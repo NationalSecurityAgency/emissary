@@ -1,0 +1,29 @@
+.DS_Store
+target/
+# IDEs use a different build dir to reduce conflicts
+# when running maven on the commandline at the same time
+target-eclipse/
+target-netbeans/
+target-idea/
+
+# output from continuous-test.sh
+mvn_test.out
+
+# used when running ./emissary script
+.mvn-classpath
+
+# IDE stuff
+nbproject/
+manifest.mf
+nbbuild.xml
+nb-configuration.xml
+nbactions*.xml
+*.iml
+*.ipr
+*.iws
+.idea/
+.project
+.classpath
+.settings/
+*.swp
+*.checkstyle

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d [using logback-test.xml] %5p %c - %X{shortName} %X{serviceLocation} - %m%n</pattern>
+    </encoder>
+  </appender>
+  <root level="DEBUG">
+    <appender-ref ref="STDOUT"/>
+  </root>
+  <!-- Configure j.u.l loggers -->
+  <logger name="emissary" level="INFO"/>
+  <logger name="emissary.util.ConstructorLookupCache" level="INFO"/>
+  <logger name="emissary.config.ServiceConfigGuide" level="INFO"/>
+  <logger name="emissary.config.ConfigUtil" level="DEBUG"/>
+  <logger name="emissary.admin.PlaceStarter" level="WARN"/>
+  <logger name="emissary.client.EmissaryClient" level="INFO"/>
+  <logger name="emissary.client.EmissaryResponse" level="INFO"/>
+  <logger name="emissary.directory.HeartbeatManager" level="INFO"/>
+  <logger name="emissary.server.mvc.internal" level="INFO"/>
+  
+  <logger name="org.qos.logback.core" level="WARN"/>
+  <logger name="org.eclipse.jetty.util.log" level="WARN"/>
+  <logger name="org.eclipse.jetty" level="WARN"/>
+  <logger name="org.apache.pdfbox" level="ERROR"/>
+  <logger name="org.apache.commons.httpclient" level="WARN"/>
+  
+  
+</configuration>

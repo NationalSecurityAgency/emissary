@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="2 seconds">
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+  <!--
+  <appender name="TOFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder>
+      <pattern>%d ${emissary.node.name}-${emissary.node.port} %5p %c - %X{shortName} %X{serviceLocation} - %m%n</pattern>
+    </encoder>
+    <file>logs/${emissary.node.name}-${emissary.node.port}.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
+    </rollingPolicy>
+  </appender>
+  -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d ${emissary.node.name}-${emissary.node.port} %5p %c - %X{shortName} %X{serviceLocation} - %m%n</pattern>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <!-- stop logging to a file in development man, redirect or tee to a file
+    <appender-ref ref="TOFILE"/>
+    -->
+    <appender-ref ref="STDOUT"/>
+  </root>
+  <logger name="emissary" level="INFO"/>
+  <logger name="emissary.util.ConstructorLookupCache" level="INFO"/>
+  <logger name="emissary.config.ServiceConfigGuide" level="INFO"/>
+  <logger name="emissary.config.ConfigUtil" level="INFO"/>
+  <logger name="emissary.admin.PlaceStarter" level="WARN"/>
+  <logger name="emissary.client.EmissaryClient" level="INFO"/>
+  <logger name="emissary.client.EmissaryResponse" level="INFO"/>
+  <logger name="emissary.pickup.QueServer" level="INFO" />
+  <logger name="emissary.directory.HeartbeatManager" level="INFO"/>
+  <logger name="emissary.server.mvc.internal" level="INFO"/>
+  <logger name="emissary.util.magic.MagicNumberFactory" level="INFO"/>
+  
+  <logger name="org.qos.logback.core" level="WARN"/>
+  <logger name="org.eclipse.jetty.util.log" level="WARN"/>
+  <logger name="org.eclipse.jetty" level="WARN"/>
+</configuration>

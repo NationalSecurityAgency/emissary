@@ -1,0 +1,157 @@
+#!/bin/bash
+
+shopt -s compat31
+
+if [ -z "${SCRIPT_DIR}" ]; then
+  # even resolves symlinks, see
+  # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+  SOURCE="${BASH_SOURCE[0]}"
+  while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+  SCRIPT_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+fi
+
+# Turn on remote debugging by prepending either of the
+# following to the command line before ./emissary:
+# DEBUG_PORT=someport
+# or 
+# DEBUG=true
+if [ "${DEBUG_PORT}x" != "x" ]; then
+  DEBUG=true
+else
+  DEBUG_PORT=8000
+fi
+if [ "${DEBUG}" == "true" ]; then
+  DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${DEBUG_PORT}"
+fi
+
+# Turn on jcommander argument parsing debugging and an echo of the command line
+# CMD_DEBUG=true ./emissary <command> <args>
+# see Emissary.java for where it is used
+if [ "${CMD_DEBUG}" == "true" ]; then
+  DEBUG_OPTS="${DEBUG_OPTS} -Dset.jcommander.debug=true"
+fi
+
+# just some defaults
+CP=""
+JAVA_OPTS=""
+
+enter_script_dir() {
+  # Change to the directory of this script
+  pushd ${SCRIPT_DIR} 2>&1 1>/dev/null 
+}
+
+setup_from_development() {
+  # Development mode runs out of /target by default
+  # but you can this by passing in TGT_DIR
+  # do something like
+  # TGT_DIR=$PWD/target-eclipse ./<script> <command> <args>
+  # You would do this if wanted to run with the classes your IDE is building
+  TGT_DIR=${TGT_DIR:="${SCRIPT_DIR}/target"}
+
+  # Now set up PROJECT_BASE
+  if [ "${PROJECT_BASE}x" != "x" ]; then
+    # we are doing development, let's override this
+    >&2 echo "Unsetting PROJECT_BASE which was ${PROJECT_BASE}"
+    RESTORE_PROJECT_BASE="export PROJECT_BASE=\"${PROJECT_BASE}\""
+    unset PROJECT_BASE
+  fi  
+  export PROJECT_BASE="${TGT_DIR}"
+  
+  # Setup the classpath by having maven dump the location
+  # of dependency jars in your local repo.  Delete this
+  # file if you change dependencies, it will not regenerate
+  local MVN_CP_FILE="${SCRIPT_DIR}/.mvn-classpath"
+  if [ ! -e "${MVN_CP_FILE}" ]; then
+    mvn -DexcludeScope=provided dependency:build-classpath -Dmdep.outputFile=${MVN_CP_FILE}
+  fi
+  # assumes mvn compile is current
+  CP="${TGT_DIR}/classes:$(cat ${MVN_CP_FILE})"
+}
+
+setup_from_distribution() {
+  # TODO: make an assembly or something to actually build this.  Untested
+
+  if [ "${PROJECT_BASE}x" == "x" ]; then
+    >&2 echo "PROJECT_BASE was not set, using ${SCRIPT_DIR}"
+    RESTORE_PROJECT_BASE="unset PROJECT_BASE"
+    export PROJECT_BASE="${SCRIPT_DIR}"
+  fi  
+  
+  CP="."
+  for f in lib/*.jar; do CP="${CP}:${SCRIPT_DIR}/${f}"; done
+  for f in lib/compile/*.jar; do CP="${CP}:${SCRIPT_DIR}/${f}"; done
+}
+
+run() {
+  # one last check that PROJECT_BASE is set
+  if [ "${PROJECT_BASE}x" == "x" ]; then
+    >&2 echo PROJECT_BASE must be set, check the script
+    exit 1
+  fi
+
+  # Some OS's need environment variables set, some use
+  # -Dfile.encoding parameter.  Let's do both
+  export LC_ALL=en_US.UTF-8
+
+  # This is for the Oracle JDBC class to ensure
+  # correct transfer to our UTF database via JDBC
+  export NLS_LANG=AMERICAN_AMERICA.UTF8
+
+  # set the native libraries if they exist
+  if [ -e ${PROJECT_BASE}/lib-native ]; then
+    local os=`uname`
+    case $os in
+     Linux*)
+       ELIB=${PROJECT_BASE}/lib-native/Linux
+       export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${ELIB}"
+       ;;
+     Darwin*)
+       ELIB=${PROJECT_BASE}/lib-native/Darwin
+       export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}:${ELIB}"
+       ;;
+     *)
+       >&2 echo OS $os not supported
+       exit 1
+    esac
+  fi
+  
+  # Setup the out dir, here will be the data/InputData etc
+  tmp="${PROJECT_BASE}/tmp"
+  if [ ! -d ${tmp} ] ; then
+      mkdir -p ${tmp}
+  fi
+
+  # options
+  JAVA_OPTS="${JAVA_OPTS}"
+  JAVA_OPTS="${JAVA_OPTS} -Dcom.sun.management.jmxremote"
+  JAVA_OPTS="${JAVA_OPTS} -Dfile.encoding=UTF8"
+  JAVA_OPTS="${JAVA_OPTS} -Duser.timezone=GMT"
+  JAVA_OPTS="${JAVA_OPTS} -Dorg.eclipse.jetty.util.log.announce=false"
+  JAVA_OPTS="${JAVA_OPTS} -Djava.awt.headless=true"
+  JAVA_OPTS="${JAVA_OPTS} -Djava.library.path=${ELIB}"
+  JAVA_OPTS="${JAVA_OPTS} -Djava.io.tmpdir=${tmp}"
+  JAVA_OPTS="${JAVA_OPTS} -Djruby.objectspace.enabled=false"
+  JAVA_OPTS="${JAVA_OPTS} -Djruby.base=${SCRIPT_DIR}"
+  JAVA_OPTS="${JAVA_OPTS} -Djruby.lib=${SCRIPT_DIR}/lib/ruby"
+  
+  CMD="java -cp "${CP}" ${DEBUG_OPTS} ${JAVA_OPTS} ${MAIN_CLASS} $@"
+  test "${CMD_DEBUG}" == "true" && >&2 echo ${CMD}
+  ${CMD}
+}
+
+cleanup() {
+  if [ "${RESTORE_PROJECT_BASE}x" != "x" ]; then
+    ${RESTORE_PROJECT_BASE}
+  fi
+  popd 2>&1 1>/dev/null # go back to orig directory
+}
+
+enter_script_dir
+if test -e "${SCRIPT_DIR}/pom.xml"; then
+  # running from the source code under core/
+  setup_from_development
+else
+  setup_from_distribution
+fi
+MAIN_CLASS=emissary.Emissary run $@
+cleanup

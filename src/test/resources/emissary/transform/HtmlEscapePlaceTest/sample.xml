@@ -1,0 +1,40 @@
+<root>
+  <setup>
+    <initialForm>HTML</initialForm>
+  </setup>
+
+  <answers>
+    <numAttachments>0</numAttachments>
+    <currentForm>HTML</currentForm>
+    <fileType>HTML</fileType>
+    <currentFormSize>1</currentFormSize>
+
+    <meta>
+      <name>CHARACTER_DIGIT_HTML_ESCAPE</name>
+      <value>7</value>
+    </meta>
+    
+    <meta>
+      <name>CHARACTER_PUNCTUATION_HTML_ESCAPE</name>
+      <value>4</value>
+    </meta>
+    
+    <meta>
+      <name>CHARACTER_WHITESPACE_HTML_ESCAPE</name>
+      <value>3</value>
+    </meta>
+    
+    <data matchMode="index">
+      <value>٠١٢٣٤٥</value>
+    </data>
+
+    <data matchMode="index">
+      <value>This Is A Test</value>
+    </data>
+    
+    <data matchMode="index">
+      <value>You can have it one way &amp;&amp; Not the other way, || both ways</value>
+    </data>
+    
+  </answers>
+</root>

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Emissary - Welcome</title>
+    <link type="text/css" rel="stylesheet" href="css/emissary.css">
+  </head>
+
+  <body>
+    <h1>Welcome to Emissary version <span id="emissary-version"></span></h1>
+    
+    <ul>
+       <li><a href="/emissary/Document.action">Submit a document</a> for processing</li>
+       <li>List the <a href="/emissary/Namespace.action">namespace contents</a></li>
+       <li><a href="/emissary/Threaddump.action">Thread Dump</a></li>
+       <li><a href="/emissary/Environment.action">Environment and Properties</a></li>
+       <li><a href="/api/metrics?pretty=true">Metrics</a></li>
+       <li><a href="/api/health?pretty=true">Health Checks</a></li>
+       <li>Enter the <a href="/emissary/Console.action">Emissary Ruby Console</a></li>
+       <li>Shutdown this emissary node <a href="/emissary/Shutdown.action" onclick="return confirm('Are you sure?');">now</a></li>
+    </ul>
+    
+    <div id="czar">
+      <p id="bubble" class="triangle-right left"></p>
+    </div>
+    
+    <script type="text/javascript">
+      function fetchAndParseJson(path, callback) {
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+          if (httpRequest.readyState === 4) {
+              if (httpRequest.status === 200) {
+                  var data = JSON.parse(httpRequest.responseText);
+                  if (callback) callback(data);
+              }
+          }
+        };
+        httpRequest.open('GET', path);
+        httpRequest.send(); 
+      }
+      
+      fetchAndParseJson('/api/version', function(data){
+          document.getElementById('emissary-version').innerHTML = data['response'][window.location.hostname + ":" + window.location.port];
+        });
+
+      function getCookie(cname) {
+    	    var name = cname + "=";
+    	    var decodedCookie = decodeURIComponent(document.cookie);
+    	    var ca = decodedCookie.split(';');
+    	    for(var i = 0; i <ca.length; i++) {
+    	        var c = ca[i];
+    	        while (c.charAt(0) == ' ') {
+    	            c = c.substring(1);
+    	        }
+    	        if (c.indexOf(name) == 0) {
+    	            return c.substring(name.length, c.length);
+    	        }
+    	    }
+    	    return "";
+    	}
+      var czar_says = getCookie('czar');
+      if (czar_says !== "") {
+    	  document.getElementById('bubble').setAttribute("style","display:block");
+    	  document.getElementById('bubble').innerHTML = czar_says;
+    	  // expire that cookie, so page refreshes don't show same message
+    	  document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+      }
+    </script>
+
+  </body>
+</html>
