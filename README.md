@@ -320,7 +320,7 @@ to keep the number of configured threads busy.
 #### Linux or MacOSX operating system
 
 Currently, developing and running natively on Windows is not
-supported.  Use a virtualized Linux OS if you on windows.  
+supported.  Use a virtualized Linux OS if you are using windows.  
 
 In terms of Linux distributions, the two most widely used on the Emissary
 codebase are CentOS 6.X and Ubuntu 12.X.
