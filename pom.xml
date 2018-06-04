@@ -995,6 +995,35 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>3.0.1</version>
         </plugin>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>dockerfile-maven-plugin</artifactId>
+          <version>1.3.7</version>
+          <configuration>
+            <skipPush>true</skipPush>
+          </configuration>
+          <executions>
+            <execution>
+              <id>tag-version</id>
+              <goals>
+                <goal>build</goal>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>${project.version}</tag>
+              </configuration>
+            </execution>
+            <execution>
+              <id>tag-latest</id>
+              <goals>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>latest</tag>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -1420,6 +1449,24 @@
       <build>
         <!--  different build directory for intellij, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-idea</directory>
+      </build>
+    </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <configuration>
+              <repository>emissary</repository>
+              <buildArgs>
+                <PROJ_VERS>${project.version}</PROJ_VERS>
+                <IMG_NAME>emissary</IMG_NAME>
+              </buildArgs>
+            </configuration>
+          </plugin>
+        </plugins>
       </build>
     </profile>
   </profiles>
