@@ -153,6 +153,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected boolean outputable = true;
 
     /**
+     * The work bundle identifier
+     */
+    protected String workBundleId;
+
+    /**
+     * The transaction id
+     */
+    protected String transactionId;
+
+    /**
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
@@ -1296,5 +1306,25 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setOutputable(boolean outputable) {
         this.outputable = outputable;
+    }
+
+    @Override
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    @Override
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    @Override
+    public String getWorkBundleId() {
+        return workBundleId;
+    }
+
+    @Override
+    public void setWorkBundleId(String workBundleId) {
+        this.workBundleId = workBundleId;
     }
 }

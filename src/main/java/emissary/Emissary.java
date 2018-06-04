@@ -20,6 +20,7 @@ import emissary.command.RunCommand;
 import emissary.command.ServerCommand;
 import emissary.command.StopCommand;
 import emissary.command.TopologyCommand;
+import emissary.command.TransactionsCommand;
 import emissary.command.VersionCommand;
 import emissary.command.WhatCommand;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class Emissary {
         List<Class<? extends EmissaryCommand>> cmds =
                 Arrays.asList(ServerCommand.class, HelpCommand.class, WhatCommand.class, TopologyCommand.class, FeedCommand.class,
                         AgentsCommand.class, PoolCommand.class, VersionCommand.class, RunCommand.class, EnvCommand.class, StopCommand.class,
-                        PeersCommand.class);
+                        PeersCommand.class, TransactionsCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
         for (Class<? extends EmissaryCommand> clz : cmds) {
             EmissaryCommand cmd;

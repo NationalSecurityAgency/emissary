@@ -26,6 +26,7 @@
     <appender-ref ref="STDOUT"/>
   </root>
   <logger name="emissary" level="INFO"/>
+  <logger name="emissary.transaction" level="ERROR"/>
   <logger name="emissary.util.ConstructorLookupCache" level="INFO"/>
   <logger name="emissary.config.ServiceConfigGuide" level="INFO"/>
   <logger name="emissary.config.ConfigUtil" level="INFO"/>

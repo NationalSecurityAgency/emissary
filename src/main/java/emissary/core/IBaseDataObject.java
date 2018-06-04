@@ -803,4 +803,24 @@ public interface IBaseDataObject {
      * @param outputable true if this tree is not able to be output, false otherwise
      */
     void setOutputable(boolean outputable);
+
+    /**
+     * @return the work bundle id
+     */
+    String getWorkBundleId();
+
+    /**
+     * Set the transaction id
+     */
+    void setWorkBundleId(String workBundleId);
+
+    /**
+     * @return the transaction id
+     */
+    String getTransactionId();
+
+    /**
+     * Set the transaction id
+     */
+    void setTransactionId(String transactionId);
 }

@@ -247,6 +247,16 @@
         <version>${dep.xmlbeans.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>1.8.13</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>1.8.13</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-plus</artifactId>
         <version>${dep.jetty.version}</version>
@@ -1006,6 +1016,27 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>3.0.1</version>
         </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>aspectj-maven-plugin</artifactId>
+          <version>1.11</version>
+          <configuration>
+            <complianceLevel>1.8</complianceLevel>
+            <source>1.8</source>
+            <target>1.8</target>
+            <showWeaveInfo>true</showWeaveInfo>
+            <verbose>true</verbose>
+            <Xlint>ignore</Xlint>
+            <encoding>UTF-8</encoding>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -1072,6 +1103,10 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>aspectj-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
