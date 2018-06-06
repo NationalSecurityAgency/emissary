@@ -35,16 +35,17 @@
     <dep.commons-exec.version>1.2</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.2.2</dep.commons-fileupload.version>
     <dep.commons-io.version>2.4</dep.commons-io.version>
-    <dep.commons-lang.version>2.6</dep.commons-lang.version>
+    <dep.commons-lang.version>3.7</dep.commons-lang.version>
     <dep.commons-logging.version>1.1.3</dep.commons-logging.version>
     <dep.commons-pool.version>1.6</dep.commons-pool.version>
     <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
-    <dep.guava.version>16.0</dep.guava.version>
+    <dep.guava.version>20.0</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.1</dep.httpclient.version>
     <dep.httpcore.version>4.4.3</dep.httpcore.version>
     <dep.jackcess.version>2.1.2</dep.jackcess.version>
     <dep.jackson.version>2.8.11</dep.jackson.version>
+    <dep.javassist.version>3.22.0-CR2</dep.javassist.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>2.27</dep.jersey.version>
@@ -59,6 +60,7 @@
     <dep.spullara.mustache.compiler.version>0.8.17</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
     <dep.sun.mail.version>1.6.2</dep.sun.mail.version>
+    <dep.swagger.version>2.0.0</dep.swagger.version>
     <dep.tika.version>1.19.1</dep.tika.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
@@ -159,11 +161,6 @@
         <version>${dep.commons-io.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>${dep.commons-lang.version}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${dep.commons-logging.version}</version>
@@ -199,6 +196,16 @@
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2</artifactId>
+        <version>${dep.swagger.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+        <version>${dep.swagger.version}</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${dep.junit.version}</version>
@@ -215,6 +222,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${dep.commons-exec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${dep.commons-lang.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -348,6 +360,11 @@
         <version>${dep.jersey.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.javassist</groupId>
+        <artifactId>javassist</artifactId>
+        <version>${dep.javassist.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom</artifactId>
         <version>${dep.jdom.version}</version>
@@ -425,6 +442,10 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
     <dependency>
@@ -464,10 +485,6 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
     </dependency>
@@ -492,6 +509,14 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
@@ -502,6 +527,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -574,10 +603,24 @@
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-json-jackson</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.module</groupId>
+          <artifactId>jackson-module-jaxb-annotations</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jruby</groupId>

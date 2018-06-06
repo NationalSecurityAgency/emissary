@@ -18,6 +18,7 @@ import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class Places {
     @GET
     @Path("/places")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of available places", tags = {"places"})
     public Response places() {
         return Response.ok().entity(lookupPlaces()).build();
     }
@@ -44,6 +46,7 @@ public class Places {
     @GET
     @Path("/cluster/places")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of available places across the cluster", tags = {"places", "cluster"})
     public Response clusterPlaces() {
         try {
             // Get our local information first

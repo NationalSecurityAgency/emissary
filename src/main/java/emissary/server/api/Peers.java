@@ -16,6 +16,7 @@ import emissary.client.EmissaryClient;
 import emissary.client.response.PeerList;
 import emissary.client.response.PeersResponseEntity;
 import emissary.core.EmissaryException;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class Peers {
     @GET
     @Path("/peers")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of local rendezvous peers", tags = {"peers"})
     public Response peers() {
         PeersResponseEntity pr = new PeersResponseEntity();
         try {
@@ -45,6 +47,7 @@ public class Peers {
     @GET
     @Path("/cluster/peers")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of rendezvous peers across the cluster", tags = {"peers", "cluster"})
     public Response clusterPeers() {
         PeersResponseEntity entity = new PeersResponseEntity();
         Set<String> peers;

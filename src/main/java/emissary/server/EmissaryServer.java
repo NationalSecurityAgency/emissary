@@ -17,8 +17,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.naming.directory.AttributeInUseException;
+import javax.ws.rs.ApplicationPath;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
@@ -41,6 +44,10 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import io.swagger.v3.jaxrs2.integration.resources.OpenApiResource;
+import io.swagger.v3.oas.integration.SwaggerConfiguration;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -127,6 +134,8 @@ public class EmissaryServer {
             lbConfigHandler.setContextPath("/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
             apiHandler.setContextPath("/api");
+            ContextHandler apiSwaggerHandler = buildSwaggerHandler(new ApiSwaggerResourceConfig());
+            apiSwaggerHandler.setContextPath("/docs-api");
             ContextHandler mvcHandler = buildMVCHandler();
             mvcHandler.setContextPath("/emissary");
             // needs to be loaded last into the server so other contexts can match or fall through
@@ -141,6 +150,7 @@ public class EmissaryServer {
             final HandlerList securedHandlers = new HandlerList();
             securedHandlers.addHandler(lbConfigHandler);
             securedHandlers.addHandler(apiHandler);
+            securedHandlers.addHandler(apiSwaggerHandler);
             securedHandlers.addHandler(mvcHandler);
             securedHandlers.addHandler(staticHandler);
             security.setHandler(securedHandlers);
@@ -545,6 +555,13 @@ public class EmissaryServer {
         return lbHolderContext;
     }
 
+    private ContextHandler buildSwaggerHandler(ResourceConfig resourceConfig) {
+        ServletHolder apiHolder = new ServletHolder(new org.glassfish.jersey.servlet.ServletContainer(resourceConfig));
+        ServletContextHandler swaggerHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        swaggerHolderContext.addServlet(apiHolder, "/*");
+        return swaggerHolderContext;
+    }
+
     @VisibleForTesting
     protected Server configureServer() throws IOException, GeneralSecurityException {
         int maxThreads = 250;
@@ -601,5 +618,18 @@ public class EmissaryServer {
                 new SslConnectionFactory(sslContextFactory, "http/1.1"),
                 new HttpConnectionFactory(https_config));
         return connector;
+    }
+
+    @ApplicationPath("/api")
+    class ApiSwaggerResourceConfig extends ResourceConfig {
+        ApiSwaggerResourceConfig() {
+            super();
+            OpenAPI oas = new OpenAPI().info(new Info().title("Emissary API").description(""));
+            SwaggerConfiguration oasConfig = new SwaggerConfiguration().openAPI(oas).cacheTTL(0L).prettyPrint(true)
+                    .resourcePackages(Stream.of("emissary.server.api").collect(Collectors.toSet()));
+            OpenApiResource openApiResource = new OpenApiResource();
+            openApiResource.setOpenApiConfiguration(oasConfig);
+            register(openApiResource);
+        }
     }
 }

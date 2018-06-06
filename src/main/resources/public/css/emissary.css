@@ -1,46 +1,31 @@
 body {
     background-color: #fff; color: #333;
     font-family: arial, sans-serif;
+    min-height: 75rem;
+    padding-top: 4.5rem;
 }
 div.scriptoutput {
     font-family: courier, "courier new", monospace;
     letter-spacing: 1px;
-    background-color: #fef3b8;
-    border: 2px solid #822a92;
+    background-color: #3d3d3d;
+    border: 0px solid #ededed;
     height: 450px;
     overflow: auto;
     padding: 4px;
 }
 .scriptinput {
-    background-color: #fef3b8;
-    border: 2px solid #34c0d6;
-    color: #822a92;
+    background-color: #3d3d3d;
+    border: 0px solid #ededed;
+    color: #ededed
 }
-h1 {
-    text-align: center;
-    color: #822a92;
-    font-size: 1.3em;
-}
-h2 {
-    text-align: center;
-    color: #822a92;
-    font-size: 1.1em;
-}
-h3 {
-    text-align: center;
-    color: #822a92;
-    font-size: 1em;
-}
-h4 {
-    text-align: center;
-    color: #822a92;
-    font-size: 0.8em;
+.prompttext {
+    color: #ededed;
 }
 .errortext {
      color: red;
 }
 .commandtext {
-     color: #822a92;
+     color: #ededed;
 }
 .responsetext {
      color: #34c0d6;
@@ -120,4 +105,12 @@ td.num {
     display: block;
     border-style: solid;
     width: 0;
+}
+
+div#content {
+    background-color: #eaeded;
+    border: 1px solid #dee2e6;
+    font-size: 0.7em;
+    padding: 7px;
+    display: none;
 }

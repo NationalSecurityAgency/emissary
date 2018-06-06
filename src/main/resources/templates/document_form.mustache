@@ -1,25 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Emissary - Submit A Document</title>
+      <link rel="stylesheet" href="/css/lib/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
+      <title>Emissary - Submit A Document</title>
   </head>
-
   <body>
-    <h1>Emissary - Submit a Document</h1>
+    <header></header>
+    <main class="container">
+        <h3>Submit a Document</h3>
 
-    <form name="f" method="POST" action="Document.action" enctype="multipart/form-data">
-      <!-- this hidden field is used to differentiate between a external POST which is likely -->
-      <!-- a computer, and one that comes from this page which is likely a person -->
-      <input type="hidden" name="source" value="form" />
+        <form name="f" method="POST" action="Document.action" enctype="multipart/form-data">
+            <!-- this hidden field is used to differentiate between a external POST which is likely -->
+            <!-- a computer, and one that comes from this page which is likely a person -->
+            <input type="hidden" name="source" value="form" />
 
-      Initial Form: <input type="text" name="initial_form" value="UNKNOWN"/> <i>(csv ok)</i><br />
-      Document: <input type="file" name="document"/><br />
-      <br />
-      <input type="submit" value="Submit"/>
-    </form>
+            <div class="form-group">
+                <label for="initial_form">Initial Form <i>(csv ok)</i>:</label>
+                <input type="text" name="initial_form" value="UNKNOWN" class="form-control"/>
+            </div>
 
-    <p>A successful submission will return a token that can be
-    used as a GET on this url in <i>token=...</i></p>
-    
+            <div class="form-group">
+                <label for="document">Document:</label>
+                <input type="file" name="document" class="form-control"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+        </form>
+
+        <p>A successful submission will return a token that can be
+        used as a GET on this url in <i>token=...</i></p>
+    </main>
+
+    <script src="/js/lib/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script>
+    <script src="/js/lib/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+    <script src="/js/lib/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
   </body>
 </html>

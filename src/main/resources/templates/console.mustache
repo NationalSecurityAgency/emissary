@@ -1,31 +1,36 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-    <title>Emissary - Ruby Console</title>
+<!doctype html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
     <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
-    <script type="text/javascript" language="javascript" src="/js/lib/MochiKit/MochiKit.js"></script>
-    <script type="text/javascript" language="javascript" src="/js/emissary.js"></script>
+    <title>Emissary - Ruby Console</title>
   </head>
   <body>
-    <h1>Emissary Ruby Console v{{emissary.version}}</h1>
-    <div id="output" class="scriptoutput">
-       {{message}}
-    </div>
-    <div class="dialog">
-      <form id="f" name="f" method="post" action="/emissary/Console.action" onsubmit="return consoleFormHook(this,document.getElementById('output'));">
-        <input type="hidden" name="c" id="c" value="eval"/>
-        <p class="small">Enter to submit, Ctrl-Enter to get a new line</p>
-        <textarea rows="3" cols="85" id="s" name="s" class="scriptinput">=&gt; </textarea><br />
-        <input type="submit" value="submit command" name="Submit"/>
-      </form>
-    <form id="r" name="r" method="post" action="/emissary/Console.action?c=reset" onsubmit="return resetConsole(document.getElementById('f'),document.getElementById('output'));" style="display: inline">
-         <input type="hidden" name="c" id="resetc" value="reset console"/>
-         <input type="submit" value="reset ruby console" name="Reset"/>
-         <input type="button" value="clear output" name="clear" onclick="document.getElementById('output').innerHTML='';document.getElementById('s').focus()"/>
-      </form>
-    </div>
-</body>
+    <header></header>
+    <main class="container">
+        <h3>Emissary Ruby Console v{{emissary.version}}</h3>
+        <div id="output" class="scriptoutput">
+            {{message}}
+        </div>
+        <div class="dialog">
+            <form id="f" name="f" method="post" action="/emissary/Console.action" onsubmit="return consoleFormHook(this,$('#output'));">
+                <input type="hidden" name="c" id="c" value="eval"/>
+                <p class="small">Enter to submit, Ctrl-Enter to get a new line</p>
+                <textarea rows="3" cols="85" id="s" name="s" class="scriptinput">=&gt; </textarea><br />
+                <button type="submit" class="btn btn-success btn-sm" id="submit">Submit</button>
+            </form>
+            <form id="r" name="r" method="post" action="/emissary/Console.action?c=reset" onsubmit="return resetConsole($('#f')[0],$('#output'));" style="display: inline">
+                <input type="hidden" name="c" id="resetc" value="reset console"/>
+                <button type="submit" class="btn btn-secondary btn-sm" id="reset">Reset Ruby Console</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="clear">Clear Output</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="/js/lib/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script>
+    <script src="/js/lib/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+    <script src="/js/lib/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
+    <script src="/js/emissary_console.js" type="text/javascript" language="javascript"></script>
+  </body>
 </html>

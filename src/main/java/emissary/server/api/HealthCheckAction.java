@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 
 import emissary.core.MetricsManager;
 import emissary.core.NamespaceException;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ public class HealthCheckAction {
     @GET
     @Path("/health")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a health check response", tags = {"health"})
     public Response clusterAgents() {
         try {
             return Response.ok().entity(MetricsManager.lookup().getHealthCheckRegistry().runHealthChecks()).build();

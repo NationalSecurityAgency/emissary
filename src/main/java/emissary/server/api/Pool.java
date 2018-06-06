@@ -18,6 +18,7 @@ import emissary.directory.EmissaryNode;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class Pool {
     @GET
     @Path("/pool")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of agent pools", tags = {"pool"})
     public Response pool() {
         return Response.ok().entity(this.lookupPool()).build();
     }
@@ -43,6 +45,7 @@ public class Pool {
     @GET
     @Path("/cluster/pool")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of agents pools across the cluster", tags = {"pool", "cluster"})
     public Response clusterPool() {
         MapResponseEntity entity = new MapResponseEntity();
         try {

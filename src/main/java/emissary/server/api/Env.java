@@ -13,6 +13,7 @@ import emissary.command.ServerCommand;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class Env {
     @GET
     @Path("/env")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of environment variables used to generate the env.sh", tags = {"environment"})
     public Response getEnvJson() {
         return Response.ok().entity(getEnv()).build();
     }
@@ -37,6 +39,7 @@ public class Env {
     @GET
     @Path("/env.sh")
     @Produces(MediaType.TEXT_PLAIN)
+    @Operation(summary = "Get a list of environment variables, in bash format, used to generate the env.sh", tags = {"environment"})
     public Response getEnvForBash() {
         return Response.ok().entity(envString()).build();
     }

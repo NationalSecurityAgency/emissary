@@ -1,12 +1,24 @@
-<html>
+<!doctype html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="/css/lib/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+        <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
+    </head>
   <body>
-     Click on the following link to see the results.<p>
-     Keep in mind, it may take some time to process.<p>
-     <a href="{{link}}">{{uuid}}</a>
-     
-     {{#error}}
-     <h4>Errors</h4>
-     <span>{{error-message}}</span>
-     {{/error}}
+    <header></header>
+    <main class="containter">
+         Click on the following link to see the results.<p>
+         Keep in mind, it may take some time to process.<p>
+         <a href="{{link}}">{{uuid}}</a>
+
+         {{#error}}
+         <h4>Errors</h4>
+         <span>{{error-message}}</span>
+         {{/error}}
+    </main>
+    <script src="/js/lib/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script>
+    <script src="/js/lib/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+    <script src="/js/lib/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
   </body>
 </html>

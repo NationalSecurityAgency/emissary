@@ -1,70 +1,102 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <title>Emissary - Welcome</title>
-    <link type="text/css" rel="stylesheet" href="css/emissary.css">
-  </head>
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <body>
-    <h1>Welcome to Emissary version <span id="emissary-version"></span></h1>
-    
-    <ul>
-       <li><a href="/emissary/Document.action">Submit a document</a> for processing</li>
-       <li>List the <a href="/emissary/Namespace.action">namespace contents</a></li>
-       <li><a href="/emissary/Threaddump.action">Thread Dump</a></li>
-       <li><a href="/emissary/Environment.action">Environment and Properties</a></li>
-       <li><a href="/api/metrics?pretty=true">Metrics</a></li>
-       <li><a href="/api/health?pretty=true">Health Checks</a></li>
-       <li>Enter the <a href="/emissary/Console.action">Emissary Ruby Console</a></li>
-       <li>Shutdown this emissary node <a href="/emissary/Shutdown.action" onclick="return confirm('Are you sure?');">now</a></li>
-    </ul>
-    
-    <div id="czar">
-      <p id="bubble" class="triangle-right left"></p>
-    </div>
-    
-    <script type="text/javascript">
-      function fetchAndParseJson(path, callback) {
-        var httpRequest = new XMLHttpRequest();
-        httpRequest.onreadystatechange = function() {
-          if (httpRequest.readyState === 4) {
-              if (httpRequest.status === 200) {
-                  var data = JSON.parse(httpRequest.responseText);
-                  if (callback) callback(data);
-              }
-          }
-        };
-        httpRequest.open('GET', path);
-        httpRequest.send(); 
-      }
-      
-      fetchAndParseJson('/api/version', function(data){
-          document.getElementById('emissary-version').innerHTML = data['response'][window.location.hostname + ":" + window.location.port];
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm">
+    <link rel="stylesheet" type="text/css" href="css/lib/swagger-ui.css" >
+    <link rel="stylesheet" href="/css/emissary.css">
+
+    <style>
+      html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
+      *, *:before, *:after { box-sizing: inherit; }
+      body { margin:0; background: #fafafa; }
+      .col { width: auto; }
+      .download-contents { width: auto; }
+    </style>
+
+    <title>Emissary - Swagger API</title>
+</head>
+<body>
+    <header></header>
+
+    <main>
+        <div class="container">
+            <div id="swagger-ui"></div>
+        </div>
+        <div class="container">
+            <div id="czar">
+                <p id="bubble" class="triangle-right left"></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/lib/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="></script>
+    <script src="/js/lib/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+    <script src="/js/lib/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
+    <script src="js/lib/swagger-ui-bundle.js"> </script>
+    <script src="js/lib/swagger-ui-standalone-preset.js"> </script>
+    <script>
+        // Parse URL Queries
+        function url_query( query ) {
+            query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+            var expr = "[\\?&]"+query+"=([^&#]*)";
+            var regex = new RegExp( expr );
+            var results = regex.exec( window.location.href );
+            if ( results !== null ) {
+                return results[1];
+            } else {
+                return false;
+            }
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for(var i = 0; i <ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        $(document).ready(function () {
+           var url_param = url_query('loc');
+
+           // Build a system
+           const ui = SwaggerUIBundle({
+             url: window.location.protocol + "//" + window.location.host + "/docs-"+(url_param ? url_param : "api")+"/openapi.json",
+              dom_id: '#swagger-ui',
+              deepLinking: true,
+              presets: [
+                SwaggerUIBundle.presets.apis
+              ],
+              plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+              ]
+            })
+
+            window.ui = ui
+
+            var czar_says = getCookie('czar');
+            if (czar_says !== "") {
+                $('#api').hide();
+                $('#swagger-ui').hide();
+                $('#bubble').css('display','block');
+                $('#bubble').html(czar_says);
+                // expire that cookie, so page refreshes don't show same message
+                document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+            }
         });
-
-      function getCookie(cname) {
-    	    var name = cname + "=";
-    	    var decodedCookie = decodeURIComponent(document.cookie);
-    	    var ca = decodedCookie.split(';');
-    	    for(var i = 0; i <ca.length; i++) {
-    	        var c = ca[i];
-    	        while (c.charAt(0) == ' ') {
-    	            c = c.substring(1);
-    	        }
-    	        if (c.indexOf(name) == 0) {
-    	            return c.substring(name.length, c.length);
-    	        }
-    	    }
-    	    return "";
-    	}
-      var czar_says = getCookie('czar');
-      if (czar_says !== "") {
-    	  document.getElementById('bubble').setAttribute("style","display:block");
-    	  document.getElementById('bubble').innerHTML = czar_says;
-    	  // expire that cookie, so page refreshes don't show same message
-    	  document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-      }
     </script>
-
-  </body>
+</body>
 </html>

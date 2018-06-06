@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 
 import emissary.core.MetricsManager;
 import emissary.core.NamespaceException;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +20,7 @@ public class MetricsAction {
     @GET
     @Path("/metrics")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get a list of application metrics", tags = {"metrics"})
     public Response clusterAgents() {
         try {
 
