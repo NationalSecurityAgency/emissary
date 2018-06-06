@@ -8,9 +8,10 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +35,9 @@ public final class MainTest extends UnitTest {
     public void setUp() throws Exception {
 
 
-        try {
-            File dataFile = new File(TMPDIR + "/testmain.dat");
-            FileOutputStream ros = new FileOutputStream(dataFile);
+        File dataFile = new File(TMPDIR + "/testmain.dat");
+        try (OutputStream ros = Files.newOutputStream(dataFile.toPath())) {
             ros.write("abcdefghijklmnopqrstuvwxyz".getBytes());
-            ros.close();
         } catch (IOException ex) {
             fail("Unable to create test file: " + ex.getMessage());
         }

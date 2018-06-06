@@ -3,8 +3,6 @@ package emissary.config;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -425,7 +423,7 @@ public class ConfigUtil {
         File f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file {}", f.getPath());
-            return new FileInputStream(f);
+            return Files.newInputStream(f.toPath());
         }
         logger.debug("No file config found using new style {}", f.getName());
 
@@ -455,7 +453,7 @@ public class ConfigUtil {
         f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file old style {}", f.getPath());
-            return new FileInputStream(f);
+            return Files.newInputStream(f.toPath());
         }
         logger.debug("No file config found using old style {}", f.getName());
 
@@ -497,7 +495,7 @@ public class ConfigUtil {
 
         try {
             if (f.exists() && f.canRead()) {
-                is = new FileInputStream(f);
+                is = Files.newInputStream(f.toPath());
             } else {
                 final List<String> cnameprefs = toResourceName(name);
                 for (final String cname : cnameprefs) {
@@ -602,7 +600,7 @@ public class ConfigUtil {
             is = new ByteArrayInputStream(ws.getContentString().getBytes("ISO8859_1"));
             logger.debug("Retrieve of {} worked, created InputStream", filename);
         } else {
-            is = new FileInputStream(filename);
+            is = Files.newInputStream(Paths.get(filename));
         }
         return is;
     }
@@ -615,29 +613,15 @@ public class ConfigUtil {
      * @throws IOException on read or write problems
      */
     public static void getConfigDataLocal(final String f, final String outputPath) throws IOException {
-        final InputStream is = getConfigData(f);
-        final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath));
-        try {
+        try (final InputStream is = getConfigData(f);
+                final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(new File(outputPath).toPath()))) {
             final byte[] buf = new byte[4096];
             int thisReadOp = 0;
             while ((thisReadOp = is.read(buf)) > -1) {
                 os.write(buf, 0, thisReadOp);
             }
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ioex1) {
-                logger.debug("Failed to close stream", ioex1);
-            }
-            try {
-                os.close();
-            } catch (IOException ioex2) {
-                logger.debug("Failed to close stream", ioex2);
-            }
+            logger.debug("Retrieved {} to {}", f, outputPath);
         }
-        logger.debug("Retrieved {} to {}", f, outputPath);
     }
 
     /**
@@ -685,10 +669,10 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {

@@ -5,8 +5,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.UUID;
 
@@ -96,7 +96,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
             instance.write(INT);
         }
         File f = new File(tmpDir, currentFile);
-        try (FileInputStream is = new FileInputStream(f)) {
+        try (InputStream is = Files.newInputStream(f.toPath())) {
             assertTrue(is.read() == INT);
             assertTrue(is.read() == -1);
         }
@@ -111,7 +111,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
             instance.write(data.getBytes(), 0, data.length());
         }
         File f = new File(tmpDir, currentFile);
-        try (FileInputStream is = new FileInputStream(f)) {
+        try (InputStream is = Files.newInputStream(f.toPath())) {
             int i = 0;
             for (; i < data.length(); i++) {
                 is.read();

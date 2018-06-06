@@ -5,8 +5,10 @@
 package emissary.util;
 
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Hexl {
 
@@ -127,24 +129,18 @@ public class Hexl {
             return;
         }
 
-        byte[] theContent = null;
-
-        for (int i = 0; i < argv.length; i++) {
-
-            try {
-                FileInputStream theFile = new FileInputStream(argv[i]);
-                DataInputStream theStream = new DataInputStream(theFile);
-
+        byte[] theContent;
+        for (String file : argv) {
+            try (InputStream theFile = Files.newInputStream(Paths.get(file));
+                    DataInputStream theStream = new DataInputStream(theFile)) {
                 theContent = new byte[theStream.available()];
                 theStream.readFully(theContent);
-                theStream.close();
-                theFile.close();
             } catch (IOException e) {
-                System.err.println("Error reading from " + argv[i]);
+                System.err.println("Error reading from " + file);
                 continue;
             }
 
-            System.out.println("File " + argv[i]);
+            System.out.println("File " + file);
             System.out.println(toHexString(theContent));
         }
     }

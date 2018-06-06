@@ -9,9 +9,10 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -462,9 +463,9 @@ public class ServiceConfigGuideTest extends UnitTest {
         // Write the config bytes out to a temp file
         final File scfile = File.createTempFile("temp", ".cfg");
         scfile.deleteOnExit();
-        final FileOutputStream os = new FileOutputStream(scfile);
-        os.write(cdata.getBytes());
-        os.close();
+        try (final OutputStream os = Files.newOutputStream(scfile.toPath())) {
+            os.write(cdata.getBytes());
+        }
 
         final ServiceConfigGuide sc3 = new ServiceConfigGuide(scfile.getAbsolutePath());
         assertEquals("Read file from disk", pn, sc3.findStringEntry("INITIAL_FORM"));

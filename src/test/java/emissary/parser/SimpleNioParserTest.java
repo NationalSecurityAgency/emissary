@@ -6,10 +6,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
@@ -71,9 +72,9 @@ public class SimpleNioParserTest extends UnitTest {
         testDataFile.deleteOnExit();
 
         // Write the test data to the file
-        FileOutputStream os = new FileOutputStream(testDataFile);
-        os.write(DATA);
-        os.close();
+        try (OutputStream os = Files.newOutputStream(testDataFile.toPath())) {
+            os.write(DATA);
+        }
 
         raf = new RandomAccessFile(testDataFile, "r");
         channel = raf.getChannel();

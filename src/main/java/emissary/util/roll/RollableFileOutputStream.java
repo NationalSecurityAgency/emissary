@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
@@ -57,15 +58,10 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     private void handleOrphanedFiles() {
         // Create FilenameFilter
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(".");
-            }
-        };
+        FilenameFilter filter = (dir, name) -> name.startsWith(".");
 
         // Look for any dot files in directory
-        for (File file : this.dir.listFiles(filter)) {
+        for (File file : Objects.requireNonNull(this.dir.listFiles(filter))) {
             if (file.isFile()) {
                 LOG.info("Renaming orphaned file, " + file.getName() + ", to non-dot file.");
                 rename(file);

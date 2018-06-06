@@ -8,8 +8,9 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,14 +159,14 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         final File baseFile = new File(configDir + "/emissary.blubber.Whale.cfg");
-        FileOutputStream ros = new FileOutputStream(baseFile);
-        ros.write("FOO = \"BAR\"\n".getBytes());
-        ros.close();
+        try (OutputStream ros = Files.newOutputStream(baseFile.toPath())) {
+            ros.write("FOO = \"BAR\"\n".getBytes());
+        }
 
         final File flavFile = new File(configDir + "/emissary.blubber.Whale-TESTFLAVOR.cfg");
-        ros = new FileOutputStream(flavFile);
-        ros.write("FOO = \"BAR2\"\n".getBytes());
-        ros.close();
+        try (OutputStream ros = Files.newOutputStream(flavFile.toPath())) {
+            ros.write("FOO = \"BAR2\"\n".getBytes());
+        }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Whale.cfg");
         assertNotNull("Configuration should have been found", c);
@@ -193,14 +194,14 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         final File baseFile = new File(configDir + "/emissary.blubber.Shark.cfg");
-        FileOutputStream ros = new FileOutputStream(baseFile);
-        ros.write("FOO = \"BAR\"\n".getBytes());
-        ros.close();
+        try (OutputStream ros = Files.newOutputStream(baseFile.toPath())) {
+            ros.write("FOO = \"BAR\"\n".getBytes());
+        }
 
         final File flavFile = new File(configDir + "/emissary.blubber.Shark-TESTFLAVOR.cfg");
-        ros = new FileOutputStream(flavFile);
-        ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
-        ros.close();
+        try (OutputStream ros = Files.newOutputStream(flavFile.toPath())) {
+            ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
+        }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
         assertNotNull("Configuration should have been found", c);
@@ -633,9 +634,7 @@ public class ConfigUtilTest extends UnitTest {
         final String filename = dir.getAbsolutePath() + "/" + name;
         final File file = new File(filename);
         testFilesAndDirectories.add(file);
-        FileOutputStream ros = null;
-        try {
-            ros = new FileOutputStream(file);
+        try (OutputStream ros = Files.newOutputStream(file.toPath())) {
             ros.write(contents.getBytes());
         } catch (FileNotFoundException ex) {
             logger.error("Problem making " + filename, ex);
@@ -643,15 +642,6 @@ public class ConfigUtilTest extends UnitTest {
         } catch (IOException ex) {
             logger.error("Problem making " + filename, ex);
             throw new RuntimeException(ex);
-        } finally {
-            if (ros != null) {
-                try {
-                    ros.close();
-                } catch (IOException ex) {
-                    logger.error("Problem closing " + ros.toString(), ex);
-                    throw new RuntimeException(ex);
-                }
-            }
         }
         return file;
     }

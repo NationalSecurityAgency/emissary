@@ -1,9 +1,11 @@
 package emissary.kff;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -655,13 +657,13 @@ public final class Ssdeep {
 
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
-        for (final String f : args) {
-            final FileInputStream is = new FileInputStream(f);
-            final byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-            // output format matches the original ssdeep program
-            System.out.println(ss.fuzzy_hash(buffer) + ",\"" + f + "\"");
+        for (final String file : args) {
+            try (final InputStream is = Files.newInputStream(Paths.get(file))) {
+                final byte[] buffer = new byte[is.available()];
+                is.read(buffer);
+                // output format matches the original ssdeep program
+                System.out.println(ss.fuzzy_hash(buffer) + ",\"" + file + "\"");
+            }
         }
     }
 }

@@ -7,9 +7,10 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
 
@@ -206,7 +207,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
     private void runFileConfiguredTest(boolean usePackage, int ctorType) throws EmissaryException {
         File cfg = null;
-        FileOutputStream fos = null;
+        OutputStream fos = null;
         try {
             // set config to java.io.tmpdir, no package resources
             // setConfig(System.getProperty("java.io.tmpdir", "."), false);
@@ -217,7 +218,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
             } else {
                 cfg = new File(CFGDIR + "/MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
             }
-            fos = new FileOutputStream(cfg);
+            fos = Files.newOutputStream(cfg.toPath());
             fos.write(configData);
 
             MyFileConfigedTestPlace mtp = null;

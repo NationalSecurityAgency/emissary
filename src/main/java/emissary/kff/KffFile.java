@@ -1,9 +1,11 @@
 package emissary.kff;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -253,14 +255,14 @@ public class KffFile implements KffFilter {
         kff.addAlgorithm("SHA-1");
         kff.addAlgorithm("SHA-256");
 
-        for (int i = 1; i < args.length; i++) {
-            FileInputStream is = new FileInputStream(args[i]);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+        for (String file : args) {
+            try (InputStream is = Files.newInputStream(Paths.get(file))) {
+                byte[] buffer = new byte[is.available()];
+                is.read(buffer);
 
-            KffResult r = kff.check(args[i], buffer);
-            System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());
+                KffResult r = kff.check(file, buffer);
+                System.out.println(file + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());
+            }
         }
     }
 }
