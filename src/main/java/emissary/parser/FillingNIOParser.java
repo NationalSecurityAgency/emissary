@@ -43,7 +43,7 @@ public abstract class FillingNIOParser extends NIOSessionParser {
             }
         }
 
-        if (b == null) {
+        if (b == null || b.length == 0) {
             setFullyParsed(true);
             throw new ParserEOFException("Sessions completed");
         }

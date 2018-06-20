@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The
@@ -45,8 +47,10 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Internal buffers for windowed content
      */
-    private ByteBuffer buff1;
-    private ByteBuffer buff2;
+    private static final int INIT_BUFFERS_SIZE = 2;
+    private LinkedList<ByteBuffer> buffers = new LinkedList<>();
+    private long setPosition = -1;
+
 
     /**
      * Creates a new instance and populates buffers with data.
@@ -57,19 +61,16 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         }
 
         this.in = in;
-        int capacity = buffsize / 2;
-        if ((buffsize % 2) == 1) {
-            capacity++;
-        }
+        int capacity = (int) Math.ceil(((double) buffsize) / INIT_BUFFERS_SIZE);
 
-        this.buff1 = ByteBuffer.allocate(capacity);
-        readIntoBuffer(this.buff1);
-        // only fill buff2 if there's more to read. otherwise save heap
-        if (!this.endofchannel) {
-            this.buff2 = ByteBuffer.allocate(capacity);
-            readIntoBuffer(this.buff2);
-        } else {
-            this.buff2 = ByteBuffer.allocate(0);
+        for (int x = 0; x < INIT_BUFFERS_SIZE; x++) {
+            ByteBuffer buffer = ByteBuffer.allocate(capacity);
+            readIntoBuffer(buffer);
+            buffers.add(buffer);
+
+            if (this.endofchannel) {
+                break;
+            }
         }
     }
 
@@ -77,24 +78,47 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * If necessary, will move data in the window to make room for additional data from the channel.
      */
     private void realignBuffers() throws IOException {
-        final int qtr = this.buff1.capacity() / 2;
-        if (this.endofchannel || (this.buff2.remaining() > qtr)) {
+        final int qtr = buffers.peekLast().capacity() / 2;
+        if (endofchannel || (buffers.peekLast().remaining() > qtr)) {
             return;
         }
-        // keep track of our position
-        final int offset = this.buff1.position() + this.buff2.position();
-        this.buff1.position(qtr);
-        // push them forward
-        this.buff1.compact();
 
-        // read from the beginning of the buffer
-        this.buff2.rewind();
+        // Shrink buffers back to closer to the initial buffer size, but do not roll off a set position
+        while (buffers.size() > INIT_BUFFERS_SIZE && setPosition > (minposition + buffers.peekFirst().limit())) {
+            // Remove overflow buffers
+            ByteBuffer buffer = buffers.pollFirst();
+            minposition += buffer.limit();
+        }
 
-        filldst(this.buff2, this.buff1);
-        // chuck the bytes read into buff1
-        this.buff2.compact();
+        final int offset = buffers.stream().mapToInt(buffer -> buffer.position()).sum();
 
-        readIntoBuffer(this.buff2);
+        // Do not roll off a set position in the buffer
+        if (setPosition != -1 && minposition + qtr > setPosition) {
+            // Extend the buffer to fit request
+            ByteBuffer buffer = ByteBuffer.allocate(buffers.peek().capacity());
+            buffers.add(buffer);
+            readIntoBuffer(buffer);
+            return;
+        }
+
+        Iterator<ByteBuffer> bufferIterator = buffers.iterator();
+
+        // Position the first byte buffer
+        ByteBuffer prev = bufferIterator.next();
+        prev.position(qtr);
+        prev.compact();
+
+        while (bufferIterator.hasNext()) {
+            ByteBuffer next = bufferIterator.next();
+            next.rewind();
+            filldst(next, prev);
+            next.compact();
+            prev = next;
+        }
+
+        // Read into last buffer
+        readIntoBuffer(prev);
+
         // update the offset
         this.minposition += qtr;
         // reset our location
@@ -107,7 +131,16 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * @return true if either buffer has data remaining or we have not reached the end of channel.
      */
     private boolean bytesAvailable() {
-        return this.buff1.remaining() > 0 || this.buff2.remaining() > 0 || !this.endofchannel;
+        return (!endofchannel || remaining() > 0);
+    }
+
+    /**
+     * Calculate the remaining bytes available in buffers
+     *
+     * @return bytes remaining in buffers
+     */
+    private int remaining() {
+        return buffers.stream().mapToInt(buffer -> buffer.remaining()).sum();
     }
 
     /**
@@ -157,8 +190,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     @Override
     public void close() throws IOException {
         this.in.close();
-        this.buff1 = null;
-        this.buff2 = null;
+        buffers.clear();
     }
 
     /**
@@ -177,7 +209,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         }
 
         // we have nothing left to read and have consumed both buffers fully.
-        if (this.endofchannel && (this.buff1.remaining() + this.buff2.remaining() == 0)) {
+        if (endofchannel && (remaining() == 0)) {
             return -1;
         }
 
@@ -191,8 +223,9 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
         while (dst.hasRemaining() && bytesAvailable()) {
             realignBuffers();
-            filldst(this.buff1, dst);
-            filldst(this.buff2, dst);
+            for (ByteBuffer b : buffers) {
+                filldst(b, dst);
+            }
         }
         final int bytesRead = maxWrite - dst.remaining();
         return (this.endofchannel && bytesRead == 0) ? -1 : bytesRead;
@@ -221,7 +254,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      */
     @Override
     public long position() throws IOException {
-        return this.minposition + this.buff1.position() + this.buff2.position();
+        return minposition + buffers.stream().mapToInt(buffer -> buffer.position()).sum();
     }
 
     /**
@@ -232,7 +265,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     @Override
     public SeekableByteChannel position(final long newPosition) throws IOException {
         // if data hasn't been read in, we'll have to do it below and see if it's available
-        if (this.endofchannel && (newPosition > this.estimatedLength)) {
+        if (this.endofchannel && (newPosition >= this.estimatedLength)) {
             throw new EOFException("Position is beyond EOF");
         }
 
@@ -242,6 +275,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
             throw new IllegalStateException("Cannot move back this far in the stream. Minimum " + this.minposition);
         }
 
+        setPosition = newPosition;
         while (!setOffset(tgtPosition) && !this.endofchannel) {
             realignBuffers();
             tgtPosition = newPosition - this.minposition;
@@ -256,18 +290,25 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * attempts to set position to specified offset in underlying buffers
      */
     private boolean setOffset(final long tgtOffset) {
-        if (tgtOffset < this.buff1.limit()) {
-            this.buff1.position((int) tgtOffset);
-            this.buff2.position(0);
-        } else if (tgtOffset <= (this.buff1.limit() + this.buff2.limit())) {
-            this.buff1.position(this.buff1.limit());
-            this.buff2.position((int) (tgtOffset - this.buff1.capacity()));
-        } else {
-            this.buff1.position(this.buff1.limit());
-            this.buff2.position(this.buff2.limit());
-            return false;
+        int modOffset = 0;
+        boolean set = false;
+        for (ByteBuffer buffer : buffers) {
+            if (set) {
+                buffer.position(0);
+            } else {
+                if (tgtOffset < modOffset + buffer.limit()) {
+                    buffer.position((int) (tgtOffset - modOffset));
+                    set = true;
+                } else {
+                    buffer.position(buffer.limit());
+                }
+
+                // increment modOffset
+                modOffset += buffer.limit();
+            }
         }
-        return true;
+
+        return set;
     }
 
     /**
@@ -287,7 +328,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * @return the maximum allowed position in the channel
      */
     public long getMaxPosition() {
-        return this.minposition + this.buff1.limit() + this.buff2.limit();
+        return this.minposition + buffers.stream().mapToInt(buffer -> buffer.limit()).sum();
     }
 
     /**

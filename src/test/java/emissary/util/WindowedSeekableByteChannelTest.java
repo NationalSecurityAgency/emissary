@@ -264,4 +264,36 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
         }
         assertTrue(hitEx);
     }
+
+    @Test
+    public void testPositionRollOff() throws Exception {
+        final byte[] buff = new byte[I_ALPHABET];
+        final byte[] alphabet = buildArry(I_ALPHABET);
+        final ByteBuffer destination = ByteBuffer.wrap(buff);
+        @SuppressWarnings({"resource"})
+        final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(I_ALPHABET * 2), 10);
+        // 2 full reads will get us to the end
+        instance.position(0);
+        instance.read(destination);
+        assertArrayEquals(alphabet, destination.array());
+        destination.put(0, NULL);
+        destination.position(0);
+
+        instance.read(destination);
+        assertArrayEquals(alphabet, destination.array());
+        destination.put(0, NULL);
+        destination.position(0);
+
+        // try to roll back to the set position
+        instance.position(0);
+        instance.read(destination);
+        assertArrayEquals(alphabet, destination.array());
+        destination.put(0, NULL);
+        destination.position(0);
+
+        // Last record should still exist
+        final int result = instance.read(destination);
+        assertEquals(26, result);
+    }
+
 }

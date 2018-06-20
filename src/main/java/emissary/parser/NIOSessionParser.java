@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,52 +92,41 @@ public abstract class NIOSessionParser extends SessionParser {
      * @return the byte array of data
      */
     protected byte[] loadOrFillNextRegion(byte[] data, int blocksize) {
-        long chunksize = MAP_MAX;
-        long length = -1L;
-
-        try {
-            length = channel.size();
-        } catch (IOException iox) {
-            logger.error("Unable to get length of file", iox);
-            return null;
-        }
+        long chunkSize = MAP_MAX;
 
         // Position before checking remaining
         try {
-            if (chunkStart < length) {
-                channel.position(chunkStart);
-            } else {
-                logger.debug("Unable to position to {} since limit = {}", chunkStart, length);
-                return null;
-            }
+            // Leave the choice of if the position is available to the channel, not based on size
+            channel.position(chunkStart);
         } catch (IOException iox) {
             logger.error("Unable to seek to {}", chunkStart, iox);
             return null;
         }
 
-        // Compute size to read in
-        if (chunksize > (length - chunkStart)) {
-            chunksize = (length - chunkStart);
-        }
-
-        logger.debug("Positioning stream to {} and grabbing next {} bytes", chunkStart, chunksize);
+        logger.debug("Positioning stream to {} and grabbing next {} bytes", chunkStart, chunkSize);
 
         // Optionally create the array or recreate if old is wrong size
-        if (data == null || data.length != (int) chunksize) {
-            data = new byte[(int) chunksize];
+        if (data == null || data.length != (int) chunkSize) {
+            data = new byte[(int) chunkSize];
         }
 
+        ByteBuffer b = ByteBuffer.wrap(data);
         try {
             int readCount = (blocksize <= 0 || blocksize > (data.length)) ? data.length : blocksize;
-            ByteBuffer b = ByteBuffer.wrap(data);
             b.limit(readCount);
             readFully(b);
         } catch (EOFException ex) {
-            logger.error("Could not fill array from input channel with {}", chunksize, ex);
+            logger.error("Could not fill array from input channel with {}", chunkSize, ex);
         } catch (IOException ex) {
-            logger.error("Count not read {} bytes into array", chunksize, ex);
+            logger.error("Count not read {} bytes into array", chunkSize, ex);
             return null;
+        } finally {
+            // Trim data to buffers remaining size
+            if (b.remaining() > 0) {
+                data = Arrays.copyOfRange(data, 0, (data.length - b.remaining()));
+            }
         }
+
         return data;
     }
 
