@@ -1,5 +1,8 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 
@@ -7,6 +10,8 @@ import java.nio.channels.SeekableByteChannel;
  * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it.
  */
 public abstract class FillingNIOParser extends NIOSessionParser {
+
+    private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);
 
     protected int sessionStart = 0;
 
@@ -36,6 +41,7 @@ public abstract class FillingNIOParser extends NIOSessionParser {
             // trying to read too large a chunk size from the underlying
             // java.io.RandomAccessFile. Try reading it in smaller chunks
             try {
+                logger.debug("Falling back to fillNextRegion() due to memory constraints");
                 b = fillNextRegion(data);
             } catch (OutOfMemoryError oom2) {
                 logger.error("Tried to fill next region but failed", oom2);
