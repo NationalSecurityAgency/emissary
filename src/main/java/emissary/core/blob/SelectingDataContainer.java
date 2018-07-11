@@ -58,6 +58,7 @@ public class SelectingDataContainer implements IDataContainer, IFileProvider {
     private static final long serialVersionUID = 6341132735027189150L;
     private static SortedSet<ContainerMaximum> containers;
     private static int maxArrayLength = Integer.MAX_VALUE;
+    private static int warnArrayLength = Integer.MAX_VALUE;
 
     /**
      * Load the config.
@@ -75,6 +76,7 @@ public class SelectingDataContainer implements IDataContainer, IFileProvider {
                 containers.add(new ContainerMaximum(c, maxMemoryLength));
             }
             maxArrayLength = config.findIntEntry("payload.maxArrayLength", Integer.MAX_VALUE);
+            warnArrayLength = config.findIntEntry("payload.warnArrayLength", Integer.MAX_VALUE);
         } catch (IOException | ClassNotFoundException e) {
             LOG.warn("Failed to load config, using default.", e);
             if (containers.isEmpty()) {
@@ -91,8 +93,13 @@ public class SelectingDataContainer implements IDataContainer, IFileProvider {
 
     @Override
     public byte[] data() {
-        if (length() > maxArrayLength) {
-            throw new DataException("Data exceeds the maximum size configured for array usage, size=" + length() + " max=" + maxArrayLength);
+        long l = length();
+        if (l > maxArrayLength) {
+            throw new DataException("Data exceeds the maximum size configured for array usage, size=" + l + " max=" + maxArrayLength);
+        }
+        if (l > warnArrayLength) {
+            // Exception generated so that the stack is available in the log.
+            LOG.warn("data() called for data exceeding the warning threshold, size={}", Long.valueOf(l), new DataException("(Dummy)"));
         }
         return actualContainer.data();
     }
