@@ -135,8 +135,7 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
     /**
      * Invalidate any local caches
      */
-    default void invalidateCache() {
-    }
+    default void invalidateCache() {}
 
     @Deprecated
     @Override

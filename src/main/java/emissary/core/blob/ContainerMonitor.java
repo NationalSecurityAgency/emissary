@@ -21,7 +21,7 @@ public class ContainerMonitor {
 
     /**
      * Get the singleton
-     * 
+     *
      * @return the singleton
      */
     public static ContainerMonitor getInstance() {
@@ -50,7 +50,7 @@ public class ContainerMonitor {
      */
     private ContainerMonitor() {
         Runnable task = new Runnable() {
-            
+
             @Override
             public void run() {
                 while (true) {
@@ -77,8 +77,7 @@ public class ContainerMonitor {
                             m.totalSize += cont.length();
                         }
                         log.info("Current Containers: {}", metrics);
-                        // TODO: longer default and configurable
-                        Thread.sleep(1000);
+                        Thread.sleep(10000);
                     } catch (Exception e) {
                         log.error("Problem with container moniotoring.", e);
                     }
@@ -94,7 +93,7 @@ public class ContainerMonitor {
 
     /**
      * Register a container to be monitored.
-     * 
+     *
      * @param container The container to monitor.
      */
     public void register(IDataContainer container) {

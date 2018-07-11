@@ -42,9 +42,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     private IDataContainer theData = new SelectingDataContainer();
 
     /**
-     * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the <a
-     * href="#fileName()">fileName</a> method. Also used in constructing the <a href="#shortName()">shortName</a> of the
-     * document.
+     * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
+     * <a href="#fileName()">fileName</a> method. Also used in constructing the <a href="#shortName()">shortName</a> of
+     * the document.
      */
     protected String theFileName;
 
@@ -270,8 +270,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array directly,
-     * no copy is made so the caller should not reuse the array.
+     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array
+     * directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData byte array to set replacing any existing data
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
@@ -284,6 +284,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * {@inheritDoc}
+     *
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
     @Deprecated

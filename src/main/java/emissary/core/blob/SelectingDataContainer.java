@@ -91,9 +91,9 @@ public class SelectingDataContainer implements IDataContainer, IFileProvider {
 
     @Override
     public byte[] data() {
-    	if (length() > maxArrayLength) {
-    		throw new DataException("Data exceeds the maximum size configured for array usage, size="+length()+" max="+maxArrayLength);
-    	}
+        if (length() > maxArrayLength) {
+            throw new DataException("Data exceeds the maximum size configured for array usage, size=" + length() + " max=" + maxArrayLength);
+        }
         return actualContainer.data();
     }
 
