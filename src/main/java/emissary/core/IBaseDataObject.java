@@ -8,7 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public interface IBaseDataObject {
+import emissary.core.blob.IDataContainer;
+import emissary.core.blob.IOriginalDataContainer;
+
+public interface IBaseDataObject extends IOriginalDataContainer {
 
     /**
      * Define the merge policy values for parameter handling
@@ -22,11 +25,16 @@ public interface IBaseDataObject {
      */
     String DEFAULT_PARAM_SEPARATOR = ";";
 
+    default IDataContainer getDataContainer() {
+        return IDataContainer.wrap(this);
+    }
+
     /**
      * Return BaseDataObjects byte array.
      * 
      * @return byte array of the data
      */
+    @Override
     byte[] data();
 
     /**
@@ -34,6 +42,7 @@ public interface IBaseDataObject {
      * 
      * @param newData byte array to set replacing any existing data
      */
+    @Override
     void setData(byte[] newData);
 
     /**
@@ -43,13 +52,18 @@ public interface IBaseDataObject {
      * @param offset the index of the first byte to use
      * @param length the number of bytes to use
      */
+    @Override
     void setData(final byte[] newData, int offset, int length);
 
     /**
      * Return length of BaseDataObjects byte array.
      * 
      * @return length in bytes of the data
+     * @deprecated Limited by the size of an int, use {@link #getDataContainer()}.{@link IDataContainer#length()
+     *             length()} instead.
      */
+    @Override
+    @Deprecated
     int dataLength();
 
     /**
@@ -171,6 +185,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Override
     ByteBuffer dataBuffer();
 
     /**
@@ -714,6 +729,7 @@ public interface IBaseDataObject {
     /**
      * Support deep copy via clone
      */
+    @Override
     IBaseDataObject clone() throws CloneNotSupportedException;
 
     /**

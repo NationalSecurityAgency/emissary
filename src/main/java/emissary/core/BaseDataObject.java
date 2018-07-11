@@ -1,14 +1,5 @@
 package emissary.core;
 
-import com.google.common.collect.LinkedListMultimap;
-import emissary.directory.DirectoryEntry;
-import emissary.directory.KeyManipulator;
-import emissary.pickup.Priority;
-import emissary.place.IServiceProviderPlace;
-import emissary.util.ByteUtil;
-import emissary.util.PayloadUtil;
-import org.apache.commons.lang.StringUtils;
-
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,6 +17,19 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.google.common.collect.LinkedListMultimap;
+
+import emissary.core.blob.IDataContainer;
+import emissary.core.blob.SelectingDataContainer;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.KeyManipulator;
+import emissary.pickup.Priority;
+import emissary.place.IServiceProviderPlace;
+import emissary.util.ByteUtil;
+import emissary.util.PayloadUtil;
+
 /**
  * Class to hold byte array of data, header, footer, and attributes
  */
@@ -34,8 +38,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /* Including this here make serialization of this object faster. */
     private static final long serialVersionUID = 7362181964652092657L;
 
-    /* Our payload */
-    protected byte[] theData;
+    /** Our payload */
+    private IDataContainer theData = new SelectingDataContainer();
 
     /**
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the <a
@@ -156,7 +160,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
-        this.theData = null;
         setCreationTimestamp(new Date(System.currentTimeMillis()));
     }
 
@@ -248,45 +251,51 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         this.shortName = makeShortName();
     }
 
+    @Override
+    public IDataContainer getDataContainer() {
+        return this.theData;
+    }
+
     /**
      * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is
      * made so the caller must be aware that modifications to the returned array are live.
      *
      * @return byte array of the data
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
+    @Deprecated
     @Override
     public byte[] data() {
-        return this.theData;
+        return getDataContainer().data();
     }
 
     /**
-     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation uses the passed in array directly,
+     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array directly,
      * no copy is made so the caller should not reuse the array.
      *
      * @param newData byte array to set replacing any existing data
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
+    @Deprecated
     @Override
     public void setData(final byte[] newData) {
-        if (newData == null) {
-            this.theData = new byte[0];
-        } else {
-            this.theData = newData;
-        }
+        this.theData.setData(newData);
     }
 
+    /**
+     * {@inheritDoc}
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
+     */
+    @Deprecated
     @Override
     public void setData(final byte[] newData, final int offset, final int length) {
-        if (length <= 0 || newData == null) {
-            this.theData = new byte[0];
-        } else {
-            this.theData = new byte[length];
-            System.arraycopy(newData, offset, this.theData, 0, length);
-        }
+        this.theData.setData(newData, offset, length);
     }
 
+    @Deprecated
     @Override
     public int dataLength() {
-        return this.theData == null ? 0 : this.theData.length;
+        return this.theData.dataLength();
     }
 
     @Override
@@ -1175,9 +1184,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public IBaseDataObject clone() throws CloneNotSupportedException {
         final BaseDataObject c = (BaseDataObject) super.clone();
-        if ((this.theData != null) && (this.theData.length > 0)) {
-            c.setData(this.theData, 0, this.theData.length);
-        }
+        c.theData = this.theData.clone();
         c.currentForm = new ArrayList<>(this.currentForm);
         c.history = new ArrayList<>(this.history);
         c.multipartAlternative = new HashMap<>(this.multipartAlternative);

@@ -27,7 +27,6 @@ public class ExtendedDataObject extends BaseDataObject implements Serializable, 
 
     public ExtendedDataObject() {
         super();
-        this.theData = null;
         FILETYPE_EMPTY = this.NEW_FILETYPE_EMPTY;
         this.intVar = 37;
     }

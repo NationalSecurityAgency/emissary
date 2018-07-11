@@ -27,3 +27,4 @@ nbactions*.xml
 .settings/
 *.swp
 *.checkstyle
+/bin/
