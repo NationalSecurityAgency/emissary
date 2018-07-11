@@ -25,6 +25,10 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      */
     String DEFAULT_PARAM_SEPARATOR = ";";
 
+    /**
+     * Get access to the binary data.
+     * @return The binary data container.
+     */
     default IDataContainer getDataContainer() {
         return IDataContainer.wrap(this);
     }
@@ -52,17 +56,6 @@ public interface IBaseDataObject extends IOriginalDataContainer {
     @Override
     @Deprecated
     void setData(final byte[] newData, int offset, int length);
-
-    /**
-     * Return length of BaseDataObjects byte array.
-     *
-     * @return length in bytes of the data
-     * @deprecated Limited by the size of an int, use {@link #getDataContainer()}.{@link IDataContainer#length()
-     *             length()} instead.
-     */
-    @Override
-    @Deprecated
-    int dataLength();
 
     /**
      * Set the header byte array
