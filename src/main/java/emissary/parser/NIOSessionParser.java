@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NIOSessionParser extends SessionParser {
     // Logger
-    protected final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
+    private final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
 
     // the input channel
     protected SeekableByteChannel channel = null;
