@@ -52,7 +52,7 @@ public class AllDataContainerTest {
     private Class<? extends IDataContainer> classToTest;
     private boolean allowCache;
     private IDataContainer cont;
-    
+
     public AllDataContainerTest(Class<? extends IDataContainer> classToTest, boolean allowCache) throws Exception {
         this.classToTest = classToTest;
         this.allowCache = allowCache;

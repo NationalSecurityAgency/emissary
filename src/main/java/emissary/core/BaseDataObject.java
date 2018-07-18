@@ -256,6 +256,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return this.theData;
     }
 
+    @Override
+    public IDataContainer newDataContainer() {
+        this.theData = new SelectingDataContainer();
+        return this.theData;
+    }
+
     /**
      * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is
      * made so the caller must be aware that modifications to the returned array are live.

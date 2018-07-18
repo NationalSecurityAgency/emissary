@@ -1,5 +1,6 @@
 package emissary.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -9,7 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +28,7 @@ import java.util.TreeSet;
 import org.hamcrest.core.Is;
 import org.hamcrest.core.IsNull;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -1151,4 +1156,40 @@ public class BaseDataObjectTest extends UnitTest {
             fail("Clone method should have been called not " + ex.getMessage());
         }
     }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void testOldContainerToNewDataContainer() throws Exception {
+        b.setData("aaaaa".getBytes(UTF_8));
+
+        try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
+                OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
+            byte[] bb = new byte[1];
+            int read;
+            while ((read = oldC.read(bb))!=-1) {
+                bb[0] ++;
+                newC.write(bb, 0, read);
+            }
+        }
+
+        Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
+    }
+
+//    @SuppressWarnings("deprecation")
+//    @Test
+//    public void testOldContainerToNewDataContainerInterface() throws Exception {
+//        b.setData("aaaaa".getBytes(UTF_8));
+//
+//        try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
+//                OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
+//            byte[] bb = new byte[1];
+//            int read;
+//            while ((read = oldC.read(bb))!=-1) {
+//                bb[0] ++;
+//                newC.write(bb, 0, read);
+//            }
+//        }
+//
+//        Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
+//    }
 }

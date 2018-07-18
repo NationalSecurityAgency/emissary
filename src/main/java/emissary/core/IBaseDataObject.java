@@ -27,6 +27,7 @@ public interface IBaseDataObject extends IOriginalDataContainer {
 
     /**
      * Get access to the binary data.
+     *
      * @return The binary data container.
      */
     default IDataContainer getDataContainer() {
@@ -34,7 +35,20 @@ public interface IBaseDataObject extends IOriginalDataContainer {
     }
 
     /**
+     * Get a data container which can be used to write new data, without invalidating and results from previous calls to
+     * {@link #getDataContainer()} (except that mutations to those objects will no-longer be persisted)
+     *
+     * @return A data container which can be used to write new data.
+     */
+    default IDataContainer newDataContainer() {
+        // FIXME: can't think of a simple solution to this, as any previous objects are maintaining a reference to this
+        // object, so will continue to mutate it directly.
+        return IDataContainer.wrap(this);
+    }
+
+    /**
      * {@inheritDoc}
+     *
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
     @Deprecated
@@ -43,6 +57,7 @@ public interface IBaseDataObject extends IOriginalDataContainer {
 
     /**
      * {@inheritDoc}
+     *
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
     @Deprecated
@@ -51,6 +66,7 @@ public interface IBaseDataObject extends IOriginalDataContainer {
 
     /**
      * {@inheritDoc}
+     *
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
     @Override
