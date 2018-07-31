@@ -40,11 +40,7 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      *
      * @return A data container which can be used to write new data.
      */
-    default IDataContainer newDataContainer() {
-        // FIXME: can't think of a simple solution to this, as any previous objects are maintaining a reference to this
-        // object, so will continue to mutate it directly.
-        return IDataContainer.wrap(this);
-    }
+    IDataContainer newDataContainer();
 
     /**
      * {@inheritDoc}
