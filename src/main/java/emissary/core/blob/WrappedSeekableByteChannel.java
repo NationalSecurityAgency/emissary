@@ -7,7 +7,7 @@ import java.nio.channels.SeekableByteChannel;
 /**
  * {@link SeekableByteChannel} that proxies calls to a wrapped instance, but where listeners for mutation and closure
  * may be registered.
- * 
+ *
  * @author adyoun2
  *
  * @param <T> The type of the wrapped instance.
@@ -23,7 +23,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
 
     /**
      * Get the listener on channel close.
-     * 
+     *
      * @return the listener on channel close.
      */
     public TriggeredAction<T> getCloseAction() {
@@ -33,7 +33,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
     /**
      * Set a listener for channel close. Only one listener may be registered, and exceptions from the listener will not
      * be handled cleanly.
-     * 
+     *
      * @param closeAction the new close listener.
      */
     public void setCloseAction(TriggeredAction<T> closeAction) {
@@ -42,7 +42,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
 
     /**
      * Get the listener on channel write/truncate.
-     * 
+     *
      * @return the listener on channel write/truncate.
      */
     public TriggeredAction<T> getWriteAction() {
@@ -52,8 +52,8 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
     /**
      * Set a listener for channel data mutation. Only one listener may be registered, and exceptions from the listener
      * will not be handled cleanly.
-     * 
-     * @param closeAction the new write/truncate listener.
+     *
+     * @param writeAction the new write/truncate listener.
      */
     public void setWriteAction(TriggeredAction<T> writeAction) {
         this.writeAction = writeAction;
@@ -61,7 +61,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
 
     /**
      * New instance.
-     * 
+     *
      * @param baseChannel the channel to wrap.
      */
     public WrappedSeekableByteChannel(T baseChannel) {
@@ -70,7 +70,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
 
     /**
      * Replace the wrapped channel. No cleanup of the original channel is performed.
-     * 
+     *
      * @param replacement the channel to wrap.
      */
     void replaceBaseChannel(T replacement) {
@@ -133,7 +133,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
 
     /**
      * Notification that the action this was registered against has occurred.
-     * 
+     *
      * @author adyoun2
      *
      * @param <T>
@@ -142,7 +142,7 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
     public static interface TriggeredAction<T extends SeekableByteChannel> {
         /**
          * Notification that the action this was registered against has occurred.
-         * 
+         *
          * @param baseChannel The implementing channel the operation occurred on.
          * @throws IOException handling of thrown exceptions is undefined.
          */
