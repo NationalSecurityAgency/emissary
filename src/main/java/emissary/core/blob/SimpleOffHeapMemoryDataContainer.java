@@ -107,8 +107,9 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     @Override
     public SimpleOffHeapMemoryDataContainer clone() throws CloneNotSupportedException {
         SimpleOffHeapMemoryDataContainer clone = (SimpleOffHeapMemoryDataContainer) super.clone();
-        try {
-            IOUtils.copyLarge(Channels.newInputStream(channel()), Channels.newOutputStream(clone.newChannel(length())));
+        try (InputStream in = Channels.newInputStream(channel());
+                OutputStream out = Channels.newOutputStream(clone.newChannel(length()))) {
+            IOUtils.copyLarge(in, out);
         } catch (IOException e) {
             throw new DataException(e);
         }

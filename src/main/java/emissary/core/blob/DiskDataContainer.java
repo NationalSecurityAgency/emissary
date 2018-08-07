@@ -194,10 +194,9 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
     @Override
     public DiskDataContainer clone() throws CloneNotSupportedException {
         DiskDataContainer c = new DiskDataContainer();
-        try {
-            IOUtils.copyLarge(
-                    Channels.newInputStream(getFileChannel()),
-                    Channels.newOutputStream(c.newChannel(length())));
+        try (InputStream in = Channels.newInputStream(getFileChannel());
+                OutputStream out = Channels.newOutputStream(c.newChannel(length()))) {
+            IOUtils.copyLarge(in, out);
         } catch (IOException e) {
             Log.error("Could not copy data for clone.", e);
             throw new DataException(e);
