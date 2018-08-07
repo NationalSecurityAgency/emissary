@@ -17,7 +17,6 @@ import java.util.Arrays;
 
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -450,50 +449,66 @@ public class AllDataContainerTest {
 
     @Test
     public void testDirectFileInteractionAppend() throws Exception {
-        Assume.assumeTrue(cont instanceof IFileProvider);
         cont.setData("Original Data that is reasonably long".getBytes(UTF_8));
-        File file = ((IFileProvider) cont).getFile();
-        Assume.assumeNotNull(file);
-        try (FileOutputStream fos = new FileOutputStream(file, true)) {
-            fos.write(" Appended Text".getBytes(UTF_8));
+        try (IFileProvider prov = cont.getFileProvider()) {
+            File file = prov.getFile();
+            try (FileOutputStream fos = new FileOutputStream(file, true)) {
+                fos.write(" Appended Text".getBytes(UTF_8));
+            }
         }
         Assert.assertEquals("Original Data that is reasonably long Appended Text", new String(cont.data(), UTF_8));
     }
 
     @Test
     public void testDirectFileInteractionReplace() throws Exception {
-        Assume.assumeTrue(cont instanceof IFileProvider);
         cont.setData("Original Data that is reasonably long".getBytes(UTF_8));
-        File file = ((IFileProvider) cont).getFile();
-        Assume.assumeNotNull(file);
-        try (FileOutputStream fos = new FileOutputStream(file, false)) {
-            fos.write("Replacement Text".getBytes(UTF_8));
+        try (IFileProvider prov = cont.getFileProvider()) {
+            File file = prov.getFile();
+            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+                fos.write("Replacement Text".getBytes(UTF_8));
+            }
         }
         Assert.assertEquals("Replacement Text", new String(cont.data(), UTF_8));
     }
 
     @Test
     public void testDirectFileInteractionAppendShort() throws Exception {
-        Assume.assumeTrue(cont instanceof IFileProvider);
         cont.setData("A".getBytes(UTF_8));
-        File file = ((IFileProvider) cont).getFile();
-        Assume.assumeNotNull(file);
-        try (FileOutputStream fos = new FileOutputStream(file, true)) {
-            fos.write(" Appended Text".getBytes(UTF_8));
+        try (IFileProvider prov = cont.getFileProvider()) {
+            File file = prov.getFile();
+            try (FileOutputStream fos = new FileOutputStream(file, true)) {
+                fos.write(" Appended Text".getBytes(UTF_8));
+            }
         }
         Assert.assertEquals("A Appended Text", new String(cont.data(), UTF_8));
     }
 
     @Test
     public void testDirectFileInteractionReplaceShort() throws Exception {
-        Assume.assumeTrue(cont instanceof IFileProvider);
         cont.setData("A".getBytes(UTF_8));
-        File file = ((IFileProvider) cont).getFile();
-        Assume.assumeNotNull(file);
-        try (FileOutputStream fos = new FileOutputStream(file, false)) {
-            fos.write("Replacement Text".getBytes(UTF_8));
+        try (IFileProvider prov = cont.getFileProvider()) {
+            File file = prov.getFile();
+            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+                fos.write("Replacement Text".getBytes(UTF_8));
+            }
         }
         Assert.assertEquals("Replacement Text", new String(cont.data(), UTF_8));
+    }
+
+    @Test
+    public void testGetFileNeverNull() throws Exception {
+        try (IFileProvider prov = cont.getFileProvider()) {
+            Assert.assertNotNull(prov.getFile());
+        }
+        cont.setData(null);
+        try (IFileProvider prov = cont.getFileProvider()) {
+            Assert.assertNotNull(prov.getFile());
+        }
+        try (SeekableByteChannel sbc = cont.newChannel(1)) {
+        }
+        try (IFileProvider prov = cont.getFileProvider()) {
+            Assert.assertNotNull(prov.getFile());
+        }
     }
 
 }

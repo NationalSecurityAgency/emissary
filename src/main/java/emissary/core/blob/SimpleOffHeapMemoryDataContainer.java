@@ -258,6 +258,11 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
         return length;
     }
 
+    @Override
+    public IFileProvider getFileProvider() {
+        return IFileProvider.tempFileProvider(this);
+    }
+
     /**
      * ReferenceQueue to which the JVM will enqueue {@link GarbageCollectDetector} instances once the relevant
      * {@link SimpleOffHeapMemoryDataContainer} is garbage collected.

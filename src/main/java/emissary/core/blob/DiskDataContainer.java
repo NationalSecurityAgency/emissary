@@ -33,11 +33,11 @@ import jline.internal.Log;
 
 /**
  * Disk backed data container, for larger objects.
- * 
+ *
  * @author adyoun2
  *
  */
-public class DiskDataContainer implements IDataContainer, IFileProvider, Externalizable {
+public class DiskDataContainer implements IDataContainer, Externalizable {
 
     private static Logger LOG = LoggerFactory.getLogger(DiskDataContainer.class);
 
@@ -211,11 +211,22 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
     }
 
     @Override
-    public File getFile() {
+    public IFileProvider getFileProvider() {
         // Assume the client will mutate the data and that the cache is now invalid
         invalidateCache();
         LOG.debug("Client has used direct file access for {}", file.getAbsolutePath());
-        return this.file;
+
+        return new IFileProvider() {
+
+            @Override
+            public void close() throws Exception {
+            }
+
+            @Override
+            public File getFile() throws IOException {
+                return file;
+            }
+        };
     }
 
     /**
@@ -227,7 +238,7 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
     /**
      * {@link PhantomReference} to a {@link DiskDataContainer} that maintains a strong reference to the file path such
      * that the file can be identified for deletion once the {@link DiskDataContainer} has been garbage collected.
-     * 
+     *
      * @author adyoun2
      *
      */
@@ -237,7 +248,7 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
 
         /**
          * Construct a new instance, and assign its queue on garbage collection to {@link #DELETE_QUEUE}.
-         * 
+         *
          * @param container The container for which to detect garbage collection.
          */
         public GarbageCollectDetector(DiskDataContainer container) {
@@ -247,7 +258,7 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
 
         /**
          * Get the path if the file that was used to back the container that has been garbage collected.
-         * 
+         *
          * @return the path.
          */
         public Path getPath() {
@@ -258,7 +269,7 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
     /**
      * Background task to detect when the JVM has enqueued {@link GarbageCollectDetector}s for containers that have been
      * garbage collected.
-     * 
+     *
      * @author adyoun2
      *
      */
@@ -304,7 +315,7 @@ public class DiskDataContainer implements IDataContainer, IFileProvider, Externa
 
         /**
          * Register a {@link GarbageCollectDetector} as requiring post garbage collection cleanup.
-         * 
+         *
          * @param ref the reference to register.
          */
         public void cleanupLater(GarbageCollectDetector ref) {

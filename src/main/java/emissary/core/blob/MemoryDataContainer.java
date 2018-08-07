@@ -8,14 +8,14 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
 /**
  * Old school data container storing the data as an on-heap byte array.
- * 
+ *
  * @author adyoun2
  *
  */
 public class MemoryDataContainer implements IDataContainer {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -4640682765681267112L;
     private byte[] theData = new byte[0];
@@ -63,6 +63,11 @@ public class MemoryDataContainer implements IDataContainer {
     @Override
     public long length() {
         return this.theData.length;
+    }
+
+    @Override
+    public IFileProvider getFileProvider() {
+        return IFileProvider.tempFileProvider(this);
     }
 
     @Override

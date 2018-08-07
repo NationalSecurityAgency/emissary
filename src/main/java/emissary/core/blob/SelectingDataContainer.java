@@ -1,6 +1,5 @@
 package emissary.core.blob;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -22,7 +21,7 @@ import emissary.core.blob.WrappedSeekableByteChannel.TriggeredAction;
  * @author adyoun2
  *
  */
-public class SelectingDataContainer implements IDataContainer, IFileProvider {
+public class SelectingDataContainer implements IDataContainer {
 
     private static final Logger LOG = LoggerFactory.getLogger(SelectingDataContainer.class);
 
@@ -188,11 +187,9 @@ public class SelectingDataContainer implements IDataContainer, IFileProvider {
     }
 
     @Override
-    public File getFile() {
-        if (actualContainer instanceof IFileProvider) {
-            return ((IFileProvider) actualContainer).getFile();
-        }
-        return null;
+    public IFileProvider getFileProvider() {
+        // This will not currently achieve a container switch if the file grows or shrinks
+        return actualContainer.getFileProvider();
     }
 
     /**

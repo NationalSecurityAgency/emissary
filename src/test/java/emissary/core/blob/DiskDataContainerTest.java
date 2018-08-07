@@ -2,7 +2,6 @@ package emissary.core.blob;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.nio.channels.SeekableByteChannel;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -33,16 +32,5 @@ public class DiskDataContainerTest extends UnitTest {
             }
         });
         Assert.assertEquals(0, remainingFiles.length);
-    }
-
-    @Test
-    public void testGetFileNeverNull() throws Exception {
-        DiskDataContainer ddc = new DiskDataContainer();
-        Assert.assertNotNull(ddc.getFile());
-        ddc.setData(null);
-        Assert.assertNotNull(ddc.getFile());
-        try (SeekableByteChannel sbc = ddc.newChannel(1)) {
-        }
-        Assert.assertNotNull(ddc.getFile());
     }
 }
