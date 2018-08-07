@@ -219,8 +219,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
         return new IFileProvider() {
 
             @Override
-            public void close() throws Exception {
-            }
+            public void close() throws Exception {}
 
             @Override
             public File getFile() throws IOException {

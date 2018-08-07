@@ -136,11 +136,6 @@
         <version>${dep.commons-collections.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress</artifactId>
-        <version>${dep.commons-compress.version}</version>
-      </dependency>
-      <dependency>
         <groupId>commons-el</groupId>
         <artifactId>commons-el</artifactId>
         <version>${dep.commons-el.version}</version>
@@ -207,6 +202,11 @@
         <groupId>net.spy</groupId>
         <artifactId>spymemcached</artifactId>
         <version>${dep.spymemcached.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${dep.commons-compress.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -502,6 +502,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
     </dependency>
     <dependency>
@@ -608,15 +612,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-compress</artifactId>
-    </dependency>
-<!--     <dependency> -->
-<!--       <groupId>net.java.dev.jna</groupId> -->
-<!--       <artifactId>jna</artifactId> -->
-<!--       <version>[4.5.1,5.0.0)</version> -->
-<!--     </dependency> -->
+    <!--     <dependency> -->
+    <!--       <groupId>net.java.dev.jna</groupId> -->
+    <!--       <artifactId>jna</artifactId> -->
+    <!--       <version>[4.5.1,5.0.0)</version> -->
+    <!--     </dependency> -->
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jetty</artifactId>

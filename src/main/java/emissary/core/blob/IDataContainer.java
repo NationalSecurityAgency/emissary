@@ -158,8 +158,8 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      * </p>
      * <p>
      * This method is provided to allow the client to interact directly with APIs that expect data to be provided in
-     * File form, where the implementation may be capable of providing a more efficient mechanism than the client writing a
-     * temporary file itself.
+     * File form, where the implementation may be capable of providing a more efficient mechanism than the client
+     * writing a temporary file itself.
      * </p>
      * <p>
      * <strong>This should only be used where appropriate.</strong>

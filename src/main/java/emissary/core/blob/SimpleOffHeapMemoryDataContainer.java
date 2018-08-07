@@ -38,8 +38,8 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     private static final byte[] NO_DATA = new byte[0];
 
     /**
-     * The pointer value of the start of the memory. A final mutable object such that the
-     * {@link GarbageCollectDetector}'s reference to the pointer is always correct.
+     * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector}
+     * 's reference to the pointer is always correct.
      */
     private transient final AtomicLong memoryHandle = new AtomicLong(0L);
     /**

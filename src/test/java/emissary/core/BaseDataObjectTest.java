@@ -1166,8 +1166,8 @@ public class BaseDataObjectTest extends UnitTest {
                 OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
             byte[] bb = new byte[1];
             int read;
-            while ((read = oldC.read(bb))!=-1) {
-                bb[0] ++;
+            while ((read = oldC.read(bb)) != -1) {
+                bb[0]++;
                 newC.write(bb, 0, read);
             }
         }
@@ -1175,21 +1175,21 @@ public class BaseDataObjectTest extends UnitTest {
         Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
     }
 
-//    @SuppressWarnings("deprecation")
-//    @Test
-//    public void testOldContainerToNewDataContainerInterface() throws Exception {
-//        b.setData("aaaaa".getBytes(UTF_8));
-//
-//        try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
-//                OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
-//            byte[] bb = new byte[1];
-//            int read;
-//            while ((read = oldC.read(bb))!=-1) {
-//                bb[0] ++;
-//                newC.write(bb, 0, read);
-//            }
-//        }
-//
-//        Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
-//    }
+    // @SuppressWarnings("deprecation")
+    // @Test
+    // public void testOldContainerToNewDataContainerInterface() throws Exception {
+    // b.setData("aaaaa".getBytes(UTF_8));
+    //
+    // try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
+    // OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
+    // byte[] bb = new byte[1];
+    // int read;
+    // while ((read = oldC.read(bb))!=-1) {
+    // bb[0] ++;
+    // newC.write(bb, 0, read);
+    // }
+    // }
+    //
+    // Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
+    // }
 }
