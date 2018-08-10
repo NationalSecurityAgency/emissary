@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +15,18 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class NIOSessionParser extends SessionParser {
     // Logger
-    protected final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
+    private final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
 
-    // the input channel
-    protected SeekableByteChannel channel = null;
+    // the input channel we will read from
+    protected SeekableByteChannel channel;
 
     // Track where we are in the overall file and in the current chunk
-    protected long chunkStart = 0L;
+    protected int chunkStart = 0;
     protected byte[] data = null;
 
-    // Max chunk to read at a time
-    protected static final long MAP_MAX_DEFAULT = 40L * 1024L * 1024L; // 40Mb
-    protected long MAP_MAX = MAP_MAX_DEFAULT;
+    // Max chunk to read at a time, we will never be able to read a file with a session larger than this.
+    protected static final int MAP_MAX_DEFAULT = 40 * 1024 * 1024; // 40Mb
+    protected int chunkSize = MAP_MAX_DEFAULT;
 
     /**
      * Create the parser with the supplied data source
@@ -49,93 +50,58 @@ public abstract class NIOSessionParser extends SessionParser {
     /**
      * Get the chunking size
      */
-    public long getMapMax() {
-        return MAP_MAX;
+    public int getChunkSize() {
+        return chunkSize;
     }
 
     /**
      * Set the chunking size
      */
-    public void setMapMax(long value) {
+    public void setChunkSize(int value) {
         if (value > 0) {
-            MAP_MAX = value;
+            chunkSize = value;
         }
     }
 
     /**
-     * Grab the next MAP_MAX bytes starting where the last session left off
-     * 
+     * Read more data, starting where the last read left off. Read in <code>chunksize</code> bytes.
+     *
      * @param data the byte array to (re)load or null if one should be created
      * @return the byte array of data
      */
     protected byte[] loadNextRegion(byte[] data) {
-        return loadOrFillNextRegion(data, -1);
-    }
-
-    /**
-     * Grab the next MAP_MAX bytes starting where the last session left off but read in only 10k segments
-     * 
-     * @param data the byte array to (re)load or null if one should be created
-     * @return the byte array of data
-     */
-    protected byte[] fillNextRegion(byte[] data) {
-        return loadOrFillNextRegion(data, 10240);
-    }
-
-    /**
-     * Grab the next MAP_MAX bytes starting where the last session left off but read in only blocksize segments or read
-     * fully if blocksize <= 0
-     * 
-     * @param data the byte array to (re)load or null if one should be created
-     * @param blocksize how much data to read at once
-     * @return the byte array of data
-     */
-    protected byte[] loadOrFillNextRegion(byte[] data, int blocksize) {
-        long chunksize = MAP_MAX;
-        long length = -1L;
-
-        try {
-            length = channel.size();
-        } catch (IOException iox) {
-            logger.error("Unable to get length of file", iox);
-            return null;
-        }
+        logger.debug("loadOrFillNextRegion: data.length = {}, chunkSize = {}, chunkStart = {}",
+                data == null ? -1 : data.length, chunkSize, chunkStart);
 
         // Position before checking remaining
         try {
-            if (chunkStart < length) {
-                channel.position(chunkStart);
-            } else {
-                logger.debug("Unable to position to {} since limit = {}", chunkStart, length);
-                return null;
-            }
+            channel.position(chunkStart);
         } catch (IOException iox) {
             logger.error("Unable to seek to {}", chunkStart, iox);
             return null;
         }
 
-        // Compute size to read in
-        if (chunksize > (length - chunkStart)) {
-            chunksize = (length - chunkStart);
+        // Optionally create the array or recreate if old is too small
+        if (data == null || data.length < chunkSize) {
+            data = new byte[chunkSize];
         }
 
-        logger.debug("Positioning stream to {} and grabbing next {} bytes", chunkStart, chunksize);
-
-        // Optionally create the array or recreate if old is wrong size
-        if (data == null || data.length != (int) chunksize) {
-            data = new byte[(int) chunksize];
-        }
+        final ByteBuffer b = ByteBuffer.wrap(data);
+        b.limit(chunkSize);
 
         try {
-            int readCount = (blocksize <= 0 || blocksize > (data.length)) ? data.length : blocksize;
-            ByteBuffer b = ByteBuffer.wrap(data);
-            b.limit(readCount);
             readFully(b);
         } catch (EOFException ex) {
-            logger.error("Could not fill array from input channel with {}", chunksize, ex);
+            logger.warn("End of channel reached at {} instead of expected {}", chunkSize - b.remaining(), chunkSize, ex);
         } catch (IOException ex) {
-            logger.error("Count not read {} bytes into array", chunksize, ex);
+            logger.error("Count not read {} bytes into array", chunkSize, ex);
             return null;
+        } finally {
+            logger.debug("After loadOrFillNextRegion, buffer state = {}, data length = {}", b, data.length);
+            int amountRead = chunkSize - b.remaining();
+            if (amountRead < data.length) {
+                data = Arrays.copyOfRange(data, 0, amountRead);
+            }
         }
         return data;
     }

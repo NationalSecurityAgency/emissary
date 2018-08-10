@@ -45,7 +45,7 @@ public class WhatCommand extends BaseCommand {
         return COMMAND_NAME;
     }
 
-    @Parameter(names = {"-h", "--header"}, description = "use header identification, defaults to true")
+    @Parameter(names = {"-h", "--header"}, description = "use header identification, defaults to true", arity = 1)
     private boolean headerIdentification = true;
 
     @Parameter(names = {"-i", "--input"}, description = "input file or directory", converter = PathExistsReadableConverter.class, required = true)
@@ -158,7 +158,8 @@ public class WhatCommand extends BaseCommand {
 
         if (!this.headerIdentification) {
             final IBaseDataObject payload =
-                    DataObjectFactory.getInstance(Executrix.readDataFromFile(path.toString()), path.toAbsolutePath(), Form.UNKNOWN);
+                    DataObjectFactory.getInstance(Executrix.readDataFromFile(path.toString()), path.toAbsolutePath().toString(),
+                            Form.UNKNOWN);
             final Identification id = identify(payload, this.headerIdentification);
             LOG.info(path + " - " + payload.getFilename() + ": " + id.getTypeString());
             return;

@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -353,6 +354,12 @@ public abstract class ExtractionTest extends UnitTest {
                 String key = meta.getChildTextTrim("name");
                 String value = meta.getChildTextTrim("value");
                 payload.appendParameter(key, value);
+            }
+
+            for (Element altView : setup.getChildren("altView")) {
+                String name = altView.getChildTextTrim("name");
+                byte[] value = altView.getChildText("value").getBytes(StandardCharsets.UTF_8);
+                payload.addAlternateView(name, value);
             }
 
             final String fileType = setup.getChildTextTrim("fileType");

@@ -1,11 +1,5 @@
 package emissary.core;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
@@ -20,6 +14,12 @@ import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * An autonomous hunk of software
@@ -476,9 +476,10 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
         }
 
         // Stop looping from occuring
-        if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS) {
+        if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS &&
+                payloadArg.currentForm() != ERROR_FORM) {
             payloadArg.replaceCurrentForm(ERROR_FORM);
-            payloadArg.addProcessingError("Agent stopped due to transform " + "history size (looping?)");
+            payloadArg.addProcessingError("Agent stopped due to larger than max transform history size (looping?)");
         }
 
         // Perhaps we already have additional keys to process

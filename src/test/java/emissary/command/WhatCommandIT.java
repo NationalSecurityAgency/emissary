@@ -30,8 +30,10 @@ public class WhatCommandIT extends UnitTest {
     public static final String[] PROJECT_BASE_ARGS = {"-b", "--projectBase"};
     @DataPoints("Input Options")
     public static final String[] INPUT_ARGS = {"-i", "--input"};
-    @DataPoints("Boolean Options")
-    public static final String[] BOOLEAN_ARGS = {"-h", "--header", "-r", "--recursive"};
+    @DataPoints("Boolean Options Without Value")
+    public static final String[] BOOLEAN_ARGS_WITHOUT_VALUE = {"-r", "--recursive"};
+    @DataPoints("Boolean Options With Value")
+    public static final String[] BOOLEAN_ARGS_WITH_VALUE = {"-h", "--header"};
     @DataPoints("String Options")
     public static final String[] STRING_ARGS = {"--logbackConfig"};
     private WhatCommand command;
@@ -50,7 +52,8 @@ public class WhatCommandIT extends UnitTest {
 
     @Theory
     public void verifyExpectedOptions(@FromDataPoints("ProjectBase Options") String baseDirArg, @FromDataPoints("Input Options") String inputDirArg,
-            @FromDataPoints("String Options") String stringArg, @FromDataPoints("Boolean Options") String booleanArg) throws Exception {
+            @FromDataPoints("String Options") String stringArg, @FromDataPoints("Boolean Options Without Value") String booleanArgWithoutValue,
+            @FromDataPoints("Boolean Options With Value") String booleanArgWithValue) throws Exception {
         // setup
         arguments.add(baseDirArg);
         arguments.add(baseDir.toString());
@@ -58,7 +61,9 @@ public class WhatCommandIT extends UnitTest {
         arguments.add(inputDir.toString());
         arguments.add(stringArg);
         arguments.add("validateStringArg");
-        arguments.add(booleanArg);
+        arguments.add(booleanArgWithoutValue);
+        arguments.add(booleanArgWithValue);
+        arguments.add(Boolean.FALSE.toString());
 
         // test (no exceptions thrown)
         WhatCommand.parse(WhatCommand.class, arguments);
