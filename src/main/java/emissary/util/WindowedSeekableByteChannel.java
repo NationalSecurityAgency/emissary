@@ -1,5 +1,8 @@
 package emissary.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,6 +21,7 @@ import java.nio.channels.SeekableByteChannel;
  * wary of using Integer.MAX_VALUE as that can cause and OOME.
  */
 public class WindowedSeekableByteChannel implements SeekableByteChannel {
+    private static final Logger logger = LoggerFactory.getLogger(WindowedSeekableByteChannel.class);
 
     /**
      * The input source
@@ -52,6 +56,9 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * Creates a new instance and populates buffers with data.
      */
     public WindowedSeekableByteChannel(final ReadableByteChannel in, final int buffsize) throws IOException {
+
+        logger.debug("WindowSeekableByteChannel created with buffer size = {}", buffsize);
+
         if ((in == null) || !in.isOpen()) {
             throw new IllegalArgumentException("Channel must be open and not null:");
         }
@@ -77,8 +84,11 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * If necessary, will move data in the window to make room for additional data from the channel.
      */
     private void realignBuffers() throws IOException {
+        logger.debug("realignBuffers() called: buf1 = {}, buf2 = {}", buff1, buff2);
+
         final int qtr = this.buff1.capacity() / 2;
         if (this.endofchannel || (this.buff2.remaining() > qtr)) {
+            logger.debug("after early return from realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
             return;
         }
         // keep track of our position
@@ -90,15 +100,24 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         // read from the beginning of the buffer
         this.buff2.rewind();
 
+        logger.debug("realignBuffers() called prior to fillDst: buf1 = {}, buf2 = {}", buff1, buff2);
+
         filldst(this.buff2, this.buff1);
         // chuck the bytes read into buff1
+
+        logger.debug("realignBuffers() called prior prior to buff2 compact: buf1 = {}, buf2 = {}", buff1, buff2);
+
         this.buff2.compact();
 
+        logger.debug("realignBuffers() called prior to readIntoBuffer: buf1 = {}, buf2 = {}", buff1, buff2);
         readIntoBuffer(this.buff2);
         // update the offset
         this.minposition += qtr;
         // reset our location
         setOffset(offset - qtr);
+
+        logger.debug("after realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
+
     }
 
     /**
@@ -125,6 +144,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * @return the number of bytes read into the buffer.
      */
     private int readIntoBuffer(final ByteBuffer buf) throws IOException {
+        logger.debug("readIntoBuffer() called: {}", buf);
+
         final int rem = buf.remaining();
         int read = 0;
         while ((read != -1) && (buf.remaining() > 0)) {
@@ -190,6 +211,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         final int maxWrite = dst.remaining();
 
         while (dst.hasRemaining() && bytesAvailable()) {
+            logger.debug("filling buffers");
             realignBuffers();
             filldst(this.buff1, dst);
             filldst(this.buff2, dst);
@@ -239,7 +261,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         long tgtPosition = newPosition - this.minposition;
         // see if we can move there
         if (tgtPosition < 0) {
-            throw new IllegalStateException("Cannot move back this far in the stream. Minimum " + this.minposition);
+            throw new IllegalStateException("Cannot move to " + newPosition + " in the stream. Minimum position is " + this.minposition);
         }
 
         while (!setOffset(tgtPosition) && !this.endofchannel) {
@@ -256,7 +278,9 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * attempts to set position to specified offset in underlying buffers
      */
     private boolean setOffset(final long tgtOffset) {
-        if (tgtOffset < this.buff1.limit()) {
+        logger.debug("setOffset() called tgtOffset = {}, buff1 = {}, buff2 = {}", tgtOffset, buff1, buff2);
+
+        if (tgtOffset <= this.buff1.limit()) {
             this.buff1.position((int) tgtOffset);
             this.buff2.position(0);
         } else if (tgtOffset <= (this.buff1.limit() + this.buff2.limit())) {

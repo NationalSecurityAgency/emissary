@@ -1,12 +1,18 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.RandomAccessFile;
 import java.nio.channels.SeekableByteChannel;
 
 /**
- * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it.
+ * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it. nextChunkOrDie
+ * will load the next region.
  */
 public abstract class FillingNIOParser extends NIOSessionParser {
+
+    private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);
 
     protected int sessionStart = 0;
 
@@ -27,21 +33,8 @@ public abstract class FillingNIOParser extends NIOSessionParser {
      * @throws ParserEOFException when there is no more data
      */
     protected byte[] nextChunkOrDie(byte[] data) throws ParserEOFException {
-        byte[] b = null;
-        try {
-            chunkStart += sessionStart;
-            b = loadNextRegion(data);
-        } catch (OutOfMemoryError oom) {
-            // This can happen even there is plenty of memory due to
-            // trying to read too large a chunk size from the underlying
-            // java.io.RandomAccessFile. Try reading it in smaller chunks
-            try {
-                b = fillNextRegion(data);
-            } catch (OutOfMemoryError oom2) {
-                logger.error("Tried to fill next region but failed", oom2);
-                throw oom2;
-            }
-        }
+        chunkStart += sessionStart;
+        byte[] b = loadNextRegion(data);
 
         if (b == null) {
             setFullyParsed(true);

@@ -1,5 +1,8 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -13,6 +16,9 @@ import java.util.Map;
  * about headers and footers, just the basic session and not much of an idea about that.
  */
 public class SimpleNioParser extends NIOSessionParser {
+
+    private final static Logger logger = LoggerFactory.getLogger(SimpleNioParser.class);
+
     protected int currentSessionIndex = 0;
 
     /**
