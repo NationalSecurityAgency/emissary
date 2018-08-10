@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +41,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * The static standalone (test) constructor. The cfgInfo argument is an absolute path to some configuration file.
-     * 
+     *
      * @param cfgInfo absolute path to a configuration file
      */
     public TikaFilePlace(String cfgInfo) throws IOException {
@@ -69,8 +70,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
         }
         logger.debug("Tika Signature File:  " + tikaSignaturePath);
 
-        try {
-            InputStream in = new FileInputStream(tikaSignaturePath);
+        try (InputStream in = new FileInputStream(tikaSignaturePath)) {
             mimeTypes = MimeTypesFactory.create(in);
         } catch (MimeTypeException e) {
             logger.error("Error loading tika configuration: " + tikaSignaturePath, e);
@@ -88,27 +88,28 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * Use the Tika mime type (magic) detector to identify the file type
-     * 
+     *
      * @param d the IBaseDataObject payload to evaluate
      * @return mediaType
      */
     private MediaType detectType(IBaseDataObject d) throws Exception {
-        Metadata metadata = new Metadata();
-        InputStream input = TikaInputStream.get(d.data(), metadata);
-        MediaType mediaType = mimeTypes.detect(input, metadata);
-        logger.debug("Tika type: " + mediaType.toString());
-        return mediaType;
+        try (InputStream input = TikaInputStream.get(Channels.newInputStream(d.getDataContainer().channel()))) {
+            Metadata metadata = new Metadata();
+            MediaType mediaType = mimeTypes.detect(input, metadata);
+            logger.debug("Tika type: " + mediaType.toString());
+            return mediaType;
+        }
     }
 
     /**
      * Consume a DataObject, and return a transformed one.
-     * 
+     *
      * @param d the IBaseDataObject payload to evaluate
      */
     @Override
     public void process(IBaseDataObject d) {
         // Bail out on empty data
-        if (d.data() == null || d.data().length == 0) {
+        if (d.getDataContainer().length() == 0) {
             d.setCurrentForm(emissary.core.Form.EMPTY);
             d.setFileType(emissary.core.Form.EMPTY);
             return;
@@ -116,7 +117,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
         try {
             MediaType mediaType = detectType(d);
-            int payloadLength = d.dataLength();
+            long payloadLength = d.getDataContainer().length();
 
             if (mediaType == null || ignores.contains(mediaType.toString()) || StringUtils.isBlank(mediaType.getType())
                     || StringUtils.isBlank(mediaType.getSubtype())) {
@@ -148,7 +149,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * Main to run standalone test of the place
-     * 
+     *
      * @param args The file to test
      */
     public static void main(String[] args) {

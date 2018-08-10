@@ -1126,7 +1126,7 @@ public class BaseDataObjectTest extends UnitTest {
 
     @Test
     public void testSetCurrentFormWithBoolean() {
-        IBaseDataObject testIbdo = DataObjectFactory.getInstance(null, "dummy", "FORM-1");
+        IBaseDataObject testIbdo = DataObjectFactory.getInstance(new byte[0], "dummy", "FORM-1");
         testIbdo.enqueueCurrentForm("FORM-2");
         testIbdo.enqueueCurrentForm("FORM-3");
 

@@ -1,6 +1,9 @@
 package emissary.util.magic;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -111,7 +114,7 @@ public class MagicNumber {
     /**
      * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '>'
      * character at the appropriate depth.
-     * 
+     *
      * @return String
      */
     public String toStringAll() {
@@ -120,14 +123,16 @@ public class MagicNumber {
 
     /**
      * Tests the sample and if successful provides the description
+     * 
+     * @throws IOException
      */
-    public String describe(byte[] data) {
+    public String describe(SeekableByteChannel bytes) throws IOException {
         log.debug("COMPARING AGAINST: " + toString());
-        String desc = describeSelf(data);
+        String desc = describeSelf(bytes);
         if (desc == null)
             return null;
         StringBuilder sb = new StringBuilder(desc);
-        return escapeBackspace(describeDependents(data, sb, 0));
+        return escapeBackspace(describeDependents(bytes, sb, 0));
     }
 
     /**
@@ -148,17 +153,21 @@ public class MagicNumber {
 
     /**
      * Describe this instance only
+     * 
+     * @throws IOException
      */
-    private String describeSelf(byte[] data) {
-        if (!test(data))
+    private String describeSelf(SeekableByteChannel bytes) throws IOException {
+        if (!test(bytes))
             return null;
-        return format(description, data);
+        return format(description, bytes);
     }
 
     /**
      * Private method to format output - mainly for description substitutions
+     * 
+     * @throws IOException
      */
-    private String format(String desc, byte[] data) {
+    private String format(String desc, SeekableByteChannel data) throws IOException {
 
         if (!substitute)
             return desc;
@@ -173,7 +182,7 @@ public class MagicNumber {
                 Character subType = stack.pop();
                 try {
                     if (dataType == TYPE_STRING) {
-                        if (offset < (data.length - 2)) {
+                        if (offset < (data.size() - 2)) {
                             String sub = new String(getElement(data, offset, 1), DEFAULT_CHARSET);
                             sb.append(sub);
                         }
@@ -207,8 +216,10 @@ public class MagicNumber {
 
     /**
      * Tests dependent children
+     * 
+     * @throws IOException
      */
-    private String describeDependents(byte[] data, StringBuilder sb, int layer) {
+    private String describeDependents(SeekableByteChannel bytes, StringBuilder sb, int layer) throws IOException {
         log.debug("DESCRIBING DEPENDENTS at layer " + layer);
         if (dependencies == null || layer >= dependencies.size()) {
             log.debug("Not enough dependents for layer " + layer);
@@ -219,7 +230,7 @@ public class MagicNumber {
         MagicNumber[] dependentItems = dependencies.get(layer);
         log.debug("Found " + dependentItems.length + " items at layer " + layer);
         for (int i = 0; i < dependentItems.length; i++) {
-            String s = dependentItems[i].describeSelf(data);
+            String s = dependentItems[i].describeSelf(bytes);
 
             if (s != null) {
                 if (sb.length() > 0) {
@@ -232,7 +243,7 @@ public class MagicNumber {
 
         if (!shouldContinue)
             return sb.toString();
-        return describeDependents(data, sb, layer + 1);
+        return describeDependents(bytes, sb, layer + 1);
     }
 
     /**
@@ -251,9 +262,11 @@ public class MagicNumber {
 
     /**
      * Tests this magic number against the given data
+     * 
+     * @throws IOException
      */
-    public boolean test(byte[] data) {
-        byte[] subject = getElement(data, offset, dataTypeLength);
+    public boolean test(SeekableByteChannel bytes) throws IOException {
+        byte[] subject = getElement(bytes, offset, dataTypeLength);
         if (subject == null)
             return false;
         printByteSample(subject, "DATA SAMPLE: ");
@@ -340,17 +353,21 @@ public class MagicNumber {
 
     /**
      * Retrieves the data sample
+     * 
+     * @throws IOException
      */
-    private static byte[] getElement(byte[] data, int offset, int length) {
-        if (data == null)
+    private static byte[] getElement(SeekableByteChannel bytes, int offset, int length) throws IOException {
+        if (bytes == null)
             return null;
-        if (data.length < (offset + length))
+        if (bytes.size() < (offset + length))
             return null;
         // log.info ("SAMPLE STATS - offset: " + offset + ", length: " + length);
-        byte[] subject = new byte[length];
-        for (int i = 0; i < subject.length; i++)
-            subject[i] = data[i + offset];
-        return subject;
+        long position = bytes.position();
+        ByteBuffer subject = ByteBuffer.allocate(length);
+        bytes.position(position + offset);
+        bytes.read(subject);
+        bytes.position(position);
+        return subject.array();
     }
 
     /**
@@ -364,7 +381,7 @@ public class MagicNumber {
 
     /**
      * Re-creates the string magic number entry for this number only
-     * 
+     *
      * @return a String represention of the entry
      */
     @Override

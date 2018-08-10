@@ -1,14 +1,5 @@
 package emissary.output;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.DataObjectFactory;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.output.filter.IDropOffFilter;
-import emissary.place.ServiceProviderPlace;
-import emissary.util.DataUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +9,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.DataObjectFactory;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.output.filter.IDropOffFilter;
+import emissary.place.ServiceProviderPlace;
+import emissary.util.DataUtil;
 
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
@@ -34,7 +34,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Primary place constructor
-     * 
+     *
      * @param configInfo our config stuff from the startup
      * @param dir string name of the directory to register into
      * @param placeLoc string form of our key
@@ -87,7 +87,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Start up the requested filter
-     * 
+     *
      * @param filterClasses the name:class values of the configured filter for this drop off
      */
     protected void initializeFilters(final List<String> filterClasses) {
@@ -147,7 +147,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         }
 
         if (logger.isDebugEnabled()) {
-            final IBaseDataObject fakePayload = DataObjectFactory.getInstance(new byte[0], "fakename", Form.UNKNOWN);
+            final IBaseDataObject fakePayload = DataObjectFactory.getInstance("fakename", Form.UNKNOWN);
             for (final IDropOffFilter filter : getFilters()) {
                 final String name = filter.getFilterName();
                 final String spec = filter.getOutputSpec();
@@ -172,7 +172,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
      * "HD" agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
      * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all
      * payloads wanting to be dropped off in a single list.
-     * 
+     *
      * @param payloadList list of IBaseDataObject from an HDMobileAgent
      */
     @Override
@@ -227,7 +227,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Called by MobileAgent through ServiceProviderPlace to handle a single payload
-     * 
+     *
      * @param tData the payload to work on
      */
     @Override
@@ -255,7 +255,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Prepare a list of payload object to be filtered
-     * 
+     *
      * @param payloadList the list of items that were eligible for output
      * @param filterParams metadata needed for the output filter
      */
@@ -271,7 +271,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Clean up after all filter are done
-     * 
+     *
      * @param payloadList the list of items that were eligible for output
      * @param filterParams metadata needed for the output filter
      */
@@ -298,7 +298,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Internal method to process a single data object
-     * 
+     *
      * @param tData the payload to work on or prepare
      * @param haveList true if in HD context
      */
@@ -373,7 +373,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Run all the output filter
-     * 
+     *
      * @param target either IBaseDataObject or List thereof
      * @param filterParams other parameters that filter need
      */
@@ -421,7 +421,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Provide access to the filter
-     * 
+     *
      * @return a copy of the list of filter
      */
     public List<IDropOffFilter> getFilters() {
@@ -430,7 +430,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Provide access to filter names
-     * 
+     *
      * @return an array of filter names or an empty array if none
      */
     public String[] getFilterNames() {
@@ -443,7 +443,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Provide access to filter by name
-     * 
+     *
      * @return the named filter or null if none by that name
      */
     public IDropOffFilter getFilter(final String name) {
@@ -461,7 +461,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * Add a filter
-     * 
+     *
      * @param filter the new filter to add, must already be configured and initialized
      */
     public void addFilter(final IDropOffFilter filter) {

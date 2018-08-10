@@ -2,11 +2,16 @@ package emissary.id;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-
-import emissary.util.UnixFile;
+import java.nio.channels.SeekableByteChannel;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.blob.IDataContainer;
+import emissary.util.UnixFile;
 
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile
@@ -80,16 +85,15 @@ public class UnixFilePlace extends emissary.id.IdPlace {
      */
     @Override
     public void process(final IBaseDataObject d) {
-        final byte[] bytes = d.data();
-
         // Bail out on empty data
-        if (bytes == null || bytes.length == 0) {
+        IDataContainer dataContainer = d.getDataContainer();
+        if (dataContainer.length() == 0) {
             d.setCurrentForm(emissary.core.Form.EMPTY);
             d.setFileType(emissary.core.Form.EMPTY);
             return;
         }
 
-        try {
+        try (final SeekableByteChannel bytes = dataContainer.channel()) {
             String currentForm = this.unixFileUtil.evaluateByMagicNumber(bytes);
             if (currentForm != null) {
                 if (this.chop && currentForm.indexOf(" ") > 0) {
@@ -115,10 +119,10 @@ public class UnixFilePlace extends emissary.id.IdPlace {
                     currentForm = currentForm.replaceAll("", "_");
                 }
 
-                if (this.minSizeMap.containsKey(currentForm) && (bytes.length < this.minSizeMap.get(currentForm))) {
+                if (this.minSizeMap.containsKey(currentForm) && (dataContainer.length() < this.minSizeMap.get(currentForm))) {
                     if (logger.isDebugEnabled()) {
                         logger.debug("Type " + currentForm + " does not meet min size requirement " + this.minSizeMap.get(currentForm) + " < "
-                                + bytes.length);
+                                + dataContainer.length());
                     }
                 } else {
                     d.setCurrentForm(currentForm);

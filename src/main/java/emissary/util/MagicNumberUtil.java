@@ -1,19 +1,21 @@
 package emissary.util;
 
-import emissary.util.shell.Executrix;
-
-import emissary.util.magic.MagicNumber;
-import emissary.util.magic.MagicNumberFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import emissary.util.magic.MagicNumber;
+import emissary.util.magic.MagicNumberFactory;
+import emissary.util.shell.Executrix;
 
 /**
  * Magic entry rules when using the Java utility, MagicNumberUtil
@@ -160,18 +162,19 @@ public final class MagicNumberUtil {
      * Input a byte array sample and it will be compared against the global magic number list. Descriptions for matching
      * entries inclusive of continuations.
      *
-     * @param data a byte[]
+     * @param bytes a byte[]
      * @return {@link String} representing matching description plus matching continuation descriptions or null.
+     * @throws IOException
      * @throws RuntimeException If the magic file has not been loaded globally using the load methods.
      * @see #load(java.io.File)
      * @see #load(byte[])
      */
-    public String describe(final byte[] data) {
+    public String describe(final SeekableByteChannel bytes) throws IOException {
         log.debug("Checking against " + this.magicNumbers.size() + " magic items");
         String description = null;
         for (final MagicNumber item : this.magicNumbers) {
             log.debug("Checking magic item " + item);
-            description = item.describe(data);
+            description = item.describe(bytes);
             if (description != null && !description.isEmpty()) {
                 break;
             }
@@ -198,7 +201,7 @@ public final class MagicNumberUtil {
         } catch (SecurityException se) {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
-        return describe(Executrix.readDataFromFile(target.getAbsolutePath()));
+        return describe(FileChannel.open(target.toPath(), StandardOpenOption.READ));
     }
 
     /**
@@ -223,7 +226,7 @@ public final class MagicNumberUtil {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
 
-        return describe(Executrix.readDataFromFile(target.getAbsolutePath()), magicConfig);
+        return describe(FileChannel.open(target.toPath(), StandardOpenOption.READ), magicConfig);
     }
 
     /**
@@ -237,7 +240,7 @@ public final class MagicNumberUtil {
      * @return {@link String} representing the id description or null
      * @throws IOException If an IO error occurs while reading either file.
      */
-    public static String describe(final byte[] sample, final File magicConfig) throws IOException {
+    public static String describe(final SeekableByteChannel sample, final File magicConfig) throws IOException {
         try {
             if (!magicConfig.exists()) {
                 throw new IOException("Magic config file not found at: " + magicConfig.getAbsolutePath());

@@ -48,7 +48,7 @@ public class SizeIdPlaceTest extends UnitTest {
     @Test
     public void testPayload() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.getDataContainer().setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         place.process(payload);
         assertEquals("Current form set from size", "SIZE_TINY", payload.currentForm());
