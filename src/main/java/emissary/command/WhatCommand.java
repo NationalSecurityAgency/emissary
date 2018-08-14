@@ -1,7 +1,13 @@
 package emissary.command;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,9 +15,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+
 import emissary.command.converter.PathExistsReadableConverter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -20,6 +31,7 @@ import emissary.core.Factory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
+import emissary.core.blob.IDataContainer;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.id.Identification;
@@ -29,9 +41,6 @@ import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
@@ -41,6 +50,7 @@ public class WhatCommand extends BaseCommand {
 
     public static String COMMAND_NAME = "what";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
@@ -151,15 +161,19 @@ public class WhatCommand extends BaseCommand {
             return;
         }
 
-        if (Files.size(path) == 0) {
+        long fileSize = Files.size(path);
+        if (fileSize == 0) {
             LOG.error(path + " - EMPTY");
             return;
         }
 
         if (!this.headerIdentification) {
             final IBaseDataObject payload =
-                    DataObjectFactory.getInstance(Executrix.readDataFromFile(path.toString()), path.toAbsolutePath().toString(),
-                            Form.UNKNOWN);
+                    DataObjectFactory.get(path.toAbsolutePath().toString(), Form.UNKNOWN);
+            try (FileInputStream fis = new FileInputStream(path.toString());
+                    OutputStream os = Channels.newOutputStream(payload.getDataContainer().newChannel(fileSize))) {
+                IOUtils.copyLarge(fis, os);
+            }
             final Identification id = identify(payload, this.headerIdentification);
             LOG.info(path + " - " + payload.getFilename() + ": " + id.getTypeString());
             return;
@@ -179,7 +193,7 @@ public class WhatCommand extends BaseCommand {
                     final IBaseDataObject payload = producer.createAndLoadDataObject(sessionHash, parent);
                     final Identification id = identify(payload, this.headerIdentification);
 
-                    LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.dataLength() + "]");
+                    LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.getDataContainer().length() + "]");
                 } catch (emissary.parser.ParserEOFException eof) {
                     LOG.debug("Parser reached end of file: ", eof);
                     // Expected EOF
@@ -195,9 +209,9 @@ public class WhatCommand extends BaseCommand {
 
     protected Identification identify(final IBaseDataObject b, final boolean useHeaderArg) {
         Identification ident = null;
-        if (b == null || b.data() == null) {
+        if (b == null || b.getDataContainer() == null) {
             ident = new Identification("BAD_SESSION");
-        } else if (b != null && b.dataLength() == 0) {
+        } else if (b.getDataContainer().length() == 0) {
             ident = new Identification(Form.EMPTY);
         } else {
             ident = runEngines(b);
@@ -213,7 +227,8 @@ public class WhatCommand extends BaseCommand {
         final Identification ident = new Identification();
         final List<String> typesFound = new ArrayList<String>();
 
-        if (b != null && b.dataLength() == 0) {
+        IDataContainer dataContainer = b.getDataContainer();
+        if (b != null && dataContainer.length() == 0) {
             ident.addType(Form.EMPTY);
             return ident;
         }
@@ -222,11 +237,15 @@ public class WhatCommand extends BaseCommand {
             typesFound.add(b.currentForm());
         }
 
-        final byte[] data = b.data();
-
         if (LOG.isDebugEnabled()) {
-            final String ds = (data.length > 10 ? new String(data, 0, 9) : new String(data));
-            LOG.debug("Running engines with data=" + ds + "...");
+            try (final SeekableByteChannel data = dataContainer.channel()) {
+                ByteBuffer prefix = ByteBuffer.allocate(10);
+                int read = data.read(prefix);
+                final String ds = new String(prefix.array(), 0, read, StandardCharsets.US_ASCII);
+                LOG.debug("Running engines with data={}...", ds);
+            } catch (IOException e) {
+                LOG.debug("Running engines with data=<read failure>...", e);
+            }
         }
 
         for (int i = 0; i < this.places.size(); i++) {

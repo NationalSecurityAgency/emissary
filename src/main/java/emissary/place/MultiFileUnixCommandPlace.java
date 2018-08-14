@@ -1,13 +1,5 @@
 package emissary.place;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
-import emissary.directory.KeyManipulator;
-import emissary.kff.KffDataObjectHandler;
-import emissary.util.shell.Executrix;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +11,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import emissary.core.DataObjectFactory;
+import emissary.core.Family;
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.kff.KffDataObjectHandler;
+import emissary.util.shell.Executrix;
 
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
@@ -151,7 +151,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Set a custom executrix, allows easier mocking among other things
-     * 
+     *
      * @param e the new executrix instance to use
      */
     public void setExecutrix(Executrix e) {
@@ -177,7 +177,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Log the messages found in the log file
-     * 
+     *
      * @param tempDir the directory where the command executed
      */
     protected void logMessages(String tempDir) {
@@ -197,7 +197,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Get list of things that were excreted from the process
-     * 
+     *
      * @param tmpDir the process execution area
      * @param inputFileName name of input file so it can be skipped
      */
@@ -209,7 +209,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Get list of things that were excreted from the process by recursively walking the directory
-     * 
+     *
      * @param tmpDir the process execution area
      * @param inputFileName name of input file so it can be skipped
      * @param outFiles list to which files that are found can be added
@@ -294,7 +294,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     /**
      * Process the result files, turning them into attachments Override hooks: initSprout, preSprout,
      * postSprout,finishSprout
-     * 
+     *
      * @param parent the original payload
      * @param files the result files
      * @param tempDirName execution area name
@@ -392,7 +392,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     /**
      * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is
      * read and loaded into the newData accumulator now
-     * 
+     *
      * @param parent the original payload
      * @param files the result files
      * @param newData accumulator for replacement parent data
@@ -413,7 +413,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Override hook when attachment processing is finished
-     * 
+     *
      * @param parent the original payload
      * @param numSubParts the number of attachments handled
      * @param actualFileCount the number of result files processed
@@ -425,7 +425,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Override hook when an attachment begins processing
-     * 
+     *
      * @param data the bytes of content for the attachment
      * @param parent the original payload
      * @param f the file the content comes from
@@ -441,7 +441,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Override hook when an attachment finished processing
-     * 
+     *
      * @param data the bytes of content for the attachment
      * @param parent the original payload
      * @param f the file the content comes from
@@ -459,7 +459,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Process in a custom way when there is only one file result
-     * 
+     *
      * @param d the parent payload
      * @param f the file to process
      * @return 0 when it works
@@ -473,7 +473,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Process in a custom way when there is only one file result
-     * 
+     *
      * @param d the parent payload
      * @param theData the bytes to process
      * @param f the file the data comes from
@@ -495,7 +495,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Process an incoming payload in synchronized fashion
-     * 
+     *
      * @param theDataObject the payload to process
      */
     protected synchronized List<IBaseDataObject> synchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
@@ -505,7 +505,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Process an incoming payload in non-synchronized fashion
-     * 
+     *
      * @param theDataObject the payload to process
      */
     protected List<IBaseDataObject> unSynchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
@@ -515,7 +515,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Process an incoming payload returning a list of attachments
-     * 
+     *
      * @param tData the payload to process
      */
     @Override
@@ -562,7 +562,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     /**
      * Process an incoming payload returning attachments This entry point is shared among all synchronized,
      * unsynchronized, normal and heavy-duty processing entry points.
-     * 
+     *
      * @param tData the payload to process
      * @return attachments
      */
@@ -574,7 +574,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     /**
      * Process an incoming payload returning attachments, using only some of the data This entry point is shared among
      * all synchronized, unsynchronized, normal and heavy-duty processing entry points.
-     * 
+     *
      * @param tData the payload to process
      * @param start offset in data to start
      * @param len length of data to use
@@ -589,16 +589,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             return sprouts;
         }
 
-        // Validate data
-        if (tData.data() == null) {
-            logger.debug("Received null data: " + tData);
-            tData.addProcessingError("NULL data in " + placeName + ".process");
-            tData.pushCurrentForm(newErrorForm);
-            return sprouts;
-        }
-
         // Validate start and len
-        if (start < 0 || len <= 0 || (start + len) > tData.dataLength()) {
+        if (start < 0 || len <= 0 || (start + len) > tData.getDataContainer().length()) {
             logger.debug("Invalid start/len for data " + start + "/" + len);
             tData.addProcessingError("Invalid data " + start + "/" + len);
             tData.pushCurrentForm(newErrorForm);
@@ -669,7 +661,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Execute the command and args in the array
-     * 
+     *
      * @param cmd the command and args to execute
      * @return the process errno status value
      */
@@ -688,7 +680,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * Execute the command and args in the array
-     * 
+     *
      * @param cmd the command and args to execute
      * @param stdout builder to append stdout from process
      * @param stderr builder to append stderr from process
@@ -701,7 +693,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * API Compatibility wrapper for Executrix cleanup method
-     * 
+     *
      * @param tempDir the directory to remove
      */
     protected void cleanupFiles(File tempDir) {
@@ -712,7 +704,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     /**
      * API Compatibility wrapper for Executrix cleanup method
-     * 
+     *
      * @param dir the directory to remove
      */
     protected void cleanupDirectory(File dir) {

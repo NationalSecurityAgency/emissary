@@ -1,8 +1,14 @@
 package emissary.transform.decode;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,56 +25,18 @@ public class JsonEscape {
      * specified as UTF-8 by RFC 4627
      */
     public static byte[] unescape(byte[] data) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == '\\' && (i + 5) < data.length && (data[i + 1] == 'u' || data[i + 1] == 'U')) {
-                // process unicode escape
-                try {
-                    String s = new String(data, i + 2, 4);
-                    char[] c = HtmlEscape.unescapeHtmlChar(s, true);
-                    if (c != null && c.length > 0) {
-                        out.write(new String(c).getBytes());
-                        logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");
-                        i += 5;
-                    } else {
-                        out.write(data[i]);
-                    }
-                } catch (IOException iox) {
-                    out.write(data[i]);
-                }
-            } else if (data[i] == '\\' && (i + 1) < data.length && isOctalDigit(data[i + 1])) {
-                // Process octal escape
-                int end = i + 1;
-                if ((i + 2) < data.length && isOctalDigit(data[i + 2]))
-                    end++;
-                if ((i + 3) < data.length && isOctalDigit(data[i + 3]))
-                    end++;
-                String s = new String(data, i + 1, (end - i));
-                try {
-                    int num = Integer.parseInt(s, 8);
-                    char[] ch = Character.toChars(num);
-                    out.write(new String(ch).getBytes());
-                    logger.debug("Octal '" + s + "' ==> '" + new String(ch) + "'");
-                    i += s.length();
-                } catch (Exception ex) {
-                    out.write(data[i]);
-                }
-            } else if (data[i] == '\\' && (i + 1) < data.length && ESCAPES.indexOf(data[i + 1]) != -1) {
-                byte b = data[i + 1];
-                if (b == 'n')
-                    out.write('\n');
-                else if (b == 't')
-                    out.write('\t');
-                else if (b == 'r')
-                    out.write('\r');
-                else
-                    out.write(b);
-                i++;
-            } else {
-                out.write(data[i]);
-            }
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
+                ByteArrayInputStream in = new ByteArrayInputStream(data)) {
+            unescape(in, baos);
+            return baos.toByteArray();
+        } catch (IOException e) {
+            return null;
         }
-        return out.toByteArray();
+    }
+
+    @SuppressWarnings("resource")
+    public static void unescape(InputStream data, OutputStream out) throws IOException {
+        IOUtils.copyLarge(new UnEscapeInputStream(data), out);
     }
 
     protected static boolean isOctalDigit(byte b) {
@@ -90,6 +58,151 @@ public class JsonEscape {
             byte[] escaped = JsonEscape.unescape(content);
             System.out.write(escaped, 0, escaped.length);
             System.out.println();
+        }
+    }
+
+    private static class UnEscapeInputStream extends FilterInputStream {
+
+        byte[] heldBytes = new byte[10];
+        int heldCount = 0;
+        boolean finished = false;
+
+        public UnEscapeInputStream(InputStream in) {
+            super(in);
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            if (finished) {
+                return -1;
+            }
+            int read = super.read(b, off, len);
+            if (read == -1) {
+                if (heldCount > 0) {
+                    finished = true;
+                    read = 0;
+                } else {
+                    return -1;
+                }
+            }
+
+            ByteArrayOutputStream tempOut = new ByteArrayOutputStream(read + heldCount);
+            boolean heldThisTime = false;
+
+            bytescan: for (int i = 0; i < read + heldCount; i++) {
+                byte thisByte = getByte(b, off, i);
+
+                if (thisByte != '\\') {
+                    tempOut.write(thisByte);
+                    continue;
+                }
+                if (i >= read + heldCount - 1 && !finished) {
+                    heldBytes[0] = thisByte;
+                    heldCount = 1;
+                    heldThisTime = true;
+                    break bytescan;
+                }
+                byte nextByte = getByte(b, off, i + 1);
+
+                if (nextByte == 'u' || nextByte == 'U') {
+                    // Check length
+                    if (i >= read + heldCount - 5) {
+                        if (!finished) {
+                            // copy to held bytes
+                            int remaining = read + heldCount - i;
+                            heldBytes = getBytes(b, off, i, remaining);
+                            heldCount = remaining;
+                            heldThisTime = true;
+                            break bytescan;
+                        } else {
+                            tempOut.write(getBytes(b, off, i, read + heldCount - i));
+                            break bytescan;
+                        }
+                    }
+
+                    // process unicode escape
+                    try {
+                        String s = new String(getBytes(b, off, i + 2, 4), StandardCharsets.UTF_8);
+                        char[] c = HtmlEscape.unescapeHtmlChar(s, true);
+                        if (c != null && c.length > 0) {
+                            tempOut.write(new String(c).getBytes(StandardCharsets.UTF_8));
+
+                            System.err.println("Unicode '" + s + "' ==> '" + new String(c) + "'");
+                            logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");
+                            i += 5;
+                        } else {
+                            tempOut.write(thisByte);
+                        }
+                    } catch (IOException iox) {
+                        tempOut.write(thisByte);
+                    }
+                } else if (isOctalDigit(nextByte)) {
+                    int count = 1;
+                    // Process octal escape
+                    octalscan: for (; count <= 3; count++) {
+                        // Check length
+                        if (i >= read + heldCount + 1 - count) {
+                            if (!finished) {
+                                // copy to held bytes
+                                int remaining = read + heldCount - i;
+                                heldBytes = getBytes(b, off, i, remaining);
+                                heldCount = remaining;
+                                heldThisTime = true;
+                                break bytescan;
+                            } else {
+                                break octalscan;
+                            }
+                        }
+                        if (count > 1 && !isOctalDigit(getByte(b, off, i + count))) {
+                            break octalscan;
+                        }
+                    }
+                    count--;
+
+                    String s = new String(getBytes(b, off, i + 1, count), StandardCharsets.UTF_8);
+                    try {
+                        int num = Integer.parseInt(s, 8);
+                        char[] ch = Character.toChars(num);
+                        tempOut.write(new String(ch).getBytes(StandardCharsets.UTF_8));
+                        logger.debug("Octal '" + s + "' ==> '" + new String(ch) + "'");
+                        i += count;
+                    } catch (Exception ex) {
+                        tempOut.write(thisByte);
+                    }
+                } else if (ESCAPES.indexOf(nextByte) != -1) {
+                    if (nextByte == 'n')
+                        tempOut.write('\n');
+                    else if (nextByte == 't')
+                        tempOut.write('\t');
+                    else if (nextByte == 'r')
+                        tempOut.write('\r');
+                    else
+                        tempOut.write(nextByte);
+                    i++;
+                } else {
+                    tempOut.write(thisByte);
+                }
+            }
+
+            if (!heldThisTime) {
+                heldCount = 0;
+            }
+
+            byte[] tempBytes = tempOut.toByteArray();
+            System.arraycopy(tempBytes, 0, b, off, tempBytes.length);
+            return tempBytes.length;
+        }
+
+        private byte getByte(byte[] b, int off, int index) {
+            return index < heldCount ? heldBytes[index] : b[index + off - heldCount];
+        }
+
+        private byte[] getBytes(byte[] b, int off, int index, int len) {
+            byte[] result = new byte[len]; // TODO re-use
+            for (int i = 0; i < len; i++) {
+                result[i] = getByte(b, off, index + i);
+            }
+            return result;
         }
     }
 }

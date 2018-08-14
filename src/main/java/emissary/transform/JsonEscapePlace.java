@@ -1,16 +1,19 @@
 /***********************************************************
- * This place transforms \\uxxxx Json escape 
+ * This place transforms \\uxxxx Json escape
  * stuff into normal unicode (utf-8 characters)
  **/
 
 package emissary.transform;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.Channels;
+
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JsonEscape;
 import emissary.util.DataUtil;
-
-import java.io.IOException;
 
 public class JsonEscapePlace extends ServiceProviderPlace {
 
@@ -21,7 +24,7 @@ public class JsonEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with specified location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      * @param dir the name of the controlling directory
      * @param placeLoc the string name for this place
@@ -33,7 +36,7 @@ public class JsonEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with default location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      */
     public JsonEscapePlace(String cfgInfo) throws IOException {
@@ -69,20 +72,19 @@ public class JsonEscapePlace extends ServiceProviderPlace {
 
         logger.debug("JsonEscapePlace just got a " + incomingForm);
 
-        byte[] newData = JsonEscape.unescape(d.data());
-
-        if (newData != null && newData.length > 0) {
-            d.setData(newData);
-
-            /*
-             * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform
-             * place, but it's only changing data, not currentForm. if (outputForm != null) {
-             * d.setCurrentForm(outputForm); }
-             */
-        } else {
-            logger.warn("error doing JsonEscape, unable to decode");
+        long len = d.getDataContainer().length();
+        try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
+                OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
+            JsonEscape.unescape(oldData, newData);
+        } catch (IOException e) {
+            logger.warn("error doing JsonEscape, unable to decode", e);
             d.pushCurrentForm(emissary.core.Form.ERROR);
         }
+        /*
+         * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform
+         * place, but it's only changing data, not currentForm. if (outputForm != null) { d.setCurrentForm(outputForm);
+         * }
+         */
     }
 
 

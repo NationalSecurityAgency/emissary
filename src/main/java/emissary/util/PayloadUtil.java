@@ -1,13 +1,5 @@
 package emissary.util;
 
-import emissary.core.IBaseDataObject;
-import emissary.util.xml.JDOMUtil;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +13,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import emissary.core.IBaseDataObject;
+import emissary.util.xml.JDOMUtil;
 
 /**
  * Utilities for dealing with IBaseDataObject and Lists thereof
@@ -48,7 +48,7 @@ public class PayloadUtil {
 
     /**
      * Generate a string about the payload object
-     * 
+     *
      * @param payload the payload to describe
      * @param oneLine true for a condensed one-line string
      */
@@ -58,7 +58,7 @@ public class PayloadUtil {
 
     /**
      * Generate a string about the payload object
-     * 
+     *
      * @param payload the payload to describe
      */
     public static String getPayloadDisplayString(final IBaseDataObject payload) {
@@ -79,7 +79,7 @@ public class PayloadUtil {
 
     /**
      * Generate a one-line string about the payload object
-     * 
+     *
      * @param payload the payload to describe
      */
     public static String getPayloadOneLineString(final IBaseDataObject payload) {
@@ -179,7 +179,7 @@ public class PayloadUtil {
 
     /**
      * Turn the payload into an xml jdom document
-     * 
+     *
      * @param d the payload
      */
     public static Document toXml(final IBaseDataObject d) {
@@ -212,7 +212,7 @@ public class PayloadUtil {
         if (d.header() != null) {
             root.addContent(JDOMUtil.protectedElement("header", d.header()));
         }
-        if (d.dataLength() > 0) {
+        if (d.getDataContainer().length() > 0) {
             root.addContent(JDOMUtil.protectedElement("data", d.data()));
         }
         if (d.footer() != null) {
@@ -237,7 +237,7 @@ public class PayloadUtil {
 
     /**
      * Turn the payload into an xml string
-     * 
+     *
      * @param d the payload
      */
     public static String toXmlString(final IBaseDataObject d) {
@@ -246,7 +246,7 @@ public class PayloadUtil {
 
     /**
      * Turn a list of payload into an xml jdom ocument
-     * 
+     *
      * @param list the payload list
      */
     public static Document toXml(final List<IBaseDataObject> list) {
@@ -262,7 +262,7 @@ public class PayloadUtil {
 
     /**
      * Turn the payload list into an xml string
-     * 
+     *
      * @param list the payload list
      */
     public static String toXmlString(final List<IBaseDataObject> list) {

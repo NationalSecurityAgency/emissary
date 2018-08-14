@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import emissary.test.core.UnitTest;
-
-public class JsonEscapeTest extends UnitTest {
+public class JsonEscapeTest {
     @Test
     public void testEscapedAngleBracketChars() {
         String input = "\\u003cThis is a Test\\u003e";
