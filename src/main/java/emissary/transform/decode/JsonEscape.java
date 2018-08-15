@@ -61,11 +61,12 @@ public class JsonEscape {
         }
     }
 
-    private static class UnEscapeInputStream extends FilterInputStream {
+    static class UnEscapeInputStream extends FilterInputStream {
 
         byte[] heldBytes = new byte[10];
         int heldCount = 0;
         boolean finished = false;
+        boolean everFinished = false;
 
         public UnEscapeInputStream(InputStream in) {
             super(in);
@@ -76,7 +77,7 @@ public class JsonEscape {
             if (finished) {
                 return -1;
             }
-            int read = super.read(b, off, len);
+            int read = everFinished ? -1 : in.read(b, off, len);
             if (read == -1) {
                 if (heldCount > 0) {
                     finished = true;
@@ -89,7 +90,8 @@ public class JsonEscape {
             ByteArrayOutputStream tempOut = new ByteArrayOutputStream(read + heldCount);
             boolean heldThisTime = false;
 
-            bytescan: for (int i = 0; i < read + heldCount; i++) {
+            int i = 0;
+            bytescan: for (i = 0; i < read + heldCount && tempOut.size() < len; i++) {
                 byte thisByte = getByte(b, off, i);
 
                 if (thisByte != '\\') {
@@ -97,37 +99,26 @@ public class JsonEscape {
                     continue;
                 }
                 if (i >= read + heldCount - 1 && !finished) {
-                    heldBytes[0] = thisByte;
-                    heldCount = 1;
-                    heldThisTime = true;
                     break bytescan;
+
                 }
                 byte nextByte = getByte(b, off, i + 1);
 
                 if (nextByte == 'u' || nextByte == 'U') {
                     // Check length
                     if (i >= read + heldCount - 5) {
-                        if (!finished) {
-                            // copy to held bytes
-                            int remaining = read + heldCount - i;
-                            heldBytes = getBytes(b, off, i, remaining);
-                            heldCount = remaining;
-                            heldThisTime = true;
-                            break bytescan;
-                        } else {
-                            tempOut.write(getBytes(b, off, i, read + heldCount - i));
-                            break bytescan;
+                        if (finished) {
+                            i += writeTail(tempOut, i, b, off, read);
                         }
+                        break bytescan;
                     }
 
                     // process unicode escape
                     try {
                         String s = new String(getBytes(b, off, i + 2, 4), StandardCharsets.UTF_8);
-                        char[] c = HtmlEscape.unescapeHtmlChar(s, true);
+                        char[] c = HtmlEscape.unescapeHtmlChar(s, true);// "X".toCharArray();//
                         if (c != null && c.length > 0) {
                             tempOut.write(new String(c).getBytes(StandardCharsets.UTF_8));
-
-                            System.err.println("Unicode '" + s + "' ==> '" + new String(c) + "'");
                             logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");
                             i += 5;
                         } else {
@@ -141,13 +132,8 @@ public class JsonEscape {
                     // Process octal escape
                     octalscan: for (; count <= 3; count++) {
                         // Check length
-                        if (i >= read + heldCount + 1 - count) {
+                        if (i >= read + heldCount - count) {
                             if (!finished) {
-                                // copy to held bytes
-                                int remaining = read + heldCount - i;
-                                heldBytes = getBytes(b, off, i, remaining);
-                                heldCount = remaining;
-                                heldThisTime = true;
                                 break bytescan;
                             } else {
                                 break octalscan;
@@ -168,6 +154,7 @@ public class JsonEscape {
                         i += count;
                     } catch (Exception ex) {
                         tempOut.write(thisByte);
+
                     }
                 } else if (ESCAPES.indexOf(nextByte) != -1) {
                     if (nextByte == 'n')
@@ -184,12 +171,34 @@ public class JsonEscape {
                 }
             }
 
+            if (i < heldCount + read) {
+                heldThisTime = true;
+                byte[] newHeld = new byte[heldCount + read - i];
+                if (i <= heldCount) {
+                    System.arraycopy(heldBytes, i, newHeld, 0, heldCount - i);
+                    System.arraycopy(b, 0, newHeld, heldCount - i, read);
+                } else {
+                    System.arraycopy(b, i, newHeld, 0, read - i);
+                }
+                heldCount = newHeld.length;
+                heldBytes = newHeld;
+            }
+
             if (!heldThisTime) {
                 heldCount = 0;
             }
 
+            everFinished |= finished;
+            finished &= heldCount == 0;
+
             byte[] tempBytes = tempOut.toByteArray();
-            System.arraycopy(tempBytes, 0, b, off, tempBytes.length);
+            System.arraycopy(tempBytes, 0, b, off, Math.min(tempBytes.length, len));
+            if (len < tempBytes.length) {
+                heldCount = tempBytes.length - len;
+                System.arraycopy(tempBytes, len, heldBytes, 0, heldCount);
+                finished = false;
+                return len;
+            }
             return tempBytes.length;
         }
 
@@ -203,6 +212,29 @@ public class JsonEscape {
                 result[i] = getByte(b, off, index + i);
             }
             return result;
+        }
+
+        private int writeTail(ByteArrayOutputStream tempOut, int i, byte[] b, int off, int read) {
+            int result = 0;
+            if (i < heldCount) {
+                tempOut.write(heldBytes, i, heldCount - i);
+                result += heldCount - i;
+            }
+            if (read > heldCount + i) {
+                tempOut.write(b, (off - heldCount) + i, read - (heldCount + i));
+                result += read - (heldCount + i);
+            }
+            return result;
+        }
+
+        @Override
+        public int read() throws IOException {
+            byte[] b = new byte[1];
+            int read = 0;
+            while (read == 0) {
+                read = read(b, 0, 1);
+            }
+            return read == -1 ? -1 : b[0];
         }
     }
 }
