@@ -347,7 +347,7 @@ public class HtmlEscape {
             int i = 0;
             bytescan: for (i = 0; i < read + heldCount && tempOut.size() < len; i++) {
                 byte thisByte = getByte(b, off, i);
-//                char debugThis = (char) thisByte;
+                // char debugThis = (char) thisByte;
 
                 if (thisByte != '&') {
                     tempOut.write(thisByte);
@@ -374,7 +374,7 @@ public class HtmlEscape {
                             }
                         }
                         byte testByte = getByte(b, off, i + count);
-//                        char debugTestByte = (char) testByte;
+                        // char debugTestByte = (char) testByte;
                         if (count == 2) {
                             if (testByte == 'X' || testByte == 'x') {
                                 isHex = true;
@@ -435,7 +435,7 @@ public class HtmlEscape {
                             }
                         }
                         byte testByte = getByte(b, off, i + count);
-//                        char debugTestByte = (char) testByte;
+                        // char debugTestByte = (char) testByte;
                         if (testByte == ';') {
                             if (count == 1) {// broken case with extra semi-colon
                                 start++;
