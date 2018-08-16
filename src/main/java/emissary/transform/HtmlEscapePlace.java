@@ -6,13 +6,15 @@
 package emissary.transform;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-
-import emissary.transform.decode.HtmlEscape;
-import emissary.util.CharacterCounterSet;
+import java.nio.channels.Channels;
 
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
+import emissary.transform.decode.HtmlEscape;
+import emissary.util.CharacterCounterSet;
 import emissary.util.DataUtil;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {
@@ -69,28 +71,20 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
 
         logger.debug("HtmlEscapePlace just got a " + incomingForm);
 
-        byte[] newData = HtmlEscape.unescapeHtml(d.data(), counters);
-
-        if (newData != null && newData.length > 0) {
-            newData = HtmlEscape.unescapeEntities(newData, counters);
-            if (outputForm != null) {
-                d.setCurrentForm(outputForm);
-            }
-            // Track how much change in size there was
-            int variance = d.dataLength() - newData.length;
-            if (variance < 0)
-                variance *= -1;
-            d.setParameter("HTML_Entity_Decode_Variance", Integer.toString(variance));
-            d.setData(newData);
-            d.setFileTypeIfEmpty("HTML");
-
-            for (String key : counters.getKeys()) {
-                d.putParameter(key + "_HTML_ESCAPE", Integer.toString(counters.get(key)));
-            }
-
-        } else {
-            logger.warn("error doing HtmlEscape, unable to decode");
+        long len = d.getDataContainer().length();
+        try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
+                OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
+            HtmlEscape.unescape(oldData, newData, true, true, counters);
+            d.setCurrentForm(outputForm);
+        } catch (IOException e) {
+            logger.warn("error doing HtmlEscape, unable to decode", e);
             d.pushCurrentForm(emissary.core.Form.ERROR);
+        }
+        long variance = Math.abs(len - d.getDataContainer().length());
+        d.setParameter("HTML_Entity_Decode_Variance", Long.toString(variance));
+        d.setFileTypeIfEmpty("HTML");
+        for (String key : counters.getKeys()) {
+            d.putParameter(key + "_HTML_ESCAPE", Integer.toString(counters.get(key)));
         }
 
         // Unescape any TEXT alt views we may have

@@ -1,14 +1,21 @@
 package emissary.transform.decode;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import emissary.util.CharacterCounterSet;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import emissary.util.ByteUtil;
+import emissary.util.CharacterCounterSet;
 import emissary.util.HtmlEntityMap;
 import emissary.util.shell.Executrix;
 
@@ -22,12 +29,19 @@ public class HtmlEscape {
     /**
      * Html Entity mapper
      */
-    private final static HtmlEntityMap HTML_ENTITY_MAP = new HtmlEntityMap();
+    private final static HtmlEntityMap HTML_ENTITY_MAP = new HtmlEntityMap();// null;//
 
     /**
      * Pattern for HTML escaped char finding in strings
      */
     private final static Pattern HESC_PATTERN = Pattern.compile("&#([xX]?)(\\p{XDigit}{2,5});");
+
+
+    @SuppressWarnings("resource")
+    public static void unescape(InputStream data, OutputStream out, boolean entities, boolean numeric, CharacterCounterSet counters)
+            throws IOException {
+        IOUtils.copyLarge(new UnEscapeInputStream(data, entities, numeric, counters), out);
+    }
 
     /**
      * Unescape some HTML data without counting what was done
@@ -50,60 +64,17 @@ public class HtmlEscape {
      * @return modified byte array
      */
     public static byte[] unescapeHtml(byte[] data, CharacterCounterSet counters) {
-
-        ByteArrayOutputStream baos = null;
-        byte[] returnBytes = null;
-        if (data == null || data.length == 0)
+        if (data == null) {
             return new byte[0];
-
-        try {
-            baos = new ByteArrayOutputStream();
-            for (int i = 0; i < data.length; i++) {
-                // Grab one encoded character
-                if (data[i] == '&' && i + 3 < data.length && data[i + 1] == '#') {
-                    int j = i + 2;
-                    boolean isHex = false;
-
-                    // Determine if &#xnnnn; or &#nnnn;
-                    if (data[j] == 'X' || data[j] == 'x') {
-                        j++;
-                        isHex = true;
-                    }
-
-                    int startPos = j;
-
-                    // Jump to end of digits, find a semi-colon
-                    while (j < data.length && emissary.util.ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
-                        j++;
-
-                    if (j < data.length && data[j] == ';') {
-                        // Try to convert it
-                        char[] c = unescapeHtmlChar(new String(data, startPos, j - startPos), isHex);
-                        if (c != null) {
-                            // write a codepoint
-                            String s = new String(c);
-                            baos.write(s.getBytes());
-                            if (counters != null) {
-                                counters.count(s);
-                            }
-                            i = j;
-                        } else {
-                            // Do no harm if the conversion fails
-                            baos.write(data[i]);
-                        }
-                    } else {
-                        baos.write(data[i]);
-                    }
-                } else {
-                    baos.write(data[i]);
-                }
-            }
-            returnBytes = baos.toByteArray();
-            baos.close();
-        } catch (IOException e) {
-            logger.debug("Cannot decode HTML bytes", e);
         }
-        return returnBytes;
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
+                ByteArrayInputStream in = new ByteArrayInputStream(data)) {
+            unescape(in, baos, false, true, counters);
+            return baos.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
+
     }
 
     /**
@@ -291,53 +262,18 @@ public class HtmlEscape {
      * Unescape HTML Entities like &amp;nbsp; into normal characters Also handle broken entities like &amp;;nbsp; and
      * &amp;nbsp (extra semi-colon and missing semi-colon respectively)
      */
-    public static byte[] unescapeEntities(byte[] s, CharacterCounterSet counters) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int slen = s.length;
-
-        logger.debug("Doing html entity normalization on bytes length " + slen);
-
-        for (int i = 0; i < slen; i++) {
-            if (i + 4 < slen && s[i] == '&') {
-                int spos = i;
-                int epos = spos + 1;
-                while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ')
-                    epos++;
-
-                if (epos == spos + 1) // broken case with extra semi-colon
-                {
-                    spos++;
-                    epos = spos + 1;
-                    while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ')
-                        epos++;
-                }
-
-                String val = HTML_ENTITY_MAP.getValueForHTMLEntity(new String(s, spos + 1, epos - (spos + 1)));
-                if (val != null) {
-                    try {
-                        baos.write(val.getBytes());
-                        if (counters != null) {
-                            counters.count(val);
-                        }
-                        // if we used the space as a terminator, keep the
-                        // space in the output, even though we consumed it
-                        if (epos < slen) {
-                            i = s[epos] == ' ' ? (epos - 1) : epos;
-                        } else {
-                            i = slen;
-                        }
-                    } catch (IOException iox) {
-                        logger.debug("Error writing unescaped bytes", iox);
-                        baos.write(s[i]);
-                    }
-                } else {
-                    baos.write(s[i]);
-                }
-            } else {
-                baos.write(s[i]);
-            }
+    public static byte[] unescapeEntities(byte[] data, CharacterCounterSet counters) {
+        if (data == null) {
+            return new byte[0];
         }
-        return baos.toByteArray();
+        logger.debug("Doing html entity normalization on bytes length " + data.length);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
+                ByteArrayInputStream in = new ByteArrayInputStream(data)) {
+            unescape(in, baos, true, false, counters);
+            return baos.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     /** This class is not meant to be instantiated. */
@@ -370,6 +306,226 @@ public class HtmlEscape {
                 System.out.write(escaped, 0, escaped.length);
                 System.out.println();
             }
+        }
+    }
+
+    static class UnEscapeInputStream extends FilterInputStream {
+
+        byte[] heldBytes = new byte[10];
+        int heldCount = 0;
+        boolean finished = false;
+        boolean everFinished = false;
+        private boolean entities;
+        private boolean numeric;
+        private CharacterCounterSet counters;
+
+        public UnEscapeInputStream(InputStream in, boolean entities, boolean numeric, CharacterCounterSet counters) {
+            super(in);
+            this.entities = entities;
+            this.numeric = numeric;
+            this.counters = counters;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            if (finished) {
+                return -1;
+            }
+            int read = everFinished ? -1 : in.read(b, off, len);
+            if (read == -1) {
+                if (heldCount > 0) {
+                    finished = true;
+                    read = 0;
+                } else {
+                    return -1;
+                }
+            }
+
+            ByteArrayOutputStream tempOut = new ByteArrayOutputStream(read + heldCount);
+            boolean heldThisTime = false;
+
+            int i = 0;
+            bytescan: for (i = 0; i < read + heldCount && tempOut.size() < len; i++) {
+                byte thisByte = getByte(b, off, i);
+//                char debugThis = (char) thisByte;
+
+                if (thisByte != '&') {
+                    tempOut.write(thisByte);
+                    continue;
+                }
+                if (i >= read + heldCount - 1 && !finished) {
+                    break bytescan;
+
+                }
+                byte nextByte = getByte(b, off, i + 1);
+
+                if (nextByte == '#' && numeric) {
+                    boolean isHex = false;
+                    int count = 2;
+                    boolean terminated = false;
+                    // Process numeric escape
+                    numscan: for (; count <= 8; count++) {
+                        // Check length
+                        if (i >= read + heldCount - count) {
+                            if (!finished) {
+                                break bytescan;
+                            } else {
+                                break numscan;
+                            }
+                        }
+                        byte testByte = getByte(b, off, i + count);
+//                        char debugTestByte = (char) testByte;
+                        if (count == 2) {
+                            if (testByte == 'X' || testByte == 'x') {
+                                isHex = true;
+                                continue numscan;
+                            }
+                            if (!ByteUtil.isDigit(testByte)) {
+                                break numscan;
+                            }
+                        } else {
+                            if (!isHex && ByteUtil.isDigit(testByte)) {
+                                continue numscan;
+                            }
+                            if (isHex && ByteUtil.isHexadecimal(testByte)) {
+                                continue numscan;
+                            }
+                            if (testByte == ';') {
+                                terminated = true;
+                                break numscan;
+                            }
+                            break numscan;
+                        }
+                    }
+
+                    if (!terminated) {
+                        tempOut.write(thisByte);
+                        continue bytescan;
+                    }
+
+                    int delta = isHex ? 3 : 2;
+                    String s = new String(getBytes(b, off, i + delta, count - delta), StandardCharsets.UTF_8);
+                    try {
+                        // Try to convert it
+                        char[] c = unescapeHtmlChar(s, isHex);
+                        if (c != null) {
+                            // write a codepoint
+                            String s2 = new String(c);
+                            tempOut.write(s2.getBytes(StandardCharsets.UTF_8));
+                            if (counters != null) {
+                                counters.count(s);
+                            }
+                            i += count;
+                        }
+                    } catch (Exception ex) {
+                        tempOut.write(thisByte);
+
+                    }
+                } else if (entities) {
+                    int count = 1;
+                    int start = 1;
+                    // Process numeric escape
+                    numscan: for (; count <= LONGEST_ENTITY_NAME + 1; count++) {
+                        // Check length
+                        if (i >= read + heldCount - count) {
+                            if (!finished) {
+                                break bytescan;
+                            } else {
+                                break numscan;
+                            }
+                        }
+                        byte testByte = getByte(b, off, i + count);
+//                        char debugTestByte = (char) testByte;
+                        if (testByte == ';') {
+                            if (count == 1) {// broken case with extra semi-colon
+                                start++;
+                            } else {
+                                break numscan;
+                            }
+                        }
+                        if (testByte == ' ') {
+                            break numscan;
+                        }
+                    }
+
+                    String val =
+                            HTML_ENTITY_MAP.getValueForHTMLEntity(new String(getBytes(b, off, i + start, count - start), StandardCharsets.UTF_8));// "X";//
+                    if (val != null) {
+                        try {
+                            tempOut.write(val.getBytes());
+                            if (counters != null) {
+                                counters.count(val);
+                            }
+                            i += count;
+                            // if we used the space as a terminator, keep the
+                            // space in the output, even though we consumed it
+                            if (getByte(b, off, i) == ' ') {
+                                i--;
+                            }
+                        } catch (IOException iox) {
+                            logger.debug("Error writing unescaped bytes", iox);
+                            tempOut.write(thisByte);
+                        }
+                    } else {
+                        tempOut.write(thisByte);
+                    }
+
+                } else {
+                    tempOut.write(thisByte);
+                }
+            }
+
+            if (i < heldCount + read) {
+                heldThisTime = true;
+                byte[] newHeld = new byte[heldCount + read - i];
+                if (i <= heldCount) {
+                    System.arraycopy(heldBytes, i, newHeld, 0, heldCount - i);
+                    System.arraycopy(b, 0, newHeld, heldCount - i, read);
+                } else {
+                    System.arraycopy(b, i, newHeld, 0, read - i);
+                }
+                heldCount = newHeld.length;
+                heldBytes = newHeld;
+            }
+
+            if (!heldThisTime) {
+                heldCount = 0;
+            }
+
+            everFinished |= finished;
+            finished &= heldCount == 0;
+
+            byte[] tempBytes = tempOut.toByteArray();
+            System.arraycopy(tempBytes, 0, b, off, Math.min(tempBytes.length, len));
+            if (len < tempBytes.length) {
+                heldCount = tempBytes.length - len;
+                System.arraycopy(tempBytes, len, heldBytes, 0, heldCount);
+                finished = false;
+                return len;
+            }
+            return tempBytes.length;
+        }
+
+        private byte getByte(byte[] b, int off, int index) {
+            return index < heldCount ? heldBytes[index] : b[index + off - heldCount];
+        }
+
+        private byte[] getBytes(byte[] b, int off, int index, int len) {
+            byte[] result = new byte[len]; // TODO re-use
+            for (int i = 0; i < len; i++) {
+                result[i] = getByte(b, off, index + i);
+            }
+            return result;
+        }
+
+        @Override
+        public int read() throws IOException {
+            byte[] b = new byte[1];
+            int read = 0;
+            while (read == 0) {
+                read = read(b, 0, 1);
+            }
+            return read == -1 ? -1 : b[0];
         }
     }
 }
