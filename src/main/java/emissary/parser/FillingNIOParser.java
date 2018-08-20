@@ -14,6 +14,7 @@ public abstract class FillingNIOParser extends NIOSessionParser {
 
     private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);
 
+    /** position of the session start relative to the start of the current chunk */
     protected int sessionStart = 0;
 
     public FillingNIOParser(SeekableByteChannel channel) {
@@ -32,17 +33,30 @@ public abstract class FillingNIOParser extends NIOSessionParser {
      * @return ref to the incoming block now filled or a new one if incoming was null or size was changed
      * @throws ParserEOFException when there is no more data
      */
-    protected byte[] nextChunkOrDie(byte[] data) throws ParserEOFException {
-        chunkStart += sessionStart;
-        byte[] b = loadNextRegion(data);
-
-        if (b == null) {
-            setFullyParsed(true);
-            throw new ParserEOFException("Sessions completed");
+    protected byte[] nextChunkOrDie(byte[] data) throws ParserException {
+        if (writeOffset == 0) {
+            // processing a new session, advance the chunkStart and reset sessionStart
+            chunkStart += sessionStart;
+            sessionStart = 0;
         }
 
-        logger.debug("Got new data at " + chunkStart + " length " + b.length);
-        sessionStart = 0;
-        return b;
+        try {
+            byte[] b = loadNextRegion(data);
+            logger.debug("Got new data at {} length {}", chunkStart, b.length);
+            return b;
+
+        } catch (ParserEOFException eof) {
+            if (writeOffset - sessionStart > 1) {
+                // there's data left in the buffer that's more than a newline, meaning
+                // there's data we were unable to parse, but there was no additional
+                // data to read - so the session is truncated
+                throw new ParserException("Unexpectedly malformed data at " + chunkStart);
+            }
+            else {
+                // end of file and the last session was complete.
+                setFullyParsed(true);
+                throw eof;
+            }
+        }
     }
 }
