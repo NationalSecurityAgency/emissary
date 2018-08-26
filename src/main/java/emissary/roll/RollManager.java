@@ -102,19 +102,28 @@ public class RollManager implements Observer {
         }
     }
 
+    /**
+     * Synchronized on RM to prevent multiple returns on RollManager
+     */
     public static RollManager getManager() {
         if (RM == null) {
-            RM = new RollManager();
+            synchronized (RollManager.class) {
+                RM = new RollManager();
+            }
         }
         return RM;
     }
 
     /**
+     * Synchronized on RM to prevent multiple returns on RollManager
+     *
      * Used to create custom RollManager based on configs.
      */
     public static RollManager getManager(Configurator configG) {
         if (RM == null) {
-            RM = new RollManager(configG);
+            synchronized (RollManager.class) {
+                RM = new RollManager(configG);
+            }
         }
         return RM;
     }
