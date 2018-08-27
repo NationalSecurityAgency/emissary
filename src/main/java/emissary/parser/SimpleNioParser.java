@@ -150,8 +150,7 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Slice data from a buffer based on a single position record
-     * 
-     * @param channel the data to pull from
+     *
      * @param r the position record indicating absolute offsets
      */
     byte[] makeDataSlice(PositionRecord r) throws IOException {
@@ -163,7 +162,12 @@ public class SimpleNioParser extends NIOSessionParser {
 
         try {
             channel.position(r.getPosition());
-            readFully(n);
+            while (n.hasRemaining()) {
+                if (channel.read(n) == -1) {
+                    channel.close();
+                    break;
+                }
+            }
         } catch (BufferUnderflowException ex) {
             logger.warn("Underflow getting {} bytes at {}", n.capacity(), r.getPosition());
         }
@@ -172,9 +176,8 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Slice data from a buffer based on a single position record
-     * 
-     * @param channel the data to pull from
-     * @param r the position record indicating absolute offsets
+     *
+     * @param records the list of position records indicating absolute offsets
      */
     byte[] makeDataSlice(List<PositionRecord> records) throws IOException {
         if (records == null || records.isEmpty()) {
@@ -198,7 +201,12 @@ public class SimpleNioParser extends NIOSessionParser {
             channel.position(r.getPosition());
             limit += (int) r.getLength();
             n.limit(limit);
-            readFully(n);
+            while (n.hasRemaining()) {
+                if (channel.read(n) == -1) {
+                    channel.close();
+                    break;
+                }
+            }
         }
 
         return n.array();

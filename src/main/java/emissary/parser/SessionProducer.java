@@ -132,7 +132,7 @@ public class SessionProducer {
      * @param defaultSessionName name to use if we have nothing better
      * @return the IBaseDataObject implementation from the Factory
      */
-    public IBaseDataObject getNextSession(String defaultSessionName) throws ParserEOFException, ParserException {
+    public IBaseDataObject getNextSession(String defaultSessionName) throws ParserException {
         DecomposedSession d = sp.getNextSession();
         return createAndLoadDataObject(d, defaultSessionName);
     }

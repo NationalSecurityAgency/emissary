@@ -44,5 +44,5 @@ public abstract class SessionParser {
      * 
      * @return the next session from the input
      */
-    public abstract DecomposedSession getNextSession() throws ParserException, ParserEOFException;
+    public abstract DecomposedSession getNextSession() throws ParserException;
 }
