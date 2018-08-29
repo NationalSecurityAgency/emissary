@@ -314,7 +314,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         for (int i = 0; i < tData.currentFormSize(); i++) {
             final String cf = tData.currentFormAt(i);
             if (this.elideContentForms.contains(cf)) {
-                tData.setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes());
+                tData.getDataContainer().setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes());
             }
         }
 

@@ -116,7 +116,7 @@ public class JsonEscape {
                     // process unicode escape
                     try {
                         String s = new String(getBytes(b, off, i + 2, 4), StandardCharsets.UTF_8);
-                        char[] c = HtmlEscape.unescapeHtmlChar(s, true);// "X".toCharArray();//
+                        char[] c = "X".toCharArray();//HtmlEscape.unescapeHtmlChar(s, true);//
                         if (c != null && c.length > 0) {
                             tempOut.write(new String(c).getBytes(StandardCharsets.UTF_8));
                             logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");

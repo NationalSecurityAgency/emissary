@@ -10,7 +10,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-public class JsonEscapeTest {
+import emissary.test.core.UnitTest;
+
+public class JsonEscapeTest extends UnitTest {
     @Test
     public void testEscapedAngleBracketChars() {
         String input = "\\u003cThis is ツ \\U200E a Test\\u003e";
