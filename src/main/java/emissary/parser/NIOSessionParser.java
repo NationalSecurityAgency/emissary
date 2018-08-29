@@ -95,16 +95,6 @@ public abstract class NIOSessionParser extends SessionParser {
             throw new ParserEOFException("Channel is closed, likely completely consumed");
         }
 
-        // Position ourselves in the input stream at the beginning of the next session when starting a new chunk.
-        if (writeOffset == 0) {
-            // Position before checking remaining
-            try {
-                channel.position(chunkStart);
-            } catch (IOException ioe) {
-                throw new ParserException("Exception positioning channel to " + chunkStart, ioe);
-            }
-        }
-
         // Optionally create the array or recreate if old is too small
         if (data == null) {
             logger.debug("allocating new byte[] of size {}", minChunkSize);

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
 /**
@@ -34,10 +35,20 @@ public abstract class FillingNIOParser extends NIOSessionParser {
      * @throws ParserEOFException when there is no more data
      */
     protected byte[] nextChunkOrDie(byte[] data) throws ParserException {
-        if (writeOffset == 0) {
-            // processing a new session, advance the chunkStart and reset sessionStart
+        if (sessionStart > 0) {
+            // the sessionStart is somewhere other than the beginning of the buffer and
+            // we've discovered that we need to load more data. Compact the buffer so that
+            // the sessionStart is at the beginning of the buffer. chunkStart is incremented
+            // by sessionStart, the write offset is updated.
+            final ByteBuffer b = ByteBuffer.wrap(data);
+            b.position(sessionStart);
+            b.limit(writeOffset);
+            b.compact(); // does not re-allocate the byte array, only manipulates the current buffer.
+
             chunkStart += sessionStart;
             sessionStart = 0;
+            writeOffset = b.position();
+            logger.debug("Compacted buffer: sessionStart/chunkStart/writeOffset = {}/{}/{}", sessionStart, chunkStart, writeOffset);
         }
 
         try {
