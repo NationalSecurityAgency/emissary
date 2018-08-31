@@ -27,40 +27,48 @@ public class RollManager implements Observer {
 
     final HashSet<Roller> rollers = new HashSet<>();
     // SINGLETON
-    private static final RollManager RM = new RollManager();
+    private static RollManager RM;
 
     protected RollManager() {
         init();
+    }
 
+    protected RollManager(Configurator configG) {
+        init(configG);
     }
 
     /**
      * Load the configurator
      */
     protected void init() {
-        ArrayList<Roller> cfgRollers = new ArrayList<>();
         try {
             Configurator configG = ConfigUtil.getConfigInfo(this.getClass());
-            executorThreadCount = configG.findIntEntry(CFG_ROLL_MANAGER_THREADS, executorThreadCount);
-            for (String roller : configG.findEntries("ROLLABLE")) {
-                try {
-                    Map<String, String> map = configG.findStringMatchMap(roller + "_");
-                    cfgRollers.add(RollUtil.buildRoller(map));
-                } catch (Exception e) {
-                    log.warn("Unable to configure Rollable for: " + roller);
-                }
-            }
+            init(configG);
         } catch (IOException ex) {
             if (ex.getMessage().startsWith("No config stream available")) {
                 log.info("No Rollables configured in the default configuration");
             } else {
                 log.warn("Unable to configure RollManager from Configurator.", ex);
             }
-        } finally {
-            exec = new RollScheduledExecutor(executorThreadCount, new RMThreadFactory());
-            for (Roller r : cfgRollers) {
-                addRoller(r);
+            System.exit(1);
+        }
+    }
+
+    protected void init(Configurator configG) {
+        ArrayList<Roller> cfgRollers = new ArrayList<>();
+        executorThreadCount = configG.findIntEntry(CFG_ROLL_MANAGER_THREADS, executorThreadCount);
+        for (String roller : configG.findEntries("ROLLABLE")) {
+            try {
+                Map<String, String> map = configG.findStringMatchMap(roller + "_");
+                cfgRollers.add(RollUtil.buildRoller(map));
+            } catch (Exception e) {
+                log.warn("Unable to configure Rollable for: " + roller);
             }
+        }
+
+        exec = new RollScheduledExecutor(executorThreadCount, new RMThreadFactory());
+        for (Roller r : cfgRollers) {
+            addRoller(r);
         }
     }
 
@@ -94,7 +102,25 @@ public class RollManager implements Observer {
         }
     }
 
-    public static RollManager getManager() {
+    /**
+     * Synchronized on RM to prevent multiple returns on RollManager
+     */
+    public static synchronized RollManager getManager() {
+        if (RM == null) {
+            RM = new RollManager();
+        }
+        return RM;
+    }
+
+    /**
+     * Synchronized on RM to prevent multiple returns on RollManager
+     *
+     * Used to create custom RollManager based on configs.
+     */
+    public static synchronized RollManager getManager(Configurator configG) {
+        if (RM == null) {
+            RM = new RollManager(configG);
+        }
         return RM;
     }
 
