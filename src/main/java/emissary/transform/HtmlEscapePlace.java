@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
+import java.util.Optional;
 
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
@@ -74,7 +75,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         long len = d.getDataContainer().length();
         try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
                 OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
-            HtmlEscape.unescape(oldData, newData, true, true, counters);
+            HtmlEscape.unescape(oldData, newData, true, true, Optional.of(counters));
             d.setCurrentForm(outputForm);
         } catch (IOException e) {
             logger.warn("error doing HtmlEscape, unable to decode", e);

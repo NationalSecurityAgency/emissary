@@ -164,10 +164,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in
-     * array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array and name passed in.
      *
-     * @param newData the bytes to hold
      * @param name the name of the data item
      */
     public BaseDataObject(final String name) {
@@ -176,10 +174,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed
-     * in array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with name, and initial form
      *
-     * @param newData the bytes to hold
      * @param name the name of the data item
      * @param form the initial form of the data
      */
@@ -205,7 +201,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in
+     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation may use the passed in
      * array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
@@ -220,7 +216,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed
+     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation may use the passed
      * in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold

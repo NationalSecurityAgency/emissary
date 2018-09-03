@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,9 +37,21 @@ public class HtmlEscape {
      */
     private final static Pattern HESC_PATTERN = Pattern.compile("&#([xX]?)(\\p{XDigit}{2,5});");
 
-
+    /**
+     * Unescape some HTML data, turning <code>&#xxxx;</code> or <code>&amp;eacute;</code> into UNICODE characters Because this operation inserts java
+     * Character objects into the byte array, it probably only makes sense to send in data that already matches the
+     * platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple
+     * character sets that cannot possibly be understood or displayed properly.
+     *
+     * @param data The source of the data. The data will be consumed from the current position until the end of the stream.
+     * @param out Where to write the transformed bytes to.
+     * @param entities Whether to change named entities such as <code>&amp;eacute;</code>.
+     * @param numeric Whether to change numeric escapes such as <code>&#xxxx;</code>.
+     * @param counters An object that may be mutated to record metrics.
+     * @throws IOException If there is a problem consuming or writing the streams.
+     */
     @SuppressWarnings("resource")
-    public static void unescape(InputStream data, OutputStream out, boolean entities, boolean numeric, CharacterCounterSet counters)
+    public static void unescape(InputStream data, OutputStream out, boolean entities, boolean numeric, Optional<CharacterCounterSet> counters)
             throws IOException {
         IOUtils.copyLarge(new UnEscapeInputStream(data, entities, numeric, counters), out);
     }
@@ -60,7 +73,7 @@ public class HtmlEscape {
      * character sets that cannot possibly be understood or displayed properly.
      *
      * @param data the array of bytes containing HTML escaped characters
-     * @param counters to measure what is changed
+     * @param counters to measure what is changed. May be null.
      * @return modified byte array
      */
     public static byte[] unescapeHtml(byte[] data, CharacterCounterSet counters) {
@@ -69,7 +82,7 @@ public class HtmlEscape {
         }
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
                 ByteArrayInputStream in = new ByteArrayInputStream(data)) {
-            unescape(in, baos, false, true, counters);
+            unescape(in, baos, false, true, Optional.ofNullable(counters));
             return baos.toByteArray();
         } catch (IOException e) {
             return null;
@@ -269,7 +282,7 @@ public class HtmlEscape {
         logger.debug("Doing html entity normalization on bytes length " + data.length);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(data.length);
                 ByteArrayInputStream in = new ByteArrayInputStream(data)) {
-            unescape(in, baos, true, false, counters);
+            unescape(in, baos, true, false, Optional.ofNullable(counters));
             return baos.toByteArray();
         } catch (IOException e) {
             return null;
@@ -317,9 +330,9 @@ public class HtmlEscape {
         boolean everFinished = false;
         private boolean entities;
         private boolean numeric;
-        private CharacterCounterSet counters;
+        private Optional<CharacterCounterSet> counters;
 
-        public UnEscapeInputStream(InputStream in, boolean entities, boolean numeric, CharacterCounterSet counters) {
+        public UnEscapeInputStream(InputStream in, boolean entities, boolean numeric, Optional<CharacterCounterSet> counters) {
             super(in);
             this.entities = entities;
             this.numeric = numeric;
@@ -412,8 +425,8 @@ public class HtmlEscape {
                             // write a codepoint
                             String s2 = new String(c);
                             tempOut.write(s2.getBytes(StandardCharsets.UTF_8));
-                            if (counters != null) {
-                                counters.count(s);
+                            if (counters.isPresent()) {
+                                counters.get().count(s);
                             }
                             i += count;
                         }
@@ -453,8 +466,8 @@ public class HtmlEscape {
                     if (val != null) {
                         try {
                             tempOut.write(val.getBytes());
-                            if (counters != null) {
-                                counters.count(val);
+                            if (counters.isPresent()) {
+                                counters.get().count(val);
                             }
                             i += count;
                             // if we used the space as a terminator, keep the

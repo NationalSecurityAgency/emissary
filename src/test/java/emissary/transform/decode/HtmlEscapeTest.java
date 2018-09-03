@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -255,7 +256,7 @@ public class HtmlEscapeTest extends UnitTest {
         HtmlEscape.unescapeEntities("a&nbsp;b&#160;".getBytes(), c);
         assertEquals("Counted nbsp as whitespace", 2, c.getWhitespaceCount());
         c = new CharacterCounterSet();
-        unescapeEntitiesByteWise("a&nbsp;b&#160;".getBytes(), c);
+        unescapeEntitiesByteWise("a&nbsp;b&#160;".getBytes(), Optional.of(c));
         assertEquals("Counted nbsp as whitespace", 2, c.getWhitespaceCount());
     }
 
@@ -274,7 +275,7 @@ public class HtmlEscapeTest extends UnitTest {
         HtmlEscape.unescapeEntities(s.getBytes(), c);
         assertEquals("Counted eacute as letter", 1, c.getLetterCount());
         c = new CharacterCounterSet();
-        unescapeEntitiesByteWise(s.getBytes(), c);
+        unescapeEntitiesByteWise(s.getBytes(), Optional.of(c));
         assertEquals("Counted eacute as letter", 1, c.getLetterCount());
     }
 
@@ -297,12 +298,12 @@ public class HtmlEscapeTest extends UnitTest {
     @Test
     public void testTwoDigitNumericHexByteArray() throws Exception {
         assertEquals("Short numeric encoded hex byte array", ",", new String(HtmlEscape.unescapeHtml("&#x2c;".getBytes())));
-        assertEquals("Short numeric encoded hex byte array", ",", new String(unescapeHtmlByteWise("&#x2c;".getBytes(), null)));
+        assertEquals("Short numeric encoded hex byte array", ",", new String(unescapeHtmlByteWise("&#x2c;".getBytes(), Optional.empty())));
     }
 
     // TODO: add tests for dual decode (Html and Entities at the same time)
 
-    private static byte[] unescapeEntitiesByteWise(byte[] bytes, CharacterCounterSet counters) throws IOException {
+    private static byte[] unescapeEntitiesByteWise(byte[] bytes, Optional<CharacterCounterSet> counters) throws IOException {
         try (InputStream in = new HtmlEscape.UnEscapeInputStream(new ByteArrayInputStream(bytes), true, false, counters);
                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             int read = in.read();
@@ -314,7 +315,7 @@ public class HtmlEscapeTest extends UnitTest {
         }
     }
 
-    private static byte[] unescapeHtmlByteWise(byte[] bytes, CharacterCounterSet counters) throws IOException {
+    private static byte[] unescapeHtmlByteWise(byte[] bytes, Optional<CharacterCounterSet> counters) throws IOException {
         try (InputStream in = new HtmlEscape.UnEscapeInputStream(new ByteArrayInputStream(bytes), false, true, counters);
                 ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             int read = in.read();

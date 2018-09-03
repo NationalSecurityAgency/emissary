@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -284,8 +285,8 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
     protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
         // Send it away, blocks until an agent is ready
         IBaseDataObject dataObject =
-                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(), fixedName,
-                        "OVERSIZE"});
+                DataObjectFactory.get(fixedName, "OVERSIZE");
+        dataObject.getDataContainer().setData(("The file is oversize at " + theFile.length() + " bytes").getBytes(StandardCharsets.UTF_8));
         dataObject.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(dataObject, theFile);
         logger.info("**Deploying an agent for oversized {} and object {} simple={}", fixedName, dataObject.getInternalId(),
@@ -516,7 +517,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
     /**
      * Build a data object and handle the data bytes
      *
-     * @param theContent the data bytes
      * @param fixedName good short name for the data
      * @param theFile where it came from
      * @param simpleMode simple flag from the input

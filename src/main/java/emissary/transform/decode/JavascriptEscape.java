@@ -35,6 +35,10 @@ public class JavascriptEscape {
         }
     }
 
+    /**
+     * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u"
+     * and only four digits work. Javascript also has normal unix escapes like \n and \r.
+     */
     @SuppressWarnings("resource")
     public static void unescape(InputStream data, OutputStream out) throws IOException {
         IOUtils.copyLarge(new UnEscapeInputStream(data), out);

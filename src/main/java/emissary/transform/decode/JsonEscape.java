@@ -34,6 +34,10 @@ public class JsonEscape {
         }
     }
 
+    /**
+     * Unescape a bunch of JSON bytes that might have \\uxxxx character values. Should already be UTF-8 since JSON is
+     * specified as UTF-8 by RFC 4627
+     */
     @SuppressWarnings("resource")
     public static void unescape(InputStream data, OutputStream out) throws IOException {
         IOUtils.copyLarge(new UnEscapeInputStream(data), out);

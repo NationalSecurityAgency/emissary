@@ -162,7 +162,7 @@ public final class MagicNumberUtil {
      * Input a byte array sample and it will be compared against the global magic number list. Descriptions for matching
      * entries inclusive of continuations.
      *
-     * @param bytes a byte[]
+     * @param bytes a channel of the source data. Current position will be maintained.
      * @return {@link String} representing matching description plus matching continuation descriptions or null.
      * @throws IOException
      * @throws RuntimeException If the magic file has not been loaded globally using the load methods.
@@ -235,7 +235,7 @@ public final class MagicNumberUtil {
      * Useful for debugging or if certain files can be narrowed down to a smaller magic file list improving id
      * performance.
      *
-     * @param sample a byte[] containing the data to be id'd
+     * @param sample a channel of the source data to be id'd. Current position will be maintained.
      * @param magicConfig the magic file containing the magic number entries to use
      * @return {@link String} representing the id description or null
      * @throws IOException If an IO error occurs while reading either file.
