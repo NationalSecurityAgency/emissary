@@ -113,7 +113,7 @@ public class SelectingDataContainerTest {
     @Test(expected = DataException.class)
     public void testMaximumArraySizeExceeded() throws Exception {
         SelectingDataContainer sdc = new SelectingDataContainer();
-        sdc.setData(new byte[300001]);
+        sdc.setData(new byte[750001]);
         sdc.data();
     }
 }

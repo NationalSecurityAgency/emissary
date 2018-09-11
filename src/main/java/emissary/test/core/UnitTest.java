@@ -1,17 +1,17 @@
 package emissary.test.core;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.command.ServerCommand;
-import emissary.config.ConfigUtil;
-import emissary.core.EmissaryException;
-import emissary.util.io.ResourceReader;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -21,8 +21,10 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import emissary.command.ServerCommand;
+import emissary.config.ConfigUtil;
+import emissary.core.EmissaryException;
+import emissary.util.io.ResourceReader;
 
 /**
  * Base class of all the unit tests
@@ -54,6 +56,7 @@ public class UnitTest {
             this.retryCount = retryCount;
         }
 
+        @Override
         public Statement apply(Statement base, Description description) {
             return statement(base, description);
         }
@@ -127,9 +130,9 @@ public class UnitTest {
      * Configure the test stuff
      * <p>
      * Beware though, if you use @BeforeClass this will not have had a change to run. So you can do something like
-     * 
+     *
      * new UnitTest().setupSystemProperties();
-     * 
+     *
      * in the @BeforeClass. See FlexibleDateTimeParserTest for an example
      */
     protected void configure() {
@@ -178,6 +181,9 @@ public class UnitTest {
         for (String r : rs) {
             String[] s = {r};
             al.add(s);
+        }
+        if (al.isEmpty()) {
+            Assert.fail("Could not load test parameters.");
         }
         return al;
     }
@@ -229,7 +235,7 @@ public class UnitTest {
 
     /**
      * Restore config dir and pkg to original values
-     * 
+     *
      * @throws EmissaryException
      */
     protected void restoreConfig() throws EmissaryException {

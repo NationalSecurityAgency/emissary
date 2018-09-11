@@ -1,19 +1,21 @@
 package emissary.util.io;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class reads a resource with utilities to read those with common names
@@ -36,7 +38,7 @@ public class ResourceReader {
 
     /**
      * Return the config stream for the class config file Caller must close the stream
-     * 
+     *
      * @param o the object whose class name matches the resource
      */
     public InputStream getConfigDataAsStream(Object o) {
@@ -45,7 +47,7 @@ public class ResourceReader {
 
     /**
      * Return the config stream for the class config file Caller must close the stream
-     * 
+     *
      * @param c the class name matching the desired resource
      */
     public InputStream getConfigDataAsStream(Class<?> c) {
@@ -62,7 +64,7 @@ public class ResourceReader {
 
     /**
      * Return the stream for the class xml resource file Caller must close the stream
-     * 
+     *
      * @param o the object whose class name matches the resource
      */
     public InputStream getXmlStream(Object o) {
@@ -71,7 +73,7 @@ public class ResourceReader {
 
     /**
      * Return the xml stream for the class resource Caller must close the stream
-     * 
+     *
      * @param c the class name matching the desired resource
      */
     public InputStream getXmlStream(Class<?> c) {
@@ -109,7 +111,7 @@ public class ResourceReader {
 
     /**
      * Get the url of the specified resource
-     * 
+     *
      * @param name name of the resource
      * @return a url to the resource
      */
@@ -123,7 +125,7 @@ public class ResourceReader {
 
     /**
      * Get the specified resource
-     * 
+     *
      * @param name name of resource
      * @return stream, caller must close
      */
@@ -137,7 +139,7 @@ public class ResourceReader {
 
     /**
      * Indicate the URL that the specified class was loaded from
-     * 
+     *
      * @param c the class
      * @return a URL indicating the jar file or file location or null if none
      */
@@ -155,7 +157,7 @@ public class ResourceReader {
 
     /**
      * Find all the config resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -165,7 +167,7 @@ public class ResourceReader {
 
     /**
      * Find all the data resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -175,7 +177,7 @@ public class ResourceReader {
 
     /**
      * Find all the xml resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -185,7 +187,7 @@ public class ResourceReader {
 
     /**
      * Find all the properties resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -195,7 +197,7 @@ public class ResourceReader {
 
     /**
      * Find all the resources present for the specified class that use the indicated suffix.
-     * 
+     *
      * @param c the class
      * @param suffix the resource suffix to hunt for, use "" for all
      * @return sorted list of resources found or an empty list if none
@@ -221,7 +223,7 @@ public class ResourceReader {
      * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For
      * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
      * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     * 
+     *
      * @param c the class
      * @param url the jar url
      * @param suffix the ending suffix of desired resources
@@ -252,7 +254,7 @@ public class ResourceReader {
      * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For
      * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
      * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     * 
+     *
      * @param c the class
      * @param url the file url
      * @param suffix the ending suffix of desired resources
@@ -264,6 +266,12 @@ public class ResourceReader {
 
         // The url may or may not have the class portion on it
         String path = url.getPath();
+        try {
+            // Spaces in file path get need switching back from %20
+            path = URLDecoder.decode(path, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            // Not possible
+        }
         if (path.indexOf(CLASS_SUFFIX) > -1) {
             // Take off the ".class"
             path = path.substring(0, path.length() - CLASS_SUFFIX.length());
