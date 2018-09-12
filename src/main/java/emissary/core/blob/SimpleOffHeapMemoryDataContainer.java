@@ -41,11 +41,11 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
      * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector}
      * 's reference to the pointer is always correct.
      */
-    private transient final AtomicLong memoryHandle = new AtomicLong(0L);
+    private transient AtomicLong memoryHandle = new AtomicLong(0L);
     /**
      * The amount of memory actually allocated. May be larger that the current data size;
      */
-    private transient final AtomicLong allocatedBytes = new AtomicLong(0L);
+    private transient AtomicLong allocatedBytes = new AtomicLong(0L);
     /**
      * The number of bytes actually used.
      */
@@ -107,7 +107,9 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     @Override
     public SimpleOffHeapMemoryDataContainer clone() throws CloneNotSupportedException {
         SimpleOffHeapMemoryDataContainer clone = (SimpleOffHeapMemoryDataContainer) super.clone();
-        clone.memoryHandle.set(0L);
+        clone.memoryHandle = new AtomicLong(0L);
+        clone.allocatedBytes = new AtomicLong(0L);
+        clone.length = 0;
         try (InputStream in = Channels.newInputStream(channel());
                 OutputStream out = Channels.newOutputStream(clone.newChannel(length()))) {
             IOUtils.copyLarge(in, out);
