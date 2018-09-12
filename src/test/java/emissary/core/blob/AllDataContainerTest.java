@@ -375,7 +375,7 @@ public class AllDataContainerTest {
             final IDataContainer clone = cont.clone();
 
             try (SeekableByteChannel channel = cont.channel()) {
-                channel.position(channel.size());
+                channel.position(cont.length());
                 channel.write(ByteBuffer.wrap(" with append".getBytes(UTF_8)));
             }
 
