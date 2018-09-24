@@ -130,10 +130,7 @@ public class ContainerMonitor {
             if (origHash != other.origHash) {
                 return false;
             }
-            if (registeredTime != other.registeredTime) {
-                return false;
-            }
-            return true;
+            return registeredTime == other.registeredTime;
         }
 
         @Override
