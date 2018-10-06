@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -25,8 +27,9 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     private static final String APPLICATION = "application";
     private static final String IMAGE = "image";
     private static final String DASH = "-";
+
     protected Map<String, Integer> minSizeMap = new HashMap<>();
-    protected String tikaSignaturePath = "";
+    protected List<String> tikaSignaturePaths = new ArrayList<>();
 
     protected MimeTypes mimeTypes;
 
@@ -40,7 +43,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * The static standalone (test) constructor. The cfgInfo argument is an absolute path to some configuration file.
-     * 
+     *
      * @param cfgInfo absolute path to a configuration file
      */
     public TikaFilePlace(String cfgInfo) throws IOException {
@@ -61,20 +64,14 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     protected void configurePlace() throws IOException {
 
         configureIdPlace(); // pick up ID_IGNORE types
-        tikaSignaturePath = configG.findStringEntry("TIKA_SIGNATURE_FILE", DEFAULT_TIKA_SIGNATURE_FILE);
-
-        File mfile = new File(tikaSignaturePath);
-        if (!mfile.exists() || !mfile.canRead()) {
-            throw new IOException("Missing or unreadable TIKA_SIGNATURE_FILE " + tikaSignaturePath);
-        }
-        logger.debug("Tika Signature File:  " + tikaSignaturePath);
+        tikaSignaturePaths = configG.findEntries("TIKA_SIGNATURE_FILE", DEFAULT_TIKA_SIGNATURE_FILE);
 
         try {
-            InputStream in = new FileInputStream(tikaSignaturePath);
-            mimeTypes = MimeTypesFactory.create(in);
+            InputStream[] tikaSignatures = getTikaSignatures();
+            mimeTypes = MimeTypesFactory.create(tikaSignatures);
         } catch (MimeTypeException e) {
-            logger.error("Error loading tika configuration: " + tikaSignaturePath, e);
-            throw new IOException("Error loading tika configuration" + tikaSignaturePath);
+            logger.error("Error loading tika configuration: " + tikaSignaturePaths.toString(), e);
+            throw new IOException("Error loading tika configuration" + tikaSignaturePaths.toString());
         }
 
         for (Map.Entry<String, String> entry : configG.findStringMatchMap("MIN_SIZE_").entrySet()) {
@@ -87,8 +84,30 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     }
 
     /**
+     * Iterates over multiple configured signature paths, and returns an array of input streams of the configured paths
+     *
+     * @return InputStream array
+     * @throws IOException if configured files does not exists
+     */
+    private InputStream[] getTikaSignatures() throws IOException {
+        List<InputStream> tikaSignatures = new ArrayList<>();
+
+        for (String tikaSignaturePath : tikaSignaturePaths) {
+            File mfile = new File(tikaSignaturePath);
+            if (!mfile.exists() || !mfile.canRead()) {
+                throw new IOException("Missing or unreadable TIKA_SIGNATURE_FILE " + tikaSignaturePath);
+            }
+
+            logger.debug("Tika Signature File:  " + tikaSignaturePath);
+            tikaSignatures.add(new FileInputStream(tikaSignaturePath));
+        }
+
+        return tikaSignatures.toArray(new InputStream[0]);
+    }
+
+    /**
      * Use the Tika mime type (magic) detector to identify the file type
-     * 
+     *
      * @param d the IBaseDataObject payload to evaluate
      * @return mediaType
      */
@@ -102,7 +121,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * Consume a DataObject, and return a transformed one.
-     * 
+     *
      * @param d the IBaseDataObject payload to evaluate
      */
     @Override
@@ -148,7 +167,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     /**
      * Main to run standalone test of the place
-     * 
+     *
      * @param args The file to test
      */
     public static void main(String[] args) {
