@@ -114,6 +114,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     private MediaType detectType(IBaseDataObject d) throws Exception {
         Metadata metadata = new Metadata();
         InputStream input = TikaInputStream.get(d.data(), metadata);
+        metadata.set(Metadata.RESOURCE_NAME_KEY, d.getFilename());
         MediaType mediaType = mimeTypes.detect(input, metadata);
         logger.debug("Tika type: " + mediaType.toString());
         return mediaType;
