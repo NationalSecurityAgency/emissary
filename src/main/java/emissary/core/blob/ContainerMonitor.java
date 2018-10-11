@@ -79,7 +79,7 @@ public class ContainerMonitor {
                         log.info("Current Containers: {}", metrics);
                         Thread.sleep(10000);
                     } catch (Exception e) {
-                        log.error("Problem with container moniotoring.", e);
+                        log.error("Problem with container monitoring.", e);
                     }
                 }
             }
