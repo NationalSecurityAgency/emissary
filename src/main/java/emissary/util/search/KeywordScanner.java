@@ -19,6 +19,19 @@ public class KeywordScanner {
      * @param data the data to be scanned
      */
     public KeywordScanner(final byte[] data) {
+        resetData(data);
+    }
+
+    public void resetData(String data) {
+        resetData(data.getBytes());
+    }
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new KeywordScanner.
+     * 
+     * @param data - bytes to match against
+     */
+    public void resetData(byte[] data) {
         this.data = data;
         if (data != null) {
             this.dataLength = data.length;

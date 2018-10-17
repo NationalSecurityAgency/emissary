@@ -19,6 +19,14 @@ public class KeywordScannerTest extends UnitTest {
     }
 
     @Test
+    public void testResetKeywordScanner() {
+        assertEquals(0, this.ks.indexOf("THI".getBytes()));
+        String otherData = "No, THIS is a test of the Emergency broadcasting system.";
+        this.ks.resetData(otherData);
+        assertEquals(4, this.ks.indexOf("THI".getBytes()));
+    }
+
+    @Test
     public void testConstructor() {
         assertEquals(0, this.ks.indexOf("THI".getBytes()));
         this.ks = new KeywordScanner(null);

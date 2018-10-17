@@ -13,14 +13,30 @@ public class ByteMatcher {
     public static final int NOTFOUND = -1;
 
 
-    public ByteMatcher(byte[] data) {
-        mydata = data;
-        scanner = new KeywordScanner(mydata);
+    public ByteMatcher(String data) {
+        this(data.getBytes());
     }
 
-    public ByteMatcher(String data) {
-        mydata = data.getBytes();
-        scanner = new KeywordScanner(mydata);
+    public ByteMatcher(byte[] data) {
+        resetData(data);
+    }
+
+    public void resetData(String data) {
+        resetData(data.getBytes());
+    }
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new ByteMatcher.
+     * 
+     * @param data - bytes to match against
+     */
+    public void resetData(byte[] data) {
+        this.mydata = data;
+        if (null == this.scanner) {
+            this.scanner = new KeywordScanner(data);
+        } else {
+            this.scanner.resetData(data);
+        }
     }
 
     /**

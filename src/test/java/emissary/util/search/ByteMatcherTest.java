@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +28,24 @@ public class ByteMatcherTest extends UnitTest {
     public void tearDown() throws Exception {
         super.tearDown();
         this.b = null;
+    }
+
+    @Test
+    public void testResetByteMatcher() {
+        String localDataOne = "The quick brown fox jumped over the lazy dog";
+        String localDataTwo = "But the faster dog ate the slower fox.";
+        String firstToken = "fox";
+        String secondToken = "dog";
+        ByteMatcher byteMatcher = new ByteMatcher(localDataOne);
+
+        Assert.assertEquals(16, byteMatcher.indexOf(firstToken));
+        Assert.assertEquals(41, byteMatcher.indexOf(secondToken));
+
+        // Reuse the same ByteMatcher
+        byteMatcher.resetData(localDataTwo);
+
+        Assert.assertEquals(34, byteMatcher.indexOf(firstToken));
+        Assert.assertEquals(15, byteMatcher.indexOf(secondToken));
     }
 
     @Test
