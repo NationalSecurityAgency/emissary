@@ -1,5 +1,6 @@
 package emissary.util.search;
 
+import java.nio.charset.Charset;
 
 /**
  * This class provides some simple string matching functions on byte arrays
@@ -22,7 +23,15 @@ public class ByteMatcher {
     }
 
     public void resetData(String data) {
-        resetData(data.getBytes());
+        resetData(data, Charset.defaultCharset());
+    }
+
+    public void resetData(String data, String charsetName) {
+        resetData(data, Charset.forName(charsetName));
+    }
+
+    public void resetData(String data, Charset charset) {
+        resetData(data.getBytes(charset));
     }
 
     /**

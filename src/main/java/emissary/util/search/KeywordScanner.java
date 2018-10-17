@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import java.nio.charset.Charset;
+
 /**
  * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.
  */
@@ -23,7 +25,15 @@ public class KeywordScanner {
     }
 
     public void resetData(String data) {
-        resetData(data.getBytes());
+        resetData(data, Charset.defaultCharset());
+    }
+
+    public void resetData(String data, String charsetName) {
+        resetData(data, Charset.forName(charsetName));
+    }
+
+    public void resetData(String data, Charset charset) {
+        resetData(data.getBytes(charset));
     }
 
     /**
