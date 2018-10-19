@@ -95,8 +95,8 @@ public interface IDirectoryPlace extends IServiceProviderPlace {
     String getRelayDirectory();
 
     /**
-     * Add an observer for one of the observable activities in the directory The runtime class of the observer
-     * determines what is being observed
+     * Add an observer for one of the observable activities in the directory The runtime class of the observer determines
+     * what is being observed
      *
      * @param observer the new DirectoryObserver to add
      */

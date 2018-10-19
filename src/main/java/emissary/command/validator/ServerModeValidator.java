@@ -1,10 +1,9 @@
 package emissary.command.validator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerModeValidator implements IParameterValidator {
 

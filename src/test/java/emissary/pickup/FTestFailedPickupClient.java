@@ -9,14 +9,13 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.FunctionalTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FTestFailedPickupClient extends FunctionalTest {
     private BreakableFilePickUpClient goodplace = null;

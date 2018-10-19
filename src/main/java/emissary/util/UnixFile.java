@@ -1,15 +1,13 @@
 package emissary.util;
 
-import emissary.util.shell.Executrix;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import emissary.util.shell.Executrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UnixFile {
 
@@ -31,8 +29,8 @@ public class UnixFile {
     public static final String FILETYPE_EMPTY = emissary.core.Form.EMPTY;
 
     /**
-     * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be
-     * thrown when attempting utilize the <code>execute</code> method.
+     * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be thrown
+     * when attempting utilize the <code>execute</code> method.
      *
      * @param magicFile the <code>File</code> containing magic number entries
      */
@@ -41,8 +39,8 @@ public class UnixFile {
     }
 
     /**
-     * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be
-     * thrown when attempting utilize the <code>execute</code> method.
+     * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be thrown
+     * when attempting utilize the <code>execute</code> method.
      *
      * @param magicFile the <code>File</code> containing magic number entries
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
@@ -88,8 +86,8 @@ public class UnixFile {
     }
 
     /**
-     * Behaves just like the UNIX file command. First performs a magic number test, then an ascii or binary file test.
-     * This is also the same as calling <code>evaluateByMagicNumber (bytes :
+     * Behaves just like the UNIX file command. First performs a magic number test, then an ascii or binary file test. This
+     * is also the same as calling <code>evaluateByMagicNumber (bytes :
      * byte[])</code> and then calling <code>evaluateBinaryProperty
      * (bytes : byte[])</code>
      */

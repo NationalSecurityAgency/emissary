@@ -1,21 +1,20 @@
 package emissary.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.util.WindowedSeekableByteChannel;
 import emissary.util.shell.Executrix;
-import java.io.ByteArrayInputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.SeekableByteChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
@@ -75,8 +74,8 @@ public class ParserFactory {
     }
 
     /**
-     * Reconfigure the factory causes the configuration to be reloaded It is not threadsafe to call this while data is
-     * being identified or parsers are being instantiated.
+     * Reconfigure the factory causes the configuration to be reloaded It is not threadsafe to call this while data is being
+     * identified or parsers are being instantiated.
      *
      * @param config the configuration to use or null for the default
      * @since 3.7.1
@@ -145,8 +144,8 @@ public class ParserFactory {
     }
 
     /**
-     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a
-     * byte[] parser will be produced if there is one available.
+     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a byte[]
+     * parser will be produced if there is one available.
      *
      * @param raf the data to be parsed
      * @return SessionParser implementation
@@ -157,9 +156,9 @@ public class ParserFactory {
     }
 
     /**
-     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a
-     * standard byte[] parser will be produced if there is one available and the size of the data in the channel is less
-     * than the configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
      *
      * @param channel the data to be parsed
      * @return SessionParser implementation
@@ -170,9 +169,9 @@ public class ParserFactory {
     }
 
     /**
-     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a
-     * standard byte[] parser will be produced if there is one available and the size of the data in the channel is less
-     * than the configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
+     * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
+     * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
      *
      * @param type the type of data
      * @param channel the data to be parsed
@@ -190,8 +189,8 @@ public class ParserFactory {
     }
 
     /**
-     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a
-     * standard byte[] parser will be produced if there is one available.
+     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a standard
+     * byte[] parser will be produced if there is one available.
      *
      * @param type the type of data
      * @param raf the data to be parsed

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
-
 /**
  * BufferedWriterOutputStream: a subclass to support writing bytes to a Writer. This implementation also buffers the
  * output to avoid multiple array allocations. Each byte is written as a seperate character (ISO8859-1 encoding per se).

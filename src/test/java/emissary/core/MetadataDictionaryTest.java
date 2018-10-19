@@ -4,11 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import emissary.test.core.UnitTest;
-import org.junit.Test;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class MetadataDictionaryTest extends UnitTest {
     private static final String TEST_NAMESPACE = "test_namespace";

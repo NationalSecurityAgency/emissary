@@ -1,12 +1,9 @@
 package emissary.server.mvc.internal;
 
-import emissary.directory.IRemoteDirectory;
-import emissary.directory.KeyManipulator;
-import emissary.log.MDCConstants;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
+import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -16,10 +13,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
-import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
-import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+import emissary.directory.IRemoteDirectory;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Path("")
 // context is /emissary, set in EmissaryServer
@@ -29,8 +29,8 @@ public class FailDirectoryAction {
     /*
      * <!-- Propagate a directory failure --> <Use-Case source="*" action="/FailDirectory.action"> <Work type="Bean"
      * target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
-     * target="emissary.comms.http.worker.DirectoryFailureWorker"/> <View status="0" view="/success.jsp"/> <View
-     * status="-1" view="/error.jsp"/> </Use-Case>
+     * target="emissary.comms.http.worker.DirectoryFailureWorker"/> <View status="0" view="/success.jsp"/> <View status="-1"
+     * view="/error.jsp"/> </Use-Case>
      */
     // Call like this
     // http://localhost:8001/emissary/FailDirectory.action?targetDir=http://localhost:8001/DirectoryPlace&dirFailName=EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:7001/DirectoryPlace&dirAddPropFlag=true

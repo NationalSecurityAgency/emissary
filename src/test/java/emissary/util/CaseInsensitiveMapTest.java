@@ -7,9 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class CaseInsensitiveMapTest extends UnitTest {
 

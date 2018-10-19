@@ -1,17 +1,16 @@
 package emissary.pool;
 
+import java.util.List;
+
 import emissary.core.EmissaryException;
 import emissary.core.IMobileAgent;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.log.MDCConstants;
 import emissary.place.IServiceProviderPlace;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import java.util.List;
 
 /**
  * Launch an incoming payload the best way possible.

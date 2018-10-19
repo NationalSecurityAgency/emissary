@@ -13,10 +13,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.config.ConfigUtil;
 import emissary.core.BaseDataObject;
 import emissary.core.EmissaryException;
@@ -25,6 +21,9 @@ import emissary.core.Namespace;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ServiceProviderPlaceTest extends UnitTest {
     private IServiceProviderPlace place = null;
@@ -50,14 +49,14 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
     private static final byte[] configKeyData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
             + "SERVICE_KEY = \"TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-            .getBytes();
+                    .getBytes();
 
     private static final byte[] configKeysData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
             + "SERVICE_KEY = \"TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n"
             + "SERVICE_KEY = \"TP2.TNAME.TRANSFORM.http://@{TGT_HOST}:@{TGT_PORT}/TP2PlaceName$6050\"\n"
             + "SERVICE_KEY = \"TP3.TNAME.ANALYZE.http://@{TGT_HOST}:@{TGT_PORT}/TP3PlaceName$7050\"\n"
             + "SERVICE_KEY = \"TP4.TNAME.IO.http://@{TGT_HOST}:@{TGT_PORT}/TP4PlaceName$8050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-            .getBytes();
+                    .getBytes();
 
     private static final byte[] configNoKeysData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n" + "SERVICE_DESCRIPTION = \"bogus\"\n")
             .getBytes();

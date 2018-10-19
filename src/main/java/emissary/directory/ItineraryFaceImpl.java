@@ -1,14 +1,13 @@
 package emissary.directory;
 
-import emissary.core.IBaseDataObject;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import emissary.core.IBaseDataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic extensible do-nothing implementation of an ItineraryFace
@@ -65,11 +64,11 @@ public class ItineraryFaceImpl implements ItineraryFace {
     }
 
     /**
-     * Try to select a more expensive place specified by key than the sde already selected and on the same machine as
-     * the specified sde, or any other one if none.
+     * Try to select a more expensive place specified by key than the sde already selected and on the same machine as the
+     * specified sde, or any other one if none.
      *
-     * Caller might use this to replace a service with a more expensive one, or to chain two services that handle the
-     * same type in some other circumstance.
+     * Caller might use this to replace a service with a more expensive one, or to chain two services that handle the same
+     * type in some other circumstance.
      *
      * @param sde the place already on the itinerary
      * @param entries the Directory entry map
@@ -144,7 +143,8 @@ public class ItineraryFaceImpl implements ItineraryFace {
      * @param entryMap map of what is registered in the directory
      */
     @Override
-    public void process(final String dataType, final IBaseDataObject payload, final List<DirectoryEntry> itinerary, final DirectoryEntryMap entryMap) {
+    public void process(final String dataType, final IBaseDataObject payload, final List<DirectoryEntry> itinerary,
+            final DirectoryEntryMap entryMap) {
         this.logger.debug("Do nothing process method called for dataType " + dataType);
     }
 }

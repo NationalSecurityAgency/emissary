@@ -57,8 +57,8 @@ public final class ClassLookupCache {
          * Get a binding between a class name and a matching object.
          *
          * <p>
-         * The reason we use a static builder method is that it can handle wildcards such as {@code <?>} more easily
-         * than when calling the constructor directly.
+         * The reason we use a static builder method is that it can handle wildcards such as {@code <?>} more easily than when
+         * calling the constructor directly.
          *
          * @param className the class name.
          * @param clazz A class object that matches {@code className}.
@@ -70,9 +70,9 @@ public final class ClassLookupCache {
     }
 
     /**
-     * A cached class object. If a thread is asked to repeatedly construct the same type of object, we can cache the
-     * class name lookup so that subsequent constructions can get to the {@link Class} object without doing a full
-     * lookup in the JVM.
+     * A cached class object. If a thread is asked to repeatedly construct the same type of object, we can cache the class
+     * name lookup so that subsequent constructions can get to the {@link Class} object without doing a full lookup in the
+     * JVM.
      */
     private static final ThreadLocal<SoftReference<NamedClass<?>>> cachedLookupResult = new ThreadLocal<SoftReference<NamedClass<?>>>();
 

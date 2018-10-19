@@ -1,11 +1,9 @@
 package emissary.server.mvc.internal;
 
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import emissary.pickup.WorkSpace;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.CLIENT_NAME;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.SPACE_NAME;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_ID;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_STATUS;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -15,11 +13,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.CLIENT_NAME;
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.SPACE_NAME;
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_ID;
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_STATUS;
-
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.pickup.WorkSpace;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Web-tier worker to call into the TreeSpace with notification that a work bundle was completed
@@ -30,10 +29,10 @@ public class WorkBundleCompletedAction {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /*
-     * <!-- Notify a WorkSpace that work was completed --> <Use-Case source="*" action="/WorkBundleCompleted.action">
-     * <Work type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
-     * target="emissary.comms.http.worker.BundleCompletedWorker"/> <View status="0" view="/success.jsp"/> <View
-     * status="-1" view="/error.jsp"/> </Use-Case>
+     * <!-- Notify a WorkSpace that work was completed --> <Use-Case source="*" action="/WorkBundleCompleted.action"> <Work
+     * type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
+     * target="emissary.comms.http.worker.BundleCompletedWorker"/> <View status="0" view="/success.jsp"/> <View status="-1"
+     * view="/error.jsp"/> </Use-Case>
      */
 
     @POST
@@ -47,7 +46,8 @@ public class WorkBundleCompletedAction {
             return Response
                     .serverError()
                     .entity("Bad params: " + CLIENT_NAME + " - " + placeName + ", " + SPACE_NAME + " - " + spaceName + ", " + WORK_BUNDLE_ID + " - "
-                            + bundleId).build();
+                            + bundleId)
+                    .build();
         }
 
         try {

@@ -1,5 +1,10 @@
 package emissary.server.mvc.internal;
 
+import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -18,11 +23,6 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-
-import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Theories.class)
 public class RegisterPeerActionTest extends EndpointTestBase {

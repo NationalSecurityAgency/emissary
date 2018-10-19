@@ -1,11 +1,11 @@
 package emissary.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it. nextChunkOrDie
@@ -62,8 +62,7 @@ public abstract class FillingNIOParser extends NIOSessionParser {
                 // there's data we were unable to parse, but there was no additional
                 // data to read - so the session is truncated
                 throw new ParserException("Unexpectedly malformed data at " + chunkStart);
-            }
-            else {
+            } else {
                 // end of file and the last session was complete.
                 setFullyParsed(true);
                 throw eof;

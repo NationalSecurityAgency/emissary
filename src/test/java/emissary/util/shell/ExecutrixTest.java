@@ -18,12 +18,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import emissary.test.core.UnitTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
-
 
 public class ExecutrixTest extends UnitTest {
     private Executrix e;

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * This implements a simple caching mechanism for {@link Constructor} lookups. For example if the same class constructor
  * is looked up repeatedly, using this cache may be able to avoid a lot of JVM reflection overhead.
@@ -44,8 +43,7 @@ public final class ConstructorLookupCache {
          *
          * @param clazz The class being constructed.
          * @param argTypes The argument types that will be passed to the constructor.
-         * @param constructor A constructor for {@code clazz} that can accept the argument types specified in
-         *        {@code argTypes}.
+         * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
          */
         public KnownConstructor(final Class<?> clazz, final Class<?>[] argTypes, final Constructor<?> constructor) {
             this.clazz = clazz;
@@ -58,9 +56,9 @@ public final class ConstructorLookupCache {
          *
          * @param desiredClazz The type of class being constructed.
          * @param desiredArgTypes The argument types that will be passed to the constructor.
-         * @return If the class and argument types match the ones that are stored, this returns the stored constructor
-         *         that is assumed to be compatible with those argument types and create an object of the given type;
-         *         otherwise {@code null}.
+         * @return If the class and argument types match the ones that are stored, this returns the stored constructor that is
+         *         assumed to be compatible with those argument types and create an object of the given type; otherwise
+         *         {@code null}.
          */
         public Constructor<?> getConstructor(final Class<?> desiredClazz, final Class<?>[] desiredArgTypes) {
             // The stored class has to match the desired class.
@@ -94,8 +92,8 @@ public final class ConstructorLookupCache {
     }
 
     /**
-     * A cached constructor lookup result. If a thread is asked to invoke the same constructor repeatedly, we can cache
-     * the result of the lookup to avoid some costly reflection calls.
+     * A cached constructor lookup result. If a thread is asked to invoke the same constructor repeatedly, we can cache the
+     * result of the lookup to avoid some costly reflection calls.
      */
     private static final ThreadLocal<SoftReference<KnownConstructor>> cachedConstructorLookup = new ThreadLocal<SoftReference<KnownConstructor>>();
 
@@ -125,13 +123,13 @@ public final class ConstructorLookupCache {
     }
 
     /**
-     * Look for a constructor for the given class type which can accept the given argument types, without using the
-     * lookup cache.
+     * Look for a constructor for the given class type which can accept the given argument types, without using the lookup
+     * cache.
      *
      * @param clazz The type of object that will be constructed.
      * @param argTypes The types of the arguments that will be passed to the class constructor.
-     * @return If {@code clazz} has a constructor that can accept the argument types in {@code argTypes}, this returns
-     *         the matching constructor; otherwise {@code null}.
+     * @return If {@code clazz} has a constructor that can accept the argument types in {@code argTypes}, this returns the
+     *         matching constructor; otherwise {@code null}.
      */
     private static Constructor<?> directConstructorLookup(final Class<?> clazz, final Class<?>[] argTypes) {
         // Look for an exact match.
@@ -230,8 +228,7 @@ public final class ConstructorLookupCache {
      *
      * @param clazz The class to be constructed.
      * @param argTypes The argument types that the caller intends to pass to the constructor.
-     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in
-     *        {@code argTypes}.
+     * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
      */
     public static void put(final Class<?> clazz, final Class<?>[] argTypes, final Constructor<?> constructor) {
         cachedConstructorLookup.set(new SoftReference<KnownConstructor>(new KnownConstructor(clazz, argTypes, constructor)));

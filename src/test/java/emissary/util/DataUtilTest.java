@@ -9,13 +9,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class DataUtilTest extends UnitTest {
 

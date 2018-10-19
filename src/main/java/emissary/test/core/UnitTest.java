@@ -1,5 +1,8 @@
 package emissary.test.core;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
 import java.util.ArrayList;
@@ -20,9 +23,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Base class of all the unit tests

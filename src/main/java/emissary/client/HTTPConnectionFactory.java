@@ -14,6 +14,9 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -28,11 +31,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.log4j.Logger;
-
-import com.google.common.annotations.VisibleForTesting;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 
 /**
  * Emissary HTTP Connection Factory. This is a singleton class that allows for the central configuration of an Apache

@@ -11,10 +11,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.methods.HttpGet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 import emissary.core.EmissaryException;
@@ -22,6 +18,9 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
+import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The version Emissary API endpoint. Currently contains the local (/api/version) call and cluster (/api/clusterVersion)

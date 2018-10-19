@@ -50,8 +50,8 @@ public class BackwardsTreeScanner {
             // A vector for holding the results.
             HitList hits = new HitList();
             /*
-             * loop through the data from beginint to end calling scan at each position. This shows how to use scan(),
-             * but in general this should be used more effediently (with a boyer more algorithm or something.
+             * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
+             * general this should be used more effediently (with a boyer more algorithm or something.
              */
             for (int pos = 1; pos < dataBytes.length; pos++) {
                 scanner.scan(dataBytes, pos, hits);
@@ -135,8 +135,8 @@ public class BackwardsTreeScanner {
         }
 
         /**
-         * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists. At
-         * the end, record the keyowrd id in the ending state.
+         * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+         * record the keyowrd id in the ending state.
          * 
          * Warning this is recursive, but thats OK for small keywords.
          */

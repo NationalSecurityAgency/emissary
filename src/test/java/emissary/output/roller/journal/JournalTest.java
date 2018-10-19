@@ -1,18 +1,18 @@
 package emissary.output.roller.journal;
 
-import emissary.test.core.UnitTest;
-import emissary.util.io.UnitTestFileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import emissary.test.core.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class JournalTest extends UnitTest {
     private Path tmpDir;

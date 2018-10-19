@@ -6,9 +6,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import emissary.util.web.HtmlEscaper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to

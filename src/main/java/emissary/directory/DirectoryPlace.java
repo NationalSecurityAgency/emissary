@@ -11,9 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.apache.http.HttpStatus;
-import org.slf4j.MDC;
-
 import emissary.client.EmissaryResponse;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -22,6 +19,8 @@ import emissary.core.Namespace;
 import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
+import org.apache.http.HttpStatus;
+import org.slf4j.MDC;
 
 /**
  * <p>
@@ -59,8 +58,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     DirectoryEntry theParent = null;
 
     /**
-     * Map of DirectoryEntryList objects by data id. This map contains the actual advertisements seen by this directory
-     * and available for MobilAgent/Place use via nextKeys
+     * Map of DirectoryEntryList objects by data id. This map contains the actual advertisements seen by this directory and
+     * available for MobilAgent/Place use via nextKeys
      */
     protected DirectoryEntryMap entryMap = new DirectoryEntryMap();
 
@@ -107,11 +106,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     protected boolean useItineraryFacet = false;
 
     /**
-     * Window of slop between asking for a zone and purging "stale" entries from the entry map. Since there is a window
-     * of time when the remote directory might be spewing out addPlace calls while we are asking for the zone transfer
-     * we can't just remove all entries once we get the zone, demarshall it and decide (finally) that it's ready to put
-     * into our map. We have to allow things somewhat recent to stay around also. This time window looks back from the
-     * beginning of the zone transfer request to provide some leniency.
+     * Window of slop between asking for a zone and purging "stale" entries from the entry map. Since there is a window of
+     * time when the remote directory might be spewing out addPlace calls while we are asking for the zone transfer we can't
+     * just remove all entries once we get the zone, demarshall it and decide (finally) that it's ready to put into our map.
+     * We have to allow things somewhat recent to stay around also. This time window looks back from the beginning of the
+     * zone transfer request to provide some leniency.
      */
     protected long zoneSlopWindowMillis = 30000; // 30 sec
 
@@ -217,8 +216,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Shared code for all the constructors to take advantage of in initializing directory services Configuration items
-     * read here are
+     * Shared code for all the constructors to take advantage of in initializing directory services Configuration items read
+     * here are
      * <ul>
      * <li>HEARTBEAT_DELAY_SECONDS, default is 30</li>
      * <li>HEARTBEAT_INTERVAL_SECONDS, default is 30</li>
@@ -301,9 +300,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Find an optional peer config stream or file and initialize tracking of the rendezvous and relay peers found
-     * there. We don't actually contact any of the remote directories here so we can get the heck out of the constructor
-     * code and get this place registered in the namespace quick! so other directories can find us in a timely fashion.
+     * Find an optional peer config stream or file and initialize tracking of the rendezvous and relay peers found there. We
+     * don't actually contact any of the remote directories here so we can get the heck out of the constructor code and get
+     * this place registered in the namespace quick! so other directories can find us in a timely fashion.
      */
     private void configureNetworkTopology() {
         if (!this.emissaryNode.isValid()) {
@@ -364,8 +363,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Used to notify parent that we are the child and do a zone tranfer Should be used when the parent is initially set
-     * and whenever the parent comes back into an online status.
+     * Used to notify parent that we are the child and do a zone tranfer Should be used when the parent is initially set and
+     * whenever the parent comes back into an online status.
      */
     protected void resetParentStatus() {
         if (this.theParent != null && !this.emissaryNode.isStandalone()) {
@@ -542,8 +541,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Retrieve and load (zone transfer) all the entries from the specified peer directory. Zone transfers do not
-     * trigger observables like addPlaces does
+     * Retrieve and load (zone transfer) all the entries from the specified peer directory. Zone transfers do not trigger
+     * observables like addPlaces does
      *
      * @param peerKey the key of the peer directory
      */
@@ -616,8 +615,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Retrieve and load (zone transfer) all the entries from the specified child directory. Notify parent, peers and
-     * other child directories if necessary. Zone transfers do not trigger observables like addPlaces does
+     * Retrieve and load (zone transfer) all the entries from the specified child directory. Notify parent, peers and other
+     * child directories if necessary. Zone transfers do not trigger observables like addPlaces does
      *
      * @param childKey the key of the child directory
      */
@@ -684,9 +683,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
 
     /**
-     * Retrieve and load (zone transfer) all the entries from specified remote directory into the specified map. Remove
-     * any stale entries from the destination map if one is specified and merge in the new entries. Zone transfers do
-     * not trigger observables like addPlaces does
+     * Retrieve and load (zone transfer) all the entries from specified remote directory into the specified map. Remove any
+     * stale entries from the destination map if one is specified and merge in the new entries. Zone transfers do not
+     * trigger observables like addPlaces does
      *
      * @param key key of the remote directory to transfer from
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
@@ -756,10 +755,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
     /**
      * Remove stale entries from the specified map and notify any observers Nothing older than checkpoint time can be
-     * considered stale and nothing that is on the incming newEntries list can be considered stale since we would just
-     * be adding it back again. Duplicates (non-stale entries) are removed from the newEntries map to avoid further
-     * confusion but only if the cost is the same. Otherwise we leave it so that a cost-change event can propagete from
-     * later code but still avoid triggering a place removed event.
+     * considered stale and nothing that is on the incming newEntries list can be considered stale since we would just be
+     * adding it back again. Duplicates (non-stale entries) are removed from the newEntries map to avoid further confusion
+     * but only if the cost is the same. Otherwise we leave it so that a cost-change event can propagete from later code but
+     * still avoid triggering a place removed event.
      *
      * @param loadMap the map we are removing from
      * @param key the key of the directory whose entries might be stale
@@ -822,8 +821,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Grok the details of a new entry list and figure out which observers need to be notified. Remove any entries that
-     * are not going to end up being added anyway.
+     * Grok the details of a new entry list and figure out which observers need to be notified. Remove any entries that are
+     * not going to end up being added anyway.
      *
      * @param map the new entries to understand
      * @param loadMap the map the entries will be loaded into
@@ -976,8 +975,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to
-     * perform nextKeys type lookup in the child map to effect the relaying function.
+     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
+     * nextKeys type lookup in the child map to effect the relaying function.
      *
      * @param newEntries the new entries to add
      * @return the list of proxy entries that are created
@@ -987,8 +986,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to
-     * perform nextKeys type lookup in the child map to effect the relaying function.
+     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
+     * nextKeys type lookup in the child map to effect the relaying function.
      *
      * @param newEntries the new entries to add (non-proxified)
      * @return the list of proxy entries that are created
@@ -1001,8 +1000,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add an entry to the child and regular entry maps This is a key we will proxy for in the entry map but need to
-     * perform nextKeys type lookup in the child map to effect the relaying function.
+     * Add an entry to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
+     * nextKeys type lookup in the child map to effect the relaying function.
      *
      * @param newEntry the new entry to add
      * @return the proxy entry that is created
@@ -1024,8 +1023,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add a list of entries to the directory Entries are kept in a Hash by "datatype::serviceType" Each entry is a List
-     * of sorted DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
+     * Add a list of entries to the directory Entries are kept in a Hash by "datatype::serviceType" Each entry is a List of
+     * sorted DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
      *
      * @param entryList the new entries to add
      */
@@ -1060,8 +1059,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add an entry to the directory Entries are kept in a Hash by "datatype::serviceType" Each entry is a List of
-     * sorted DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
+     * Add an entry to the directory Entries are kept in a Hash by "datatype::serviceType" Each entry is a List of sorted
+     * DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
      *
      * @param newEntry the new entry to add
      */
@@ -1198,8 +1197,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      *
      * @param pattern the key pattern to match in the child map
      * @param checkpoint only remove entries older than this
-     * @param newEntries map of newly arriving entries to allow freshness determination or null if no new entries (i.e.
-     *        zone transfer) triggered this action
+     * @param newEntries map of newly arriving entries to allow freshness determination or null if no new entries (i.e. zone
+     *        transfer) triggered this action
      * @return count of entries removed from entry map
      */
     private int removeChildEntries(final String pattern, final long checkpoint, final DirectoryEntryMap newEntries) {
@@ -1368,13 +1367,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         try {
             new DirectoryAdapter().outboundFailDirectory(directory.getKey(), failKey, permanent);
         } catch (Exception ex) {
-            logger.error("DirectoryPlace.irdFailRemoteDirectory: " + "Problem talking to directory " + directory.getKey() + " to fail " + failKey, ex);
+            logger.error("DirectoryPlace.irdFailRemoteDirectory: " + "Problem talking to directory " + directory.getKey() + " to fail " + failKey,
+                    ex);
         }
     }
 
     /**
-     * Established or re-established contact with a remote directory. Check for presence on peer or relay and initiate
-     * zone transfer if needed.
+     * Established or re-established contact with a remote directory. Check for presence on peer or relay and initiate zone
+     * transfer if needed.
      *
      * @param key the key of the directory we contacted
      */
@@ -1418,8 +1418,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Register a list of entries. This signature only meant to be called from within EmissaryClient code. Each entry
-     * will have a separate key, cost and quality but should all be local to each other.
+     * Register a list of entries. This signature only meant to be called from within EmissaryClient code. Each entry will
+     * have a separate key, cost and quality but should all be local to each other.
      *
      * @param entryList list of directoryEntry to add
      * @param propagating true if going back down the directory chain
@@ -1567,8 +1567,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Private helper to register with parent and children directories. This method handles multiple directory entries,
-     * each can have separate key, description, cost, and quality
+     * Private helper to register with parent and children directories. This method handles multiple directory entries, each
+     * can have separate key, description, cost, and quality
      *
      * @param dir the place entry to register
      * @param entryList the new entries
@@ -1584,7 +1584,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             logger.debug("registration succeeded");
         } catch (Exception ex) {
             logger.warn(
-                    "DirectoryPlace.registerWith: " + "Problem talking to directory " + dir.getKey() + " to add " + entryList.size() + " entries", ex);
+                    "DirectoryPlace.registerWith: " + "Problem talking to directory " + dir.getKey() + " to add " + entryList.size() + " entries",
+                    ex);
         }
     }
 
@@ -1771,10 +1772,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Provide a mechanism to traverse this directory that is acting as a relay point. The payload might want to
-     * traverse from the child up into the current or peer network, or it might be coming from a peer and want to
-     * traverse into the child network. This is determined by looking at the history to determine where the payload came
-     * from.
+     * Provide a mechanism to traverse this directory that is acting as a relay point. The payload might want to traverse
+     * from the child up into the current or peer network, or it might be coming from a peer and want to traverse into the
+     * child network. This is determined by looking at the history to determine where the payload came from.
      *
      * @param d the visiting payload
      */
@@ -1903,8 +1903,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the
-     * requester From IRemoteDirectory interface
+     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the requester
+     * From IRemoteDirectory interface
      *
      * @param dataId the key to the entry Map set of DirectoryEntryList objects
      * @param requester key of the place requesting the list
@@ -1947,8 +1947,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Deregister places removing all keys for the specified places. Should only be called externally from
-     * EmissaryClient
+     * Deregister places removing all keys for the specified places. Should only be called externally from EmissaryClient
      *
      * @see #removePlaces(List)
      * @param keys four-tuple key for the place
@@ -2193,8 +2192,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Add an observer for one of the observable activities in the directory The runtime class of the observer
-     * determines what is being observed
+     * Add an observer for one of the observable activities in the directory The runtime class of the observer determines
+     * what is being observed
      *
      * @param observer the new DirectoryObserver to add
      */
@@ -2218,8 +2217,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Pull the local directory from the namespace and return it. This does not work in some test scenarios where we
-     * have multiple non-local directories in a single JVM.
+     * Pull the local directory from the namespace and return it. This does not work in some test scenarios where we have
+     * multiple non-local directories in a single JVM.
      *
      * @return the local directory instance
      * @throws EmissaryException when directory does not exist in namespace
@@ -2236,8 +2235,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Get the sync status of a remote directory as seen from this directory. Note that this method only can return true
-     * for things that the HeartbeatManager is tracking, i.e. parent, child or peer directories of this instance.
+     * Get the sync status of a remote directory as seen from this directory. Note that this method only can return true for
+     * things that the HeartbeatManager is tracking, i.e. parent, child or peer directories of this instance.
      *
      * @param key the key of the remote directory
      * @return true if remote is reported as being up, false otherwise
@@ -2248,13 +2247,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Force a heartbeat with a particular directory Directory represented by key does not necessarily need to be one
-     * that the HeartbeatManager is already tracking and calling this method will not add it permanently to any list to
-     * be tracked. This is a one time event and can be used at the callers discretion. Note however,that if the key is
-     * not a peer, child or parent of this directory, a warning will be issued here when the success or failure action
-     * is taken by the heartbeat manager. It can be ignored in this case. Note also, that a true return from this method
-     * merely means that the remote directory responded to the heartbeat method, not that the remote directory is in
-     * sync yet with this one.
+     * Force a heartbeat with a particular directory Directory represented by key does not necessarily need to be one that
+     * the HeartbeatManager is already tracking and calling this method will not add it permanently to any list to be
+     * tracked. This is a one time event and can be used at the callers discretion. Note however,that if the key is not a
+     * peer, child or parent of this directory, a warning will be issued here when the success or failure action is taken by
+     * the heartbeat manager. It can be ignored in this case. Note also, that a true return from this method merely means
+     * that the remote directory responded to the heartbeat method, not that the remote directory is in sync yet with this
+     * one.
      *
      * @see #isRemoteDirectoryAvailable(String)
      * @param key the key of the remote directory
@@ -2310,10 +2309,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Remove a routing acceptor function for the specified directory entry. If it had been read in from the config
-     * subsytem or the jar resources and it is still there, removing it will only be temporary as it will be reread from
-     * the same source the next time it is needed. In order to remove the effect of such a function you must add or
-     * replace the function in the configuration subsystem with a function definition that always returns true.
+     * Remove a routing acceptor function for the specified directory entry. If it had been read in from the config subsytem
+     * or the jar resources and it is still there, removing it will only be temporary as it will be reread from the same
+     * source the next time it is needed. In order to remove the effect of such a function you must add or replace the
+     * function in the configuration subsystem with a function definition that always returns true.
      *
      * @param de the directory entry's function to remove
      * @param isDefault if true remove the default routing rule

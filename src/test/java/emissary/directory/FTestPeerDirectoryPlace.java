@@ -11,16 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.FunctionalTest;
+import org.junit.After;
+import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FTestPeerDirectoryPlace extends FunctionalTest {
 
@@ -316,7 +315,8 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         logger.debug("From child2 we have " + dlchild2);
         assertNotNull("Tolower dataid list from child2", dlchild2);
         assertEquals("Size of dataid list from child2", 1, dlchild2.size());
-        assertEquals("Child2 cost three hops", dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 3), dlchild2.getEntry(0).getExpense());
+        assertEquals("Child2 cost three hops", dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 3),
+                dlchild2.getEntry(0).getExpense());
 
         // Add a proxy to a place
         logger.debug("Adding the FOOBAR proxy to the ToUpper on child1/8006");

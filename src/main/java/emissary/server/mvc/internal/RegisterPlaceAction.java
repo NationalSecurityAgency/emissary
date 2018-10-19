@@ -1,9 +1,6 @@
 package emissary.server.mvc.internal;
 
-import emissary.server.mvc.adapters.DirectoryAdapter;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -14,7 +11,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+import emissary.server.mvc.adapters.DirectoryAdapter;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer
@@ -28,8 +28,8 @@ public class RegisterPlaceAction {
      * <!-- Register place with the specified directory, primarily used for the local DirectoryPlace to addPlace with a
      * remote peer relay --> <Use-Case source="*" action="/RegisterPlace.action"> <Work type="Bean"
      * target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
-     * target="emissary.comms.http.worker.RegisterPlaceWorker"/> <View status="0" view="/success.jsp"/> <View
-     * status="-1" view="/error.jsp"/> </Use-Case>
+     * target="emissary.comms.http.worker.RegisterPlaceWorker"/> <View status="0" view="/success.jsp"/> <View status="-1"
+     * view="/error.jsp"/> </Use-Case>
      */
 
     // TODO This is an initial crack at the new endpoint, I haven't seen it called an am unsure when/if it does

@@ -1,15 +1,14 @@
 package emissary.util;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Help determine type of data from various data file mappings The name of the file gives some context to the mappings

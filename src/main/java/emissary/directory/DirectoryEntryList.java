@@ -115,14 +115,13 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Keep the list in sorted order by expense cheapest first, no duplicates. If a duplicate key is found, the least
-     * expensive copy will be kept. This keeps us out of trouble double adding the remote overhead when there is no
-     * reason to do so.
+     * expensive copy will be kept. This keeps us out of trouble double adding the remote overhead when there is no reason
+     * to do so.
      *
-     * For example, if we have A and B on our peer list, A has already retrieved B's entries and added the remote
-     * overhead when storing them in A. When we retrieve the same entry from A and B it looks cheaper coming from B
-     * since it is local to B. Whichever one we get last, we want to keep the one coming from B. By the time they get
-     * here, the one from B will have REMOTE_COST added once, and the one from A will have it added twice: once by A and
-     * once here.
+     * For example, if we have A and B on our peer list, A has already retrieved B's entries and added the remote overhead
+     * when storing them in A. When we retrieve the same entry from A and B it looks cheaper coming from B since it is local
+     * to B. Whichever one we get last, we want to keep the one coming from B. By the time they get here, the one from B
+     * will have REMOTE_COST added once, and the one from A will have it added twice: once by A and once here.
      * 
      * @param newEntry the incoming entry for insertion
      * @return true as per general contract of Collection.add

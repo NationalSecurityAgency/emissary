@@ -1,5 +1,8 @@
 package emissary.util;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
@@ -8,9 +11,6 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
 import org.junit.Test;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class DependencyCheckTest extends UnitTest {
 

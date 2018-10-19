@@ -7,9 +7,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.admin.Startup;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -19,6 +16,8 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node
@@ -62,8 +61,8 @@ public class EmissaryNode {
     protected boolean nodeNameIsDefault = false;
 
     /**
-     * Construct the node. The node name and port are from system properties. The node type is based on the os.name in
-     * this implementation
+     * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
+     * implementation
      */
     public EmissaryNode() {
         this.nodeName = System.getProperty(NODE_NAME_PROPERTY);

@@ -89,8 +89,8 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
 
     /**
      * The query string is the name of a native library to serve back. The requesting place is searching for a native
-     * library (.so or .dll) to use. If we have what the requestor is looking for in our libraryDirectory, serve it back
-     * to them as an array of bytes.
+     * library (.so or .dll) to use. If we have what the requestor is looking for in our libraryDirectory, serve it back to
+     * them as an array of bytes.
      */
     public/* synchronized */byte[] nativeLibraryDeliver(final String query) throws RemoteException {
 

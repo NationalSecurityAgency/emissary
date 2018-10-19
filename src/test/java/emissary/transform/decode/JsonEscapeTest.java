@@ -2,9 +2,8 @@ package emissary.transform.decode;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class JsonEscapeTest extends UnitTest {
     @Test

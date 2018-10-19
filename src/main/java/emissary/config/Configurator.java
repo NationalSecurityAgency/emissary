@@ -171,8 +171,8 @@ public interface Configurator {
     boolean findBooleanEntry(String param, String dflt);
 
     /**
-     * Get the names of all entries for this config. This set is not backed by the configuration and any changes to it
-     * are not relflected in the configuration.
+     * Get the names of all entries for this config. This set is not backed by the configuration and any changes to it are
+     * not relflected in the configuration.
      */
     Set<String> entryKeys();
 

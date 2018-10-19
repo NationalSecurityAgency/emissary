@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +56,8 @@ public class JournaledChannelPool implements AutoCloseable {
     }
 
     /**
-     * Returns an available output from the pool. This method will block if there are no free objects available and the
-     * max number of outputs has been created.
+     * Returns an available output from the pool. This method will block if there are no free objects available and the max
+     * number of outputs has been created.
      * 
      * @return an available KeyedOutput from the pool
      * @throws IOException If there is some I/O problem.

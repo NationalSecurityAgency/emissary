@@ -9,13 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import emissary.test.core.UnitTest;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class BaseDataWithRemappingTest extends UnitTest {
     private BaseDataObject b = null;

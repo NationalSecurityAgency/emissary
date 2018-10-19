@@ -28,8 +28,8 @@ public class MagicNumberFactory {
 
 
     /**
-     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which
-     * are also nested with continuations as child MagicNumber instances.
+     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
+     * also nested with continuations as child MagicNumber instances.
      *
      * @param configData the byte[] representing the magic file
      * @param zeroDepthErrorList logs errors with zero depth entries
@@ -43,14 +43,13 @@ public class MagicNumberFactory {
     }
 
     /**
-     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which
-     * are also nested with continuations as child MagicNumber instances.
+     * Public method to parse a byte array representing the magic file into a list containing MagicNumber objects which are
+     * also nested with continuations as child MagicNumber instances.
      *
      * @param configData the byte[] representing the magic file
      * @param zeroDepthErrorList logs errors with zero depth entries
      * @param continuationErrorMap logs errors with continuations - these are entries with depths > 0
-     * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are
-     *        IGNORABLE_DATATYPE_MSGS
+     * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
      * @return a {@link List}.
      */
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, List<String> zeroDepthErrorList,
@@ -192,8 +191,8 @@ public class MagicNumberFactory {
     }
 
     /**
-     * Private method to store the list of MagicNumber instances and adds them a new layer of continuations in the
-     * target MagicNumber
+     * Private method to store the list of MagicNumber instances and adds them a new layer of continuations in the target
+     * MagicNumber
      *
      * @param target the MagicNumber instance acting as the parent for the continuations
      * @param extensions a {@link List} of continuations which are MagicNumber instances
@@ -233,7 +232,7 @@ public class MagicNumberFactory {
             item.offsetUnary = resolveOffsetUnary(columns, item);
             item.offset = resolveOffset(columns, item);
         } catch (Exception e) {
-            // log.error ("original entry   \t: " + entry);
+            // log.error ("original entry \t: " + entry);
             // log.error ("Error on column 0\t: " + columns[0], e);
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
@@ -259,7 +258,7 @@ public class MagicNumberFactory {
             item.value = resolveValue(columns, item);
             item.dataTypeLength = item.value.length;
         } catch (Exception e) {
-            // log.error ("original entry   \t: " + entry);
+            // log.error ("original entry \t: " + entry);
             // log.error ("Error on column 2\t: " + columns[2], e);
             throw new ParseException("Error on column 2:" + columns[2] + ". " + e.getMessage());
         }

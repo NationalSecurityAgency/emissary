@@ -7,15 +7,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import emissary.core.EmissaryException;
+import emissary.test.core.FunctionalTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.core.EmissaryException;
-import emissary.test.core.FunctionalTest;
 
 @RunWith(Parameterized.class)
 public class FTestServiceConfigGuide extends FunctionalTest {

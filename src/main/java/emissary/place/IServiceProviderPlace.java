@@ -13,8 +13,8 @@ import emissary.directory.DirectoryEntry;
 public interface IServiceProviderPlace {
 
     /**
-     * Used as a marker on the transofrm history of a payload when we sprout it, between the parent's history and the
-     * new history of the sprout
+     * Used as a marker on the transofrm history of a payload when we sprout it, between the parent's history and the new
+     * history of the sprout
      */
     public static final String SPROUT_KEY = "<SPROUT>";
 

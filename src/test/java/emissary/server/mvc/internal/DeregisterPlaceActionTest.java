@@ -1,6 +1,5 @@
 package emissary.server.mvc.internal;
 
-
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -12,6 +11,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 
+import emissary.core.Namespace;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.server.mvc.EndpointTestBase;
+import emissary.util.io.ResourceReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,13 +23,6 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-
-import emissary.core.Namespace;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.EmissaryNode;
-import emissary.server.mvc.EndpointTestBase;
-import emissary.util.io.ResourceReader;
-
 
 @RunWith(Theories.class)
 public class DeregisterPlaceActionTest extends EndpointTestBase {

@@ -1,15 +1,14 @@
 package emissary.directory;
 
-import emissary.util.xml.JDOMUtil;
+import java.util.List;
+import java.util.Map;
 
+import emissary.util.xml.JDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class acts as a container and producer for turning a directory entry list into a full xml document
@@ -115,8 +114,8 @@ public class DirectoryXmlContainer {
     }
 
     /**
-     * Build an xml string from the contents of a directory place making it appear that the place represented by
-     * proxyKey acts as a proxy for all or the keys in the directory map
+     * Build an xml string from the contents of a directory place making it appear that the place represented by proxyKey
+     * acts as a proxy for all or the keys in the directory map
      * 
      * @param dir the directory to pull the entryMap contents from
      * @param proxyKey place to appear as the proxy

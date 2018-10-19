@@ -39,8 +39,8 @@ public abstract class SessionParser {
     }
 
     /**
-     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from
-     * the session data for the next session in the data
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data for the next session in the data
      * 
      * @return the next session from the input
      */

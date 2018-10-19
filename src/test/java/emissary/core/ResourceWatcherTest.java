@@ -9,14 +9,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ResourceWatcherTest extends UnitTest {
 

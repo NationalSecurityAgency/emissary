@@ -1,9 +1,10 @@
 package emissary.roll;
 
-import emissary.config.Configurator;
-import emissary.core.Factory;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import emissary.config.Configurator;
+import emissary.core.Factory;
 
 /**
  * Util class to grab known parameters from configs to help configure Rollable objects.
@@ -20,8 +21,8 @@ public class RollUtil {
     }
 
     /**
-     * Returns the TimeUnit by extracting the value from ROLLABLE_TIME_PERIOD. The time unit value must be one that
-     * exactly matches those defined in the TimeUnit enum. Defaults to MINUTES.
+     * Returns the TimeUnit by extracting the value from ROLLABLE_TIME_PERIOD. The time unit value must be one that exactly
+     * matches those defined in the TimeUnit enum. Defaults to MINUTES.
      * 
      * @param configG
      * @return the configured rollable TimeUnit

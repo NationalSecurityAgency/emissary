@@ -7,11 +7,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer

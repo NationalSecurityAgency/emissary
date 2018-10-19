@@ -5,12 +5,11 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.shell.Executrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple base class for doing data type identification This simple implementation can only match constant strings
@@ -106,8 +105,8 @@ public class DataIdentifier {
     }
 
     /**
-     * Get the size of data that is required for an id This is the maximum amount of data that the id algorithm will
-     * use, more or less can be sent,
+     * Get the size of data that is required for an id This is the maximum amount of data that the id algorithm will use,
+     * more or less can be sent,
      * 
      * @see #getTestString(byte[])
      */

@@ -1,12 +1,12 @@
 package emissary.pool;
 
+import java.io.IOException;
+
 import emissary.core.Factory;
 import emissary.core.IMobileAgent;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> {
 

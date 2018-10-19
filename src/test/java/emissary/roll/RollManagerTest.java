@@ -6,11 +6,10 @@ import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import emissary.test.core.UnitTest;
 import emissary.util.EmissaryIsolatedClassloaderRunner;
 import org.junit.Assert;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 import org.junit.runner.RunWith;
 
 @RunWith(EmissaryIsolatedClassloaderRunner.class)

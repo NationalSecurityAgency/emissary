@@ -1,14 +1,5 @@
 package emissary.util.shell;
 
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.directory.KeyManipulator;
-import emissary.util.io.FileManipulator;
-
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -23,6 +14,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.Map;
+
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.directory.KeyManipulator;
+import emissary.util.io.FileManipulator;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class wraps up things related to execing of external processes and reading and writing disk files.
@@ -832,8 +831,8 @@ public class Executrix {
     }
 
     /**
-     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration
-     * value The values in the command string that can be replaced are &lt;INPUT_PATH&gt;, &lt;OUTPUT_PATH&gt;,
+     * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
+     * The values in the command string that can be replaced are &lt;INPUT_PATH&gt;, &lt;OUTPUT_PATH&gt;,
      * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On windows the command is wrapped in
      * <code>cmd /c %CYGWIN_HOME%/bin/bash -c 'your command'</code> while on unix systems it is wrapped more like
      * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
@@ -866,8 +865,8 @@ public class Executrix {
             }
         } else {
             /*
-             * Run the command in short limiting the core file size to 0, the cpu time to 5 minutes and virtual memory
-             * to 100 Megabytes.
+             * Run the command in short limiting the core file size to 0, the cpu time to 5 minutes and virtual memory to 100
+             * Megabytes.
              */
             final String[] tmp = {"/bin/sh", "-c", "ulimit -c 0; ulimit -v " + vmSzLimit + "; " + "cd " + tmpNames[DIR] + "; " + c};
             cmd = tmp;
@@ -1075,9 +1074,9 @@ public class Executrix {
     }
 
     /**
-     * Recursively remove up all files in a directory and then remove the directory itself. If the passed directory does
-     * not exist then it will return true. If the passed directory is actually a file it will try and delete that. If an
-     * IO problem happens listing the files then it will return false.
+     * Recursively remove up all files in a directory and then remove the directory itself. If the passed directory does not
+     * exist then it will return true. If the passed directory is actually a file it will try and delete that. If an IO
+     * problem happens listing the files then it will return false.
      * 
      * @param dir the directory to remove
      * @return true if it works, false otherwise

@@ -1,14 +1,14 @@
 package emissary.command;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
+
 import java.nio.file.Paths;
 
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
 
 public class ServerCommandIT extends UnitTest {
     private static final String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);

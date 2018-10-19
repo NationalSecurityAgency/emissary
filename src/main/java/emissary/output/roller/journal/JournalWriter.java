@@ -1,6 +1,7 @@
 package emissary.output.roller.journal;
 
 import static emissary.output.roller.journal.Journal.SEP;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;

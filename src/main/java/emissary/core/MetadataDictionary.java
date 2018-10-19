@@ -8,12 +8,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import org.apache.commons.collections.map.LRUMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 
 /**
  * This class provides metadata renaming and remapping based on values in its configuration file. There are a set of

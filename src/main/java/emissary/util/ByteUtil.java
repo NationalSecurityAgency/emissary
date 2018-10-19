@@ -250,9 +250,8 @@ public class ByteUtil {
     }
 
     /**
-     * Given a byte-array and a start offset, return a string of the bytes between the start position and a carriage
-     * return byte. In essence, this is grabbing a line of input where the byte array is composed of several lines of
-     * input.
+     * Given a byte-array and a start offset, return a string of the bytes between the start position and a carriage return
+     * byte. In essence, this is grabbing a line of input where the byte array is composed of several lines of input.
      * 
      * @param data The byte array of input data.
      * @param pos The initial start offset.

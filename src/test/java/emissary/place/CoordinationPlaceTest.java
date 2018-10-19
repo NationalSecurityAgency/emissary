@@ -1,5 +1,15 @@
 package emissary.place;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
@@ -12,16 +22,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class CoordinationPlaceTest extends UnitTest {
 

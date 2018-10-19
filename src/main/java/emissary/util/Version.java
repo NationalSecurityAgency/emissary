@@ -24,8 +24,8 @@ public final class Version {
     }
 
     /**
-     * Read hardwired config info. Cannot be overridden using the normal emissary.config.pkg or emissary.config.dir
-     * methods. Does not create a Configurator due to logging restrictions on this method.
+     * Read hardwired config info. Cannot be overridden using the normal emissary.config.pkg or emissary.config.dir methods.
+     * Does not create a Configurator due to logging restrictions on this method.
      */
     private void readHardWiredConfigInfo() {
         InputStream rstream = null;

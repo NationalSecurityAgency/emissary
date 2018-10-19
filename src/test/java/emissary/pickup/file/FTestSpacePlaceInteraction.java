@@ -10,11 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.pickup.Priority;
@@ -23,6 +18,10 @@ import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 import emissary.test.core.FunctionalTest;
 import emissary.util.io.ResourceReader;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FTestSpacePlaceInteraction extends FunctionalTest {
     private FilePickUpClient place = null;

@@ -6,11 +6,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import emissary.util.CharacterCounterSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.util.HtmlEntityMap;
 import emissary.util.shell.Executrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HtmlEscape {
 
@@ -41,9 +40,9 @@ public class HtmlEscape {
 
     /**
      * Unescape some HTML data, turning <code>&#xxxx;</code> into UNICODE characters Because this operation inserts java
-     * Character objects into the byte array, it probably only makes sense to send in data that already matches the
-     * platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple
-     * character sets that cannot possibly be understood or displayed properly.
+     * Character objects into the byte array, it probably only makes sense to send in data that already matches the platform
+     * encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple character sets that
+     * cannot possibly be understood or displayed properly.
      *
      * @param data the array of bytes containing HTML escaped characters
      * @param counters to measure what is changed

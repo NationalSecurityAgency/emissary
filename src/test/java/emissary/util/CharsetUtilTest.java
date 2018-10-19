@@ -3,9 +3,8 @@ package emissary.util;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class CharsetUtilTest extends UnitTest {
     // Strings from wikipedia, 2017-07-18

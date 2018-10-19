@@ -2,16 +2,14 @@ package emissary.server.mvc;
 
 import javax.ws.rs.core.Application;
 
+import emissary.core.Namespace;
+import emissary.test.core.UnitTest;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.AfterClass;
-
-import emissary.core.Namespace;
-import emissary.test.core.UnitTest;
-
 
 public class EndpointTestBase extends JerseyTest {
 

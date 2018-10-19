@@ -14,11 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Multimap;
 import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.Multimap;
 
 public class DecomposedSessionTest extends UnitTest {
 

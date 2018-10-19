@@ -1,5 +1,19 @@
 package emissary.test.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.xml.bind.DatatypeConverter;
+
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -20,19 +34,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public abstract class ExtractionTest extends UnitTest {
@@ -171,7 +172,8 @@ public abstract class ExtractionTest extends UnitTest {
                 if (index != null) {
                     assertEquals(
                             String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
-                                    payload.getAllCurrentForms()), payload.currentFormAt(index.getIntValue()), cf);
+                                    payload.getAllCurrentForms()),
+                            payload.currentFormAt(index.getIntValue()), cf);
                 } else {
                     assertTrue("Current form " + cf + " not found in " + tname + ", " + payload.getAllCurrentForms(),
                             payload.searchCurrentForm(cf) > -1);
@@ -227,7 +229,8 @@ public abstract class ExtractionTest extends UnitTest {
             String key = meta.getChildTextTrim("name");
             assertTrue(
                     String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                            payload.getStringParameter(key)), !payload.hasParameter(key));
+                            payload.getStringParameter(key)),
+                    !payload.hasParameter(key));
         }
 
         // Check the primary view. Even though there is only one

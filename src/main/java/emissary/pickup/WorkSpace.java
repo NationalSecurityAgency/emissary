@@ -1,5 +1,24 @@
 package emissary.pickup;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import emissary.client.EmissaryResponse;
 import emissary.command.FeedCommand;
 import emissary.command.ServerCommand;
@@ -19,25 +38,6 @@ import org.apache.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.MemoryUsage;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a
@@ -101,8 +101,8 @@ public class WorkSpace implements Runnable {
     protected String PROJECT_BASE = null;
 
     /**
-     * How many file names to send per remote message, should be 10% or less of the size of the PickUpPlace.MAX_QUE
-     * Helps prevent blocking if it's not a factor of the PickUpPlace.MAX_QUE size
+     * How many file names to send per remote message, should be 10% or less of the size of the PickUpPlace.MAX_QUE Helps
+     * prevent blocking if it's not a factor of the PickUpPlace.MAX_QUE size
      */
     protected int FILES_PER_MESSAGE = Integer.getInteger(CLZ + ".filesPerBundle", 5);
 
@@ -417,8 +417,7 @@ public class WorkSpace implements Runnable {
     }
 
     /**
-     * Set directory processing flag. When true directory entries are retrieved from the input area just like normal
-     * files.
+     * Set directory processing flag. When true directory entries are retrieved from the input area just like normal files.
      *
      * @see emissary.util.io.FileFind
      * @param on the new value for directory retrieval
@@ -560,8 +559,8 @@ public class WorkSpace implements Runnable {
 
 
     /**
-     * Get the initial list of pick up client places from the local directory. Our observer will keep us in sync after
-     * this initial pull. This method does not cause clients to be notified.
+     * Get the initial list of pick up client places from the local directory. Our observer will keep us in sync after this
+     * initial pull. This method does not cause clients to be notified.
      *
      * @param thePattern the key pattern to match for places of interest
      */
@@ -734,8 +733,8 @@ public class WorkSpace implements Runnable {
     }
 
     /**
-     * Method called by remote PickUp client instances when they are ready to reteive data from this WorkSpace Access
-     * via emissary.comms.http.WorkSpaceApapter
+     * Method called by remote PickUp client instances when they are ready to reteive data from this WorkSpace Access via
+     * emissary.comms.http.WorkSpaceApapter
      *
      * @param remoteKey key of the requesting PickUp place
      * @return WorkBundle at the head of the list or null if empty
@@ -824,8 +823,8 @@ public class WorkSpace implements Runnable {
     }
 
     /**
-     * Receive notice that a bundle was completed Normally called from emissary.server.mvc.adapters.WorkSpaceAdapter
-     * when a bundle completion message is received from the remote client doing the processing.
+     * Receive notice that a bundle was completed Normally called from emissary.server.mvc.adapters.WorkSpaceAdapter when a
+     * bundle completion message is received from the remote client doing the processing.
      *
      * @param remoteName the name of the place that did the processing
      * @param bundleId the unique id of the bundle that was completed
@@ -1130,8 +1129,8 @@ public class WorkSpace implements Runnable {
         }
 
         /**
-         * Pull all of the files into bundles, emit some stats, and notify the PickUp client instances to start work.
-         * When the list of file bundles is empty we can quit or loop around again.
+         * Pull all of the files into bundles, emit some stats, and notify the PickUp client instances to start work. When the
+         * list of file bundles is empty we can quit or loop around again.
          */
         @Override
         public void run() {
@@ -1338,8 +1337,9 @@ public class WorkSpace implements Runnable {
             // must have a min size of 1 file, but cannot be over the
             // max byte size, or max file count
             if ((bundle.size() > 0)
-                    && (((WorkSpace.this.MAX_BUNDLE_SIZE > -1) && (bytesInBundle >= WorkSpace.this.MAX_BUNDLE_SIZE)) || ((WorkSpace.this.FILES_PER_MESSAGE > -1) && (bundle
-                            .size() >= WorkSpace.this.FILES_PER_MESSAGE)))) {
+                    && (((WorkSpace.this.MAX_BUNDLE_SIZE > -1) && (bytesInBundle >= WorkSpace.this.MAX_BUNDLE_SIZE))
+                            || ((WorkSpace.this.FILES_PER_MESSAGE > -1) && (bundle
+                                    .size() >= WorkSpace.this.FILES_PER_MESSAGE)))) {
                 bReturn = false;
             }
 
@@ -1348,8 +1348,8 @@ public class WorkSpace implements Runnable {
         }
 
         /**
-         * Check memory (heap) usage and wait for it to go below the threshold. We must be able to collect at least 500
-         * file bundles to trigger this mechanism.
+         * Check memory (heap) usage and wait for it to go below the threshold. We must be able to collect at least 500 file
+         * bundles to trigger this mechanism.
          */
         protected void pauseCollector() {
             final int initialQueueSize = getOutboundQueueSize();

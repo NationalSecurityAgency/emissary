@@ -2,12 +2,11 @@ package emissary.place;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 /**
  * Tests the KffHashPlace

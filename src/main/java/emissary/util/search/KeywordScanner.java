@@ -40,9 +40,9 @@ public class KeywordScanner {
     /**
      * Returns the first occurrence of the provided pattern in the data, starting from the specified index.
      * <p>
-     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were
-     * zero: the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if
-     * it were equal to the length of the data: -1 is returned.
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: -1 is returned.
      * 
      * @param patternArg the byte pattern to scan for, null returns -1
      * @param start the index to start searching from, negative values treated as 0
@@ -53,15 +53,15 @@ public class KeywordScanner {
     }
 
     /**
-     * Returns the first occurrence of the provided pattern in the data, starting from the specified index and stopping
-     * at the specified index.
+     * Returns the first occurrence of the provided pattern in the data, starting from the specified index and stopping at
+     * the specified index.
      * <p>
-     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were
-     * zero: the entire data may be scanned. If it is greater than the length of the data, it has the same effect as if
-     * it were equal to the length of the data: -1 is returned.
+     * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
+     * the entire data may be scanned. If it is greater than the length of the data, it has the same effect as if it were
+     * equal to the length of the data: -1 is returned.
      * <p>
-     * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value,
-     * -1 is returned.
+     * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value, -1
+     * is returned.
      * 
      * @param patternArg the byte pattern to scan for, null returns -1
      * @param start the index to start searching from, negative values treated as 0
@@ -85,12 +85,12 @@ public class KeywordScanner {
     /**
      * Find the next occurrence of the set pattern, stopping at the specified index.
      * <p>
-     * If the value of {@code stop} is negative, greater than or equal to the data length, or less than the previously
-     * found index: -1 is returned.
+     * If the value of {@code stop} is negative, greater than or equal to the data length, or less than the previously found
+     * index: -1 is returned.
      * <p>
-     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and
-     * return the index of the first occurrence of the provided pattern. Calls to this method will then return the index
-     * of subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
+     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
+     * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
+     * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
      * 
      * @param stop the index to stop searching at, exclusive, negative value returns -1
      * @return the index, less than the stop index, where the next occurrence of the pattern is found, -1 if not found
@@ -114,9 +114,9 @@ public class KeywordScanner {
     /**
      * Find the next occurrence of the set pattern.
      * <p>
-     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and
-     * return the index of the first occurrence of the provided pattern. Calls to this method will then return the index
-     * of subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
+     * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
+     * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
+     * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
      * 
      * @return the index where the next occurrence of the pattern is found, -1 if not found
      */

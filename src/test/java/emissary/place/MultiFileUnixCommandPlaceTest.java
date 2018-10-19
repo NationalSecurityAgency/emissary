@@ -15,17 +15,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.shell.Executrix;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;

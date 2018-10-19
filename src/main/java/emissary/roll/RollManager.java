@@ -1,20 +1,19 @@
 package emissary.roll;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import java.util.ArrayList;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * RollManager handles all incremental rolls for configured objects within the framework

@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class IdPlaceTest extends UnitTest {
 

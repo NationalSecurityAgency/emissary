@@ -3,11 +3,10 @@ package emissary.parser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.config.ServiceConfigGuide;
 
 public class DataIdentifierTest extends UnitTest {
 

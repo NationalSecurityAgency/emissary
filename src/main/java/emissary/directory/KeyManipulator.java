@@ -141,8 +141,8 @@ public class KeyManipulator implements Serializable {
     }
 
     /**
-     * Return whether the key passed in is complete or not This is useful in determining if the key must be wildcarded
-     * for a query.
+     * Return whether the key passed in is complete or not This is useful in determining if the key must be wildcarded for a
+     * query.
      *
      * @param key the key to check
      */
@@ -358,8 +358,8 @@ public class KeyManipulator implements Serializable {
      * @param origKey the original key
      * @param proxyKey the key representing the place that wants to proxy
      * @param dfltExp default expense to use if origKey has none or -1 for no dflt
-     * @return a key with the original data type, service type and service name and expense but the new place location
-     *         from proxyKey
+     * @return a key with the original data type, service type and service name and expense but the new place location from
+     *         proxyKey
      */
     public static String makeProxyKey(final String origKey, final String proxyKey, final int dfltExp) {
         if (isLocalTo(origKey, proxyKey) && dfltExp > -1) {

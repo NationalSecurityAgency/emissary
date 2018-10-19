@@ -1,9 +1,9 @@
 package emissary.core;
 
-import emissary.server.mvc.adapters.MoveToAdapter;
-
 import java.io.Serializable;
 import java.util.List;
+
+import emissary.server.mvc.adapters.MoveToAdapter;
 
 /**
  * Interface to the MobileAgent
@@ -24,8 +24,8 @@ public interface IMobileAgent extends Serializable, Runnable {
      * used to get directory access to figure out where to go next.
      * 
      * @param payload the payload IBaseDataObject or list thereof
-     * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but
-     *        the payload will not be processed here
+     * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but the
+     *        payload will not be processed here
      */
     void go(Object payload, emissary.place.IServiceProviderPlace sourcePlace);
 
@@ -33,8 +33,8 @@ public interface IMobileAgent extends Serializable, Runnable {
      * Arriving payload assigned to an agent for process at arrivalPlace
      * 
      * @param payload the payload IBaseDataObject or list thereof
-     * @param arrivalPlace the place to begin processing the payload has already been added to the transform history by
-     *        the sender
+     * @param arrivalPlace the place to begin processing the payload has already been added to the transform history by the
+     *        sender
      * @param mec the move error count to update the agent's state
      * @param iq the list of DirectoryEntry stored itinerary steps if any
      */
@@ -101,8 +101,8 @@ public interface IMobileAgent extends Serializable, Runnable {
     int getMaxMoveErrors();
 
     /**
-     * Set the maximum number of move attempts that can error out before this instance will quit trying and set the
-     * workflow to be an ERROR condition
+     * Set the maximum number of move attempts that can error out before this instance will quit trying and set the workflow
+     * to be an ERROR condition
      * 
      * @param value the maximum number of move failures
      */

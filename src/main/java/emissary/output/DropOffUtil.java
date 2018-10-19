@@ -1,13 +1,5 @@
 package emissary.output;
 
-import emissary.config.Configurator;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.util.shell.Executrix;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,6 +14,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
+
+import emissary.config.Configurator;
+import emissary.core.Family;
+import emissary.core.IBaseDataObject;
+import emissary.util.shell.Executrix;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -180,8 +180,7 @@ public class DropOffUtil {
     }
 
     /**
-     * This method is really only for debugging/testing. It can force this utility to act like it's on windwos when it's
-     * not
+     * This method is really only for debugging/testing. It can force this utility to act like it's on windwos when it's not
      *
      * @param value set the value of osIsWindows
      */
@@ -191,8 +190,8 @@ public class DropOffUtil {
     }
 
     /**
-     * Drop off often needs to make way for a file it wants to write Do so and return the name of the file that can now
-     * be written
+     * Drop off often needs to make way for a file it wants to write Do so and return the name of the file that can now be
+     * written
      */
     public String makeWayForIncomingFile(final IBaseDataObject DO, final String suffix) {
         return makeWayForIncomingFile(DO, suffix, null);
@@ -361,8 +360,8 @@ public class DropOffUtil {
      * </pre>
      *
      * <b>Note for Windows Users:</b> Since windows filesystems seem to strip trailing dots from directory names, we are
-     * going to be proactive about it and detect that there is a . before a / or \ and we will replace that dot, and
-     * only that dot, with an underscore. This will provide consistency across platforms.
+     * going to be proactive about it and detect that there is a . before a / or \ and we will replace that dot, and only
+     * that dot, with an underscore. This will provide consistency across platforms.
      *
      * @param specArg the incoming specification
      * @param d the payload we are making a path for
@@ -521,9 +520,9 @@ public class DropOffUtil {
     }
 
     /**
-     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use
-     * the shortname. An ID = AUTO_GENERATED_ID will use an auto gen uuid. If no id value is found, defaults to using an
-     * auto generated id.
+     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use the
+     * shortname. An ID = AUTO_GENERATED_ID will use an auto gen uuid. If no id value is found, defaults to using an auto
+     * generated id.
      *
      * @return id
      */
@@ -548,8 +547,8 @@ public class DropOffUtil {
     }
 
     /**
-     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use
-     * the shortname. An ID = AUTO_GENERATED_ID will be ignored. If no id value is found, returns empty array.
+     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use the
+     * shortname. An ID = AUTO_GENERATED_ID will be ignored. If no id value is found, returns empty array.
      *
      * @return id
      */
@@ -603,8 +602,8 @@ public class DropOffUtil {
     }
 
     /**
-     * This is a fallback, we should have either the bin name from the plop line or the processing time plugged in by
-     * pickup but if not, we have to send it somewhere...
+     * This is a fallback, we should have either the bin name from the plop line or the processing time plugged in by pickup
+     * but if not, we have to send it somewhere...
      */
     public String whatBin(final String sriheader) {
         final SimpleTimeZone gmt = new SimpleTimeZone(0, "GMT");
@@ -773,9 +772,9 @@ public class DropOffUtil {
     }
 
     /**
-     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use
-     * the shortname. An ID = AUTO_GENERATED_ID will use an auto gen uuid. If no id value is found, defaults to using an
-     * auto generated id.
+     * Extract the ID from the payload. The ID from the payload is specified in the cfg file. An ID = SHORTNAME will use the
+     * shortname. An ID = AUTO_GENERATED_ID will use an auto gen uuid. If no id value is found, defaults to using an auto
+     * generated id.
      *
      * @param d the payload
      * @param tld if a param is specified and cannot be found in the d method parameter, tries to get param from tld.
@@ -937,8 +936,8 @@ public class DropOffUtil {
     }
 
     /**
-     * Parse an RFC-822 Date or one of the thousands of variants make a quick attempt to normalize the timezone
-     * information and get the timestamp in GMT. Should change to pass in a default from the U124 header
+     * Parse an RFC-822 Date or one of the thousands of variants make a quick attempt to normalize the timezone information
+     * and get the timestamp in GMT. Should change to pass in a default from the U124 header
      *
      * @param dateString the string date from the RFC 822 Date header
      * @param supplyDefaultOnBad when true use current date if sentDate is unparseable

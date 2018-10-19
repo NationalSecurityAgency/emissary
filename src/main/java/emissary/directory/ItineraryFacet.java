@@ -1,19 +1,18 @@
 package emissary.directory;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import emissary.config.ConfigEntry;
 import emissary.config.Configurator;
 import emissary.core.Facet;
 import emissary.core.Factory;
 import emissary.core.IAggregator;
 import emissary.core.IBaseDataObject;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A collection of Faces that work in conjunction with the DirectoryPlace to optimize or manipulate complex agent
@@ -106,15 +105,16 @@ public class ItineraryFacet extends Facet {
     }
 
     /**
-     * Think about the specified itinerary and let any faces that have registered for the current data type have a look
-     * at it.
+     * Think about the specified itinerary and let any faces that have registered for the current data type have a look at
+     * it.
      * 
      * @param dataType the current type of the data This is the dataType::serviceType of interest (e.g. UNKNOWN::ID)
      * @param payload the data object being routed
      * @param itinerary list of keys selected so far
      * @param entryMap map of what the directory has registered
      */
-    public void thinkOn(final String dataType, final IBaseDataObject payload, final List<DirectoryEntry> itinerary, final DirectoryEntryMap entryMap) {
+    public void thinkOn(final String dataType, final IBaseDataObject payload, final List<DirectoryEntry> itinerary,
+            final DirectoryEntryMap entryMap) {
         // Check conditions
         if (dataType == null || itinerary == null) {
             logger.debug("Cannot operate on null dataType or null itinerary");

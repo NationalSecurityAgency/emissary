@@ -13,13 +13,12 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
+import emissary.config.ConfigUtil;
+import emissary.test.core.UnitTest;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.config.ConfigUtil;
-import emissary.test.core.UnitTest;
 
 public class EmissaryClientTest extends UnitTest {
 

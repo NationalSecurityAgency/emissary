@@ -9,16 +9,15 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.command.FeedCommand;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.test.core.FunctionalTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FTestMultipleWorkSpaces extends FunctionalTest {
     private FilePickUpClient place = null;

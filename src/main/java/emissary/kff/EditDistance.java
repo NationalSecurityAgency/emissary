@@ -32,11 +32,11 @@ public class EditDistance {
      * 
      * HISTORY 13 Nov 89 (mwm) Created edit_dist() and set_costs().
      * 
-     * 28 Jan 90 (mwm) Added view_costs(). Should verify that THRESHOLD computations will work even when THRESHOLD is
-     * not a multiple of sizeof(int).
+     * 28 Jan 90 (mwm) Added view_costs(). Should verify that THRESHOLD computations will work even when THRESHOLD is not a
+     * multiple of sizeof(int).
      * 
-     * 17 May 93 (mwm) Improved performance when used with trn's newsgroup processing; assume all costs are 1, and you
-     * can terminate when a threshold is exceeded.
+     * 17 May 93 (mwm) Improved performance when used with trn's newsgroup processing; assume all costs are 1, and you can
+     * terminate when a threshold is exceeded.
      */
 
     private static final int MIN_DIST = 100;
@@ -47,8 +47,7 @@ public class EditDistance {
      */
 
     private static final int THRESHOLD = 4000; /*
-                                                * worry about allocating more memory only when this # of bytes is
-                                                * exceeded
+                                                * worry about allocating more memory only when this # of bytes is exceeded
                                                 */
 
     private static final int STRLENTHRESHOLD = (THRESHOLD / (Integer.SIZE / 8) - 3) / 2;
@@ -190,23 +189,23 @@ public class EditDistance {
         }
 
         /*
-         * Here's where the fun begins. We will find the minimum edit distance using dynamic programming. We only need
-         * to store two rows of the matrix at a time, since we always progress down the matrix. For example, given the
-         * strings "one" and "two", and insert, delete and change costs equal to 1:
+         * Here's where the fun begins. We will find the minimum edit distance using dynamic programming. We only need to store
+         * two rows of the matrix at a time, since we always progress down the matrix. For example, given the strings "one" and
+         * "two", and insert, delete and change costs equal to 1:
          * 
          * _ o n e _ 0 1 2 3 t 1 1 2 3 w 2 2 2 3 o 3 2 3 3
          * 
          * The dynamic programming recursion is defined as follows:
          * 
-         * ar(x,0) := x * insert_cost ar(0,y) := y * delete_cost ar(x,y) := min(a(x - 1, y - 1) + (from[x] == to[y] ? 0
-         * : change), a(x - 1, y) + insert_cost, a(x, y - 1) + delete_cost, a(x - 2, y - 2) + (from[x] == to[y-1] &&
-         * from[x-1] == to[y] ? swap_cost : infinity))
+         * ar(x,0) := x * insert_cost ar(0,y) := y * delete_cost ar(x,y) := min(a(x - 1, y - 1) + (from[x] == to[y] ? 0 :
+         * change), a(x - 1, y) + insert_cost, a(x, y - 1) + delete_cost, a(x - 2, y - 2) + (from[x] == to[y-1] && from[x-1] ==
+         * to[y] ? swap_cost : infinity))
          * 
-         * Since this only looks at most two rows and three columns back, we need only store the values for the two
-         * preceeding rows. In this implementation, we do not explicitly store the zero column, so only 2 * from_len + 2
-         * words are needed. However, in the implementation of the swap_cost check, the current matrix value is used as
-         * a buffer; we can't overwrite the earlier value until the swap_cost check has been performed. So we use 2 *
-         * from_len + 3 elements in the buffer.
+         * Since this only looks at most two rows and three columns back, we need only store the values for the two preceeding
+         * rows. In this implementation, we do not explicitly store the zero column, so only 2 * from_len + 2 words are needed.
+         * However, in the implementation of the swap_cost check, the current matrix value is used as a buffer; we can't
+         * overwrite the earlier value until the swap_cost check has been performed. So we use 2 * from_len + 3 elements in the
+         * buffer.
          */
 
         // /#define ar(x,y,index) (((x) == 0) ? (y) * del : (((y) == 0) ? (x) * ins :

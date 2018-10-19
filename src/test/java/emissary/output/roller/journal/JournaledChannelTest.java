@@ -1,13 +1,7 @@
 package emissary.output.roller.journal;
 
-import emissary.test.core.UnitTest;
-import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,8 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
-import static org.junit.Assert.assertTrue;
+import emissary.test.core.UnitTest;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class JournaledChannelTest extends UnitTest {
 

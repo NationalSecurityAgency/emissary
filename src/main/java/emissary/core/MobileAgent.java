@@ -1,5 +1,11 @@
 package emissary.core;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
@@ -14,12 +20,6 @@ import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * An autonomous hunk of software
@@ -110,9 +110,9 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * Runnable interface, starts this agent running on it's own thread. It will wait unless it has a payload and a
-     * place to start with. You can set both of these items at once using the <em>go</em> method, which will then notify
-     * us to come out of the wait state and process the payload
+     * Runnable interface, starts this agent running on it's own thread. It will wait unless it has a payload and a place to
+     * start with. You can set both of these items at once using the <em>go</em> method, which will then notify us to come
+     * out of the wait state and process the payload
      */
     @Override
     public void run() {
@@ -182,8 +182,6 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
 
     /**
      * Report whether we are busy or not
-     * 
-     * @return
      */
     @Override
     public boolean isInUse() {
@@ -247,8 +245,7 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * The main control loop to determine and go through an itinerary until the payload is finished (no where else to
-     * go)
+     * The main control loop to determine and go through an itinerary until the payload is finished (no where else to go)
      *
      * @param currentPlaceArg where we are now
      */
@@ -634,12 +631,12 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * Communicate with the directory through the current place to get the next place to go. These are all local calls
-     * since all the local directories have all the information
+     * Communicate with the directory through the current place to get the next place to go. These are all local calls since
+     * all the local directories have all the information
      *
-     * This call may cause several key entries to be returned from the directory. All will be put on an internal queue
-     * and the first one will be returned to the caller. Caller knows to look on the internal queue for additional
-     * entries before calling this method again.
+     * This call may cause several key entries to be returned from the directory. All will be put on an internal queue and
+     * the first one will be returned to the caller. Caller knows to look on the internal queue for additional entries
+     * before calling this method again.
      */
     protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
             final IBaseDataObject payloadArg) {
@@ -720,9 +717,9 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * A little more than the name implies, this method sets the things required for an idle agent to get moving again.
-     * This is to be used when starting the agent from a pick up place because although we start with an initial 'place'
-     * we don't use it for processing, just to get the nextKey from the directory there.
+     * A little more than the name implies, this method sets the things required for an idle agent to get moving again. This
+     * is to be used when starting the agent from a pick up place because although we start with an initial 'place' we don't
+     * use it for processing, just to get the nextKey from the directory there.
      *
      * @param payloadArg the real payload, existing if any will be cleared
      * @param arrivalPlaceArg the place we start at
@@ -751,8 +748,8 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
 
     /**
      * This is for an already in process agent arriving at a new place from a "moveTo". This is different than the above
-     * method because we presume we have arrived at this place in order to do some processing here, not just because we
-     * got picked up by it. So we don't need to get a key first, just start processing.
+     * method because we presume we have arrived at this place in order to do some processing here, not just because we got
+     * picked up by it. So we don't need to get a key first, just start processing.
      *
      * @param dataObject the real payload, exisitng if any will be cleared
      * @param arrivalPlaceArg the place we start at
@@ -774,8 +771,8 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate
-     * on which path we entered to the agent's thread
+     * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate on
+     * which path we entered to the agent's thread
      *
      * @param dataObject the real payload
      * @param arrivalPlaceArg the place we start at
@@ -817,8 +814,8 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * Delete all forms on the stack that are not final. This is called in error conditions to try and break out of
-     * loops or terminate other badness and zip to the end
+     * Delete all forms on the stack that are not final. This is called in error conditions to try and break out of loops or
+     * terminate other badness and zip to the end
      *
      * @param payloadArg the dataobject to work on
      */
@@ -954,8 +951,8 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     }
 
     /**
-     * Set the maximum number of move attempts that can error out before this instance will quit trying and set the
-     * workflow to be an ERROR condition
+     * Set the maximum number of move attempts that can error out before this instance will quit trying and set the workflow
+     * to be an ERROR condition
      *
      * @param value the maximum number of move failures
      */

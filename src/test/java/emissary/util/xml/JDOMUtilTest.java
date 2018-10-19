@@ -3,10 +3,9 @@ package emissary.util.xml;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import emissary.test.core.UnitTest;
 import org.jdom2.Document;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class JDOMUtilTest extends UnitTest {
 

@@ -1,9 +1,9 @@
 package emissary.pickup;
 
+import java.util.LinkedList;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.LinkedList;
 
 /**
  * A size limited queue for holding data to process.
@@ -16,11 +16,11 @@ public class PickupQueue {
     private static final Logger logger = LoggerFactory.getLogger(PickupQueue.class);
 
     /**
-     * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from main
-     * to and instance of this class with the getQueSize method, and at the same keep all of the places busy. We do this
-     * by making the MAX_QUE_SIZE large enough to hold enough files to be processed in SLEEP_TIME. BUT we don't just
-     * make the MAX_QUE_SIZE huge because then we use too much memory. Some feeds put stuff on the Que in blocks. If our
-     * que is a prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
+     * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from main to
+     * and instance of this class with the getQueSize method, and at the same keep all of the places busy. We do this by
+     * making the MAX_QUE_SIZE large enough to hold enough files to be processed in SLEEP_TIME. BUT we don't just make the
+     * MAX_QUE_SIZE huge because then we use too much memory. Some feeds put stuff on the Que in blocks. If our que is a
+     * prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
      */
     private int MAX_QUE_SIZE = 19;
 

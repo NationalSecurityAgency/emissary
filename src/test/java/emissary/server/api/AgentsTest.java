@@ -9,13 +9,6 @@ import static org.mockito.Mockito.when;
 
 import javax.ws.rs.core.Response;
 
-import org.hamcrest.collection.IsEmptyCollection;
-import org.hamcrest.collection.IsIterableContainingInOrder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import emissary.client.response.AgentsResponseEntity;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
@@ -23,6 +16,12 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import org.hamcrest.collection.IsEmptyCollection;
+import org.hamcrest.collection.IsIterableContainingInOrder;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 public class AgentsTest extends EndpointTestBase {
 

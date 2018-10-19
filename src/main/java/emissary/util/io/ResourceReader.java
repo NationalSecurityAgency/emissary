@@ -1,8 +1,5 @@
 package emissary.util.io;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +11,9 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class reads a resource with utilities to read those with common names
@@ -218,9 +218,9 @@ public class ResourceReader {
     }
 
     /**
-     * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For
-     * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
-     * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
      * 
      * @param c the class
      * @param url the jar url
@@ -249,9 +249,9 @@ public class ResourceReader {
 
 
     /**
-     * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For
-     * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
-     * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
      * 
      * @param c the class
      * @param url the file url

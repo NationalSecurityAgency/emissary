@@ -41,8 +41,8 @@ public final class Ssdeep {
     private static final long MASK32 = 0xffffffffL;
 
     /**
-     * Base64 encoding table. Given a 5-bit value {@code n}, position {@code n} in the array is the code point
-     * (expressed as a byte) that should appear.
+     * Base64 encoding table. Given a 5-bit value {@code n}, position {@code n} in the array is the code point (expressed as
+     * a byte) that should appear.
      */
     private static final byte[] b64Table = SpamSumSignature.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 
@@ -50,8 +50,7 @@ public final class Ssdeep {
      * Get the base64 encoding of the low 6 bits of the given value.
      *
      * @param v The value to encode.
-     * @return The base64 encoding of the low 6 bits of {@code v}. The returned value is a code point expressed as a
-     *         byte.
+     * @return The base64 encoding of the low 6 bits of {@code v}. The returned value is a code point expressed as a byte.
      */
     private static byte b64EncodeLowBits(final long v) {
         return b64Table[((int) v) & 0x3f];
@@ -78,8 +77,8 @@ public final class Ssdeep {
         /**
          * Estimate the block size to use.
          *
-         * @param expectedInputLength The expected amount of data to be processed, in bytes. A 0 value can be used if
-         *        the length is unknown, in which case a default block size is returned.
+         * @param expectedInputLength The expected amount of data to be processed, in bytes. A 0 value can be used if the length
+         *        is unknown, in which case a default block size is returned.
          * @return The estimated block size to use.
          */
         private static long estimateBlockSize(final long expectedInputLength) {
@@ -93,8 +92,8 @@ public final class Ssdeep {
         /**
          * Construct a spam sum context to process a file.
          *
-         * @param f The file that will be processed, if known. If non-{@code null}, the length of the file is used to
-         *        guess the hash block size to use.
+         * @param f The file that will be processed, if known. If non-{@code null}, the length of the file is used to guess the
+         *        hash block size to use.
          */
         public SsContext(final File f) {
             final long expectedInputLength = (f != null) ? f.length() : 0;
@@ -104,8 +103,8 @@ public final class Ssdeep {
         /**
          * Construct a spam sum context to process a byte array.
          *
-         * @param data The bytes that will be processed, if known. If non-{@code null}, the length of the array is used
-         *        to guess the hash block size to use.
+         * @param data The bytes that will be processed, if known. If non-{@code null}, the length of the array is used to guess
+         *        the hash block size to use.
          */
         public SsContext(final byte[] data) {
             final long expectedInputLength = (data != null) ? data.length : 0;
@@ -203,9 +202,8 @@ public final class Ssdeep {
          *
          * @param input The input array.
          * @param maxLength The desired maximum array length.
-         * @return If {@code input} is no larger than {@code maxLength}, this just returns {@code input}. Otherwise this
-         *         returns a new array with the same content as {@code input} but with the length truncated to
-         *         {@code maxLength}.
+         * @return If {@code input} is no larger than {@code maxLength}, this just returns {@code input}. Otherwise this returns
+         *         a new array with the same content as {@code input} but with the length truncated to {@code maxLength}.
          */
         private static byte[] truncateArray(final byte[] input, final int maxLength) {
             if (input.length == maxLength) {
@@ -261,9 +259,9 @@ public final class Ssdeep {
          * The computations will use the current block size from the context, but any other existing hash state will be
          * discarded.
          *
-         * @param stream A file containing the bytes to hash. Assumed non-{@code null}. The processing will start
-         *        reading at the current file position and hash all of the data from there to the end of the file. The
-         *        file position when this returns is unspecified. The file is not closed by this operation.
+         * @param stream A file containing the bytes to hash. Assumed non-{@code null}. The processing will start reading at the
+         *        current file position and hash all of the data from there to the end of the file. The file position when this
+         *        returns is unspecified. The file is not closed by this operation.
          * @return The signature for the given stream content.
          * @throws IOException If there is some I/O problem while reading the stream.
          */
@@ -300,8 +298,8 @@ public final class Ssdeep {
         private long h1;
 
         /**
-         * The original documentation says this is the sum of the bytes times the index, but I'm not sure about that.
-         * 32-bit unsigned, initially 0.
+         * The original documentation says this is the sum of the bytes times the index, but I'm not sure about that. 32-bit
+         * unsigned, initially 0.
          */
         private long h2;
 
@@ -418,10 +416,10 @@ public final class Ssdeep {
      * @param needle The array containing the sequence to search for.
      * @param needleStart The starting offset of the sequence to search for, inclusive. Assumed to be in range for
      *        {@code needle}.
-     * @param length The length of the sequence to search for. Assumed to be in range for {@code needle}. Assumed
-     *        greater than zero.
-     * @return If the subsequence of {@code needle} is present in {@code haystack}, this returns the least offset where
-     *         the subsequence occurs. Otherwise -1.
+     * @param length The length of the sequence to search for. Assumed to be in range for {@code needle}. Assumed greater
+     *        than zero.
+     * @return If the subsequence of {@code needle} is present in {@code haystack}, this returns the least offset where the
+     *         subsequence occurs. Otherwise -1.
      */
     private static int indexOfSubSequence(final byte[] haystack, final byte[] needle, final int needleStart, final int length) {
         final int lastCandidatePos = haystack.length - length;
@@ -450,8 +448,8 @@ public final class Ssdeep {
      * @param s1 The first byte array for comparison.
      * @param s2 The second byte array for comparison.
      * @param len The substring length to look for. Assumed greater than zero.
-     * @return {@code true} iff {@code s1} and {@code s2} have at least one byte sequence of length {@code len} in
-     *         common at arbitrary offsets.
+     * @return {@code true} iff {@code s1} and {@code s2} have at least one byte sequence of length {@code len} in common at
+     *         arbitrary offsets.
      */
     private static boolean hasCommonSequence(final byte[] s1, final byte[] s2, final int length) {
         if ((s1.length < length) || (s2.length < length)) {
@@ -476,12 +474,12 @@ public final class Ssdeep {
     }
 
     /**
-     * Truncate sequences of longer than 3 identical bytes. These sequences contain very little information so they tend
-     * to just bias the result unfairly.
+     * Truncate sequences of longer than 3 identical bytes. These sequences contain very little information so they tend to
+     * just bias the result unfairly.
      *
      * @param in The input bytes.
-     * @return An array containing the same content as {@code in}, except that any sequences of more than 3 identical
-     *         bytes are truncated to 3 bytes. For example "aaabbbbcddddd" becomes "aaabbbcddd".
+     * @return An array containing the same content as {@code in}, except that any sequences of more than 3 identical bytes
+     *         are truncated to 3 bytes. For example "aaabbbbcddddd" becomes "aaabbbcddd".
      */
     private static byte[] eliminateLongSequences(final byte[] in) {
         if (in.length < 4) {
@@ -538,8 +536,8 @@ public final class Ssdeep {
     }
 
     /**
-     * This is the low level string scoring algorithm. It takes two strings and scores them on a scale of 0-100 where 0
-     * is a terrible match and 100 is a great match. The blockSize is used to cope with very small messages.
+     * This is the low level string scoring algorithm. It takes two strings and scores them on a scale of 0-100 where 0 is a
+     * terrible match and 100 is a great match. The blockSize is used to cope with very small messages.
      */
     private static long scoreStrings(final byte[] s1, final byte[] s2, final long blockSize) {
         final int len1 = s1.length;
@@ -603,8 +601,8 @@ public final class Ssdeep {
      *
      * @param signature1 The first signature.
      * @param signature2 The second signature.
-     * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100
-     *         is a great match.
+     * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100 is a
+     *         great match.
      */
     public int Compare(final SpamSumSignature signature1, final SpamSumSignature signature2) {
         if ((null == signature1) || (null == signature2)) {

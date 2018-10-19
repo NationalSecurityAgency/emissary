@@ -1,13 +1,5 @@
 package emissary.place;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
-import emissary.directory.KeyManipulator;
-import emissary.kff.KffDataObjectHandler;
-import emissary.util.shell.Executrix;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +11,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import emissary.core.DataObjectFactory;
+import emissary.core.Family;
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.kff.KffDataObjectHandler;
+import emissary.util.shell.Executrix;
 
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
@@ -90,10 +90,10 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * <li>NEW_PARENT_FORM: form on parent for success, default UNKNOWN, can use '&lt;null>'</li>
      * <li>NEW_CHILD_FORM: new form on extracted data, default UNKNOWN</li>
      * <li>SINGLE_CHILD_FILETYPE: file type for single child</li>
-     * <li>KEEP_PARENT_HASHES_FOR_SINGLE_CHILD: when single child is promoted determines if original parent hashes are
+     * <li>KEEP_PARENT_HASHES_FOR_SINGLE_CHILD: when single child is promoted determines if original parent hashes are kept
+     * or not, default false</li>
+     * <li>KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD: when single child is promoted determines if original parent filetype is
      * kept or not, default false</li>
-     * <li>KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD: when single child is promoted determines if original parent filetype
-     * is kept or not, default false</li>
      * <li>SET_TITLE_TO_FILENAME: whether to use filename in doc title, defaul true</li>
      * <li>SERVICE_DISPLAY_NAME: pretty name for sprout message</li>
      * <li>CUSTOM_FILE_TYPES: special mapping to set type by file extension</li>
@@ -368,8 +368,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
 
     /**
-     * Determines the initial forms for a new data object based on the configuration settings and the file name. This
-     * method may be customized in sub-classes, but at least one form value must be returned!
+     * Determines the initial forms for a new data object based on the configuration settings and the file name. This method
+     * may be customized in sub-classes, but at least one form value must be returned!
      */
     protected List<String> getFormsFromFile(File f) {
         List<String> tmpForms = new ArrayList<String>();
@@ -390,8 +390,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
 
     /**
-     * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is
-     * read and loaded into the newData accumulator now
+     * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is read
+     * and loaded into the newData accumulator now
      * 
      * @param parent the original payload
      * @param files the result files
@@ -560,8 +560,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     }
 
     /**
-     * Process an incoming payload returning attachments This entry point is shared among all synchronized,
-     * unsynchronized, normal and heavy-duty processing entry points.
+     * Process an incoming payload returning attachments This entry point is shared among all synchronized, unsynchronized,
+     * normal and heavy-duty processing entry points.
      * 
      * @param tData the payload to process
      * @return attachments
@@ -572,8 +572,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
 
     /**
-     * Process an incoming payload returning attachments, using only some of the data This entry point is shared among
-     * all synchronized, unsynchronized, normal and heavy-duty processing entry points.
+     * Process an incoming payload returning attachments, using only some of the data This entry point is shared among all
+     * synchronized, unsynchronized, normal and heavy-duty processing entry points.
      * 
      * @param tData the payload to process
      * @param start offset in data to start

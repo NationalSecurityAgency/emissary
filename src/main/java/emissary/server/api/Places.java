@@ -1,5 +1,16 @@
 package emissary.server.api;
 
+import static emissary.server.api.ApiUtils.lookupPeers;
+import static emissary.server.api.ApiUtils.stripPeerString;
+
+import java.util.Set;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import emissary.client.EmissaryClient;
 import emissary.client.response.PlaceList;
 import emissary.client.response.PlacesResponseEntity;
@@ -10,16 +21,6 @@ import emissary.server.EmissaryServer;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Set;
-
-import static emissary.server.api.ApiUtils.lookupPeers;
-import static emissary.server.api.ApiUtils.stripPeerString;
 
 /**
  * The agents Emissary API endpoint. Currently contains the local (/api/places) call and cluster (/api/clusterPlaces)

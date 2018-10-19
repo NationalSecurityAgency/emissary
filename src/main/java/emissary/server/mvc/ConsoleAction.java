@@ -14,13 +14,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.google.common.collect.ImmutableMap;
+import emissary.scripting.RubyConsole;
 import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
-
-import emissary.scripting.RubyConsole;
 
 @Path("")
 // context is emissary

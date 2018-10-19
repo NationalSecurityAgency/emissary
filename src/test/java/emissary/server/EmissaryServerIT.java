@@ -1,25 +1,20 @@
 package emissary.server;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
+import emissary.command.ServerCommand;
+import emissary.test.core.UnitTest;
 import emissary.util.Version;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.Ignore;
 import org.junit.Test;
-
-import emissary.command.ServerCommand;
-import emissary.core.EmissaryException;
-import emissary.test.core.UnitTest;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class EmissaryServerIT extends UnitTest {
 

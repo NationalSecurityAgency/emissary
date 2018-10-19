@@ -1,13 +1,5 @@
 package emissary.util;
 
-import emissary.core.IBaseDataObject;
-import emissary.util.xml.JDOMUtil;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,6 +13,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import emissary.core.IBaseDataObject;
+import emissary.util.xml.JDOMUtil;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utilities for dealing with IBaseDataObject and Lists thereof

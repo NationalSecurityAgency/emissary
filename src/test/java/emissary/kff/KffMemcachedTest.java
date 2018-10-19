@@ -18,14 +18,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import emissary.kff.KffFilter.FilterType;
 import emissary.test.core.UnitTest;
 import net.spy.memcached.MemcachedClient;
@@ -33,6 +25,13 @@ import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;
 import net.spy.memcached.ops.Operation;
 import net.spy.memcached.ops.OperationStatus;
+import org.apache.commons.lang.NotImplementedException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class KffMemcachedTest extends UnitTest {
 

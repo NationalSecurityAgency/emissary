@@ -1,21 +1,11 @@
 package emissary.output.roller;
 
-import emissary.output.io.SimpleFileNameGenerator;
-import emissary.output.roller.journal.Journal;
-import emissary.output.roller.journal.JournalEntry;
-import emissary.output.roller.journal.JournalReader;
-import emissary.output.roller.journal.JournalWriter;
-import emissary.output.roller.journal.JournaledChannelPool;
-import emissary.output.roller.journal.KeyedOutput;
-import emissary.test.core.UnitTest;
-import emissary.util.io.FileNameGenerator;
-import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
+import static org.junit.Assert.assertThat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,12 +24,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
-import static org.junit.Assert.assertThat;
+import emissary.output.io.SimpleFileNameGenerator;
+import emissary.output.roller.journal.Journal;
+import emissary.output.roller.journal.JournalEntry;
+import emissary.output.roller.journal.JournalReader;
+import emissary.output.roller.journal.JournalWriter;
+import emissary.output.roller.journal.JournaledChannelPool;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.test.core.UnitTest;
+import emissary.util.io.FileNameGenerator;
+import emissary.util.io.UnitTestFileUtils;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class JournaledCoalescerTest extends UnitTest {
     @Rule
@@ -197,8 +197,8 @@ public class JournaledCoalescerTest extends UnitTest {
     }
 
     /**
-     * This test case tries to simulate a crash during the roll up. There would be a '.rolling' file present from the
-     * last run, which should be deleted and normal operations carried out from there.
+     * This test case tries to simulate a crash during the roll up. There would be a '.rolling' file present from the last
+     * run, which should be deleted and normal operations carried out from there.
      */
     @SuppressWarnings("resource")
     @Test
@@ -253,8 +253,8 @@ public class JournaledCoalescerTest extends UnitTest {
     }
 
     /**
-     * Test to make sure an orphaned rolled file is cleaned up. This can happen during a crash when the part/journal
-     * files are deleted, but the rolled file is not renamed.
+     * Test to make sure an orphaned rolled file is cleaned up. This can happen during a crash when the part/journal files
+     * are deleted, but the rolled file is not renamed.
      */
     @Test
     public void testCrashAfterRolledNoPartFiles() throws Exception {
@@ -324,7 +324,8 @@ public class JournaledCoalescerTest extends UnitTest {
         // setup
         Path target = Files.createTempFile(targetBUDPath, "badfile", "");
         String key = target.toString();
-        try (JournalWriter jw = new JournalWriter(targetBUDPath, key); SeekableByteChannel c = Files.newByteChannel(target, StandardOpenOption.WRITE)) {
+        try (JournalWriter jw = new JournalWriter(targetBUDPath, key);
+                SeekableByteChannel c = Files.newByteChannel(target, StandardOpenOption.WRITE)) {
             ArrayList<String> strings = new ArrayList<>(BUD1_LINES);
             strings.addAll(BUD2_LINES);
             for (String line : strings) {

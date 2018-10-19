@@ -1,9 +1,8 @@
 package emissary.server;
 
+import emissary.test.core.UnitTest;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class InitializeContextTest extends UnitTest {
 

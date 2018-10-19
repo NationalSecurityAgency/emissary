@@ -1,5 +1,19 @@
 package emissary.server.mvc.internal;
 
+import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
@@ -9,19 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.HashSet;
-import java.util.Set;
-
-import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-
 @Path("")
 // context is /emissary, set in EmissaryServer
 public class RegisterPeerAction {
@@ -29,8 +30,8 @@ public class RegisterPeerAction {
 
     /*
      * <!-- Register a peer with the local directory and return the xml --> <Use-Case source="*"
-     * action="/RegisterPeer.action"> <Work type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work
-     * type="Bean" target="emissary.comms.http.worker.LookupDirectoryWorker"/> <Work type="Bean"
+     * action="/RegisterPeer.action"> <Work type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
+     * target="emissary.comms.http.worker.LookupDirectoryWorker"/> <Work type="Bean"
      * target="emissary.comms.http.worker.RegisterPeerWorker"/> <Work type="Bean"
      * target="emissary.comms.http.worker.SetProxyWorker"/> <View status="0" view="/xmldir.jsp"/> <View status="-1"
      * view="/error.jsp"/> </Use-Case>

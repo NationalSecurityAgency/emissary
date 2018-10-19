@@ -12,16 +12,15 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.output.filter.IDropOffFilter;
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DropOffPlaceTest extends UnitTest {
 

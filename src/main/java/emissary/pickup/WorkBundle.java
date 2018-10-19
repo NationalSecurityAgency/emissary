@@ -1,17 +1,16 @@
 package emissary.pickup;
 
-import emissary.util.xml.JDOMUtil;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+
+import emissary.util.xml.JDOMUtil;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to communicate between the TreePickUpPlace and TreeSpace about a set of files to process.
@@ -90,8 +89,8 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     }
 
     /**
-     * Build one as a copy of another, generating a new unique id for the copy. Transient fields sentTo and errorCount
-     * are not copied by this constructor
+     * Build one as a copy of another, generating a new unique id for the copy. Transient fields sentTo and errorCount are
+     * not copied by this constructor
      * 
      * @param that the work bundle to copy
      */

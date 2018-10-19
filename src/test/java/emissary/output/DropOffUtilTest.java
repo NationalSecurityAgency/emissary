@@ -1,17 +1,11 @@
 package emissary.output;
 
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.BaseDataObject;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.output.DropOffUtil;
-import emissary.test.core.UnitTest;
-import emissary.util.TimeUtil;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,12 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.BaseDataObject;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.UnitTest;
+import emissary.util.TimeUtil;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for DropOffUtil
@@ -407,7 +405,8 @@ public class DropOffUtilTest extends UnitTest {
         this.util.processMetadata(family);
 
         // Child 1 subtree has a FOO param
-        assertEquals("Propagation of configured parent type must use closest available entry on child", "FOO", child.getStringParameter("PARENT_FOO"));
+        assertEquals("Propagation of configured parent type must use closest available entry on child", "FOO",
+                child.getStringParameter("PARENT_FOO"));
         assertEquals("Propagation of configured parent type must use closest available entry on child records", "CHILD_FOO", childRecords.get(0)
                 .getStringParameter("PARENT_FOO"));
 

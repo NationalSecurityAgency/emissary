@@ -10,12 +10,11 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.Set;
 
+import emissary.test.core.UnitTest;
 import org.hamcrest.junit.ExpectedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
     @Rule

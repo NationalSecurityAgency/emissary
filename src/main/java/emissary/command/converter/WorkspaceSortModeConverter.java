@@ -1,11 +1,11 @@
 package emissary.command.converter;
 
+import java.util.Comparator;
+
 import com.beust.jcommander.IStringConverter;
 import emissary.pickup.WorkBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Comparator;
 
 public class WorkspaceSortModeConverter implements IStringConverter<Comparator<WorkBundle>> {
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceSortModeConverter.class);
@@ -69,8 +69,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
     }
 
     /**
-     * Order the queue by the youngest/most-recent file modification time in the bundles. "Youngest" is relative to
-     * "now".
+     * Order the queue by the youngest/most-recent file modification time in the bundles. "Youngest" is relative to "now".
      *
      * However, if the priority of the bundles differ, the priority overrules the times
      */

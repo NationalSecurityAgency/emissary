@@ -201,8 +201,8 @@ public class ByteMatcher {
     }
 
     /**
-     * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the
-     * {token} to the end of the line.
+     * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the {token} to
+     * the end of the line.
      */
     public String getValue(String key, int ofs, String delim) {
 

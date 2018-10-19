@@ -2,7 +2,6 @@ package emissary.util;
 
 import org.jdom2.Verifier;
 
-
 public class StringUtil {
 
     /**

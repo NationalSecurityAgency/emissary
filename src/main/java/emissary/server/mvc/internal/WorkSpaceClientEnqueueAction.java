@@ -1,12 +1,7 @@
 package emissary.server.mvc.internal;
 
-import emissary.server.mvc.adapters.WorkSpaceAdapter;
-import emissary.core.Namespace;
-import emissary.directory.KeyManipulator;
-import emissary.pickup.IPickUpSpace;
-import emissary.pickup.WorkBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -15,8 +10,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
+
+import emissary.core.Namespace;
+import emissary.directory.KeyManipulator;
+import emissary.pickup.IPickUpSpace;
+import emissary.pickup.WorkBundle;
+import emissary.server.mvc.adapters.WorkSpaceAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer

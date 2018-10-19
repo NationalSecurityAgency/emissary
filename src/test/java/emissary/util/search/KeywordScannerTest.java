@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class KeywordScannerTest extends UnitTest {
     private final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();

@@ -14,18 +14,16 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.test.core.UnitTest;
-
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public final class MainTest extends UnitTest {
     private String className = "emissary.place.sample.DevNullPlace";

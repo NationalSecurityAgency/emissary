@@ -32,8 +32,7 @@ public class DecomposedSession {
     protected ArrayListMultimap<String, Object> metadata = ArrayListMultimap.create(100, 1);
 
     /**
-     * Set the header. This implementation does NOT make a copy of the byte array Previously existing header data is
-     * lost
+     * Set the header. This implementation does NOT make a copy of the byte array Previously existing header data is lost
      *
      * @param h byte array of header data to set
      */

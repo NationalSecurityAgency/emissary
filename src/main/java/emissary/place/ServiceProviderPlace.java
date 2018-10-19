@@ -1,6 +1,15 @@
 package emissary.place;
 
-import emissary.server.mvc.adapters.DirectoryAdapter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.codahale.metrics.Timer;
 import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -19,23 +28,12 @@ import emissary.directory.WildcardEntry;
 import emissary.kff.KffDataObjectHandler;
 import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
+import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
 import emissary.util.JavaCharSetLoader;
-
-import com.codahale.metrics.Timer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
@@ -46,16 +44,16 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
         emissary.core.IAggregator, ServiceProviderPlaceMBean {
 
     /**
-     * Container for all configuration parameters read from the configuration file for this place. The net result is
-     * that many name value pairs are loaded from one or more files. See ServiceConfigGuide for details.
+     * Container for all configuration parameters read from the configuration file for this place. The net result is that
+     * many name value pairs are loaded from one or more files. See ServiceConfigGuide for details.
      *
      * @see emissary.config.ServiceConfigGuide
      */
     protected Configurator configG;
 
     /**
-     * A <i><b>local</b></i> reference to the directory that this place resides in. Every JVM that contains 'places'
-     * must have a local directory
+     * A <i><b>local</b></i> reference to the directory that this place resides in. Every JVM that contains 'places' must
+     * have a local directory
      *
      * @see emissary.directory.DirectoryPlace
      */
@@ -64,8 +62,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
 
     /**
      * set of keys for this place read from configG. Each of the values defined by
-     * SERVICE_PROXY.SERCVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the
-     * config file.
+     * SERVICE_PROXY.SERCVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the config
+     * file.
      */
     protected List<String> keys = new ArrayList<String>();
 
@@ -107,8 +105,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
 
     /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
-     * element used to know where that is and how to name it. If the old style config with SERVICE_PROXY etc is used
-     * then the PlaceName becomes the runtime class name of the instance without the package.
+     * element used to know where that is and how to name it. If the old style config with SERVICE_PROXY etc is used then
+     * the PlaceName becomes the runtime class name of the instance without the package.
      */
     public ServiceProviderPlace() throws IOException {
         super();
@@ -118,8 +116,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Create a place and register it at the location specified. The location key contains the name of the place which
-     * is used to configure it. The local directory instance is found in the local Namespace.
+     * Create a place and register it at the location specified. The location key contains the name of the place which is
+     * used to configure it. The local directory instance is found in the local Namespace.
      *
      * @param thePlaceLocation string name of our location
      */
@@ -505,8 +503,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
 
     /**
      * "HD" agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
-     * called. Should be overridden by concrete places that wish to process bulk data in a different manner than one
-     * payload at a time.
+     * called. Should be overridden by concrete places that wish to process bulk data in a different manner than one payload
+     * at a time.
      *
      * @param payloadList list of IBaseDataObject from an HDMobileAgent
      * @return list of IBaseDataObject "sprouts"
@@ -597,9 +595,9 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Process a payload and return a list of new items decomosed from it (or an empty list) What happens here and what
-     * is ultimately expected depends on the workflow stage of the place registration, and the type of job it is
-     * expected to do.
+     * Process a payload and return a list of new items decomosed from it (or an empty list) What happens here and what is
+     * ultimately expected depends on the workflow stage of the place registration, and the type of job it is expected to
+     * do.
      *
      * @param payload the BaseDataObject to process
      * @return list of BaseDataObject that represent the children (if any)
@@ -615,8 +613,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * This method must be called during setup of the place to ensure that one of the two implementations is provided by
-     * the declaring class.
+     * This method must be called during setup of the place to ensure that one of the two implementations is provided by the
+     * declaring class.
      */
     protected void verifyProcessImplementationProvided() {
 
@@ -652,8 +650,7 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Convenience method a lot of places use. Removes all items from the current form stack that this place has proxies
-     * for
+     * Convenience method a lot of places use. Removes all items from the current form stack that this place has proxies for
      *
      * @param d a data object whose current form will be expunged of my proxies
      * @return count of how many items removed
@@ -1012,8 +1009,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can
-     * instantiate and use the Main class directly.
+     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can instantiate
+     * and use the Main class directly.
      *
      * @param placeClass the class to instantiate
      * @param args from command line
@@ -1024,8 +1021,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can
-     * instantiate and use the Main class directly.
+     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can instantiate
+     * and use the Main class directly.
      *
      * @param placeClass the class name to instantiate
      * @param args from command line
@@ -1084,8 +1081,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * Leverage our insider knowledge of how emissary MobileAgents work in conjunction with the namespace to reach
-     * around the back door of the system and get the TLD for the current payload You should only call this if
+     * Leverage our insider knowledge of how emissary MobileAgents work in conjunction with the namespace to reach around
+     * the back door of the system and get the TLD for the current payload You should only call this if
      * payload.shortName().indexOf(Family.SEP) > -1
      */
     protected IBaseDataObject getTLD() {
@@ -1121,12 +1118,12 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * This method should return a list of all the parameters that a subclass Place will potentially modify (this
-     * includes adding, removing, or changing the value of).
+     * This method should return a list of all the parameters that a subclass Place will potentially modify (this includes
+     * adding, removing, or changing the value of).
      *
      * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
-     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it
-     * will become abstract.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
      *
      * @return a List&lt;String&gt; of all parameter names that a Place will add, remove, or change the value of
      */
@@ -1139,8 +1136,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
      * includes adding, removing, or changing the value of).
      *
      * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
-     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it
-     * will become abstract.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
      *
      * @return a List&lt;String&gt; of all alternate view names that a Place will add, remove, or change the value of
      */
@@ -1152,8 +1149,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
      * This method should return a list of all the output forms that a subclass Place will potentially output
      *
      * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
-     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it
-     * will become abstract.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
      *
      * @return a List&lt;String&gt; of all output forms that a Place may output
      */
@@ -1165,8 +1162,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
      * This method should return a list of all the file types that a subclass Place will potentially output
      *
      * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.
-     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it
-     * will become abstract.
+     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will
+     * become abstract.
      *
      * @return a List&lt;String&gt; of all file types that a Place may output
      */
@@ -1175,8 +1172,8 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     }
 
     /**
-     * This method should return true if the Place may alter the IBaseDataObject data[] (i.e.PrimaryView) in any way,
-     * and false otherwise
+     * This method should return true if the Place may alter the IBaseDataObject data[] (i.e.PrimaryView) in any way, and
+     * false otherwise
      *
      * @return true if the data[] member may be altered by the Place, false otherwise
      */

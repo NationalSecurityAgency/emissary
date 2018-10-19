@@ -6,15 +6,14 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
 import emissary.place.EmptyFormPlace;
 import emissary.place.IServiceProviderPlace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * This mobile agent carries around an ArrayList of payload that can be added onto instead of sprouting. The agent is
@@ -167,10 +166,10 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * The main control loop to determine and go through an itinerary Since we have a list of payload object that can
-     * potentially grow at every place we visit, we need to iterate over them until we get done but we cannot use a
-     * normal iterator which will throw an exception if the underlying collection mutates while iterating. So we make
-     * the selection of the first payload that needs work, find the place for it, process all other payloads that have
-     * the same form and lastPlace, then move on.
+     * potentially grow at every place we visit, we need to iterate over them until we get done but we cannot use a normal
+     * iterator which will throw an exception if the underlying collection mutates while iterating. So we make the selection
+     * of the first payload that needs work, find the place for it, process all other payloads that have the same form and
+     * lastPlace, then move on.
      */
     @Override
     protected void agentControl(final IServiceProviderPlace currentPlaceArg) {

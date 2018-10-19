@@ -1,12 +1,6 @@
 package emissary.util;
 
-import emissary.config.ConfigEntry;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -23,7 +17,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static java.util.stream.Collectors.toList;
+import emissary.config.ConfigEntry;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Attempt to parse a date in an unknown format. This will loop through a set of configured formats and convert it into
@@ -48,8 +48,8 @@ public class FlexibleDateTimeParser {
     /*
      * Three-letter time zone IDs often point to multiple time zones. Java 8 uses the time zone over the offset causing
      * problems with the date/time in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it
-     * would take some time to transition, a regex is used to strip out the short time zone if there is an offset
-     * present. See java.util.TimeZone and java.time.ZoneId#SHORT_IDS for more info.
+     * would take some time to transition, a regex is used to strip out the short time zone if there is an offset present.
+     * See java.util.TimeZone and java.time.ZoneId#SHORT_IDS for more info.
      */
     private static final String SHORT_TZ_PATTERN = "(\\()?([A-Z]{3})(\\))?"; // (XXX) or XXX
     private static final String OFFSET_PATTERN = "[ ]?[+-]\\d{2}(:?\\d{2}(:?\\d{2})?)?[ ]?"; // +00 +00:00 +0000

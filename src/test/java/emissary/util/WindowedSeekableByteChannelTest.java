@@ -12,9 +12,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 /**
  *

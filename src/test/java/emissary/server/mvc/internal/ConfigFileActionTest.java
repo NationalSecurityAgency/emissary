@@ -1,5 +1,12 @@
 package emissary.server.mvc.internal;
 
+import static emissary.server.mvc.internal.ConfigFileAction.CONFIG_PARAM;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+import javax.ws.rs.core.Response;
+
 import emissary.server.mvc.EndpointTestBase;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -7,14 +14,6 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-
-import javax.ws.rs.core.Response;
-
-import static emissary.server.mvc.internal.ConfigFileAction.CONFIG_PARAM;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-
 
 @RunWith(Theories.class)
 public class ConfigFileActionTest extends EndpointTestBase {

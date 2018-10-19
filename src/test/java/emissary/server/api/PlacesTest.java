@@ -1,5 +1,8 @@
 package emissary.server.api;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +11,6 @@ import javax.ws.rs.core.Response;
 
 import emissary.client.response.PlacesResponseEntity;
 import emissary.command.ServerCommand;
-import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
@@ -20,9 +22,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 public class PlacesTest extends EndpointTestBase {
     private static final Set<String> EXPECTED_PLACES = new HashSet<>(Arrays.asList("pickupClient", "pickupPlace", "processingPlace"));

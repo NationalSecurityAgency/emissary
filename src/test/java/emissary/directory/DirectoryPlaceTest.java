@@ -15,16 +15,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DirectoryPlaceTest extends UnitTest {
 

@@ -12,13 +12,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
-
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class ItineraryFacetTest extends UnitTest {
 

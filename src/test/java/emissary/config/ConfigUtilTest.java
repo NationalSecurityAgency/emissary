@@ -15,15 +15,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import emissary.core.EmissaryException;
+import emissary.test.core.LogbackCapture;
+import emissary.test.core.UnitTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import emissary.core.EmissaryException;
-import emissary.test.core.LogbackCapture;
-import emissary.test.core.UnitTest;
 
 public class ConfigUtilTest extends UnitTest {
 

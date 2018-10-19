@@ -1,5 +1,16 @@
 package emissary.command;
 
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 import com.beust.jcommander.JCommander;
 import com.google.common.net.HostAndPort;
 import emissary.config.ConfigUtil;
@@ -11,17 +22,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PeersCommandIT extends UnitTest {
     @Rule

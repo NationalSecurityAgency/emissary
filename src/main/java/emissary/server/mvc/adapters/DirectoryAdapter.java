@@ -1,5 +1,15 @@
 package emissary.server.mvc.adapters;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
+
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.config.ConfigUtil;
@@ -22,15 +32,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Stuff for adapting the Directory calls to HTTP All of the outbound methods supply the TARGET_DIRECTORY parameter that
@@ -104,8 +105,7 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Process the removePlaces call coming remotely over HTTP request params onto the specified (local) directory
-     * place.
+     * Process the removePlaces call coming remotely over HTTP request params onto the specified (local) directory place.
      *
      * @param req the inbound request object
      */
@@ -128,9 +128,9 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Handle the packaging and sending of an addPlaces call to a remote directory. Sends multiple keys on the same
-     * place with the same cost/quality and description if the description, cost and quality lists are only size 1. Uses
-     * a distinct description/cost/quality for each key when there are enough values
+     * Handle the packaging and sending of an addPlaces call to a remote directory. Sends multiple keys on the same place
+     * with the same cost/quality and description if the description, cost and quality lists are only size 1. Uses a
+     * distinct description/cost/quality for each key when there are enough values
      *
      * @param parentDirectory the url portion of the parent directory location
      * @param entryList the list of directory entries to add
@@ -233,8 +233,7 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Process the failDirectory call coming remotely over HTTP request params onto the specified (local) directory
-     * place.
+     * Process the failDirectory call coming remotely over HTTP request params onto the specified (local) directory place.
      *
      * @param req the inbound request object
      */
@@ -309,8 +308,8 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map
-     * of String,DirectoryEntryList for return
+     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map of
+     * String,DirectoryEntryList for return
      *
      * @param key the key of the remote directory to request the zone transfer from
      * @param myKey the key of the local requesting the zone or null if none
@@ -335,8 +334,8 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map
-     * of String,DirectoryEntryList for return.
+     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map of
+     * String,DirectoryEntryList for return.
      *
      * @param key the key of the remote directory to request the zone transfer from
      * @param myKey the key of the local dir requesting the zone or null if none
@@ -400,8 +399,7 @@ public class DirectoryAdapter extends EmissaryClient {
     /**
      * Look up the local directory using one of two methods. The easier method almost always works, the case where it
      * doesn't in when there are multilpe configured Emissary nodes on the same local JVM through a single jetty with
-     * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test
-     * coverage.
+     * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
      *
      * @param name name of the local directory or null for default
      */
