@@ -49,7 +49,7 @@
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>2.27</dep.jersey.version>
-    <dep.jetty.version>9.4.3.v20170317</dep.jetty.version>
+    <dep.jetty.version>9.4.12.v20180830</dep.jetty.version>
     <dep.jruby-complete.version>1.7.1</dep.jruby-complete.version>
     <dep.junit.version>4.12</dep.junit.version>
     <dep.logback.version>1.1.5</dep.logback.version>
@@ -59,8 +59,8 @@
     <dep.slf4j.version>1.7.16</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.8.17</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
-    <dep.sun.mail.version>1.4.5</dep.sun.mail.version>
-    <dep.tika.version>1.11</dep.tika.version>
+    <dep.sun.mail.version>1.6.2</dep.sun.mail.version>
+    <dep.tika.version>1.19.1</dep.tika.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
