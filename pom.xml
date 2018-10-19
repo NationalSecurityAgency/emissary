@@ -44,10 +44,11 @@
     <dep.httpclient.version>4.5.1</dep.httpclient.version>
     <dep.httpcore.version>4.4.3</dep.httpcore.version>
     <dep.jackcess.version>2.1.2</dep.jackcess.version>
-    <dep.jackson.version>2.8.4</dep.jackson.version>
+    <dep.jackson.databind.version>2.8.11.2</dep.jackson.databind.version>
+    <dep.jackson.version>2.8.11</dep.jackson.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.26</dep.jersey.version>
+    <dep.jersey.version>2.27</dep.jersey.version>
     <dep.jetty.version>9.4.3.v20170317</dep.jetty.version>
     <dep.jruby-complete.version>1.7.1</dep.jruby-complete.version>
     <dep.junit.version>4.12</dep.junit.version>
@@ -66,8 +67,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
-    <!-- release plugin recommends at least 3.0.4, due to bugs -->
-    <maven.min-version>3.2.2</maven.min-version>
+    <maven.min-version>3.2.5</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- With Java 8 and the latest version of surefire, user.timezone is not read correctly.  Reevaluate one day.
@@ -96,7 +96,17 @@
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${dep.jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
+        <version>${dep.jackson.databind.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.module</groupId>
+        <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${dep.jackson.version}</version>
       </dependency>
       <dependency>
@@ -414,10 +424,10 @@
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
     </dependency>
-    <!--<dependency>-->
-    <!--<groupId>com.fasterxml.jackson.core</groupId>-->
-    <!--<artifactId>jackson-databind</artifactId>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.github.spullara.mustache.java</groupId>
       <artifactId>compiler</artifactId>
@@ -462,10 +472,6 @@
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
     </dependency>
-    <!--<dependency>-->
-    <!--<groupId>edu.ucar</groupId>-->
-    <!--<artifactId>jj2000</artifactId>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-ganglia</artifactId>
@@ -575,10 +581,6 @@
       <artifactId>jersey-media-multipart</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jruby</groupId>
       <artifactId>jruby-complete</artifactId>
     </dependency>
@@ -586,14 +588,6 @@
       <groupId>org.mozilla</groupId>
       <artifactId>rhino</artifactId>
     </dependency>
-    <!--<dependency>-->
-    <!--<groupId>org.slf4j</groupId>-->
-    <!--<artifactId>jcl-over-slf4j</artifactId>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-    <!--<groupId>org.slf4j</groupId>-->
-    <!--<artifactId>jul-to-slf4j</artifactId>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
@@ -726,18 +720,6 @@
             </execution>
           </executions>
         </plugin>
-        <!--
-        <plugin>
-          <groupId>de.jflex</groupId>
-          <artifactId>jflex-maven-plugin</artifactId>
-          <version>${dep.jflex.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
-        </plugin>
-        -->
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
           <artifactId>replacer</artifactId>
@@ -842,8 +824,6 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.6.0</version>
           <configuration>
-            <source>${maven.compiler.source}</source>
-            <target>${maven.compiler.target}</target>
             <showWarnings>${maven.compiler.showWarnings}</showWarnings>
             <compilerArgs>
               <arg>-Xlint:-path,unchecked</arg>
@@ -864,23 +844,22 @@
           <version>2.5.3</version>
         </plugin>
         <plugin>
-          <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-          <artifactId>maven-java-formatter-plugin</artifactId>
-          <version>0.4</version>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <version>2.8.0</version>
           <configuration>
-            <configFile>${eclipseFormatterStyle}</configFile>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
             <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
+            <configFile>${eclipseFormatterStyle}</configFile>
             <lineEnding>LF</lineEnding>
+            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+            <skipCssFormatting>true</skipCssFormatting>
+            <skipHtmlFormatting>true</skipHtmlFormatting>
+            <skipJsFormatting>true</skipJsFormatting>
+            <skipJsonFormatting>true</skipJsonFormatting>
+            <skipXmlFormatting>true</skipXmlFormatting>
           </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.eclipse.tycho</groupId>
-              <artifactId>org.eclipse.jdt.core</artifactId>
-              <version>3.10.0.v20140604-1726</version>
-            </dependency>
-          </dependencies>
           <executions>
             <execution>
               <goals>
@@ -891,9 +870,26 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>net.revelc.code</groupId>
+          <artifactId>impsort-maven-plugin</artifactId>
+          <version>1.2.0</version>
+          <configuration>
+            <groups>java.,javax.,*</groups>
+            <removeUnused>true</removeUnused>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sort-imports</id>
+              <goals>
+                <goal>sort</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>2.10.0</version>
           <executions>
             <execution>
               <id>sort-pom</id>
@@ -970,9 +966,6 @@
             <minimumTokens>100</minimumTokens>
             <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
             <targetJdk>${maven.compiler.target}</targetJdk>
-            <!--
-            <aggregate>true</aggregate>
-            -->
           </configuration>
         </plugin>
         <plugin>
@@ -996,9 +989,6 @@
           <configuration>
             <showSuccess>true</showSuccess>
             <linkXRef>true</linkXRef>
-            <!--
-            <aggregate>true</aggregate>
-            -->
           </configuration>
         </plugin>
         <plugin>
@@ -1160,13 +1150,6 @@
                   <report>checkstyle</report>
                 </reports>
               </reportSet>
-              <!--
-              <reportSet>
-                <reports>
-                  <report>checkstyle-aggregate</report>
-                </reports>
-              </reportSet>
-              -->
             </reportSets>
           </plugin>
         </plugins>
@@ -1231,8 +1214,12 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-            <artifactId>maven-java-formatter-plugin</artifactId>
+            <groupId>net.revelc.code.formatter</groupId>
+            <artifactId>formatter-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>net.revelc.code</groupId>
+            <artifactId>impsort-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
@@ -1353,7 +1340,7 @@
                       <pluginExecutionFilter>
                         <groupId>com.github.ekryd.sortpom</groupId>
                         <artifactId>sortpom-maven-plugin</artifactId>
-                        <versionRange>[2.4.0,)</versionRange>
+                        <versionRange>[0,)</versionRange>
                         <goals>
                           <goal>sort</goal>
                         </goals>
@@ -1366,7 +1353,7 @@
                       <pluginExecutionFilter>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <versionRange>[1.2.0,)</versionRange>
+                        <versionRange>[0,)</versionRange>
                         <goals>
                           <goal>exec</goal>
                         </goals>
@@ -1379,7 +1366,7 @@
                       <pluginExecutionFilter>
                         <groupId>com.google.code.maven-replacer-plugin</groupId>
                         <artifactId>replacer</artifactId>
-                        <versionRange>[1.5.3,)</versionRange>
+                        <versionRange>[0,)</versionRange>
                         <goals>
                           <goal>replace</goal>
                         </goals>
@@ -1392,7 +1379,7 @@
                       <pluginExecutionFilter>
                         <groupId>de.jflex</groupId>
                         <artifactId>jflex-maven-plugin</artifactId>
-                        <versionRange>[1.6.0,)</versionRange>
+                        <versionRange>[0,)</versionRange>
                         <goals>
                           <goal>generate</goal>
                         </goals>
@@ -1401,34 +1388,6 @@
                         <ignore />
                       </action>
                     </pluginExecution>
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-                        <artifactId>maven-java-formatter-plugin</artifactId>
-                        <versionRange>[0.4,)</versionRange>
-                        <goals>
-                          <goal>format</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore />
-                      </action>
-                    </pluginExecution>
-                    <!--
-                    <pluginExecution>
-                      <pluginExecutionFilter>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <versionRange>[2.5,)</versionRange>
-                        <goals>
-                          <goal>jar</goal>
-                        </goals>
-                      </pluginExecutionFilter>
-                      <action>
-                        <ignore />
-                      </action>
-                    </pluginExecution>
-                    -->
                   </pluginExecutions>
                 </lifecycleMappingMetadata>
               </configuration>
