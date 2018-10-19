@@ -44,7 +44,6 @@
     <dep.httpclient.version>4.5.1</dep.httpclient.version>
     <dep.httpcore.version>4.4.3</dep.httpcore.version>
     <dep.jackcess.version>2.1.2</dep.jackcess.version>
-    <dep.jackson.databind.version>2.8.11.2</dep.jackson.databind.version>
     <dep.jackson.version>2.8.11</dep.jackson.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
@@ -102,7 +101,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.databind.version}</version>
+        <version>${dep.jackson.version}.2</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
