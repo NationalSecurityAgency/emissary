@@ -10,7 +10,7 @@ import java.io.PrintStream;
 
 /**
  * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of
- * strings is provided as the keywords to be searched. This class is usefull for a relatively small set of keywords.
+ * strings is provided as the keywords to be searched. This class is useful for a relatively small set of keywords.
  * Larger keyword lists can be used if you have memory!
  *
  * @author ce
@@ -23,53 +23,37 @@ public class BackwardsTreeScanner {
     // public static final int OFFSET = 0;
     // public static final int ID = 1;
 
-    /** Original list of keywords storred in byte array form. */
-    byte[][] keywords;
     /** Root node of tree state diagram. Always start a search from here! */
-    State root = new State((byte) 0);
+    private State root = new State((byte) 0);
 
     /**
-     * a tester. Run it at look at stdout. It prints a tree representation of the state diagram and then searches.
+     * Optional empty constructor
      */
-    public static void main(String[] args) {
-        try {
-            // a list of interesting keywords. */
-            String[] keys = {"\nabc", "\nxyz", "\nab", "\nXYZ", "\npqr", "\na string", "Q"};
-            // A string for holding the test data to be searched
-            String dataString = "";
-            // The thing we are testing
-            BackwardsTreeScanner scanner = new BackwardsTreeScanner(keys);
-            // Make up an interesting string. The second half should never match.
-            for (int i = 0; i < keys.length; i++) {
-                dataString += keys[i];
-            }
-            // for (int i = 0;i<keys.length;i++)dataString +=keys[i].toString().substring(0,2);
-            // A byte array version of the data.
-            byte[] dataBytes = dataString.getBytes();
+    public BackwardsTreeScanner() {
 
-            // A vector for holding the results.
-            HitList hits = new HitList();
-            /*
-             * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
-             * general this should be used more effediently (with a boyer more algorithm or something.
-             */
-            for (int pos = 1; pos < dataBytes.length; pos++) {
-                scanner.scan(dataBytes, pos, hits);
-                for (int i = 0; i < hits.size(); i++) {
-                    Hit tmp = hits.get(i);
-                    System.out.println("Hit At:" + tmp.getOffset() + " id: " + tmp.getID());
-                }
-                hits.clear();
-            }
-        } catch (Exception e) {
-            System.out.println("Exception in test:" + e);
-            e.printStackTrace();
-        }
     }
 
+    /**
+     * Constructor that delegates learning keywords to resetKeywords method.
+     *
+     * @param keywordStrings - array of keywords to learn
+     * @throws Exception - thrown if problem encountered
+     */
     public BackwardsTreeScanner(String[] keywordStrings) throws Exception {
+        resetKeywords(keywordStrings);
+    }
+
+    /**
+     * Resets keywords and internal State learns them. This method destroys previous state.
+     *
+     * @param keywordStrings - String of keywords to learn
+     * @throws Exception - if problem encountered while learning
+     */
+    public synchronized void resetKeywords(String[] keywordStrings) throws Exception {
         // make byte arrays
-        keywords = new byte[keywordStrings.length][];
+        /** Original list of keywords stored in byte array form. */
+        byte[][] keywords = new byte[keywordStrings.length][];
+        root = new State((byte) 0); // reset state
         // and learn them
         for (int i = 0; i < keywords.length; i++) {
             keywords[i] = keywordStrings[i].getBytes();
@@ -80,7 +64,7 @@ public class BackwardsTreeScanner {
 
     /**
      * This scans the byte array backwards from the offset. Each hit is added to the result vector. We stop when all
-     * posibilities are found
+     * possibilities are found
      */
     public synchronized int scan(byte[] data, int offset, HitList result) throws Exception {
         if (result == null) {
@@ -135,10 +119,10 @@ public class BackwardsTreeScanner {
         }
 
         /**
-         * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
-         * record the keyowrd id in the ending state.
+         * Walk through he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+         * record the keyword id in the ending state.
          * 
-         * Warning this is recursive, but thats OK for small keywords.
+         * Warning this is recursive, but that is OK for small keywords.
          */
         public void learn(byte[] word, int wordLoc, int id) throws Exception {
             if (word == null) {
@@ -185,14 +169,14 @@ public class BackwardsTreeScanner {
             }
             if (matches != null) {
                 out.print(prefix + "ids [");
-                for (int i = 0; i < matches.length; i++) {
-                    out.print(" " + matches[i]);
+                for (int match : matches) {
+                    out.print(" " + match);
                 }
                 out.println(" ]");
             }
-            for (int i = 0; i < nextStates.length; i++) {
-                if (nextStates[i] != null) {
-                    nextStates[i].print(out, prefix + "  ");
+            for (State nextState : nextStates) {
+                if (nextState != null) {
+                    nextState.print(out, prefix + "  ");
                 }
             }
         }
