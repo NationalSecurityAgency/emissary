@@ -119,7 +119,7 @@ public class BackwardsTreeScanner {
         }
 
         /**
-         * Walk through he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+         * Walk through the keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
          * record the keyword id in the ending state.
          * 
          * Warning this is recursive, but that is OK for small keywords.

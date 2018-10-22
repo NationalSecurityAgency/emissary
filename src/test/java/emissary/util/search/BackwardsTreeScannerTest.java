@@ -1,6 +1,7 @@
 package emissary.util.search;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class BackwardsTreeScannerTest {
@@ -14,12 +15,12 @@ public class BackwardsTreeScannerTest {
         BackwardsTreeScanner first = new BackwardsTreeScanner();
         first.resetKeywords(defaultKeywords);
         int result = first.scan(defaultData.getBytes(), defaultData.length() - 1, hits);
-        Assert.assertEquals(39, result);
+        assertEquals(39, result);
 
         hits = new HitList();
         BackwardsTreeScanner second = new BackwardsTreeScanner(defaultKeywords);
         result = second.scan(defaultData.getBytes(), defaultData.length() - 1, hits);
-        Assert.assertEquals(39, result);
+        assertEquals(39, result);
     }
 
     @Test(expected = Exception.class)
