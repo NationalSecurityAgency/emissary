@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import java.nio.charset.Charset;
+
 /**
  * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.
  */
@@ -19,6 +21,27 @@ public class KeywordScanner {
      * @param data the data to be scanned
      */
     public KeywordScanner(final byte[] data) {
+        resetData(data);
+    }
+
+    public void resetData(String data) {
+        resetData(data, Charset.defaultCharset());
+    }
+
+    public void resetData(String data, String charsetName) {
+        resetData(data, Charset.forName(charsetName));
+    }
+
+    public void resetData(String data, Charset charset) {
+        resetData(data.getBytes(charset));
+    }
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new KeywordScanner.
+     * 
+     * @param data - bytes to match against
+     */
+    public void resetData(byte[] data) {
         this.data = data;
         if (data != null) {
             this.dataLength = data.length;
