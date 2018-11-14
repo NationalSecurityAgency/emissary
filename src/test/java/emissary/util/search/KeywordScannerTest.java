@@ -45,6 +45,13 @@ public class KeywordScannerTest extends UnitTest {
     }
 
     @Test
+    public void testEmptyConstructor() {
+        assertEquals(0, this.ks.indexOf("THI".getBytes()));
+        this.ks = new KeywordScanner();
+        assertEquals(-1, this.ks.indexOf("THI".getBytes()));
+    }
+
+    @Test
     public void testCaseSensitiveSearchNotFound() {
         assertTrue(this.ks.isCaseSensitive());
         assertEquals("Case sensitive searching by default", -1, this.ks.indexOf("TEST".getBytes()));

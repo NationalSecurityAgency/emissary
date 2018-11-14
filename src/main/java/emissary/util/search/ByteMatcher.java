@@ -13,6 +13,9 @@ public class ByteMatcher {
 
     public static final int NOTFOUND = -1;
 
+    public ByteMatcher() {
+        this(new byte[0]);
+    }
 
     public ByteMatcher(String data) {
         this(data.getBytes());
