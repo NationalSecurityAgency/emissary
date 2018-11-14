@@ -1,5 +1,7 @@
 package emissary.test.core;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -15,8 +17,6 @@ import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.server.EmissaryServer;
 import org.eclipse.jetty.server.Server;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * Base class of all the functional tests
@@ -65,8 +65,8 @@ public class FunctionalTest extends UnitTest {
     }
 
     /**
-     * Start a localhost jetty on the specified port Create a emissary/test123 user in a /tmp/jetty-users.properties but
-     * use the runtime package "xrez".xml file
+     * Start a localhost jetty on the specified port Create a emissary/test123 user in a /tmp/jetty-users.properties but use
+     * the runtime package "xrez".xml file
      */
     protected void startJetty(int port, String xrez) throws Exception {
         String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);

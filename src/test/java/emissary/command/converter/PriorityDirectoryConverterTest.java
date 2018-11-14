@@ -3,14 +3,13 @@ package emissary.command.converter;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
+import emissary.pickup.Priority;
+import emissary.pickup.PriorityDirectory;
+import emissary.test.core.UnitTest;
 import org.hamcrest.junit.ExpectedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-
-import emissary.pickup.Priority;
-import emissary.pickup.PriorityDirectory;
-import emissary.test.core.UnitTest;
 
 public class PriorityDirectoryConverterTest extends UnitTest {
     @Rule

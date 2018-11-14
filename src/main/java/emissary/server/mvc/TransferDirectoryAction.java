@@ -7,14 +7,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IDirectoryPlace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is emissary

@@ -10,13 +10,10 @@ import java.io.FileWriter;
 import java.nio.file.Files;
 import java.util.UUID;
 
-import emissary.util.roll.RollableFileOutputStream;
+import emissary.test.core.UnitTest;
+import emissary.util.io.FileNameGenerator;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.util.io.FileNameGenerator;
-
-import emissary.test.core.UnitTest;
 
 /**
  * Tests Rollable Output Stream.

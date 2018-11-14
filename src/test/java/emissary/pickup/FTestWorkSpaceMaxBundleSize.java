@@ -8,16 +8,15 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.command.FeedCommand;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.FunctionalTest;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private MyWorkSpace space = null;

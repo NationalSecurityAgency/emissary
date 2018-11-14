@@ -42,8 +42,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     private IDataContainer theData = new SelectingDataContainer();
 
     /**
-     * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the <a
-     * href="#fileName()">fileName</a> method. Also used in constructing the <a href="#shortName()">shortName</a> of the
+     * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
+     * <a href="#fileName()">fileName</a> method. Also used in constructing the <a href="#shortName()">shortName</a> of the
      * document.
      */
     protected String theFileName;
@@ -90,8 +90,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected int numChildren = 0;
 
     /**
-     * If this file has siblings that were sprouted at the same time, this will indicate how many total siblings there
-     * are. This can be used to navigate among siblings without needing to refer to the parent.
+     * If this file has siblings that were sprouted at the same time, this will indicate how many total siblings there are.
+     * This can be used to navigate among siblings without needing to refer to the parent.
      */
     protected int numSiblings = 0;
 
@@ -164,8 +164,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in
-     * array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in array
+     * directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
@@ -177,8 +177,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed
-     * in array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed in
+     * array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
@@ -263,8 +263,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is
-     * made so the caller must be aware that modifications to the returned array are live.
+     * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is made so
+     * the caller must be aware that modifications to the returned array are live.
      *
      * @return byte array of the data
      * @deprecated Interaction with data should be via {@link #getDataContainer()}
@@ -315,8 +315,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     private String makeShortName() {
         /*
-         * using the file object works for most cases. It works on windows with a valid unix path. However, it fails on
-         * the unix side if it is given a valid Windows path.
+         * using the file object works for most cases. It works on windows with a valid unix path. However, it fails on the unix
+         * side if it is given a valid Windows path.
          */
         // File file = new File( theFileName );
         // return file.getName();
@@ -686,8 +686,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Merge in new parameters using the specified policy to determine whether to keep all values, unique values, or
-     * prefer existing values
+     * Merge in new parameters using the specified policy to determine whether to keep all values, unique values, or prefer
+     * existing values
      *
      * @param m map of new parameters
      * @param policy the merge policy
@@ -911,8 +911,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Return a reference to the header byte array. WARNING: this implementation returns the actual array directly, no
-     * copy is made so the caller must be aware that modifications to the returned array are live.
+     * Return a reference to the header byte array. WARNING: this implementation returns the actual array directly, no copy
+     * is made so the caller must be aware that modifications to the returned array are live.
      *
      * @return byte array of header information or null if none
      */
@@ -927,8 +927,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Return a reference to the footer byte array. WARNING: this implementation returns the actual array directly, no
-     * copy is made so the caller must be aware that modifications to the returned array are live.
+     * Return a reference to the footer byte array. WARNING: this implementation returns the actual array directly, no copy
+     * is made so the caller must be aware that modifications to the returned array are live.
      *
      * @return byte array of footer data or null if none
      */
@@ -1074,8 +1074,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Add a multipart alternative view of the data WARNING: this implementation returns the actual array directly, no
-     * copy is made so the caller must be aware that modifications to the returned array are live.
+     * Add a multipart alternative view of the data WARNING: this implementation returns the actual array directly, no copy
+     * is made so the caller must be aware that modifications to the returned array are live.
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
@@ -1216,8 +1216,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * The creation timestamp is part of the provenance of the event represented by this instance. It is normally set
-     * from the constructor
+     * The creation timestamp is part of the provenance of the event represented by this instance. It is normally set from
+     * the constructor
      *
      * @param creationTimestamp when this item was created
      */

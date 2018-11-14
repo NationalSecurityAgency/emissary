@@ -12,11 +12,10 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataUtil {
     private static final Logger logger = LoggerFactory.getLogger(DataUtil.class);
@@ -110,8 +109,8 @@ public class DataUtil {
     }
 
     /**
-     * Get the event or collection date from a data object by checking the EventDate and FILE_DATE parameters. If both
-     * are missing default to today.
+     * Get the event or collection date from a data object by checking the EventDate and FILE_DATE parameters. If both are
+     * missing default to today.
      * 
      * @param payload data object to examine
      * @return event date

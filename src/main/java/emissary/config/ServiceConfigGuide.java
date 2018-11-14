@@ -257,8 +257,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Handle a newly parsed or passed in entry. Substitutions are handled on both the LHS and RHS, then the values are
-     * stored as a ConfigEntry in our local list and map. Only the last value in the map is available for substitutions.
-     * LHS is analyzed before RHS and in L to R order.
+     * stored as a ConfigEntry in our local list and map. Only the last value in the map is available for substitutions. LHS
+     * is analyzed before RHS and in L to R order.
      *
      * @param parmNameArg the LHS
      * @param svalArg the raw RHS
@@ -406,8 +406,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 final int max = (s.charAt(epos) == '1' || s.charAt(epos) == '0') ? (i + 7) : (i + 6);
                 while (epos < slen
                         && epos < max
-                        && ((s.charAt(epos) >= '0' && s.charAt(epos) <= '9') || (s.charAt(epos) >= 'A' && s.charAt(epos) <= 'F') || (s.charAt(epos) >= 'a' && s
-                                .charAt(epos) <= 'f'))) {
+                        && ((s.charAt(epos) >= '0' && s.charAt(epos) <= '9') || (s.charAt(epos) >= 'A' && s.charAt(epos) <= 'F')
+                                || (s.charAt(epos) >= 'a' && s
+                                        .charAt(epos) <= 'f'))) {
                     epos++;
                 }
                 if (epos <= slen) {
@@ -528,8 +529,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Get the names of all entries for this config This set is not backed by the configuration and any changes to it
-     * are not relflected in the configuration.
+     * Get the names of all entries for this config This set is not backed by the configuration and any changes to it are
+     * not relflected in the configuration.
      */
     @Override
     public Set<String> entryKeys() {
@@ -549,8 +550,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Remove entries, those with operators of '!=' are stored and can be retrieved for replay during merge. This method
-     * is not part of the Configurator interface.
+     * Remove entries, those with operators of '!=' are stored and can be retrieved for replay during merge. This method is
+     * not part of the Configurator interface.
      */
     protected List<ConfigEntry> getRemoveEntries() {
         return new ArrayList<ConfigEntry>(this.p_remove_parameters);
@@ -802,8 +803,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * </pre>
      *
      * @param param the key to look for in the config file
-     * @return map where key is remainder after match and value is a Set of all found config values, or an empty map if
-     *         none found
+     * @return map where key is remainder after match and value is a Set of all found config values, or an empty map if none
+     *         found
      */
     @Override
     public Map<String, Set<String>> findStringMatchMultiMap(final String param) {
@@ -1077,12 +1078,12 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Merge in a new configuration set with this one. New things are supposed to override older things in the sense of
-     * findStringEntry which only picks the top of the list, the new things should get added to the top. If the merged
-     * in Configurator contains remove entries (operator of '!=') then it only applies to entries in this instance, not
-     * in "other". This is slightly different than when a config is read in directly, but without that there would be no
-     * way to remove entries from a super-config and continue to supply entries here and still be able to use the
-     * wildcard remove (value of '*') The order in the merged config file is important. Any '!= "*"' operations must
-     * precede the new value being supplied since normal remove operations take place in each config before the merge.
+     * findStringEntry which only picks the top of the list, the new things should get added to the top. If the merged in
+     * Configurator contains remove entries (operator of '!=') then it only applies to entries in this instance, not in
+     * "other". This is slightly different than when a config is read in directly, but without that there would be no way to
+     * remove entries from a super-config and continue to supply entries here and still be able to use the wildcard remove
+     * (value of '*') The order in the merged config file is important. Any '!= "*"' operations must precede the new value
+     * being supplied since normal remove operations take place in each config before the merge.
      *
      * @param other the new entries to merge in
      */

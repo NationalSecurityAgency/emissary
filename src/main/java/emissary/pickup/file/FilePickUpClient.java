@@ -1,11 +1,5 @@
 package emissary.pickup.file;
 
-import emissary.core.IBaseDataObject;
-import emissary.pickup.IPickUpSpace;
-import emissary.pickup.PickupQueue;
-import emissary.pickup.QueServer;
-import emissary.pickup.WorkBundle;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -13,6 +7,12 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
+
+import emissary.core.IBaseDataObject;
+import emissary.pickup.IPickUpSpace;
+import emissary.pickup.PickupQueue;
+import emissary.pickup.QueServer;
+import emissary.pickup.WorkBundle;
 
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
@@ -22,12 +22,11 @@ import java.util.Map;
  */
 public class FilePickUpClient extends emissary.pickup.PickUpSpace {
     /**
-     * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from
-     * WorkSpace or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the
-     * places busy. We do this by making the MAX_QUE_SIZE large enough to hold enough files to be processed in
-     * pollingInterval. BUT we don't just make the MAX_QUE_SIZE huge because then we use too much memory. Some feeds put
-     * stuff on the Que in blocks. If our que is a prime numbered size they cannot fill it completely, which will help
-     * prevent blocking maybe.
+     * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from WorkSpace
+     * or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the places busy.
+     * We do this by making the MAX_QUE_SIZE large enough to hold enough files to be processed in pollingInterval. BUT we
+     * don't just make the MAX_QUE_SIZE huge because then we use too much memory. Some feeds put stuff on the Que in blocks.
+     * If our que is a prime numbered size they cannot fill it completely, which will help prevent blocking maybe.
      */
     protected int pollingInterval = 500;
     protected int MAX_QUE_SIZE = 5;
@@ -119,8 +118,8 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace {
     }
 
     /**
-     * Hook for subclasses to alter the file path perhaps based on the OS at runtime. Allows one set of configuration
-     * paths to work on the system across operating systems.
+     * Hook for subclasses to alter the file path perhaps based on the OS at runtime. Allows one set of configuration paths
+     * to work on the system across operating systems.
      *
      * @param path file path to alter
      * @return altered path

@@ -4,10 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import java.nio.charset.UnsupportedCharsetException;
 
 import emissary.test.core.UnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class KeywordScannerTest extends UnitTest {
     private final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();
@@ -17,6 +18,23 @@ public class KeywordScannerTest extends UnitTest {
     @Before
     public void setUp() throws Exception {
         this.ks = new KeywordScanner(this.DATA);
+    }
+
+    @Test
+    public void testResetKeywordScanner() {
+        assertEquals(0, this.ks.indexOf("THI".getBytes()));
+        String otherData = "No, THIS is a test of the Emergency broadcasting system.";
+        this.ks.resetData(otherData);
+        assertEquals(4, this.ks.indexOf("THI".getBytes()));
+    }
+
+    @Test(expected = UnsupportedCharsetException.class)
+    public void testKeywordScannerWithCharset() {
+        assertEquals(0, this.ks.indexOf("THI".getBytes()));
+        String otherData = "No, THIS is a test of the Emergency broadcasting system.";
+        this.ks.resetData(otherData, "ISO-8859-1");
+        assertEquals(4, this.ks.indexOf("THI".getBytes()));
+        this.ks.resetData("Other other data", "NoSuchCharset");
     }
 
     @Test

@@ -7,13 +7,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.TreeMultimap;
-
 import emissary.core.MetadataDictionary;
 import emissary.core.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the
@@ -50,8 +48,8 @@ public class MetadataDictionaryUtil {
     }
 
     /**
-     * Get the view, map the first token on each line. The view should be structured as "key value" where the first
-     * space on the line separates the key from the rest.
+     * Get the view, map the first token on each line. The view should be structured as "key value" where the first space on
+     * the line separates the key from the rest.
      * 
      * @param input the bytes of the view to be mapped
      * @return a byte[] containing transformed/alphabetized keys with their value pairs

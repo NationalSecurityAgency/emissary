@@ -287,8 +287,8 @@ public class HeartbeatManager {
     }
 
     /**
-     * Notify our directory that a directory has been contacted If parent considers this a rdv or rly host they this
-     * could initiate a zone transfer or other action
+     * Notify our directory that a directory has been contacted If parent considers this a rdv or rly host they this could
+     * initiate a zone transfer or other action
      *
      * @param key string key of the directory that was contacted
      */
@@ -323,8 +323,8 @@ public class HeartbeatManager {
     }
 
     /**
-     * Send a heartbeat message to the directory represented by key and take follow-on actions as appropriate Called
-     * from the timer task normally, but can be called externally by the impatient
+     * Send a heartbeat message to the directory represented by key and take follow-on actions as appropriate Called from
+     * the timer task normally, but can be called externally by the impatient
      *
      * @see emissary.directory.DirectoryPlace#heartbeatRemoteDirectory(String)
      * @param key key representing the directory to heartbeat

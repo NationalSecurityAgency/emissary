@@ -5,15 +5,13 @@ import static emissary.directory.KeyManipulator.DOLLAR;
 
 import java.io.Serializable;
 
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.xml.JDOMUtil;
-
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is container object for storing directory entry information such as the service name and type, the
@@ -43,8 +41,8 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Nominal starting path weight. Making it lower makes the entry less likely to be selected from a group with equal
-     * expense. Making it higher makes it more likely to be selected from a group with equal expense. Between entries
-     * with different expense values there is no effect.
+     * expense. Making it higher makes it more likely to be selected from a group with equal expense. Between entries with
+     * different expense values there is no effect.
      */
     protected transient int pathWeight = 500;
 
@@ -334,10 +332,10 @@ public class DirectoryEntry implements Serializable {
     }
 
     /**
-     * Get the path weight of moving to a place Nominal starting path weight is 500. Making it lower makes the entry
-     * less likely to be selected from a group with equal expense. Making it higher makes it more likely to be selected
-     * from a group with equal expense. Between entries with different expense values there is no effect. The value is
-     * not allowed to go below zero.
+     * Get the path weight of moving to a place Nominal starting path weight is 500. Making it lower makes the entry less
+     * likely to be selected from a group with equal expense. Making it higher makes it more likely to be selected from a
+     * group with equal expense. Between entries with different expense values there is no effect. The value is not allowed
+     * to go below zero.
      * 
      * @return the current path weight value
      */
@@ -359,8 +357,8 @@ public class DirectoryEntry implements Serializable {
 
 
     /**
-     * Add to the path weight. The increment can be negative to remove weight. The path weight is not allowed to go
-     * below zero.
+     * Add to the path weight. The increment can be negative to remove weight. The path weight is not allowed to go below
+     * zero.
      * 
      * @see #getPathWeight()
      * @param weightIncrement amount to add to weight
@@ -482,8 +480,8 @@ public class DirectoryEntry implements Serializable {
 
 
     /**
-     * test if the current dataEntry matches the passed key pattern specifically ignoring cost in the incoming pattern
-     * (if any)
+     * test if the current dataEntry matches the passed key pattern specifically ignoring cost in the incoming pattern (if
+     * any)
      */
     public boolean equalsIgnoreCost(final String pattern) {
         return equals(KeyManipulator.removeExpense(pattern));
@@ -574,8 +572,8 @@ public class DirectoryEntry implements Serializable {
     }
 
     /**
-     * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same
-     * data type, service type, service name and expense but change the place to the proxy
+     * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same data
+     * type, service type, service name and expense but change the place to the proxy
      * 
      * @param proxyKey the replacement key
      */

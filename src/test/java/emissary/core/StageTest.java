@@ -7,11 +7,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import emissary.test.core.UnitTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class StageTest extends UnitTest {
     Stage stages;

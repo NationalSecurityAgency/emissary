@@ -1,17 +1,15 @@
 package emissary.test.core;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 
+import emissary.place.IServiceProviderPlace;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import emissary.place.IServiceProviderPlace;
 
 public class TestExtractionTest extends UnitTest {
 

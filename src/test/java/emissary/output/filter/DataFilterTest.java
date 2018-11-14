@@ -9,14 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.shell.Executrix;
+import org.junit.Test;
 
 public class DataFilterTest extends UnitTest {
 

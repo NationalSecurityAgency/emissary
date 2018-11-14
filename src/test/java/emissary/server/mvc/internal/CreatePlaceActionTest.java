@@ -1,18 +1,5 @@
 package emissary.server.mvc.internal;
 
-import emissary.server.mvc.EndpointTestBase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-
 import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_CLASS_NAME;
 import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_DIRECTORY;
 import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_LOCATION;
@@ -20,6 +7,19 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
+
+import emissary.server.mvc.EndpointTestBase;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
 public class CreatePlaceActionTest extends EndpointTestBase {

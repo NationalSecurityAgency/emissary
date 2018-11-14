@@ -8,11 +8,10 @@ package emissary.transform;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import emissary.transform.decode.HtmlEscape;
-import emissary.util.CharacterCounterSet;
-
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
+import emissary.transform.decode.HtmlEscape;
+import emissary.util.CharacterCounterSet;
 import emissary.util.DataUtil;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {

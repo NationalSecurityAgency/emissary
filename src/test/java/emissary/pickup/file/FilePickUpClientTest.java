@@ -10,16 +10,15 @@ import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.admin.PlaceStarter;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.pickup.WorkBundle;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FilePickUpClientTest extends UnitTest {
     private static String CLIENT_KEY = "http://localhost:8005/FilePickUpClient";

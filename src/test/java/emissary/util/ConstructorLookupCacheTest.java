@@ -5,9 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 /**
  * Unit tests for {@link ConstructorLookupCache}.

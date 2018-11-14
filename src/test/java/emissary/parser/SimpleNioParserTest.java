@@ -11,11 +11,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
+import emissary.test.core.UnitTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 public class SimpleNioParserTest extends UnitTest {
 

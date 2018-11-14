@@ -9,8 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.MDC;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -21,12 +19,11 @@ import emissary.parser.ParserException;
 import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
-import emissary.pickup.file.FilePickUpPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
 import emissary.util.shell.Executrix;
-
+import org.slf4j.MDC;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
@@ -706,10 +703,9 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * Retrieve and agent from the pool and assign the payload to it
      * 
      * @param payload the payload for the agent
-     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The
-     *        specified time will not be strictly observed because the pool itself blocks for a configurable amount of
-     *        time when requesting an agent. We will wait no more than the specified timeoutMs + the configured pool
-     *        timeout value.
+     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified
+     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when
+     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.
      * @throws EmissaryException when an agent cannot be obtained
      */
     public void assignToPooledAgent(IBaseDataObject payload, long timeoutMs) throws EmissaryException {
@@ -722,10 +718,9 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param payload the payload for the agent
      * @param agentPool the pool of agents
      * @param startingLocation the agent launch point
-     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The
-     *        specified time will not be strictly observed because the pool itself blocks for a configurable amount of
-     *        time when requesting an agent. We will wait no more than the specified timeoutMs + the configured pool
-     *        timeout value.
+     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified
+     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when
+     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.
      * @return mobile agent assigned to pool
      * @throws EmissaryException when an agent cannot be obtained
      */

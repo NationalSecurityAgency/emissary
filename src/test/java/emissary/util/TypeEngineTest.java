@@ -3,13 +3,12 @@ package emissary.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.test.core.UnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class TypeEngineTest extends UnitTest {
     @Before

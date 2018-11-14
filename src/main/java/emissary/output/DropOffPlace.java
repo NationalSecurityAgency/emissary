@@ -1,14 +1,5 @@
 package emissary.output;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.DataObjectFactory;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.output.filter.IDropOffFilter;
-import emissary.place.ServiceProviderPlace;
-import emissary.util.DataUtil;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +9,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.DataObjectFactory;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.output.filter.IDropOffFilter;
+import emissary.place.ServiceProviderPlace;
+import emissary.util.DataUtil;
 
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
@@ -170,8 +170,8 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * "HD" agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
-     * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all
-     * payloads wanting to be dropped off in a single list.
+     * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all payloads
+     * wanting to be dropped off in a single list.
      * 
      * @param payloadList list of IBaseDataObject from an HDMobileAgent
      */

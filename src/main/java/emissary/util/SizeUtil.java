@@ -57,10 +57,10 @@ public class SizeUtil {
     }
 
     /**
-     * Approximates the amount of RAM consumed by the "extracted records" in a single IBaseDataObject. This is typically
-     * the case when the framework gets eventing datasets. These extracted records are usually treated specially and not
-     * run through the processing pipelines proper, but on output do appear as proper child IBaseDataObjects. In the
-     * case of a large dataset, these extracted records can consume huge amounts of RAM.
+     * Approximates the amount of RAM consumed by the "extracted records" in a single IBaseDataObject. This is typically the
+     * case when the framework gets eventing datasets. These extracted records are usually treated specially and not run
+     * through the processing pipelines proper, but on output do appear as proper child IBaseDataObjects. In the case of a
+     * large dataset, these extracted records can consume huge amounts of RAM.
      * 
      * @param ibdo - The IBaseDataObject to approximate
      * @return - The approximate size, in bytes, in RAM for extracted records of an IBaseDataObject
@@ -131,10 +131,9 @@ public class SizeUtil {
 
     /**
      * Approximate the amount of RAM consumed by an individual {@link IBaseDataObject}. The purpose of this method is to
-     * approximate the RAM that will be consumed by a corresponding serialized/deserialized object, hence not all
-     * aspects of the {@link IBaseDataObject} are considered. Additionally, this method does not include all the
-     * "outputtable" logic that may be present in output filter, which could make the actual size smaller than is
-     * reported by this method.
+     * approximate the RAM that will be consumed by a corresponding serialized/deserialized object, hence not all aspects of
+     * the {@link IBaseDataObject} are considered. Additionally, this method does not include all the "outputtable" logic
+     * that may be present in output filter, which could make the actual size smaller than is reported by this method.
      * 
      * @param ibdo The IBaseDataObject to approximate the size of
      * @return The approximate size, in bytes, in RAM for the IBaseDataObject
@@ -189,8 +188,8 @@ public class SizeUtil {
     }
 
     /**
-     * Estimate the size, in bytes, of the RAM of an entire {@link IBaseDataObject} family tree. This is simply the sum
-     * of the sizes of the individual members of the family tree.
+     * Estimate the size, in bytes, of the RAM of an entire {@link IBaseDataObject} family tree. This is simply the sum of
+     * the sizes of the individual members of the family tree.
      *
      * @param familyTree - List<IBaseDataObject> representing the family tree for a document object
      * @return - the approximate size, in bytes, in RAM for the familyTree

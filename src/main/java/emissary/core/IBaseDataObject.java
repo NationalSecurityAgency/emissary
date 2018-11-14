@@ -614,9 +614,9 @@ public interface IBaseDataObject extends IOriginalDataContainer {
     int pushCurrentForm(String val);
 
     /**
-     * Replaces the current form of the data with a new form Does a pop() followed by a push(newForm) to simulate what
-     * would happen in the old "one form at a time system"
-     *
+     * Replaces the current form of the data with a new form Does a pop() followed by a push(newForm) to simulate what would
+     * happen in the old "one form at a time system"
+     * 
      * @param val value of the the new form of the data
      */
     void setCurrentForm(String val);

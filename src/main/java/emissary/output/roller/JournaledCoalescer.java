@@ -1,15 +1,15 @@
 package emissary.output.roller;
 
-import emissary.output.roller.journal.Journal;
-import emissary.output.roller.journal.JournalEntry;
-import emissary.output.roller.journal.JournalReader;
-import emissary.output.roller.journal.JournaledChannelPool;
-import emissary.output.roller.journal.KeyedOutput;
-import emissary.roll.Rollable;
-import emissary.util.io.FileNameGenerator;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.output.roller.journal.Journal.EXT;
+import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
+import static java.nio.file.Files.exists;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isReadable;
+import static java.nio.file.Files.isWritable;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,16 +24,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static emissary.output.roller.journal.Journal.EXT;
-import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
-import static java.nio.file.Files.exists;
-import static java.nio.file.Files.isDirectory;
-import static java.nio.file.Files.isReadable;
-import static java.nio.file.Files.isWritable;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.READ;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import emissary.output.roller.journal.Journal;
+import emissary.output.roller.journal.JournalEntry;
+import emissary.output.roller.journal.JournalReader;
+import emissary.output.roller.journal.JournaledChannelPool;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.roll.Rollable;
+import emissary.util.io.FileNameGenerator;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Rollable implemenation that uses a journal to record offsets of completed writes to a pool of outputs. The
@@ -152,8 +152,8 @@ public class JournaledCoalescer implements Rollable {
     }
 
     /**
-     * Sets the current file name to be used when creating files and rolling output. Closes current pool, retrieves a
-     * list of Journal files that need to be rolled, and instantiates the next pool.
+     * Sets the current file name to be used when creating files and rolling output. Closes current pool, retrieves a list
+     * of Journal files that need to be rolled, and instantiates the next pool.
      * <p>
      * Called by the roll method, synchronized for consistency.
      */
@@ -173,8 +173,8 @@ public class JournaledCoalescer implements Rollable {
     }
 
     /**
-     * Returns and KeyedOutput object containing the final output file and can be written to as either an OutputStream
-     * or a SeekableByteChannel. This method will block if objects from the pool have been exhausted.
+     * Returns and KeyedOutput object containing the final output file and can be written to as either an OutputStream or a
+     * SeekableByteChannel. This method will block if objects from the pool have been exhausted.
      *
      * @return a KeyedOutput
      * @throws IOException

@@ -3,8 +3,8 @@ package emissary.util.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import emissary.test.core.UnitTest;

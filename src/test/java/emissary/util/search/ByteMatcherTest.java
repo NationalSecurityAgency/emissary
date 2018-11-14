@@ -6,11 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import java.nio.charset.UnsupportedCharsetException;
 
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ByteMatcherTest extends UnitTest {
 
@@ -28,6 +30,42 @@ public class ByteMatcherTest extends UnitTest {
     public void tearDown() throws Exception {
         super.tearDown();
         this.b = null;
+    }
+
+    @Test
+    public void testResetByteMatcher() {
+        String localDataOne = "The quick brown fox jumped over the lazy dog";
+        String localDataTwo = "But the faster dog ate the slower fox.";
+        String firstToken = "fox";
+        String secondToken = "dog";
+        ByteMatcher byteMatcher = new ByteMatcher(localDataOne);
+
+        Assert.assertEquals(16, byteMatcher.indexOf(firstToken));
+        Assert.assertEquals(41, byteMatcher.indexOf(secondToken));
+
+        // Reuse the same ByteMatcher
+        byteMatcher.resetData(localDataTwo);
+
+        Assert.assertEquals(34, byteMatcher.indexOf(firstToken));
+        Assert.assertEquals(15, byteMatcher.indexOf(secondToken));
+    }
+
+    @Test(expected = UnsupportedCharsetException.class)
+    public void testByteMatcherWithCharset() {
+        String localDataOne = "The quick brown fox jumped over the lazy dog";
+        String localDataTwo = "But the faster dog ate the slower fox.";
+        String firstToken = "fox";
+        String secondToken = "dog";
+        ByteMatcher byteMatcher = new ByteMatcher(localDataOne);
+
+        // Back to the first data, but with a different charset
+        byteMatcher.resetData(localDataOne, "ISO-8859-1");
+
+        Assert.assertEquals(16, byteMatcher.indexOf(firstToken));
+        Assert.assertEquals(41, byteMatcher.indexOf(secondToken));
+
+        // Back to the second data, with a charset that doesn't exist.
+        byteMatcher.resetData(localDataTwo, "NoSuchCharset");
     }
 
     @Test

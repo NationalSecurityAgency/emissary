@@ -1,12 +1,11 @@
 package emissary.admin;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
 
 import emissary.directory.EmissaryNode;
 import emissary.pickup.file.FilePickUpClient;
@@ -15,9 +14,7 @@ import emissary.place.CoordinationPlace;
 import emissary.place.sample.DelayPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
-
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.junit.Test;
 
 public class StartupTest extends UnitTest {
 

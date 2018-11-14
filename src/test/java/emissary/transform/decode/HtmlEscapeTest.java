@@ -5,9 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
-
 import emissary.util.CharacterCounterSet;
+import org.junit.Test;
 
 public class HtmlEscapeTest extends UnitTest {
 

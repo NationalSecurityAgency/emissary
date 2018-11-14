@@ -7,10 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
 import emissary.place.ServiceProviderPlace;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 /**
  *

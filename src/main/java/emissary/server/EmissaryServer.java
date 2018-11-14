@@ -22,7 +22,6 @@ import javax.naming.directory.AttributeInUseException;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.client.HTTPConnectionFactory;
@@ -42,7 +41,6 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
-
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;

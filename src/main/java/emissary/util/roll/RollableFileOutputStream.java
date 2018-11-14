@@ -1,12 +1,5 @@
 package emissary.util.roll;
 
-import emissary.roll.Rollable;
-
-import emissary.util.io.FileNameGenerator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +9,11 @@ import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
+
+import emissary.roll.Rollable;
+import emissary.util.io.FileNameGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows for use within the Emissary Rolling framework. Keeps track of bytes written and is thread safe.
@@ -164,8 +162,8 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     }
 
     /**
-     * Closes the underlying outputs and renames the current file to its final name. A new file is NOT opened. Further
-     * use of the instance of this class is not guaranteed to function after calling this method.
+     * Closes the underlying outputs and renames the current file to its final name. A new file is NOT opened. Further use
+     * of the instance of this class is not guaranteed to function after calling this method.
      * 
      * @throws IOException
      */
@@ -237,8 +235,8 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     }
 
     /**
-     * Determines whether to delete zero byte files on a roll. If true, both bytes written and the size of the output
-     * file are checked. If both are zero, and deleteZeroByteFiles is true, the file is deleted.
+     * Determines whether to delete zero byte files on a roll. If true, both bytes written and the size of the output file
+     * are checked. If both are zero, and deleteZeroByteFiles is true, the file is deleted.
      * 
      * @param deleteZeroByteFiles
      */

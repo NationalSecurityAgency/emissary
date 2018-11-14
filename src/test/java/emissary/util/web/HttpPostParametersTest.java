@@ -3,7 +3,6 @@ package emissary.util.web;
 import static org.junit.Assert.assertEquals;
 
 import emissary.test.core.UnitTest;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,8 +38,8 @@ public class HttpPostParametersTest extends UnitTest {
     }
 
     /*
-     * Note that this test has a lambda character which when encoded becomes two bytes. As you can see in this it
-     * becomes encoded as %CE %BB.
+     * Note that this test has a lambda character which when encoded becomes two bytes. As you can see in this it becomes
+     * encoded as %CE %BB.
      */
     @Test
     public void testAddParameter() {

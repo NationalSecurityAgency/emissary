@@ -1,13 +1,5 @@
 package emissary.output.filter;
 
-import emissary.output.DropOffUtil;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -18,6 +10,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.output.DropOffUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the base mechanism for a drop off filter
@@ -98,7 +98,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName, final emissary.config.Configurator theFilterConfig) {
+    public void initialize(final emissary.config.Configurator theConfigG, final String filterName,
+            final emissary.config.Configurator theFilterConfig) {
         this.configG = theConfigG;
         if (filterName != null) {
             setFilterName(filterName);
@@ -403,8 +404,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate
-     * views being on the outputTypes list from the run-time type configuration stream for the filter in questin.
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in questin.
      *
      * @param type of the data
      */
@@ -413,8 +414,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate
-     * views being on the outputTypes list from the run-time type configuration stream for the filter in question.
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in question.
      *
      * @param types types to check
      * @return true if any one of the types is outputtable
@@ -489,8 +490,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
-     * Makes a set of the file type, current form with and without the .PrimaryView qualifier. Result set can be passed
-     * to {@link #isOutputtable(Collection)} for checking whether the primary view should be output
+     * Makes a set of the file type, current form with and without the .PrimaryView qualifier. Result set can be passed to
+     * {@link #isOutputtable(Collection)} for checking whether the primary view should be output
      *
      * @param d the payload
      */

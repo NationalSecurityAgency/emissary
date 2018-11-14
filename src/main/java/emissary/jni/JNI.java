@@ -9,9 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -21,6 +18,8 @@ import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide methods for retrieving native libraries from the repository The main entry point is loadLibrary. Places
@@ -209,10 +208,10 @@ public class JNI implements Serializable {
     }
 
     /**
-     * Load a native library, finding it if it isn't already here. First try to load the library and catch any
-     * exception. Try to ask the directory place where the JniRepositoryPlace is and see if the repository has the
-     * library we are looking for. It it comes back, save it to disk in the agreed upon location and then load it in the
-     * regular way. Throw an UnsatisfiedLinkError if this doesn't work.
+     * Load a native library, finding it if it isn't already here. First try to load the library and catch any exception.
+     * Try to ask the directory place where the JniRepositoryPlace is and see if the repository has the library we are
+     * looking for. It it comes back, save it to disk in the agreed upon location and then load it in the regular way. Throw
+     * an UnsatisfiedLinkError if this doesn't work.
      *
      * Note that System.loadLibrary expects the name as it comes back from expandLibraryName while the repository will
      * respond to the name as it comes from filesystemLibraryName.
@@ -285,9 +284,9 @@ public class JNI implements Serializable {
     }
 
     /**
-     * Retrieve all the dependencies of a given library. For example if the incoming libname is foo, then the full path
-     * of the lib might be libfoo-Solaris-:-2.x-v1.2.so and the dependencies would be listed in the config file as
-     * DEP_foo = "libdep1.so" DEP_foo = "libdep2.so"
+     * Retrieve all the dependencies of a given library. For example if the incoming libname is foo, then the full path of
+     * the lib might be libfoo-Solaris-:-2.x-v1.2.so and the dependencies would be listed in the config file as DEP_foo =
+     * "libdep1.so" DEP_foo = "libdep2.so"
      */
     private boolean retrieveDependencies(final String libname, final String[] errmsg) {
         final List<String> deps = this.configG.findEntries("DEP_" + libname);
@@ -385,9 +384,9 @@ public class JNI implements Serializable {
     }
 
     /**
-     * Retrieve from the Repository with the specified Key. Can be used for bootstrapping when config files for
-     * directories and Repositories might not exist. A non-related repository can be specified in this case and the
-     * system will bootstrap from it.
+     * Retrieve from the Repository with the specified Key. Can be used for bootstrapping when config files for directories
+     * and Repositories might not exist. A non-related repository can be specified in this case and the system will
+     * bootstrap from it.
      */
     public byte[] returnFile(final String filename, final String[] errmsg, final String repositoryKey) {
 

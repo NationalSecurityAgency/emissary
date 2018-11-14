@@ -18,18 +18,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.UnitTest;
+import emissary.util.io.ResourceReader;
+import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
-import emissary.util.io.ResourceReader;
-import emissary.util.shell.Executrix;
 
 public class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;

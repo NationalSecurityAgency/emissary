@@ -86,9 +86,9 @@ public abstract class IdPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Save a list of all the forms that this place is a service proxy for and a list of final id determinations that
-     * this place can make so that any new form being set can be differentiated as final or non-final and the stacks
-     * cleaned up appropriately
+     * Save a list of all the forms that this place is a service proxy for and a list of final id determinations that this
+     * place can make so that any new form being set can be differentiated as final or non-final and the stacks cleaned up
+     * appropriately
      * <ul>
      * <li>FINAL_ID - current form values that do not get UNKNOWN pushed on top</li>
      * <li>ID_RENAME_ - current form values to rename</li>
@@ -103,8 +103,8 @@ public abstract class IdPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Before setting a non-final current form, pop everything this place is s proxy for, then push the new form onto
-     * the currentForm() stack, then push UNKNOWN on right after it (unless the newForm itself is UNKNOWN).
+     * Before setting a non-final current form, pop everything this place is s proxy for, then push the new form onto the
+     * currentForm() stack, then push UNKNOWN on right after it (unless the newForm itself is UNKNOWN).
      */
     public int setNonFinalCurrentForm(final IBaseDataObject d, final String newForm) {
 
@@ -145,8 +145,8 @@ public abstract class IdPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Before setting a final current form, pop everything this place is a proxy for, then push the new form onto both
-     * the currentForm() and destination() stack.
+     * Before setting a final current form, pop everything this place is a proxy for, then push the new form onto both the
+     * currentForm() and destination() stack.
      */
     public int setFinalCurrentForm(final IBaseDataObject d, final String newForm) {
 
@@ -184,8 +184,8 @@ public abstract class IdPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Set a whole bunch of new forms. The top one may or may not be a FINAL_ID, all others are FINAL_ID de facto so
-     * that extraneous UNKNOWNs are not put on the stack
+     * Set a whole bunch of new forms. The top one may or may not be a FINAL_ID, all others are FINAL_ID de facto so that
+     * extraneous UNKNOWNs are not put on the stack
      */
     public int setCurrentForm(final IBaseDataObject d, final Collection<String> newForms) {
 

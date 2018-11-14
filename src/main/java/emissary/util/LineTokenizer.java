@@ -196,8 +196,8 @@ public class LineTokenizer {
     }
 
     /**
-     * Push back a single token onto the stack We only take a single push back. This just moves our pointers to the
-     * previous index
+     * Push back a single token onto the stack We only take a single push back. This just moves our pointers to the previous
+     * index
      */
     public void pushBack() {
         if (previousIndex == -1) {

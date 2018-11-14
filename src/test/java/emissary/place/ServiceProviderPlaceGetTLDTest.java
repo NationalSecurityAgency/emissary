@@ -6,10 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -17,6 +13,9 @@ import emissary.core.IMobileAgent;
 import emissary.directory.DirectoryEntry;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
+import emissary.test.core.UnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ServiceProviderPlaceGetTLDTest extends UnitTest {
 

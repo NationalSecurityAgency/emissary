@@ -5,12 +5,12 @@
 
 package emissary.transform;
 
+import java.io.IOException;
+
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JsonEscape;
 import emissary.util.DataUtil;
-
-import java.io.IOException;
 
 public class JsonEscapePlace extends ServiceProviderPlace {
 
@@ -75,9 +75,8 @@ public class JsonEscapePlace extends ServiceProviderPlace {
             d.setData(newData);
 
             /*
-             * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform
-             * place, but it's only changing data, not currentForm. if (outputForm != null) {
-             * d.setCurrentForm(outputForm); }
+             * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform place, but
+             * it's only changing data, not currentForm. if (outputForm != null) { d.setCurrentForm(outputForm); }
              */
         } else {
             logger.warn("error doing JsonEscape, unable to decode");

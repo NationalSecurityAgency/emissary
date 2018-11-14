@@ -1,5 +1,10 @@
 package emissary.server.mvc.adapters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import emissary.admin.PlaceStarter;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
@@ -10,10 +15,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Adapt createPlace calls (remote construction) to HTTP

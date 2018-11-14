@@ -14,16 +14,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import emissary.config.ConfigUtil;
 import emissary.core.Factory;
 import emissary.core.Family;
@@ -39,6 +29,15 @@ import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.parser.SimpleParser;
 import emissary.util.shell.Executrix;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * This class handles running a the main method from a ServiceProviderPlace instance in a well defined but extensible
@@ -1041,9 +1040,9 @@ public class Main {
     }
 
     /**
-     * Split the output to separate files. This is for doing followon processing on the data, so just the data gets
-     * output here. One payload or attachment per file. Directories will be created as needed underneath the
-     * baseOutputDir (can be specified with -d)
+     * Split the output to separate files. This is for doing followon processing on the data, so just the data gets output
+     * here. One payload or attachment per file. Directories will be created as needed underneath the baseOutputDir (can be
+     * specified with -d)
      *
      * @param payload the processed payload
      * @param att the list of attachments

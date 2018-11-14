@@ -1,10 +1,9 @@
 package emissary.server.mvc.adapters;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.ServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utilities for dealing with request parameters
@@ -18,8 +17,8 @@ public class RequestUtil {
     private RequestUtil() {}
 
     /**
-     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no
-     * parameter is found, return the default value.
+     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no parameter
+     * is found, return the default value.
      */
     public static String getParameter(final ServletRequest request, final String param, final String defaultVal) {
         Object o = request.getAttribute(param);
@@ -35,16 +34,16 @@ public class RequestUtil {
 
 
     /**
-     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no
-     * parameter is found, return null.
+     * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no parameter
+     * is found, return null.
      */
     public static String getParameter(final ServletRequest request, final String param) {
         return getParameter(request, param, null);
     }
 
     /**
-     * Get attribute or parameters from request and return an array of Strings. Attribute has priority over parameter
-     * when both are present
+     * Get attribute or parameters from request and return an array of Strings. Attribute has priority over parameter when
+     * both are present
      */
     public static String[] getParameterValues(final ServletRequest request, final String param) {
         String[] retArray = null;

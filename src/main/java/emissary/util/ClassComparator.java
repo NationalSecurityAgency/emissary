@@ -3,7 +3,6 @@ package emissary.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class ClassComparator {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassComparator.class);

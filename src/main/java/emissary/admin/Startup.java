@@ -10,10 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.client.EmissaryResponse;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
@@ -24,7 +20,9 @@ import emissary.pickup.PickUpPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
 import emissary.server.mvc.adapters.PlaceStarterAdapter;
-import jline.internal.Log;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Startup {
 
@@ -66,8 +64,8 @@ public class Startup {
     }
 
     /**
-     * return the type of place specified Key manipulator does not work on this, though it seems to if the key has dots
-     * in the hostname like many do.
+     * return the type of place specified Key manipulator does not work on this, though it seems to if the key has dots in
+     * the hostname like many do.
      */
     public static String placeName(final String key) {
         final int pos = key.lastIndexOf("/");
@@ -385,8 +383,8 @@ public class Startup {
     }
 
     /**
-     * Start all places on the list on a thread, return control immediately All places in hostParameters list must be
-     * for the same host:port!
+     * Start all places on the list on a thread, return control immediately All places in hostParameters list must be for
+     * the same host:port!
      */
     protected boolean placeSetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg, final Map<String, String> placesArg,
             final List<String> hostParameters) {

@@ -4,10 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Timer;
 import emissary.test.core.UnitTest;
 import org.junit.Test;
-
-import com.codahale.metrics.Timer;
 
 public class MetricsFormatterTest extends UnitTest {
     @Test

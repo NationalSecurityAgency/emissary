@@ -1,12 +1,9 @@
 package emissary.server.mvc.internal;
 
-import emissary.directory.IRemoteDirectory;
-import emissary.directory.KeyManipulator;
-import emissary.log.MDCConstants;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -15,10 +12,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 
-import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+import emissary.directory.IRemoteDirectory;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Path("")
 // context is /emissary, set in EmissaryServer
@@ -26,11 +27,11 @@ public class DeregisterPlaceAction {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /*
-     * <!-- Deregister place from the specified directory, primarily used for the local DirectoryPlace to removePlace
-     * from peer or relay --> <Use-Case source="*" action="/DeregisterPlace.action"> <Work type="Bean"
+     * <!-- Deregister place from the specified directory, primarily used for the local DirectoryPlace to removePlace from
+     * peer or relay --> <Use-Case source="*" action="/DeregisterPlace.action"> <Work type="Bean"
      * target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
-     * target="emissary.comms.http.worker.DeregisterPlaceWorker"/> <View status="0" view="/success.jsp"/> <View
-     * status="-1" view="/error.jsp"/> </Use-Case>
+     * target="emissary.comms.http.worker.DeregisterPlaceWorker"/> <View status="0" view="/success.jsp"/> <View status="-1"
+     * view="/error.jsp"/> </Use-Case>
      */
     // call like this
     // http://localhost:8001/emissary/DeregisterPlace.action?targetDir=http://localhost:8001/DirectoryPlace&dirAddKey=UPPER_CASE.TO_LOWER.TRANSFORM.http://localhost:8001/ToLowerPlace

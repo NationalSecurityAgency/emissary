@@ -1,9 +1,9 @@
 package emissary.util;
 
+import java.net.URLClassLoader;
+
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
-
-import java.net.URLClassLoader;
 
 public class EmissaryIsolatedClassloaderRunner extends BlockJUnit4ClassRunner {
 

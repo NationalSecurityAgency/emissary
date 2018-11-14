@@ -1,5 +1,9 @@
 package emissary.pickup;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,10 +13,6 @@ import emissary.test.core.UnitTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class WorkSpaceTest extends UnitTest {
     MyWorkSpace mws;
@@ -64,8 +64,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "oldest first" sorting when the priorities are even (and hence, don't override
-     * the time based ordering)
+     * Test the WorkBundle sorting of the "oldest first" sorting when the priorities are even (and hence, don't override the
+     * time based ordering)
      */
     @Test
     public void testOldestFirstQueueing() throws Exception {
@@ -100,8 +100,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "oldest first" sorting when the priorities are unequal and therefore the times
-     * are ignored/defer to the priority order
+     * Test the WorkBundle sorting of the "oldest first" sorting when the priorities are unequal and therefore the times are
+     * ignored/defer to the priority order
      */
     @Test
     public void testOldestFirstPriorityOverrideQueueing() throws Exception {
@@ -136,8 +136,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "youngest first" sorting when the priorities are even (and hence, don't
-     * override the time based ordering)
+     * Test the WorkBundle sorting of the "youngest first" sorting when the priorities are even (and hence, don't override
+     * the time based ordering)
      */
     @Test
     public void testYoungestFirstQueueing() throws Exception {
@@ -172,8 +172,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "youngest first" sorting when the priorities are unequal and therefore the
-     * times are ignored/defer to the priority order
+     * Test the WorkBundle sorting of the "youngest first" sorting when the priorities are unequal and therefore the times
+     * are ignored/defer to the priority order
      */
     @Test
     public void testYoungestFirstPriorityOverrideQueueing() throws Exception {
@@ -207,8 +207,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "smallest first" sorting when the priorities are even (and hence, don't
-     * override the time based ordering)
+     * Test the WorkBundle sorting of the "smallest first" sorting when the priorities are even (and hence, don't override
+     * the time based ordering)
      */
     @Test
     public void testSmallestFirstQueueing() throws Exception {
@@ -243,8 +243,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "smallest first" sorting when the priorities are unequal and therefore the
-     * times are ignored/defer to the priority order
+     * Test the WorkBundle sorting of the "smallest first" sorting when the priorities are unequal and therefore the times
+     * are ignored/defer to the priority order
      */
     @Test
     public void testSmallestFirstPriorityOverrideQueueing() throws Exception {
@@ -278,8 +278,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "largest first" sorting when the priorities are even (and hence, don't
-     * override the time based ordering)
+     * Test the WorkBundle sorting of the "largest first" sorting when the priorities are even (and hence, don't override
+     * the time based ordering)
      */
     @Test
     public void testLargestFirstQueueing() throws Exception {
@@ -314,8 +314,8 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     /**
-     * Test the WorkBundle sorting of the "largest first" sorting when the priorities are unequal and therefore the
-     * times are ignored/defer to the priority order
+     * Test the WorkBundle sorting of the "largest first" sorting when the priorities are unequal and therefore the times
+     * are ignored/defer to the priority order
      */
     @Test
     public void testLargestFirstPriorityOverrideQueueing() throws Exception {

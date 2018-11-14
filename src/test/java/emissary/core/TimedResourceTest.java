@@ -6,17 +6,15 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.Timer;
+import emissary.place.IServiceProviderPlace;
+import emissary.place.sample.DevNullPlace;
+import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-
-import com.codahale.metrics.Timer;
-
-import emissary.place.IServiceProviderPlace;
-import emissary.place.sample.DevNullPlace;
-import emissary.test.core.UnitTest;
 
 public class TimedResourceTest extends UnitTest {
     private IServiceProviderPlace tp;

@@ -1,12 +1,12 @@
 package emissary.server.mvc.internal;
 
-import emissary.server.mvc.adapters.MoveToAdapter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
+import emissary.server.mvc.adapters.MoveToAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MoveToAction {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -6,12 +6,11 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import emissary.test.core.UnitTest;
 import org.junit.Test;
 
-import emissary.test.core.UnitTest;
-
 public class FastBoyerMooreTest extends UnitTest {
-    private final String[][] keywords = { {"one", "two", "three", "four", "five"}, {"uno", "dos", "tres", "quatro", "cinco"},
+    private final String[][] keywords = {{"one", "two", "three", "four", "five"}, {"uno", "dos", "tres", "quatro", "cinco"},
             {"alpha", "beta", "gamma", "delta", "epsilon"}};
 
     @Test

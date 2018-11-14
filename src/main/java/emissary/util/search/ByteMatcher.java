@@ -1,5 +1,6 @@
 package emissary.util.search;
 
+import java.nio.charset.Charset;
 
 /**
  * This class provides some simple string matching functions on byte arrays
@@ -13,14 +14,38 @@ public class ByteMatcher {
     public static final int NOTFOUND = -1;
 
 
-    public ByteMatcher(byte[] data) {
-        mydata = data;
-        scanner = new KeywordScanner(mydata);
+    public ByteMatcher(String data) {
+        this(data.getBytes());
     }
 
-    public ByteMatcher(String data) {
-        mydata = data.getBytes();
-        scanner = new KeywordScanner(mydata);
+    public ByteMatcher(byte[] data) {
+        resetData(data);
+    }
+
+    public void resetData(String data) {
+        resetData(data, Charset.defaultCharset());
+    }
+
+    public void resetData(String data, String charsetName) {
+        resetData(data, Charset.forName(charsetName));
+    }
+
+    public void resetData(String data, Charset charset) {
+        resetData(data.getBytes(charset));
+    }
+
+    /**
+     * Reset the byte array. Use of this method avoids having to instantiate a new ByteMatcher.
+     * 
+     * @param data - bytes to match against
+     */
+    public void resetData(byte[] data) {
+        this.mydata = data;
+        if (null == this.scanner) {
+            this.scanner = new KeywordScanner(data);
+        } else {
+            this.scanner.resetData(data);
+        }
     }
 
     /**
@@ -201,8 +226,8 @@ public class ByteMatcher {
     }
 
     /**
-     * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the
-     * {token} to the end of the line.
+     * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the {token} to
+     * the end of the line.
      */
     public String getValue(String key, int ofs, String delim) {
 

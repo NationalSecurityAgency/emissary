@@ -1,13 +1,5 @@
 package emissary.server.mvc.internal;
 
-import emissary.core.EmissaryException;
-import emissary.core.Namespace;
-import emissary.pickup.WorkBundle;
-import emissary.pickup.WorkSpace;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -15,6 +7,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.pickup.WorkBundle;
+import emissary.pickup.WorkSpace;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer
@@ -29,8 +29,8 @@ public class WorkSpaceClientSpaceTakeAction {
     public static final String DATA_IDENTIFIER = "tdataId";
 
     /*
-     * <!-- Take data from a WorkSpace --> <Use-Case source="*" action="/WorkSpaceClientSpaceTake.action"> <Work
-     * type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
+     * <!-- Take data from a WorkSpace --> <Use-Case source="*" action="/WorkSpaceClientSpaceTake.action"> <Work type="Bean"
+     * target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
      * target="emissary.comms.http.worker.WorkSpaceClientSpaceTakeWorker"/> <View status="0" view="/take.jsp"/> <View
      * status="-1" view="/error.jsp"/> </Use-Case>
      */

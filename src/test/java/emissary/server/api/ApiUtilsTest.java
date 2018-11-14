@@ -11,20 +11,18 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hamcrest.junit.ExpectedException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.test.core.UnitTest;
-
+import org.hamcrest.junit.ExpectedException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 
 public class ApiUtilsTest extends UnitTest {
     @Rule

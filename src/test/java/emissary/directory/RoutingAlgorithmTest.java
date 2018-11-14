@@ -8,16 +8,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RoutingAlgorithmTest extends UnitTest {
     private MyDirectoryPlace dir;

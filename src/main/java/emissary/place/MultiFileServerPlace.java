@@ -71,8 +71,8 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
     /**
      * Validate that we should process this data. Will reject null data or empty objects. Generally, all
      * MultiFileServerPlaces should invoke this method before executing {@link #process(IBaseDataObject)} or
-     * {@link #processHeavyDuty(IBaseDataObject)}. Override if your Place wants to do more validation before bothering
-     * to process a payload.
+     * {@link #processHeavyDuty(IBaseDataObject)}. Override if your Place wants to do more validation before bothering to
+     * process a payload.
      * 
      * @param d payload to validate
      * @return true if d is not null and not empty

@@ -10,14 +10,13 @@ import static emissary.client.HTTPConnectionFactory.DFLT_STORE_TYPE;
 
 import javax.net.ssl.SSLContext;
 
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.test.core.UnitTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.test.core.UnitTest;
 
 /**
  *

@@ -170,7 +170,7 @@ public class FastBoyerMoore {
     public static void main(final String[] args) {
         try {
             // a list of interesting keywords. */
-            final String[][] keys = { {"\nABCD"},// 0,1,2,3,4
+            final String[][] keys = {{"\nABCD"}, // 0,1,2,3,4
                     {"\nABC"}, // 5 6 7 8
                     {"\nAB"}, // 9 10 11
                     {"\n//xyz//"}, // 12 13 14 15 16 17 18 19
@@ -227,7 +227,7 @@ public class FastBoyerMoore {
         public static void main(final String[] args) {
             try {
                 // a list of interesting keywords. */
-                final String[][] keys = { {"\nABCD", "\nABC", "\nAB", "\n//xyz//", "\nxxxxx", "\nabcdefghi"}, {"\nabcde", "\nabcdefg"}};
+                final String[][] keys = {{"\nABCD", "\nABC", "\nAB", "\n//xyz//", "\nxxxxx", "\nabcdefghi"}, {"\nabcde", "\nabcdefg"}};
 
                 // The thing we are testing
                 final BackwardsTreeScanner scanner = new BackwardsTreeScanner(keys);
@@ -246,9 +246,8 @@ public class FastBoyerMoore {
                 // A vector for holding the results.
                 final List<int[]> hits = new ArrayList<int[]>();
                 /*
-                 * loop through the data from beginint to end calling scan at each position. This shows how to use
-                 * scan(), but in general this should be used more effediently (with a boyer more algorithm or
-                 * something.
+                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
+                 * general this should be used more effediently (with a boyer more algorithm or something.
                  */
                 for (int pos = 1; pos < dataBytes.length; pos++) {
                     scanner.scan(dataBytes, pos, hits);
@@ -283,9 +282,8 @@ public class FastBoyerMoore {
                 // A vector for holding the results.
                 final List<int[]> hits = new ArrayList<int[]>();
                 /*
-                 * loop through the data from beginint to end calling scan at each position. This shows how to use
-                 * scan(), but in general this should be used more effediently (with a boyer more algorithm or
-                 * something.
+                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
+                 * general this should be used more effediently (with a boyer more algorithm or something.
                  */
                 for (int pos = 1; pos < dataBytes.length; pos++) {
                     scanner.scan(dataBytes, pos, hits);
@@ -396,8 +394,8 @@ public class FastBoyerMoore {
             }
 
             /**
-             * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists.
-             * At the end, record the keyowrd id in the ending state.
+             * Walk throught he keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
+             * record the keyowrd id in the ending state.
              *
              * Warning this is recursive, but thats OK for small keywords.
              */

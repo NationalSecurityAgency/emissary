@@ -1,10 +1,8 @@
 package emissary.server.mvc.internal;
 
-import emissary.admin.PlaceStarter;
-import emissary.place.IServiceProviderPlace;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_CLASS_NAME;
+import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_DIRECTORY;
+import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_LOCATION;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -14,9 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_CLASS_NAME;
-import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_DIRECTORY;
-import static emissary.server.mvc.adapters.PlaceStarterAdapter.CP_LOCATION;
+import emissary.admin.PlaceStarter;
+import emissary.place.IServiceProviderPlace;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer
@@ -28,8 +28,8 @@ public class CreatePlaceAction {
     /*
      * <!-- Create and register a place on a remote machine --> <Use-Case source="*" action="/CreatePlace.action"> <Work
      * type="Bean" target="emissary.comms.http.worker.LogWorker"/> <Work type="Bean"
-     * target="emissary.comms.http.worker.CreatePlaceWorker"/> <View status="0" view="/createplace.jsp"/> <View
-     * status="-1" view="/error.jsp"/> </Use-Case>
+     * target="emissary.comms.http.worker.CreatePlaceWorker"/> <View status="0" view="/createplace.jsp"/> <View status="-1"
+     * view="/error.jsp"/> </Use-Case>
      */
 
     @POST

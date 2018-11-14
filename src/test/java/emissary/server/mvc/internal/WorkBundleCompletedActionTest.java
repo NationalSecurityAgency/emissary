@@ -1,6 +1,5 @@
 package emissary.server.mvc.internal;
 
-
 import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_ID;
 import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_STATUS;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.CLIENT_NAME;
@@ -16,6 +15,9 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 
+import emissary.core.Namespace;
+import emissary.pickup.WorkSpace;
+import emissary.server.mvc.EndpointTestBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,10 +25,6 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
-
-import emissary.core.Namespace;
-import emissary.pickup.WorkSpace;
-import emissary.server.mvc.EndpointTestBase;
 
 @RunWith(Theories.class)
 public class WorkBundleCompletedActionTest extends EndpointTestBase {

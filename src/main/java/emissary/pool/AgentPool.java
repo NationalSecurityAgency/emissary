@@ -101,7 +101,6 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
     /**
      * Configure the commons pool stuff based on our requirements
      * 
-     * @param maxActive max pool size
      * @param name name of the pool in the namespace
      */
     protected void configurePool(String name) {

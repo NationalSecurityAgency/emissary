@@ -6,9 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -16,6 +13,8 @@ import emissary.directory.DirectoryEntry;
 import emissary.directory.IDirectoryPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.PayloadUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide a storage area for incoming "moveTo(here)" payloads so that the http transfer can become more asnychronous.
@@ -254,8 +253,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
-     * Add an item to the spool for sending. Can be the result of a sprout or a new item being ingested into the system.
-     * The arrivalPlace is null so we call MobileAgent.go rather than MobileAgent.arrive
+     * Add an item to the spool for sending. Can be the result of a sprout or a new item being ingested into the system. The
+     * arrivalPlace is null so we call MobileAgent.go rather than MobileAgent.arrive
      *
      * @param payload the dataObject or Collection to save
      * @return number of items on the queue
@@ -265,8 +264,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
-     * Add an item to the spool for sending. Can be the result of a sprout or a new item being ingested into the system.
-     * We call MobileAgent.go rather than MobileAgent.arrive
+     * Add an item to the spool for sending. Can be the result of a sprout or a new item being ingested into the system. We
+     * call MobileAgent.go rather than MobileAgent.arrive
      *
      * @param payload the dataObject or Collection to save
      * @param place the sending or sprouting place reference
@@ -339,8 +338,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
-     * Provide a copy of the map for stats gathering applications. This map shows how many items of each type have
-     * arrived on this node
+     * Provide a copy of the map for stats gathering applications. This map shows how many items of each type have arrived
+     * on this node
      */
     public Map<String, Integer> getMoveCountMap() {
         synchronized (moveCountMap) {

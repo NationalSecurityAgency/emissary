@@ -40,8 +40,8 @@ public class SimpleParser extends SessionParser {
     }
 
     /**
-     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from
-     * the session data.
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data.
      * 
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements.
@@ -131,9 +131,9 @@ public class SimpleParser extends SessionParser {
     }
 
     /**
-     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from
-     * the session data for the next session in the data. This Simple base implementation only treats the whole file as
-     * one session
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data for the next session in the data. This Simple base implementation only treats the whole file as one
+     * session
      * 
      * @return the DecomposedSession
      * @throws ParserException when parsing cannot be completed

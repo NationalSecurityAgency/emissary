@@ -1,8 +1,5 @@
 package emissary.parser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -10,6 +7,9 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A very simple minded parser implementation that assumes each input channel is one session. This parser has no idea
@@ -32,8 +32,8 @@ public class SimpleNioParser extends NIOSessionParser {
     }
 
     /**
-     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from
-     * the session data.
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data.
      *
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements
@@ -121,9 +121,9 @@ public class SimpleNioParser extends NIOSessionParser {
     }
 
     /**
-     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from
-     * the session data for the next session in the data. This Simple base implementation only treats the whole file as
-     * one session
+     * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
+     * session data for the next session in the data. This Simple base implementation only treats the whole file as one
+     * session
      * 
      * @return next session
      * @throws emissary.parser.ParserException
@@ -150,8 +150,7 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Slice data from a buffer based on a single position record
-     * 
-     * @param channel the data to pull from
+     *
      * @param r the position record indicating absolute offsets
      */
     byte[] makeDataSlice(PositionRecord r) throws IOException {
@@ -163,7 +162,12 @@ public class SimpleNioParser extends NIOSessionParser {
 
         try {
             channel.position(r.getPosition());
-            readFully(n);
+            while (n.hasRemaining()) {
+                if (channel.read(n) == -1) {
+                    channel.close();
+                    break;
+                }
+            }
         } catch (BufferUnderflowException ex) {
             logger.warn("Underflow getting {} bytes at {}", n.capacity(), r.getPosition());
         }
@@ -172,9 +176,8 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Slice data from a buffer based on a single position record
-     * 
-     * @param channel the data to pull from
-     * @param r the position record indicating absolute offsets
+     *
+     * @param records the list of position records indicating absolute offsets
      */
     byte[] makeDataSlice(List<PositionRecord> records) throws IOException {
         if (records == null || records.isEmpty()) {
@@ -198,7 +201,12 @@ public class SimpleNioParser extends NIOSessionParser {
             channel.position(r.getPosition());
             limit += (int) r.getLength();
             n.limit(limit);
-            readFully(n);
+            while (n.hasRemaining()) {
+                if (channel.read(n) == -1) {
+                    channel.close();
+                    break;
+                }
+            }
         }
 
         return n.array();

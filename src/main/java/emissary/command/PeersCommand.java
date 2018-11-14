@@ -1,5 +1,9 @@
 package emissary.command;
 
+import java.io.IOException;
+import java.util.Set;
+import java.util.TreeSet;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -7,10 +11,6 @@ import com.google.common.net.HostAndPort;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.KeyManipulator;
-
-import java.io.IOException;
-import java.util.Set;
-import java.util.TreeSet;
 
 // TODO Had to extend Http in order to get node host/port substitution. MAybe move up to BaseCommand?
 @Parameters(commandDescription = "Read the peers.cfg (respective flavors) and return hosts as bashable list")

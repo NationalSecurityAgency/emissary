@@ -7,14 +7,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
-
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
-
+import org.junit.Test;
 
 public class ShortNameComparatorTest extends UnitTest {
     private byte[] nobytes = new byte[0];

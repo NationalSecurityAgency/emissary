@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +77,8 @@ public class Roller extends Observable implements Runnable {
     }
 
     /*
-     * There is the potential that we could lose some progress during a roll since this method is called immediately
-     * after a roll. Places should control that behavior via internal locking if necessary to maintain exact progress.
+     * There is the potential that we could lose some progress during a roll since this method is called immediately after a
+     * roll. Places should control that behavior via internal locking if necessary to maintain exact progress.
      */
     protected void resetProgress(long start) {
         try {
@@ -125,9 +126,8 @@ public class Roller extends Observable implements Runnable {
     }
 
     /*
-     * There are a couple of conditions where we would not want to execute when both a progress value and time schedule
-     * are configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between
-     * schduled runs
+     * There are a couple of conditions where we would not want to execute when both a progress value and time schedule are
+     * configured: - Time based roll happened and a progress run is scheduled - Progress roll happened between schduled runs
      */
     private boolean shouldRoll(long start) {
         // verify both time and progress are set

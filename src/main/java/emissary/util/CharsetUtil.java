@@ -1,9 +1,9 @@
 package emissary.util;
 
 import java.io.UnsupportedEncodingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * A collection of utilities for dealing with different character sets in Java. Mainly with the aim of getting to UTF-8.
@@ -231,8 +231,8 @@ public class CharsetUtil {
     }
 
     /**
-     * Check for valid utf8 data. Borrowed from the unidesc package (GPL) by Bill Poser, converted from C to Java. The
-     * check runs from offs to dlen-1
+     * Check for valid utf8 data. Borrowed from the unidesc package (GPL) by Bill Poser, converted from C to Java. The check
+     * runs from offs to dlen-1
      *
      * @param data the bytes to check for validity
      * @param offs beginning offset to check
@@ -253,7 +253,7 @@ public class CharsetUtil {
                 switch (len) {
                     default:
                         return false;
-                        // everything else falls through when true
+                    // everything else falls through when true
                     case 4:
                         a = (data[--srcptr] & 0xff);
                         if (a < 0x80 || a > 0xbf) {
@@ -271,7 +271,7 @@ public class CharsetUtil {
                         }
 
                         switch (val) {
-                        // no fall through in this one
+                            // no fall through in this one
                             case 0xe0:
                                 if (a < 0xa0) {
                                     return false;
@@ -310,8 +310,8 @@ public class CharsetUtil {
     }
 
     /**
-     * See if string has multibyte chars (No longer based on org.apache.poi.util.StringUtil) It would be a bad idea to
-     * call this with a very large string
+     * See if string has multibyte chars (No longer based on org.apache.poi.util.StringUtil) It would be a bad idea to call
+     * this with a very large string
      *
      * @param value string to test
      * @return true if string has at least one multibyte char

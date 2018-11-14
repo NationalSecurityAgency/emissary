@@ -3,13 +3,11 @@ package emissary.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import emissary.test.core.UnitTest;
-import org.junit.Test;
-
 import com.codahale.metrics.Timer;
-
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
+import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class MetricsManagerTest extends UnitTest {
     @Test

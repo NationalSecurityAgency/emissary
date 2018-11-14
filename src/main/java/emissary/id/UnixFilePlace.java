@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import emissary.util.UnixFile;
-
 import emissary.core.IBaseDataObject;
+import emissary.util.UnixFile;
 
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile
@@ -59,7 +58,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         }
         this.swallowIgnorableExceptions = configG.findBooleanEntry("SWALLOW_IGNORABLE_EXCEPTIONS", this.swallowIgnorableExceptions);
         this.unixFileUtil = new UnixFile(magicPaths, this.swallowIgnorableExceptions);
-        logger.debug("Created unixFile with " + magicPaths.size() + " magic files containing " + this.unixFileUtil.magicEntryCount() + " magic rules");
+        logger.debug(
+                "Created unixFile with " + magicPaths.size() + " magic files containing " + this.unixFileUtil.magicEntryCount() + " magic rules");
 
         this.chop = configG.findBooleanEntry("CHOP", this.chop);
         this.chopAtTwo = configG.findEntriesAsSet("CHOP_AT_TWO");

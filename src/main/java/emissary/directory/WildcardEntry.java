@@ -1,13 +1,13 @@
 package emissary.directory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handle the details of a wildcard directory entry including iterating through the possible directory match strings A
@@ -23,7 +23,8 @@ import java.util.Set;
  * </ul>
  *
  * <ol>
- * <li>The complete unchanged entry is returned first, so an exact match will work like it always has worked before.</li>
+ * <li>The complete unchanged entry is returned first, so an exact match will work like it always has worked
+ * before.</li>
  * <li>Next the parenthetical expressions are wildcarded out starting from the right and moving left until all have been
  * changed to wildcards. Each step wildcards another parenthetical expression without reverting the previous one. So you
  * currently cannot get a wildcard match on the non-rightmost expression without every one to the right of it also being

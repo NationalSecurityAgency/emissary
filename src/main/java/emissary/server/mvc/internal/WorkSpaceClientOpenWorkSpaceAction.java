@@ -1,10 +1,7 @@
 package emissary.server.mvc.internal;
 
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import emissary.pickup.IPickUpSpace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.CLIENT_NAME;
+import static emissary.server.mvc.adapters.WorkSpaceAdapter.SPACE_NAME;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -14,8 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.CLIENT_NAME;
-import static emissary.server.mvc.adapters.WorkSpaceAdapter.SPACE_NAME;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.pickup.IPickUpSpace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Web-tier worker to call the WorkSpaceClientPlace.openSpace coming in on a remote request

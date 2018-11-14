@@ -1,12 +1,18 @@
 package emissary.directory;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.Facet;
 import emissary.core.IAggregator;
 import emissary.core.IBaseDataObject;
-import emissary.core.Facet;
 import emissary.log.MDCConstants;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
@@ -15,13 +21,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Controls lookup and caching of pertinent javascript accept functions for the relevant itinerary steps.
@@ -227,8 +226,8 @@ public class JSAcceptFacet extends Facet {
     }
 
     /**
-     * Get the js key that would match a defaulted directory entry to allow mapping the resource. It is as if the
-     * directory entry key were wildcarded on the SERVICE_PROXY element and we just omit it from the key.
+     * Get the js key that would match a defaulted directory entry to allow mapping the resource. It is as if the directory
+     * entry key were wildcarded on the SERVICE_PROXY element and we just omit it from the key.
      *
      * @param de the controlling directory entry
      * @return the string key
@@ -254,8 +253,8 @@ public class JSAcceptFacet extends Facet {
     }
 
     /**
-     * Get the default js resource name that would match a directory entry wildcarded on the SERVICE_PROXY element and
-     * will allow finding the resource
+     * Get the default js resource name that would match a directory entry wildcarded on the SERVICE_PROXY element and will
+     * allow finding the resource
      *
      * @param de the controlling directory entry
      * @return the resource name
@@ -270,9 +269,9 @@ public class JSAcceptFacet extends Facet {
     /**
      * Get a script matching the directory entry from the local script cache or from a provided resource. If we retrieve
      * from a resource the result will be cached even if null to prevent future lookups and compilations. This is a
-     * timestamp enabled cache, such that editing the JS resource on disk will cause it to be reloaded and recompiled.
-     * JS resources provided in jar files are never reloaded, but if initially loaded from a jar file, placing on in the
-     * proper disk location will cause the disk file resource to override at the next checkpoint.
+     * timestamp enabled cache, such that editing the JS resource on disk will cause it to be reloaded and recompiled. JS
+     * resources provided in jar files are never reloaded, but if initially loaded from a jar file, placing on in the proper
+     * disk location will cause the disk file resource to override at the next checkpoint.
      *
      * @param de the directory entry to match
      * @return the script
@@ -431,9 +430,9 @@ public class JSAcceptFacet extends Facet {
     }
 
     /**
-     * Allow a function to be loaded into the facet after being pushed here by a possibly remote source. These are
-     * stored with -1L timestamp so that the local disk and resources are never checked for an update. If you want to
-     * have the local config streamuration take over for this directory entry, this script must first be removed
+     * Allow a function to be loaded into the facet after being pushed here by a possibly remote source. These are stored
+     * with -1L timestamp so that the local disk and resources are never checked for an update. If you want to have the
+     * local config streamuration take over for this directory entry, this script must first be removed
      *
      * @see #remove(emissary.directory.DirectoryEntry)
      * @param de the DirectoryEntry the function matches

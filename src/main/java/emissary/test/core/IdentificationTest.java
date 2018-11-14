@@ -1,5 +1,12 @@
 package emissary.test.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+
 import emissary.core.DataObjectFactory;
 import emissary.core.Factory;
 import emissary.core.Form;
@@ -14,13 +21,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public abstract class IdentificationTest extends UnitTest {

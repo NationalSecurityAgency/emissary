@@ -1,5 +1,8 @@
 package emissary.server.mvc.adapters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.core.Namespace;
@@ -10,9 +13,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Stuff for adapting the Directory heartbeat calls to HTTP

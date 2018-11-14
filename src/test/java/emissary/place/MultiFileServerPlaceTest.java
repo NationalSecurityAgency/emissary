@@ -11,15 +11,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MultiFileServerPlaceTest extends UnitTest {
     MFSPlace mfsp = null;

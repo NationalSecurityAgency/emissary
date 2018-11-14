@@ -13,10 +13,8 @@ import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
-
+import org.junit.Test;
 
 public class TimeUtilTest extends UnitTest {
 

@@ -14,9 +14,6 @@ import javax.script.ScriptEngineManager;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -25,6 +22,8 @@ import emissary.core.NamespaceException;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.util.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provide access to the running emissary node via with a ruby scripting interpreter The RubyConsole is normally run on
@@ -209,8 +208,8 @@ public class RubyConsole implements HttpSessionBindingListener, Runnable {
     }
 
     /**
-     * Load everything that is in this node's namespace into the JRuby context so that the scripting engine can access
-     * all of these things by the name they were bound with
+     * Load everything that is in this node's namespace into the JRuby context so that the scripting engine can access all
+     * of these things by the name they were bound with
      */
     protected void loadNamespaceIntoContext() {
         for (String key : Namespace.keySet()) {
@@ -241,13 +240,13 @@ public class RubyConsole implements HttpSessionBindingListener, Runnable {
     }
 
     /**
-     * Set up a ruby expression to be evaluated, wait for it to be done and return the result. The evaluation happens on
-     * the ruby console thread, not the callers thread
+     * Set up a ruby expression to be evaluated, wait for it to be done and return the result. The evaluation happens on the
+     * ruby console thread, not the callers thread
      *
      * @param expression the ruby expression to evaluate
-     * @param limit the max time to wait for the answer in millis sending a limit of 0 causes nowait and must call
-     *        getResult yourself if you want the result (async model). Calling limit with a number greater than 0 will
-     *        wait at most that length of time for the result to be ready. A limit of < 0 is currently undefined.
+     * @param limit the max time to wait for the answer in millis sending a limit of 0 causes nowait and must call getResult
+     *        yourself if you want the result (async model). Calling limit with a number greater than 0 will wait at most
+     *        that length of time for the result to be ready. A limit of < 0 is currently undefined.
      */
     public Object evalAndWait(String expression, long limit) throws Exception {
         synchronized (this) {

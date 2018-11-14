@@ -49,9 +49,9 @@ public class ConfigUtil {
     public static final String JS_FILE_ENDING = ResourceReader.JS_SUFFIX;
 
     /**
-     * This property specifies the config override directory. When present, we look here first for config info The
-     * directory can be remoted using http to allow centralized configuration or it can be on a local (possibly shared)
-     * filesystem. If not present we try and load from the classpath as a resource The property is set with -D{@value}
+     * This property specifies the config override directory. When present, we look here first for config info The directory
+     * can be remoted using http to allow centralized configuration or it can be on a local (possibly shared) filesystem. If
+     * not present we try and load from the classpath as a resource The property is set with -D{@value}
      */
     public static final String CONFIG_DIR_PROPERTY = "emissary.config.dir";
 
@@ -61,8 +61,8 @@ public class ConfigUtil {
     public static final String CONFIG_PKG_PROPERTY = "emissary.config.pkg";
 
     /**
-     * This property specified the install/config flavor to run. This will opt-import and merge config files special to
-     * the desired flavor allowing multiple configurations to be kept in the same configuration package
+     * This property specified the install/config flavor to run. This will opt-import and merge config files special to the
+     * desired flavor allowing multiple configurations to be kept in the same configuration package
      */
     public static final String CONFIG_FLAVOR_PROPERTY = "emissary.config.flavor";
 
@@ -103,9 +103,9 @@ public class ConfigUtil {
     private static boolean isWindows = false;
 
     /**
-     * The configuration flavor, allows multiple layers of config stuff to be stored together in one package or
-     * directory, sort of like a mini single inheritance model. It is a comma separated, ordered list of sub-types to
-     * try to merge into the current config.
+     * The configuration flavor, allows multiple layers of config stuff to be stored together in one package or directory,
+     * sort of like a mini single inheritance model. It is a comma separated, ordered list of sub-types to try to merge into
+     * the current config.
      */
     private static String configFlavors = null;
 
@@ -113,8 +113,8 @@ public class ConfigUtil {
 
     /**
      * XML bean configuration with Jetty 6 does a poor job of propagating exceptions during configure. Once we update to
-     * Jetty 9, evaluate removing this. Otherwise, there is no way I could find to stop the server from starting if
-     * there is a configuration error.
+     * Jetty 9, evaluate removing this. Otherwise, there is no way I could find to stop the server from starting if there is
+     * a configuration error.
      * 
      * TODO: evaluate whether we can change this now that we are on jetty 9
      *
@@ -151,8 +151,8 @@ public class ConfigUtil {
     }
 
     /**
-     * Initialize system properties for this class, but make it so that test cases (and other interested parties) can
-     * reset system properties and re-call this method when they need to.
+     * Initialize system properties for this class, but make it so that test cases (and other interested parties) can reset
+     * system properties and re-call this method when they need to.
      * 
      * @throws EmissaryException
      */

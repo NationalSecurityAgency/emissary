@@ -10,19 +10,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.config.ConfigUtil;
@@ -37,6 +24,18 @@ import emissary.log.MDCConstants;
 import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.PayloadUtil;
+import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.EntityBuilder;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Facilitate moving agents over HTTP
@@ -238,8 +237,8 @@ public class MoveToAdapter extends EmissaryClient {
         }
 
         /**
-         * Get the agent's payload data. The actual type will depend on the particular implementation of IMobileAgent
-         * that serialized the data to us.
+         * Get the agent's payload data. The actual type will depend on the particular implementation of IMobileAgent that
+         * serialized the data to us.
          */
         Object getPayload() {
             return this.payload;

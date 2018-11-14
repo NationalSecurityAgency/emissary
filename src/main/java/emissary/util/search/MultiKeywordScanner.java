@@ -1,7 +1,7 @@
 package emissary.util.search;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultiKeywordScanner implements IMultiKeywordScanner {
 
@@ -31,7 +31,11 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
         this.keywords = keywordsArg;
 
         try {
-            this.treeScanner = new BackwardsTreeScanner(keywordsArg);
+            if (null == this.treeScanner) {
+                this.treeScanner = new BackwardsTreeScanner(keywordsArg);
+            } else {
+                this.treeScanner.resetKeywords(keywordsArg);
+            }
         } catch (Exception e) {
             logger.error("Could not create BackwardsTreeScanner", e);
         }
@@ -74,6 +78,22 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
+    public HitList findAll(final byte[] dataArg) {
+        if (dataArg != null) {
+            return this.findAll(dataArg, 0, dataArg.length);
+        }
+        return new HitList();
+    }
+
+    @Override
+    public HitList findAll(final byte[] dataArg, final int start) {
+        if (dataArg != null) {
+            return this.findAll(dataArg, start, dataArg.length);
+        }
+        return new HitList();
+    }
+
+    @Override
     public HitList findAll(final byte[] dataArg, final int start, final int stop) {
         this.data = dataArg;
         int position;
@@ -94,17 +114,25 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
-    public HitList findAll(final byte[] dataArg, final int start) {
-        if (dataArg != null) {
-            return this.findAll(dataArg, start, dataArg.length);
+    public HitList findNext() {
+        if (this.data != null) {
+            return this.findNext(this.data, this.lastPosition + 1, this.data.length);
         }
         return new HitList();
     }
 
     @Override
-    public HitList findAll(final byte[] dataArg) {
+    public HitList findNext(final byte[] dataArg) {
         if (dataArg != null) {
-            return this.findAll(dataArg, 0, dataArg.length);
+            return this.findNext(dataArg, this.lastPosition + 1, dataArg.length);
+        }
+        return new HitList();
+    }
+
+    @Override
+    public HitList findNext(final byte[] dataArg, final int start) {
+        if (dataArg != null) {
+            return this.findNext(dataArg, start, dataArg.length);
         }
         return new HitList();
     }
@@ -130,29 +158,5 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
         this.lastPosition = position;
 
         return hits;
-    }
-
-    @Override
-    public HitList findNext(final byte[] dataArg, final int start) {
-        if (dataArg != null) {
-            return this.findNext(dataArg, start, dataArg.length);
-        }
-        return new HitList();
-    }
-
-    @Override
-    public HitList findNext(final byte[] dataArg) {
-        if (dataArg != null) {
-            return this.findNext(dataArg, this.lastPosition + 1, dataArg.length);
-        }
-        return new HitList();
-    }
-
-    @Override
-    public HitList findNext() {
-        if (this.data != null) {
-            return this.findNext(this.data, this.lastPosition + 1, this.data.length);
-        }
-        return new HitList();
     }
 }

@@ -1,10 +1,15 @@
 package emissary.command;
 
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import emissary.command.converter.PathExistsConverter;
@@ -12,13 +17,6 @@ import emissary.command.converter.ProjectBaseConverter;
 import emissary.config.ConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 
 public abstract class BaseCommand implements EmissaryCommand {
 
@@ -159,7 +157,9 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     /**
-     * Create a new command and parse the args </p> Useful for testings
+     * Create a new command and parse the args
+     * </p>
+     * Useful for testings
      * 
      * @param clazz the Class of return type class
      * @param args vararg of Strings
@@ -174,9 +174,9 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     /*
-     * Try to reinitialize the logback context with the configured file you may have 2 log files if anything logged
-     * before we do this. Useful when you are running a server For troubleshooting, looking at the
-     * http://localhost:8001/lbConfig when this works, you will see the initial logger and then new one
+     * Try to reinitialize the logback context with the configured file you may have 2 log files if anything logged before
+     * we do this. Useful when you are running a server For troubleshooting, looking at the http://localhost:8001/lbConfig
+     * when this works, you will see the initial logger and then new one
      */
     public void reinitLogback() {
         // Need to reinit because logback config uses ${emissary.node.name}-${emissary.node.port}

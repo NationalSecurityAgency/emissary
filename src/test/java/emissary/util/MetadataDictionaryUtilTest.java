@@ -9,16 +9,14 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.TreeMultimap;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.MetadataDictionary;
 import emissary.core.MetadataDictionaryTest;
 import emissary.test.core.UnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class MetadataDictionaryUtilTest extends UnitTest {
 

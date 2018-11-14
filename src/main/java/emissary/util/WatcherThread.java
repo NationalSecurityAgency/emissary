@@ -7,7 +7,6 @@ import java.util.Date;
 
 import emissary.util.io.ReadOutput;
 
-
 public class WatcherThread extends Thread {
     private Process proc = null;
     private int delay = 1000;

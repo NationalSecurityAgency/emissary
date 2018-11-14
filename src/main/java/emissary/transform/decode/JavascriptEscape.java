@@ -3,11 +3,9 @@ package emissary.transform.decode;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import emissary.transform.decode.HtmlEscape;
+import emissary.util.shell.Executrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.util.shell.Executrix;
 
 public class JavascriptEscape {
 
@@ -16,8 +14,8 @@ public class JavascriptEscape {
 
 
     /**
-     * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u"
-     * and only four digits work. Javascript also has normal unix escapes like \n and \r.
+     * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u" and
+     * only four digits work. Javascript also has normal unix escapes like \n and \r.
      */
     public static byte[] unescape(byte[] data) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

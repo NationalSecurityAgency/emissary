@@ -220,10 +220,10 @@ public class ResourceReader {
     }
 
     /**
-     * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For
-     * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
-     * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     *
+     * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * 
      * @param c the class
      * @param url the jar url
      * @param suffix the ending suffix of desired resources
@@ -251,10 +251,10 @@ public class ResourceReader {
 
 
     /**
-     * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For
-     * example if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are
-     * located at emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     *
+     * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For example
+     * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
+     * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
+     * 
      * @param c the class
      * @param url the file url
      * @param suffix the ending suffix of desired resources

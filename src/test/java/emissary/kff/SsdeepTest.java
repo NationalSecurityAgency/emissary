@@ -10,9 +10,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
-
 import emissary.util.Hexl;
+import org.junit.Test;
 
 /** Unit tests for {@link Ssdeep}. */
 public final class SsdeepTest extends UnitTest {

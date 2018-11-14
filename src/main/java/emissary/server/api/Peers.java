@@ -1,5 +1,17 @@
 package emissary.server.api;
 
+import static emissary.server.api.ApiUtils.getHostAndPort;
+import static emissary.server.api.ApiUtils.lookupPeers;
+import static emissary.server.api.ApiUtils.stripPeerString;
+
+import java.util.Set;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import emissary.client.EmissaryClient;
 import emissary.client.response.PeerList;
 import emissary.client.response.PeersResponseEntity;
@@ -7,17 +19,6 @@ import emissary.core.EmissaryException;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Set;
-
-import static emissary.server.api.ApiUtils.getHostAndPort;
-import static emissary.server.api.ApiUtils.lookupPeers;
-import static emissary.server.api.ApiUtils.stripPeerString;
 
 /**
  * The peers Emissary API endpoint.

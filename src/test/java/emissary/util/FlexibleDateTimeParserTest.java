@@ -1,16 +1,16 @@
 package emissary.util;
 
-import emissary.test.core.UnitTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import emissary.test.core.UnitTest;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class FlexibleDateTimeParserTest extends UnitTest {
 
@@ -66,8 +66,8 @@ public class FlexibleDateTimeParserTest extends UnitTest {
 
     /**
      * Three-letter time zone IDs often point to multiple timezones. Java 8 uses the timezone over the offset causing
-     * problems with the datetime in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it
-     * would take some time to transition, a regex strips out the short timezone if there is an offset present.
+     * problems with the datetime in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it would
+     * take some time to transition, a regex strips out the short timezone if there is an offset present.
      * <p>
      * See {@link java.util.TimeZone} and {@link java.time.ZoneId#SHORT_IDS}
      */

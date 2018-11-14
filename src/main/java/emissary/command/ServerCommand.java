@@ -4,17 +4,15 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Parameters(commandDescription = "Start an Emissary jetty server")
 public class ServerCommand extends HttpCommand {

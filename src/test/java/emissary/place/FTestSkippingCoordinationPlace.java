@@ -8,11 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import emissary.test.core.FunctionalTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -20,7 +15,11 @@ import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.place.sample.ToLowerPlace;
+import emissary.test.core.FunctionalTest;
 import emissary.util.io.ResourceReader;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class FTestSkippingCoordinationPlace extends FunctionalTest {
     private CoordinationPlace place;

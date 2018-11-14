@@ -5,9 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class ClassComparatorTest extends UnitTest {
     @Test

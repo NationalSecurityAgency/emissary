@@ -1,12 +1,13 @@
 package emissary.client.response;
 
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.TreeMap;
 
 @XmlRootElement(name = "mapResponseEntity")
 @XmlAccessorType(XmlAccessType.NONE)

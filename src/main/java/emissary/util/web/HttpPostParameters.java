@@ -3,7 +3,6 @@ package emissary.util.web;
 /*
  $Id$
  */
-
 /**
  * Hold onto fielded data that should be posted to a URL
  * in x-www-urlencoded format.
@@ -12,12 +11,11 @@ package emissary.util.web;
  *
  * @author MJF, 2000-08-01
  */
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpPostParameters {
 

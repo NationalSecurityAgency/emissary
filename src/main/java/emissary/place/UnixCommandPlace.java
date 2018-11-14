@@ -11,7 +11,6 @@ import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
 import emissary.util.shell.Executrix;
 
-
 /**
  * Run a command external to the Emissary JVM to process data
  */

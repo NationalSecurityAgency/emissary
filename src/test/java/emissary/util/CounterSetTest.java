@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class CounterSetTest extends UnitTest {
 

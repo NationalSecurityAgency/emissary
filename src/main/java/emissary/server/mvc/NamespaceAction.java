@@ -13,10 +13,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.server.mvc.Template;
-
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import org.glassfish.jersey.server.mvc.Template;
 
 @Path("")
 // context is emissary

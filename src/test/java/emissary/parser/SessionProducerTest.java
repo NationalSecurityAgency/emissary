@@ -4,10 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
-
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 @SuppressWarnings("deprecation")
 // TODO: either remove these tests or test the new Parser

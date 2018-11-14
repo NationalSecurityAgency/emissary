@@ -81,8 +81,8 @@ public final class Journal {
 
     /**
      * This method retrieves the last valid JournalEntry based on the length or position within the content file. It is
-     * possible, on some architectures, that upon a crash data may not have flushed to disk. In this case, we need to
-     * query the Journal to find the last good position based on the length of the file.
+     * possible, on some architectures, that upon a crash data may not have flushed to disk. In this case, we need to query
+     * the Journal to find the last good position based on the length of the file.
      * 
      * @param channelSize The maximum position, generally the file size, to search for
      * @return JournalEntry containing the last good offset less than or equal to channelSize

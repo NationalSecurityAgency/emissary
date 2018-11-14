@@ -8,14 +8,13 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 
+import emissary.test.core.UnitTest;
+import emissary.util.io.ResourceReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.test.core.UnitTest;
-import emissary.util.io.ResourceReader;
 
 public class RubyConsoleTest extends UnitTest {
     private RubyConsole console;

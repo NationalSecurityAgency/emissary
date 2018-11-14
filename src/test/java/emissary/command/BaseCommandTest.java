@@ -1,5 +1,7 @@
 package emissary.command;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +9,6 @@ import com.beust.jcommander.JCommander;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class BaseCommandTest extends UnitTest {
 

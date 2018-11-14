@@ -2,11 +2,10 @@ package emissary.core;
 
 import static org.junit.Assert.assertTrue;
 
+import emissary.pickup.file.FilePickUpPlace;
 import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
-
-import emissary.pickup.file.FilePickUpPlace;
 
 public class FilePickUpPlaceHealthCheckTest extends UnitTest {
 

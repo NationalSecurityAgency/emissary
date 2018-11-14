@@ -3,9 +3,8 @@ package emissary.util.web;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class UrlDataTest extends UnitTest {
 

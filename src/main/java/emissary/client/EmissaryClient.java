@@ -1,5 +1,11 @@
 package emissary.client;
 
+import java.io.IOException;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.core.MediaType;
+
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -26,11 +32,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.security.Password;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base class of all the actions that use HttpClient.

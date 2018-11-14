@@ -136,9 +136,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Evaluate whether to skip processing. This will allow the coordination place to continue to the next configured
-     * place. Note that shouldContinue method takes precedence. Use one or the other and be cautious when using both
-     * Classes can override this method to provide any additional logic during coordination
+     * Evaluate whether to skip processing. This will allow the coordination place to continue to the next configured place.
+     * Note that shouldContinue method takes precedence. Use one or the other and be cautious when using both Classes can
+     * override this method to provide any additional logic during coordination
      */
     protected boolean shouldSkip(IBaseDataObject d, IServiceProviderPlace p) {
         logger.debug("Skipping with currentForm {} to place {}", d.currentForm(), p);

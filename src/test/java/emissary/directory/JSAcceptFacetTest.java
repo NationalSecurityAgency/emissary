@@ -10,17 +10,16 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.core.AggregateObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.Facet;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JSAcceptFacetTest extends UnitTest {
 

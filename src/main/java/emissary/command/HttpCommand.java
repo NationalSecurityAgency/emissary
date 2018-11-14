@@ -1,5 +1,9 @@
 package emissary.command;
 
+import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.beust.jcommander.Parameter;
 import com.google.common.net.HostAndPort;
 import emissary.client.EmissaryClient;
@@ -7,11 +11,6 @@ import emissary.command.converter.FileExistsConverter;
 import emissary.directory.EmissaryNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /* abstract command to configure http options
  * <p>

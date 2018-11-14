@@ -17,10 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
 import emissary.util.shell.Executrix;
+import org.junit.Test;
 
 public class ServiceConfigGuideTest extends UnitTest {
 
@@ -579,11 +578,10 @@ public class ServiceConfigGuideTest extends UnitTest {
     }
 
     /**
-     * This test case validates the patch for Emissary #201:
-     * https://github.com/NationalSecurityAgency/emissary/issues/201.
+     * This test case validates the patch for Emissary #201: https://github.com/NationalSecurityAgency/emissary/issues/201.
      *
-     * It verifies that findStringEntry() returns the first non-null configured value or the provided default value if
-     * no non-null values are configured for a property.
+     * It verifies that findStringEntry() returns the first non-null configured value or the provided default value if no
+     * non-null values are configured for a property.
      */
     @Test
     public void testFindStringEntry_WithDefaultAndConfiguredNull_Emissary201() {

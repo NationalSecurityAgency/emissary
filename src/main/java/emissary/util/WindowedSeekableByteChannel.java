@@ -1,14 +1,14 @@
 package emissary.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The
@@ -29,14 +29,13 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     private final ReadableByteChannel in;
 
     /**
-     * estimated length. We have to estimate because we are buffering into a window and may not be at the end. We read
-     * ahead to keep buffers full, but there can be additional data.
+     * estimated length. We have to estimate because we are buffering into a window and may not be at the end. We read ahead
+     * to keep buffers full, but there can be additional data.
      */
     long estimatedLength;
 
     /**
-     * The earliest position we can move to. Essentially, position of the underlying Channel that is at position 0 of
-     * buff1
+     * The earliest position we can move to. Essentially, position of the underlying Channel that is at position 0 of buff1
      */
     long minposition;
 
@@ -132,12 +131,12 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Attempt to read data from the open channel into the buffer provided.
      * <p/>
-     * After this call completes, we have either filled the buffer -or- have reached the end of data in the input
-     * channel. The buffer will have its position set to 0, and limit set to the end of the data read, which may be
-     * equal to the size of the buffer.
+     * After this call completes, we have either filled the buffer -or- have reached the end of data in the input channel.
+     * The buffer will have its position set to 0, and limit set to the end of the data read, which may be equal to the size
+     * of the buffer.
      * <p/>
-     * Has the side effect of raising the endofchannel flag if we have exhausted the bytes in the input channel. Updates
-     * the estimatedLength with the number of bytes read.
+     * Has the side effect of raising the endofchannel flag if we have exhausted the bytes in the input channel. Updates the
+     * estimatedLength with the number of bytes read.
      * <p/>
      *
      * @param buf the destination buffer.
@@ -170,8 +169,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Closes underlying Channel and releases buffers. Further calls to this instance will result in unspecified
-     * behavior.
+     * Closes underlying Channel and releases buffers. Further calls to this instance will result in unspecified behavior.
      * 
      * @see java.nio.channels.Channel#close()
      */
@@ -295,8 +293,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Returns the minimum position we can go to in the backing Channel. This is based on the current window mapped into
-     * the backing store.
+     * Returns the minimum position we can go to in the backing Channel. This is based on the current window mapped into the
+     * backing store.
      * 
      * @return the minimum allowed position in the channel
      */
@@ -305,8 +303,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Returns the maximum position we can go to in the backing Channel. This is based on the current window mapped into
-     * the backing store.
+     * Returns the maximum position we can go to in the backing Channel. This is based on the current window mapped into the
+     * backing store.
      * 
      * @return the maximum allowed position in the channel
      */

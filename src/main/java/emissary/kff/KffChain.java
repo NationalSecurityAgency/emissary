@@ -1,11 +1,11 @@
 package emissary.kff;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Keep a list of hash algorithm names and compute them and compare the results to the ordered chain of KFF filter when
@@ -108,8 +108,8 @@ public class KffChain {
     }
 
     /**
-     * Check content on our chain in the order loaded Data smaller than minDataSize will get hashes computed but can
-     * never be reported as KNOWN data.
+     * Check content on our chain in the order loaded Data smaller than minDataSize will get hashes computed but can never
+     * be reported as KNOWN data.
      *
      * @return result of check
      */

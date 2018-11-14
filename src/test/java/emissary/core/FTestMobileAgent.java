@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import emissary.place.IServiceProviderPlace;
+import emissary.test.core.FunctionalTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.place.IServiceProviderPlace;
-import emissary.test.core.FunctionalTest;
 
 public class FTestMobileAgent extends FunctionalTest {
 

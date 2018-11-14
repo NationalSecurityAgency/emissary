@@ -171,8 +171,8 @@ public class FileFind {
 
     }
     /**
-     * Simple class to capture the contents of a directory AND a position within it. We use Iterator like methods, but
-     * avoid the added complexity of the 'Iterator' class.
+     * Simple class to capture the contents of a directory AND a position within it. We use Iterator like methods, but avoid
+     * the added complexity of the 'Iterator' class.
      */
     static class DirectoryList {
         private File[] contents;

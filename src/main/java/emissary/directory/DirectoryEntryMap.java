@@ -1,13 +1,13 @@
 package emissary.directory;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Keep a map of DataID to DirectoryEntryList for the Directory Extensible to use other things for the key if desired,
@@ -83,8 +83,8 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
     }
 
     /**
-     * Add a directory entry to the appropriate DirectoryEntryList If it is a duplicate entry in all parts except cost,
-     * only the lowest cost entry is kept. Either this entry or the one already in the list will be discarded.
+     * Add a directory entry to the appropriate DirectoryEntryList If it is a duplicate entry in all parts except cost, only
+     * the lowest cost entry is kept. Either this entry or the one already in the list will be discarded.
      *
      * @param d the entry to add
      */
@@ -219,8 +219,8 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * Remove all entries that match the key returning them as a list
      * 
      * @param key the key that must be matched (can be wildcarded)
-     * @param checkpoint only remove entries older than this value, use Long.MAX_VALUE to have all matching entries
-     *        removed without regard to their age
+     * @param checkpoint only remove entries older than this value, use Long.MAX_VALUE to have all matching entries removed
+     *        without regard to their age
      * @return list of entries that were removed from the map
      */
     public List<DirectoryEntry> removeAllMatching(final String key, final long checkpoint) {

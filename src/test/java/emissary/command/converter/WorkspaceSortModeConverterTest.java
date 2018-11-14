@@ -5,11 +5,10 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Comparator;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import emissary.pickup.WorkBundle;
 import emissary.test.core.UnitTest;
+import org.junit.Before;
+import org.junit.Test;
 
 public class WorkspaceSortModeConverterTest extends UnitTest {
     private Comparator<WorkBundle> comparator;

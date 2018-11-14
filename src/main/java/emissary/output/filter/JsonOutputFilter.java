@@ -1,5 +1,17 @@
 package emissary.output.filter;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,18 +33,6 @@ import emissary.core.IBaseDataObject;
 import emissary.directory.DirectoryEntry;
 import emissary.util.TimeUtil;
 import org.apache.commons.collections.CollectionUtils;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 /**
  * JSON Output filter using Jackson
@@ -103,6 +103,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer) throws Exception {
 
             String key = writer.getName();
+            @SuppressWarnings("unchecked")
             Collection<Object> values = (Collection<Object>) pojo;
 
             if (includeParameter(key)) {
@@ -225,8 +226,8 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     }
 
     /**
-     * This class is used so we do not have to annotate the IBaseDataObject. Set custom annotations on the method
-     * signatures to include/exclude fields in the ibdo.
+     * This class is used so we do not have to annotate the IBaseDataObject. Set custom annotations on the method signatures
+     * to include/exclude fields in the ibdo.
      */
     abstract class IbdoMixin {
         @JsonProperty("internalId")

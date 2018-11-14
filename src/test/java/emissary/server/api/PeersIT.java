@@ -1,5 +1,8 @@
 package emissary.server.api;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,9 +28,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
-
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
 
 public class PeersIT extends EndpointTestBase {
     @Rule

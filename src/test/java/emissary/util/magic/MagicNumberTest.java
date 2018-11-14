@@ -3,14 +3,10 @@ package emissary.util.magic;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import emissary.util.magic.MagicNumber;
-import emissary.util.magic.MagicNumberFactory;
-import emissary.util.magic.ParseException;
-import org.junit.Test;
+import javax.xml.bind.DatatypeConverter;
 
 import emissary.test.core.UnitTest;
-
-import javax.xml.bind.DatatypeConverter;
+import org.junit.Test;
 
 public class MagicNumberTest extends UnitTest {
 

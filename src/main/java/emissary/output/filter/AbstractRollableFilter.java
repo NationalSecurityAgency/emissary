@@ -1,16 +1,6 @@
 package emissary.output.filter;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.output.io.DateStampFilenameGenerator;
-import emissary.output.roller.JournaledCoalescer;
-import emissary.output.roller.journal.KeyedOutput;
-import emissary.pool.AgentPool;
-import emissary.roll.RollManager;
-import emissary.roll.Roller;
-import emissary.util.io.FileNameGenerator;
-import org.apache.commons.lang.StringUtils;
+import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,7 +12,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.output.io.DateStampFilenameGenerator;
+import emissary.output.roller.JournaledCoalescer;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.pool.AgentPool;
+import emissary.roll.RollManager;
+import emissary.roll.Roller;
+import emissary.util.io.FileNameGenerator;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
 

@@ -34,13 +34,16 @@ import org.junit.Test;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
 import emissary.test.core.UnitTest;
-
+import org.hamcrest.core.Is;
+import org.hamcrest.core.IsNull;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class BaseDataObjectTest extends UnitTest {
 
@@ -857,7 +860,8 @@ public class BaseDataObjectTest extends UnitTest {
         this.b.putParameters(p);
         assertEquals("Returned list size should match what was put in", 3, this.b.getParameter("FOO").size());
         this.b.appendParameter("FOO", "FOO4");
-        assertEquals("Returned string should be combination of initial list and added value", "FOO1;FOO2;FOO3;FOO4", this.b.getStringParameter("FOO"));
+        assertEquals("Returned string should be combination of initial list and added value", "FOO1;FOO2;FOO3;FOO4",
+                this.b.getStringParameter("FOO"));
     }
 
     @Test

@@ -1,19 +1,17 @@
 package emissary.util;
 
-import emissary.util.shell.Executrix;
-
-import emissary.util.magic.MagicNumber;
-import emissary.util.magic.MagicNumberFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import emissary.util.magic.MagicNumber;
+import emissary.util.magic.MagicNumberFactory;
+import emissary.util.shell.Executrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Magic entry rules when using the Java utility, MagicNumberUtil
@@ -37,8 +35,8 @@ import java.util.TreeMap;
  * length.
  *
  * D. Value columns 1. String, Byte, Short, or Long - 1, 2, or 4 byte values - or any length value for the string type.
- * 2. String values can be escaped. a. Example "\0\40\320\3200\4text\ \7\x40\r\t\" parsed as:
- * "0-32-208-208-0-4-text- -7-64- " with the dashes removed.
+ * 2. String values can be escaped. a. Example "\0\40\320\3200\4text\ \7\x40\r\t\" parsed as: "0-32-208-208-0-4-text-
+ * -7-64- " with the dashes removed.
  *
  * 1. Escaping number values Numbers can be of length up to three octal or two hex and can also be terminated by
  * non-digits and finally must be less then 256. These numeric values are substituted into their respective byte
@@ -84,24 +82,24 @@ public final class MagicNumberUtil {
     private final List<MagicNumber> magicNumbers = new ArrayList<MagicNumber>();
 
     /**
-     * Log flag for storing parse errors - they will just be discarded. Switching this on will allow erroneous entries
-     * to be logged and can be retrieved using the method getErrorLog to find out which entries had parsing errors.
-     * Using the magic file shipped with version unix file 3.39 only three/four primary entries were unsupported - these
-     * had to do with signed data types such as ubelong. Or the value was larger then the specified data type which
-     * occurred once. Otherwise, remaining errors were in continuations - mainly when the offset value was in the form
-     * of n.s+32 where 'n' is a decimal value and 's' could not be determined.
+     * Log flag for storing parse errors - they will just be discarded. Switching this on will allow erroneous entries to be
+     * logged and can be retrieved using the method getErrorLog to find out which entries had parsing errors. Using the
+     * magic file shipped with version unix file 3.39 only three/four primary entries were unsupported - these had to do
+     * with signed data types such as ubelong. Or the value was larger then the specified data type which occurred once.
+     * Otherwise, remaining errors were in continuations - mainly when the offset value was in the form of n.s+32 where 'n'
+     * is a decimal value and 's' could not be determined.
      */
     private boolean logErrors = false;
 
     /**
-     * Log data structure for continuations. Maps entries with depth 0 with a List of continuation entries containing
-     * the errors
+     * Log data structure for continuations. Maps entries with depth 0 with a List of continuation entries containing the
+     * errors
      */
     private final Map<String, List<String>> extErrorMap = new TreeMap<String, List<String>>();
 
     /**
-     * Log data structure for entries with a depth of '0' - these are the important entries. Just maintains a simple
-     * list of these entries
+     * Log data structure for entries with a depth of '0' - these are the important entries. Just maintains a simple list of
+     * these entries
      */
     private final List<String> errorList = new ArrayList<String>();
 
@@ -202,10 +200,9 @@ public final class MagicNumberUtil {
     }
 
     /**
-     * Do not load magic file globally and do not compare against the global magic number list and instead compare
-     * target against the specified magic file. The magic file will be read/parsed each time as the comparative file.
-     * Useful for debugging or if certain files can be narrowed down to a smaller magic file list improving id
-     * performance.
+     * Do not load magic file globally and do not compare against the global magic number list and instead compare target
+     * against the specified magic file. The magic file will be read/parsed each time as the comparative file. Useful for
+     * debugging or if certain files can be narrowed down to a smaller magic file list improving id performance.
      *
      * @param target a java.io.File specifying the file to be id'd
      * @param magicConfig the magic file containing the magic number entries to use
@@ -227,10 +224,9 @@ public final class MagicNumberUtil {
     }
 
     /**
-     * Do not load magic file globally and do not compare against the global magic number list and compare target
-     * against the specified magic file instead. The magic file will be read/parsed each time as the comparative file.
-     * Useful for debugging or if certain files can be narrowed down to a smaller magic file list improving id
-     * performance.
+     * Do not load magic file globally and do not compare against the global magic number list and compare target against
+     * the specified magic file instead. The magic file will be read/parsed each time as the comparative file. Useful for
+     * debugging or if certain files can be narrowed down to a smaller magic file list improving id performance.
      *
      * @param sample a byte[] containing the data to be id'd
      * @param magicConfig the magic file containing the magic number entries to use

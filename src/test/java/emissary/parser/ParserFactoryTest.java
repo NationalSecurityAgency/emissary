@@ -2,16 +2,16 @@ package emissary.parser;
 
 import static org.junit.Assert.assertEquals;
 
-import emissary.test.core.UnitTest;
-import org.junit.Test;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.util.WindowedSeekableByteChannel;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.test.core.UnitTest;
+import emissary.util.WindowedSeekableByteChannel;
+import org.junit.Test;
 
 public class ParserFactoryTest extends UnitTest {
 

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 
 import emissary.core.Namespace;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +55,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     void irdAddPeerDirectories(Set<String> keys);
 
     /**
-     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the
-     * requester
+     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the requester
      * 
      * @param dataId the key to the entry Map set of DirectoryEntryList objects
      * @param requester key of the place requesting the list
@@ -72,10 +70,9 @@ public interface IRemoteDirectory extends IDirectoryPlace {
         private final Logger logger = LoggerFactory.getLogger(Lookup.class);
 
         /**
-         * Look up the local directory using one of two methods. The easier method almost always works, the case where
-         * it doesn't in when there are multilpe configured Emissary nodes on the same local JVM through a single jetty
-         * with multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good
-         * test coverage.
+         * Look up the local directory using one of two methods. The easier method almost always works, the case where it
+         * doesn't in when there are multilpe configured Emissary nodes on the same local JVM through a single jetty with
+         * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
          * 
          * @param name name of the local directory or null for default
          */

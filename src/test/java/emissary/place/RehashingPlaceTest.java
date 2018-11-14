@@ -8,19 +8,18 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.Test;
-
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class RehashingPlaceTest extends UnitTest {
 
     private static final byte[] configKeyData = ("TGT_HOST = \"myhost.example.com\"\n" + "TGT_PORT = \"9999\"\n"
             + "SERVICE_KEY = \"TPROXY.TRANSFORM.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-            .getBytes();
+                    .getBytes();
 
     @Test
     public void testRehash() throws Exception {

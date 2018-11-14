@@ -3,11 +3,10 @@ package emissary.transform;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.ExtractionTest;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class HtmlEscapePlaceTest extends ExtractionTest {

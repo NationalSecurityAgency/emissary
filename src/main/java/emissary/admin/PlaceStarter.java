@@ -1,5 +1,10 @@
 package emissary.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -13,11 +18,6 @@ import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Static methods to start places in the system.
@@ -73,9 +73,8 @@ public class PlaceStarter {
     }
 
     /**
-     * Create a place using generic Object[] constructor args for maximum flexibility for finding any existing
-     * constructor. Will check to see if the place already exists first and return the existing instance from the
-     * Namespace if it does.
+     * Create a place using generic Object[] constructor args for maximum flexibility for finding any existing constructor.
+     * Will check to see if the place already exists first and return the existing instance from the Namespace if it does.
      *
      * @param theLocation key for the new place
      * @param constructorArgs array of args to pass to the place constructor

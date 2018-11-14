@@ -7,11 +7,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.junit.After;
-import org.junit.Before;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.directory.IDirectoryPlace;
@@ -22,6 +17,10 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.test.core.FunctionalTest;
 import emissary.util.Version;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.junit.After;
+import org.junit.Before;
 
 public class FTestMovingAgent extends FunctionalTest {
     private IDirectoryPlace dir1 = null;
