@@ -18,12 +18,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
 
 /**
  * Data container using off heap memory allocation.
@@ -38,8 +37,8 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     private static final byte[] NO_DATA = new byte[0];
 
     /**
-     * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector}
-     * 's reference to the pointer is always correct.
+     * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector} 's
+     * reference to the pointer is always correct.
      */
     private transient AtomicLong memoryHandle = new AtomicLong(0L);
     /**
@@ -271,9 +270,9 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     static final ReferenceQueue<SimpleOffHeapMemoryDataContainer> DELETE_QUEUE = new ReferenceQueue<>();
 
     /**
-     * {@link PhantomReference} to a {@link SimpleOffHeapMemoryDataContainer} that maintains a strong reference to the
-     * file path such that the file can be identified for deletion once the {@link SimpleOffHeapMemoryDataContainer} has
-     * been garbage collected.
+     * {@link PhantomReference} to a {@link SimpleOffHeapMemoryDataContainer} that maintains a strong reference to the file
+     * path such that the file can be identified for deletion once the {@link SimpleOffHeapMemoryDataContainer} has been
+     * garbage collected.
      *
      * @author adyoun2
      *
@@ -311,8 +310,8 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
      */
     private static final class OffHeapMemoryCleanupTask implements Runnable {
         /**
-         * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the
-         * reference before the target is enqueued.
+         * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the reference
+         * before the target is enqueued.
          */
         private final Set<GarbageCollectDetector> activePersistence = new HashSet<>();
 

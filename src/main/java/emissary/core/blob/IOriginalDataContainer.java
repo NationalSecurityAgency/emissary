@@ -18,8 +18,8 @@ public interface IOriginalDataContainer {
      * Return the data as a byte array.
      * </p>
      * <p>
-     * Changes to data in the array may or may not alter the underlying data. <strong>It is recommended that any
-     * intended changes are persisted using {@link #setData(byte[])}.</strong>
+     * Changes to data in the array may or may not alter the underlying data. <strong>It is recommended that any intended
+     * changes are persisted using {@link #setData(byte[])}.</strong>
      * </p>
      * 
      * @return byte array of the data
@@ -31,8 +31,8 @@ public interface IOriginalDataContainer {
      * Set data to byte array passed in.
      * </p>
      * <p>
-     * Subsequent changes to data in the array may or may not alter the underlying data. <strong>It is recommended that
-     * any intended changes are persisted by calling this again.</strong>
+     * Subsequent changes to data in the array may or may not alter the underlying data. <strong>It is recommended that any
+     * intended changes are persisted by calling this again.</strong>
      * </p>
      * 
      * @param newData byte array to set replacing any existing data

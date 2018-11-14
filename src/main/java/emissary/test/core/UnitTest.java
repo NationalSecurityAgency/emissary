@@ -8,6 +8,10 @@ import java.lang.management.ThreadInfo;
 import java.util.ArrayList;
 import java.util.List;
 
+import emissary.command.ServerCommand;
+import emissary.config.ConfigUtil;
+import emissary.core.EmissaryException;
+import emissary.util.io.ResourceReader;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.After;
@@ -20,11 +24,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.command.ServerCommand;
-import emissary.config.ConfigUtil;
-import emissary.core.EmissaryException;
-import emissary.util.io.ResourceReader;
 
 /**
  * Base class of all the unit tests

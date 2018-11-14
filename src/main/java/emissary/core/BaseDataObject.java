@@ -17,10 +17,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.google.common.collect.LinkedListMultimap;
-
 import emissary.core.blob.IDataContainer;
 import emissary.core.blob.SelectingDataContainer;
 import emissary.directory.DirectoryEntry;
@@ -29,6 +26,7 @@ import emissary.pickup.Priority;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Class to hold byte array of data, header, footer, and attributes
@@ -276,8 +274,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array
-     * directly, no copy is made so the caller should not reuse the array.
+     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array directly,
+     * no copy is made so the caller should not reuse the array.
      *
      * @param newData byte array to set replacing any existing data
      * @deprecated Interaction with data should be via {@link #getDataContainer()}

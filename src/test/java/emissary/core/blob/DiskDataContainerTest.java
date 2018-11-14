@@ -3,12 +3,11 @@ package emissary.core.blob;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import emissary.test.core.UnitTest;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-
-import emissary.test.core.UnitTest;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DiskDataContainerTest extends UnitTest {

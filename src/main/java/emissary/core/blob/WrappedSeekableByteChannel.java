@@ -31,8 +31,8 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
     }
 
     /**
-     * Set a listener for channel close. Only one listener may be registered, and exceptions from the listener will not
-     * be handled cleanly.
+     * Set a listener for channel close. Only one listener may be registered, and exceptions from the listener will not be
+     * handled cleanly.
      *
      * @param closeAction the new close listener.
      */
@@ -50,8 +50,8 @@ public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implement
     }
 
     /**
-     * Set a listener for channel data mutation. Only one listener may be registered, and exceptions from the listener
-     * will not be handled cleanly.
+     * Set a listener for channel data mutation. Only one listener may be registered, and exceptions from the listener will
+     * not be handled cleanly.
      *
      * @param writeAction the new write/truncate listener.
      */

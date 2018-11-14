@@ -23,13 +23,12 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import jline.internal.Log;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Disk backed data container, for larger objects.
@@ -234,8 +233,8 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
     static final ReferenceQueue<DiskDataContainer> DELETE_QUEUE = new ReferenceQueue<>();
 
     /**
-     * {@link PhantomReference} to a {@link DiskDataContainer} that maintains a strong reference to the file path such
-     * that the file can be identified for deletion once the {@link DiskDataContainer} has been garbage collected.
+     * {@link PhantomReference} to a {@link DiskDataContainer} that maintains a strong reference to the file path such that
+     * the file can be identified for deletion once the {@link DiskDataContainer} has been garbage collected.
      *
      * @author adyoun2
      *
@@ -273,8 +272,8 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
      */
     private static final class DiskCleanupTask implements Runnable {
         /**
-         * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the
-         * reference before the target is enqueued.
+         * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the reference
+         * before the target is enqueued.
          */
         private final Set<GarbageCollectDetector> activePersistence = new HashSet<>();
 

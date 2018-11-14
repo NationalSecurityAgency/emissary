@@ -5,9 +5,8 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-
 import emissary.core.IBaseDataObject;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 
 /**
  * Container for binary data, with capability additional to the original {@link IBaseDataObject}.
@@ -111,8 +110,8 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      * Get the data as a channel.
      * </p>
      * <p>
-     * Writes to this channel <strong>will</strong> be persisted into the underlying data, so long as the channel is
-     * closed normally.
+     * Writes to this channel <strong>will</strong> be persisted into the underlying data, so long as the channel is closed
+     * normally.
      * </p>
      *
      * @return A channel on the data, or null if no data exists.
@@ -123,8 +122,8 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
     /**
      * Get a channel that can be used to write new data. Existing data will be lost if this is used.
      *
-     * @param estimatedSize An estimate of the size of the data that will be written, to allow an appropriate data store
-     *        to be used.
+     * @param estimatedSize An estimate of the size of the data that will be written, to allow an appropriate data store to
+     *        be used.
      * @return A channel that can be used to write new data.
      * @throws IOException
      */
@@ -157,9 +156,9 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      * Get direct access to the data in file form.
      * </p>
      * <p>
-     * This method is provided to allow the client to interact directly with APIs that expect data to be provided in
-     * File form, where the implementation may be capable of providing a more efficient mechanism than the client
-     * writing a temporary file itself.
+     * This method is provided to allow the client to interact directly with APIs that expect data to be provided in File
+     * form, where the implementation may be capable of providing a more efficient mechanism than the client writing a
+     * temporary file itself.
      * </p>
      * <p>
      * <strong>This should only be used where appropriate.</strong>

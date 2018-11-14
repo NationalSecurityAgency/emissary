@@ -7,13 +7,12 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.blob.WrappedSeekableByteChannel.TriggeredAction;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link IDataContainer} proxy for another {@link IDataContainer} appropriate for the size of data being handled.
@@ -162,8 +161,8 @@ public class SelectingDataContainer implements IDataContainer {
     }
 
     /**
-     * Trigger on channel growing to the point where the appropriate container changes, with some threshold. When it
-     * does copy the data to the appropriate impl and replace the backing channel.
+     * Trigger on channel growing to the point where the appropriate container changes, with some threshold. When it does
+     * copy the data to the appropriate impl and replace the backing channel.
      *
      * @param channel The wrapped channel to detect growth on.
      * @return A trigger to apply to the channel.
