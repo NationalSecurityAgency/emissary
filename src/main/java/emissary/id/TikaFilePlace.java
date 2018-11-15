@@ -30,6 +30,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
     protected Map<String, Integer> minSizeMap = new HashMap<>();
     protected List<String> tikaSignaturePaths = new ArrayList<>();
+    protected boolean includeFilenameMimeType = true;
 
     protected MimeTypes mimeTypes;
 
@@ -65,6 +66,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
         configureIdPlace(); // pick up ID_IGNORE types
         tikaSignaturePaths = configG.findEntries("TIKA_SIGNATURE_FILE", DEFAULT_TIKA_SIGNATURE_FILE);
+        includeFilenameMimeType = configG.findBooleanEntry("INCLUDE_FILENAME_MIME_TYPE", includeFilenameMimeType);
 
         try {
             InputStream[] tikaSignatures = getTikaSignatures();
@@ -114,10 +116,23 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     private MediaType detectType(IBaseDataObject d) throws Exception {
         Metadata metadata = new Metadata();
         InputStream input = TikaInputStream.get(d.data(), metadata);
-        metadata.set(Metadata.RESOURCE_NAME_KEY, d.getFilename());
+        appendFilenameMimeTypeSupport(d, metadata);
         MediaType mediaType = mimeTypes.detect(input, metadata);
         logger.debug("Tika type: " + mediaType.toString());
         return mediaType;
+    }
+
+    /**
+     * Use filename to support the mime type detection, if not disabled in TikaFilePlace.cfg
+     *
+     * @param d the IBaseDataObject payload to evaluate
+     * @param metadata from the file, for Tika to process
+     */
+    private void appendFilenameMimeTypeSupport(IBaseDataObject d, Metadata metadata) {
+        if (includeFilenameMimeType) {
+            logger.debug("Filename support for Mime Type detection is enabled");
+            metadata.set(Metadata.RESOURCE_NAME_KEY, d.getFilename());
+        }
     }
 
     /**
