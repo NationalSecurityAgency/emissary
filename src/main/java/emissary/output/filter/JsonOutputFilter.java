@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import emissary.config.Configurator;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.directory.DirectoryEntry;
 import emissary.util.TimeUtil;
@@ -49,7 +50,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected ObjectMapper jsonMapper;
 
     @Override
-    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) throws EmissaryException {
         if (filterName == null) {
             setFilterName("JSON");
         }

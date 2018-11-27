@@ -51,6 +51,7 @@
     <dep.jetty.version>9.4.12.v20180830</dep.jetty.version>
     <dep.jruby-complete.version>1.7.1</dep.jruby-complete.version>
     <dep.junit.version>4.12</dep.junit.version>
+    <dep.kryo.version>4.0.2</dep.kryo.version>
     <dep.logback.version>1.1.5</dep.logback.version>
     <dep.mockito-all.version>1.9.0</dep.mockito-all.version>
     <dep.oro.version>2.0.8</dep.oro.version>
@@ -87,6 +88,11 @@
         <groupId>com.beust</groupId>
         <artifactId>jcommander</artifactId>
         <version>${dep.jcommander.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.esotericsoftware</groupId>
+        <artifactId>kryo</artifactId>
+        <version>${dep.kryo.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -422,6 +428,10 @@
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.esotericsoftware</groupId>
+      <artifactId>kryo</artifactId>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

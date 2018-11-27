@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.output.filter.FilterUtil;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
@@ -91,41 +91,8 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
      * @param filterClasses the name:class values of the configured filter for this drop off
      */
     protected void initializeFilters(final List<String> filterClasses) {
-        for (final String entry : filterClasses) {
-            final String name;
-            final String clazz;
-            Configurator filterConfig = null;
-            final int colpos = entry.indexOf(':');
-            if (colpos > -1) {
-                name = entry.substring(0, colpos);
-                clazz = entry.substring(colpos + 1);
-                final String filterConfigName = configG.findStringEntry(name);
-                if (filterConfigName != null) {
-                    try {
-                        filterConfig = ConfigUtil.getConfigInfo(filterConfigName);
-                    } catch (IOException configError) {
-                        logger.warn("Specified filter configuration {} cannot be loaded", filterConfigName);
-                        continue;
-                    }
-                }
-            } else {
-                name = null;
-                clazz = entry;
-            }
 
-            try {
-                final Object filter = emissary.core.Factory.create(clazz);
-                if (filter != null && filter instanceof IDropOffFilter) {
-                    final IDropOffFilter f = (IDropOffFilter) filter;
-                    f.initialize(configG, name, filterConfig);
-                    addFilter(f);
-                } else {
-                    logger.error("Misconfigured filter {} is not an IDropOffFilter instance, ignoring it", clazz);
-                }
-            } catch (Exception ex) {
-                logger.error("Unable to create or initialize {}", clazz, ex);
-            }
-        }
+        outputFilters.addAll(FilterUtil.initializeFilters(filterClasses, configG));
 
         // Collect the set of content types to elide
         this.elideContentForms = configG.findEntriesAsSet("ELIDE_CONTENT");
@@ -134,7 +101,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         this.noNukeForms = configG.findEntriesAsSet("NO_NUKE_FORM");
 
         if (logger.isInfoEnabled()) {
-            logger.debug("Setting ELIDE_CONTENT forms to " + this.elideContentForms);
+            logger.debug("Setting ELIDE_CONTENT forms to {}", this.elideContentForms);
             final StringBuilder sb = new StringBuilder("Output Filters:");
             if (this.outputFilters.size() > 0) {
                 for (final IDropOffFilter f : this.outputFilters) {
@@ -190,7 +157,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
                 }
 
                 // Process the payload item with HDcontext=true
-                processData(d, true);
+                processData(d);
             } catch (Exception e) {
                 logger.error("Place.process threw:", e);
                 d.addProcessingError("agentProcessHD(" + myKey + "): " + e);
@@ -202,8 +169,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         }
 
         // Prepare the data and metadata for filter output
-        final Map<String, Object> filterParams = new HashMap<>();
-        preFilterHook(payloadList, filterParams);
+        final Map<String, Object> filterParams = preFilterHook(payloadList);
 
         // Run the filter on the output, indicating that
         // the records are pre-sorted, if the filter cares
@@ -246,27 +212,37 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         // syncronization can be set by config file entry
         if (this.doSynchronized) {
             synchronized (this) {
-                processData(tData, false);
+                dropOffSingle(tData);
             }
         } else {
-            processData(tData, false);
+            dropOffSingle(tData);
         }
+    }
+
+    /**
+     * Performs synchronization management for dropping off objects
+     *
+     * @param tData the payload to drop off
+     */
+    private void dropOffSingle(final IBaseDataObject tData) {
+        processData(tData);
+        // There currently are no extra params needed
+        final Map<String, Object> filterParams = new HashMap<>();
+        runOutputFilters(Collections.singletonList(tData), filterParams);
+
+        // Actually remove the current forms we used or could have used
+        this.nukeMyProxies(tData);
+        logger.debug("DropOff finished with {}", tData.shortName());
     }
 
     /**
      * Prepare a list of payload object to be filtered
      * 
      * @param payloadList the list of items that were eligible for output
-     * @param filterParams metadata needed for the output filter
+     * @return metadata needed for the output filter
      */
-    public void preFilterHook(final List<IBaseDataObject> payloadList, final Map<String, Object> filterParams) {
-        // Sort the list of records
-        Collections.sort(payloadList, new emissary.util.ShortNameComparator());
-        filterParams.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
-        filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.get(0));
-
-        // Prepare the metadata
-        this.dropOffUtil.processMetadata(payloadList);
+    public Map<String, Object> preFilterHook(final List<IBaseDataObject> payloadList) {
+        return FilterUtil.preFilter(payloadList, dropOffUtil);
     }
 
     /**
@@ -300,75 +276,21 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
      * Internal method to process a single data object
      * 
      * @param tData the payload to work on or prepare
-     * @param haveList true if in HD context
      */
-    protected void processData(final IBaseDataObject tData, final boolean haveList) {
+    protected void processData(final IBaseDataObject tData) {
 
         logger.debug("DropOff is working on {}, current form is {}", tData.shortName(), tData.getAllCurrentForms());
-
-        final StringBuilder poppedForms = new StringBuilder();
-
-        String prevBin = "";
 
         // skip the I/O for some types for all filter
         for (int i = 0; i < tData.currentFormSize(); i++) {
             final String cf = tData.currentFormAt(i);
-            if (this.elideContentForms.contains(cf)) {
+            if (elideContentForms.contains(cf)) {
                 tData.setData(("[[ " + tData.getAllCurrentForms() + " content elided in DropOffPlace. ]]").getBytes());
             }
         }
 
-        // Write out data for all the destinations we area proxy for, popping
-        // them off the stack as they are handled.
+        FilterUtil.processData(tData, noNukeForms, getDirectoryEntry());
 
-        final Set<String> serviceProxies = getProxies();
-        final Set<String> cfSet = new HashSet<>();
-        for (int i = 0; i < tData.currentFormSize(); i++) {
-            final String cf = tData.currentFormAt(i);
-
-            if (serviceProxies.contains(cf) || serviceProxies.contains("*")) {
-                // Record extra drop offs in the transform history since
-                // we are taking precedence over the normal agent/directory mechanism
-                // Do this before popping the extra destination so that it
-                // is not just lost forever. Since the agent appends
-                // one entry to the history when it sends the agent here,
-                // that's the top current form and
-                // we don't want to duplicate that one
-
-                if (!prevBin.equals(cf) && (i > 0) && !cfSet.contains(cf) && !("UNKNOWN".equals(cf) || cf.endsWith("-PROCESSED"))) {
-                    // e.g.: [dataType].DROP_OFF.IO.host.dom:port/DropOffPlace
-                    final emissary.directory.DirectoryEntry de = getDirectoryEntry();
-                    de.setDataType("[" + cf + "]");
-                    tData.appendTransformHistory(de.getKey());
-                }
-
-                // Accumulate forms we have handled in poppedForms
-                if (poppedForms.length() > 0) {
-                    poppedForms.append(" ");
-                }
-                poppedForms.append(cf);
-                cfSet.add(cf);
-
-                prevBin = cf;
-            }
-        }
-
-        // Record the list of forms
-        tData.setParameter("POPPED_FORMS", poppedForms.toString());
-
-        // Do the output filtering now if we aren't in HD mode
-        if (!haveList) {
-
-            // There currently are no extra params needed
-            final Map<String, Object> filterParams = new HashMap<>();
-
-            runOutputFilters(tData, filterParams);
-
-            // Actually remove the current forms we used or could have used
-            this.nukeMyProxies(tData);
-
-            logger.debug("DropOff finished with {}", tData.shortName());
-        }
     }
 
     /**
@@ -378,18 +300,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
      * @param filterParams other parameters that filter need
      */
     @SuppressWarnings("unchecked")
-    protected void runOutputFilters(final Object target, final Map<String, Object> filterParams) {
-
-        IBaseDataObject doTarget = null;
-        List<IBaseDataObject> listTarget = null;
-        if (target instanceof IBaseDataObject) {
-            doTarget = (IBaseDataObject) target;
-        } else if (target instanceof List) {
-            listTarget = (List<IBaseDataObject>) target;
-        } else {
-            logger.error("Cannot run filter on {}", target.getClass().getName());
-            return;
-        }
+    protected void runOutputFilters(final List<IBaseDataObject> target, final Map<String, Object> filterParams) {
 
         // Write output onto each of the filter that have been
         // configured, as long as they work
@@ -399,12 +310,10 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
             // call the filter to output its data
             int filterStatus = IDropOffFilter.STATUS_FAILURE;
             try {
-                if (listTarget != null && filter.isOutputtable(listTarget)) {
-                    filterStatus = filter.filter(listTarget, filterParams);
-                } else if (doTarget != null && filter.isOutputtable(doTarget)) {
-                    filterStatus = filter.filter(doTarget, filterParams);
+                if (target != null && filter.isOutputtable(target)) {
+                    filterStatus = filter.filter(target, filterParams);
                 } else {
-                    logger.debug("Filter {} not Outputtable for {}", filter.getFilterName(), listTarget != null ? "list" : "single payload");
+                    logger.debug("Filter {} not Outputtable", filter.getFilterName());
                     filterStatus = IDropOffFilter.STATUS_SUCCESS;
                 }
                 logger.debug("Filter {} took {}s - {}", filter.getFilterName(), ((System.currentTimeMillis() - start) / 1000.0), filterStatus);

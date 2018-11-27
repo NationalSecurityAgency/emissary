@@ -1,8 +1,20 @@
 package emissary.output.filter;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.core.IBaseDataObject;
+import emissary.util.io.FileNameGenerator;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +37,13 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractFilter implements IDropOffFilter {
     /** A static convenience logger */
     protected static Logger slogger = LoggerFactory.getLogger(AbstractFilter.class);
+
+    /**
+     * Configuration parameter for Filter Appender/Output configuration.
+     *
+     * @see AbstractFilter#externalAppenders
+     */
+    public static final String CFG_USE_EXTERNAL_APPENDERS = "FILTER_APPENDERS_EXTERNAL";
 
     /** get a logger configured on the impl's classname */
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
@@ -49,6 +68,25 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /** hold the filter condition, if any, for this filter */
     private IFilterCondition filterCondition;
+
+    /** Holds the output path for the data filter */
+    protected Path outputPath;
+
+    /** Holds the file name generator for the data filter */
+    protected FileNameGenerator fileNameGenerator;
+
+    /**
+     * flag to determine whether to use external appenders.
+     *
+     * <pre>
+     * // if true, implementations must call
+     * int filter(List&lt;emissary.core.IBaseDataObject&gt; list, Map&lt;String, Object&gt; params, OutputStream os);
+     *
+     * // if false, implementations must call
+     * int filter(List&lt;emissary.core.IBaseDataObject&gt; list, Map&lt;String, Object&gt; params);
+     * </pre>
+     */
+    protected boolean externalAppenders;
 
     /**
      * A set of FileType and FileTYpe.ViewName strings controlling what can be output by this filter
@@ -85,7 +123,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * Initialization phase hook for the filter with default preferences for the runtime configuration of the filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName) {
+    public void initialize(final emissary.config.Configurator theConfigG, final String filterName) throws EmissaryException {
         loadFilterConfiguration(null);
         initialize(theConfigG, filterName, this.filterConfig);
     }
@@ -98,9 +136,11 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName,
-            final emissary.config.Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, final String filterName,
+            final Configurator theFilterConfig)
+            throws EmissaryException {
         this.configG = theConfigG;
+        externalAppenders = theConfigG.findBooleanEntry(CFG_USE_EXTERNAL_APPENDERS, false);
         if (filterName != null) {
             setFilterName(filterName);
         }
@@ -109,6 +149,19 @@ public abstract class AbstractFilter implements IDropOffFilter {
         loadOutputSpec(theConfigG);
         this.dropOffUtil = new DropOffUtil(theConfigG);
         initializeOutputTypes(this.filterConfig);
+        String outputPathConfig =
+                this.filterConfig != null ? this.filterConfig.findStringEntry(OUTPUT_PATH) : ConfigUtil.getProjectBase() + "/localoutput/"
+                        + this.getFilterName();
+        if (StringUtils.isBlank(outputPathConfig)) {
+            throw new EmissaryException("OutputPath not configured. Cannot instantiate filter");
+        }
+
+        this.outputPath = Paths.get(outputPathConfig);
+        try {
+            Files.createDirectories(this.outputPath);
+        } catch (IOException ioe) {
+            throw new EmissaryException("Could not create outputPath for filter.", ioe);
+        }
     }
 
     private final void loadFilterCondition(final Configurator parentConfig) {
@@ -516,6 +569,35 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     @Override
     public Collection<String> getOutputTypes() {
-        return new HashSet<String>(this.outputTypes);
+        return new HashSet<>(this.outputTypes);
+    }
+
+    public boolean useExternalAppenders() {
+        return externalAppenders;
+    }
+
+    @Override
+    public Path getOutputPath() {
+        return this.outputPath;
+    }
+
+    @Override
+    public String getFileExtension() {
+        return "";
+    }
+
+    @Override
+    public boolean hasFileNameGenerator() {
+        return this.fileNameGenerator != null;
+    }
+
+    @Override
+    public void setFileNameGenerator(FileNameGenerator fng) {
+        this.fileNameGenerator = fng;
+    }
+
+    @Override
+    public FileNameGenerator getFileNameGenerator() {
+        return this.fileNameGenerator;
     }
 }

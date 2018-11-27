@@ -1,6 +1,11 @@
 package emissary.output.filter;
 
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.util.io.FileNameGenerator;
+
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +24,9 @@ public interface IDropOffFilter {
     /** Failed filter return value {@value} */
     int STATUS_SUCCESS = 1;
 
+    /** The required output config directory for all filters */
+    String OUTPUT_PATH = "OUTPUT_PATH";
+
     /**
      * Used in params when filter should understand that the List of incoming records is presorted value is {@value}
      */
@@ -28,6 +36,17 @@ public interface IDropOffFilter {
      * Used to param the TLD to the filter that don't get the whole list
      */
     String TLD_PARAM = "TLD";
+
+
+    /**
+     * Return the path of this filter
+     */
+    Path getOutputPath();
+
+    /**
+     * Return the file extension for this filter
+     */
+    String getFileExtension();
 
     /**
      * Return the name of this filter
@@ -40,12 +59,25 @@ public interface IDropOffFilter {
     void setFilterName(String s);
 
     /**
+     * Return a filename generator for this filter
+     */
+    boolean hasFileNameGenerator();
+
+    /**
+     * Returns a Filenamegenerator for the filter. Warning, this method can return null. hasFileNameGenerator should
+     * proceed this method.
+     */
+    FileNameGenerator getFileNameGenerator();
+
+    void setFileNameGenerator(FileNameGenerator fng);
+
+    /**
      * Initialization phase hook for the filter using default preferences for the runtime filter configuration
      * 
      * @param configG passed in configuration object, usually DropOff's
      * @param filterName the configured name of this filter or null for the default
      */
-    void initialize(emissary.config.Configurator configG, String filterName);
+    void initialize(Configurator configG, String filterName) throws EmissaryException;
 
     /**
      * Initialization phase hook for the filter
@@ -54,7 +86,7 @@ public interface IDropOffFilter {
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig configuration for specific runtime filter
      */
-    void initialize(emissary.config.Configurator configG, String filterName, emissary.config.Configurator filterConfig);
+    void initialize(Configurator configG, String filterName, Configurator filterConfig) throws EmissaryException;
 
     /**
      * Run the filter for a document
@@ -118,6 +150,7 @@ public interface IDropOffFilter {
      * @param d the IBaseDataObject to check for outputtability
      * @return true if the filter will attempt to output this payload
      */
+    @Deprecated
     boolean isOutputtable(emissary.core.IBaseDataObject d);
 
     /**

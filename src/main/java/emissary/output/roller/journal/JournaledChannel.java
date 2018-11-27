@@ -26,7 +26,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
     final JournalWriter journal;
     ByteBuffer directBuff;
 
-    JournaledChannel(final Path path, final String key, final int index) throws IOException {
+    public JournaledChannel(final Path path, final String key, final int index) throws IOException {
         this.fc = FileChannel.open(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.READ, StandardOpenOption.WRITE);
         this.path = path;
         this.index = index;

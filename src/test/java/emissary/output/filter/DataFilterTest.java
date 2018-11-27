@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import emissary.core.EmissaryException;
+
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
@@ -20,21 +22,27 @@ import org.junit.Test;
 public class DataFilterTest extends UnitTest {
 
     @Test
-    public void testFilterSetup() {
+    public void testFilterSetup() throws EmissaryException {
         Configurator config = new ServiceConfigGuide();
         config.addEntry("OUTPUT_SPEC_FOO", "/tmp/%S%.%F%");
         config.addEntry("OUTPUT_SPEC_BAR", "/xyzzy/%S%.%F%");
+
+        Configurator filterConfig = new ServiceConfigGuide();
+        filterConfig.addEntry("OUTPUT_PATH", "/tmp/data");
+
         IDropOffFilter f = new DataFilter();
-        f.initialize(config, "FOO");
+        f.initialize(config, "FOO", filterConfig);
         assertEquals("Filter name should be set", "FOO", f.getFilterName());
         assertEquals("Output spec should be build based on name", "/tmp/%S%.%F%", f.getOutputSpec());
+        assertEquals("Output path should be set", "/tmp/data", f.getOutputPath().toString());
     }
 
     @Test
-    public void testOutputFromFilter() {
+    public void testOutputFromFilter() throws EmissaryException {
         Configurator config = new ServiceConfigGuide();
         config.addEntry("OUTPUT_SPEC_FOO", "/tmp/%S%.%F%");
         config.addEntry("OUTPUT_TYPE", "FTYPE.PrimaryView");
+        config.addEntry("OUTPUT_PATH", "/tmp/data");
 
         IDropOffFilter f = new DataFilter();
         f.initialize(config, "FOO", config);

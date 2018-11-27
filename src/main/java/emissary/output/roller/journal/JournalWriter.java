@@ -12,9 +12,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * BG Write ahead log to track progress, often files, that have been successfully flushed to disk. The file itself
- * contains metadata at the start, followed by a collection of log entries of fixed length, currently 1024. Leading
- * metadata is in the format:
+ * Write ahead log to track progress, often files, that have been successfully flushed to disk. The file itself contains
+ * metadata at the start, followed by a collection of log entries of fixed length, currently 1024. Leading metadata is
+ * in the format:
  *
  * <pre>
  * <code>

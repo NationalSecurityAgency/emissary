@@ -14,6 +14,7 @@ import java.util.Map;
 import com.google.common.io.Files;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JsonOutputFilterTest extends UnitTest {
+public class JsonRollingOutputFilterTest extends UnitTest {
 
     private ServiceConfigGuide config;
     private IBaseDataObject payload;
@@ -49,13 +50,13 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testFilterSetup() {
+    public void testFilterSetup() throws EmissaryException {
         f.initialize(config, "FOO", config);
         assertEquals("Filter name should be set", "FOO", f.getFilterName());
     }
 
     @Test
-    public void testOutputFromFilter() {
+    public void testOutputFromFilter() throws EmissaryException {
         f.initialize(config, "FOO", config);
 
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -74,7 +75,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testMetadataRecordOutput() {
+    public void testMetadataRecordOutput() throws EmissaryException {
         config.addEntry("EXTRA_PARAM", "*");
         f.initialize(config, "FOO", config);
 
@@ -113,7 +114,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testWhitelistFields() {
+    public void testWhitelistFields() throws EmissaryException {
         config.addEntry("EXTRA_PARAM", "BAR");
         f.initialize(config, "FOO", config);
 
@@ -139,7 +140,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testBlacklistedFields() {
+    public void testBlacklistedFields() throws EmissaryException {
         config.addEntry("BLACKLIST_FIELD", "FOO");
         config.addEntry("BLACKLIST_PREFIX", "BAR_");
         config.addEntry("EXTRA_PARAM", "*");
@@ -173,7 +174,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testBlacklistedFieldsNoWhitelist() {
+    public void testBlacklistedFieldsNoWhitelist() throws EmissaryException {
         config.addEntry("BLACKLIST_FIELD", "FOO");
         config.addEntry("BLACKLIST_PREFIX", "BAR_");
         f.initialize(config, "FOO", config);
@@ -206,7 +207,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testBlacklistAll() {
+    public void testBlacklistAll() throws EmissaryException {
         config.addEntry("BLACKLIST_FIELD", "*");
         f.initialize(config, "FOO", config);
 
@@ -229,7 +230,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testBlacklistedPrefixWhitelistField() {
+    public void testBlacklistedPrefixWhitelistField() throws EmissaryException {
         config.addEntry("BLACKLIST_PREFIX", "BAR");
         config.addEntry("EXTRA_PARAM", "BAR_BAZ");
         f.initialize(config, "FOO", config);
@@ -244,7 +245,7 @@ public class JsonOutputFilterTest extends UnitTest {
 
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        f.filter(payloadList, new HashMap<String, Object>(), output);
+        f.filter(payloadList, new HashMap<>(), output);
         String s = output.toString();
 
         // assert
@@ -253,7 +254,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testWhitelistedPrefixBlacklistField() {
+    public void testWhitelistedPrefixBlacklistField() throws EmissaryException {
         config.addEntry("EXTRA_PARAM_PREFIX", "BAR");
         config.addEntry("BLACKLIST_FIELD", "BAR_BAZ");
         f.initialize(config, "FOO", config);
@@ -268,7 +269,7 @@ public class JsonOutputFilterTest extends UnitTest {
 
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        f.filter(payloadList, new HashMap<String, Object>(), output);
+        f.filter(payloadList, new HashMap<>(), output);
         String s = output.toString();
 
         // assert
@@ -277,7 +278,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testBlacklistValue() {
+    public void testBlacklistValue() throws EmissaryException {
         config.addEntry("EXTRA_PARAM", "*");
         config.addEntry("BLACKLIST_VALUE_BAR", "baz");
         f.initialize(config, "FOO", config);
@@ -292,7 +293,7 @@ public class JsonOutputFilterTest extends UnitTest {
 
         // run filter
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        f.filter(payloadList, new HashMap<String, Object>(), output);
+        f.filter(payloadList, new HashMap<>(), output);
         String s = output.toString();
 
         System.out.println(s);
@@ -303,7 +304,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testTotalDescendantCountMultiChildren() {
+    public void testTotalDescendantCountMultiChildren() throws EmissaryException {
         // setup
         IBaseDataObject parent = DataObjectFactory.getInstance();
         parent.setFilename("parent");
@@ -321,7 +322,7 @@ public class JsonOutputFilterTest extends UnitTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         // test
-        f.filter(Arrays.asList(parent, child, child2), new HashMap<String, Object>(), output);
+        f.filter(Arrays.asList(parent, child, child2), new HashMap<>(), output);
 
         // verify
         String s = output.toString();
@@ -331,7 +332,7 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testStripPrefix() {
+    public void testStripPrefix() throws EmissaryException {
         config.addEntry("STRIP_PARAM_PREFIX", "IGNORE_");
         config.addEntry("EXTRA_PREFIX", "IGNORE_");
         config.addEntry("EXTRA_PARAM", "QUUX");

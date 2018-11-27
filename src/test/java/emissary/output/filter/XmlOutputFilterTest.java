@@ -12,10 +12,17 @@ import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class XmlOutputFilterTest extends UnitTest {
 
@@ -40,18 +47,18 @@ public class XmlOutputFilterTest extends UnitTest {
     }
 
     @Test
-    public void testFilterSetup() {
+    public void testFilterSetup() throws EmissaryException {
         f.initialize(config, "FOO");
         assertEquals("Filter name should be set", "FOO", f.getFilterName());
         assertEquals("Output spec should be build based on name", "/tmp/%S%.%F%", f.getOutputSpec());
     }
 
     @Test
-    public void testOutputFromFilter() {
+    public void testOutputFromFilter() throws EmissaryException {
         f.initialize(config, "FOO", config);
         List<IBaseDataObject> payloadList = Lists.newArrayList(payload);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
         assertTrue("Payload should be outputtable", f.isOutputtable(payload, params));
         assertTrue("Payload list should be outputtable", f.isOutputtable(payloadList, params));

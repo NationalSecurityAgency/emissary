@@ -7,7 +7,7 @@ public class SimpleFileNameGenerator implements FileNameGenerator {
     private DropOffUtil dropOffUtil;
 
     /**
-     * Creates a file name generator for BUD files
+     * Creates a file name generator for Kryo files
      */
     public SimpleFileNameGenerator() {
         this.dropOffUtil = new DropOffUtil();

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 
@@ -24,7 +25,7 @@ public class DataFilter extends AbstractFilter {
      * @param filterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final Configurator configG, final String filterName, final Configurator filterConfig) {
+    public void initialize(final Configurator configG, final String filterName, final Configurator filterConfig) throws EmissaryException {
         if (filterName == null) {
             setFilterName("DATA");
         }

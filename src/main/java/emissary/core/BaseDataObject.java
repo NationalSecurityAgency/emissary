@@ -47,18 +47,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Terminal portion of theFileName
      */
-    private String shortName;
+    protected String shortName;
 
     /**
      * The internal identifier, generated for each constructed object
      */
-    private final UUID internalId = UUID.randomUUID();
+    protected UUID internalId = UUID.randomUUID();
 
     /**
      * The currentForm is a stack of the itinerary items. The contents of the list are {@link String} and map to the
      * dataType portion of the keys in the emissary.DirectoryPlace.
      */
-    private List<String> currentForm = new ArrayList<>();
+    protected List<String> currentForm = new ArrayList<>();
 
     /**
      * History of processing errors. Lines of text are accumulated from String and returned in-toto as a String.
@@ -130,7 +130,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected String[] FILETYPE_EMPTY = {Form.UNKNOWN};
 
     // Filetypes with this suffix are equivalent to no file type at all
-    protected String FILETYPE_ENDSWITH = "-UNWRAPPED";
+    protected static final String FILETYPE_ENDSWITH = "-UNWRAPPED";
 
     /**
      * The integer priority of the data object. A lower number is higher priority.
@@ -140,7 +140,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The timestamp for when the BaseDataObject was created. Used in data provenance tracking.
      */
-    private Date creationTimestamp;
+    protected Date creationTimestamp;
 
     /**
      * The extracted records, if any
@@ -543,7 +543,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public String whereAmI() {
-        String host = null;
+        String host;
         try {
             host = InetAddress.getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException e) {
@@ -586,7 +586,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             return true;
         }
         final String s = this.history.get(this.history.size() - 1);
-        return s.indexOf(IServiceProviderPlace.SPROUT_KEY) > -1;
+        return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
     @Override
@@ -723,7 +723,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public List<Object> getParameter(final String key) {
         // Try remapping
-        List<Object> v = null;
+        List<Object> v;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
             v = this.parameters.get(dict.map(key));
@@ -843,7 +843,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public Map<String, String> getCookedParameters() {
         final Map<String, String> ext = new TreeMap<>();
         for (final String key : this.parameters.keySet()) {
-            ext.put(key.toString(), getStringParameter(key));
+            ext.put(key, getStringParameter(key));
         }
         return ext;
     }

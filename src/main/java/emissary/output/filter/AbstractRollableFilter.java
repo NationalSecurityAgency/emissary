@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.output.io.DateStampFilenameGenerator;
 import emissary.output.roller.JournaledCoalescer;
@@ -21,17 +22,14 @@ import emissary.output.roller.journal.KeyedOutput;
 import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
-import emissary.util.io.FileNameGenerator;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
 
-    protected static final String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
-
-    public static final String OUTPUT_PATH = "OUTPUT_PATH";
     public static final String MAX_ROLL_FILE_SIZE = "MAX_FILE_SIZE";
     public static final String MAX_OUTPUT_APPENDERS = "MAX_OUTPUT_APPENDERS";
     public static final String ROLL_INTERVAL_UNIT = "ROLL_INTERVAL_UNIT";
+    public static final String RUN_WITH_ROLLER = "RUN_WITH_ROLLER";
 
     protected String defaultOutputPath = "./out";
     protected Path outputPath;
@@ -41,7 +39,6 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     protected TimeUnit rollIntervalUnits = TimeUnit.MINUTES;
     protected Roller roller;
     protected JournaledCoalescer rollable;
-    protected FileNameGenerator fileNameGenerator;
     protected boolean appendNewLine = true;
 
     /**
@@ -62,13 +59,15 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) throws EmissaryException {
         super.initialize(theConfigG, filterName, theFilterConfig);
         initOutputConfig();
-        initRollConfig();
         initFilenameGenerator();
         setupLocalOutputDir();
-        setupRoller();
+        if (configG.findBooleanEntry(RUN_WITH_ROLLER, false)) {
+            initRollConfig();
+            setupRoller();
+        }
     }
 
     /**

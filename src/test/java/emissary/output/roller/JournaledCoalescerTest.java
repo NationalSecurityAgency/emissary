@@ -48,33 +48,33 @@ public class JournaledCoalescerTest extends UnitTest {
     private FileNameGenerator fileNameGenerator;
     private JournaledCoalescer journaledCoalescer;
 
-    private Path targetBUDPath;
-    private Path tempBUD1;
-    private final String BUD1_NAME = "bud1";
-    private Path tempBUD2;
-    private final String BUD2_NAME = "bud2";
-    private final List<String> BUD1_LINES = Arrays.asList("Line1", "Line2");
-    private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
+    private Path targetKRYOPath;
+    private Path tempKRYO1;
+    private final String KRYO1_NAME = "kryo1";
+    private Path tempKRYO2;
+    private final String KRYO2_NAME = "kryo2";
+    private final List<String> KRYO1_LINES = Arrays.asList("Line1", "Line2");
+    private final List<String> KRYO2_LINES = Arrays.asList("Line3", "Line4");
 
     @Before
     @Override
     public void setUp() throws Exception {
         fileNameGenerator = new SimpleFileNameGenerator();
-        targetBUDPath = Files.createTempDirectory("temp-files");
-        journaledCoalescer = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        targetKRYOPath = Files.createTempDirectory("temp-files");
+        journaledCoalescer = new JournaledCoalescer(targetKRYOPath, fileNameGenerator);
 
         // setup temp files
-        tempBUD1 = Files.createTempFile(targetBUDPath, BUD1_NAME, "");
-        Files.write(tempBUD1, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        tempKRYO1 = Files.createTempFile(targetKRYOPath, KRYO1_NAME, "");
+        Files.write(tempKRYO1, KRYO1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
-        tempBUD2 = Files.createTempFile(targetBUDPath, BUD2_NAME, "");
-        Files.write(tempBUD2, BUD2_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        tempKRYO2 = Files.createTempFile(targetKRYOPath, KRYO2_NAME, "");
+        Files.write(tempKRYO2, KRYO2_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
     }
 
     @After
     public void cleanUp() throws IOException {
         journaledCoalescer.close();
-        UnitTestFileUtils.cleanupDirectoryRecursively(targetBUDPath);
+        UnitTestFileUtils.cleanupDirectoryRecursively(targetKRYOPath);
     }
 
     @SuppressWarnings("resource")
@@ -116,11 +116,11 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testRollOrphanedFiles() throws Exception {
         // setup
-        try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
+        try (JournaledChannelPool pool = new JournaledChannelPool(targetKRYOPath, KRYO1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
-            Files.copy(tempBUD1, one);
-            Files.copy(tempBUD2, two);
+            Files.copy(tempKRYO1, one);
+            Files.copy(tempKRYO2, two);
             one.commit();
             two.commit();
         }
@@ -129,38 +129,38 @@ public class JournaledCoalescerTest extends UnitTest {
         journaledCoalescer.roll();
 
         // verify
-        Path bud1destination = targetBUDPath.resolve(BUD1_NAME);
-        assertThat(Files.exists(bud1destination), equalTo(true));
-        List<String> fileResults = Files.readAllLines(bud1destination, Charset.defaultCharset());
-        assertThat("Expected 4 lines in " + bud1destination, fileResults.size(), equalTo(4));
-        assertThat(fileResults, containsInRelativeOrder(BUD1_LINES.get(0), BUD1_LINES.get(1)));
-        assertThat(fileResults, containsInRelativeOrder(BUD2_LINES.get(0), BUD2_LINES.get(1)));
+        Path kryo1destination = targetKRYOPath.resolve(KRYO1_NAME);
+        assertThat(Files.exists(kryo1destination), equalTo(true));
+        List<String> fileResults = Files.readAllLines(kryo1destination, Charset.defaultCharset());
+        assertThat("Expected 4 lines in " + kryo1destination, fileResults.size(), equalTo(4));
+        assertThat(fileResults, containsInRelativeOrder(KRYO1_LINES.get(0), KRYO1_LINES.get(1)));
+        assertThat(fileResults, containsInRelativeOrder(KRYO2_LINES.get(0), KRYO2_LINES.get(1)));
     }
 
     @Test
     public void testAddFilesBeforeRoll() throws Exception {
         // test
-        Path bud1destination = null;
-        Path bud2destination = null;
+        Path kryo1destination = null;
+        Path kryo2destination = null;
         try (KeyedOutput one = journaledCoalescer.getOutput(); KeyedOutput two = journaledCoalescer.getOutput()) {
-            Files.copy(tempBUD1, one);
-            bud1destination = one.getFinalDestination();
-            Files.copy(tempBUD2, two);
-            bud2destination = two.getFinalDestination();
+            Files.copy(tempKRYO1, one);
+            kryo1destination = one.getFinalDestination();
+            Files.copy(tempKRYO2, two);
+            kryo2destination = two.getFinalDestination();
             one.commit();
             two.commit();
         }
         // verify
         // no roll happened
-        assertThat(bud1destination, notNullValue());
-        assertThat(bud1destination, equalTo(bud2destination));
-        assertThat(Files.exists(bud1destination), equalTo(false));
+        assertThat(kryo1destination, notNullValue());
+        assertThat(kryo1destination, equalTo(kryo2destination));
+        assertThat(Files.exists(kryo1destination), equalTo(false));
 
         // verify
         journaledCoalescer.roll();
-        assertThat(Files.exists(bud1destination), equalTo(true));
-        long totalSize = Files.size(tempBUD1) + Files.size(tempBUD2);
-        assertThat(Files.size(bud1destination), equalTo(totalSize));
+        assertThat(Files.exists(kryo1destination), equalTo(true));
+        long totalSize = Files.size(tempKRYO1) + Files.size(tempKRYO2);
+        assertThat(Files.size(kryo1destination), equalTo(totalSize));
 
     }
 
@@ -171,7 +171,7 @@ public class JournaledCoalescerTest extends UnitTest {
 
         // test
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBUD1, one);
+            Files.copy(tempKRYO1, one);
             expectedPrefix1 = one.getFinalDestination().getFileName().toString();
             one.commit();
         }
@@ -181,17 +181,17 @@ public class JournaledCoalescerTest extends UnitTest {
         String expectedPrefix2 = null;
 
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBUD2, one);
+            Files.copy(tempKRYO2, one);
             expectedPrefix2 = one.getFinalDestination().getFileName().toString();
             one.commit();
         }
         // verify
-        Path bud1Destination = targetBUDPath.resolve(expectedPrefix1);
-        assertThat("Expected target to exist " + bud1Destination.toString(), Files.exists(bud1Destination), equalTo(true));
-        assertThat(bud1Destination.getFileName().toString(), not(equalTo(expectedPrefix2)));
-        assertThat(bud1Destination.getParent(), equalTo(targetBUDPath));
-        assertThat(bud1Destination.getFileName().toString(), equalTo(expectedPrefix1));
-        assertThat(Files.readAllLines(bud1Destination, Charset.defaultCharset()), equalTo(BUD1_LINES));
+        Path kryo1Destination = targetKRYOPath.resolve(expectedPrefix1);
+        assertThat("Expected target to exist " + kryo1Destination.toString(), Files.exists(kryo1Destination), equalTo(true));
+        assertThat(kryo1Destination.getFileName().toString(), not(equalTo(expectedPrefix2)));
+        assertThat(kryo1Destination.getParent(), equalTo(targetKRYOPath));
+        assertThat(kryo1Destination.getFileName().toString(), equalTo(expectedPrefix1));
+        assertThat(Files.readAllLines(kryo1Destination, Charset.defaultCharset()), equalTo(KRYO1_LINES));
 
         assertThat(expectedPrefix1, not(equalTo(expectedPrefix2)));
     }
@@ -204,23 +204,23 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testCrashWhileRolling() throws Exception {
         // setup
-        Path finalBudOutput = null;
+        Path finalKryoOutput = null;
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBUD1, one);
-            finalBudOutput = one.getFinalDestination();
+            Files.copy(tempKRYO1, one);
+            finalKryoOutput = one.getFinalDestination();
             one.commit();
         }
 
-        Path oldRolling = Paths.get(targetBUDPath.toString(), finalBudOutput.getFileName().toString() + ROLLING_EXT);
+        Path oldRolling = Paths.get(targetKRYOPath.toString(), finalKryoOutput.getFileName().toString() + ROLLING_EXT);
         Files.createFile(oldRolling);
 
         // test
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator).roll();
+        new JournaledCoalescer(targetKRYOPath, fileNameGenerator).roll();
 
         // verify
         assertThat(Files.exists(oldRolling), equalTo(false));
-        assertThat(Files.exists(finalBudOutput), equalTo(true));
-        assertThat(Files.readAllLines(finalBudOutput, Charset.defaultCharset()), equalTo(BUD1_LINES));
+        assertThat(Files.exists(finalKryoOutput), equalTo(true));
+        assertThat(Files.readAllLines(finalKryoOutput, Charset.defaultCharset()), equalTo(KRYO1_LINES));
     }
 
     /**
@@ -228,28 +228,28 @@ public class JournaledCoalescerTest extends UnitTest {
      */
     @Test
     public void testCrashAfterRolled() throws Exception {
-        try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
+        try (JournaledChannelPool pool = new JournaledChannelPool(targetKRYOPath, KRYO1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
-            Files.copy(tempBUD1, one);
-            Files.copy(tempBUD2, two);
+            Files.copy(tempKRYO1, one);
+            Files.copy(tempKRYO2, two);
             one.commit();
             two.commit();
         }
 
         // create the rolled file
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
-        Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Path oldRolled = Files.createFile(targetKRYOPath.resolve(KRYO1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Files.write(oldRolled, KRYO1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
-        JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        JournaledCoalescer jrnl = new JournaledCoalescer(targetKRYOPath, fileNameGenerator);
 
         assertThat(Files.exists(oldRolled), equalTo(true));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(false));
 
         jrnl.roll();
 
         assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(true));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(true));
     }
 
     /**
@@ -259,75 +259,75 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testCrashAfterRolledNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
-        Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Path oldRolled = Files.createFile(targetKRYOPath.resolve(KRYO1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Files.write(oldRolled, KRYO1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        new JournaledCoalescer(targetKRYOPath, fileNameGenerator);
 
         // verify orphaned rolled file is cleaned up
         assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(true));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(true));
     }
 
     @Test
     public void testCrashAfterRolledEmpty() throws Exception {
-        try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
+        try (JournaledChannelPool pool = new JournaledChannelPool(targetKRYOPath, KRYO1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
             one.commit();
             two.commit();
         }
 
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetKRYOPath.resolve(KRYO1_NAME + JournaledCoalescer.ROLLED_EXT));
 
-        JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        JournaledCoalescer jrnl = new JournaledCoalescer(targetKRYOPath, fileNameGenerator);
 
         assertThat(Files.exists(oldRolled), equalTo(true));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(false));
 
         jrnl.roll();
 
         assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(false));
     }
 
     @Test
     public void testCrashAfterRolledEmptyNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetKRYOPath.resolve(KRYO1_NAME + JournaledCoalescer.ROLLED_EXT));
 
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        new JournaledCoalescer(targetKRYOPath, fileNameGenerator);
 
         // verify orphaned rolled file is cleaned up
         assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertThat(Files.exists(targetKRYOPath.resolve(KRYO1_NAME)), equalTo(false));
     }
 
     @Test
     public void testRollEmptyFiles() throws Exception {
         // setup
-        Files.write(tempBUD1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
-        Path finalBudOutput = null;
+        Files.write(tempKRYO1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
+        Path finalKryoOutput = null;
         try (KeyedOutput os = journaledCoalescer.getOutput()) {
             // make sure we create an empty file
-            finalBudOutput = os.getFinalDestination();
+            finalKryoOutput = os.getFinalDestination();
         }
         // test
         journaledCoalescer.roll();
 
         // verify
-        assertThat(Files.exists(finalBudOutput), equalTo(false));
+        assertThat(Files.exists(finalKryoOutput), equalTo(false));
     }
 
     @Test
     public void testRollBadFiles() throws Exception {
         // setup
-        Path target = Files.createTempFile(targetBUDPath, "badfile", "");
+        Path target = Files.createTempFile(targetKRYOPath, "badfile", "");
         String key = target.toString();
-        try (JournalWriter jw = new JournalWriter(targetBUDPath, key);
+        try (JournalWriter jw = new JournalWriter(targetKRYOPath, key);
                 SeekableByteChannel c = Files.newByteChannel(target, StandardOpenOption.WRITE)) {
-            ArrayList<String> strings = new ArrayList<>(BUD1_LINES);
-            strings.addAll(BUD2_LINES);
+            ArrayList<String> strings = new ArrayList<>(KRYO1_LINES);
+            strings.addAll(KRYO2_LINES);
             for (String line : strings) {
                 c.write(ByteBuffer.wrap(line.getBytes()));
                 jw.write(new JournalEntry(key, c.position()));
@@ -340,7 +340,7 @@ public class JournaledCoalescerTest extends UnitTest {
         // open journal
         JournalReader jr = new JournalReader(Paths.get(key + Journal.EXT));
         Journal j = jr.getJournal();
-        Path rolled = Files.createTempFile(targetBUDPath, "rolled_badfile", "");
+        Path rolled = Files.createTempFile(targetKRYOPath, "rolled_badfile", "");
         try (SeekableByteChannel sbc = Files.newByteChannel(rolled, StandardOpenOption.WRITE)) {
             journaledCoalescer.combineFiles(j, sbc);
         }
