@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
+/**
+ * A Facade for an {@link IDataContainer}, allowing a change listener to be registered.
+ *
+ */
 public class ChangeNofifyingDataContainer implements IDataContainer {
 
     /**
@@ -11,9 +15,16 @@ public class ChangeNofifyingDataContainer implements IDataContainer {
      */
     private static final long serialVersionUID = 4466141643920488464L;
 
+    /** Wrapped data container */
     private IDataContainer dc;
+    /** Listener */
     private TriggeredAction<IDataContainer> updateAction;
 
+    /**
+     * Wrap an {@link IDataContainer} with a notification Facade.
+     * 
+     * @param dc the data container to be wrapped.
+     */
     public ChangeNofifyingDataContainer(IDataContainer dc) {
         this.dc = dc;
     }
@@ -88,6 +99,11 @@ public class ChangeNofifyingDataContainer implements IDataContainer {
         void onTrigger(T changedData);
     }
 
+    /**
+     * Register a change listener. Only one listener can be registered.
+     * 
+     * @param listener the listener.
+     */
     public void registerChangeListener(TriggeredAction<IDataContainer> listener) {
         this.updateAction = listener;
     }

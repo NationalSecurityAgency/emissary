@@ -45,9 +45,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
     IDataContainer newDataContainer();
 
     /**
-     * Get access to the binary data.
+     * Get access to the multipart alternative views of the data.
      *
-     * @return The binary data container.
+     * @return The multipart alternative views.
      */
     default IViewManager getViewManager() {
         return IViewManager.wrap(this);

@@ -98,7 +98,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected int birthOrder = 0;
 
     /**
-     * Hash of alternate views of the data {@link String} current form is the key, byte[] is the value
+     * Alternate views of the data
      */
     protected IViewManager multipartAlternative = new ViewManager();
 
@@ -1030,8 +1030,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Return a specified multipart alternative view of the data WARNING: this implementation returns the actual array
-     * directly, no copy is made so the caller must be aware that modifications to the returned array are live.
+     * Return a specified multipart alternative view of the data WARNING: this implementation may return the actual array
+     * directly, so the caller must be aware that modifications to the returned array may be live.
      *
      * @param s the name of the view to retrieve
      * @return byte array of alternate view data or null if none
@@ -1067,8 +1067,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Add a multipart alternative view of the data WARNING: this implementation returns the actual array directly, no copy
-     * is made so the caller must be aware that modifications to the returned array are live.
+     * Add a multipart alternative view of the data WARNING: this implementation may store the actual array directly, so the
+     * caller must be aware that modifications to the returned array may be live.
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view

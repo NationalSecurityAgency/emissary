@@ -15,6 +15,10 @@ import emissary.core.blob.DataException;
 import emissary.core.blob.IDataContainer;
 import emissary.core.blob.SelectingDataContainer;
 
+/**
+ * Standard implementation of {@link IViewManager}.
+ *
+ */
 public class ViewManager implements IViewManager {
 
     /**
