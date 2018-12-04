@@ -189,6 +189,7 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      * @return buffer required by the HTML Velocity templates.
      */
     @Override
+    @Deprecated
     ByteBuffer dataBuffer();
 
     /**
