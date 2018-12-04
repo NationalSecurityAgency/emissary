@@ -5,8 +5,6 @@ import emissary.core.IBaseDataObject;
 /**
  * Runtime exception that can be thrown by a data container on error without a breaking change to the
  * {@link IBaseDataObject} API.
- * 
- * @author adyoun2
  *
  */
 public class DataException extends RuntimeException {

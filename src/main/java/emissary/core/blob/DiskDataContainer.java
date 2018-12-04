@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Disk backed data container, for larger objects.
  *
- * @author adyoun2
- *
  */
 public class DiskDataContainer implements IDataContainer, Externalizable {
 

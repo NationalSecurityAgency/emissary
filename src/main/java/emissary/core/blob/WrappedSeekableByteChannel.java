@@ -8,8 +8,6 @@ import java.nio.channels.SeekableByteChannel;
  * {@link SeekableByteChannel} that proxies calls to a wrapped instance, but where listeners for mutation and closure
  * may be registered.
  *
- * @author adyoun2
- *
  * @param <T> The type of the wrapped instance.
  */
 public class WrappedSeekableByteChannel<T extends SeekableByteChannel> implements SeekableByteChannel {

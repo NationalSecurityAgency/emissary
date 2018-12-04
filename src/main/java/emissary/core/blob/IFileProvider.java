@@ -6,8 +6,6 @@ import java.io.IOException;
 /**
  * Capable of providing direct access to the data in file form.
  *
- * @author adyoun2
- *
  */
 public interface IFileProvider extends AutoCloseable {
 

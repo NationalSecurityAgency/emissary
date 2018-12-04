@@ -15,7 +15,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import emissary.core.blob.IDataContainer.LegacyContainerWrapper;
 import org.apache.commons.lang.SerializationUtils;
 import org.junit.Assert;
 import org.junit.Before;

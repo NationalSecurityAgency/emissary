@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Data container using off heap memory allocation.
  *
- * @author adyoun2
- *
  */
 public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externalizable {
 

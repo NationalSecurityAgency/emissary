@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link IDataContainer} proxy for another {@link IDataContainer} appropriate for the size of data being handled.
  *
- * @author adyoun2
- *
  */
 public class SelectingDataContainer implements IDataContainer {
 
