@@ -43,6 +43,7 @@ public class BaseDataObjectTest extends UnitTest {
 
     private BaseDataObject b = null;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         this.b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
@@ -51,6 +52,7 @@ public class BaseDataObjectTest extends UnitTest {
         this.b.pushCurrentForm("THREE");
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
