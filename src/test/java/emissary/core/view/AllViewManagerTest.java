@@ -1,5 +1,6 @@
 package emissary.core.view;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -7,7 +8,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +26,7 @@ import emissary.config.Configurator;
 import emissary.core.MetadataDictionary;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.core.blob.IDataContainer;
 import emissary.util.ByteUtil;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -183,7 +188,30 @@ public class AllViewManagerTest {
         assertEquals("Appended alternate view contents", "more stuff", new String(this.b.getAlternateView("T1")));
     }
 
-    // TODO: Test new APIs
+    @Test
+    public void testAddContainer() throws Exception {
+        IDataContainer cont = b.addAlternateView("Fish");
+        cont.setData("Wombat".getBytes(StandardCharsets.UTF_8));
+        assertEquals("Wombat", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+    }
+
+    @Test
+    public void testAddContainerStream() throws Exception {
+        IDataContainer cont = b.addAlternateView("Fish");
+        try (OutputStream is = Channels.newOutputStream(cont.channel())) {
+            is.write("Sloth".getBytes(UTF_8));
+        }
+        assertEquals("Sloth", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+    }
+
+    @Test
+    public void testMutateViaMapPersists() throws Exception {
+        b.addAlternateView("Fish", "Wombat".getBytes(UTF_8));
+        try (OutputStream os = Channels.newOutputStream(b.getAlternateViewContainers().get("Fish").channel())) {
+            os.write("Narwhal".getBytes(UTF_8));
+        }
+        assertEquals("Narwhal", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+    }
 
     private static class FakeLegacyManager implements IOriginalViewManager {
         /**
