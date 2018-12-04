@@ -8,23 +8,22 @@ import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import com.google.common.collect.LinkedListMultimap;
 import emissary.core.blob.IDataContainer;
 import emissary.core.blob.SelectingDataContainer;
+import emissary.core.view.IViewManager;
+import emissary.core.view.ViewManager;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.Priority;
 import emissary.place.IServiceProviderPlace;
-import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -101,7 +100,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Hash of alternate views of the data {@link String} current form is the key, byte[] is the value
      */
-    protected Map<String, byte[]> multipartAlternative = new TreeMap<>();
+    protected IViewManager multipartAlternative = new ViewManager();
 
     /**
      * Any header that goes along with the data
@@ -258,6 +257,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public IDataContainer newDataContainer() {
         this.theData = new SelectingDataContainer();
         return this.theData;
+    }
+
+    @Override
+    public IViewManager getViewManager() {
+        return multipartAlternative;
     }
 
     /**
@@ -1020,8 +1024,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public int getNumAlternateViews() {
-        return this.multipartAlternative.size();
+        return getViewManager().getNumAlternateViews();
     }
 
     /**
@@ -1032,28 +1037,21 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return byte array of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public byte[] getAlternateView(final String s) {
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            return this.multipartAlternative.get(dict.map(s));
-        } catch (NamespaceException ex) {
-            return this.multipartAlternative.get(s);
-        }
+        return getViewManager().getAlternateView(s);
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data) {
-        appendAlternateView(name, data, 0, data.length);
+        getViewManager().appendAlternateView(name, data);
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        final byte[] av = getAlternateView(name);
-        if (av != null) {
-            addAlternateView(name, ByteUtil.glue(av, 0, av.length - 1, data, offset, offset + length - 1));
-        } else {
-            addAlternateView(name, data, offset, length);
-        }
+        getViewManager().appendAlternateView(name, data, offset, length);
     }
 
     /**
@@ -1063,12 +1061,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return buffer of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public ByteBuffer getAlternateViewBuffer(final String s) {
-        final byte[] viewdata = getAlternateView(s);
-        if (viewdata == null) {
-            return null;
-        }
-        return ByteBuffer.wrap(viewdata);
+        return getViewManager().getAlternateViewBuffer(s);
     }
 
     /**
@@ -1079,39 +1074,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param data the byte array of data for the view
      */
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
-        if (data == null) {
-            this.multipartAlternative.remove(mappedName);
-        } else {
-            this.multipartAlternative.put(mappedName, data);
-        }
+        getViewManager().addAlternateView(name, data);
     }
 
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
-        if (data == null || length <= 0) {
-            this.multipartAlternative.remove(mappedName);
-        } else {
-            final byte[] mpa = new byte[length];
-            System.arraycopy(data, offset, mpa, 0, length);
-            this.multipartAlternative.put(mappedName, mpa);
-        }
+        getViewManager().addAlternateView(name, data, offset, length);
     }
 
     /**
@@ -1121,7 +1092,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Set<String> getAlternateViewNames() {
-        return new TreeSet<>(this.multipartAlternative.keySet());
+        return getViewManager().getAlternateViewNames();
     }
 
     /**
@@ -1131,8 +1102,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return an map of alternate views ordered by name, key = String, value = byte[]
      */
     @Override
+    @Deprecated
     public Map<String, byte[]> getAlternateViews() {
-        return this.multipartAlternative;
+        return getViewManager().getAlternateViews();
     }
 
     @Override
@@ -1192,7 +1164,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         c.theData = this.theData.clone();
         c.currentForm = new ArrayList<>(this.currentForm);
         c.history = new ArrayList<>(this.history);
-        c.multipartAlternative = new HashMap<>(this.multipartAlternative);
+        c.multipartAlternative = multipartAlternative.clone();
         c.priority = this.priority;
         c.creationTimestamp = this.creationTimestamp;
 

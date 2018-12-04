@@ -43,7 +43,6 @@ public class BaseDataObjectTest extends UnitTest {
 
     private BaseDataObject b = null;
 
-    @Override
     @Before
     public void setUp() throws Exception {
         this.b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
@@ -52,7 +51,6 @@ public class BaseDataObjectTest extends UnitTest {
         this.b.pushCurrentForm("THREE");
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
         super.tearDown();
@@ -145,7 +143,7 @@ public class BaseDataObjectTest extends UnitTest {
         assertEquals("Byte buffer on footer", "A good footer".length(), fb.array().length);
         assertEquals("Byte buffer on data", "This is a test".length(), db.array().length);
         assertNotNull("Byte buffer on view", vb);
-        assertEquals("Byte buffer on view", "alternate view".length(), vb.array().length);
+        assertEquals("Byte buffer on view", "alternate view".length(), vb.limit());
 
         this.b.addAlternateView("TESTVIEW", null);
         assertNull("Byte buffer on removed view", this.b.getAlternateView("TESTVIEW"));

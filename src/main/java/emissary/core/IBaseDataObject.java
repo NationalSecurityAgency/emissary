@@ -10,8 +10,10 @@ import java.util.UUID;
 
 import emissary.core.blob.IDataContainer;
 import emissary.core.blob.IOriginalDataContainer;
+import emissary.core.view.IOriginalViewManager;
+import emissary.core.view.IViewManager;
 
-public interface IBaseDataObject extends IOriginalDataContainer {
+public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewManager {
 
     /**
      * Define the merge policy values for parameter handling
@@ -41,6 +43,15 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      * @return A data container which can be used to write new data.
      */
     IDataContainer newDataContainer();
+
+    /**
+     * Get access to the binary data.
+     *
+     * @return The binary data container.
+     */
+    default IViewManager getViewManager() {
+        return IViewManager.wrap(this);
+    }
 
     /**
      * {@inheritDoc}
@@ -396,79 +407,6 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      * @return the string value of the FILETYPE parameter
      */
     String getFileType();
-
-    /**
-     * Disclose how many multipart alternative views of the data exist
-     *
-     * @return count of alternate views
-     */
-    int getNumAlternateViews();
-
-    /**
-     * Return a specified multipart alternative view of the data
-     *
-     * @param arg1 the name of the view to retrieve
-     * @return byte array of alternate view data
-     */
-    byte[] getAlternateView(String arg1);
-
-    /**
-     * Return a specified multipart alternative view of the data in a buffer
-     *
-     * @param arg1 the name of the view to retrieve
-     * @return buffer of alternate view data
-     */
-    ByteBuffer getAlternateViewBuffer(String arg1);
-
-    /**
-     * Add a multipart alternative view of the data
-     *
-     * @param name the name of the new view
-     * @param data the byte array of data for the view
-     */
-    void addAlternateView(String name, byte[] data);
-
-    /**
-     * Add a multipart alternative view of the data
-     *
-     * @param name the name of the new view
-     * @param data the byte array conatining data for the view
-     * @param offset index of the first byte to use
-     * @param length number of bytes to use
-     */
-    void addAlternateView(String name, byte[] data, int offset, int length);
-
-    /**
-     * Append the specified data to the alternate view
-     *
-     * @param name the name of the new view
-     * @param data the byte array of data for the view
-     */
-    void appendAlternateView(String name, byte[] data);
-
-    /**
-     * Append to a multipart alternative view of the data
-     *
-     * @param name the name of the view
-     * @param data the byte array conatining data for the view
-     * @param offset index of the first byte to use
-     * @param length number of bytes to use
-     */
-    void appendAlternateView(String name, byte[] data, int offset, int length);
-
-    /**
-     * Get the set of alt view names for new foreach loops
-     *
-     * @return set of alternate view names
-     */
-    Set<String> getAlternateViewNames();
-
-    /**
-     * Get the alternate view map.
-     *
-     * @return map of alternate views, key = String, value = byte[]
-     */
-    Map<String, byte[]> getAlternateViews();
 
     /**
      * Test for broken document

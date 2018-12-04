@@ -1,0 +1,90 @@
+package emissary.core.view;
+
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.Map;
+import java.util.Set;
+
+public interface IOriginalViewManager extends Cloneable, Serializable {
+
+    /**
+     * Disclose how many multipart alternative views of the data exist
+     *
+     * @return count of alternate views
+     */
+    int getNumAlternateViews();
+
+    /**
+     * Return a specified multipart alternative view of the data
+     *
+     * @param arg1 the name of the view to retrieve
+     * @return byte array of alternate view data
+     */
+    @Deprecated
+    byte[] getAlternateView(String arg1);
+
+    /**
+     * Return a specified multipart alternative view of the data in a buffer
+     *
+     * @param arg1 the name of the view to retrieve
+     * @return buffer of alternate view data
+     */
+    @Deprecated
+    ByteBuffer getAlternateViewBuffer(String arg1);
+
+    /**
+     * Add a multipart alternative view of the data
+     *
+     * @param name the name of the new view
+     * @param data the byte array of data for the view
+     */
+    @Deprecated
+    void addAlternateView(String name, byte[] data);
+
+    /**
+     * Add a multipart alternative view of the data
+     *
+     * @param name the name of the new view
+     * @param data the byte array conatining data for the view
+     * @param offset index of the first byte to use
+     * @param length number of bytes to use
+     */
+    @Deprecated
+    void addAlternateView(String name, byte[] data, int offset, int length);
+
+    /**
+     * Append the specified data to the alternate view
+     *
+     * @param name the name of the new view
+     * @param data the byte array of data for the view
+     */
+    @Deprecated
+    void appendAlternateView(String name, byte[] data);
+
+    /**
+     * Append to a multipart alternative view of the data
+     *
+     * @param name the name of the view
+     * @param data the byte array conatining data for the view
+     * @param offset index of the first byte to use
+     * @param length number of bytes to use
+     */
+    @Deprecated
+    void appendAlternateView(String name, byte[] data, int offset, int length);
+
+    /**
+     * Get the set of alt view names for new foreach loops
+     *
+     * @return set of alternate view names
+     */
+    Set<String> getAlternateViewNames();
+
+    /**
+     * Get the alternate view map.
+     *
+     * @return map of alternate views, key = String, value = byte[]
+     */
+    @Deprecated
+    Map<String, byte[]> getAlternateViews();
+
+}
