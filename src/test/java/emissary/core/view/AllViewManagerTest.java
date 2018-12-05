@@ -27,6 +27,7 @@ import emissary.core.MetadataDictionary;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.blob.IDataContainer;
+import emissary.core.blob.MemoryDataContainer;
 import emissary.util.ByteUtil;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -189,10 +190,32 @@ public class AllViewManagerTest {
     }
 
     @Test
-    public void testAddContainer() throws Exception {
+    public void testAddContainerEmpty() throws Exception {
         IDataContainer cont = b.addAlternateView("Fish");
         cont.setData("Wombat".getBytes(StandardCharsets.UTF_8));
         assertEquals("Wombat", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+        assertEquals("Wombat", new String(b.getAlternateView("Fish"), UTF_8));
+    }
+
+    @Test
+    public void testAddContainerExisting() throws Exception {
+        IDataContainer cont = new MemoryDataContainer();
+        cont.setData("Gecko".getBytes(StandardCharsets.UTF_8));
+        b.addAlternateViewContainer("Fish", cont);
+        assertEquals("Gecko", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+        assertEquals("Gecko", new String(b.getAlternateView("Fish"), UTF_8));
+    }
+
+    @Test
+    public void testRemoveView() throws Exception {
+        IDataContainer cont = new MemoryDataContainer();
+        cont.setData("Tanuki".getBytes(StandardCharsets.UTF_8));
+        b.addAlternateViewContainer("Fish", cont);
+        assertEquals("Tanuki", new String(b.getAlternateViewContainer("Fish").data(), UTF_8));
+        assertEquals("Tanuki", new String(b.getAlternateView("Fish"), UTF_8));
+        b.removeView("Fish");
+        assertNull(b.getAlternateViewContainer("Fish"));
+        assertNull(b.getAlternateView("Fish"));
     }
 
     @Test

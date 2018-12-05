@@ -88,7 +88,7 @@ class LegacyViewManagerWrapper implements IViewManager {
 
     @Override
     public void addAlternateViewContainer(String viewName, IDataContainer cont) {
-        addAlternateView(viewName, cont.data());
+        addAlternateView(viewName, cont != null ? cont.data() : null);
     }
 
     @Override

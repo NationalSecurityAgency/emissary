@@ -133,6 +133,11 @@ public class ViewManager implements IViewManager {
 
     @Override
     public void addAlternateViewContainer(String name, IDataContainer cont) {
+        if (cont == null) {
+            removeView(name);
+            return;
+        }
+
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
