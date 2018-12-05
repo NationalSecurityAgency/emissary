@@ -28,6 +28,15 @@ public interface IViewManager extends IOriginalViewManager {
     IDataContainer addAlternateView(String viewName);
 
     /**
+     * Add an alternate view using an existing data container. Reference equality may maintained, so future changes to the
+     * data container are maintained.
+     * 
+     * @param viewName The name of the view.
+     * @param cont The container to add.
+     */
+    void addAlternateViewContainer(String viewName, IDataContainer cont);
+
+    /**
      * Get all the views as an umodifiable map.
      * 
      * @return All the views.

@@ -132,6 +132,18 @@ public class ViewManager implements IViewManager {
     }
 
     @Override
+    public void addAlternateViewContainer(String name, IDataContainer cont) {
+        String mappedName = name;
+        try {
+            final MetadataDictionary dict = MetadataDictionary.lookup();
+            mappedName = dict.map(name);
+        } catch (NamespaceException ex) {
+            // ignore
+        }
+        views.put(mappedName, cont);
+    }
+
+    @Override
     public Map<String, IDataContainer> getAlternateViewContainers() {
         return Collections.unmodifiableMap(views);
     }

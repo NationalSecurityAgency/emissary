@@ -87,6 +87,11 @@ class LegacyViewManagerWrapper implements IViewManager {
     }
 
     @Override
+    public void addAlternateViewContainer(String viewName, IDataContainer cont) {
+        addAlternateView(viewName, cont.data());
+    }
+
+    @Override
     public Map<String, IDataContainer> getAlternateViewContainers() {
         return getAlternateViews().entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -96,7 +101,7 @@ class LegacyViewManagerWrapper implements IViewManager {
     @Override
     public boolean removeView(String name) {
         boolean ret = getAlternateView(name) != null;
-        addAlternateView(name, null);
+        addAlternateView(name, (byte[]) null);
         return ret;
     }
 

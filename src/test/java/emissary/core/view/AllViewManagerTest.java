@@ -97,7 +97,7 @@ public class AllViewManagerTest {
             this.b.addAlternateView("FOO", null, 20, 10);
             assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 1);
             // Delete by mapped name
-            this.b.addAlternateView("FLUBBER", null);
+            this.b.addAlternateViewContainer("FLUBBER", null);
             assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 0);
         } catch (Exception ex) {
             fail("Could not configure test: " + ex.getMessage());
@@ -123,7 +123,7 @@ public class AllViewManagerTest {
         this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
 
-        this.b.addAlternateView("TESTVIEW2", null);
+        this.b.addAlternateViewContainer("TESTVIEW2", null);
         assertNull("Null view after removal", this.b.getAlternateView("TESTVIEW2"));
         assertNull("Empty byte buffer after removal", this.b.getAlternateViewBuffer("TESTVIEW2"));
     }
