@@ -10,7 +10,6 @@ import emissary.core.IBaseDataObject;
 /**
  * Container of alternate views of data, matching only those methods on the original {@link IBaseDataObject}. New method
  * signatures should be added to {@link IViewManager}.
- * 
  *
  */
 public interface IOriginalViewManager extends Cloneable, Serializable {

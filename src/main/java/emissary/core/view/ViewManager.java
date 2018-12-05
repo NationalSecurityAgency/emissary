@@ -25,13 +25,20 @@ public class ViewManager implements IViewManager {
      * 
      */
     private static final long serialVersionUID = -6591038506218822977L;
+    /** The views sorted */
     private Map<String, IDataContainer> views = new TreeMap<>();
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getNumAlternateViews() {
         return views.size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public byte[] getAlternateView(String arg1) {
@@ -39,6 +46,9 @@ public class ViewManager implements IViewManager {
         return cont != null && cont.data().length != 0 ? cont.data() : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public ByteBuffer getAlternateViewBuffer(String arg1) {
@@ -46,6 +56,9 @@ public class ViewManager implements IViewManager {
         return cont != null ? cont.dataBuffer() : null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public void addAlternateView(String name, byte[] data) {
@@ -56,6 +69,9 @@ public class ViewManager implements IViewManager {
         addAlternateView(name).setData(data);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public void addAlternateView(String name, byte[] data, int offset, int length) {
@@ -66,12 +82,18 @@ public class ViewManager implements IViewManager {
         addAlternateView(name).setData(data, offset, length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public void appendAlternateView(String name, byte[] data) {
         appendAlternateView(name, data, 0, data.length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public void appendAlternateView(String name, byte[] data, int offset, int length) {
@@ -90,11 +112,17 @@ public class ViewManager implements IViewManager {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Set<String> getAlternateViewNames() {
         return views.keySet();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Deprecated
     public Map<String, byte[]> getAlternateViews() {
@@ -105,32 +133,29 @@ public class ViewManager implements IViewManager {
                 TreeMap::new));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IDataContainer getAlternateViewContainer(String name) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
+        String mappedName = getMappedName(name);
         return views.get(mappedName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IDataContainer addAlternateView(String name) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
+        String mappedName = getMappedName(name);
         IDataContainer container = new SelectingDataContainer();
         views.put(mappedName, container);
         return container;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addAlternateViewContainer(String name, IDataContainer cont) {
         if (cont == null) {
@@ -138,33 +163,30 @@ public class ViewManager implements IViewManager {
             return;
         }
 
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
+        String mappedName = getMappedName(name);
         views.put(mappedName, cont);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, IDataContainer> getAlternateViewContainers() {
         return Collections.unmodifiableMap(views);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean removeView(String name) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
+        String mappedName = getMappedName(name);
         return views.remove(mappedName) != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IViewManager clone() {
         ViewManager result = new ViewManager();
@@ -180,5 +202,22 @@ public class ViewManager implements IViewManager {
                 (x, y) -> x,
                 TreeMap::new));
         return result;
+    }
+
+    /**
+     * Lookup the mapped name for the view.
+     * 
+     * @param name The base name
+     * @return A mapped name if one is configued.
+     */
+    private String getMappedName(String name) {
+        String mappedName = name;
+        try {
+            final MetadataDictionary dict = MetadataDictionary.lookup();
+            mappedName = dict.map(name);
+        } catch (NamespaceException ex) {
+            // ignore
+        }
+        return mappedName;
     }
 }

@@ -54,7 +54,9 @@ public interface IViewManager extends IOriginalViewManager {
     IViewManager clone();
 
     /**
-     * Wrap an {@link IOriginalViewManager} such that it can be accessed via the {@link IViewManager} api.
+     * Get an {@link IViewManager} that "Updates" an object that only supports the methods from previous versions of
+     * {@link IBaseDataObject}, as defined in {@link IOriginalViewManager}, such that alternate implementations that have
+     * not been updated can still be used.
      * 
      * @param oldView The views to wrap.
      * @return The views meeting the new api.
