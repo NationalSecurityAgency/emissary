@@ -413,7 +413,8 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      *
      * @param arg1 the name of the view to retrieve
      * @return byte array of alternate view data
-     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#data() data()} instead. (With null checking)
+     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#data()
+     *             data()} instead. (With null checking)
      */
     @Deprecated
     byte[] getAlternateView(String arg1);
@@ -423,7 +424,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      *
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
-     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#dataBuffer() dataBuffer()} instead. (With null checking)
+     * @deprecated Use
+     *             {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#dataBuffer()
+     *             dataBuffer()} instead. (With null checking)
      */
     @Deprecated
     ByteBuffer getAlternateViewBuffer(String arg1);
@@ -433,7 +436,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
-     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#setData(byte[]) setData(byte[])} instead.
+     * @deprecated Use
+     *             {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#setData(byte[])
+     *             setData(byte[])} instead.
      */
     @Deprecated
     void addAlternateView(String name, byte[] data);
@@ -445,7 +450,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
      * @param length number of bytes to use
-     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#setData(byte[], int, int) setData(byte[], int, int)} instead.
+     * @deprecated Use
+     *             {@link #getViewManager()}.{@link IViewManager#addAlternateView(String)}.{@link IDataContainer#setData(byte[], int, int)
+     *             setData(byte[], int, int)} instead.
      */
     @Deprecated
     void addAlternateView(String name, byte[] data, int offset, int length);
@@ -455,7 +462,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
-     * @deprecated Write to {@link #getViewManager()}.{@link IViewManager#getAlternateView(String)}.{@link IDataContainer#channel() channel()} instead. (With null checking)
+     * @deprecated Write to
+     *             {@link #getViewManager()}.{@link IViewManager#getAlternateView(String)}.{@link IDataContainer#channel()
+     *             channel()} instead. (With null checking)
      */
     @Deprecated
     void appendAlternateView(String name, byte[] data);
@@ -467,7 +476,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
      * @param length number of bytes to use
-     * @deprecated Write to {@link #getViewManager()}.{@link IViewManager#getAlternateView(String)}.{@link IDataContainer#channel() channel()} instead. (With null checking)
+     * @deprecated Write to
+     *             {@link #getViewManager()}.{@link IViewManager#getAlternateView(String)}.{@link IDataContainer#channel()
+     *             channel()} instead. (With null checking)
      */
     @Deprecated
     void appendAlternateView(String name, byte[] data, int offset, int length);
@@ -476,7 +487,8 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      * Get the alternate view map.
      *
      * @return map of alternate views, key = String, value = byte[]
-     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#getAlternateViewContainers() getAlternateViewContainers()} instead.
+     * @deprecated Use {@link #getViewManager()}.{@link IViewManager#getAlternateViewContainers()
+     *             getAlternateViewContainers()} instead.
      */
     @Deprecated
     Map<String, byte[]> getAlternateViews();

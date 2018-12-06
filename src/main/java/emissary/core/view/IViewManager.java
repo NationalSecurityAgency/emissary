@@ -37,7 +37,7 @@ public interface IViewManager extends IOriginalViewManager {
     void addAlternateViewContainer(String viewName, IDataContainer cont);
 
     /**
-     * Get all the views as an umodifiable map.
+     * Get all the views as an unmodifiable map.
      * 
      * @return All the views.
      */

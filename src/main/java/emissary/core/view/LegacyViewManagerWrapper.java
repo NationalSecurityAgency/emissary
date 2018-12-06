@@ -3,6 +3,7 @@ package emissary.core.view;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import emissary.core.IBaseDataObject;
@@ -144,7 +145,9 @@ class LegacyViewManagerWrapper implements IViewManager {
     public Map<String, IDataContainer> getAlternateViewContainers() {
         return getAlternateViews().entrySet().stream().collect(Collectors.toMap(
                 Map.Entry::getKey,
-                e -> getAlternateViewContainer(e.getKey())));
+                e -> getAlternateViewContainer(e.getKey()),
+                (x, y) -> x,
+                TreeMap::new));
     }
 
     /**

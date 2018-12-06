@@ -91,11 +91,80 @@ public class AllViewManagerTest {
             assertNotNull("Remapped alt view slice retrieved by original name", this.b.getAlternateView("FOO"));
             assertNotNull("Remapped alt view slice retrieved by new name", this.b.getAlternateView("BAR"));
             final Set<String> avnames = this.b.getAlternateViewNames();
+            assertEquals(2, avnames.size());
             assertTrue("Alt view names contains remapped name", avnames.contains("FLUBBER"));
             assertTrue("Alt view slice names contains remapped name", avnames.contains("BAR"));
 
             // Delete by orig name
             this.b.addAlternateView("FOO", null, 20, 10);
+            assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 1);
+            // Delete by mapped name
+            this.b.addAlternateView("FLUBBER", null);
+            assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 0);
+        } catch (Exception ex) {
+            fail("Could not configure test: " + ex.getMessage());
+        } finally {
+            // Clean up
+            Namespace.unbind(MetadataDictionary.DEFAULT_NAMESPACE_NAME);
+        }
+    }
+
+    @Test
+    public void testAltViewRemappingContainerUseRemove() {
+        try {
+            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes(UTF_8);
+
+            final ByteArrayInputStream str = new ByteArrayInputStream(configData);
+            final Configurator conf = ConfigUtil.getConfigInfo(str);
+            MetadataDictionary.initialize(MetadataDictionary.DEFAULT_NAMESPACE_NAME, conf);
+            IDataContainer configDataCont = this.b.addAlternateView("PROPERTIES");
+            configDataCont.setData(configData);
+            this.b.addAlternateViewContainer("FOO", configDataCont);
+            assertNotNull("Remapped alt view retrieved by original name", this.b.getAlternateView("PROPERTIES"));
+            assertNotNull("Remapped alt view retrieved by new name", this.b.getAlternateView("FLUBBER"));
+            assertNotNull("Remapped alt view slice retrieved by original name", this.b.getAlternateView("FOO"));
+            assertNotNull("Remapped alt view slice retrieved by new name", this.b.getAlternateView("BAR"));
+            final Set<String> avnames = this.b.getAlternateViewNames();
+            assertEquals(2, avnames.size());
+            assertTrue("Alt view names contains remapped name", avnames.contains("FLUBBER"));
+            assertTrue("Alt view slice names contains remapped name", avnames.contains("BAR"));
+
+            // Delete by orig name
+            this.b.removeView("FOO");
+            assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 1);
+            // Delete by mapped name
+            this.b.removeView("FLUBBER");
+            assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 0);
+        } catch (Exception ex) {
+            fail("Could not configure test: " + ex.getMessage());
+        } finally {
+            // Clean up
+            Namespace.unbind(MetadataDictionary.DEFAULT_NAMESPACE_NAME);
+        }
+    }
+
+    @Test
+    public void testAltViewRemappingContainerSetNull() {
+        try {
+            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes(UTF_8);
+
+            final ByteArrayInputStream str = new ByteArrayInputStream(configData);
+            final Configurator conf = ConfigUtil.getConfigInfo(str);
+            MetadataDictionary.initialize(MetadataDictionary.DEFAULT_NAMESPACE_NAME, conf);
+            IDataContainer configDataCont = this.b.addAlternateView("PROPERTIES");
+            configDataCont.setData(configData);
+            this.b.addAlternateViewContainer("FOO", configDataCont);
+            assertNotNull("Remapped alt view retrieved by original name", this.b.getAlternateView("PROPERTIES"));
+            assertNotNull("Remapped alt view retrieved by new name", this.b.getAlternateView("FLUBBER"));
+            assertNotNull("Remapped alt view slice retrieved by original name", this.b.getAlternateView("FOO"));
+            assertNotNull("Remapped alt view slice retrieved by new name", this.b.getAlternateView("BAR"));
+            final Set<String> avnames = this.b.getAlternateViewNames();
+            assertEquals(2, avnames.size());
+            assertTrue("Alt view names contains remapped name", avnames.contains("FLUBBER"));
+            assertTrue("Alt view slice names contains remapped name", avnames.contains("BAR"));
+
+            // Delete by orig name
+            this.b.addAlternateViewContainer("FOO", null);
             assertTrue("View removed by orig name", this.b.getAlternateViewNames().size() == 1);
             // Delete by mapped name
             this.b.addAlternateViewContainer("FLUBBER", null);
@@ -119,12 +188,17 @@ public class AllViewManagerTest {
     }
 
     @Test
+    public void testNonExistentAltViewContainer() {
+        assertNull("No such view", this.b.getAlternateViewContainer("NOSUCHVIEW"));
+    }
+
+    @Test
     public void testAltViews() {
         this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
         this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
 
-        this.b.addAlternateViewContainer("TESTVIEW2", null);
+        this.b.addAlternateView("TESTVIEW2", null);
         assertNull("Null view after removal", this.b.getAlternateView("TESTVIEW2"));
         assertNull("Empty byte buffer after removal", this.b.getAlternateViewBuffer("TESTVIEW2"));
     }
@@ -155,6 +229,20 @@ public class AllViewManagerTest {
         this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
         final Map<String, byte[]> v = this.b.getAlternateViews();
+        assertEquals("Count of views", 3, v.size());
+
+        List<String> source = new ArrayList<String>(v.keySet());
+        List<String> sorted = new ArrayList<String>(v.keySet());
+        Collections.sort(sorted);
+        assertEquals("Views are sorted", sorted, source);
+    }
+
+    @Test
+    public void testMapOfAltViewsContainer() {
+        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
+        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
+        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        final Map<String, IDataContainer> v = this.b.getAlternateViewContainers();
         assertEquals("Count of views", 3, v.size());
 
         List<String> source = new ArrayList<String>(v.keySet());
