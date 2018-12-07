@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
 /**
- * A Facade for an {@link IDataContainer}, allowing a change listener to be registered.
+ * A decorator for an {@link IDataContainer}, allowing a change listener to be registered.
  *
  */
 public class ChangeNofifyingDataContainer implements IDataContainer {
@@ -55,7 +55,7 @@ public class ChangeNofifyingDataContainer implements IDataContainer {
     public IDataContainer clone() throws CloneNotSupportedException {
         IDataContainer wrapped = dc.clone();
         ChangeNofifyingDataContainer clone = new ChangeNofifyingDataContainer(wrapped);
-        // TODO : what to do with listeners?
+        clone.updateAction = updateAction; // should this be cloned
         return clone;
     }
 
