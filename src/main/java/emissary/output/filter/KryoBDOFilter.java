@@ -1,17 +1,5 @@
 package emissary.output.filter;
 
-import com.esotericsoftware.kryo.KryoException;
-import com.google.common.annotations.VisibleForTesting;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.core.kryo.BDODeserialzerIterator;
-import emissary.output.DropOffUtil;
-import emissary.output.push.Bucket;
-import emissary.roll.Rollable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.DirectoryStream;
@@ -26,6 +14,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.esotericsoftware.kryo.KryoException;
+import com.google.common.annotations.VisibleForTesting;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.core.kryo.BDODeserialzerIterator;
+import emissary.output.DropOffUtil;
+import emissary.output.push.Bucket;
+import emissary.roll.Rollable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KryoBDOFilter implements Rollable {
     protected static final Logger logger = LoggerFactory.getLogger(KryoBDOFilter.class);

@@ -9,12 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.output.filter.FilterUtil;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.output.filter.FilterUtil;
 import emissary.output.filter.IDropOffFilter;
 import emissary.place.ServiceProviderPlace;
 import emissary.util.DataUtil;

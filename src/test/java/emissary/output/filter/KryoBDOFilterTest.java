@@ -1,8 +1,8 @@
 package emissary.output.filter;
 
-import emissary.test.core.UnitTest;
-import emissary.util.UnitTestSecurityManager;
-import org.junit.Test;
+import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,9 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import emissary.test.core.UnitTest;
+import emissary.util.UnitTestSecurityManager;
+import org.junit.Test;
 
 public class KryoBDOFilterTest extends UnitTest {
 
@@ -26,8 +26,7 @@ public class KryoBDOFilterTest extends UnitTest {
     private Path createDir;
 
     @Override
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         outputDir = Files.createTempDirectory(TEST_OUTPUT);
         errorDir = Files.createTempDirectory(TEST_ERROR);
@@ -37,8 +36,7 @@ public class KryoBDOFilterTest extends UnitTest {
     }
 
     @Override
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         System.setSecurityManager(null);
         cleanupDirectoryRecursively(errorDir);
         cleanupDirectoryRecursively(inputDir);

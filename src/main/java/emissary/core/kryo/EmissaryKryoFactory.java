@@ -1,15 +1,15 @@
 package emissary.core.kryo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.util.DefaultClassResolver;
 import com.esotericsoftware.kryo.util.MapReferenceResolver;
 import com.google.common.collect.ArrayListMultimap;
 import emissary.core.BDOKryoSerializer;
 import emissary.core.BaseDataObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
 
 /**
  * This class provides a factory and thread local implementation for BaseDataObject (de)serialization. Kryo is not

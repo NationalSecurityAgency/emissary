@@ -1,14 +1,14 @@
 package emissary.output.filter;
 
-import emissary.config.Configurator;
-import emissary.core.EmissaryException;
-import emissary.util.io.FileNameGenerator;
-
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.util.io.FileNameGenerator;
 
 /**
  * Interface for drop off filter.
@@ -64,8 +64,8 @@ public interface IDropOffFilter {
     boolean hasFileNameGenerator();
 
     /**
-     * Returns a Filenamegenerator for the filter. Warning, this method can return null. hasFileNameGenerator should
-     * proceed this method.
+     * Returns a FileNameGenerator for the filter. Warning, this method can return null. hasFileNameGenerator should proceed
+     * this method.
      */
     FileNameGenerator getFileNameGenerator();
 

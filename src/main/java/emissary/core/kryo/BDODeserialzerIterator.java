@@ -1,9 +1,5 @@
 package emissary.core.kryo;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import emissary.core.IBaseDataObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
+import emissary.core.IBaseDataObject;
 
 /**
  * Utility class to deserialize Family Trees from a serialzed Kryo stream/file.

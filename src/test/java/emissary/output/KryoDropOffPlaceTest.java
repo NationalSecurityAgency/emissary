@@ -1,5 +1,15 @@
 package emissary.output;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
@@ -14,16 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 public class KryoDropOffPlaceTest extends UnitTest {
 
 
@@ -34,8 +34,7 @@ public class KryoDropOffPlaceTest extends UnitTest {
 
     @Before
     @Override
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
         // TODO: Need to delete the kryo-test directory at tear down time. Not working currently
         outputDir = Files.createTempDirectory(TEST_OUTPUT);
@@ -44,8 +43,7 @@ public class KryoDropOffPlaceTest extends UnitTest {
 
     @After
     @Override
-    public void tearDown() throws Exception
-    {
+    public void tearDown() throws Exception {
         System.setSecurityManager(null);
         super.tearDown();
     }

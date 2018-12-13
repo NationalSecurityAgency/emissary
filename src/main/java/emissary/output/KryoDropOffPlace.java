@@ -1,5 +1,17 @@
 package emissary.output;
 
+import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
 import com.esotericsoftware.kryo.io.Output;
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
@@ -16,18 +28,6 @@ import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
 import emissary.util.io.FileNameGenerator;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
-import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
 
 /**
  * DropOff to generate serialized IBDOs.

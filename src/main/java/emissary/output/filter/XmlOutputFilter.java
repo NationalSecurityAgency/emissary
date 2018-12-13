@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import emissary.core.EmissaryException;
-import emissary.output.DropOffPlace;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.util.PayloadUtil;

@@ -1,14 +1,5 @@
 package emissary.output.filter;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.EmissaryException;
-import emissary.core.IBaseDataObject;
-import emissary.util.io.FileNameGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -25,8 +16,10 @@ import java.util.Set;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
+import emissary.util.io.FileNameGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,8 +143,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
         this.dropOffUtil = new DropOffUtil(theConfigG);
         initializeOutputTypes(this.filterConfig);
         String outputPathConfig =
-                this.filterConfig != null ? this.filterConfig.findStringEntry(OUTPUT_PATH) : ConfigUtil.getProjectBase() + "/localoutput/"
-                        + this.getFilterName();
+                this.filterConfig != null ? this.filterConfig.findStringEntry(OUTPUT_PATH)
+                        : ConfigUtil.getProjectBase() + "/localoutput/" + this.getFilterName();
         if (StringUtils.isBlank(outputPathConfig)) {
             throw new EmissaryException("OutputPath not configured. Cannot instantiate filter");
         }
