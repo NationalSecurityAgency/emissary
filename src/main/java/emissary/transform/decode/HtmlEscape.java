@@ -38,12 +38,13 @@ public class HtmlEscape {
     private final static Pattern HESC_PATTERN = Pattern.compile("&#([xX]?)(\\p{XDigit}{2,5});");
 
     /**
-     * Unescape some HTML data, turning <code>&#xxxx;</code> or <code>&amp;eacute;</code> into UNICODE characters Because this operation inserts java
-     * Character objects into the byte array, it probably only makes sense to send in data that already matches the
-     * platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple
-     * character sets that cannot possibly be understood or displayed properly.
+     * Unescape some HTML data, turning <code>&#xxxx;</code> or <code>&amp;eacute;</code> into UNICODE characters
+     * Because this operation inserts java Character objects into the byte array, it probably only makes sense to send
+     * in data that already matches the platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a
+     * mixed up mess of multiple character sets that cannot possibly be understood or displayed properly.
      *
-     * @param data The source of the data. The data will be consumed from the current position until the end of the stream.
+     * @param data The source of the data. The data will be consumed from the current position until the end of the
+     *        stream.
      * @param out Where to write the transformed bytes to.
      * @param entities Whether to change named entities such as <code>&amp;eacute;</code>.
      * @param numeric Whether to change numeric escapes such as <code>&#xxxx;</code>.
@@ -336,7 +337,7 @@ public class HtmlEscape {
             super(in);
             this.entities = entities;
             this.numeric = numeric;
-            this.counters = counters;
+            this.counters = counters != null ? counters : Optional.empty();
         }
 
         @Override

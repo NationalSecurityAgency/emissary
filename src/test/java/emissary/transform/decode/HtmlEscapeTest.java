@@ -49,7 +49,7 @@ public class HtmlEscapeTest extends UnitTest {
             assertEquals("Entities must be escaped in string '" + t[i] + "'", ans[i], s);
             byte[] b = HtmlEscape.unescapeEntities(t[i].getBytes());
             assertEquals("Entity bytes must be escaped in '" + t[i] + "'", ans[i], new String(b));
-            b = unescapeEntitiesByteWise(t[i].getBytes(), null);
+            b = unescapeEntitiesByteWise(t[i].getBytes(), Optional.empty());
             assertEquals("Entity bytes must be escaped in '" + t[i] + "'", ans[i], new String(b));
         }
     }

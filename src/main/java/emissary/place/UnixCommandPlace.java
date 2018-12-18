@@ -271,7 +271,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     protected byte[] runCommandOn(IDataContainer iDataContainer) throws ResourceException {
         String[] names = executrix.makeTempFilenames();
         String tempDirName = names[Executrix.DIR];
-//        String inputFileName = names[Executrix.INPATH];
+        // String inputFileName = names[Executrix.INPATH];
         String outputFileName = names[Executrix.OUTPATH];
         File tempDir = new File(tempDirName);
         byte[] outputData = null;
@@ -358,7 +358,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the results of running the command
      */
     protected void asDataHook(IBaseDataObject tData, byte[] outputData) {
-        //TODO: make this stream
+        // TODO: make this stream
         tData.setData(outputData);
     }
 

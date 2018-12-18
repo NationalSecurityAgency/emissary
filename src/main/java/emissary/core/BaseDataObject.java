@@ -201,8 +201,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation may use the passed in
-     * array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation may use the passed
+     * in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
@@ -216,8 +216,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation may use the passed
-     * in array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation may use the
+     * passed in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
