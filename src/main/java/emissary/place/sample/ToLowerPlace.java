@@ -1,6 +1,9 @@
 package emissary.place.sample;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.Channels;
 
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
@@ -9,7 +12,7 @@ import emissary.place.ServiceProviderPlace;
  * This is the main ToLower program.
  *
  * Creation Date: 10/06/2003
- * 
+ *
  **/
 public class ToLowerPlace extends ServiceProviderPlace {
 
@@ -48,13 +51,22 @@ public class ToLowerPlace extends ServiceProviderPlace {
     @Override
     public void process(IBaseDataObject d) {
 
-        // Process the data. Get it with d.data().
-        byte[] data = d.data();
-
-        for (int i = 0; i < data.length; i++) {
-            if (Character.isUpperCase((char) data[i])) {
-                data[i] = (byte) Character.toLowerCase((char) data[i]);
+        // Process the data. Note for an inline transformation, newContainer is required to allow clean closure
+        long len = d.getDataContainer().length();
+        try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
+                OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
+            int read = oldData.read();
+            while (read != -1) {
+                char theChar = (char) read;
+                if (Character.isUpperCase(theChar)) {
+                    theChar = Character.toLowerCase(theChar);
+                }
+                newData.write((byte) theChar);
+                read = oldData.read();
             }
+        } catch (IOException e) {
+            logger.warn("error doing transform, unable to decode", e);
+            d.pushCurrentForm(emissary.core.Form.ERROR);
         }
 
         if (d.transformHistory().size() < 10) {

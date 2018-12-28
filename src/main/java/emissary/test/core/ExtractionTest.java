@@ -375,7 +375,7 @@ public abstract class ExtractionTest extends UnitTest {
             if (StringUtils.isNotBlank(inputAlternateView)) {
                 final byte[] data = payload.data();
                 payload.addAlternateView(inputAlternateView, data);
-                payload.setData(INCORRECT_VIEW_MESSAGE);
+                payload.getDataContainer().setData(INCORRECT_VIEW_MESSAGE);
             }
 
             final String badAlternateView = setup.getChildTextTrim("badAlternateView");

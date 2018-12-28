@@ -161,12 +161,51 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in array
-     * directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with name passed in.
+     *
+     * @param name the name of the data item
+     */
+    public BaseDataObject(final String name) {
+        this();
+        setFilename(name);
+    }
+
+    /**
+     * Create a new BaseDataObject with name, and initial form
+     *
+     * @param name the name of the data item
+     * @param form the initial form of the data
+     */
+    public BaseDataObject(final String name, final String form) {
+        this(name);
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+    }
+
+    /**
+     *
+     * @param newData
+     * @param name
+     * @param form
+     * @param fileType
+     */
+    public BaseDataObject(final String name, final String form, final String fileType) {
+        this(name, form);
+        if (fileType != null) {
+            this.setFileType(fileType);
+        }
+    }
+
+    /**
+     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation may use the passed
+     * in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
+     * @deprecated prefer data initialisation using streaming
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name) {
         setData(newData);
         setFilename(name);
@@ -174,13 +213,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed in
-     * array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation may use the
+     * passed in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
      * @param form the initial form of the data
+     * @deprecated prefer data initialisation using streaming
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form) {
         this(newData, name);
         if (form != null) {
@@ -188,6 +229,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    /**
+     *
+     * @param newData
+     * @param name
+     * @param form
+     * @param fileType
+     * @deprecated prefer data initialisation using streaming
+     */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form, final String fileType) {
         this(newData, name, form);
         if (fileType != null) {
