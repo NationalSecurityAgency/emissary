@@ -1,6 +1,7 @@
 package emissary.util;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 /**
  * A set of named counters for keeping counts on various classes of characters encountered
@@ -8,6 +9,7 @@ import java.util.Arrays;
 public class CharacterCounterSet extends CounterSet {
     public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_WHITESPACE", "CHARACTER_ISO_CONTROL",
             "CHARACTER_PUNCTUATION", "CHARACTER_OTHER"};
+    private static final Pattern PATTERN_CHARACTER_PUNCTUATION = Pattern.compile("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]");
 
     /**
      * Create a set of character counters
@@ -108,7 +110,7 @@ public class CharacterCounterSet extends CounterSet {
                 increment("CHARACTER_WHITESPACE");
             else if (Character.isISOControl(cp))
                 increment("CHARACTER_ISO_CONTROL");
-            else if (scp.matches("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]"))
+            else if (PATTERN_CHARACTER_PUNCTUATION.matcher(scp).matches())
                 increment("CHARACTER_PUNCTUATION");
             else
                 increment("CHARACTER_OTHER");
