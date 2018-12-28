@@ -8,11 +8,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.util.shell.Executrix;
 
 public class JsonEscape {
     /* our logger */

@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
 import emissary.test.core.UnitTest;
+import org.junit.Test;
 
 public class JsonEscapeTest extends UnitTest {
     @Test

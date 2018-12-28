@@ -108,8 +108,8 @@ public class DataUtil {
     }
 
     /**
-     * Get the event or collection date from a data object by checking the EventDate and FILE_DATE parameters. If both
-     * are missing default to today.
+     * Get the event or collection date from a data object by checking the EventDate and FILE_DATE parameters. If both are
+     * missing default to today.
      *
      * @param payload data object to examine
      * @return event date

@@ -8,11 +8,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.util.shell.Executrix;
 
 public class JavascriptEscape {
     private final static String ESCAPES = "nr";
@@ -36,8 +35,8 @@ public class JavascriptEscape {
     }
 
     /**
-     * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u"
-     * and only four digits work. Javascript also has normal unix escapes like \n and \r.
+     * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u" and
+     * only four digits work. Javascript also has normal unix escapes like \n and \r.
      */
     @SuppressWarnings("resource")
     public static void unescape(InputStream data, OutputStream out) throws IOException {

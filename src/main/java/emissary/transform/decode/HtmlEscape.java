@@ -11,14 +11,11 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.util.ByteUtil;
 import emissary.util.CharacterCounterSet;
 import emissary.util.HtmlEntityMap;
 import emissary.util.shell.Executrix;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +37,12 @@ public class HtmlEscape {
     private final static Pattern HESC_PATTERN = Pattern.compile("&#([xX]?)(\\p{XDigit}{2,5});");
 
     /**
-     * Unescape some HTML data, turning <code>&#xxxx;</code> or <code>&amp;eacute;</code> into UNICODE characters
-     * Because this operation inserts java Character objects into the byte array, it probably only makes sense to send
-     * in data that already matches the platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a
-     * mixed up mess of multiple character sets that cannot possibly be understood or displayed properly.
+     * Unescape some HTML data, turning <code>&#xxxx;</code> or <code>&amp;eacute;</code> into UNICODE characters Because
+     * this operation inserts java Character objects into the byte array, it probably only makes sense to send in data that
+     * already matches the platform encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of
+     * multiple character sets that cannot possibly be understood or displayed properly.
      *
-     * @param data The source of the data. The data will be consumed from the current position until the end of the
-     *        stream.
+     * @param data The source of the data. The data will be consumed from the current position until the end of the stream.
      * @param out Where to write the transformed bytes to.
      * @param entities Whether to change named entities such as <code>&amp;eacute;</code>.
      * @param numeric Whether to change numeric escapes such as <code>&#xxxx;</code>.
@@ -428,9 +424,7 @@ public class HtmlEscape {
                             // write a codepoint
                             String s2 = new String(c);
                             tempOut.write(s2.getBytes(StandardCharsets.UTF_8));
-                            if (counters.isPresent()) {
-                                counters.get().count(s);
-                            }
+                            counters.ifPresent(cc -> cc.count(s2));
                             i += count;
                         }
                     } catch (Exception ex) {
@@ -469,9 +463,7 @@ public class HtmlEscape {
                     if (val != null) {
                         try {
                             tempOut.write(val.getBytes());
-                            if (counters.isPresent()) {
-                                counters.get().count(val);
-                            }
+                            counters.ifPresent(cc -> cc.count(val));
                             i += count;
                             // if we used the space as a terminator, keep the
                             // space in the output, even though we consumed it

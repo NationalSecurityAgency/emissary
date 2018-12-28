@@ -170,8 +170,8 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
     /**
      * "HD" agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
-     * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all
-     * payloads wanting to be dropped off in a single list.
+     * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all payloads
+     * wanting to be dropped off in a single list.
      *
      * @param payloadList list of IBaseDataObject from an HDMobileAgent
      */

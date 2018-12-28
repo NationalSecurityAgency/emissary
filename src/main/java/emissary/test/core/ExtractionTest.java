@@ -84,7 +84,7 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     @Test
-    public void testExtractionPlace() {
+    public void testExtractionPlace() throws Exception {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         // Need a pair consisting of a .dat file and a .xml file (answers)
@@ -97,7 +97,8 @@ public abstract class ExtractionTest extends UnitTest {
             byte[] data = new byte[doc.available()];
             doc.read(data);
             String defaultCurrentForm = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
-            IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, defaultCurrentForm);
+            IBaseDataObject payload = DataObjectFactory.getInstance(resource, defaultCurrentForm);
+            payload.getDataContainer().setData(data);
             setupPayload(payload, controlDoc);
             processPreHook(payload, controlDoc);
             List<IBaseDataObject> attachments = place.agentProcessHeavyDuty(payload);
@@ -107,7 +108,7 @@ public abstract class ExtractionTest extends UnitTest {
             checkAnswersPostHook(controlDoc, payload, attachments, resource);
         } catch (Exception ex) {
             logger.error("Error running test {}", resource, ex);
-            fail("Cannot run test " + resource + ": " + ex);
+            throw ex;
         }
     }
 
@@ -205,7 +206,7 @@ public abstract class ExtractionTest extends UnitTest {
 
         int dataLength = JDOMUtil.getChildIntValue(el, "dataLength");
         if (dataLength > -1) {
-            assertEquals("Data length in " + tname, dataLength, payload.dataLength());
+            assertEquals("Data length in " + tname, dataLength, payload.getDataContainer().length());
         }
 
         String shortName = el.getChildTextTrim("shortName");
@@ -237,7 +238,7 @@ public abstract class ExtractionTest extends UnitTest {
         // primary view there can be multiple elements to test it
         // with differing matchMode operators
         for (Element dataEl : el.getChildren("data")) {
-            byte[] payloadData = payload.data();
+            byte[] payloadData = payload.getDataContainer().data();
             checkStringValue(dataEl, new String(payloadData), tname);
         }
 
@@ -245,7 +246,7 @@ public abstract class ExtractionTest extends UnitTest {
         for (Element view : el.getChildren("view")) {
             String viewName = view.getChildTextTrim("name");
             String lengthStr = view.getChildTextTrim("length");
-            byte viewData[] = payload.getAlternateView(viewName);
+            byte viewData[] = payload.getViewManager().getAlternateViewContainer(viewName).data();
             assertTrue(String.format("Alternate View '%s' is missing in %s", viewName, tname), viewData != null);
             if (lengthStr != null) {
                 assertEquals(String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname), Integer.parseInt(lengthStr),
@@ -257,7 +258,7 @@ public abstract class ExtractionTest extends UnitTest {
         // Check for noview items
         for (Element view : el.getChildren("noview")) {
             String viewName = view.getChildTextTrim("name");
-            byte viewData[] = payload.getAlternateView(viewName);
+            byte viewData[] = payload.getViewManager().getAlternateViewContainer(viewName).data();
             assertTrue(String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname), viewData == null);
         }
 
@@ -362,7 +363,7 @@ public abstract class ExtractionTest extends UnitTest {
             for (Element altView : setup.getChildren("altView")) {
                 String name = altView.getChildTextTrim("name");
                 byte[] value = altView.getChildText("value").getBytes(StandardCharsets.UTF_8);
-                payload.addAlternateView(name, value);
+                payload.getViewManager().addAlternateView(name).setData(value);
             }
 
             final String fileType = setup.getChildTextTrim("fileType");
@@ -373,14 +374,14 @@ public abstract class ExtractionTest extends UnitTest {
 
             final String inputAlternateView = setup.getChildTextTrim("inputAlternateView");
             if (StringUtils.isNotBlank(inputAlternateView)) {
-                final byte[] data = payload.data();
-                payload.addAlternateView(inputAlternateView, data);
+                final byte[] data = payload.getDataContainer().data();
+                payload.getViewManager().addAlternateView(inputAlternateView).setData(data);
                 payload.getDataContainer().setData(INCORRECT_VIEW_MESSAGE);
             }
 
             final String badAlternateView = setup.getChildTextTrim("badAlternateView");
             if (StringUtils.isNotBlank(badAlternateView)) {
-                payload.addAlternateView(badAlternateView, INCORRECT_VIEW_MESSAGE);
+                payload.getViewManager().addAlternateView(badAlternateView).setData(INCORRECT_VIEW_MESSAGE);
             }
         }
         if (!didSetFiletype) {

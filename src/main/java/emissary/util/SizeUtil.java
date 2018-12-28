@@ -95,7 +95,9 @@ public class SizeUtil {
      * 
      * @param ibdo - The IBaseDataObject to approximate
      * @return - The approximate size, in bytes, in RAM for the IBaseDataObject
+     * @deprecated This is unknowable, as the data may not be in RAM
      */
+    @Deprecated
     public static long getPayloadRAMSize(IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;

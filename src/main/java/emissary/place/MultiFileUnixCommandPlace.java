@@ -390,8 +390,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
 
     /**
-     * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is
-     * read and loaded into the newData accumulator now.
+     * Override hook when attachment processing is about to be started If CONTENT_FILE has been specified that data is read
+     * and loaded into the newData accumulator now.
      * 
      * @param parent the original payload
      * @param files the result files
@@ -560,8 +560,9 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     }
 
     /**
-     * Process an incoming payload returning attachments This entry point is shared among all synchronized,
-     * unsynchronized, normal and heavy-duty processing entry points.
+     * Process an incoming payload returning attachments This entry point is shared among all synchronized, unsynchronized,
+     * normal and heavy-duty processing entry points.
+     * 
      * @param tData the payload to process
      * @return attachments
      */

@@ -7,10 +7,9 @@ import java.io.IOException;
 
 import javax.xml.bind.DatatypeConverter;
 
+import emissary.test.core.UnitTest;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.Test;
-
-import emissary.test.core.UnitTest;
 
 @SuppressWarnings("resource")
 public class MagicNumberTest extends UnitTest {

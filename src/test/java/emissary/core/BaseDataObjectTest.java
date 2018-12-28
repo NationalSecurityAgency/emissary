@@ -103,7 +103,7 @@ public class BaseDataObjectTest extends UnitTest {
         assertEquals("Array slice must use length", 4, this.b.dataLength());
     }
 
-	@Test
+    @Test
     public void testDataSliceData() {
         final byte[] ary = "abcdefghijk".getBytes();
         this.b.setData(ary, 3, 4);

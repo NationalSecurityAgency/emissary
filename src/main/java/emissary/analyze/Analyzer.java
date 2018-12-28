@@ -3,9 +3,12 @@ package emissary.analyze;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.blob.IDataContainer;
+import emissary.core.view.IViewManager;
 import emissary.place.ServiceProviderPlace;
 
 /**
@@ -66,16 +69,29 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * Search for the first preferred view that is present or use the primary data if none
      * 
      * @param payload the payload to pull data from
+     * @deprecated Use {@link #getPreferredExistingDataContainer(IBaseDataObject)}
      */
+    @Deprecated
     protected byte[] getPreferredData(final IBaseDataObject payload) {
-        final Set<String> altViewNames = payload.getAlternateViewNames();
+        IDataContainer preferredDataContainer = getPreferredExistingDataContainer(payload);
+        return preferredDataContainer != null ? preferredDataContainer.data() : new byte[0];
+    }
 
-        for (final String view : this.PREFERRED_VIEWS) {
-            if (altViewNames.contains(view)) {
-                return payload.getAlternateView(view);
-            }
-        }
-        return payload.data();
+    /**
+     * Search for the first preferred view that is present or use the primary data if none
+     * 
+     * @param payload the payload to pull data from
+     */
+    protected IDataContainer getPreferredExistingDataContainer(final IBaseDataObject payload) {
+        IViewManager vm = payload.getViewManager();
+        final Set<String> altViewNames = vm.getAlternateViewNames();
+
+        return this.PREFERRED_VIEWS
+                .stream()
+                .filter(altViewNames::contains)
+                .findFirst()
+                .map(vm::getAlternateViewContainer)
+                .orElse(payload.getDataContainer());
     }
 
     /**
@@ -84,16 +100,29 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * @param payload the data object to load
      * @param analyzedData the results of the analysis
      * @return true if the data was stored, false if not. See ANALYZED_DATA_NAME config element
+     * @deprecated use {@link #getPreferredDataContainerForWriting(IBaseDataObject)}.
      */
+    @Deprecated
     protected boolean setPreferredData(final IBaseDataObject payload, final byte[] analyzedData) {
+        Optional<IDataContainer> odc = getPreferredDataContainerForWriting(payload);
+        odc.ifPresent(dc -> dc.setData(analyzedData));
+        return odc.isPresent();
+    }
+
+    /**
+     * Get a data container for the preferred data location.
+     * 
+     * @param payload the payload to write data to
+     * @return An optional data container to be written to, empty if ANALYZED_DATA_NAME is not set.
+     */
+    protected Optional<IDataContainer> getPreferredDataContainerForWriting(final IBaseDataObject payload) {
         if (this.ANALYZED_DATA_NAME != null) {
             if ("base".equals(this.ANALYZED_DATA_NAME)) {
-                payload.setData(analyzedData);
+                return Optional.of(payload.newDataContainer());
             } else {
-                payload.addAlternateView(this.ANALYZED_DATA_NAME, analyzedData);
+                return Optional.of(payload.getViewManager().addAlternateView(this.ANALYZED_DATA_NAME));
             }
-            return true;
         }
-        return false;
+        return Optional.empty();
     }
 }

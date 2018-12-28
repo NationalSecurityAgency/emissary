@@ -13,9 +13,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.MDC;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -29,6 +26,8 @@ import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.MDC;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about

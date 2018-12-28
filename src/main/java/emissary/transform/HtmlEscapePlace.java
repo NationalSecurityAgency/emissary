@@ -13,6 +13,7 @@ import java.nio.channels.Channels;
 import java.util.Optional;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.view.IViewManager;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.HtmlEscape;
 import emissary.util.CharacterCounterSet;
@@ -76,7 +77,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
                 OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
             HtmlEscape.unescape(oldData, newData, true, true, Optional.of(counters));
-            d.setCurrentForm(outputForm);
+            d.setCurrentForm(outputForm != null ? outputForm : incomingForm);
         } catch (IOException e) {
             logger.warn("error doing HtmlEscape, unable to decode", e);
             d.pushCurrentForm(emissary.core.Form.ERROR);
@@ -89,17 +90,17 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         }
 
         // Unescape any TEXT alt views we may have
-        for (String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (String viewName : viewManager.getAlternateViewNames()) {
             if (viewName.startsWith("TEXT")) {
-                byte[] textView = d.getAlternateView(viewName);
-                if (textView != null && textView.length > 0) {
-                    byte[] s = HtmlEscape.unescapeHtml(textView);
-                    if (s != null && s.length > 0) {
-                        s = HtmlEscape.unescapeEntities(s);
-                        if (s != null) {
-                            d.addAlternateView(viewName, s);
-                        }
-                    }
+                long length = viewManager.getAlternateViewContainer(viewName).length();
+                try (InputStream oldData = Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel());
+                        OutputStream newData = Channels.newOutputStream(viewManager.addAlternateView(viewName).newChannel(length))) {
+                    HtmlEscape.unescape(oldData, newData, true, true, Optional.empty());
+                    d.setCurrentForm(outputForm);
+                } catch (IOException e) {
+                    logger.warn("error doing HtmlEscape, unable to decode", e);
+                    d.pushCurrentForm(emissary.core.Form.ERROR);
                 }
             }
         }

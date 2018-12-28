@@ -15,14 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-
 import emissary.command.converter.PathExistsReadableConverter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -41,6 +36,9 @@ import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
 public class WhatCommand extends BaseCommand {

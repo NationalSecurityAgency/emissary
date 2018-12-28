@@ -18,22 +18,12 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import emissary.config.ConfigUtil;
 import emissary.core.Factory;
 import emissary.core.Family;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.core.blob.IDataContainer;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.kff.KffDataObjectHandler;
@@ -44,6 +34,16 @@ import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.parser.SimpleParser;
 import emissary.util.shell.Executrix;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * This class handles running a the main method from a ServiceProviderPlace instance in a well defined but extensible
@@ -1001,8 +1001,8 @@ public class Main {
         outStream.println("File type: " + payload.getFileType());
         outStream.println("Encoding: " + payload.getFontEncoding());
         outStream.println("Length: " + payload.getDataContainer().length());
-        if (payload.getNumAlternateViews() > 0) {
-            outStream.println("Alt views: " + payload.getAlternateViewNames());
+        if (payload.getViewManager().getNumAlternateViews() > 0) {
+            outStream.println("Alt views: " + payload.getViewManager().getAlternateViewNames());
         }
         if (payload.getNumChildren() > 0) {
             outStream.println("Attachments: " + payload.getNumChildren());
@@ -1036,10 +1036,14 @@ public class Main {
         }
 
         for (String view : viewsToPrint) {
-            byte[] av = payload.getAlternateView(view);
+            IDataContainer av = payload.getViewManager().getAlternateViewContainer(view);
             if (av != null) {
                 outStream.println("Alternate View " + view);
-                outStream.write(av, 0, av.length);
+                try (InputStream vin = Channels.newInputStream(av.channel())) {
+                    IOUtils.copyLarge(vin, outStream);
+                } catch (IOException e) {
+                    logger.error("Error printing payload", e);
+                }
                 outStream.println();
                 outStream.println();
                 needTrailingCr = false;

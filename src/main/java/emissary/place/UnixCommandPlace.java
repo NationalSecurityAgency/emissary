@@ -323,7 +323,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the result of running the command
      */
     protected void asAlternateViewHook(IBaseDataObject tData, String newForm, byte[] outputData) {
-        tData.addAlternateView(newForm != null ? newForm : tData.currentForm(), outputData);
+        tData.getViewManager().addAlternateView(newForm != null ? newForm : tData.currentForm()).setData(outputData);
     }
 
     /**

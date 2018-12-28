@@ -81,9 +81,8 @@ public class JsonEscapePlace extends ServiceProviderPlace {
             d.pushCurrentForm(emissary.core.Form.ERROR);
         }
         /*
-         * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform
-         * place, but it's only changing data, not currentForm. if (outputForm != null) { d.setCurrentForm(outputForm);
-         * }
+         * due to emissary commit 72d9383 outputForm gets set to UNKNOWN which causes looping. This is a transform place, but
+         * it's only changing data, not currentForm. if (outputForm != null) { d.setCurrentForm(outputForm); }
          */
     }
 

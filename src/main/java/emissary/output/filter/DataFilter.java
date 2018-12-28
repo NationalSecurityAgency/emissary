@@ -1,6 +1,5 @@
 package emissary.output.filter;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,12 +8,12 @@ import java.nio.channels.Channels;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
+import emissary.core.view.IViewManager;
 import emissary.output.DropOffPlace;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Filter that writes unadorned data as raw bytes
@@ -67,11 +66,13 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Check each alt view
-        for (final String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (final String viewName : viewManager.getAlternateViewNames()) {
             if (isViewOutputtable(lang, fileType, currentForm, viewName)) {
                 final String fixedViewName = viewName.replace(" ", "_");
                 final boolean status =
-                        writeDataFile(d, tld, baseFileName, () -> new ByteArrayInputStream(d.getAlternateView(viewName)), fixedViewName);
+                        writeDataFile(d, tld, baseFileName, () -> Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel()),
+                                fixedViewName);
                 writeCount += (status ? 1 : -1);
             }
         }
@@ -108,10 +109,12 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Check each alt view
-        for (final String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (final String viewName : viewManager.getAlternateViewNames()) {
             if (isViewOutputtable(lang, fileType, currentForm, viewName)) {
                 final String fixedViewName = viewName.replace(" ", "_");
-                final boolean status = writeDataStream(d, tld, output, () -> new ByteArrayInputStream(d.getAlternateView(viewName)), fixedViewName);
+                final boolean status = writeDataStream(d, tld, output,
+                        () -> Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel()), fixedViewName);
                 writeCount += (status ? 1 : -1);
             }
         }

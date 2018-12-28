@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import emissary.util.magic.MagicNumber;
 import emissary.util.magic.MagicNumberFactory;
 import emissary.util.shell.Executrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Magic entry rules when using the Java utility, MagicNumberUtil

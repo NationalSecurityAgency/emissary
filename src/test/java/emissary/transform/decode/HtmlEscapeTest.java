@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import org.junit.Test;
-
 import emissary.test.core.UnitTest;
 import emissary.util.CharacterCounterSet;
 import org.junit.Test;

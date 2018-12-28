@@ -14,13 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import emissary.core.IBaseDataObject;
+import emissary.util.xml.JDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import emissary.core.IBaseDataObject;
-import emissary.util.xml.JDOMUtil;
 
 /**
  * Utilities for dealing with IBaseDataObject and Lists thereof
