@@ -41,7 +41,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public byte[] getAlternateView(String arg1) {
+    public byte[] getAlternateView(final String arg1) {
         IDataContainer cont = getAlternateViewContainer(arg1);
         return cont != null && cont.data().length != 0 ? cont.data() : null;
     }
@@ -51,7 +51,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public ByteBuffer getAlternateViewBuffer(String arg1) {
+    public ByteBuffer getAlternateViewBuffer(final String arg1) {
         IDataContainer cont = getAlternateViewContainer(arg1);
         return cont != null ? cont.dataBuffer() : null;
     }
@@ -61,7 +61,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public void addAlternateView(String name, byte[] data) {
+    public void addAlternateView(final String name, final byte[] data) {
         if (data == null || data.length == 0) {
             removeView(name);
             return;
@@ -74,7 +74,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public void addAlternateView(String name, byte[] data, int offset, int length) {
+    public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
         if (data == null || length == 0) {
             removeView(name);
             return;
@@ -87,7 +87,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public void appendAlternateView(String name, byte[] data) {
+    public void appendAlternateView(final String name, final byte[] data) {
         appendAlternateView(name, data, 0, data.length);
     }
 
@@ -96,7 +96,7 @@ public class ViewManager implements IViewManager {
      */
     @Override
     @Deprecated
-    public void appendAlternateView(String name, byte[] data, int offset, int length) {
+    public void appendAlternateView(final String name, final byte[] data, final int offset, final int length) {
         IDataContainer cont = getAlternateViewContainer(name);
         if (cont == null) {
             cont = addAlternateView(name);
@@ -137,7 +137,7 @@ public class ViewManager implements IViewManager {
      * {@inheritDoc}
      */
     @Override
-    public IDataContainer getAlternateViewContainer(String name) {
+    public IDataContainer getAlternateViewContainer(final String name) {
         String mappedName = getMappedName(name);
         return views.get(mappedName);
     }
@@ -146,7 +146,7 @@ public class ViewManager implements IViewManager {
      * {@inheritDoc}
      */
     @Override
-    public IDataContainer addAlternateView(String name) {
+    public IDataContainer addAlternateView(final String name) {
         String mappedName = getMappedName(name);
         IDataContainer container = new SelectingDataContainer();
         views.put(mappedName, container);
@@ -157,7 +157,7 @@ public class ViewManager implements IViewManager {
      * {@inheritDoc}
      */
     @Override
-    public void addAlternateViewContainer(String name, IDataContainer cont) {
+    public void addAlternateViewContainer(final String name, final IDataContainer cont) {
         if (cont == null) {
             removeView(name);
             return;
@@ -179,7 +179,7 @@ public class ViewManager implements IViewManager {
      * {@inheritDoc}
      */
     @Override
-    public boolean removeView(String name) {
+    public boolean removeView(final String name) {
         String mappedName = getMappedName(name);
         return views.remove(mappedName) != null;
     }
@@ -210,7 +210,7 @@ public class ViewManager implements IViewManager {
      * @param name The base name
      * @return A mapped name if one is configued.
      */
-    private String getMappedName(String name) {
+    private String getMappedName(final String name) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
