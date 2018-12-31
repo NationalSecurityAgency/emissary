@@ -9,7 +9,8 @@ import java.util.regex.Pattern;
 public class CharacterCounterSet extends CounterSet {
     public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_WHITESPACE", "CHARACTER_ISO_CONTROL",
             "CHARACTER_PUNCTUATION", "CHARACTER_OTHER"};
-    private static final Pattern PATTERN_CHARACTER_PUNCTUATION = Pattern.compile("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]");
+    private static final Pattern PATTERN_CHARACTER_PUNCTUATION =
+            Pattern.compile("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]");
 
     /**
      * Create a set of character counters
