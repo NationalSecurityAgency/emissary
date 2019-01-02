@@ -91,7 +91,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
                 .filter(altViewNames::contains)
                 .findFirst()
                 .map(vm::getAlternateViewContainer)
-                .orElse(payload.getDataContainer());
+                .orElseGet(payload::getDataContainer);
     }
 
     /**

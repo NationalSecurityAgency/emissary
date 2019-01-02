@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.blob.IDataContainer;
 
 /**
  * Container of alternate views of data, matching only those methods on the original {@link IBaseDataObject}. New method
@@ -26,6 +27,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      *
      * @param arg1 the name of the view to retrieve
      * @return byte array of alternate view data
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     byte[] getAlternateView(String arg1);
@@ -35,6 +37,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      *
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     ByteBuffer getAlternateViewBuffer(String arg1);
@@ -44,6 +47,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     void addAlternateView(String name, byte[] data);
@@ -55,6 +59,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
      * @param length number of bytes to use
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     void addAlternateView(String name, byte[] data, int offset, int length);
@@ -64,6 +69,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     void appendAlternateView(String name, byte[] data);
@@ -75,6 +81,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
      * @param length number of bytes to use
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     void appendAlternateView(String name, byte[] data, int offset, int length);
@@ -90,6 +97,7 @@ public interface IOriginalViewManager extends Cloneable, Serializable {
      * Get the alternate view map.
      *
      * @return map of alternate views, key = String, value = byte[]
+     * @deprecated Interaction via {@link IDataContainer}s is preferred.
      */
     @Deprecated
     Map<String, byte[]> getAlternateViews();
