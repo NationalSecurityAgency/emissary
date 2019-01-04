@@ -97,7 +97,6 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
                 try (InputStream oldData = Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel());
                         OutputStream newData = Channels.newOutputStream(viewManager.addAlternateView(viewName).newChannel(length))) {
                     HtmlEscape.unescape(oldData, newData, true, true, Optional.empty());
-                    d.setCurrentForm(outputForm);
                 } catch (IOException e) {
                     logger.warn("error doing HtmlEscape, unable to decode", e);
                     d.pushCurrentForm(emissary.core.Form.ERROR);
