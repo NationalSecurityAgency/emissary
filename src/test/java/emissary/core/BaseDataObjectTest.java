@@ -141,11 +141,11 @@ public class BaseDataObjectTest extends UnitTest {
         final ByteBuffer fb = this.b.footerBuffer();
         final ByteBuffer db = this.b.dataBuffer();
         final ByteBuffer vb = this.b.getAlternateViewBuffer("TESTVIEW");
-        assertEquals("Byte buffer on header", "A fine header".length(), hb.array().length);
-        assertEquals("Byte buffer on footer", "A good footer".length(), fb.array().length);
-        assertEquals("Byte buffer on data", "This is a test".length(), db.array().length);
+        assertEquals("Byte buffer on header", "A fine header".length(), hb.remaining());
+        assertEquals("Byte buffer on footer", "A good footer".length(), fb.remaining());
+        assertEquals("Byte buffer on data", "This is a test".length(), db.remaining());
         assertNotNull("Byte buffer on view", vb);
-        assertEquals("Byte buffer on view", "alternate view".length(), vb.array().length);
+        assertEquals("Byte buffer on view", "alternate view".length(), vb.remaining());
 
         this.b.addAlternateView("TESTVIEW", null);
         assertNull("Byte buffer on removed view", this.b.getAlternateView("TESTVIEW"));
