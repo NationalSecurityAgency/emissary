@@ -7,8 +7,6 @@ import emissary.core.IBaseDataObject;
 /**
  * Container of binary data, matching only those methods on the original {@link IBaseDataObject}. New method signatures
  * should be added to {@link IDataContainer}.
- * 
- * @author adyoun2
  *
  */
 public interface IOriginalDataContainer {

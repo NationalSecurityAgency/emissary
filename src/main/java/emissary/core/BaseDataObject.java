@@ -996,8 +996,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public ByteBuffer dataBuffer() {
-        return ByteBuffer.wrap(data());
+        return getDataContainer().dataBuffer();
     }
 
     @Override

@@ -9,8 +9,6 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 /**
  * Old school data container storing the data as an on-heap byte array.
  *
- * @author adyoun2
- *
  */
 public class MemoryDataContainer implements IDataContainer {
 

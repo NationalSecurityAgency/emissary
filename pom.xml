@@ -31,7 +31,7 @@
     <dep.commons-cli.version>1.2</dep.commons-cli.version>
     <dep.commons-codec.version>1.9</dep.commons-codec.version>
     <dep.commons-collections.version>3.2.1</dep.commons-collections.version>
-    <dep.commons-compress.version>[1.16,2.0)</dep.commons-compress.version>
+    <dep.commons-compress.version>1.18</dep.commons-compress.version>
     <dep.commons-el.version>1.0</dep.commons-el.version>
     <dep.commons-exec.version>1.2</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.2.2</dep.commons-fileupload.version>
@@ -605,11 +605,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-    <!--     <dependency> -->
-    <!--       <groupId>net.java.dev.jna</groupId> -->
-    <!--       <artifactId>jna</artifactId> -->
-    <!--       <version>[4.5.1,5.0.0)</version> -->
-    <!--     </dependency> -->
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jetty</artifactId>

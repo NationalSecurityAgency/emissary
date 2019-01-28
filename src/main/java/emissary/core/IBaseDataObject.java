@@ -200,6 +200,7 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      * @return buffer required by the HTML Velocity templates.
      */
     @Override
+    @Deprecated
     ByteBuffer dataBuffer();
 
     /**
