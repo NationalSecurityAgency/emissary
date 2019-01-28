@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.channels.Channels;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1065,7 +1068,7 @@ public class Main {
      */
     public void handleSplitOutput(IBaseDataObject payload, List<IBaseDataObject> att) {
         String fn = getBaseOutputDir() + "/" + payload.shortName() + "." + payload.currentForm();
-        try (OutputStream os = new FileOutputStream(fn);
+        try (OutputStream os = Files.newOutputStream(Paths.get(fn));
                 InputStream is = Channels.newInputStream(payload.getDataContainer().channel())) {
             IOUtils.copyLarge(is, os);
         } catch (IOException e) {
@@ -1075,7 +1078,7 @@ public class Main {
 
         for (IBaseDataObject part : att) {
             fn = getBaseOutputDir() + "/" + part.shortName() + "." + part.currentForm();
-            try (OutputStream os = new FileOutputStream(fn);
+            try (OutputStream os = Files.newOutputStream(Paths.get(fn));
                     InputStream is = Channels.newInputStream(part.getDataContainer().channel())) {
                 IOUtils.copyLarge(is, os);
             } catch (IOException e) {

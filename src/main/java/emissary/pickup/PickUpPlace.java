@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -524,7 +525,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
     protected boolean processDataObject(String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
         IBaseDataObject d = DataObjectFactory.getInstance();
         d.setFilename(fixedName);
-        try (FileInputStream fis = new FileInputStream(theFile);
+        try (InputStream fis = Files.newInputStream(theFile.toPath());
                 OutputStream os = Channels.newOutputStream(d.getDataContainer().newChannel(theFile.length()))) {
             IOUtils.copyLarge(fis, os);
         } catch (IOException ioEx) {

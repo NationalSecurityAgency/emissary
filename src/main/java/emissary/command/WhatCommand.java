@@ -2,6 +2,7 @@ package emissary.command;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -167,7 +168,7 @@ public class WhatCommand extends BaseCommand {
         if (!this.headerIdentification) {
             final IBaseDataObject payload =
                     DataObjectFactory.get(path.toAbsolutePath().toString(), Form.UNKNOWN);
-            try (FileInputStream fis = new FileInputStream(path.toString());
+            try (InputStream fis = Files.newInputStream(path);
                     OutputStream os = Channels.newOutputStream(payload.getDataContainer().newChannel(fileSize))) {
                 IOUtils.copyLarge(fis, os);
             }

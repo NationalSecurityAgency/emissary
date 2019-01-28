@@ -1,12 +1,11 @@
 package emissary.core.blob;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
+import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
 
@@ -23,7 +22,7 @@ class TempFileProvider implements IFileProvider {
     @Override
     public void close() throws Exception {
         if (f.lastModified() > creationDate) {
-            try (FileInputStream fis = new FileInputStream(f); OutputStream os = Channels.newOutputStream(container.newChannel(f.length()))) {
+            try (InputStream fis = Files.newInputStream(f.toPath()); OutputStream os = Channels.newOutputStream(container.newChannel(f.length()))) {
                 IOUtils.copyLarge(fis, os);
             }
         }
@@ -34,7 +33,7 @@ class TempFileProvider implements IFileProvider {
     public File getFile() throws IOException {
         if (f == null) {
             f = File.createTempFile("emissaryTemp", ".tmpIFP");
-            try (FileOutputStream fos = new FileOutputStream(f); InputStream is = Channels.newInputStream(container.channel())) {
+            try (OutputStream fos = Files.newOutputStream(f.toPath()); InputStream is = Channels.newInputStream(container.channel())) {
                 IOUtils.copyLarge(is, fos);
             }
             // Annoyingly hard to detect file modification, as it can take < 1 ms
