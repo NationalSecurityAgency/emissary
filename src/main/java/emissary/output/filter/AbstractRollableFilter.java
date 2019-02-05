@@ -52,7 +52,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * @return the byte representation of the payload(s)
      * @throws IOException if there is an issue outputting the data
      */
-    abstract byte[] convert(final List<IBaseDataObject> list, final Map<String, Object> params) throws IOException;
+    public abstract byte[] convert(final List<IBaseDataObject> list, final Map<String, Object> params) throws IOException;
 
     /**
      * Initialization phase hook for the filter with provided filter configuration
