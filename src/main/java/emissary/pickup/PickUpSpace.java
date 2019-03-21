@@ -82,7 +82,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
     @Override
     public void openSpace(String spaceName) {
         if (openSpaceNames.contains(spaceName)) {
-            logger.info("Open spaces already includes " + spaceName);
+            logger.debug("Open spaces already includes " + spaceName);
         } else {
             openSpaceNames.add(spaceName);
             numConsecutiveTakeErrors.put(spaceName, 0);
