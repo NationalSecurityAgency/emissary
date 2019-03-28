@@ -61,6 +61,11 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      */
     default void invalidateCache() {}
 
+    /**
+     * {@inheritDoc}
+     * 
+     * @deprecated Use {@link #length()} instead.
+     */
     @Deprecated
     @Override
     default int dataLength() {

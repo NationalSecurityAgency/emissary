@@ -25,7 +25,6 @@ import javax.annotation.PreDestroy;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import jline.internal.Log;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +102,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
             }
             return result;
         } catch (IOException ioEx) {
-            Log.error("Could not read data from disk.", ioEx);
+            LOG.error("Could not read data from disk.", ioEx);
             throw new DataException(ioEx);
         }
     }
@@ -138,7 +137,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
         try (SeekableByteChannel dataChannel = newChannel(newData.length)) {
             dataChannel.write(ByteBuffer.wrap(newData, offset, length));
         } catch (IOException ioEx) {
-            Log.error("Could not write data to disk.", ioEx);
+        	LOG.error("Could not write data to disk.", ioEx);
             throw new DataException(ioEx);
         }
     }
@@ -155,7 +154,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
             invalidateCache();
             return getFileChannel().map(MapMode.READ_WRITE, 0, length());
         } catch (IOException e) {
-            Log.error("Could not map FileChannel to ByteBuffer.", e);
+        	LOG.error("Could not map FileChannel to ByteBuffer.", e);
             throw new DataException(e);
         }
     }
@@ -195,7 +194,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
                 OutputStream out = Channels.newOutputStream(c.newChannel(length()))) {
             IOUtils.copyLarge(in, out);
         } catch (IOException e) {
-            Log.error("Could not copy data for clone.", e);
+        	LOG.error("Could not copy data for clone.", e);
             throw new DataException(e);
         }
         return c;
