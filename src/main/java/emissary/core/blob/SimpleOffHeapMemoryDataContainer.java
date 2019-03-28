@@ -38,11 +38,11 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
      * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector} 's
      * reference to the pointer is always correct.
      */
-    private transient AtomicLong memoryHandle = new AtomicLong(0L);
+    private final transient AtomicLong memoryHandle = new AtomicLong(0L);
     /**
      * The amount of memory actually allocated. May be larger that the current data size;
      */
-    private transient AtomicLong allocatedBytes = new AtomicLong(0L);
+    private final transient AtomicLong allocatedBytes = new AtomicLong(0L);
     /**
      * The number of bytes actually used.
      */
@@ -66,15 +66,7 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
 
     @Override
     public void setData(byte[] newData) {
-        if (newData == null || newData.length == 0) {
-            if (memoryHandle.get() != 0L) {
-                Native.free(memoryHandle.get());
-                memoryHandle.set(0L);
-                allocatedBytes.set(0L);
-            }
-            return;
-        }
-        setData(newData, 0, newData.length);
+        setData(newData, 0, newData != null ? newData.length : 0);
     }
 
     @Override
