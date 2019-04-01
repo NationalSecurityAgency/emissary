@@ -74,7 +74,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /** Metadata view name */
     public static final String METADATA_VIEW_NAME = "Metadata";
-    public static final String METADATA_VIEW = "." + METADATA_VIEW_NAME;
 
     /* alternate views to NOT output if only a file type/form is specified */
     protected Set<String> blacklist = Collections.emptySet();
@@ -111,7 +110,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         initializeOutputTypes(this.filterConfig);
     }
 
-    private final void loadFilterCondition(final Configurator parentConfig) {
+    private void loadFilterCondition(final Configurator parentConfig) {
         this.filterConditionSpec = parentConfig.findStringEntry("FILTER_CONDITION_" + getFilterName(), null);
 
         // format FILTER_CONDITION_<filtername> = profilename:clazz just like dropoff filter config
@@ -139,7 +138,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
             try {
                 final Object filterConditionObj = emissary.core.Factory.create(clazz);
 
-                if (filterConditionObj != null && filterConditionObj instanceof IFilterCondition) {
+                if (filterConditionObj instanceof IFilterCondition) {
                     this.filterCondition = (IFilterCondition) filterConditionObj;
                     // initialize using the config
                     filterCondition.initialize(filterConfig);
@@ -208,7 +207,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
             return;
         }
 
-        final List<String> configPreferences = new ArrayList<String>();
+        final List<String> configPreferences = new ArrayList<>();
 
         if (getFilterName() != null) {
             configPreferences.add(this.getClass().getPackage().getName() + "." + getFilterName() + ConfigUtil.CONFIG_FILE_ENDING);
@@ -235,7 +234,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params) {
         // Important to process them in order, if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
+            list.sort(new emissary.util.ShortNameComparator());
             params.put(PRE_SORTED, Boolean.TRUE);
         }
 
@@ -258,7 +257,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
         // Important to process them in order, if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
+            list.sort(new emissary.util.ShortNameComparator());
             params.put(PRE_SORTED, Boolean.TRUE);
         }
 
@@ -384,13 +383,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected String getCharset(final IBaseDataObject d, final String defaultCharset) {
         String lang = d.getFontEncoding();
-        if (lang == null || lang.toUpperCase().indexOf("ASCII") != -1 || lang.toUpperCase().indexOf("8859-1") != -1) {
+        if (lang == null || lang.toUpperCase().contains("ASCII") || lang.toUpperCase().contains("8859-1")) {
             final String s = d.getStringParameter("HTML_CHARSET");
             if (s != null) {
                 lang = s;
             }
         }
-        if (lang == null || lang.toUpperCase().indexOf("ASCII") != -1 || lang.toUpperCase().indexOf("8859-1") != -1) {
+        if (lang == null || lang.toUpperCase().contains("ASCII") || lang.toUpperCase().contains("8859-1")) {
             final String s = d.getStringParameter("MIME_CHARSET");
             if (s != null) {
                 lang = s;
@@ -428,7 +427,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
         if (canOutput && this.logger.isDebugEnabled()) {
-            final Set<String> outputFor = new HashSet<String>();
+            final Set<String> outputFor = new HashSet<>();
             for (final String s : this.outputTypes) {
                 if (types.contains(s)) {
                     outputFor.add(s);
@@ -456,7 +455,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     protected Set<String> getTypesToCheckForNamedView(final IBaseDataObject d, final String viewName) {
-        final Set<String> checkTypes = new HashSet<String>();
+        final Set<String> checkTypes = new HashSet<>();
         final String lang = this.dropOffUtil.getLanguage(d);
         final String fileType = this.dropOffUtil.getFileType(d.getCookedParameters());
         final String currentForm = d.currentForm();
@@ -485,6 +484,11 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 checkTypes.add(lang + "." + currentForm + "." + viewName);
             }
         }
+
+        if (viewName.contains(":")) {
+            checkTypes.add(fileType + "." + viewName.substring(0, viewName.indexOf(':')));
+        }
+
         this.logger.debug("Types to be checked for named view {}: {}", viewName, checkTypes);
         return checkTypes;
     }
@@ -516,6 +520,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     @Override
     public Collection<String> getOutputTypes() {
-        return new HashSet<String>(this.outputTypes);
+        return new HashSet<>(this.outputTypes);
     }
 }
