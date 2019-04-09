@@ -54,7 +54,7 @@ public class WorkSpaceClientOpenWorkSpaceAction {
             throw new IllegalArgumentException("No client place found using name " + placeName);
         }
 
-        logger.info("Notified {} to open space at {}", placeName, spaceName);
+        logger.debug("Notified {} to open space at {}", placeName, spaceName);
         place.openSpace(spaceName);
         return Response.ok().entity("Successfully opened the workspace").build();
     }
