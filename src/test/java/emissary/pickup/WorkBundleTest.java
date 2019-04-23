@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import org.junit.Test;
@@ -26,9 +27,11 @@ public class WorkBundleTest extends UnitTest {
         assertEquals("Eat prefix stored", "/eat/prefix", w3.getEatPrefix());
 
         w3.addFileName("file1.txt");
+        w3.addTransactionId(UUID.randomUUID().toString());
         w3.addFileName("file2.txt");
         w3.addFileName("file3.txt");
         assertEquals("Size of file names", 3, w3.size());
+        assertEquals("Size of transaction id list", 1, w3.getTransactionIdList().size());
 
         w3.addFileNames(new String[] {"file4.txt", "file5.txt", "file6.txt"});
         assertEquals("Size of file names", 6, w3.size());
@@ -48,6 +51,7 @@ public class WorkBundleTest extends UnitTest {
         w3.setSentTo("machine1");
         w3.setPriority(3);
         assertEquals("Error count return should be incremented", 1, w3.incrementErrorCount());
+        assertEquals("Files processed count return should be incremented", 1, w3.incrementFilesProcessedCount());
 
         WorkBundle w4 = new WorkBundle(w3);
         assertEquals("Copy constructor", "/output/root", w4.getOutputRoot());
@@ -57,6 +61,7 @@ public class WorkBundleTest extends UnitTest {
         assertEquals("Copy constructor", 8, w4.size());
         assertEquals("Copy of sentTo", "machine1", w4.getSentTo());
         assertEquals("Copy of errorCount", 1, w4.getErrorCount());
+        assertEquals("Copy of filesProcessedCount", 1, w4.getFilesProcessedCount());
         assertEquals("Copy of priority", w3.getPriority(), w4.getPriority());
         assertEquals("Copy of simple mode flag", w3.getSimpleMode(), w4.getSimpleMode());
 
@@ -79,6 +84,8 @@ public class WorkBundleTest extends UnitTest {
         w.setCaseId("caseid");
         w.addFileName("file1.txt", 15L, 4L);
         w.addFileName("<file2.txt&foo=bar>", 7L, 10L);
+        String txid = UUID.randomUUID().toString();
+        w.addTransactionId(txid);
         w.setPriority(1);
         w.setSimpleMode(false);
 
@@ -101,10 +108,12 @@ public class WorkBundleTest extends UnitTest {
         assertEquals("Priority across xml", w.getPriority(), w2.getPriority());
         assertEquals("Simple mode across xml", w.getSimpleMode(), w2.getSimpleMode());
         List<String> w2l = w2.getFileNameList();
+        List<String> txidList = w2.getTransactionIdList();
         assertNotNull("File list from xml", w2l);
         assertEquals("Size of file list from xml", 2, w2l.size());
         assertEquals("File values from xml", "file1.txt", w2l.get(0));
         assertEquals("File values from xml", "<file2.txt&foo=bar>", w2l.get(1));
+        assertEquals("Transaction Id from xml", txid, txidList.get(0));
     }
 
     @Test

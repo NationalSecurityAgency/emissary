@@ -48,13 +48,22 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     boolean simpleMode = false;
 
     // List of filenames comprising this bundle
-    List<String> fileNameList = new ArrayList<String>();
+    List<String> fileNameList = new ArrayList<>();
+
+    // List of file transaction IDs
+    List<String> transactionIdList = new ArrayList<>();
+
+    // array of file parse status
+    boolean[] failedToParseFile;
 
     // Where being processed
     String sentTo;
 
     // Cumulative errors in processing tries
     int errorCount = 0;
+
+    // number of files "successfully" processed
+    int filesProcessedCount = 0;
 
     /**
      * The oldest file in the bundle in millis since epoch
@@ -101,6 +110,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         this.caseId = that.getCaseId();
         this.sentTo = that.sentTo;
         this.errorCount = that.errorCount;
+        this.filesProcessedCount = that.filesProcessedCount;
         this.priority = that.getPriority();
         this.simpleMode = that.getSimpleMode();
         this.oldestFileModificationTime = that.oldestFileModificationTime;
@@ -272,6 +282,34 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     }
 
     /**
+     * Gets the list of file transaction Ids
+     * 
+     * @return the list of transaction Ids
+     */
+    public List<String> getTransactionIdList() {
+        return this.transactionIdList;
+    }
+
+    /**
+     * Add the transaction id to the list
+     * 
+     * @param id the id to add
+     */
+    public void addTransactionId(String id) {
+        this.transactionIdList.add(id);
+    }
+
+    /**
+     * Get a transaction id by index
+     * 
+     * @param index the index
+     * @return the transaction id by index
+     */
+    public String getTransactionId(int index) {
+        return this.transactionIdList.get(index);
+    }
+
+    /**
      * Gets the value of caseId
      * 
      * @return the value of caseId
@@ -301,6 +339,59 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      */
     public String getSentTo() {
         return sentTo;
+    }
+
+    /**
+     * Initialize failedToParseFileArray array
+     * 
+     * @param size size of array to initialize
+     */
+    public void initFailedToParseFileArray(int size) {
+        this.failedToParseFile = new boolean[size];
+    }
+
+    /**
+     * Checks to see if file failed to parse or not.
+     * 
+     * @param index the index to check
+     * @return boolean of whether file failed to parse
+     */
+    public boolean failedToParseFile(int index) {
+        return this.failedToParseFile[index];
+    }
+
+    /**
+     * Set status of failed to parse file to true.
+     * 
+     * @param index the index to set
+     */
+    public void setFailedToParseFile(int index) {
+        this.failedToParseFile[index] = true;
+    }
+
+    /**
+     * Get the files processsed count
+     * 
+     * @return number of files processed
+     */
+    public int getFilesProcessedCount() {
+        return filesProcessedCount;
+    }
+
+    /**
+     * Increment the files processed count
+     * 
+     * @return the number of files processed
+     */
+    public int incrementFilesProcessedCount() {
+        return ++filesProcessedCount;
+    }
+
+    /**
+     * Set the number of files processed count
+     */
+    public void setFilesProcessedCount(int val) {
+        this.filesProcessedCount = val;
     }
 
     /**
@@ -401,7 +492,8 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     @Override
     public String toString() {
         return "WorkBundle[id=" + getBundleId() + ", pri=" + getPriority() + ", files=" + fileNameList.toString() + ", eatPrefix=" + getEatPrefix()
-                + ", outputRoot=" + getOutputRoot() + ", sentTo=" + getSentTo() + ", errorCount=" + getErrorCount() + ", totalFileSize="
+                + ", outputRoot=" + getOutputRoot() + ", sentTo=" + getSentTo() + ", filesProcessedCount=" + getFilesProcessedCount()
+                + ", errorCount=" + getErrorCount() + ", totalFileSize="
                 + getTotalFileSize() + ", oldestModTime=" + getOldestFileModificationTime() + ", youngModTime=" + getYoungestFileModificationTime()
                 + ", simple=" + getSimpleMode() + ", caseId=" + getCaseId() + ", size=" + size() + "]";
     }
@@ -414,6 +506,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         root.addContent(JDOMUtil.simpleElement("caseId", getCaseId()));
         root.addContent(JDOMUtil.simpleElement("sentTo", getSentTo()));
         root.addContent(JDOMUtil.simpleElement("errorCount", getErrorCount()));
+        root.addContent(JDOMUtil.simpleElement("filesProcessedCount", getFilesProcessedCount()));
         root.addContent(JDOMUtil.simpleElement("priority", getPriority()));
         root.addContent(JDOMUtil.simpleElement("simpleMode", getSimpleMode()));
         root.addContent(JDOMUtil.simpleElement("oldestFileModificationTime", getOldestFileModificationTime()));
@@ -421,6 +514,9 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         root.addContent(JDOMUtil.simpleElement("totalFileSize", getTotalFileSize()));
         for (String fn : fileNameList) {
             root.addContent(JDOMUtil.simpleElement("fileName", fn));
+        }
+        for (String txid : transactionIdList) {
+            root.addContent(JDOMUtil.simpleElement("transactionId", txid));
         }
 
         Document jdom = new Document(root);
@@ -496,9 +592,18 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         if (serr != null && serr.length() > 0) {
             wb.setErrorCount(Integer.parseInt(serr));
         }
+        String sFilesProcessedCount = root.getChildTextTrim("filesProcessedCount");
+        if (sFilesProcessedCount != null && sFilesProcessedCount.length() > 0) {
+            wb.setFilesProcessedCount(Integer.parseInt(sFilesProcessedCount));
+        }
         for (Element fn : root.getChildren("fileName")) {
             wb.addFileName(fn.getTextTrim());
         }
+        for (Element txid : root.getChildren("transactionId")) {
+            wb.addTransactionId(txid.getTextTrim());
+        }
+        wb.initFailedToParseFileArray(wb.getFileNameList().size());
+
         return wb;
     }
 }
