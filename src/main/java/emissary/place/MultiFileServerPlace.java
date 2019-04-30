@@ -99,17 +99,17 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
     protected void addParentInformation(IBaseDataObject parent, List<IBaseDataObject> children, boolean nullifyFileType) {
-        int siblingCount = 1;
+        int birthOrder = 1;
         if (children != null) {
-            int total = children.size();
+            int totalNumSiblings = children.size();
             for (IBaseDataObject child : children) {
                 if (child == null) {
                     logger.warn("addParentInformation with null child!");
                     continue;
                 }
                 addParentInformation(parent, child, nullifyFileType);
-                child.setBirthOrder(siblingCount++);
-                child.setNumSiblings(total);
+                child.setBirthOrder(birthOrder++);
+                child.setNumSiblings(totalNumSiblings);
             }
         }
     }
