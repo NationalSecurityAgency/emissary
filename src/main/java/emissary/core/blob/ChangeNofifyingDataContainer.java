@@ -62,7 +62,7 @@ public class ChangeNofifyingDataContainer implements IDataContainer {
     @Override
     public SeekableByteChannel channel() throws IOException {
         WrappedSeekableByteChannel<SeekableByteChannel> sbc = new WrappedSeekableByteChannel<>(dc.channel());
-        sbc.setCloseAction(x -> updateAction.onTrigger(ChangeNofifyingDataContainer.this));
+        sbc.setWriteAction((dc) -> sbc.setCloseAction(x -> updateAction.onTrigger(ChangeNofifyingDataContainer.this)));
         return sbc;
     }
 
