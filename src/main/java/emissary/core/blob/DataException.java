@@ -10,7 +10,7 @@ import emissary.core.IBaseDataObject;
 public class DataException extends RuntimeException {
 
     /**
-     * 
+     * {@link java.io.Serializable}
      */
     private static final long serialVersionUID = -7025870592738740195L;
 
