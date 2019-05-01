@@ -11,7 +11,7 @@ import java.nio.channels.SeekableByteChannel;
 public class ChangeNofifyingDataContainer implements IDataContainer {
 
     /**
-     * 
+     * {@link java.io.Serializable}
      */
     private static final long serialVersionUID = 4466141643920488464L;
 
@@ -84,7 +84,7 @@ public class ChangeNofifyingDataContainer implements IDataContainer {
     }
 
     /**
-     * Notification that the action this was registered against has occurred.
+     * Functional interface called when action this was registered against has occurred.
      *
      * @param <T>
      */
