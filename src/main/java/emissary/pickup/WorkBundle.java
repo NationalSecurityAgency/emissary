@@ -47,8 +47,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     // Flag to note if the bundle is in simple mode
     boolean simpleMode = false;
 
-    // List of filenames comprising this bundle
-    List<String> fileNameList = new ArrayList<String>();
+    List<WorkUnit> workUnitList = new ArrayList<>();
 
     // Where being processed
     String sentTo;
@@ -106,8 +105,8 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         this.oldestFileModificationTime = that.oldestFileModificationTime;
         this.youngestFileModificationTime = that.youngestFileModificationTime;
         this.totalFileSize = that.totalFileSize;
-        if (that.size() > 0) {
-            this.addFileNames(that.getFileNameList());
+        if (that.getWorkUnitList().size() > 0) {
+            this.addWorkUnits(that.getWorkUnitList());
         }
         resetBundleId();
     }
@@ -184,43 +183,43 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     }
 
     /**
-     * Gets the list of file names
+     * Gets the list of WorkUnits in bundle
      * 
-     * @return the string values of filenames
+     * @return the list of WorkUnits
      */
-    public List<String> getFileNameList() {
-        return new ArrayList<String>(fileNameList);
+    public List<WorkUnit> getWorkUnitList() {
+        return new ArrayList<>(workUnitList);
     }
 
     /**
-     * Gets an iterator over file names
+     * Gets an iterator over work units
      * 
-     * @return iterator of String filename values
+     * @return iterator of WorkUnit
      */
-    public Iterator<String> getFileNameIterator() {
-        return this.fileNameList.iterator();
+    public Iterator<WorkUnit> getWorkUnitIterator() {
+        return workUnitList.iterator();
     }
 
     /**
-     * Add a file to the list, without adjusting file modification time tracking.
-     * 
-     * @param file string file name consistent with outputRoot
-     * @return number of files in this set after update
+     * Add a workUnit to the list.
+     *
+     * @param workUnit the workUnit to add
+     * @return number of WorkUnits in list after add
      */
-    public int addFileName(String file) {
-        fileNameList.add(file);
+    public int addWorkUnit(WorkUnit workUnit) {
+        workUnitList.add(workUnit);
         return size();
     }
 
     /**
-     * Add a file to the list
+     * Add a workunit to the list
      * 
-     * @param file string file name consistent with outputRoot
+     * @param workUnit the workUnit to add
      * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
      * @return number of files in this set after update
      */
-    public int addFileName(String file, long fileModificationTimeInMillis, long fileSize) {
-        fileNameList.add(file);
+    public int addWorkUnit(WorkUnit workUnit, long fileModificationTimeInMillis, long fileSize) {
+        workUnitList.add(workUnit);
         if (fileModificationTimeInMillis < oldestFileModificationTime) {
             oldestFileModificationTime = fileModificationTimeInMillis;
         }
@@ -232,6 +231,59 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
     }
 
     /**
+     * Add from a list, without adjusting file modification time tracking.
+     */
+    protected int addWorkUnits(List<WorkUnit> list) { // This appears to only be used by unit tests and the copy constructor
+        workUnitList.addAll(list);
+        return workUnitList.size();
+    }
+
+    /**
+     * Gets the list of file names
+     * 
+     * @return the string values of filenames
+     */
+    public List<String> getFileNameList() {
+        ArrayList<String> fileNameList = new ArrayList<>(workUnitList.size());
+        for (WorkUnit workUnit : workUnitList) {
+            fileNameList.add(workUnit.getFileName());
+        }
+
+        return fileNameList;
+    }
+
+    /**
+     * Gets an iterator over file names
+     * 
+     * @return iterator of String filename values
+     */
+    public Iterator<String> getFileNameIterator() {
+        return getFileNameList().iterator();
+    }
+
+    /**
+     * Add a file to the list, without adjusting file modification time tracking.
+     * 
+     * @param file string file name consistent with outputRoot
+     * @return number of files in this set after update
+     */
+    public int addFileName(String file) {
+        workUnitList.add(new WorkUnit(file));
+        return size();
+    }
+
+    /**
+     * Add a file to the list
+     * 
+     * @param file string file name consistent with outputRoot
+     * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
+     * @return number of files in this set after update
+     */
+    public int addFileName(String file, long fileModificationTimeInMillis, long fileSize) {
+        return addWorkUnit(new WorkUnit(file), fileModificationTimeInMillis, fileSize);
+    }
+
+    /**
      * Add files to the list, without adjusting file modification time tracking.
      * 
      * @param file string file names consistent with outputRoot
@@ -239,7 +291,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      */
     protected int addFileNames(String[] file) { // This appears to only be used by unit tests
         for (int i = 0; file != null && i < file.length; i++) {
-            fileNameList.add(file[i]);
+            workUnitList.add(new WorkUnit(file[i]));
         }
         return size();
     }
@@ -249,7 +301,9 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      */
     protected int addFileNames(List<String> list) { // This appears to only be used by unit tests and the copy
                                                     // constructor
-        fileNameList.addAll(list);
+        for (String file : list) {
+            workUnitList.add(new WorkUnit(file));
+        }
         return size();
     }
 
@@ -257,7 +311,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      * Get the number of files contained
      */
     public int size() {
-        return fileNameList.size();
+        return workUnitList.size();
     }
 
     /**
@@ -265,7 +319,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      */
     protected void clearFiles() {
         // This is only used for testing
-        fileNameList.clear();
+        workUnitList.clear();
         oldestFileModificationTime = Long.MAX_VALUE;
         youngestFileModificationTime = Long.MIN_VALUE;
         totalFileSize = 0L;
@@ -400,7 +454,8 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      */
     @Override
     public String toString() {
-        return "WorkBundle[id=" + getBundleId() + ", pri=" + getPriority() + ", files=" + fileNameList.toString() + ", eatPrefix=" + getEatPrefix()
+        return "WorkBundle[id=" + getBundleId() + ", pri=" + getPriority() + ", files=" + getFileNameList().toString() + ", eatPrefix="
+                + getEatPrefix()
                 + ", outputRoot=" + getOutputRoot() + ", sentTo=" + getSentTo() + ", errorCount=" + getErrorCount() + ", totalFileSize="
                 + getTotalFileSize() + ", oldestModTime=" + getOldestFileModificationTime() + ", youngModTime=" + getYoungestFileModificationTime()
                 + ", simple=" + getSimpleMode() + ", caseId=" + getCaseId() + ", size=" + size() + "]";
@@ -419,8 +474,17 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         root.addContent(JDOMUtil.simpleElement("oldestFileModificationTime", getOldestFileModificationTime()));
         root.addContent(JDOMUtil.simpleElement("youngestFileModificationTime", getYoungestFileModificationTime()));
         root.addContent(JDOMUtil.simpleElement("totalFileSize", getTotalFileSize()));
-        for (String fn : fileNameList) {
-            root.addContent(JDOMUtil.simpleElement("fileName", fn));
+
+        for (WorkUnit wu : workUnitList) {
+            Element workunit = new Element("workUnit");
+            workunit.addContent(JDOMUtil.simpleElement("workFileName", wu.getFileName()));
+            if (wu.getTransactionId() != null) {
+                workunit.addContent(JDOMUtil.simpleElement("transactionId", wu.getTransactionId()));
+            }
+            workunit.addContent(JDOMUtil.simpleElement("failedToParse", wu.failedToParse()));
+            workunit.addContent(JDOMUtil.simpleElement("failedToProcess", wu.failedToProcess()));
+
+            root.addContent(workunit);
         }
 
         Document jdom = new Document(root);
@@ -434,7 +498,7 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
      * @return the constructed WorkBundle or null on error
      */
     public static WorkBundle buildWorkBundle(String xml) {
-        Document jdoc = null;
+        Document jdoc;
         try {
             jdoc = JDOMUtil.createDocument(xml, false);
             return buildWorkBundle(jdoc);
@@ -496,9 +560,15 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
         if (serr != null && serr.length() > 0) {
             wb.setErrorCount(Integer.parseInt(serr));
         }
-        for (Element fn : root.getChildren("fileName")) {
-            wb.addFileName(fn.getTextTrim());
+
+        for (Element wu : root.getChildren("workUnit")) {
+            String filename = wu.getChildTextTrim("workFileName");
+            String transactionId = wu.getChildTextTrim("transactionId");
+            boolean failedToParse = Boolean.valueOf(wu.getChildTextTrim("failedToParse"));
+            boolean failedToProcess = Boolean.valueOf(wu.getChildTextTrim("failedToProcess"));
+            wb.addWorkUnit(new WorkUnit(filename, transactionId, failedToParse, failedToProcess));
         }
+
         return wb;
     }
 }
