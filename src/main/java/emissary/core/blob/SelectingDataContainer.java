@@ -1,6 +1,11 @@
 package emissary.core.blob;
 
+import java.io.Externalizable;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
@@ -18,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * {@link IDataContainer} proxy for another {@link IDataContainer} appropriate for the size of data being handled.
  *
  */
-public class SelectingDataContainer implements IDataContainer {
+public class SelectingDataContainer implements IDataContainer, Externalizable {
 
     private static final Logger LOG = LoggerFactory.getLogger(SelectingDataContainer.class);
 
@@ -234,6 +239,28 @@ public class SelectingDataContainer implements IDataContainer {
      */
     IDataContainer getActualContainer() {
         return this.actualContainer;
+    }
+
+    /**
+     * Allow the de-serialising instance to determine the implementation used, rather than assuming the config will be
+     * identical.
+     */
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        try (InputStream channel = Channels.newInputStream(channel())) {
+            IOUtils.copyLarge(channel, (OutputStream) out);
+        }
+    }
+
+    /**
+     * Allow this instance to determine the implementation used, rather than assuming the config will be identical from the
+     * serialisation.
+     */
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        try (SeekableByteChannel channel = newChannel(in.available())) {
+            IOUtils.copyLarge((InputStream) in, Channels.newOutputStream(channel));
+        }
     }
 
 }
