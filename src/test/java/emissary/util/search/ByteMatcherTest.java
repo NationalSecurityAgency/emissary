@@ -33,6 +33,12 @@ public class ByteMatcherTest extends UnitTest {
     }
 
     @Test
+    public void testEmptyConstructor() {
+        ByteMatcher byteMatcher = new ByteMatcher();
+        Assert.assertEquals(-1, byteMatcher.indexOf("a token, hadoken"));
+    }
+
+    @Test
     public void testResetByteMatcher() {
         String localDataOne = "The quick brown fox jumped over the lazy dog";
         String localDataTwo = "But the faster dog ate the slower fox.";
