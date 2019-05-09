@@ -15,6 +15,10 @@ public class KeywordScanner {
     private int lastPosition = 0;
     private boolean caseSensitive = true;
 
+    public KeywordScanner() {
+        this(new byte[0]);
+    }
+
     /**
      * Initializes a new {@code KeywordScanner} object with the provided data bytes.
      * 

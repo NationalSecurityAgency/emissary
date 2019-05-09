@@ -823,4 +823,40 @@ public interface IBaseDataObject extends IOriginalDataContainer {
      * @param outputable true if this tree is not able to be output, false otherwise
      */
     void setOutputable(boolean outputable);
+
+    /**
+     * @return the unique identifier of the IBaseDataObject
+     */
+    String getId();
+
+    /**
+     * Set the unique identifier of the IBaseDataObject
+     *
+     * @param id the unique identifier of the IBaseDataObject
+     */
+    void setId(String id);
+
+    /**
+     * @return the unique identifier of the {@link emissary.pickup.WorkBundle}
+     */
+    String getWorkBundleId();
+
+    /**
+     * Set the unique identifier of the {@link emissary.pickup.WorkBundle}
+     *
+     * @param workBundleId the unique identifier of the {@link emissary.pickup.WorkBundle}
+     */
+    void setWorkBundleId(String workBundleId);
+
+    /**
+     * @return the unique identifier of the transaction
+     */
+    String getTransactionId();
+
+    /**
+     * Set the unique identifier of the transaction
+     * 
+     * @param transactionId the unique identifier of the transaction
+     */
+    void setTransactionId(String transactionId);
 }

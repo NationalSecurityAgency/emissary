@@ -49,18 +49,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Terminal portion of theFileName
      */
-    private String shortName;
+    protected String shortName;
 
     /**
      * The internal identifier, generated for each constructed object
      */
-    private final UUID internalId = UUID.randomUUID();
+    protected UUID internalId = UUID.randomUUID();
 
     /**
      * The currentForm is a stack of the itinerary items. The contents of the list are {@link String} and map to the
      * dataType portion of the keys in the emissary.DirectoryPlace.
      */
-    private List<String> currentForm = new ArrayList<>();
+    protected List<String> currentForm = new ArrayList<>();
 
     /**
      * History of processing errors. Lines of text are accumulated from String and returned in-toto as a String.
@@ -142,7 +142,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The timestamp for when the BaseDataObject was created. Used in data provenance tracking.
      */
-    private Date creationTimestamp;
+    protected Date creationTimestamp;
 
     /**
      * The extracted records, if any
@@ -153,6 +153,21 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Check to see if this tree is able to be written out.
      */
     protected boolean outputable = true;
+
+    /**
+     * The unique identifier of this object
+     */
+    protected String id;
+
+    /**
+     * The identifier of the {@link emissary.pickup.WorkBundle}
+     */
+    protected String workBundleId;
+
+    /**
+     * The identifier used to track the object through the system
+     */
+    protected String transactionId;
 
     /**
      * Create an empty BaseDataObject.
@@ -1309,5 +1324,35 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setOutputable(boolean outputable) {
         this.outputable = outputable;
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getWorkBundleId() {
+        return workBundleId;
+    }
+
+    @Override
+    public void setWorkBundleId(String workBundleId) {
+        this.workBundleId = workBundleId;
+    }
+
+    @Override
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    @Override
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }
