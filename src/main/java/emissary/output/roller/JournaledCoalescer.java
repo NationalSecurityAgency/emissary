@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * FileNameGenerator.
  *
  */
-public class JournaledCoalescer implements Rollable {
+public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     private static final Logger LOG = LoggerFactory.getLogger(JournaledCoalescer.class);
     /**
@@ -202,7 +202,7 @@ public class JournaledCoalescer implements Rollable {
         try {
             this.rolling = true;
             Collection<Path> paths = initializeNextPool();
-            processPaths(paths);
+            coalesce(paths);
         } catch (IOException ex) {
             LOG.error("Error occurred during roll.", ex);
         } catch (InterruptedException ex) {
@@ -212,7 +212,13 @@ public class JournaledCoalescer implements Rollable {
         }
     }
 
-    private void processPaths(Collection<Path> journalPaths) throws IOException {
+    @Override
+    public void coalesce() throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void coalesce(Collection<Path> journalPaths) throws IOException {
         if (journalPaths.isEmpty()) {
             // nothing to do...
             return;
