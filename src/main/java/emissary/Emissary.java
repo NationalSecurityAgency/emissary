@@ -16,20 +16,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
 import com.google.common.annotations.VisibleForTesting;
-import emissary.command.AgentsCommand;
-import emissary.command.Banner;
-import emissary.command.EmissaryCommand;
-import emissary.command.EnvCommand;
-import emissary.command.FeedCommand;
-import emissary.command.HelpCommand;
-import emissary.command.PeersCommand;
-import emissary.command.PoolCommand;
-import emissary.command.RunCommand;
-import emissary.command.ServerCommand;
-import emissary.command.StopCommand;
-import emissary.command.TopologyCommand;
-import emissary.command.VersionCommand;
-import emissary.command.WhatCommand;
+import emissary.command.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +39,7 @@ public class Emissary {
         List<Class<? extends EmissaryCommand>> cmds =
                 Arrays.asList(ServerCommand.class, HelpCommand.class, WhatCommand.class, TopologyCommand.class, FeedCommand.class,
                         AgentsCommand.class, PoolCommand.class, VersionCommand.class, RunCommand.class, EnvCommand.class, StopCommand.class,
-                        PeersCommand.class);
+                        PeersCommand.class, PauseCommand.class, UnpauseCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
         for (Class<? extends EmissaryCommand> clz : cmds) {
             EmissaryCommand cmd;

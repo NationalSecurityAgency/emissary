@@ -19,6 +19,7 @@ public abstract class QueServer extends Thread {
 
     // Loop control
     protected boolean timeToShutdown = false;
+    protected boolean paused = false;
 
     // The queue this thread will monitor
     protected final PickupQueue queue;
@@ -71,6 +72,18 @@ public abstract class QueServer extends Thread {
     public void run() {
         logger.debug("Starting the QueServer run method");
         while (!timeToShutdown) {
+
+            // check to see if we want to stop taking work
+            if (isPaused()) {
+                try {
+                    logger.info("QueServer currently paused, sleeping for {}", pollingInterval);
+                    Thread.sleep(pollingInterval);
+                } catch (InterruptedException ignore) {
+                    // empty catch block
+                }
+                continue;
+            }
+
             // Process something on the queue
             try {
                 checkQue();
@@ -153,6 +166,28 @@ public abstract class QueServer extends Thread {
      */
     public abstract boolean processQueueItem(WorkBundle path);
 
+    /**
+     * Stop taking work off the queue
+     */
+    public void pause() {
+        paused = true;
+    }
+
+    /**
+     * Reusume taking work off the queue
+     */
+    public void unpause() {
+        paused = false;
+    }
+
+    /**
+     * Check to see if the current queue is paused
+     *
+     * @return true if work is paused, false otherwise
+     */
+    public boolean isPaused() {
+        return paused;
+    }
 
     /**
      * Schedule this thread to stop soon
