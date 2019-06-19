@@ -1,6 +1,7 @@
 package emissary.pickup;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,9 @@ public abstract class QueServer extends Thread {
     // Poll interval in millis
     public static final long DEFAULT_POLLING_INTERVAL = 1000L;
     protected long pollingInterval = DEFAULT_POLLING_INTERVAL;
+
+    public static final long DEFAULT_PAUSE_INTERVAL = TimeUnit.MINUTES.toMillis(1);
+    protected long pauseInterval = DEFAULT_PAUSE_INTERVAL;
 
     // Loop control
     protected boolean timeToShutdown = false;
@@ -76,8 +80,8 @@ public abstract class QueServer extends Thread {
             // check to see if we want to stop taking work
             if (isPaused()) {
                 try {
-                    logger.info("QueServer currently paused, sleeping for {}", pollingInterval);
-                    Thread.sleep(pollingInterval);
+                    logger.info("QueServer currently paused, sleeping for {}", getPauseInterval());
+                    Thread.sleep(getPauseInterval());
                 } catch (InterruptedException ignore) {
                     // empty catch block
                 }
@@ -178,6 +182,15 @@ public abstract class QueServer extends Thread {
      */
     public void unpause() {
         paused = false;
+    }
+
+    /**
+     * Get the time to sleep before checking if the que server has been unpaused
+     *
+     * @return the pause check interval
+     */
+    public long getPauseInterval() {
+        return pauseInterval;
     }
 
     /**
