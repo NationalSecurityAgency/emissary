@@ -8,11 +8,13 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 
 import org.apache.commons.lang.SerializationUtils;
@@ -450,7 +452,7 @@ public class AllDataContainerTest {
         cont.setData("Original Data that is reasonably long".getBytes(UTF_8));
         try (IFileProvider prov = cont.getFileProvider()) {
             File file = prov.getFile();
-            try (FileOutputStream fos = new FileOutputStream(file, true)) {
+            try (OutputStream fos = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
                 fos.write(" Appended Text".getBytes(UTF_8));
             }
         }
@@ -462,7 +464,7 @@ public class AllDataContainerTest {
         cont.setData("Original Data that is reasonably long".getBytes(UTF_8));
         try (IFileProvider prov = cont.getFileProvider()) {
             File file = prov.getFile();
-            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+            try (OutputStream fos = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
                 fos.write("Replacement Text".getBytes(UTF_8));
             }
         }
@@ -474,7 +476,7 @@ public class AllDataContainerTest {
         cont.setData("A".getBytes(UTF_8));
         try (IFileProvider prov = cont.getFileProvider()) {
             File file = prov.getFile();
-            try (FileOutputStream fos = new FileOutputStream(file, true)) {
+            try (OutputStream fos = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.APPEND)) {
                 fos.write(" Appended Text".getBytes(UTF_8));
             }
         }
@@ -486,7 +488,7 @@ public class AllDataContainerTest {
         cont.setData("A".getBytes(UTF_8));
         try (IFileProvider prov = cont.getFileProvider()) {
             File file = prov.getFile();
-            try (FileOutputStream fos = new FileOutputStream(file, false)) {
+            try (OutputStream fos = Files.newOutputStream(file.toPath(), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
                 fos.write("Replacement Text".getBytes(UTF_8));
             }
         }
