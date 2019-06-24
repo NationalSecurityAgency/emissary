@@ -14,12 +14,16 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PreDestroy;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import emissary.roll.RollManager;
+import emissary.roll.Rollable;
+import emissary.roll.Roller;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -309,12 +313,30 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
 
         @Override
         public void run() {
-            Runtime.getRuntime().addShutdownHook(new Thread() {
+            /**
+             * Keep alive for the cleanup thread, and allow hook into last stage of Emissary shutdown.
+             */
+            RollManager.getManager().addRoller(new Roller(TimeUnit.SECONDS, 10, new Rollable() {
+
                 @Override
-                public void run() {
+                public void close() throws IOException {
+                    LOG.info("System shutdown detected, unalocating memory (this shouldn't be necessary, better safe than sorry).");
                     shutDown();
                 }
-            });
+
+                @Override
+                public void roll() {
+                    if (!CLEANUP_THREAD.isAlive()) {
+                        CLEANUP_THREAD.start();
+                    }
+                }
+
+                @Override
+                public boolean isRolling() {
+                    return true;
+                }
+            }));
+
             while (true) {
                 final GarbageCollectDetector reference = (GarbageCollectDetector) DELETE_QUEUE.poll();
                 if (reference != null) {
