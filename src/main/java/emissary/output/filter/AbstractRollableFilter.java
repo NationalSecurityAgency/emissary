@@ -16,6 +16,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.io.DateStampFilenameGenerator;
+import emissary.output.roller.IJournaler;
 import emissary.output.roller.JournaledCoalescer;
 import emissary.output.roller.journal.KeyedOutput;
 import emissary.pool.AgentPool;
@@ -40,7 +41,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     protected long rollInterval = 10L;
     protected TimeUnit rollIntervalUnits = TimeUnit.MINUTES;
     protected Roller roller;
-    protected JournaledCoalescer rollable;
+    protected IJournaler rollable;
     protected FileNameGenerator fileNameGenerator;
     protected boolean appendNewLine = true;
 
@@ -134,7 +135,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * @throws IOException if there is an issue with the output path
      * @throws InterruptedException if the journal is interrupted
      */
-    protected JournaledCoalescer createRollable() throws IOException, InterruptedException {
+    protected IJournaler createRollable() throws IOException, InterruptedException {
         return new JournaledCoalescer(this.outputPath, this.fileNameGenerator, this.maxOutputAppenders);
     }
 

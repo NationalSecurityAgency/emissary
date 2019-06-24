@@ -13,6 +13,7 @@ import emissary.pickup.IPickUpSpace;
 import emissary.pickup.PickupQueue;
 import emissary.pickup.QueServer;
 import emissary.pickup.WorkBundle;
+import emissary.pickup.WorkUnit;
 
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
@@ -34,6 +35,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace {
 
     // work bundle currently being processed
     protected WorkBundle currentBundle = null;
+    protected WorkUnit currentWorkUnit = null;
 
     // These allow the same config file to drive this
     // place on both windows and unix like systems where

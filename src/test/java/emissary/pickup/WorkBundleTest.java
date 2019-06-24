@@ -2,6 +2,7 @@ package emissary.pickup;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -9,11 +10,61 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import org.junit.Test;
 
 public class WorkBundleTest extends UnitTest {
+
+    private boolean compareWorkerUnits(WorkUnit w1, WorkUnit w2) {
+        boolean matchFileNames;
+        if (w1.getFileName() == null && w2.getFileName() == null) {
+            matchFileNames = true;
+        } else {
+            matchFileNames = w1.getFileName().equals(w2.getFileName());
+        }
+
+        boolean matchTxid;
+        if (w1.getTransactionId() == null && w2.getTransactionId() == null) {
+            matchTxid = true;
+        } else {
+            matchTxid = w1.getTransactionId().equals(w2.getTransactionId());
+        }
+
+        return matchFileNames && matchTxid && (w1.failedToParse() == w2.failedToParse()) && (w1.failedToProcess() == w2.failedToProcess());
+    }
+
+    @Test
+    public void testWorkBundleWithWorkerUnits() {
+        WorkBundle w1 = new WorkBundle();
+        w1.addWorkUnit(new WorkUnit("file1.txt"));
+        w1.addWorkUnit(new WorkUnit("file2.txt", UUID.randomUUID().toString(), true, true));
+        w1.addWorkUnit(new WorkUnit("file3.txt", UUID.randomUUID().toString(), true, false));
+        assertEquals("Size of work units", 3, w1.getWorkUnitList().size());
+
+        int ic = 0;
+        for (Iterator<WorkUnit> i = w1.getWorkUnitIterator(); i.hasNext();) {
+            i.next();
+            ic++;
+        }
+        assertEquals("Files from iterator", 3, ic);
+
+        WorkBundle w2 = new WorkBundle(w1);
+        assertNotEquals("Copy ctor new id", w1.getBundleId(), w2.getBundleId());
+        assertEquals("Failed to properly copy WorkUnit list", w1.getWorkUnitList(), w2.getWorkUnitList());
+
+        String xml = w2.toXml();
+        assertNotNull("XML failed to generate", xml);
+
+        WorkBundle w3 = WorkBundle.buildWorkBundle(xml);
+        assertNotNull("Failed to buildworkbundle from xml", w3);
+        for (int i = 0; i < w2.getWorkUnitList().size(); i++) {
+            if (!compareWorkerUnits(w2.getWorkUnitList().get(i), w3.getWorkUnitList().get(i))) {
+                fail("BuildWorkBundle did not generate equivalent workBundle");
+            }
+        }
+    }
 
     @Test
     public void testWorkBundle() {
