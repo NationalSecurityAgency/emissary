@@ -39,7 +39,7 @@ public class Emissary {
         List<Class<? extends EmissaryCommand>> cmds =
                 Arrays.asList(ServerCommand.class, HelpCommand.class, WhatCommand.class, TopologyCommand.class, FeedCommand.class,
                         AgentsCommand.class, PoolCommand.class, VersionCommand.class, RunCommand.class, EnvCommand.class, StopCommand.class,
-                        PeersCommand.class, PauseCommand.class, UnpauseCommand.class);
+                        PeersCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
         for (Class<? extends EmissaryCommand> clz : cmds) {
             EmissaryCommand cmd;

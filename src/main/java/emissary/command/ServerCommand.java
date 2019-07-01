@@ -7,10 +7,13 @@ import java.util.Set;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
+import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +55,20 @@ public class ServerCommand extends HttpCommand {
         return agents;
     }
 
+    @Parameter(names = {"--pause"}, description = "do not allow the server to take work from the feeder")
+    private boolean pause = false;
+
+    public boolean getPause() {
+        return pause;
+    }
+
+    @Parameter(names = {"--unpause"}, description = "allow a paused server to take work from the feeder")
+    private boolean unpause = false;
+
+    public boolean getUnpause() {
+        return unpause;
+    }
+
     @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     private boolean dumpJettyBeans = false;
 
@@ -64,10 +81,12 @@ public class ServerCommand extends HttpCommand {
         setup();
         LOG.info("Running Emissary Server");
 
-        try {
-            new EmissaryServer(this).startServer();
-        } catch (EmissaryException e) {
-            LOG.error("Unable to start server", e);
+        if (getPause()) {
+            pauseServer();
+        } else if (getUnpause()) {
+            unpauseServer();
+        } else {
+            runServer();
         }
     }
 
@@ -103,5 +122,34 @@ public class ServerCommand extends HttpCommand {
             overrideFlavor(String.join(",", flavorSet));
         }
 
+    }
+
+    protected void runServer() {
+        try {
+            new EmissaryServer(this).startServer();
+        } catch (EmissaryException e) {
+            LOG.error("Unable to start server", e);
+        }
+    }
+
+    protected void pauseServer() {
+        serverAction("Pause");
+    }
+
+    protected void unpauseServer() {
+        serverAction("Unpause");
+    }
+
+    protected void serverAction(String action) {
+        LOG.info(action + " Emissary QueServer at {}://{}:{}", getScheme(), getHost(), getPort());
+        EmissaryClient client = new EmissaryClient();
+        String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/emissary/" + action + ".action";
+        EmissaryResponse response = client.send(new HttpGet(endpoint));
+        if (response.getStatus() != 200) {
+            LOG.error(action + " Emissary QueServer Failed!!");
+            LOG.error(response.getContentString());
+        } else {
+            LOG.info(action + " Emissary QueServer Successful");
+        }
     }
 }
