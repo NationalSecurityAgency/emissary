@@ -149,7 +149,7 @@ public class SelectingDataContainer implements IDataContainer, Externalizable {
     @Override
     public SeekableByteChannel channel() throws IOException {
         WrappedSeekableByteChannel<SeekableByteChannel> channel = new WrappedSeekableByteChannel<>(actualContainer.channel());
-        TriggeredAction<SeekableByteChannel> changeImplOnSize = getImplSwitchTrigger(channel);
+        TriggeredAction<SeekableByteChannel> changeImplOnSize = getImplSwitchTrigger(channel, length());
         channel.setWriteAction(changeImplOnSize);
         return channel;
     }
@@ -158,7 +158,7 @@ public class SelectingDataContainer implements IDataContainer, Externalizable {
     public SeekableByteChannel newChannel(long estimatedSize) throws IOException {
         switchToAppropriateImpl(estimatedSize);
         WrappedSeekableByteChannel<SeekableByteChannel> channel = new WrappedSeekableByteChannel<>(actualContainer.newChannel(estimatedSize));
-        TriggeredAction<SeekableByteChannel> changeImplOnSize = getImplSwitchTrigger(channel);
+        TriggeredAction<SeekableByteChannel> changeImplOnSize = getImplSwitchTrigger(channel, estimatedSize);
         channel.setWriteAction(changeImplOnSize);
         return channel;
     }
@@ -170,10 +170,10 @@ public class SelectingDataContainer implements IDataContainer, Externalizable {
      * @param channel The wrapped channel to detect growth on.
      * @return A trigger to apply to the channel.
      */
-    private TriggeredAction<SeekableByteChannel> getImplSwitchTrigger(WrappedSeekableByteChannel<SeekableByteChannel> channel) {
+    private TriggeredAction<SeekableByteChannel> getImplSwitchTrigger(WrappedSeekableByteChannel<SeekableByteChannel> channel, long minSwitchSize) {
         return sourceChannel -> {
             long size = sourceChannel.size();
-            Class<? extends IDataContainer> newClass = determineClassForSize((long) (size * 0.8));
+            Class<? extends IDataContainer> newClass = determineClassForSize(Long.max((long) (size * 0.8), minSwitchSize));
             if (newClass != actualContainer.getClass()) {
                 LOG.debug("Channel has grown too large for {} with padding, swiitching impl", actualContainer.getClass());
                 switchToAppropriateImpl(size);

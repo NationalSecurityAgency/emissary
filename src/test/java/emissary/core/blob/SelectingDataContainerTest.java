@@ -84,6 +84,31 @@ public class SelectingDataContainerTest {
         Assert.assertEquals("ツツばばかかかか", new String(sdc.data(), UTF_8));
     }
 
+    @Test
+    public void testNewChannelEstimateNotIgnored() throws Exception {
+        SelectingDataContainer sdc = new SelectingDataContainer();
+        try (SeekableByteChannel channel = sdc.newChannel(100)) {
+            channel.position(channel.size());
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("ツ".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("ば".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("ば".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("か".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("か".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("か".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+            channel.write(ByteBuffer.wrap("か".getBytes(UTF_8)));
+            Assert.assertEquals(DiskDataContainer.class, sdc.getActualContainer().getClass());
+        }
+
+        Assert.assertEquals("ツばばかかかか", new String(sdc.data(), UTF_8));
+    }
+
     @Test(expected = DataException.class)
     public void testMaximumExceededSet() throws Exception {
         SelectingDataContainer sdc = new SelectingDataContainer();

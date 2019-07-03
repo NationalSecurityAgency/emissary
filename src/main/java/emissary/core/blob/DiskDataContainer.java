@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PreDestroy;
 
@@ -62,6 +64,14 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
             Configurator c = ConfigUtil.getConfigInfo(DiskDataContainer.class);
             keepCache = c.findBooleanEntry("payload.diskContainer.keepCache", true);
             tempFilePath = c.findStringEntry("payload.diskContainer.tempFilePath", System.getProperty("java.io.tmpdir"));
+            Pattern subsPattern = Pattern.compile("\\$\\{([^}]+)\\}");
+            Matcher subsMatcher = subsPattern.matcher(tempFilePath);
+            StringBuffer realPath = new StringBuffer(tempFilePath.length());
+            while (subsMatcher.find()) {
+                subsMatcher.appendReplacement(realPath, System.getProperty(subsMatcher.group(1)));
+            }
+            subsMatcher.appendTail(realPath);
+            tempFilePath = realPath.toString();
             new File(tempFilePath).mkdirs();
         } catch (IOException e) {
             LOG.warn("Could not load configuration, using defaults.", e);
