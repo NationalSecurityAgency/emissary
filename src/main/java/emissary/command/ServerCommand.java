@@ -141,15 +141,15 @@ public class ServerCommand extends HttpCommand {
     }
 
     protected void serverAction(String action) {
-        LOG.info(action + " Emissary QueServer at {}://{}:{}", getScheme(), getHost(), getPort());
+        LOG.info("{} Emissary QueServer at {}://{}:{}", action, getScheme(), getHost(), getPort());
         EmissaryClient client = new EmissaryClient();
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/emissary/" + action + ".action";
         EmissaryResponse response = client.send(new HttpGet(endpoint));
         if (response.getStatus() != 200) {
-            LOG.error(action + " Emissary QueServer Failed!!");
+            LOG.error("{} Emissary QueServer Failed!!", action);
             LOG.error(response.getContentString());
         } else {
-            LOG.info(action + " Emissary QueServer Successful");
+            LOG.info("{} Emissary QueServer Successful", action);
         }
     }
 }
