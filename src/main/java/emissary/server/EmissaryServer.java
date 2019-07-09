@@ -41,13 +41,20 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import emissary.util.ServerUtil;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.DigestAuthenticator;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
@@ -178,6 +185,10 @@ public class EmissaryServer {
             Files.write(envsh, envString.getBytes());
             LOG.info("Wrote {}", envsh.toAbsolutePath());
             LOG.debug(" with \n{}", envString);
+
+            if (cmd.getPause()) {
+                ServerUtil.pauseServer();
+            }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
 
