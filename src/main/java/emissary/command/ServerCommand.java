@@ -145,22 +145,22 @@ public class ServerCommand extends HttpCommand {
     }
 
     protected void pauseServer() {
-        serverAction(PauseAction.PAUSE);
+        setServerState(PauseAction.PAUSE);
     }
 
     protected void unpauseServer() {
-        serverAction(PauseAction.UNPAUSE);
+        setServerState(PauseAction.UNPAUSE);
     }
 
-    protected void serverAction(String action) {
+    protected void setServerState(String state) {
         EmissaryClient client = new EmissaryClient();
-        String endpoint = getEndpoint("/emissary/" + action + PauseAction.ACTION);
-        LOG.debug("{} Emissary Server at {}", action, endpoint);
+        String endpoint = getEndpoint("/emissary/" + state + PauseAction.ACTION);
+        LOG.debug("Calling endpoint {} to set EmissaryServer state to {}", endpoint, state);
         EmissaryResponse response = client.send(new HttpGet(endpoint));
         if (response.getStatus() != 200) {
-            LOG.error("{} Emissary Server Failed: {}", action, response.getContentString());
+            LOG.error("Setting Emissary server state to {} failed -- {}", state, response.getContentString());
         } else {
-            LOG.info("{} Emissary Server Successful", action);
+            LOG.info("Setting Emissary server state to {} successful", state);
         }
     }
 

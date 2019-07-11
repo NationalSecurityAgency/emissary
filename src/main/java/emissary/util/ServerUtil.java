@@ -17,7 +17,7 @@ public class ServerUtil {
         LOG.debug("Pausing Emissary QueServer(s)");
         getPickupClients().forEach(client -> {
             client.pauseQueueServer();
-            LOG.info("Paused {}", client);
+            LOG.info("Emissary QueServer set to state Paused for {}", client);
         });
     }
 
@@ -25,7 +25,7 @@ public class ServerUtil {
         LOG.debug("Unpausing Emissary QueServer(s)");
         getPickupClients().forEach(client -> {
             client.unpauseQueueServer();
-            LOG.info("Unpaused {}", client);
+            LOG.info("Emissary QueServer set to state Unpaused for {}", client);
         });
     }
 
@@ -34,7 +34,7 @@ public class ServerUtil {
         for (String key : Namespace.keySet()) {
             Object obj = Namespace.lookup(key);
             if (obj instanceof FilePickUpClient) {
-                LOG.debug("Found {}", obj);
+                LOG.debug("Namespace search for PickupClients found: {}", obj);
                 clients.add((FilePickUpClient) obj);
             }
         }
