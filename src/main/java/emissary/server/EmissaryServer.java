@@ -188,6 +188,8 @@ public class EmissaryServer {
 
             if (cmd.getPause()) {
                 ServerUtil.pauseServer();
+            } else {
+                ServerUtil.unpauseServer();
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
