@@ -38,7 +38,6 @@ public class EmissaryServerIT extends UnitTest {
         try {
             server.startServer();
             EmissaryClient client = new EmissaryClient();
-            MapResponseEntity entity = new MapResponseEntity();
             String hostPort = cmd.getHost() + ":" + cmd.getPort(); // will be key in response
             String endpoint = cmd.getScheme() + "://" + hostPort + "/api/version";
             MapResponseEntity versionMap = client.send(new HttpGet(endpoint)).getContent(MapResponseEntity.class);

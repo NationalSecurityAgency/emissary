@@ -96,6 +96,11 @@ public class SpamSumSignature {
         return this.equals((SpamSumSignature) obj);
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public boolean equals(SpamSumSignature other) {
         if (this.blockSize != other.blockSize) {
             return false;

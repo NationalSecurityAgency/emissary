@@ -23,9 +23,6 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Create a session parser on the data
-     * 
-     * @param channel
-     * @throws emissary.parser.ParserException
      */
     public SimpleNioParser(SeekableByteChannel channel) throws ParserException {
         super(channel);
@@ -37,7 +34,6 @@ public class SimpleNioParser extends NIOSessionParser {
      *
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements
-     * @throws emissary.parser.ParserException
      */
     protected DecomposedSession decomposeSession(InputSession session) throws ParserException {
         try {
@@ -78,7 +74,6 @@ public class SimpleNioParser extends NIOSessionParser {
      *
      * @param raw map of PositionRecord objects
      * @return map of metadata
-     * @throws java.io.IOException
      */
     protected Map<String, String> cookMetaRecords(Map<String, Object> raw) throws IOException {
 
@@ -126,8 +121,6 @@ public class SimpleNioParser extends NIOSessionParser {
      * session
      * 
      * @return next session
-     * @throws emissary.parser.ParserException
-     * @throws emissary.parser.ParserEOFException
      */
     @Override
     public DecomposedSession getNextSession() throws ParserException, ParserEOFException {

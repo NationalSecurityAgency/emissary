@@ -64,9 +64,7 @@ public class JournalWriter implements Closeable {
 
     /**
      * 
-     * @param e
      * @return position difference between last entry and current
-     * @throws IOException
      */
     public long write(JournalEntry e) throws IOException {
         lock.lock();
@@ -125,8 +123,6 @@ public class JournalWriter implements Closeable {
 
     /**
      * Closes underlying journal channel.
-     * 
-     * @throws IOException
      */
     @Override
     public void close() throws IOException {

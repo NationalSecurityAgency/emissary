@@ -164,20 +164,6 @@ public class MagicNumberFactory {
      *
      * @param entry the magic number String entry
      * @param storage a {@link List} where the MagicNumber instances will be placed
-     * @return the MagicNumber instance created
-     * @throws Exception if one occurs while parsing the entry
-     * @see #buildMagicNumber(java.lang.String)
-     */
-    private static MagicNumber parseAndStore(List<MagicNumber> storage, String entry) throws Exception {
-        return parseAndStore(storage, entry, false);
-    }
-
-    /**
-     * Private method for parsing entries and storing them into the target storage data structure which is a list.
-     *
-     *
-     * @param entry the magic number String entry
-     * @param storage a {@link List} where the MagicNumber instances will be placed
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      * @return the MagicNumber instance created
      * @throws Exception if one occurs while parsing the entry

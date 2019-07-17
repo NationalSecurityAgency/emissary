@@ -251,7 +251,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param f file to process
      * @return true if it worked
      * @throws IOException If there is some I/O problem.
-     * @throws emissary.core.EmissaryException
      */
     public boolean processDataFile(File f) throws IOException, EmissaryException {
         boolean isOversize = false;
@@ -273,7 +272,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param fixedName name to use for the object
      * @param simpleMode simple flag from the input
      * @return true
-     * @throws emissary.core.EmissaryException
      */
     protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
         // Send it away, blocks until an agent is ready
@@ -294,7 +292,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param theFile the file that contains the data
      * @param fixedName name to use for the dataObject
      * @return true if the file is processed successfully
-     * @throws emissary.core.EmissaryException
      */
     protected boolean handleSimplePayload(File theFile, String fixedName) throws EmissaryException {
         byte[] theContent = Executrix.readDataFromFile(theFile.getAbsolutePath());
@@ -468,7 +465,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param outputRoot the done area
      * @return true if it worked
      * @throws IOException If there is some I/O problem.
-     * @throws emissary.core.EmissaryException
      */
     public boolean processDataFile(File theFile, String fixedName, boolean isOversize, boolean simpleMode, String outputRoot) throws IOException,
             EmissaryException {
@@ -516,7 +512,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param theFile where it came from
      * @param simpleMode simple flag from the input
      * @return true if it works
-     * @throws emissary.core.EmissaryException
      */
     protected boolean processDataObject(byte[] theContent, String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
         IBaseDataObject d = DataObjectFactory.getInstance(new Object[] {theContent, fixedName});
@@ -531,7 +526,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param theFile where it came from
      * @param simpleMode simple flag from the input
      * @return true if it works
-     * @throws emissary.core.EmissaryException
      */
     protected boolean processDataObject(IBaseDataObject d, String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
         String currentForm = d.popCurrentForm();
@@ -559,7 +553,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param fixedName the good short name of the file
      * @return count of sessions parsed
      * @throws IOException If there is some I/O problem.
-     * @throws emissary.parser.ParserException
      */
     public int processSessions(File theFile, String fixedName) throws IOException, ParserException {
         // We are going to prefer a RAF parser if one
@@ -665,7 +658,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
     /**
      * Produce a legal tracking filename from the disk filename
      * 
-     * @param v
      * @return fixed filename
      */
     protected String fixFileName(String v) {

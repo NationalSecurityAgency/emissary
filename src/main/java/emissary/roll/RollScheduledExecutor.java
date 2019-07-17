@@ -55,8 +55,6 @@ public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
 
     /**
      * Wrapper for the Future to give us a handle to our Rollable object.
-     * 
-     * @param <V>
      */
     static class RollFuture<V> implements RunnableScheduledFuture<V> {
         private final RunnableScheduledFuture<V> rsf;

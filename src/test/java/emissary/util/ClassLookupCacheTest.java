@@ -17,7 +17,7 @@ public class ClassLookupCacheTest extends UnitTest {
     private static final String TEST_CLASS_NAME = TEST_CLASS_OBJECT.getName();
 
     /**
-     * Call {@link ClassLookupCache#lookup(className)} and ensure that it returns the given class.
+     * Call {@link ClassLookupCache#lookup(String)} and ensure that it returns the given class.
      *
      * @param className The class name to look up.
      * @param expectedClazz The expected class object.

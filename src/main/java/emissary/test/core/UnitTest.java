@@ -210,7 +210,6 @@ public class UnitTest {
      *
      * @param configPath The path to use for config.dir, or null if the value should not be changed.
      * @param pkg use this.pkg for config.pkg
-     * @throws EmissaryException
      */
     protected void setConfig(final String configPath, boolean pkg) throws EmissaryException {
         // TODO: refactor this. Changing the pkg affected toResourceName, which could have the
@@ -229,8 +228,6 @@ public class UnitTest {
 
     /**
      * Restore config dir and pkg to original values
-     * 
-     * @throws EmissaryException
      */
     protected void restoreConfig() throws EmissaryException {
         // Restore config paths

@@ -65,9 +65,10 @@ public class JournaledChannelPoolTest extends UnitTest {
         }
         final ArrayList<JournalEntry> result = new ArrayList<>();
         for (final Path journalPath : JournalReader.getJournalPaths(this.directory)) {
-            final JournalReader jr = new JournalReader(journalPath);
-            Journal j = jr.getJournal();
-            result.addAll(j.getEntries());
+            try (final JournalReader jr = new JournalReader(journalPath)) {
+                Journal j = jr.getJournal();
+                result.addAll(j.getEntries());
+            }
         }
         assertTrue("Expected 4 Journal Entries " + result.size(), result.size() == 4);
         int jrnltot = 0;

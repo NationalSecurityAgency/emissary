@@ -86,7 +86,6 @@ public class JournaledChannelPool implements AutoCloseable {
      * Flushes underlying channel and writes journal entry, updating current position.
      * 
      * @param jc the JournaledChannel to flush
-     * @throws IOException If there is some I/O problem.
      */
     void free(final JournaledChannel jc) {
         if (jc == null) {
