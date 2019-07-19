@@ -104,7 +104,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
 
             String key = writer.getName();
             @SuppressWarnings("unchecked")
-            Collection<Object> values = (Collection<Object>) pojo;
+            Collection<Object> values = (Collection<Object>) ((Map<?, ?>) pojo).get(key);
 
             if (includeParameter(key)) {
                 Collection<Object> write = filter(key, values);
