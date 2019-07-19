@@ -47,11 +47,14 @@ final class LegacyContainerWrapper implements IDataContainer {
     public SeekableByteChannel channel() {
         SeekableInMemoryByteChannel baseChannel = new SeekableInMemoryByteChannel(data());
         WrappedSeekableByteChannel<SeekableInMemoryByteChannel> wrapped = new WrappedSeekableByteChannel<>(baseChannel);
-        wrapped.setCloseAction(x -> {
-            int size = (int) x.size();
-            byte[] b = new byte[size];
-            System.arraycopy(x.array(), 0, b, 0, size);
-            setData(b);
+        wrapped.setWriteAction(o -> {
+            wrapped.setWriteAction(null);
+            wrapped.setCloseAction(x -> {
+                int size = (int) x.size();
+                byte[] b = new byte[size];
+                System.arraycopy(x.array(), 0, b, 0, size);
+                setData(b);
+            });
         });
         return wrapped;
     }

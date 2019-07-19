@@ -42,7 +42,9 @@ public interface IBaseDataObject extends IOriginalDataContainer, IOriginalViewMa
      *
      * @return A data container which can be used to write new data.
      */
-    IDataContainer newDataContainer();
+    default IDataContainer newDataContainer() {
+        return IDataContainer.wrap(this);
+    }
 
     /**
      * Get access to the multipart alternative views of the data.

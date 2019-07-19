@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,6 +41,8 @@ public class AllDataContainerTest {
                 {SimpleOffHeapMemoryDataContainer.class, false},
                 {DiskDataContainer.class, true},
                 {DiskDataContainer.class, false},
+                {ConcatinatedArrayDataContainer.class, true},
+                {ConcatinatedArrayDataContainer.class, false},
                 {SelectingDataContainer.class, true},
                 {SelectingDataContainer.class, false},
                 {LegacyContainerWrapper.class, true},
@@ -78,6 +81,7 @@ public class AllDataContainerTest {
     @Test
     // @Ignore("Contract of ByteBuffer not explicitly defined")
     public void testMutationViaBufferPossible() throws Exception {
+        assumeTrue(cont.supportsDirectMutationViaBuffer());
         cont.setData("Base Test".getBytes(StandardCharsets.UTF_8));
 
         if (!allowCache) {

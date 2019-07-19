@@ -24,11 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.blob.IDataContainer;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
 import emissary.test.core.UnitTest;
@@ -1156,7 +1158,6 @@ public class BaseDataObjectTest extends UnitTest {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void testOldContainerToNewDataContainer() throws Exception {
         b.setData("aaaaa".getBytes(UTF_8));
@@ -1174,21 +1175,539 @@ public class BaseDataObjectTest extends UnitTest {
         Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
     }
 
-    // @SuppressWarnings("deprecation")
-    // @Test
-    // public void testOldContainerToNewDataContainerInterface() throws Exception {
-    // b.setData("aaaaa".getBytes(UTF_8));
-    //
-    // try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
-    // OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
-    // byte[] bb = new byte[1];
-    // int read;
-    // while ((read = oldC.read(bb))!=-1) {
-    // bb[0] ++;
-    // newC.write(bb, 0, read);
-    // }
-    // }
-    //
-    // Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
-    // }
+    /**
+     * Test forward compatibility of implementations of {@link IBaseDataObject} developed before the introduction of
+     * {@link IDataContainer}s. Uses a naive implementation of the interface and calls the default methods.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testOldContainerToNewDataContainerInterface() throws Exception {
+        b = new IBaseDataObject() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+            private byte[] data = new byte[0];
+
+            @Override
+            public IBaseDataObject clone() throws CloneNotSupportedException {
+                return this;
+            }
+
+            @Override
+            public int dataLength() {
+                return data.length;
+            }
+
+            @Override
+            public String whereAmI() {
+                return null;
+            }
+
+            @Override
+            public List<String> transformHistory() {
+                return null;
+            }
+
+            @Override
+            public String shortName() {
+                return null;
+            }
+
+            @Override
+            public void setWorkBundleId(String workBundleId) {}
+
+            @Override
+            public void setTransactionId(String transactionId) {}
+
+            @Override
+            public void setPriority(int priority) {}
+
+            @Override
+            public void setParameters(Map<? extends String, ? extends Object> map) {}
+
+            @Override
+            public void setParameter(String key, Object val) {}
+
+            @Override
+            public void setOutputable(boolean outputable) {}
+
+            @Override
+            public void setNumSiblings(int num) {}
+
+            @Override
+            public void setNumChildren(int num) {}
+
+            @Override
+            public void setId(String id) {}
+
+            @Override
+            public void setHistory(List<String> list) {}
+
+            @Override
+            public void setHeaderEncoding(String arg1) {}
+
+            @Override
+            public void setHeader(byte[] arg1) {}
+
+            @Override
+            public void setFooter(byte[] arg1) {}
+
+            @Override
+            public void setFontEncoding(String arg1) {}
+
+            @Override
+            public void setFilename(String f) {}
+
+            @Override
+            public boolean setFileTypeIfEmpty(String arg1) {
+                return false;
+            }
+
+            @Override
+            public boolean setFileTypeIfEmpty(String arg1, String[] arg2) {
+                return false;
+            }
+
+            @Override
+            public void setFileType(String arg1) {}
+
+            @Override
+            public void setExtractedRecords(List<? extends IBaseDataObject> records) {}
+
+            @Override
+            public void setData(byte[] newData, int offset, int length) {
+                this.data = newData;
+            }
+
+            @Override
+            public void setData(byte[] newData) {
+                this.data = newData;
+            }
+
+            @Override
+            public void setCurrentForm(String val, boolean clearAllForms) {}
+
+            @Override
+            public void setCurrentForm(String val) {}
+
+            @Override
+            public void setCreationTimestamp(Date creationTimestamp) {}
+
+            @Override
+            public void setClassification(String classification) {}
+
+            @Override
+            public void setBroken(String arg1) {}
+
+            @Override
+            public void setBirthOrder(int num) {}
+
+            @Override
+            public String searchCurrentForm(Collection<String> values) {
+                return null;
+            }
+
+            @Override
+            public int searchCurrentForm(String val) {
+                return 0;
+            }
+
+            @Override
+            public void replaceCurrentForm(String form) {
+
+            }
+
+            @Override
+            public void putUniqueParameters(Map<? extends String, ? extends Object> m) {}
+
+            @Override
+            public void putParameters(Map<? extends String, ? extends Object> m, MergePolicy policy) {}
+
+            @Override
+            public void putParameters(Map<? extends String, ? extends Object> m) {}
+
+            @Override
+            public void putParameter(String key, Object val) {}
+
+            @Override
+            public int pushCurrentForm(String val) {
+                return 0;
+            }
+
+            @Override
+            public void pullFormToTop(String curForm) {
+
+            }
+
+            @Override
+            public String printMeta() {
+                return null;
+            }
+
+            @Override
+            public String popCurrentForm() {
+                return null;
+            }
+
+            @Override
+            public void mergeParameters(Map<? extends String, ? extends Object> m) {
+
+            }
+
+            @Override
+            public boolean isOutputable() {
+                return false;
+            }
+
+            @Override
+            public boolean isFileTypeEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean isBroken() {
+                return false;
+            }
+
+            @Override
+            public ByteBuffer headerBuffer() {
+                return null;
+            }
+
+            @Override
+            public byte[] header() {
+                return null;
+            }
+
+            @Override
+            public boolean hasVisited(String pattern) {
+                return false;
+            }
+
+            @Override
+            public boolean hasParameter(String key) {
+                return false;
+            }
+
+            @Override
+            public boolean hasExtractedRecords() {
+                return false;
+            }
+
+            @Override
+            public String getWorkBundleId() {
+                return null;
+            }
+
+            @Override
+            public String getTransactionId() {
+                return null;
+            }
+
+            @Override
+            public String getStringParameter(String key, String sep) {
+                return null;
+            }
+
+            @Override
+            public String getStringParameter(String key) {
+                return null;
+            }
+
+            @Override
+            public String getProcessingError() {
+                return null;
+            }
+
+            @Override
+            public int getPriority() {
+                return 0;
+            }
+
+            @Override
+            public DirectoryEntry getPenultimatePlaceVisited() {
+                return null;
+            }
+
+            @Override
+            public Map<String, Collection<Object>> getParameters() {
+                return null;
+            }
+
+            @Override
+            public Set<String> getParameterKeys() {
+                return null;
+            }
+
+            @Override
+            public List<Object> getParameter(String key) {
+                return null;
+            }
+
+            @Override
+            public int getNumSiblings() {
+                return 0;
+            }
+
+            @Override
+            public int getNumChildren() {
+                return 0;
+            }
+
+            @Override
+            public int getNumAlternateViews() {
+                return 0;
+            }
+
+            @Override
+            public DirectoryEntry getLastPlaceVisited() {
+                return null;
+            }
+
+            @Override
+            public UUID getInternalId() {
+                return null;
+            }
+
+            @Override
+            public String getId() {
+                return null;
+            }
+
+            @Override
+            public String getHeaderEncoding() {
+                return null;
+            }
+
+            @Override
+            public String getFontEncoding() {
+                return null;
+            }
+
+            @Override
+            public String getFilename() {
+                return null;
+            }
+
+            @Override
+            public String getFileType() {
+                return null;
+            }
+
+            @Override
+            public List<IBaseDataObject> getExtractedRecords() {
+                return null;
+            }
+
+            @Override
+            public int getExtractedRecordCount() {
+                return 0;
+            }
+
+            @Override
+            public Date getCreationTimestamp() {
+                return null;
+            }
+
+            @Override
+            public Map<String, String> getCookedParameters() {
+                return null;
+            }
+
+            @Override
+            public String getClassification() {
+                return null;
+            }
+
+            @Override
+            public String getBroken() {
+                return null;
+            }
+
+            @Override
+            public int getBirthOrder() {
+                return 0;
+            }
+
+            @Override
+            public Map<String, byte[]> getAlternateViews() {
+                return null;
+            }
+
+            @Override
+            public Set<String> getAlternateViewNames() {
+                return null;
+            }
+
+            @Override
+            public ByteBuffer getAlternateViewBuffer(String arg1) {
+                return null;
+            }
+
+            @Override
+            public byte[] getAlternateView(String arg1) {
+                return null;
+            }
+
+            @Override
+            public List<String> getAllCurrentForms() {
+                return null;
+            }
+
+            @Override
+            public ByteBuffer footerBuffer() {
+                return null;
+            }
+
+            @Override
+            public byte[] footer() {
+                return null;
+            }
+
+            @Override
+            public int enqueueCurrentForm(String val) {
+                return 0;
+            }
+
+            @Override
+            public List<Object> deleteParameter(String key) {
+                return null;
+            }
+
+            @Override
+            public int deleteCurrentFormAt(int i) {
+                return 0;
+            }
+
+            @Override
+            public int deleteCurrentForm(String form) {
+                return 0;
+            }
+
+            @Override
+            public ByteBuffer dataBuffer() {
+                return ByteBuffer.wrap(data);
+            }
+
+            @Override
+            public byte[] data() {
+                return data;
+            }
+
+            @Override
+            public int currentFormSize() {
+                return 0;
+            }
+
+            @Override
+            public String currentFormAt(int i) {
+                return null;
+            }
+
+            @Override
+            public String currentForm() {
+                return null;
+            }
+
+            @Override
+            public void clearTransformHistory() {
+
+            }
+
+            @Override
+            public void clearParameters() {
+
+            }
+
+            @Override
+            public void clearExtractedRecords() {
+
+            }
+
+            @Override
+            public boolean beforeStart() {
+                return false;
+            }
+
+            @Override
+            public boolean appendUniqueParameter(String key, CharSequence value) {
+                return false;
+            }
+
+            @Override
+            public void appendTransformHistory(String key) {
+
+            }
+
+            @Override
+            public void appendParameter(String key, CharSequence value, String sep) {
+
+            }
+
+            @Override
+            public void appendParameter(String key, Iterable<? extends CharSequence> values) {
+
+            }
+
+            @Override
+            public void appendParameter(String key, CharSequence value) {
+
+            }
+
+            @Override
+            public void appendAlternateView(String name, byte[] data, int offset, int length) {
+
+            }
+
+            @Override
+            public void appendAlternateView(String name, byte[] data) {
+
+            }
+
+            @Override
+            public void addProcessingError(String val) {
+
+            }
+
+            @Override
+            public void addExtractedRecords(List<? extends IBaseDataObject> records) {
+
+            }
+
+            @Override
+            public void addExtractedRecord(IBaseDataObject record) {
+
+            }
+
+            @Override
+            public int addCurrentFormAt(int i, String val) {
+                return 0;
+            }
+
+            @Override
+            public void addAlternateView(String name, byte[] data, int offset, int length) {
+
+            }
+
+            @Override
+            public void addAlternateView(String name, byte[] data) {
+
+            }
+        };
+        b.setData("aaaaa".getBytes(UTF_8));
+
+        try (InputStream oldC = Channels.newInputStream(b.getDataContainer().channel());
+                OutputStream newC = Channels.newOutputStream(b.newDataContainer().newChannel(5))) {
+            byte[] bb = new byte[1];
+            int read;
+            while ((read = oldC.read(bb)) != -1) {
+                bb[0]++;
+                newC.write(bb, 0, read);
+            }
+        }
+
+        Assert.assertEquals("bbbbb", new String(b.data(), UTF_8));
+    }
 }

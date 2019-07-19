@@ -92,4 +92,8 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      * @return the data in file form, or null if the operation is not possible.
      */
     IFileProvider getFileProvider();
+
+    default boolean supportsDirectMutationViaBuffer() {
+        return true;
+    }
 }
