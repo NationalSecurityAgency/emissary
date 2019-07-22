@@ -263,4 +263,11 @@ public class SelectingDataContainer implements IDataContainer, Externalizable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean supportsDirectMutationViaBuffer() {
+        return actualContainer.supportsDirectMutationViaBuffer();
+    }
 }

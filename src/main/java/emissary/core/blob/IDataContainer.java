@@ -2,6 +2,7 @@ package emissary.core.blob;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
 import emissary.core.IBaseDataObject;
@@ -93,6 +94,13 @@ public interface IDataContainer extends IOriginalDataContainer, Cloneable, Seria
      */
     IFileProvider getFileProvider();
 
+    /**
+     * Given that the contract of mutations to {@link ByteBuffer}s returned by {@link IDataContainer#dataBuffer()
+     * dataBuffer} isn't guaranteed, determine if it is possible that mutations to the returned buffer will be persisted.
+     * 
+     * @return whether mutations to the byte buffer may be persisted. The timeliness of such a change may still be
+     *         inconsistent.
+     */
     default boolean supportsDirectMutationViaBuffer() {
         return true;
     }
