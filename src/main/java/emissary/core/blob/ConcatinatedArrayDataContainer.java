@@ -35,6 +35,13 @@ public class ConcatinatedArrayDataContainer implements IDataContainer {
     long size = 0;
 
     /**
+     * Default constructor
+     */
+    public ConcatinatedArrayDataContainer() {
+        ContainerMonitor.getInstance().register(this);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
