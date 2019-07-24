@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings xmlns="http://maven.apache.org/POM/4.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                              http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <!-- optional, but allows you move the repository location if you
+                     want for example, if it is on a shared drive that is really slow
+  <localRepository>/somecooldir/mvn-repo</localRepository>
+  -->
+  <localRepository>/tmp/.m2/repository</localRepository>
+  <!-- server password is encrypted, you must have a
+                ~/.m2/settings-security.xml file, try
+  echo "<settingsSecurity><master>{KlTvz8oxYrMHlSFrVYlLuyeimGK4Pp6NytqDwATt8dX87pciTZOrwqzkgHHoKlk0}</master></settingsSecurity>" > ~/.m2/settings-security.xml
+  -->
+  <servers>
+    <server>
+      <id>emissary-public</id>
+      <username>emissary-guest</username>
+      <password>{Y55V343fIp0HUdEdKxDJbglKZ+LuS6ywKlY4J1kHWjGoct34Oyh9i3mZv6EdzsFI}</password>
+    </server>
+  </servers>
+</settings>
+
+

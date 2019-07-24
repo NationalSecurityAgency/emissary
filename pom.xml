@@ -826,6 +826,11 @@
           <version>1.9.1</version>
         </plugin>
         <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.6.0</version>
@@ -1002,6 +1007,35 @@
           <artifactId>sonar-maven-plugin</artifactId>
           <version>3.0.1</version>
         </plugin>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>dockerfile-maven-plugin</artifactId>
+          <version>1.3.7</version>
+          <configuration>
+            <skipPush>true</skipPush>
+          </configuration>
+          <executions>
+            <execution>
+              <id>tag-version</id>
+              <goals>
+                <goal>build</goal>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>${project.version}</tag>
+              </configuration>
+            </execution>
+            <execution>
+              <id>tag-latest</id>
+              <goals>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>latest</tag>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -1026,6 +1060,11 @@
           <reuseForks>true</reuseForks>
           <forkCount>${surefire.forkCount}</forkCount>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.7</version>
       </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -1160,6 +1199,24 @@
           </plugin>
         </plugins>
       </reporting>
+    </profile>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.spotify</groupId>
+            <artifactId>dockerfile-maven-plugin</artifactId>
+            <configuration>
+              <repository>emissary</repository>
+              <buildArgs>
+                <PROJ_VERS>${project.version}</PROJ_VERS>
+                <IMG_NAME>emissary</IMG_NAME>
+              </buildArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>pmd</id>

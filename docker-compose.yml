@@ -1,0 +1,39 @@
+version: '2'
+
+services:
+  emissary-worker-1:
+    image: emissary
+    command: server -a 2 -m cluster -p 8001
+    ports:
+      - "8001:8001"
+    network_mode: host
+    volumes:
+      - input:/opt/emissary/target/data
+      - output-1:/opt/emissary/localoutput
+
+  emissary-worker-2:
+    image: emissary
+    command: server -a 2 -m cluster -p 9001
+    ports:
+      - "9001:9001"
+    network_mode: host
+    volumes:
+      - input:/opt/emissary/target/data
+      - output-2:/opt/emissary/localoutput
+
+  emissary-feeder:
+    image: emissary
+    command: feed -p 7001 -i /opt/emissary/target/data/InputData --eatPrefix /opt/emissary/target/data/InputData
+    ports:
+      - "7001:7001"
+    network_mode: host
+    depends_on:
+      - emissary-worker-1
+      - emissary-worker-2
+    volumes:
+      - input:/opt/emissary/target/data
+
+volumes:
+  input:
+  output-1:
+  output-2:

@@ -1,0 +1,3 @@
+export MAVEN_OPTS="-Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true -Duser.timezone=GMT"
+#export PATH="/var/jenkins_home/test_runner_home/installs:$PATH"
+export PATH="/tmp:$PATH"
