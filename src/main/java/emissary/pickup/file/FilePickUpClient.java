@@ -120,6 +120,29 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace {
     }
 
     /**
+     * Pause the QueServer to stop taking work
+     */
+    public void pauseQueueServer() {
+        queServer.pause();
+    }
+
+    /**
+     * Unpause the QueServer to start taking work
+     */
+    public void unpauseQueueServer() {
+        queServer.unpause();
+    }
+
+    /**
+     * Check the status of the QueServer to see if it is taking work
+     *
+     * @return true if the QueServer is paused, false otherwise
+     */
+    public boolean isQueueServerPaused() {
+        return queServer.isPaused();
+    }
+
+    /**
      * Hook for subclasses to alter the file path perhaps based on the OS at runtime. Allows one set of configuration paths
      * to work on the system across operating systems.
      *
