@@ -33,6 +33,7 @@ pipeline {
 	}
         stage('Test') {
             steps {
+	    	sh 'mvn test'
 		sh 'rm -f test_results'
 		sh 'sudo ./Docker_compose_test_script.sh'
             }
