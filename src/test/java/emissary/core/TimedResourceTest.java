@@ -33,7 +33,7 @@ public class TimedResourceTest extends UnitTest {
 
         TestMobileAgent tma = new TestMobileAgent();
 
-        try (TimedResource tr = new TimedResource(tma, tp, -2, new Timer())) {
+        try (TimedResource tr = new TimedResource(tma, tp, -2, new Timer(), 1)) {
             // should never time out
             assertFalse(tr.checkState(System.currentTimeMillis()));
             // still running
@@ -47,7 +47,7 @@ public class TimedResourceTest extends UnitTest {
     public void test() throws Exception {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
-        try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer())) {
+        try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer(), 1)) {
             Thread.sleep(100);
             // still running, but should be interrupted by this
             assertFalse(tr.checkState(System.currentTimeMillis()));
@@ -60,10 +60,10 @@ public class TimedResourceTest extends UnitTest {
     public void testDontInterruptAgent() throws Exception {
         TestMobileAgent tma = new TestMobileAgent();
         // little time
-        TimedResource first = new TimedResource(tma, tp, 1, new Timer());
+        TimedResource first = new TimedResource(tma, tp, 1, new Timer(), 1);
         first.close();
         // long time
-        TimedResource second = new TimedResource(tma, tp, 1000000, new Timer());
+        TimedResource second = new TimedResource(tma, tp, 1000000, new Timer(), 1);
         // simulate finished processing within place
         // should indicate complete
         assertTrue(first.checkState(System.currentTimeMillis()));

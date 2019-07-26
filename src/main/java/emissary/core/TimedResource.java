@@ -38,14 +38,19 @@ public class TimedResource implements AutoCloseable {
         timerContext = null;
     }
 
-    public TimedResource(final IMobileAgent agent, final IServiceProviderPlace place, final long allowedDuration, final Timer timer) {
+    public TimedResource(final IMobileAgent agent, final IServiceProviderPlace place, final long allowedDuration, final Timer timer,
+            int payloadCount) {
         this.started = System.currentTimeMillis();
         this.agent = agent;
-        this.payloadCount = agent.payloadCount();
+        this.payloadCount = payloadCount;
         this.placeName = place.getPlaceName();
         this.timerContext = timer.time();
         this.allowedDuration = allowedDuration;
 
+    }
+
+    public String getPlaceName() {
+        return this.placeName;
     }
 
     // checks the state of the current place, returns true if it's closed
@@ -65,7 +70,7 @@ public class TimedResource implements AutoCloseable {
         lock.lock();
         try {
             if (!isClosed) {
-                LOG.debug("Found agent that needs interrupting {} in place {}", agent.getName(), placeName);
+                LOG.debug("Found agent that needs interrupting {} in place {} - {}", agent.getName(), placeName, this.toString());
                 agent.interrupt();
             }
         } catch (Exception e) {

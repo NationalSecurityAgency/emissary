@@ -515,6 +515,7 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
         logger.debug("Entering agentProcessHeavyDuty with " + payloadList.size() + " payload items");
 
         List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
+        int payloadItems = payloadList.size();
 
         // For each incoming payload object
         for (IBaseDataObject dataObject : payloadList) {
@@ -531,6 +532,15 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
                 logger.error("Place.process exception", e);
                 dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
                 dataObject.replaceCurrentForm(emissary.core.Form.ERROR);
+            }
+
+            // Check the Thread interrupt status if there's any remaining payloads to process.
+            // NOTE: Don't clear the interrupt status flag, this is done by the MobileAgent.
+            if (--payloadItems > 0 && Thread.currentThread().isInterrupted()) {
+                // Stop processing any remaining payload objects since the processing time limit has expired.
+                logger.warn("Place {} interrupted while processing {}, {} payload items not processed.",
+                        getPlaceName(), dataObject.getFilename(), payloadItems);
+                break;
             }
         }
 

@@ -386,7 +386,7 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
     protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
-        try (TimedResource timer = resourceWatcherStart(place)) {
+        try (TimedResource timer = resourceWatcherStart(place, 1)) {
             this.lastPlaceProcessed = place.getDirectoryEntry().getKey();
             if (this.moveErrorsOccurred > 0) {
                 payloadArg.setParameter("AGENT_MOVE_ERRORS", Integer.toString(this.moveErrorsOccurred));
@@ -426,12 +426,12 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
         }
     }
 
-    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
+    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place, int payloadCount) {
         TimedResource tr = TimedResource.EMPTY;
         // CoordinationPlaces are tracked individually
         if (!(place instanceof CoordinationPlace)) {
             try {
-                tr = ResourceWatcher.lookup().starting(this, place);
+                tr = ResourceWatcher.lookup().starting(this, place, payloadCount);
             } catch (EmissaryException ex) {
                 logger.debug("No resource monitoring enabled");
             }
@@ -474,7 +474,7 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
 
         // Stop looping from occuring
         if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS &&
-                payloadArg.currentForm() != ERROR_FORM) {
+                !payloadArg.currentForm().equals(ERROR_FORM)) {
             payloadArg.replaceCurrentForm(ERROR_FORM);
             payloadArg.addProcessingError("Agent stopped due to larger than max transform history size (looping?)");
         }

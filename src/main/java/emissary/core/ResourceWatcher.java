@@ -78,13 +78,13 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Register an agent to start tracking it
-     * 
+     *
      * @param agent the agent to track
      * @param place place executing
      * @return TimedResource for the place and agent
      */
-    public TimedResource starting(final IMobileAgent agent, final IServiceProviderPlace place) {
-        TimedResource tr = new TimedResource(agent, place, getPlaceDuration(place), metrics.timer(place.getPlaceName()));
+    public TimedResource starting(final IMobileAgent agent, final IServiceProviderPlace place, int payloadCount) {
+        TimedResource tr = new TimedResource(agent, place, getPlaceDuration(place), metrics.timer(place.getPlaceName()), payloadCount);
         tracking.offer(tr);
         return tr;
     }
@@ -143,6 +143,7 @@ public class ResourceWatcher implements Runnable {
                 final long now = System.currentTimeMillis();
                 final TimedResource val = it.next();
                 if (val.checkState(now)) {
+                    LOG.debug("Removing {} TimedResource {}", val.getPlaceName(), val.toString());
                     it.remove();
                 }
             }

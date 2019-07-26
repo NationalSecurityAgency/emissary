@@ -184,7 +184,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             List<IBaseDataObject> sprouts = null;
 
             // Like an agent would do it
-            try (TimedResource tr = ResourceWatcher.lookup().starting(getAgent(), p)) {
+            try (TimedResource tr = ResourceWatcher.lookup().starting(getAgent(), p, 1)) {
                 if (hd) {
                     // Do the normal HD processing
                     sprouts = p.agentProcessHeavyDuty(d);

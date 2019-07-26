@@ -413,7 +413,7 @@ public class HDMobileAgent extends MobileAgent {
         logger.debug("In atPlaceHD {} with {} payload items", place, payloadListArg.size());
 
         List<IBaseDataObject> ret = Collections.emptyList();
-        try (TimedResource tr = resourceWatcherStart(place)) {
+        try (TimedResource tr = resourceWatcherStart(place, payloadListArg.size())) {
             // Process and get back a list of sprouted payloads
             lastPlaceProcessed = place.getDirectoryEntry().getKey();
 
