@@ -77,7 +77,15 @@ public class MemoryDataContainer implements IDataContainer {
     public SeekableByteChannel channel() throws IOException {
         SeekableInMemoryByteChannel baseChannel = new SeekableInMemoryByteChannel(theData);
         WrappedSeekableByteChannel<SeekableInMemoryByteChannel> wrapped = new WrappedSeekableByteChannel<>(baseChannel);
-        wrapped.setCloseAction(this::setDataFromChannel);
+        wrapped.setWriteAction(o -> {
+            wrapped.setWriteAction(null);
+            wrapped.setCloseAction(x -> {
+                int size = (int) x.size();
+                byte[] b = new byte[size];
+                System.arraycopy(x.array(), 0, b, 0, size);
+                setData(b);
+            });
+        });
         return wrapped;
     }
 
