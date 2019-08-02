@@ -13,7 +13,7 @@ mvn_test.out
 .mvn-classpath
 
 # used when running ./Docker_compose_test_script.sh
-test_results
+target/test_results
 
 # IDE stuff
 nbproject/

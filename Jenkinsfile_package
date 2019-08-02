@@ -18,8 +18,6 @@ pipeline {
 		sh 'mkdir -p ~/.m2'
 		sh 'sudo chown -R $(whoami):$(whoami) ~/.m2'
 		sh 'rm -rf ~/.m2/repository'
-		sh 'mv src/test/resources/jenkins_config/settings.xml ~/.m2'
-		sh 'mv src/test/resources/jenkins_config/settings-security.xml ~/.m2'
 		sh 'sudo chown -R $(whoami):$(whoami) $(pwd)'
 		sh 'mvn clean install'
 		sh 'mvn clean compile'
