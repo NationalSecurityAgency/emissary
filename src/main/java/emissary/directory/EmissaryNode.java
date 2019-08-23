@@ -42,6 +42,12 @@ public class EmissaryNode {
     /** Node scheme property */
     public static final String NODE_SCHEME_PROPERTY = "emissary.node.scheme";
 
+    /** Node service type property */
+    public static final String NODE_SERVICE_TYPE_PROPERTY = "emissary.node.service.type";
+
+    /** Node service type is {@value} */
+    public static final String DEFAULT_NODE_SERVICE_TYPE = "server";
+
     /** Node type is {@value} */
     public static final String DEFAULT_NODE_TYPE = "emissary-edge-node";
 
@@ -59,6 +65,7 @@ public class EmissaryNode {
     protected String nodeType = null;
     protected String nodeMode = null; // probably better as nodeType, but that requires a refactor
     protected boolean nodeNameIsDefault = false;
+    protected String nodeServiceType = null;
 
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
@@ -81,6 +88,7 @@ public class EmissaryNode {
         this.nodePort = Integer.getInteger(NODE_PORT_PROPERTY, -1).intValue();
         this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase().replace(' ', '_');
         this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase();
+        this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
     }
 
     /**

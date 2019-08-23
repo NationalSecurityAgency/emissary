@@ -9,6 +9,7 @@ import com.google.common.net.HostAndPort;
 import emissary.client.EmissaryClient;
 import emissary.command.converter.FileExistsConverter;
 import emissary.directory.EmissaryNode;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +109,11 @@ public abstract class HttpCommand extends BaseCommand {
         logInfo("Setting {} to {} ", EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
         System.setProperty(EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
 
+        // check to see if this is set -- feed will call server command and reset this value
+        if (StringUtils.isBlank(System.getProperty(EmissaryNode.NODE_SERVICE_TYPE_PROPERTY))) {
+            logInfo("Setting {} to {} ", EmissaryNode.NODE_SERVICE_TYPE_PROPERTY, getCommandName());
+            System.setProperty(EmissaryNode.NODE_SERVICE_TYPE_PROPERTY, getCommandName());
+        }
     }
 
     public HostAndPort getHostAndPort() {
