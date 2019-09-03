@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.databind.ser.std.MapProperty;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.directory.DirectoryEntry;
@@ -113,6 +114,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
                     jgen.writeFieldName(transform(key));
 
                     // only write the element
+                    ((MapProperty)writer).setValue(write);
                     writer.serializeAsElement(write, jgen, provider);
                 }
             }
