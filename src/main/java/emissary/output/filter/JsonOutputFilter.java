@@ -114,7 +114,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
                     jgen.writeFieldName(transform(key));
 
                     // only write the element
-                    ((MapProperty)writer).setValue(write);
+                    ((MapProperty) writer).setValue(write);
                     writer.serializeAsElement(write, jgen, provider);
                 }
             }
