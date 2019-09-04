@@ -43,7 +43,7 @@ should be an entry for REPOSITORY:emissary and TAG:latest:
    emissary            latest              e740d5f23a79        44 hours ago        620MB
    centos              7                   49f7960eb7e4        2 days ago          200MB
 ```
- 
+
 To run files through Emissary, we'll need to volume mount local directories into the running container. Let's create two local directories for 
 input/output to Emissary:
 ```
@@ -67,7 +67,7 @@ Emissary image by running ```docker ps```:
 ```
 [~]$ docker ps
    CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS               NAMES
-   dda57bfdfa9e        emissary:latest           "./emissary server -a…"  17 seconds ago      Up 16 seconds       8001/tcp            priceless_galileo
+   dda57bfdfa9e        emissary:latest           "./emissary server -a?"  17 seconds ago      Up 16 seconds       8001/tcp            priceless_galileo
 ```
 
 ## Logs
@@ -114,3 +114,16 @@ docker run -it --rm --name emissary --hostname emissary-001 -p 8001:8001 emissar
 ```
 
 Then from a browser, go to http://localhost:8001/ to see the endpoints.
+
+## Basic Testing with Docker Compose
+If you like to test an emissary cluster automatically ingesting a set of sample files you can place any files you'd like to test within the
+```src/test/resources/test_input``` directory then build a Docker image using the Dockerfile-test_feeder file in addition to the Docker image
+created earlier.  This can easily be done by executing the following command:
+```
+sudo docker build -f Dockerfile-test_feeder -t emissary-feeder-test:latest --build-arg PROJ_VERS=$(./emissary version | grep Version: | 
+awk {'print $3 " " '}) --build-arg IMG_NAME=latest .
+```
+Then execute ```docker-compose -f docker-compose.test.yml up``` to start the cluster and execute ```docker-compose down or CTRL+C``` to exit the
+docker-compose. Alternatively you could execute ```./test_script.sh``` to execute a cursory check that the cluster will successfully ingest 
+emissary-knight.png in a timely manner.
+
