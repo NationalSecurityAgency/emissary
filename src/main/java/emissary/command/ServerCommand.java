@@ -7,10 +7,14 @@ import java.util.Set;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
+import emissary.server.mvc.PauseAction;
+import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +56,20 @@ public class ServerCommand extends HttpCommand {
         return agents;
     }
 
+    @Parameter(names = {"--pause"}, description = "do not allow the server to take work from the feeder")
+    private boolean pause = false;
+
+    public boolean getPause() {
+        return pause;
+    }
+
+    @Parameter(names = {"--unpause"}, description = "allow a paused server to take work from the feeder")
+    private boolean unpause = false;
+
+    public boolean getUnpause() {
+        return unpause;
+    }
+
     @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     private boolean dumpJettyBeans = false;
 
@@ -62,12 +80,24 @@ public class ServerCommand extends HttpCommand {
     @Override
     public void run(JCommander jc) {
         setup();
-        LOG.info("Running Emissary Server");
 
-        try {
-            new EmissaryServer(this).startServer();
-        } catch (EmissaryException e) {
-            LOG.error("Unable to start server", e);
+        // let's check to see if the server is already running
+        EmissaryClient client = new EmissaryClient();
+        String endpoint = getEndpoint("/api/health");
+        LOG.debug("Checking to see if Emissary Server is running at {}", endpoint);
+        EmissaryResponse response = client.send(new HttpGet(endpoint));
+        if (response.getStatus() == 200) {
+            // the server is already running so pause/unpause or fail
+            if (getPause()) {
+                pauseServer();
+            } else if (getUnpause()) {
+                unpauseServer();
+            } else {
+                throw new RuntimeException("Emissary server is already running");
+            }
+        } else {
+            // no running server so fire it up
+            runServer();
         }
     }
 
@@ -103,5 +133,38 @@ public class ServerCommand extends HttpCommand {
             overrideFlavor(String.join(",", flavorSet));
         }
 
+    }
+
+    protected void runServer() {
+        try {
+            LOG.info("Running Emissary Server");
+            new EmissaryServer(this).startServer();
+        } catch (EmissaryException e) {
+            LOG.error("Unable to start server", e);
+        }
+    }
+
+    protected void pauseServer() {
+        setServerState(PauseAction.PAUSE);
+    }
+
+    protected void unpauseServer() {
+        setServerState(PauseAction.UNPAUSE);
+    }
+
+    protected void setServerState(String state) {
+        EmissaryClient client = new EmissaryClient();
+        String endpoint = getEndpoint("/emissary/" + state + PauseAction.ACTION);
+        LOG.debug("Calling endpoint {} to set EmissaryServer state to {}", endpoint, state);
+        EmissaryResponse response = client.send(new HttpGet(endpoint));
+        if (response.getStatus() != 200) {
+            LOG.error("Setting Emissary server state to {} failed -- {}", state, response.getContentString());
+        } else {
+            LOG.info("Setting Emissary server state to {} successful", state);
+        }
+    }
+
+    protected String getEndpoint(String endpoint) {
+        return getScheme() + "://" + getHost() + ":" + getPort() + endpoint;
     }
 }

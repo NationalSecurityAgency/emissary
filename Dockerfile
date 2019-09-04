@@ -8,7 +8,7 @@ RUN yum update -y \
 ARG PROJ_VERS
 ARG IMG_NAME
 
-ADD target/emissary-${PROJ_VERS}-dist.tar.gz /opt
+ADD target/emissary-${PROJ_VERS}-dist.tar.gz /opt/
 
 RUN ln -s /opt/emissary-${PROJ_VERS} /opt/emissary
 
@@ -19,7 +19,6 @@ RUN mkdir -p /opt/emissary-${PROJ_VERS}/localoutput/json
 RUN chmod -R a+rw /opt/emissary
 
 EXPOSE 8001
-
 
 ENTRYPOINT ["./emissary"]
 

@@ -60,6 +60,7 @@ Once Emissary starts up, we should see a log line that says: "Started EmissarySe
 ```input/InputData/``` for Emissary to process. When the processing has finish, the files will be moved to ```input/DoneData```. All extracted 
 content can be found in the local ```output``` directory. Depending on your specific configuration, there should be output in the ```output/json``` 
 directory.
+
 ## Container without a name
 If the ```--name emissary``` flag is not specified, you can find the name/id of the container that is running the
 Emissary image by running ```docker ps```:
@@ -68,42 +69,50 @@ Emissary image by running ```docker ps```:
    CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS               NAMES
    dda57bfdfa9e        emissary:latest           "./emissary server -a?"  17 seconds ago      Up 16 seconds       8001/tcp            priceless_galileo
 ```
+
 ## Logs
 To see the Emissary logs from the docker container, run:
 ```
 docker logs emissary
 ```
+
 ## Monitor Emissary
 To monitor Emissary in a container, we need to connect to the running container. If we want to run the agents command,
 we simply need to run the following command:
 ```
 docker exec -it emissary ./emissary agents -p 8001 --mon
 ```
+
 To see the environment settings:
 ```
 docker exec -it emissary ./emissary env
 ```
+
 To attach to the running container, run:
 ```
 docker exec -it emissary /bin/bash
 ```
+
 ## Emissary Cluster Mode
 We can use a Docker compose file to simulate cluster mode. We'll start a feeder and two workers by default. To start the cluster, run the 
 sample docker-compose.yml file:
 ```
 docker-compose up
 ```
+
 Once the cluster has started, we can manage input and output by looking at the volumes that were created by the compose file. The volume
  location can be found in ```/var/lib/docker/volumes/```. Simply move a file into the input directory for Emissary to process it:
 ```
 cp emissary-knight.png /var/lib/docker/volumes/emissary_input/_data/InputData/
 ```
+
 ## Emissary UI
 If you want to connect to the web front-end for Emissary, some additional steps are need to configure jetty. We need to
 give the container a hostname and pass that onto Emissary from the command line. Sample command:
 ```
 docker run -it --rm --name emissary --hostname emissary-001 -p 8001:8001 emissary server -a 2 -p 8001 -s http -h emissary-001
 ```
+
 Then from a browser, go to http://localhost:8001/ to see the endpoints.
 
 ## Basic Testing with Docker Compose
@@ -117,4 +126,4 @@ awk {'print $3 " " '}) --build-arg IMG_NAME=latest .
 Then execute ```docker-compose -f docker-compose.test.yml up``` to start the cluster and execute ```docker-compose down or CTRL+C``` to exit the
 docker-compose. Alternatively you could execute ```./test_script.sh``` to execute a cursory check that the cluster will successfully ingest 
 emissary-knight.png in a timely manner.
- 
+
