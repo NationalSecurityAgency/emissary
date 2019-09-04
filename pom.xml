@@ -61,7 +61,7 @@
     <dep.spullara.mustache.compiler.version>0.8.17</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
     <dep.sun.mail.version>1.6.2</dep.sun.mail.version>
-    <dep.tika.version>1.20</dep.tika.version>
+    <dep.tika.version>1.22</dep.tika.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
@@ -103,7 +103,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}.1</version>
+        <version>${dep.jackson.version}.3</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
@@ -1199,24 +1199,6 @@
           </plugin>
         </plugins>
       </reporting>
-    </profile>
-    <profile>
-      <id>docker</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <configuration>
-              <repository>emissary</repository>
-              <buildArgs>
-                <PROJ_VERS>${project.version}</PROJ_VERS>
-                <IMG_NAME>emissary</IMG_NAME>
-              </buildArgs>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>pmd</id>
