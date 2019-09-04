@@ -44,7 +44,7 @@
     <dep.httpclient.version>4.5.1</dep.httpclient.version>
     <dep.httpcore.version>4.4.3</dep.httpcore.version>
     <dep.jackcess.version>2.1.2</dep.jackcess.version>
-    <dep.jackson.version>2.8.11</dep.jackson.version>
+    <dep.jackson.version>2.9.9</dep.jackson.version>
     <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
@@ -103,7 +103,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}.3</version>
+        <version>${dep.jackson.version}.1</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
