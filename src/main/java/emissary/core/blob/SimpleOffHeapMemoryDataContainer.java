@@ -39,6 +39,12 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     private static final byte[] NO_DATA = new byte[0];
 
     /**
+     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low
+     * enough that Garbage collection becomes infrequent, but still guards resources.
+     */
+    private static long forcedGarbageCollecionInterval = 60000;
+
+    /**
      * The pointer value of the start of the memory. A final mutable object such that the {@link GarbageCollectDetector} 's
      * reference to the pointer is always correct.
      */
@@ -303,6 +309,13 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
      *
      */
     private static final class OffHeapMemoryCleanupTask implements Runnable {
+
+        /**
+         * The timestamp of the last forced garbage collection. This can be necessary as the memory footprint can become low
+         * enough that Garbage collection becomes infrequent, but still guards resources.
+         */
+        private long lastForcedGarbageCollect = System.currentTimeMillis();
+
         /**
          * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the reference
          * before the target is enqueued.
@@ -352,6 +365,10 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
                     }
                 } else {
                     try {
+                        if (lastForcedGarbageCollect + forcedGarbageCollecionInterval < System.currentTimeMillis()) {
+                            System.gc();
+                            lastForcedGarbageCollect = System.currentTimeMillis();
+                        }
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                     }

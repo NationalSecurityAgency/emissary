@@ -53,6 +53,12 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
 
     private static boolean keepCache = true;
 
+    /**
+     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low
+     * enough that Garbage collection becomes infrequent, but still guards resources.
+     */
+    private static long forcedGarbageCollecionInterval;
+
     /** The backing file */
     private transient File file;
 
@@ -72,6 +78,7 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
             }
             subsMatcher.appendTail(realPath);
             tempFilePath = realPath.toString();
+            forcedGarbageCollecionInterval = c.findLongEntry("payload.diskContainer.forcedGarbageCollecionInterval", 600000);
             new File(tempFilePath).mkdirs();
         } catch (IOException e) {
             LOG.warn("Could not load configuration, using defaults.", e);
@@ -282,6 +289,13 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
      *
      */
     private static final class DiskCleanupTask implements Runnable {
+
+        /**
+         * The timestamp of the last forced garbage collection. This can be necessary as the memory footprint can become low
+         * enough that Garbage collection becomes infrequent, but still guards resources.
+         */
+        private long lastForcedGarbageCollect = System.currentTimeMillis();
+
         /**
          * Set of strong references to {@link GarbageCollectDetector}s, such that the JVM cannot garbage collect the reference
          * before the target is enqueued.
@@ -332,6 +346,10 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
                 } else {
                     try {
                         LOG.trace("No DiskDataContainers have been garbage collected.");
+                        if (lastForcedGarbageCollect + forcedGarbageCollecionInterval < System.currentTimeMillis()) {
+                            System.gc();
+                            lastForcedGarbageCollect = System.currentTimeMillis();
+                        }
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
                     }
