@@ -6,12 +6,9 @@ import com.beust.jcommander.Parameters;
 import emissary.client.EmissaryClient;
 import emissary.client.response.AgentsResponseEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Parameters(commandDescription = "List all the agents for a given node or all nodes in the cluster")
 public class AgentsCommand extends MonitorCommand<AgentsResponseEntity> {
-    private static final Logger LOG = LoggerFactory.getLogger(AgentsCommand.class);
 
     public static String COMMAND_NAME = "agents";
 

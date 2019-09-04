@@ -51,8 +51,6 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Create a resource watcher set it running and bind into the NamespaceException
-     * 
-     * @param metricsManager
      */
     public ResourceWatcher(final MetricsManager metricsManager) {
         this.metrics = metricsManager.getMetricRegistry();
@@ -93,7 +91,6 @@ public class ResourceWatcher implements Runnable {
      * Lookup the default ResourceWatcher in the Namespace
      * 
      * @return The registered ResourceWatcher
-     * @throws emissary.core.NamespaceException
      */
     public static ResourceWatcher lookup() throws NamespaceException {
         return (ResourceWatcher) Namespace.lookup(DEFAULT_NAMESPACE_NAME);

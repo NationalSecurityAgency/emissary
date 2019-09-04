@@ -602,7 +602,8 @@ public class EmissaryServer {
         String trustStorePass = httpConnFactCfg.findStringEntry("javax.net.ssl.trustStorePassword", keystorePass);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
         // setup context to add to connector
-        SslContextFactory sslContextFactory = new SslContextFactory(keystore);
+        SslContextFactory sslContextFactory = new SslContextFactory.Server();
+        sslContextFactory.setKeyStorePath(keystore);
         sslContextFactory.setKeyStorePassword(keystorePass);
         KeyStore trustStoreInstance = KeyStore.getInstance("JKS");
         try (final InputStream is = new FileInputStream(trustStore)) {

@@ -6,6 +6,7 @@ import java.util.Arrays;
  * A set of named counters for keeping counts on various classes of characters encountered
  */
 public class CharacterCounterSet extends CounterSet {
+    private static final long serialVersionUID = -7111758159975960091L;
     public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_WHITESPACE", "CHARACTER_ISO_CONTROL",
             "CHARACTER_PUNCTUATION", "CHARACTER_OTHER"};
 

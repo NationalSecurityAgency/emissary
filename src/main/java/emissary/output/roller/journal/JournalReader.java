@@ -193,9 +193,6 @@ public class JournalReader implements Closeable {
 
     /**
      * Prints contents of a Journal to stdout.
-     * 
-     * @param args
-     * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         String path = args[0];

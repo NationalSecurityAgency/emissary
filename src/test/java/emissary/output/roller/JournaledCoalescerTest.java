@@ -200,7 +200,6 @@ public class JournaledCoalescerTest extends UnitTest {
      * This test case tries to simulate a crash during the roll up. There would be a '.rolling' file present from the last
      * run, which should be deleted and normal operations carried out from there.
      */
-    @SuppressWarnings("resource")
     @Test
     public void testCrashWhileRolling() throws Exception {
         // setup
@@ -215,7 +214,9 @@ public class JournaledCoalescerTest extends UnitTest {
         Files.createFile(oldRolling);
 
         // test
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator).roll();
+        try (JournaledCoalescer jc = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
+            jc.roll();
+        }
 
         // verify
         assertThat(Files.exists(oldRolling), equalTo(false));
@@ -241,12 +242,11 @@ public class JournaledCoalescerTest extends UnitTest {
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
-        JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
-
-        assertThat(Files.exists(oldRolled), equalTo(true));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
-
-        jrnl.roll();
+        try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
+            assertThat(Files.exists(oldRolled), equalTo(true));
+            assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+            jrnl.roll();
+        }
 
         assertThat(Files.exists(oldRolled), equalTo(false));
         assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(true));
@@ -262,7 +262,7 @@ public class JournaledCoalescerTest extends UnitTest {
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
         // verify orphaned rolled file is cleaned up
         assertThat(Files.exists(oldRolled), equalTo(false));
@@ -280,12 +280,11 @@ public class JournaledCoalescerTest extends UnitTest {
 
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
 
-        JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
-
-        assertThat(Files.exists(oldRolled), equalTo(true));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
-
-        jrnl.roll();
+        try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
+            assertThat(Files.exists(oldRolled), equalTo(true));
+            assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+            jrnl.roll();
+        }
 
         assertThat(Files.exists(oldRolled), equalTo(false));
         assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
@@ -296,7 +295,7 @@ public class JournaledCoalescerTest extends UnitTest {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
 
-        new JournaledCoalescer(targetBUDPath, fileNameGenerator);
+        new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
         // verify orphaned rolled file is cleaned up
         assertThat(Files.exists(oldRolled), equalTo(false));
@@ -338,8 +337,10 @@ public class JournaledCoalescerTest extends UnitTest {
         }
         long partSize = Files.size(target);
         // open journal
-        JournalReader jr = new JournalReader(Paths.get(key + Journal.EXT));
-        Journal j = jr.getJournal();
+        Journal j;
+        try (JournalReader jr = new JournalReader(Paths.get(key + Journal.EXT))) {
+            j = jr.getJournal();
+        }
         Path rolled = Files.createTempFile(targetBUDPath, "rolled_badfile", "");
         try (SeekableByteChannel sbc = Files.newByteChannel(rolled, StandardOpenOption.WRITE)) {
             journaledCoalescer.combineFiles(j, sbc);

@@ -432,19 +432,19 @@ public class DropOffUtilTest extends UnitTest {
         Date start = new Date(); // use this for relative comparison
 
         // hit on child EventDate
-        assertEquals("2015-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld)));
+        assertEquals("2015-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing child EventDate should hit on child FILE_DATE
         d.deleteParameter("EventDate");
-        assertEquals("2015-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld)));
+        assertEquals("2015-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing child FILE_DATE should hit on tld EventDate
         d.deleteParameter("FILE_DATE");
-        assertEquals("2016-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld)));
+        assertEquals("2016-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing tld EventDate should hit on tld FILE_DATE
         tld.deleteParameter("EventDate");
-        assertEquals("2016-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld)));
+        assertEquals("2016-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing tld FILE_DATE should default to now as configured by default
         tld.deleteParameter("FILE_DATE");

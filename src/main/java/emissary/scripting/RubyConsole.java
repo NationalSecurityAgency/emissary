@@ -403,8 +403,6 @@ public class RubyConsole implements HttpSessionBindingListener, Runnable {
 
     /**
      * Simulate some type of context when running from a static main
-     * 
-     * @throws EmissaryException
      */
     public static void createEmissaryContext() throws EmissaryException {
         // Do some of the things that the normal context initializer does

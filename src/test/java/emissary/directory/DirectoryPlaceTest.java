@@ -40,13 +40,13 @@ public class DirectoryPlaceTest extends UnitTest {
         // master directory
         InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
 
-        this.master = spy(new DirectoryPlace(configStream, null, this.masterloc));
+        this.master = spy(new DirectoryPlace(configStream, this.masterloc, new EmissaryNode()));
         configStream.close();
         Namespace.bind(this.masterloc, this.master);
 
         // non-master directory
         configStream = new ResourceReader().getConfigDataAsStream(this);
-        this.client = spy(new DirectoryPlace(configStream, this.master.getDirectoryEntry().getKey(), this.clientloc));
+        this.client = spy(new DirectoryPlace(configStream, this.master.getDirectoryEntry().getKey(), this.clientloc, new EmissaryNode()));
         configStream.close();
         Namespace.bind(this.clientloc, this.client);
     }

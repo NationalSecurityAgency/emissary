@@ -242,7 +242,6 @@ public final class MagicNumberUtil {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
 
-        final MagicNumberUtil util = new MagicNumberUtil();
         final List<MagicNumber> magicNumberList =
                 MagicNumberFactory.buildMagicNumberList(Executrix.readDataFromFile(magicConfig.getAbsolutePath()), null, null);
 
@@ -349,7 +348,6 @@ public final class MagicNumberUtil {
         sb.append("\nPARTIALLY SUCCESSFUL ENTRIES (failed on some extensions)\n\n");
 
         for (final String entry : continuationErrorMap.keySet()) {
-            final List<String> ext = continuationErrorMap.get(entry);
             sb.append('\n');
             sb.append("MAIN ENTRY (STATUS:SUCCESSFUL): ");
             sb.append(entry);

@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Tracks written progress of a corresponding file. Some formats within the framework don't lend themselves to knowing
  * length of output prior to writing as in many journaled formats. Our model allows us to track successful or complete
@@ -18,7 +15,6 @@ import org.slf4j.LoggerFactory;
  */
 public final class Journal {
 
-    private static final Logger logger = LoggerFactory.getLogger(Journal.class);
     static final byte SEP = 0x00;
     // 6 byte magic
     static final byte[] MAGIC = "BGJRNL".getBytes();

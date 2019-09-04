@@ -153,8 +153,6 @@ public class ConfigUtil {
     /**
      * Initialize system properties for this class, but make it so that test cases (and other interested parties) can reset
      * system properties and re-call this method when they need to.
-     * 
-     * @throws EmissaryException
      */
     public static void initialize() throws EmissaryException {
         // PlaceStarter.class.getName();
@@ -239,10 +237,6 @@ public class ConfigUtil {
 
     /**
      * Get a List of config directories.
-     * <p>
-     * 
-     * @throws EmissaryException
-     *
      */
     public static List<String> getConfigDirs() {
         if (configDirs == null) {
@@ -657,7 +651,6 @@ public class ConfigUtil {
      *
      * @return Configurator with all emissary.admin.MasterClassNames
      * @throws IOException If there is some I/O problem.
-     * @throws EmissaryException
      */
     public static Configurator getMasterClassNames() throws IOException, EmissaryException {
         final List<File> masterClassNames = new ArrayList<>();
