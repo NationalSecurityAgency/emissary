@@ -186,7 +186,7 @@ public class EmissaryServer {
             LOG.info("Wrote {}", envsh.toAbsolutePath());
             LOG.debug(" with \n{}", envString);
 
-            if (cmd.getPause()) {
+            if (cmd.isPause()) {
                 ServerUtil.pauseServer();
             } else {
                 ServerUtil.unpauseServer();
