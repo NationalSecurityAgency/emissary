@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import emissary.command.converter.PriorityDirectoryConverter;
 import emissary.command.converter.WorkspaceSortModeConverter;
@@ -91,15 +92,16 @@ public class FeedCommand extends ServiceCommand {
     @Override
     public void startService() {
         if (CollectionUtils.isEmpty(priorityDirectories)) {
-            LOG.error("No input root or directories specified");
-        } else {
-            LOG.info("Starting feeder using {} as the workspace class", workspaceClass);
-            try {
-                WorkSpace ws = (WorkSpace) Class.forName(workspaceClass).getConstructor(FeedCommand.class).newInstance(this);
-                ws.run();
-            } catch (Exception e) {
-                LOG.error("Error running WorkSpace class: {} ", workspaceClass, e);
-            }
+            LOG.error("No input root or priority directories specified");
+            throw new ParameterException("Missing required parameter '-i' for input root or priority directories");
+        }
+
+        LOG.info("Starting feeder using {} as the workspace class", workspaceClass);
+        try {
+            WorkSpace ws = (WorkSpace) Class.forName(workspaceClass).getConstructor(FeedCommand.class).newInstance(this);
+            ws.run();
+        } catch (Exception e) {
+            LOG.error("Error running WorkSpace class: {} ", workspaceClass, e);
         }
     }
 
