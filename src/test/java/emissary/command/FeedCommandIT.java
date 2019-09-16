@@ -57,6 +57,7 @@ public class FeedCommandIT extends UnitTest {
     public void noArguments() throws Exception {
         // test
         command = FeedCommand.parse(FeedCommand.class, Collections.emptyList());
+        command.startService();
     }
 
     @Test
