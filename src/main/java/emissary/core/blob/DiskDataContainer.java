@@ -54,8 +54,8 @@ public class DiskDataContainer implements IDataContainer, Externalizable {
     private static boolean keepCache = true;
 
     /**
-     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low
-     * enough that Garbage collection becomes infrequent, but still guards resources.
+     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low enough
+     * that Garbage collection becomes infrequent, but still guards resources.
      */
     private static long forcedGarbageCollecionInterval;
 

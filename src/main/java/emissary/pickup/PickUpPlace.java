@@ -668,6 +668,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
 
     /**
      * Produce a legal tracking filename from the disk filename
+     * 
      * @param v
      * @return fixed filename
      */

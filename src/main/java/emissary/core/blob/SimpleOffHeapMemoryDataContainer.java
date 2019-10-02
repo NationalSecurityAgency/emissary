@@ -39,8 +39,8 @@ public class SimpleOffHeapMemoryDataContainer implements IDataContainer, Externa
     private static final byte[] NO_DATA = new byte[0];
 
     /**
-     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low
-     * enough that Garbage collection becomes infrequent, but still guards resources.
+     * The interval between forced garbage collections. This can be necessary as the memory footprint can become low enough
+     * that Garbage collection becomes infrequent, but still guards resources.
      */
     private static long forcedGarbageCollecionInterval = 60000;
 
