@@ -6,19 +6,20 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import emissary.command.converter.PriorityDirectoryConverter;
 import emissary.command.converter.WorkspaceSortModeConverter;
 import emissary.pickup.PriorityDirectory;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implemetation to distribute work to peer nodes")
-public class FeedCommand extends HttpCommand {
+public class FeedCommand extends ServiceCommand {
 
     public static String COMMAND_NAME = "feed";
 
@@ -58,7 +59,7 @@ public class FeedCommand extends HttpCommand {
 
     @Parameter(names = {"-i", "--inputRoot"},
             description = "the root path or comma-separated paths to use when reading input, can use PriorityDirectory format",
-            converter = PriorityDirectoryConverter.class, required = true)
+            converter = PriorityDirectoryConverter.class)
     private List<PriorityDirectory> priorityDirectories;
 
     @Parameter(names = {"--sort"}, description = "order which to sort files as they are put into work bundles, defaults to Priority sort (10)",
@@ -89,8 +90,12 @@ public class FeedCommand extends HttpCommand {
     private boolean fileTimestamp = false;
 
     @Override
-    public void run(JCommander jc) {
-        setup();
+    public void startService() {
+        if (CollectionUtils.isEmpty(priorityDirectories)) {
+            LOG.error("No input root or priority directories specified");
+            throw new ParameterException("Missing required parameter '-i' for input root or priority directories");
+        }
+
         LOG.info("Starting feeder using {} as the workspace class", workspaceClass);
         try {
             WorkSpace ws = (WorkSpace) Class.forName(workspaceClass).getConstructor(FeedCommand.class).newInstance(this);

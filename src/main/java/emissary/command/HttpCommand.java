@@ -107,7 +107,6 @@ public abstract class HttpCommand extends BaseCommand {
         System.setProperty(EmissaryNode.NODE_PORT_PROPERTY, Integer.toString(port));
         logInfo("Setting {} to {} ", EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
         System.setProperty(EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
-
     }
 
     public HostAndPort getHostAndPort() {

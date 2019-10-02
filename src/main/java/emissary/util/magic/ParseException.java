@@ -5,6 +5,8 @@ package emissary.util.magic;
  */
 
 public class ParseException extends Exception {
+    private static final long serialVersionUID = -58614520195826109L;
+
     public ParseException(String message) {
         super(message);
     }

@@ -8,6 +8,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Use the {@link ServiceCommand} --stop flag to stop a running server
+ */
+@Deprecated
 @Parameters(commandDescription = "Stop an Emissary jetty server")
 public class StopCommand extends HttpCommand {
 

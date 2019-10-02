@@ -188,7 +188,8 @@ public final class Ssdeep {
 
         /**
          * Discard any existing hash state and prepare to compute a new hash. This should be followed by calls to
-         * {@link #applyBytes()} to provide the data, and then {@link #finishHashing()} to complete the computations.
+         * {@link #applyBytes(RollingState, byte[], int, int)} to provide the data, and then
+         * {@link #finishHashing(RollingState)} to complete the computations.
          */
         private void beginHashing() {
             this.fuzzLen1 = 0;
@@ -215,7 +216,7 @@ public final class Ssdeep {
 
         /**
          * Finish hashing and generate the final signature. This should be done after all bytes have been applied with
-         * {@link #applyBytes()}.
+         * {@link #applyBytes(RollingState, byte[], int, int)}.
          *
          * @param rollState The rolling hash state used during hashing.
          * @return The final signature.
@@ -447,9 +448,9 @@ public final class Ssdeep {
      *
      * @param s1 The first byte array for comparison.
      * @param s2 The second byte array for comparison.
-     * @param len The substring length to look for. Assumed greater than zero.
-     * @return {@code true} iff {@code s1} and {@code s2} have at least one byte sequence of length {@code len} in common at
-     *         arbitrary offsets.
+     * @param length The substring length to look for. Assumed greater than zero.
+     * @return {@code true} iff {@code s1} and {@code s2} have at least one byte sequence of length {@code length} in common
+     *         at arbitrary offsets.
      */
     private static boolean hasCommonSequence(final byte[] s1, final byte[] s2, final int length) {
         if ((s1.length < length) || (s2.length < length)) {

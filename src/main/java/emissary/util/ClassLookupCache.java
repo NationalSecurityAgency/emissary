@@ -28,7 +28,7 @@ public final class ClassLookupCache {
         /** The class name. */
         private final String className;
 
-        /** A class object that matches {@link #name}. */
+        /** A class object that matches {@link #className}. */
         private final Class<T> clazz;
 
         /**

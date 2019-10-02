@@ -29,7 +29,6 @@ import emissary.output.roller.journal.JournalEntry;
 import emissary.output.roller.journal.JournalReader;
 import emissary.output.roller.journal.JournaledChannelPool;
 import emissary.output.roller.journal.KeyedOutput;
-import emissary.roll.Rollable;
 import emissary.util.io.FileNameGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -91,7 +90,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * @see JournaledCoalescer#JournaledCoalescer(java.nio.file.Path, FileNameGenerator, int)
      * @param outPath The Path to use for reading input and writing combined output
      * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
-     * @throws java.lang.InterruptedException
      * @throws IOException If there is some I/O problem.
      */
     public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator) throws IOException, InterruptedException {
@@ -104,8 +102,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * @param outPath The Path to use for reading input and writing combined output
      * @param fileNameGenerator The FileNameGenerator to use for unique destination file names
      * @param poolsize The max number of outputs for the pool.
-     * @throws IOException
-     * @throws InterruptedException
      */
     public JournaledCoalescer(final Path outPath, final FileNameGenerator fileNameGenerator, int poolsize) throws IOException, InterruptedException {
         this.outputPath = outPath.toAbsolutePath();
@@ -118,8 +114,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     /**
      * Validate the Path we are using for combining files
-     *
-     * @throws Exception
      */
     private void validateOutputPath() throws IOException {
         if (!exists(this.outputPath)) {
@@ -135,8 +129,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * Sometimes the rolled files can hang around after a crash. If there is a rolled file, that means all of the files
      * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled
      * file. Otherwise, the rolled file will get cleaned up with the normal process.
-     *
-     * @throws IOException
      */
     private void cleanupOrphanedRolledFiles() throws IOException {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(outputPath, "*" + ROLLED_EXT)) {
@@ -177,7 +169,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      * SeekableByteChannel. This method will block if objects from the pool have been exhausted.
      *
      * @return a KeyedOutput
-     * @throws IOException
      */
     public final KeyedOutput getOutput() throws IOException {
         lock.lock();
@@ -284,7 +275,6 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      *
      * @param journal The journal to combine in the output stream
      * @param rolledOutput The OutputStream object to use
-     * @throws IOException
      */
     protected void combineFiles(Journal journal, SeekableByteChannel rolledOutput) throws IOException {
         long startPos = rolledOutput.position();

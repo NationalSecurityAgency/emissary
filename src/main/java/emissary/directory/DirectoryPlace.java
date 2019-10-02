@@ -177,13 +177,28 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      * @param configStream config info
      * @param parentDir the parent directory or null if none
      * @param placeLoc key for this place
-     * @throws IOException when configuration failes
+     * @throws IOException when configuration fails
      */
     @Deprecated
     // need to pass in EmissaryNode
     public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc) throws IOException {
         super(configStream, parentDir, placeLoc);
         this.emissaryNode = new EmissaryNode();
+        setupDirectory(parentDir);
+    }
+
+    /**
+     * Create a new directory as specified by the config info with a parent for relaying through.
+     *
+     * @param configStream config info
+     * @param parentDir the parent directory or null if none
+     * @param placeLoc key for this place
+     * @param node node configuration details or null for defaults
+     * @throws IOException when configuration fails
+     */
+    public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc, final EmissaryNode node) throws IOException {
+        super(configStream, parentDir, placeLoc);
+        this.emissaryNode = node;
         setupDirectory(parentDir);
     }
 

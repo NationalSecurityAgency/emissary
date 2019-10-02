@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.fasterxml.jackson.databind.ser.std.MapProperty;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.directory.DirectoryEntry;
@@ -110,7 +111,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
 
             String key = writer.getName();
             @SuppressWarnings("unchecked")
-            Collection<Object> values = (Collection<Object>) pojo;
+            Collection<Object> values = (Collection<Object>) ((Map<?, ?>) pojo).get(key);
 
             if (includeParameter(key)) {
                 Collection<Object> write = filter(key, values);
@@ -119,6 +120,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
                     jgen.writeFieldName(transform(key));
 
                     // only write the element
+                    ((MapProperty) writer).setValue(write);
                     writer.serializeAsElement(write, jgen, provider);
                 }
             }
@@ -205,6 +207,8 @@ public class JsonOutputFilter extends AbstractRollableFilter {
      * Ibdo {@link Module} implementation that allows registration of serializers
      */
     class IbdoModule extends SimpleModule {
+        private static final long serialVersionUID = -8129967131240053241L;
+
         public IbdoModule() {
             addSerializer(IBaseDataObject.class, new IbdoSerializer());
         }

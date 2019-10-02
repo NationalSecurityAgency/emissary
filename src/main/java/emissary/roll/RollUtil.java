@@ -13,7 +13,6 @@ public class RollUtil {
     /**
      * returns the time period from the current Configurator using the value from ROLLABLE_TIME_PERIOD. Defaults to 10L
      * 
-     * @param configG
      * @return the configured rollable time period
      */
     public static long getPeriod(Configurator configG) {
@@ -24,7 +23,6 @@ public class RollUtil {
      * Returns the TimeUnit by extracting the value from ROLLABLE_TIME_PERIOD. The time unit value must be one that exactly
      * matches those defined in the TimeUnit enum. Defaults to MINUTES.
      * 
-     * @param configG
      * @return the configured rollable TimeUnit
      */
     public static TimeUnit getTimeUnit(Configurator configG) {

@@ -5,6 +5,8 @@ package emissary.util.magic;
  */
 
 public class ByteArrayPrecisionException extends NumberFormatException {
+    private static final long serialVersionUID = -50977746714895277L;
+
     public ByteArrayPrecisionException(String msg) {
         super(msg);
     }

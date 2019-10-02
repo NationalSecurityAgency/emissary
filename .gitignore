@@ -12,6 +12,9 @@ mvn_test.out
 # used when running ./emissary script
 .mvn-classpath
 
+# used when running ./Docker_compose_test_script.sh
+target/test_results
+
 # IDE stuff
 nbproject/
 manifest.mf

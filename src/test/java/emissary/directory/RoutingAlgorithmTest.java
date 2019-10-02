@@ -349,7 +349,7 @@ public class RoutingAlgorithmTest extends UnitTest {
      */
     class MyDirectoryPlace extends DirectoryPlace {
         public MyDirectoryPlace(final String placeLoc) throws IOException {
-            super(new ResourceReader().getConfigDataAsStream(thisPackage + ".MyDirectoryPlace.cfg"), null, placeLoc);
+            super(new ResourceReader().getConfigDataAsStream(thisPackage + ".MyDirectoryPlace.cfg"), placeLoc, new EmissaryNode());
         }
 
         public void clearAllEntries() {

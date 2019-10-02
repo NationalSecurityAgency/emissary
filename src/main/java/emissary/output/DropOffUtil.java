@@ -3,6 +3,7 @@ package emissary.output;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -682,7 +683,7 @@ public class DropOffUtil {
      */
     protected String datePath(final String dtg) {
         if (dtg == null) {
-            return emissary.util.TimeUtil.getDateAsPath(new Date());
+            return emissary.util.TimeUtil.getDateAsPath(Instant.now());
         } else {
             return dtg.substring(0, 4) + "-" + // yyyy
                     dtg.substring(4, 6) + "-" + // mm

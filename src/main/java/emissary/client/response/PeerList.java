@@ -21,7 +21,6 @@ public class PeerList {
     }
 
     // used by object mapper
-    @SuppressWarnings("usused")
     public PeerList() {}
 
     public String getHost() {

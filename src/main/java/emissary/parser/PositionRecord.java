@@ -10,9 +10,6 @@ public class PositionRecord {
 
     /**
      * position and length of something important in a data structure
-     * 
-     * @param position
-     * @param length
      */
     public PositionRecord(long position, long length) {
         this.position = position;

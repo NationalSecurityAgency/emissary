@@ -164,8 +164,6 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     /**
      * Closes the underlying outputs and renames the current file to its final name. A new file is NOT opened. Further use
      * of the instance of this class is not guaranteed to function after calling this method.
-     * 
-     * @throws IOException
      */
     @Override
     public void close() throws IOException {
@@ -183,7 +181,6 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
      * Thread safe write of a byte
      * 
      * @param b byte to write
-     * @throws IOException
      */
     @Override
     public void write(int b) throws IOException {
@@ -203,7 +200,6 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
      * @param b the data
      * @param off the start offset of the data
      * @param len the number of bytes to write
-     * @throws IOException
      */
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
@@ -237,8 +233,6 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     /**
      * Determines whether to delete zero byte files on a roll. If true, both bytes written and the size of the output file
      * are checked. If both are zero, and deleteZeroByteFiles is true, the file is deleted.
-     * 
-     * @param deleteZeroByteFiles
      */
     public void setDeleteZeroByteFiles(boolean deleteZeroByteFiles) {
         this.deleteZeroByteFiles = deleteZeroByteFiles;
