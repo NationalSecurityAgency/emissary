@@ -145,6 +145,12 @@ public interface IServiceProviderPlace {
      */
     long getResourceLimitMillis();
 
+    /**
+     * Get current resource processing time in millis
+     *
+     * @return long resource processing time in millis
+     */
+    long getResourceTimeMillis();
 
     /**
      * Get the agent that is currently responsible for this thread

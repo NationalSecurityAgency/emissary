@@ -2,6 +2,8 @@ package emissary.place;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -102,6 +104,11 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
      */
     protected boolean processMethodImplemented = false;
     protected boolean processHDMethodImplemented = false;
+
+    /**
+     * Stores the starting time when processing a payload object.
+     */
+    private Instant resourceStartTime = null;
 
     /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
@@ -555,12 +562,15 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
         MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());
         try {
+            this.resourceStartTime = Instant.now();
             List<IBaseDataObject> l = processHeavyDuty(payload);
             rehash(payload);
             return l;
         } catch (Exception e) {
             logger.error("Place.process threw: " + e, e);
             throw e;
+        } finally {
+            this.resourceStartTime = null;
         }
     }
 
@@ -996,6 +1006,15 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     @Override
     public long getResourceLimitMillis() {
         return configG.findLongEntry("PLACE_RESOURCE_LIMIT_MILLIS", -2L);
+    }
+
+    /**
+     * Get current resource processing time in millis
+     * 
+     * @return long processing time in millis
+     */
+    public long getResourceTimeMillis() {
+        return (null == this.resourceStartTime) ? 0 : Duration.between(this.resourceStartTime, Instant.now()).toMillis();
     }
 
     /**
