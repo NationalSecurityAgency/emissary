@@ -9,8 +9,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import emissary.config.Configurator;
@@ -461,5 +463,54 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
 
         assertNull(this.util.getEventDate(d, tld));
+    }
+
+    @Test
+    public void testGetFileType() {
+        Map<String, String> metadata = new HashMap<>();
+        testFileType(metadata, "UNKNOWN", null);
+
+        String poppedForms = "myPoppedForms";
+        setupMetadata(metadata, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
+        testFileType(metadata, poppedForms, null);
+
+        String formsArg = "myFile";
+        setupMetadata(metadata, formsArg, DropOffUtil.FileTypeCheckParameter.FILETYPE);
+        testFileType(metadata, formsArg, formsArg);
+
+        String finalId = "myFinalId";
+        setupMetadata(metadata, finalId, DropOffUtil.FileTypeCheckParameter.FINAL_ID);
+        formsArg = "differentFileType";
+        testFileType(metadata, finalId, formsArg);
+
+        formsArg = "myFile  ";
+        metadata.clear();
+        testFileType(metadata, "myFile", formsArg);
+        assertEquals(formsArg,
+                metadata.get(DropOffUtil.FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName()));
+
+        formsArg = "";
+        String fontEncoding = "fontEncoding";
+        setupMetadata(metadata, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
+        testFileType(metadata, "TEXT", formsArg);
+
+        metadata.clear();
+        formsArg = " MSWORD";
+        testFileType(metadata, "MSWORD_FRAGMENT", formsArg);
+
+        metadata.clear();
+        formsArg = "QUOTED-PRINTABLE";
+        testFileType(metadata, "TEXT", formsArg);
+    }
+
+    private void setupMetadata(Map<String, String> metadata, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
+        metadata.clear();
+        metadata.put(fileTypeCheckParameter.getFieldName(), fieldValue);
+    }
+
+    private void testFileType(Map<String, String> metadata, String expectedResults, String formsArg) {
+        String fileType;
+        fileType = util.getFileType(metadata, formsArg);
+        assertEquals(expectedResults, fileType);
     }
 }

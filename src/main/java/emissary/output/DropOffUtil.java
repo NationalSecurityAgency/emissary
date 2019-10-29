@@ -20,7 +20,7 @@ import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.util.shell.Executrix;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -729,39 +729,38 @@ public class DropOffUtil {
     public String getFileType(final Map<String, String> metaData, final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
-            forms = metaData.get("POPPED_FORMS");
+            forms = metaData.get(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
             if (forms == null) {
                 forms = "";
             }
         }
 
-        String fileType = "UNKNOWN";
-        if (metaData.containsKey("FILETYPE")) {
-            fileType = metaData.get("FILETYPE");
-        } else if (metaData.containsKey("FINAL_ID")) {
-            fileType = metaData.get("FINAL_ID");
-            logger.debug("FINAL_ID FileType is (" + fileType + ")");
-            metaData.put("FILETYPE", fileType);
+        String fileType;
+        if (metaData.containsKey(FileTypeCheckParameter.FILETYPE.getFieldName())) {
+            fileType = metaData.get(FileTypeCheckParameter.FILETYPE.getFieldName());
+        } else if (metaData.containsKey(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
+            fileType = metaData.get(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            logger.debug("FINAL_ID FileType is ({})", fileType);
+            metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
         } else {
-            fileType = forms;
-            if (forms.indexOf(" ") > -1) {
+            if (forms.contains(" ")) {
                 fileType = forms.substring(0, forms.indexOf(" ")).trim();
-                metaData.put("COMPLETE_FILETYPE", forms);
+                metaData.put(FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName(), forms);
             } else {
                 fileType = forms;
             }
-            if (fileType == null || fileType.length() == 0) {
-                if (metaData.containsKey("FontEncoding")) {
+            if (StringUtils.isEmpty(fileType)) {
+                if (metaData.containsKey(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
                     fileType = "TEXT";
+                } else {
+                    fileType = "UNKNOWN";
                 }
             }
-            if (fileType == null || fileType.length() == 0) {
-                fileType = "UNKNOWN";
-            }
-            metaData.put("FILETYPE", fileType);
+
+            metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
         }
 
-        if ("UNKNOWN".equals(fileType) && (forms != null) && (forms.indexOf("MSWORD") > -1)) {
+        if ("UNKNOWN".equals(fileType) && forms.contains("MSWORD")) {
             fileType = "MSWORD_FRAGMENT";
         }
 
@@ -770,6 +769,24 @@ public class DropOffUtil {
         }
 
         return fileType;
+    }
+
+    /**
+     * Parameters that are used to determine filetype in {@link #getFileType(Map, String)}
+     */
+    public enum FileTypeCheckParameter {
+        COMPLETE_FILETYPE("COMPLETE_FILETYPE"), FILETYPE("FILETYPE"), FINAL_ID("FINAL_ID"), FONT_ENCODING("FontEncoding"), POPPED_FORMS(
+                "POPPED_FORMS");
+
+        String fieldName;
+
+        FileTypeCheckParameter(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
     }
 
     /**
