@@ -15,8 +15,12 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
@@ -78,6 +82,26 @@ public class ExecutrixTest extends UnitTest {
         assertNotNull("names array has null OUTPATH", names[Executrix.OUTPATH]);
         assertTrue("names must use out file ending", names[Executrix.OUT].endsWith(".out"));
         assertTrue("names must use in file ending", names[Executrix.IN].endsWith(".in"));
+    }
+
+    @Test
+    public void testExecutrixUniqueBase() {
+        this.e.setInFileEnding(".in");
+        this.e.setOutFileEnding(".out");
+        this.e.setOrder("NORMAL");
+
+        final int COUNT = 1000;
+        final Set<String> basePathSet = Collections.synchronizedSet(new HashSet<>(COUNT));
+
+        // Generate COUNT sets of names
+        IntStream.range(0, COUNT).parallel().forEach(number -> {
+            final String[] name = this.e.makeTempFilenames();
+            assertNotNull("name null DIR", name[Executrix.DIR]);
+            assertNotNull("name null BASE", name[Executrix.BASE]);
+            assertNotNull("name null BASE_PATH", name[Executrix.BASE_PATH]);
+            basePathSet.add(name[Executrix.BASE_PATH]);
+        });
+        assertEquals("Some BASE_PATH entries mismatch", COUNT, basePathSet.size());
     }
 
     @Test
