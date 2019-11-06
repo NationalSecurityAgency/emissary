@@ -129,7 +129,7 @@ public class Executrix {
     public String[] makeTempFilenames() {
         final String[] names = new String[7];
         final String dir = FileManipulator.mkTempFile(this.tmpDir, this.placeName);
-        final String base = Long.toString(System.currentTimeMillis());
+        final String base = Long.toString(System.nanoTime());
         names[DIR] = dir;
         names[BASE] = base;
         names[BASE_PATH] = dir + File.separator + base;
