@@ -47,7 +47,6 @@ public class FilePickUpPlace extends emissary.pickup.PickUpPlace {
      * <li>POLLING_INTERVAL: how long to sleep between directory polls</li>
      * <li>BUNDLE_SIZE: how many files to group in a bundle</li>
      * <li>INPUT_DATA: one or more directories to pull files from</li>
-     * <li></li>
      * </ul>
      */
     protected void configurePlace() {

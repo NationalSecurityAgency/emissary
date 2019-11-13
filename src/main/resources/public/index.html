@@ -43,26 +43,26 @@
         });
 
       function getCookie(cname) {
-    	    var name = cname + "=";
-    	    var decodedCookie = decodeURIComponent(document.cookie);
-    	    var ca = decodedCookie.split(';');
-    	    for(var i = 0; i <ca.length; i++) {
-    	        var c = ca[i];
-    	        while (c.charAt(0) == ' ') {
-    	            c = c.substring(1);
-    	        }
-    	        if (c.indexOf(name) == 0) {
-    	            return c.substring(name.length, c.length);
-    	        }
-    	    }
-    	    return "";
-    	}
+          var name = cname + "=";
+          var decodedCookie = decodeURIComponent(document.cookie);
+          var ca = decodedCookie.split(';');
+          for(var i = 0; i <ca.length; i++) {
+              var c = ca[i];
+              while (c.charAt(0) == ' ') {
+                  c = c.substring(1);
+              }
+              if (c.indexOf(name) == 0) {
+                  return c.substring(name.length, c.length);
+              }
+          }
+          return "";
+      }
       var czar_says = getCookie('czar');
       if (czar_says !== "") {
-    	  document.getElementById('bubble').setAttribute("style","display:block");
-    	  document.getElementById('bubble').innerHTML = czar_says;
-    	  // expire that cookie, so page refreshes don't show same message
-    	  document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        document.getElementById('bubble').setAttribute("style","display:block");
+        document.getElementById('bubble').innerHTML = czar_says;
+        // expire that cookie, so page refreshes don't show same message
+        document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       }
     </script>
 

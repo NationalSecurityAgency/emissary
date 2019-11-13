@@ -109,7 +109,7 @@ public class MagicNumber {
     protected List<MagicNumber[]> dependencies;
 
     /**
-     * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '>'
+     * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '&gt;'
      * character at the appropriate depth.
      * 
      * @return String

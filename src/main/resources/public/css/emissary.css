@@ -81,15 +81,15 @@ td.num {
 }
 
 #czar {
-	width: 400px;
-	margin-left: 20px;
-	background-image: url("/img/mini-czar.jpg");
-	background-repeat: no-repeat;
-	background-position: left;
+    width: 400px;
+    margin-left: 20px;
+    background-image: url("/img/mini-czar.jpg");
+    background-repeat: no-repeat;
+    background-position: left;
 }
 
 #bubble {
-	display:none;
+    display:none;
 }
 
 .triangle-right.left {

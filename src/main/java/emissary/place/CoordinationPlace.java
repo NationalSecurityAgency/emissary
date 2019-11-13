@@ -80,13 +80,12 @@ public class CoordinationPlace extends ServiceProviderPlace {
     /**
      * Set up the place specific information Config items read here are:
      * 
-     * <pre>
      * <ul>
-     *   <li>OUTPUT_FORM: default=null, output form for final step of coordination</li>
-     *   <li>PUSH_OUTPUT_FORM: default=true, calls pushOutputForm when true, setOutputForm otherwise</li>
-     *   <li>SERVICE_COORDINATION: place entries to use for this coordination place, an ordered list of places that must already be constructed</li>
+     * <li>OUTPUT_FORM: default=null, output form for final step of coordination</li>
+     * <li>PUSH_OUTPUT_FORM: default=true, calls pushOutputForm when true, setOutputForm otherwise</li>
+     * <li>SERVICE_COORDINATION: place entries to use for this coordination place, an ordered list of places that must
+     * already be constructed</li>
      * </ul>
-     * </pre>
      */
     protected void configurePlace() {
         outputForm = configG.findStringEntry("OUTPUT_FORM", null);

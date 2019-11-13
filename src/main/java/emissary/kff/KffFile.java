@@ -195,7 +195,7 @@ public class KffFile implements KffFilter {
      * @param record bytes from the kff binary file, one record long
      * @param hash HASH to compare to record
      * @param crc CRC to compare to record
-     * @return <0 if given value is less than record, >0 if given value is greater than record, 0 if they match
+     * @return &lt;0 if given value is less than record, &gt;0 if given value is greater than record, 0 if they match
      */
     private int compare(byte[] record, byte[] hash, long crc) {
         int i;

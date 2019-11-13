@@ -44,20 +44,20 @@
     <dep.httpclient.version>4.5.1</dep.httpclient.version>
     <dep.httpcore.version>4.4.3</dep.httpcore.version>
     <dep.jackcess.version>2.1.2</dep.jackcess.version>
-    <dep.jackson.version>2.9.9</dep.jackson.version>
+    <dep.jackson.version>2.10.1</dep.jackson.version>
     <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>2.27</dep.jersey.version>
     <dep.jetty.version>9.4.18.v20190429</dep.jetty.version>
-    <dep.jruby-complete.version>1.7.1</dep.jruby-complete.version>
+    <dep.jruby-complete.version>9.2.9.0</dep.jruby-complete.version>
     <dep.junit.version>4.12</dep.junit.version>
-    <dep.logback.version>1.1.5</dep.logback.version>
-    <dep.mockito-all.version>1.9.0</dep.mockito-all.version>
+    <dep.logback.version>1.2.3</dep.logback.version>
+    <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7R4</dep.rhino.version>
-    <dep.slf4j.version>1.7.16</dep.slf4j.version>
+    <dep.slf4j.version>1.7.29</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.8.17</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
     <dep.sun.mail.version>1.6.2</dep.sun.mail.version>
@@ -68,14 +68,18 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
-    <maven.min-version>3.2.5</maven.min-version>
+    <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- With Java 8 and the latest version of surefire, user.timezone is not read correctly.  Reevaluate one day.
          See https://issues.apache.org/jira/browse/SUREFIRE-1176 or
          http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
+
+         The COMPAT locale provider is used because the date formatter parsing has changed significantly
+         when using the CLDR locale provider, which is the default in JDK11.
+         https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
       -->
-    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
+    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
     <surefire.forkCount>.5C</surefire.forkCount>
   </properties>
   <dependencyManagement>
@@ -103,7 +107,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}.3</version>
+        <version>${dep.jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
@@ -676,12 +680,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.5</version>
+          <version>3.1.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>1.4</version>
+          <version>3.0.0-M2</version>
           <executions>
             <execution>
               <id>check-maven-version</id>
@@ -693,6 +697,9 @@
                   <requireMavenVersion>
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
+                  <requireJavaVersion>
+                    <version>[1.8,)</version>
+                  </requireJavaVersion>
                   <dependencyConvergence />
                 </rules>
               </configuration>
@@ -702,7 +709,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.4.2</version>
+          <version>3.1.0</version>
           <configuration>
             <delimiters>
               <delimiter>${*}</delimiter>
@@ -715,7 +722,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.2.0</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -734,12 +741,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.17</version>
+          <version>3.0.0-M3</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.4</version>
+          <version>3.8.2</version>
           <configuration>
             <attach>true</attach>
             <relativizeDecorationLinks>false</relativizeDecorationLinks>
@@ -752,7 +759,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.0</version>
           <configuration>
             <configLocation>${checkstyleFormatter}</configLocation>
             <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
@@ -779,11 +786,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.10.1</version>
+          <version>3.1.1</version>
           <configuration>
             <quiet>true</quiet>
             <footer>Generated ${maven.build.timestamp}</footer>
-            <additionalparam>-Xdoclint:none</additionalparam>
+            <doclint>all,-missing</doclint>
           </configuration>
           <executions>
             <execution>
@@ -810,20 +817,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.5</version>
-          <executions>
-            <execution>
-              <id>build-jars</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
+          <version>3.1.2</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.9.1</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -833,7 +832,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.8.1</version>
           <configuration>
             <showWarnings>${maven.compiler.showWarnings}</showWarnings>
             <compilerArgs>
@@ -844,7 +843,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20</version>
+          <version>3.0.0-M3</version>
           <configuration>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
           </configuration>
@@ -852,12 +851,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.5.3</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.8.0</version>
+          <version>2.11.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
@@ -873,6 +872,7 @@
           </configuration>
           <executions>
             <execution>
+              <id>format-java-sources</id>
               <goals>
                 <goal>format</goal>
               </goals>
@@ -883,7 +883,7 @@
         <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.2.0</version>
+          <version>1.3.2</version>
           <configuration>
             <groups>java.,javax.,*</groups>
             <removeUnused>true</removeUnused>
@@ -923,7 +923,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.5.201505241946</version>
+          <version>0.8.4</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>
@@ -967,7 +967,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.4</version>
+          <version>3.12.0</version>
           <configuration>
             <excludes />
             <failOnViolation>false</failOnViolation>
@@ -982,12 +982,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>2.7</version>
+          <version>3.0.0</version>
           <configuration>
             <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
             <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -996,7 +996,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>2.20</version>
+          <version>3.0.0-M3</version>
           <configuration>
             <showSuccess>true</showSuccess>
             <linkXRef>true</linkXRef>
@@ -1005,12 +1005,12 @@
         <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.7.0.1746</version>
         </plugin>
         <plugin>
           <groupId>com.spotify</groupId>
           <artifactId>dockerfile-maven-plugin</artifactId>
-          <version>1.3.7</version>
+          <version>1.4.13</version>
           <configuration>
             <skipPush>true</skipPush>
           </configuration>
@@ -1036,19 +1036,33 @@
             </execution>
           </executions>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>${surefire.argline}</argLine>
@@ -1062,11 +1076,7 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
@@ -1090,6 +1100,7 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <argLine>${surefire.argline}</argLine>
@@ -1102,8 +1113,10 @@
         </configuration>
         <executions>
           <execution>
+            <id>run-integration-tests</id>
             <goals>
               <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
           </execution>
         </executions>
@@ -1113,6 +1126,7 @@
   <reporting>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <reportSets>
           <reportSet>
@@ -1127,7 +1141,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.0.0</version>
         <reportSets>
           <reportSet>
             <id>default</id>
@@ -1139,9 +1153,11 @@
         </reportSets>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
     </plugins>
@@ -1181,6 +1197,7 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
           </plugin>
         </plugins>
@@ -1188,6 +1205,7 @@
       <reporting>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <reportSets>
               <reportSet>
@@ -1210,6 +1228,7 @@
       <reporting>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-pmd-plugin</artifactId>
           </plugin>
         </plugins>
@@ -1220,6 +1239,7 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
               <outputDirectory>${project.build.directory}</outputDirectory>
@@ -1368,6 +1388,10 @@
           <name>m2e.version</name>
         </property>
       </activation>
+      <properties>
+        <!-- enable compiler compliance when building in Eclipse -->
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-eclipse</directory>
@@ -1485,6 +1509,15 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>jdk-release-flag</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
     </profile>
   </profiles>
 </project>

@@ -57,10 +57,10 @@ public class Emissary {
         for (Class<? extends EmissaryCommand> clz : cmds) {
             EmissaryCommand cmd;
             try {
-                cmd = clz.newInstance();
+                cmd = clz.getDeclaredConstructor().newInstance();
                 String name = cmd.getCommandName();
                 staticCopy.put(name, cmd);
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (ReflectiveOperationException e) {
                 LOG.error("Couldn't make EMISSARY_COMMANDS", e);
                 System.exit(1);
             }

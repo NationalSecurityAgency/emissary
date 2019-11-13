@@ -87,7 +87,7 @@ public class Main {
     protected Set<String> viewsToPrint = new HashSet<String>();
     /** Class name of parser to run on input data */
     protected String parserName = SimpleParser.class.getName();
-    /** Number of threads to use to process input fies */
+    /** Number of threads to use to process input files */
     protected int numThreads = 1;
     /** The workers that call the place */
     List<Worker> workers = new ArrayList<Worker>();

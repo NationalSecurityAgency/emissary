@@ -33,7 +33,7 @@ public class MagicNumberFactory {
      *
      * @param configData the byte[] representing the magic file
      * @param zeroDepthErrorList logs errors with zero depth entries
-     * @param continuationErrorMap logs errors with continuations - these are entries with depths > 0
+     * @param continuationErrorMap logs errors with continuations - these are entries with depths &gt; 0
      * @return a {@link List}.
      */
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, List<String> zeroDepthErrorList,
@@ -48,7 +48,7 @@ public class MagicNumberFactory {
      *
      * @param configData the byte[] representing the magic file
      * @param zeroDepthErrorList logs errors with zero depth entries
-     * @param continuationErrorMap logs errors with continuations - these are entries with depths > 0
+     * @param continuationErrorMap logs errors with continuations - these are entries with depths &gt; 0
      * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
      * @return a {@link List}.
      */

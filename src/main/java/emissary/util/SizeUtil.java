@@ -191,7 +191,7 @@ public class SizeUtil {
      * Estimate the size, in bytes, of the RAM of an entire {@link IBaseDataObject} family tree. This is simply the sum of
      * the sizes of the individual members of the family tree.
      *
-     * @param familyTree - List<IBaseDataObject> representing the family tree for a document object
+     * @param familyTree - {@code List<IBaseDataObject>} representing the family tree for a document object
      * @return - the approximate size, in bytes, in RAM for the familyTree
      */
     public static long sizeof(List<IBaseDataObject> familyTree) {

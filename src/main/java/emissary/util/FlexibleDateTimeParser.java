@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Attempt to parse a date in an unknown format. This will loop through a set of configured formats and convert it into
  * a {@link ZonedDateTime}.
- * <p/>
+ * <p>
  * Other parsing libs:
- * <p/>
+ * <p>
  * Natty - It handled a good chunk of the formats but not all.
  */
 public class FlexibleDateTimeParser {

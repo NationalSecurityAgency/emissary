@@ -8,29 +8,58 @@ import emissary.place.IServiceProviderPlace;
  * A class of utility methods for manipulating dictionary keys. Keys are stored in the dictionary with the following
  * format:
  *
- * <pre>
- *
- *    <code>dataType.serviceName.serviceType.location$expense</code>
+ * <code>dataType.serviceName.serviceType.location$expense</code>
  * 
- *    Example:   UNKNOWN.servicename.ID.tcp://host.dom.com:8001/FilePlace$5050
- * 
- *    For the example key above the return values are as follows:
+ * Example: UNKNOWN.servicename.ID.tcp://host.dom.com:8001/FilePlace$5050
  * 
  * <table>
- *   <tr><td>routine</td>  <td>return value</td></tr>
- *   <tr><td>dataType</td>        <td>UNKOWN</td></tr>
- *   <tr><td>serviceName</td>     <td>servicename</td></tr>
- *   <tr><td>serviceType</td>     <td>ID</td></tr>
- *   <tr><td>serviceHost</td>     <td>host.dom.com:8001</td></tr>
- *   <tr><td>serviceHostURL</td>  <td>http://host.dom.com:8001/</td></tr>
- *   <tr><td>serviceLocation</td> <td>http://host.dom.com:8001/FilePlace</td></tr>
- *   <tr><td>expense</td>         <td>5050</td></tr>
- *   <tr><td>serviceClassname</td><td>FilePlace</td></tr>
- *   <tr><td>dataID</td>          <td>UNKOWN::ID</td></tr>
- *   <tr><td>defaultDirectoryKey</td><td>*.*.*.http://host.dom.com:8001/DirectoryPlace</td></tr>
+ * <caption>For the example key above the return values are as follows:</caption>
+ * <tr>
+ * <td>routine</td>
+ * <td>return value</td>
+ * </tr>
+ * <tr>
+ * <td>dataType</td>
+ * <td>UNKOWN</td>
+ * </tr>
+ * <tr>
+ * <td>serviceName</td>
+ * <td>servicename</td>
+ * </tr>
+ * <tr>
+ * <td>serviceType</td>
+ * <td>ID</td>
+ * </tr>
+ * <tr>
+ * <td>serviceHost</td>
+ * <td>host.dom.com:8001</td>
+ * </tr>
+ * <tr>
+ * <td>serviceHostURL</td>
+ * <td>http://host.dom.com:8001/</td>
+ * </tr>
+ * <tr>
+ * <td>serviceLocation</td>
+ * <td>http://host.dom.com:8001/FilePlace</td>
+ * </tr>
+ * <tr>
+ * <td>expense</td>
+ * <td>5050</td>
+ * </tr>
+ * <tr>
+ * <td>serviceClassname</td>
+ * <td>FilePlace</td>
+ * </tr>
+ * <tr>
+ * <td>dataID</td>
+ * <td>UNKOWN::ID</td>
+ * </tr>
+ * <tr>
+ * <td>defaultDirectoryKey</td>
+ * <td>*.*.*.http://host.dom.com:8001/DirectoryPlace</td>
+ * </tr>
  * </table>
  *
- * </pre>
  */
 public class KeyManipulator implements Serializable {
 

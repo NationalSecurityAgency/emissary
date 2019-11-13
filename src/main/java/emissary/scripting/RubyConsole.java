@@ -246,7 +246,7 @@ public class RubyConsole implements HttpSessionBindingListener, Runnable {
      * @param expression the ruby expression to evaluate
      * @param limit the max time to wait for the answer in millis sending a limit of 0 causes nowait and must call getResult
      *        yourself if you want the result (async model). Calling limit with a number greater than 0 will wait at most
-     *        that length of time for the result to be ready. A limit of < 0 is currently undefined.
+     *        that length of time for the result to be ready. A limit of &lt; 0 is currently undefined.
      */
     public Object evalAndWait(String expression, long limit) throws Exception {
         synchronized (this) {

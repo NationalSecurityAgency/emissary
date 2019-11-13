@@ -281,7 +281,7 @@ public interface IBaseDataObject {
      * @param key name of the metadata element
      * @param value the value to append
      * @param sep ignored
-     * @deprecated use <code>appendParameter(String key, CharSequence value)</code>
+     * @deprecated use {@link #appendParameter(String, CharSequence)}
      */
     @Deprecated
     void appendParameter(String key, CharSequence value, String sep);

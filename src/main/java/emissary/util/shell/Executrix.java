@@ -78,23 +78,21 @@ public class Executrix {
     /**
      * Configure all the extra command stuff along with the normal config Config Items read here are:
      * 
-     * <pre>
      * <ul>
-     *   <li>EXEC_COMMAND: the command to execute</li>
-     *   <li>IN_FILE_ENDING: extension of input file, default is none</li>
-     *   <li>OUT_FILE_ENDING: extension of output file, default is .out if input extension is blank, none otherwise</li>
-     *   <li>OUTPUT_TYPE: FILE or STD for where the output of EXEC_COMMAND goes, default STD</li>
-     *   <li>ORDER: default is NORMAL</li>
-     *   <li>NUM_ARGS: obsolete</li>
-     *   <li>TEMP_DIR: default is java.io.tmpdir</li>
-     *   <li>MINIMUM_DATA_SIZE: default is 0</li>
-     *   <li>MAXIMUM_DATA_SIZE: default is 64*1024</li>
-     *   <li>PLACE_NAME: also required by places in general</li>
-     *   <li>VM_SIZE_LIMIG: default is 200000 for ulimit argument</li>
-     *   <li>CPU_TIME_LIMIT: default is 300 seconds for ulimit argument</li>
-     *   <li>PROCESS_MAX_MILLIS: default is 300000 (5 Min) for process Watchdog. Set to 0 to disable watchdog use</li>
+     * <li>EXEC_COMMAND: the command to execute</li>
+     * <li>IN_FILE_ENDING: extension of input file, default is none</li>
+     * <li>OUT_FILE_ENDING: extension of output file, default is .out if input extension is blank, none otherwise</li>
+     * <li>OUTPUT_TYPE: FILE or STD for where the output of EXEC_COMMAND goes, default STD</li>
+     * <li>ORDER: default is NORMAL</li>
+     * <li>NUM_ARGS: obsolete</li>
+     * <li>TEMP_DIR: default is java.io.tmpdir</li>
+     * <li>MINIMUM_DATA_SIZE: default is 0</li>
+     * <li>MAXIMUM_DATA_SIZE: default is 64*1024</li>
+     * <li>PLACE_NAME: also required by places in general</li>
+     * <li>VM_SIZE_LIMIG: default is 200000 for ulimit argument</li>
+     * <li>CPU_TIME_LIMIT: default is 300 seconds for ulimit argument</li>
+     * <li>PROCESS_MAX_MILLIS: default is 300000 (5 Min) for process Watchdog. Set to 0 to disable watchdog use</li>
      * </ul>
-     * </pre>
      * 
      * @param configGArg the configuration stream
      */

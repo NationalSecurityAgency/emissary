@@ -19,8 +19,7 @@ import org.slf4j.LoggerFactory;
  * modification time, both initially entered as time from the epoch. However, the concept of "youngest" and "oldest" is
  * relative to the construction time, so that:
  * <p>
- * getOldestFileModificationTime() <= getYoungestFileModificationTime()
- * </p>
+ * getOldestFileModificationTime() &lt;= getYoungestFileModificationTime()
  */
 public class WorkBundle implements Serializable, Comparable<WorkBundle> {
 

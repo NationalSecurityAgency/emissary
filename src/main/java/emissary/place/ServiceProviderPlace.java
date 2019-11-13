@@ -365,18 +365,16 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     /**
      * Configuration items read here are:
      *
-     * <pre>
      * <ul>
-     *   <li>PLACE_NAME: place name portion of key, required</li>
-     *   <li>SERVICE_NAME: service name portion of key, required</li>
-     *   <li>SERVICE_TYPE: service type portion of key, required</li>
-     *   <li>SERVICE_DESCRIPTION: description of place, required</li>
-     *   <li>SERVICE_COST: cost of service provided, required</li>
-     *   <li>SERVICE_QUALITY: quality of service provided, required</li>
-     *   <li>SERVICE_PROXY: list of service proxy types for key</li>
-     *   <li>SERVICE_KEY: full 4 part keys with expense</li>
+     * <li>PLACE_NAME: place name portion of key, required</li>
+     * <li>SERVICE_NAME: service name portion of key, required</li>
+     * <li>SERVICE_TYPE: service type portion of key, required</li>
+     * <li>SERVICE_DESCRIPTION: description of place, required</li>
+     * <li>SERVICE_COST: cost of service provided, required</li>
+     * <li>SERVICE_QUALITY: quality of service provided, required</li>
+     * <li>SERVICE_PROXY: list of service proxy types for key</li>
+     * <li>SERVICE_KEY: full 4 part keys with expense</li>
      * </ul>
-     * </pre>
      *
      * @param placeLocation the specified placeLocation or a full four part key to register with
      */
@@ -1083,7 +1081,7 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
     /**
      * Leverage our insider knowledge of how emissary MobileAgents work in conjunction with the namespace to reach around
      * the back door of the system and get the TLD for the current payload You should only call this if
-     * payload.shortName().indexOf(Family.SEP) > -1
+     * payload.shortName().indexOf(Family.SEP) &gt; -1
      */
     protected IBaseDataObject getTLD() {
         try {

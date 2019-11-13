@@ -18,21 +18,21 @@ import org.slf4j.LoggerFactory;
  *
  * A. Examples:
  *
- * Java ByteCode From Larry Schwimmer (schwim@cs.stanford.edu) 0 belong 0xcafebabe compiled Java class data, >6 beshort
- * x version %d. >4 beshort x \b%d
+ * Java ByteCode From Larry Schwimmer (schwim@cs.stanford.edu) 0 belong 0xcafebabe compiled Java class data, &gt;6
+ * beshort x version %d. &gt;4 beshort x \b%d
  *
  * The entries must have 4 columns where the first three are delimited by white space as tabs, or spaces, or both and
  * the remaining columns will be stored as the description. Since spaces are also delimiters - if the value column
  * (third column) requires a space then it should be escaped.
  *
- * B. Offset Column 1. A decimal, hex, or octal value preceded or not preceded by '>' 2. Decimal: n* - if the
- * occurrences is > 1, then not preceded by '0' 3. Hex: 0xn* 4. Octal: 0n* 5. Offset values in the format '(n.s+32)' are
- * ignored. These only occurred in the continuations
+ * B. Offset Column 1. A decimal, hex, or octal value preceded or not preceded by '&gt;' 2. Decimal: n* - if the
+ * occurrences is &gt; 1, then not preceded by '0' 3. Hex: 0xn* 4. Octal: 0n* 5. Offset values in the format '(n.s+32)'
+ * are ignored. These only occurred in the continuations
  *
  * C. Data Type Column 1. BYTE, SHORT, LONG, STRING, BESHORT, BELONG, LESHORT, LELONG 2. LEDATE, BEDATE, and DATE are
- * not supported 3. Masking: If the data type is followed by a mask value in decimal, octal or hex and delimited by '&'
- * then the value column will be stored as the product of the masking. The mask value cannot exceed the data type
- * length.
+ * not supported 3. Masking: If the data type is followed by a mask value in decimal, octal or hex and delimited by
+ * '&amp;' then the value column will be stored as the product of the masking. The mask value cannot exceed the data
+ * type length.
  *
  * D. Value columns 1. String, Byte, Short, or Long - 1, 2, or 4 byte values - or any length value for the string type.
  * 2. String values can be escaped. a. Example "\0\40\320\3200\4text\ \7\x40\r\t\" parsed as: "0-32-208-208-0-4-text-
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * column - 4\ 4\4 results in [char 4, char space, char 4, integer 4] - Ascii values 8-15 can be escaped as: \b\t\n\r
  * etc... see man page for ascii - trailing slashes will result in the placement of a trailing space
  *
- * 3. Substitution Example >4 beshort x \bversion %d.%c Substitution is allowed for continuations only. In this case,
+ * 3. Substitution Example &gt;4 beshort x \bversion %d.%c Substitution is allowed for continuations only. In this case,
  * the short byte array will be sampled from the document at offset 4 and length 2. This stored value can be substituted
  * in the description field where %c or %s will substitute convert the number into a unicode character and %d %ld and
  * other numeric data types will instead substitute the numeric value.
@@ -61,13 +61,13 @@ import org.slf4j.LoggerFactory;
  * can be blank in continuations since continuations may depend upon the successful testing of preceding continuations.
  * In other words:
  *
- * 0 long 0xcafebabe java binary >4 byte x version %d
+ * 0 long 0xcafebabe java binary &gt;4 byte x version %d
  *
  * can be re-written as
  *
- * 0 short 0xcafe java >4 byte 0xba >>6 byte 0xbe \b\bbinary >>>4 byte x version %d
+ * 0 short 0xcafe java &gt;4 byte 0xba &gt;&gt;6 byte 0xbe \b\bbinary &gt;&gt;&gt;4 byte x version %d
  *
- * where the continuations will only occur upon the completion of '>4 byte 0xba'
+ * where the continuations will only occur upon the completion of '&gt;4 byte 0xba'
  *
  * 1. The descriptions can be escaped with a '\b' 2. Each continuation is prefixed with a space when added to a
  * description. To avoid this or remove spaces use the '\b' backspace and it will perform a backspace function or trim

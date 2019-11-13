@@ -253,8 +253,8 @@ public class ByteTokenizer implements Enumeration<String> {
     }
 
     /**
-     * Tests if there are more tokens available from this tokenizer's string. If this method returns <tt>true</tt>, then a
-     * subsequent call to <tt>nextToken</tt> with no argument will successfully return a token.
+     * Tests if there are more tokens available from this tokenizer's string. If this method returns <code>true</code>, then
+     * a subsequent call to <code>nextToken</code> with no argument will successfully return a token.
      *
      * @return <code>true</code> if and only if there is at least one token in the string after the current position;
      *         <code>false</code> otherwise.
@@ -307,9 +307,9 @@ public class ByteTokenizer implements Enumeration<String> {
 
     /**
      * Returns the next token in this string tokenizer's string. First, the set of characters considered to be delimiters by
-     * this <tt>ByteTokenizer</tt> object is changed to be the characters in the string <tt>delim</tt>. Then the next token
-     * in the string after the current position is returned. The current position is advanced beyond the recognized token.
-     * The new delimiter set remains the default after this call.
+     * this <code>ByteTokenizer</code> object is changed to be the characters in the string <code>delim</code>. Then the
+     * next token in the string after the current position is returned. The current position is advanced beyond the
+     * recognized token. The new delimiter set remains the default after this call.
      *
      * @param delim the new delimiters.
      * @return the next token, after switching to the new delimiter set.
