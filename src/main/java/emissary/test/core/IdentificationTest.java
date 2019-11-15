@@ -8,14 +8,12 @@ import java.io.InputStream;
 import java.util.Collection;
 
 import emissary.core.DataObjectFactory;
-import emissary.core.Factory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
-import emissary.place.sample.DevNullPlace;
 import emissary.util.io.ResourceReader;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -25,14 +23,11 @@ import org.slf4j.LoggerFactory;
 @RunWith(Parameterized.class)
 public abstract class IdentificationTest extends UnitTest {
     protected static Logger logger = LoggerFactory.getLogger(IdentificationTest.class);
-    protected static String PLACE_UNDER_TEST = DevNullPlace.class.getName();
-    protected static String CONFIG_UNDER_TEST = null;
     protected static IServiceProviderPlace place = null;
 
     @Parameterized.Parameters
     public static Collection<?> data() {
-        Collection<?> params = getMyTestParameterFiles(IdentificationTest.class);
-        return params;
+        return getMyTestParameterFiles(IdentificationTest.class);
     }
 
     protected String resource;
@@ -45,38 +40,29 @@ public abstract class IdentificationTest extends UnitTest {
         this.resource = resource;
     }
 
-    @BeforeClass
-    public static void initializePlace() throws Exception {
-        new UnitTest().setupSystemProperties();
-        if (!logger.isDebugEnabled()) {
-            @SuppressWarnings("unused")
-            Logger l = LoggerFactory.getLogger(PLACE_UNDER_TEST);
-        }
-        if (CONFIG_UNDER_TEST != null) {
-            place = (IServiceProviderPlace) Factory.create(PLACE_UNDER_TEST, CONFIG_UNDER_TEST);
-        } else {
-            place = (IServiceProviderPlace) Factory.create(PLACE_UNDER_TEST);
-        }
+    @Before
+    public void setUpPlace() throws Exception {
+        place = createPlace();
     }
 
-    @AfterClass
-    public static void tearDownPlace() {
+    /**
+     * Derived classes must implement this
+     */
+    public abstract IServiceProviderPlace createPlace() throws IOException;
+
+    @After
+    public void tearDownPlace() {
         if (place != null) {
             place.shutDown();
             place = null;
         }
-
-        @SuppressWarnings("unused")
-        Logger l = LoggerFactory.getLogger(PLACE_UNDER_TEST);
-        PLACE_UNDER_TEST = null;
-        CONFIG_UNDER_TEST = null;
     }
 
     @Test
     public void testIdentificationPlace() {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
-        try (InputStream doc = new ResourceReader().getResourceAsStream(resource);) {
+        try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
             byte[] data = new byte[doc.available()];
             doc.read(data);
             String expectedAnswer = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
