@@ -13,11 +13,12 @@ import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
@@ -35,7 +36,7 @@ public class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;
     private static Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
     private static String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
-    private File scriptFile = new File(tmpdir, "testUnixCommand.sh");
+    private Path scriptFile = Paths.get(tmpdir, "testUnixCommand.sh");
     private static String W = "Президент Буш";
     private IBaseDataObject payload;
     private String FORM = "TEST";
@@ -60,9 +61,7 @@ public class UnixCommandPlaceTest extends UnitTest {
         place.shutDown();
         place = null;
         payload = null;
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
+        Files.deleteIfExists(scriptFile);
         validateMockitoUsage();
     }
 
@@ -114,15 +113,15 @@ public class UnixCommandPlaceTest extends UnitTest {
 
         // fake an output file and load it with some data
         String DATA = new String("test-test");
-        File outputFile = new File(tmpdir, "output.out");
-        IOUtils.write(DATA, Files.newOutputStream(outputFile.toPath()));
+        Path outputFile = Paths.get(tmpdir, "output.out");
+        IOUtils.write(DATA, Files.newOutputStream(outputFile));
 
         // null is returned in situations with a non-zero return code
-        assertNull(place.fileProcess(new String[] {"negative"}, outputFile.getAbsolutePath()));
-        assertNull(place.fileProcess(new String[] {"positive"}, outputFile.getAbsolutePath()));
+        assertNull(place.fileProcess(new String[] {"negative"}, outputFile.toAbsolutePath().toString()));
+        assertNull(place.fileProcess(new String[] {"positive"}, outputFile.toAbsolutePath().toString()));
 
         // a successful execution will return the bytes of the specified output file
-        assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.getAbsolutePath())));
+        assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString())));
     }
 
     @Test
@@ -157,15 +156,13 @@ public class UnixCommandPlaceTest extends UnitTest {
 
             // Make some output
             fos.write("cat ${1} > ${2}\n".getBytes());
-            scriptFile.setExecutable(true); // jdk 1.6+ only
+            scriptFile.toFile().setExecutable(true); // jdk 1.6+ only
         }
     }
 
     private OutputStream startScript() throws IOException {
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
-        OutputStream fos = Files.newOutputStream(scriptFile.toPath());
+        Files.deleteIfExists(scriptFile);
+        OutputStream fos = Files.newOutputStream(scriptFile);
         fos.write("#!/bin/bash\n".getBytes());
         return fos;
     }
@@ -177,7 +174,7 @@ public class UnixCommandPlaceTest extends UnitTest {
                 fos.write(" > ${2}".getBytes());
             }
             fos.write('\n');
-            scriptFile.setExecutable(true); // jdk 1.6+ only
+            scriptFile.toFile().setExecutable(true); // jdk 1.6+ only
         }
     }
 

@@ -1,7 +1,9 @@
 package emissary.id;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import emissary.core.IBaseDataObject;
@@ -51,8 +53,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
     protected void configurePlace() throws IOException {
         final List<String> magicPaths = configG.findEntries("MAGIC_FILE", "magic");
         for (final String mPath : magicPaths) {
-            final File mfile = new File(mPath);
-            if (!mfile.exists() || !mfile.canRead()) {
+            Path mfile = Paths.get(mPath);
+            if (!Files.exists(mfile) || !Files.isReadable(mfile)) {
                 throw new IOException("Missing or unreadable MAGIC_FILE " + mPath);
             }
         }

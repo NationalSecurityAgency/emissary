@@ -6,11 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
@@ -196,17 +197,17 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testLocOnlyConstructorWithFileConfigDataAndNoPackage() throws EmissaryException {
+    public void testLocOnlyConstructorWithFileConfigDataAndNoPackage() throws IOException, EmissaryException {
         runFileConfiguredTest(false, 1);
     }
 
     @Test
-    public void testLocOnlyConstructorWithFileConfigDataAndPackage() throws EmissaryException {
+    public void testLocOnlyConstructorWithFileConfigDataAndPackage() throws IOException, EmissaryException {
         runFileConfiguredTest(true, 1);
     }
 
-    private void runFileConfiguredTest(boolean usePackage, int ctorType) throws EmissaryException {
-        File cfg = null;
+    private void runFileConfiguredTest(boolean usePackage, int ctorType) throws IOException, EmissaryException {
+        Path cfg = null;
         OutputStream fos = null;
         try {
             // set config to java.io.tmpdir, no package resources
@@ -214,11 +215,11 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
             // Write out the config data to the temp config dir
             if (usePackage) {
-                cfg = new File(CFGDIR + "/" + thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+                cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
             } else {
-                cfg = new File(CFGDIR + "/MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+                cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
             }
-            fos = Files.newOutputStream(cfg.toPath());
+            fos = Files.newOutputStream(cfg);
             fos.write(configData);
 
             MyFileConfigedTestPlace mtp = null;
@@ -228,7 +229,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
                 mtp = new MyFileConfigedTestPlace("http://example.com:8001/MyFileConfigedTestPlace");
             } else if (ctorType == 2) {
                 // String name of config file
-                mtp = new MyFileConfigedTestPlace(cfg.getName(), null, "http://example.com:8001/MyTestPlace");
+                mtp = new MyFileConfigedTestPlace(cfg.getFileName().toString(), null, "http://example.com:8001/MyTestPlace");
             } else if (ctorType == 3) {
                 // Stream input of config
                 InputStream config = new ByteArrayInputStream(configData);
@@ -246,7 +247,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
             // Clean up the tmp config settings
             restoreConfig();
 
-            cfg.delete();
+            Files.deleteIfExists(cfg);
 
             if (fos != null) {
                 try {
@@ -254,9 +255,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
                 } catch (IOException ignore) {
                 }
             }
-            if (cfg != null && cfg.exists()) {
-                cfg.delete();
-            }
+            Files.deleteIfExists(cfg);
         }
     }
 

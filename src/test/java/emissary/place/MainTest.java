@@ -7,11 +7,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,10 +34,8 @@ public final class MainTest extends UnitTest {
     @Override
     @Before
     public void setUp() throws Exception {
-
-
-        File dataFile = new File(TMPDIR + "/testmain.dat");
-        try (OutputStream ros = Files.newOutputStream(dataFile.toPath())) {
+        Path dataFile = Paths.get(TMPDIR, "testmain.dat");
+        try (OutputStream ros = Files.newOutputStream(dataFile)) {
             ros.write("abcdefghijklmnopqrstuvwxyz".getBytes());
         } catch (IOException ex) {
             fail("Unable to create test file: " + ex.getMessage());
@@ -51,8 +50,8 @@ public final class MainTest extends UnitTest {
         for (String key : Namespace.keySet()) {
             Namespace.unbind(key);
         }
-        File dataFile = new File(TMPDIR + "/testmain.dat");
-        dataFile.delete();
+        Path dataFile = Paths.get(TMPDIR, "testmain.dat");
+        Files.deleteIfExists(dataFile);
     }
 
     @Test
@@ -164,16 +163,16 @@ public final class MainTest extends UnitTest {
     }
 
     @Test
-    public void testSplitHook() {
+    public void testSplitHook() throws IOException {
         String[] args = {"-s", "-d", TMPDIR, "-S", TMPDIR + "/testmain.dat"};
         MainWithHooks m = new MainWithHooks(className, args);
         m.run();
         assertEquals("Must process args and leave file", 1, m.getFileArgs().size());
         assertTrue("PreSplitHook must be called", m.splithook[0]);
         assertTrue("PostSplitHook must be called", m.splithook[1]);
-        File expectedSplitFile = new File(TMPDIR, "testmain.dat." + Form.UNKNOWN);
-        assertTrue("File must exist after split", expectedSplitFile.exists());
-        expectedSplitFile.delete();
+        Path expectedSplitFile = Paths.get(TMPDIR, "testmain.dat." + Form.UNKNOWN);
+        assertTrue("File must exist after split", Files.exists(expectedSplitFile));
+        Files.deleteIfExists(expectedSplitFile);
     }
 
     @Test

@@ -1,9 +1,10 @@
 package emissary.id;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,13 +95,13 @@ public class TikaFilePlace extends emissary.id.IdPlace {
         List<InputStream> tikaSignatures = new ArrayList<>();
 
         for (String tikaSignaturePath : tikaSignaturePaths) {
-            File mfile = new File(tikaSignaturePath);
-            if (!mfile.exists() || !mfile.canRead()) {
+            Path mfile = Paths.get(tikaSignaturePath);
+            if (!Files.exists(mfile) || !Files.isReadable(mfile)) {
                 throw new IOException("Missing or unreadable TIKA_SIGNATURE_FILE " + tikaSignaturePath);
             }
 
-            logger.debug("Tika Signature File:  " + tikaSignaturePath);
-            tikaSignatures.add(new FileInputStream(tikaSignaturePath));
+            logger.debug("Tika Signature File:  {}", tikaSignaturePath);
+            tikaSignatures.add(Files.newInputStream(mfile));
         }
 
         return tikaSignatures.toArray(new InputStream[0]);

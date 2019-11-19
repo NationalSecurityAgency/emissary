@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
@@ -19,7 +19,7 @@ import org.junit.Test;
 
 public class SimpleNioParserTest extends UnitTest {
 
-    private File testDataFile;
+    private Path testDataFile;
     private FileChannel channel;
     private static final int DATALEN = 1000;
     RandomAccessFile raf = null;
@@ -68,15 +68,14 @@ public class SimpleNioParserTest extends UnitTest {
         }
 
         // Make test file
-        testDataFile = File.createTempFile("SimpleNioParserTest", ".dat");
-        testDataFile.deleteOnExit();
+        testDataFile = Files.createTempFile("SimpleNioParserTest", ".dat");
 
         // Write the test data to the file
-        try (OutputStream os = Files.newOutputStream(testDataFile.toPath())) {
+        try (OutputStream os = Files.newOutputStream(testDataFile)) {
             os.write(DATA);
         }
 
-        raf = new RandomAccessFile(testDataFile, "r");
+        raf = new RandomAccessFile(testDataFile.toFile(), "r");
         channel = raf.getChannel();
     }
 
@@ -89,6 +88,7 @@ public class SimpleNioParserTest extends UnitTest {
         if (raf != null) {
             raf.close();
         }
+        Files.deleteIfExists(testDataFile);
     }
 
 

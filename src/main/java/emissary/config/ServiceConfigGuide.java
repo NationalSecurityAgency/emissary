@@ -2,7 +2,6 @@ package emissary.config;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +10,9 @@ import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -480,11 +482,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     protected boolean createDirectory(final String sval) {
         final String fixedSval = sval.replace('\\', '/');
-        logger.debug("Trying to create dir " + fixedSval);
-        final File d = new File(fixedSval);
-        if (!d.exists()) {
-            if (!d.mkdirs()) {
-                logger.debug("Failed to create directory " + fixedSval);
+        logger.debug("Trying to create dir {}", fixedSval);
+        final Path d = Paths.get(fixedSval);
+        if (!Files.exists(d)) {
+            try {
+                Files.createDirectories(d);
+            } catch (IOException e) {
+                logger.debug("Failed to create directory {}", fixedSval, e);
                 return false;
             }
         }
@@ -498,31 +502,22 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         final String fixedSval = sval.replace('\\', '/');
         logger.debug("Trying to create file {}", fixedSval);
-        final File d = new File(fixedSval);
-        FileWriter newFile = null;
-        if (!d.exists()) {
+        final Path d = Paths.get(fixedSval);
+        if (!Files.exists(d)) {
             try {
                 // Ensure the directory exists to hold the file
-                final File parent = new File(new File(d.getCanonicalPath()).getParent());
-                if (!parent.exists()) {
+                final Path parent = d.toAbsolutePath().normalize().getParent();
+                if (!Files.exists(parent)) {
                     if (!createDirectory(parent.toString())) {
                         logger.debug("Failed to create parent directory for {}", fixedSval);
                         return false;
                     }
                 }
                 // Create the file in the directory
-                newFile = new FileWriter(d);
+                Files.createFile(d);
             } catch (IOException e) {
                 logger.debug("Failed to create file {}", fixedSval, e);
                 return false;
-            } finally {
-                if (newFile != null) {
-                    try {
-                        newFile.close();
-                    } catch (IOException ioe) {
-                        logger.debug("Error closing file", ioe);
-                    }
-                }
             }
         }
         return true;
@@ -945,12 +940,8 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public String findCanonicalFileNameEntry(final String theParameter, final String dflt) {
         final String fn = findStringEntry(theParameter, dflt);
-        if (fn != null && fn.length() > 0) {
-            try {
-                return new File(fn).getCanonicalPath();
-            } catch (IOException ex) {
-                logger.error("Cannot compute canonical path on " + fn, ex);
-            }
+        if (StringUtils.isNotBlank(fn)) {
+            return Paths.get(fn).toAbsolutePath().normalize().toString();
         }
         return fn;
     }

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.Set;
 
 import emissary.test.core.UnitTest;
 import emissary.util.shell.Executrix;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 public class ServiceConfigGuideTest extends UnitTest {
@@ -396,28 +399,20 @@ public class ServiceConfigGuideTest extends UnitTest {
     @Test
     public void testCreateDirAndFile() throws IOException {
         final String tmp = System.getProperty("java.io.tmpdir");
-        final File tdir = new File(tmp, "foo-dir");
-        final File tfile = new File(tdir, "foo-file.txt");
-        final File t2file = new File(tdir.getPath() + "/subdir/blubdir/bar-file.txt");
+        final Path tdir = Paths.get(tmp, "foo-dir");
+        final Path tfile = Paths.get(tdir.toString(), "foo-file.txt");
+        final Path t2file = Paths.get(tdir.toString(), "subdir", "blubdir", "bar-file.txt");
         String s =
-                "CREATE_DIRECTORY = \"" + tdir.getPath() + "\"\n" + "CREATE_FILE = \"" + tfile.getPath() + "\"\n" + "CREATE_FILE = \""
-                        + tfile.getPath() + "\"\n" + "CREATE_FILE = \"" + t2file.getPath() + "\"\n";
+                "CREATE_DIRECTORY = \"" + tdir + "\"\n" + "CREATE_FILE = \"" + tfile + "\"\n" + "CREATE_FILE = \""
+                        + tfile + "\"\n" + "CREATE_FILE = \"" + t2file + "\"\n";
         s = s.replace('\\', '/');
 
         new ServiceConfigGuide(new ByteArrayInputStream(s.getBytes()));
-        assertTrue("Directory creation failed for " + tdir.getPath() + " in " + s, tdir.exists());
-        assertTrue("File creation failed for " + tfile.getPath() + " in " + s, tfile.exists() && tfile.canRead());
-        assertTrue("File and directory creation failed for " + t2file.getPath() + " in " + s, t2file.exists() && t2file.canRead());
+        assertTrue("Directory creation failed for " + tdir + " in " + s, Files.exists(tdir));
+        assertTrue("File creation failed for " + tfile + " in " + s, Files.exists(tfile) && Files.isReadable(tfile));
+        assertTrue("File and directory creation failed for " + t2file + " in " + s, Files.exists(t2file) && Files.isReadable(t2file));
 
-        if (t2file.exists()) {
-            t2file.deleteOnExit();
-        }
-        if (tfile.exists()) {
-            tfile.deleteOnExit();
-        }
-        if (tdir.exists()) {
-            tdir.deleteOnExit();
-        }
+        FileUtils.deleteDirectory(tdir.toFile());
     }
 
     @Test
@@ -522,8 +517,8 @@ public class ServiceConfigGuideTest extends UnitTest {
             Executrix.writeDataToFile(optional, optname);
             c = new ServiceConfigGuide(priname);
         } finally {
-            new File(priname).delete();
-            new File(optname).delete();
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(optname));
         }
 
 
@@ -543,14 +538,14 @@ public class ServiceConfigGuideTest extends UnitTest {
             Executrix.writeDataToFile(primary, priname);
             c = new ServiceConfigGuide(priname);
         } finally {
-            new File(priname).delete();
+            Files.deleteIfExists(Paths.get(priname));
         }
         assertEquals("Optional value not present", 1, c.findEntries("FOO").size());
     }
 
 
     @Test
-    public void testOptImportWhenOptionalFileExistsButHasBadSyntax() {
+    public void testOptImportWhenOptionalFileExistsButHasBadSyntax() throws IOException {
         // Write the config bytes out to a temp file
         final String dir = System.getProperty("java.io.tmpdir");
         final String priname = dir + "/primary.cfg";
@@ -566,8 +561,8 @@ public class ServiceConfigGuideTest extends UnitTest {
         } catch (IOException iox) {
             // expected
         } finally {
-            new File(priname).delete();
-            new File(optname).delete();
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(optname));
         }
 
     }
@@ -615,5 +610,26 @@ public class ServiceConfigGuideTest extends UnitTest {
         assertEquals("Property set to null should return default", defaultValue, nullValue);
         assertEquals("Multi-valued property should return first non-null value", nonNullValue, multiValue);
         assertEquals("Multi-valued property with all nulls should return default", defaultValue, multiNullValue);
+    }
+
+    @Test
+    public void testFindCanonicalFileNameEntry() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/output/testing.out";
+
+        try {
+            Executrix.writeDataToFile(new String("OUTDIRTEST = " + dir + "/copilot/../output/testing.out").getBytes(), priname);
+            ServiceConfigGuide guide = new ServiceConfigGuide(priname);
+
+            String canonical = guide.findCanonicalFileNameEntry("OUTDIRTEST", "");
+            System.out.println(canonical);
+            assertEquals("Canonical filenames do not match", priname, canonical);
+        } catch (IOException iox) {
+            // expected
+            logger.warn("There be trouble", iox);
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+        }
     }
 }

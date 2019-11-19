@@ -1,17 +1,19 @@
 package emissary.util.roll;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.FileNameGenerator;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +23,7 @@ import org.junit.Test;
 public class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator {
     private static final String data = "some junk bytes";
     private static final int INT = 1;
-    File tmpDir;
+    Path tmpDir;
     String currentFile;
     String lastFile;
 
@@ -29,8 +31,14 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        tmpDir = Files.createTempDirectory("emissary_rfost_test").toFile();
-        tmpDir.deleteOnExit();
+        tmpDir = Files.createTempDirectory("emissary_rfost_test");
+    }
+
+    @After
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        FileUtils.deleteDirectory(tmpDir.toFile());
     }
 
     /**
@@ -41,24 +49,21 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
         // setup
         String file1name = this.nextFileName();
         String file2name = this.nextFileName();
-        File file1 = new File(tmpDir, "." + file1name);
-        file1.createNewFile();
-        FileWriter fw = new FileWriter(file1);
-        fw.write("Foo");
-        fw.flush();
-        fw.close();
-        File file2 = new File(tmpDir, "." + file2name);
-        file2.createNewFile();
+        Path file1 = Paths.get(tmpDir.toString(), "." + file1name);
+        Files.createFile(file1);
+        Files.write(file1, "Foo".getBytes());
+        Path file2 = Paths.get(tmpDir.toString(), "." + file2name);
+        Files.createFile(file2);
         // test
-        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir)) {
+        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
         }
 
         // verify
-        assertThat(file1.exists(), equalTo(false));
-        assertThat(new File(tmpDir, file1name).exists(), equalTo(true));
+        assertFalse(Files.exists(file1));
+        assertTrue(Files.exists(Paths.get(tmpDir.toString(), file1name)));
         // make sure 0 byte file was deleted
-        assertThat(file2.exists(), equalTo(false));
-        assertThat(new File(tmpDir, file2name).exists(), equalTo(false));
+        assertFalse(Files.exists(file2));
+        assertFalse(Files.exists(Paths.get(tmpDir.toString(), file2name)));
     }
 
     /**
@@ -67,13 +72,13 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
     @Test
     public void testRoll() throws Exception {
 
-        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir)) {
+        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(data.getBytes());
-            assertTrue(data.length() == instance.bytesWritten);
+            assertEquals(data.length(), instance.bytesWritten);
             instance.roll();
-            assertTrue(new File(tmpDir, lastFile).exists());
-            assertTrue(new File(tmpDir, "." + currentFile).exists());
-            assertTrue(0L == instance.bytesWritten);
+            assertTrue(Files.exists(Paths.get(tmpDir.toString(), lastFile)));
+            assertTrue(Files.exists(Paths.get(tmpDir.toString(), "." + currentFile)));
+            assertEquals(0L, instance.bytesWritten);
         }
     }
 
@@ -82,7 +87,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      */
     @Test
     public void testClose() throws Exception {
-        RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir);
+        RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile());
         instance.close();
         assertTrue(instance.fileOutputStream == null && instance.currentFile == null);
     }
@@ -92,13 +97,13 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      */
     @Test
     public void testWrite_int() throws Exception {
-        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir)) {
+        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(INT);
         }
-        File f = new File(tmpDir, currentFile);
-        try (InputStream is = Files.newInputStream(f.toPath())) {
-            assertTrue(is.read() == INT);
-            assertTrue(is.read() == -1);
+        Path f = Paths.get(tmpDir.toString(), currentFile);
+        try (InputStream is = Files.newInputStream(f)) {
+            assertEquals(INT, is.read());
+            assertEquals(-1, is.read());
         }
     }
 
@@ -107,11 +112,11 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      */
     @Test
     public void testWriteBytes() throws Exception {
-        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir)) {
+        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(data.getBytes(), 0, data.length());
         }
-        File f = new File(tmpDir, currentFile);
-        try (InputStream is = Files.newInputStream(f.toPath())) {
+        Path f = Paths.get(tmpDir.toString(), currentFile);
+        try (InputStream is = Files.newInputStream(f)) {
             int i = 0;
             for (; i < data.length(); i++) {
                 is.read();
@@ -125,13 +130,13 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      */
     @Test
     public void testWriteZeroBytes() throws Exception {
-        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir)) {
+        try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             // set to true by default...
             instance.setDeleteZeroByteFiles(true);
             instance.roll();
         }
-        File f = new File(tmpDir, currentFile);
-        assertTrue(!f.exists());
+        Path f = Paths.get(tmpDir.toString(), currentFile);
+        assertFalse(Files.exists(f));
     }
 
     @Override
