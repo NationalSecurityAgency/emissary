@@ -623,7 +623,6 @@ public class ServiceConfigGuideTest extends UnitTest {
             ServiceConfigGuide guide = new ServiceConfigGuide(priname);
 
             String canonical = guide.findCanonicalFileNameEntry("OUTDIRTEST", "");
-            System.out.println(canonical);
             assertEquals("Canonical filenames do not match", priname, canonical);
         } catch (IOException iox) {
             // expected
