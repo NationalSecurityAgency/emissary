@@ -240,9 +240,9 @@ public class ResourceReader {
                     results.add(name);
                 }
             }
-            logger.debug("Found " + results.size() + " jar resources for " + cmatch);
+            logger.debug("Found {} jar resources for {}", results.size(), cmatch);
         } catch (IOException ex) {
-            logger.warn("Cannot get jar url connection to " + url, ex);
+            logger.warn("Cannot get jar url connection to {}", url, ex);
         }
         return results;
     }
@@ -296,7 +296,7 @@ public class ResourceReader {
             }
         }
 
-        logger.debug("Found " + results.size() + " jar resources for " + cmatch);
+        logger.debug("Found {} file resources for {}", results.size(), cmatch);
         return results;
     }
 

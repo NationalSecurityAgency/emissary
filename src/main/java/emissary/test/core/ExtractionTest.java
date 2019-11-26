@@ -38,10 +38,6 @@ import org.slf4j.LoggerFactory;
 @RunWith(Parameterized.class)
 public abstract class ExtractionTest extends UnitTest {
 
-    static {
-        new UnitTest().setupSystemProperties();
-    }
-
     protected static Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
     protected KffDataObjectHandler kff = new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
             KffDataObjectHandler.SET_FILE_TYPE);

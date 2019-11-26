@@ -3,16 +3,13 @@ package emissary.id;
 import java.io.IOException;
 import java.util.Collection;
 
+import emissary.place.IServiceProviderPlace;
 import emissary.test.core.IdentificationTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class TikaFilePlaceTest extends IdentificationTest {
-
-    static {
-        PLACE_UNDER_TEST = "emissary.id.TikaFilePlace";
-    }
 
     @Parameterized.Parameters
     public static Collection<?> data() {
@@ -21,5 +18,10 @@ public class TikaFilePlaceTest extends IdentificationTest {
 
     public TikaFilePlaceTest(final String resource) throws IOException {
         super(resource);
+    }
+
+    @Override
+    public IServiceProviderPlace createPlace() throws IOException {
+        return new TikaFilePlace();
     }
 }

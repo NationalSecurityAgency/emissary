@@ -52,8 +52,10 @@
     <dep.jersey.version>2.27</dep.jersey.version>
     <dep.jetty.version>9.4.18.v20190429</dep.jetty.version>
     <dep.jruby-complete.version>9.2.9.0</dep.jruby-complete.version>
-    <dep.junit.version>4.12</dep.junit.version>
+    <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
     <dep.logback.version>1.2.3</dep.logback.version>
+    <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
     <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7R4</dep.rhino.version>
@@ -210,14 +212,6 @@
         <version>${dep.javax.annotation-api.version}</version>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${dep.junit.version}</version>
-        <!-- because UnitTest, FunctionalTest and FTestServiceConfigGuide are in the emissary src/main vs src/test
-           junit must be a compile time dependency.  Needs to be refactored -->
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
         <groupId>net.spy</groupId>
         <artifactId>spymemcached</artifactId>
         <version>${dep.spymemcached.version}</version>
@@ -369,6 +363,38 @@
         <version>${dep.jruby-complete.version}</version>
       </dependency>
       <dependency>
+        <!-- UnitTest, FunctionalTest and FTestServiceConfigGuide are in the emissary src/main vs src/test
+           junit must be a compile time dependency.  Needs to be refactored -->
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-commons</artifactId>
+        <version>${dep.junit-platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.platform</groupId>
+        <artifactId>junit-platform-launcher</artifactId>
+        <version>${dep.junit-platform.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.mozilla</groupId>
         <artifactId>rhino</artifactId>
         <version>${dep.rhino.version}</version>
@@ -503,10 +529,6 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
       <groupId>net.spy</groupId>
       <artifactId>spymemcached</artifactId>
     </dependency>
@@ -593,6 +615,30 @@
     <dependency>
       <groupId>org.jruby</groupId>
       <artifactId>jruby-complete</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-launcher</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
     </dependency>
     <dependency>
       <groupId>org.mozilla</groupId>
@@ -741,7 +787,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>3.0.0-M3</version>
+          <version>${dep.maven-surefire-plugin.version}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -843,7 +889,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M3</version>
+          <version>${dep.maven-surefire-plugin.version}</version>
           <configuration>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
           </configuration>
@@ -996,7 +1042,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>3.0.0-M3</version>
+          <version>${dep.maven-surefire-plugin.version}</version>
           <configuration>
             <showSuccess>true</showSuccess>
             <linkXRef>true</linkXRef>
