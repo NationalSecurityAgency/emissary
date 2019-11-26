@@ -564,7 +564,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
             raf = new RandomAccessFile(theFile, "r");
 
             // Get the right type of session parser
-            SessionParser sp = parserFactory.makeSessionParser(raf);
+            SessionParser sp = parserFactory.makeSessionParser(raf.getChannel());
             logger.debug("Using session parser from raf ident {}", sp.getClass().getName());
 
             // .. and a session producer to crank out the data objects...

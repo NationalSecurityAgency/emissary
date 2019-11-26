@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -218,7 +219,8 @@ public class JsonOutputFilter extends AbstractRollableFilter {
             jgen.writeStartObject();
             JavaType javaType = provider.constructType(IBaseDataObject.class);
             BeanDescription beanDesc = provider.getConfig().introspect(javaType);
-            JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanSerializer(provider, javaType, beanDesc);
+            JsonSerializer<Object> serializer = BeanSerializerFactory.instance.findBeanOrAddOnSerializer(provider, javaType, beanDesc,
+                    provider.isEnabled(MapperFeature.USE_STATIC_TYPING));
 
             // add some custom fields here
             jgen.writeObjectField("id", dropOffUtil.getBestIdFrom(ibdo));

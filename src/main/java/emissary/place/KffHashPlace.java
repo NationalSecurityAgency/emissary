@@ -14,7 +14,6 @@ import emissary.kff.KffDataObjectHandler;
  * <p>
  * For performance reasons, we've needed lightweight 'chunkers' that understand the parsing boundaries of input formats
  * which then delegate to a place for full parsing.
- * </p>
  */
 public class KffHashPlace extends ServiceProviderPlace {
 

@@ -39,8 +39,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
-     * <a href="#fileName()">fileName</a> method. Also used in constructing the <a href="#shortName()">shortName</a> of the
-     * document.
+     * {@link #getFilename()} method. Also used in constructing the {@link #shortName()} of the document.
      */
     protected String theFileName;
 

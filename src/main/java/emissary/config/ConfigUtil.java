@@ -530,7 +530,7 @@ public class ConfigUtil {
     }
 
     /**
-     * Add the current config Flavor to the name of the resource passed in. E.g. emissary.pkg.Foo.cfg =>
+     * Add the current config Flavor to the name of the resource passed in. E.g. emissary.pkg.Foo.cfg =&gt;
      * emissary.pkg.Foo-${FLAVOR}.cfg
      *
      * @param name the base resource or config name

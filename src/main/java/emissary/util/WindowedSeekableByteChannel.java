@@ -130,14 +130,13 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Attempt to read data from the open channel into the buffer provided.
-     * <p/>
+     * <p>
      * After this call completes, we have either filled the buffer -or- have reached the end of data in the input channel.
      * The buffer will have its position set to 0, and limit set to the end of the data read, which may be equal to the size
      * of the buffer.
-     * <p/>
+     * <p>
      * Has the side effect of raising the endofchannel flag if we have exhausted the bytes in the input channel. Updates the
      * estimatedLength with the number of bytes read.
-     * <p/>
      *
      * @param buf the destination buffer.
      * @return the number of bytes read into the buffer.
@@ -219,7 +218,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     }
 
     /*
-     * Safely fill a destination buffer avoiding a buffer overflow if necessary. <p/> Copies byte from src to dest. The
+     * Safely fill a destination buffer avoiding a buffer overflow if necessary. <p> Copies byte from src to dest. The
      * number of bytes copied is the minimum of the amount of space remaining in the destination buffer
      */
     private void filldst(final ByteBuffer src, final ByteBuffer dst) {

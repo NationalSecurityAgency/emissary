@@ -23,12 +23,10 @@ import org.apache.http.HttpStatus;
 import org.slf4j.MDC;
 
 /**
- * <p>
  * The DirectoryPlace class is used to store information relating to Places/Services in the Emissary Agent-Based
  * architecture. When a Place comes up it calls the method addPlace passing in all of the relevant information to store
  * in the Directory. Agents query the directory by calling the method nextKeys which requires a query String search
  * pattern.
- * </p>
  *
  * <p>
  * We try to support some network topographic constructions by providing a set of peer directories and a set of child
@@ -37,21 +35,18 @@ import org.slf4j.MDC;
  * directories act as relay points (in the JXTA sense of the word) for their childrenwhile peer directories are like
  * JXTA Peers. The JXTA RendezVous service is provided by the, currently fairly static, list of peer directories
  * initially read from a config file. At least one host must be listed in order to bootstrap the network.
- * </p>
  *
  * <p>
  * Emissary directory instances are also observable with respect to Peer activities, and Place activities. Peer
  * observers will be called with a list of current members of the peer group (including this directory) whenever the
  * peer group loses or gains members. Place observers will be called with a key that matches the pattern supplied on
  * thier subscription and an indication of whether it is a register or deregister or cost change.
- * </p>
  *
  * <p>
  * For resiliency of the resulting topology, more than one statically configured rendezvous host should be present in
  * each peer group. The relay directory must have visibility with all of the machines in the peer subgroup it relays
  * for. We only allow one relay point for a subgroup with this version. That should eventually change to allow multple
  * connections through the relay point if the physical network will support it.
- * </p>
  */
 public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPlace, IRemoteDirectory {
     // My parent connects into the next higher level peer group

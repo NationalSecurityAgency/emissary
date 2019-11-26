@@ -143,7 +143,6 @@ public abstract class BaseCommand implements EmissaryCommand {
      * 
      * @param clazz the Class of return type class
      * @param args vararg of Strings
-     * @return <T extends AbstractBaseCommand>
      */
     public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
@@ -155,12 +154,11 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     /**
      * Create a new command and parse the args
-     * </p>
+     * <p>
      * Useful for testings
      * 
      * @param clazz the Class of return type class
      * @param args vararg of Strings
-     * @return <T extends EmissaryCommand>
      */
     public static <T extends EmissaryCommand> T parse(Class<T> clazz, List<String> args) throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {

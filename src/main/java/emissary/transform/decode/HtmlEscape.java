@@ -39,7 +39,7 @@ public class HtmlEscape {
     }
 
     /**
-     * Unescape some HTML data, turning <code>&#xxxx;</code> into UNICODE characters Because this operation inserts java
+     * Unescape some HTML data, turning <code>&amp;#xxxx;</code> into UNICODE characters Because this operation inserts java
      * Character objects into the byte array, it probably only makes sense to send in data that already matches the platform
      * encoding (i.e. UTF-8 for normal usage). Otherwise the result will be a mixed up mess of multiple character sets that
      * cannot possibly be understood or displayed properly.

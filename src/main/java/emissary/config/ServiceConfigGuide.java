@@ -752,6 +752,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * value of the config line as the value of the hash
      *
      * <pre>
+     * {@code
      * Example config entries
      *    FOO_ONE: AAA
      *    FOO_TWO: BBB
@@ -759,6 +760,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * will yield a map with
      *     ONE -> AAA
      *     TWO -> BBB
+     * }
      * </pre>
      *
      * @param theParameter the key to look for in the config file
@@ -792,6 +794,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * Set.
      *
      * <pre>
+     * {@code
      * Example config entries
      *    FOO_ONE: AAA
      *    FOO_TWO: BBB
@@ -800,6 +803,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * will yield a map with Sets
      *     ONE -> {AAA}
      *     TWO -> {BBB,CCC}
+     * }
      * </pre>
      *
      * @param param the key to look for in the config file

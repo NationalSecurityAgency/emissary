@@ -87,7 +87,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * <li>BIN_EXTENSIONS: extension of files to skip when picking up results</li>
      * <li>BIN_FILES: filenames to skip when picking up results</li>
      * <li>NEW_ERROR_FORM: form for error result, default ERROR</li>
-     * <li>NEW_PARENT_FORM: form on parent for success, default UNKNOWN, can use '&lt;null>'</li>
+     * <li>NEW_PARENT_FORM: form on parent for success, default UNKNOWN, can use '&lt;null&gt;'</li>
      * <li>NEW_CHILD_FORM: new form on extracted data, default UNKNOWN</li>
      * <li>SINGLE_CHILD_FILETYPE: file type for single child</li>
      * <li>KEEP_PARENT_HASHES_FOR_SINGLE_CHILD: when single child is promoted determines if original parent hashes are kept

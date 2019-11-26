@@ -68,7 +68,7 @@ public class Family {
     }
 
     /**
-     * Return the separator string for the specified birthorder e.g. sep(5) ==> "-att-5"
+     * Return the separator string for the specified birthorder e.g. sep(5) ==&gt; "-att-5"
      * 
      * @param birthorder the number for the attachment to name
      */

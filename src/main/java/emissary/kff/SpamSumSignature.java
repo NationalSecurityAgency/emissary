@@ -22,7 +22,6 @@ public class SpamSumSignature {
     /**
      * <p>
      * Change a string into an array of bytes
-     * </p>
      */
     public static byte[] GetBytes(String str) {
         byte[] r = new byte[str.length()];
@@ -35,7 +34,6 @@ public class SpamSumSignature {
     /**
      * <p>
      * Change a string into an array of bytes
-     * </p>
      */
     public static String GetString(byte[] hsh) {
         String r = "";
@@ -52,7 +50,6 @@ public class SpamSumSignature {
     /**
      * <p>
      * Initializes a new instance of the {@code SpamSumSignature} class.
-     * </p>
      * 
      * @param signature The signature.
      */
@@ -142,9 +139,7 @@ public class SpamSumSignature {
 
     /**
      * <p>
-     * Gets the size of the block.
-     * </p>
-     * Value: The size of the block.
+     * Gets the size of the block. Value: The size of the block.
      */
     public/* uint */long getBlockSize() {
         return blockSize;
@@ -152,9 +147,7 @@ public class SpamSumSignature {
 
     /**
      * <p>
-     * Gets the first hash part.
-     * </p>
-     * Value: The first hash part.
+     * Gets the first hash part. Value: The first hash part.
      */
     public byte[] getHashPart1() {
         return hash1;
@@ -162,9 +155,7 @@ public class SpamSumSignature {
 
     /**
      * <p>
-     * Gets the second hash part.
-     * </p>
-     * Value: The second hash part.
+     * Gets the second hash part. Value: The second hash part.
      */
     public byte[] getHashPart2() {
         return hash2;

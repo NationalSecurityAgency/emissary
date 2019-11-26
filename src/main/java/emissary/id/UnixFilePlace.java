@@ -21,7 +21,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
     protected Map<String, Integer> minSizeMap = new HashMap<>();
 
     /**
-     * The <code>UnixFile</code> instance
+     * The {@link UnixFile} instance
      */
     protected UnixFile unixFileUtil = null;
 

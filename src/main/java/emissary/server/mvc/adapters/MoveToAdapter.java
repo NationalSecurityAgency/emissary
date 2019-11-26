@@ -64,15 +64,13 @@ public class MoveToAdapter extends EmissaryClient {
     /**
      * Configure static stuff for this class Config items read here are
      * 
-     * <pre>
      * <ul>
-     *   <li>VIRTUAL_MOVETO_ADDR: default null for redirecting moveTo calls when dynamic loadbalancing is available</li>
-     *   <li>VIRTUAL_MOVETO_PROTOCOL: default http protocol for loadbalancing redirect request</li>
-     *   <li>VIRTUAL_COOKIE_NAME: name of coookie holding real destination place, default=PLACE</li>
-     *   <li>VIRTUAL_COOKIE_DOMAIN: name of cookie domain for redirect cookie, default=www.example.com</li>
-     *   <li>VIRTUAL_COOKIE_PATH: path set on redirect cookie, default=/</li>
+     * <li>VIRTUAL_MOVETO_ADDR: default null for redirecting moveTo calls when dynamic loadbalancing is available</li>
+     * <li>VIRTUAL_MOVETO_PROTOCOL: default http protocol for loadbalancing redirect request</li>
+     * <li>VIRTUAL_COOKIE_NAME: name of coookie holding real destination place, default=PLACE</li>
+     * <li>VIRTUAL_COOKIE_DOMAIN: name of cookie domain for redirect cookie, default=www.example.com</li>
+     * <li>VIRTUAL_COOKIE_PATH: path set on redirect cookie, default=/</li>
      * </ul>
-     * </pre>
      */
     public static void reconfigure() {
         try {

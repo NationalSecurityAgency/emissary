@@ -16,19 +16,15 @@ import java.util.concurrent.locks.ReentrantLock;
  * contains metadata at the start, followed by a collection of log entries of fixed length, currently 1024. Leading
  * metadata is in the format:
  *
- * <pre>
  * <code>
  * [Journal Magic][Journal Version][Journal key.size()][Journal key.getBytes()][Journal Sequence Number][null byte][1-n Journal Entries]
  * </code>
- * </pre>
  *
  * Record format:
  *
- * <pre>
  * <code>
  * [Journal sequence number][null byte][Entry value.size()][null byte][Entry val.getBytes()][null byte][position][null padded to fixed len]
  * </code>
- * </pre>
  */
 public class JournalWriter implements Closeable {
 
