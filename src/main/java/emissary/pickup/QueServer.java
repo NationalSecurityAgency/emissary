@@ -76,6 +76,12 @@ public abstract class QueServer extends Thread {
     public void run() {
         logger.debug("Starting the QueServer run method");
         while (!timeToShutdown) {
+            // Process something on the queue
+            try {
+                checkQue();
+            } catch (Exception e) {
+                logger.warn("Exception in checkQue():" + e, e);
+            }
 
             // check to see if we want to stop taking work
             if (isPaused()) {
@@ -88,15 +94,8 @@ public abstract class QueServer extends Thread {
                 continue;
             }
 
-            // Process something on the queue
-            try {
-                checkQue();
-            } catch (Exception e) {
-                logger.warn("Exception in checkQue():" + e, e);
-            }
-
             // If pull mode and we have room for one more.
-            if (space.getSpaceCount() > 0 && queue.canHold(1)) {
+            else if (space.getSpaceCount() > 0 && queue.canHold(1)) {
                 logger.debug("Que can hold more, trying take()");
                 boolean status = space.take();
                 if (status) {
