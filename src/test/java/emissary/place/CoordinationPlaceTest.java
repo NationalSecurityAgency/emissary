@@ -17,7 +17,7 @@ import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

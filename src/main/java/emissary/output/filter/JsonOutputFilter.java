@@ -34,7 +34,7 @@ import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.directory.DirectoryEntry;
 import emissary.util.TimeUtil;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 /**
  * JSON Output filter using Jackson
