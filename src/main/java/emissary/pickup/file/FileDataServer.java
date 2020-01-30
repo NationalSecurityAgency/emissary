@@ -3,6 +3,7 @@ package emissary.pickup.file;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import emissary.core.Pausable;
 import emissary.log.MDCConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import org.slf4j.MDC;
 /**
  * Thread to monitor a directory for files
  */
-public class FileDataServer extends Thread {
+public class FileDataServer extends Pausable {
 
     // Logger
     protected static final Logger logger = LoggerFactory.getLogger(FileDataServer.class);
@@ -78,6 +79,10 @@ public class FileDataServer extends Thread {
 
         // Loop can be terminated by calling the shutdown() method
         while (!timeToShutdown) {
+
+            if (checkPaused()) {
+                continue;
+            }
 
             String holdDir = myParent.getInProcessArea();
             String errDir = myParent.getErrorArea();
