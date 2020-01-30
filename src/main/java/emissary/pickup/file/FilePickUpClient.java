@@ -123,14 +123,18 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
     /**
      * Pause the QueServer to stop taking work
      */
-    public void pauseQueueServer() {
+    @Override
+    public void pause() {
+        logger.info("*** Pausing {} for {}", queServer.getClass().getName(), getClass().getName());
         queServer.pause();
     }
 
     /**
      * Unpause the QueServer to start taking work
      */
-    public void unpauseQueueServer() {
+    @Override
+    public void unpause() {
+        logger.info("*** Unpausing {} for {}", queServer.getClass().getName(), getClass().getName());
         queServer.unpause();
     }
 
@@ -139,7 +143,8 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
      *
      * @return true if the QueServer is paused, false otherwise
      */
-    public boolean isQueueServerPaused() {
+    @Override
+    public boolean isPaused() {
         return queServer.isPaused();
     }
 

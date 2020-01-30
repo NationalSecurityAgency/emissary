@@ -70,6 +70,44 @@ public class FilePickUpPlace extends emissary.pickup.PickUpPlace implements IPic
     }
 
     /**
+     * Pause the DataServers
+     */
+    @Override
+    public void pause() {
+        for (FileDataServer i : theDataServer) {
+            logger.info("*** Pausing {} for {}", i.getClass().getName(), getClass().getName());
+            i.pause();
+        }
+    }
+
+    /**
+     * Unpause the DataServers
+     */
+    @Override
+    public void unpause() {
+        for (FileDataServer i : theDataServer) {
+            logger.info("*** Unpausing {} for {}", i.getClass().getName(), getClass().getName());
+            i.unpause();
+        }
+    }
+
+
+    /**
+     * Check the status of the DataServers
+     *
+     * @return true if any data server is paused, false otherwise
+     */
+    @Override
+    public boolean isPaused() {
+        for (FileDataServer i : theDataServer) {
+            if (i.isPaused()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * For each input directory start a new server thread.
      */
     public void startDataServer() {

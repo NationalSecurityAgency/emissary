@@ -29,6 +29,7 @@ import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.IPausable;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
@@ -41,7 +42,6 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
-import emissary.util.ServerUtil;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -187,9 +187,9 @@ public class EmissaryServer {
             LOG.debug(" with \n{}", envString);
 
             if (cmd.isPause()) {
-                ServerUtil.pauseServer();
+                pause(true);
             } else {
-                ServerUtil.unpauseServer();
+                unpause(true);
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
@@ -219,6 +219,47 @@ public class EmissaryServer {
      */
     public boolean isServerRunning() {
         return (this.server != null) && (this.server.isStarted());
+    }
+
+
+    /**
+     * Pause the server
+     *
+     * @throws NamespaceException if there is an issue
+     */
+    public static void pause() throws NamespaceException {
+        pause(false);
+    }
+
+    /**
+     * Pause the server
+     *
+     * @param silent true to silence {@link NamespaceException}, false otherwise
+     * @throws NamespaceException if there is an issue
+     */
+    public static void pause(boolean silent) throws NamespaceException {
+        LOG.debug("Pausing Emissary Server");
+        Namespace.lookup(IPausable.class, silent).forEach(IPausable::pause);
+    }
+
+    /**
+     * Unpause the server
+     *
+     * @throws NamespaceException if there is an issue
+     */
+    public static void unpause() throws NamespaceException {
+        unpause(false);
+    }
+
+    /**
+     * Unpause the server
+     *
+     * @param silent true to silence {@link NamespaceException}, false otherwise
+     * @throws NamespaceException if there is an issue
+     */
+    public static void unpause(boolean silent) throws NamespaceException {
+        LOG.debug("Unpausing Emissary Server");
+        Namespace.lookup(IPausable.class, silent).forEach(IPausable::unpause);
     }
 
     /**
