@@ -35,7 +35,6 @@ import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
-import emissary.pickup.IPickUp;
 import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
@@ -290,20 +289,12 @@ public class EmissaryServer {
         LOG.info("Beginning shutdown of EmissaryServer {}", name);
         logThreadDump("Thread dump before anything");
 
-        // iterate over pickup places and shut those down first
-        for (String key : Namespace.keySet()) {
-            try {
-                Object obj = Namespace.lookup(key);
-                if (IPickUp.isImplementation(obj.getClass())) {
-                    LOG.debug("Stopping {} ", obj);
-                    ((IPickUp) obj).shutDown();
-                    LOG.debug("Done stopping place: {}", key);
-                }
-            } catch (Exception ex) {
-                LOG.error("Error shutting down " + key, ex);
-            }
+        try {
+            pause();
+            LOG.info("Done pausing server");
+        } catch (Exception ex) {
+            LOG.error("Error pausing server", ex);
         }
-        LOG.info("Done stopping all pickup places");
 
         try {
             AgentPool.lookup().close();
@@ -329,7 +320,7 @@ public class EmissaryServer {
         for (String key : Namespace.keySet()) {
             try {
                 Object obj = Namespace.lookup(key);
-                if (obj instanceof IServiceProviderPlace && !IPickUp.isImplementation(obj.getClass())) {
+                if (obj instanceof IServiceProviderPlace) {
                     LOG.info("Stopping {} ", obj);
                     ((IServiceProviderPlace) obj).shutDown();
                     LOG.info("Done stopping place: {}", key);
