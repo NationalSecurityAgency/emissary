@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import emissary.pickup.IPickUp;
+
 /**
  * Monitor one or more directories and pickup files for the system
  */
-public class FilePickUpPlace extends emissary.pickup.PickUpPlace {
+public class FilePickUpPlace extends emissary.pickup.PickUpPlace implements IPickUp {
 
     // How often to check directories in millis
     protected int pollingInterval = 30000;

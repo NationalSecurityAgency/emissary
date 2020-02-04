@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import emissary.core.IBaseDataObject;
+import emissary.pickup.IPickUp;
 import emissary.pickup.IPickUpSpace;
 import emissary.pickup.PickupQueue;
 import emissary.pickup.QueServer;
@@ -21,7 +22,7 @@ import emissary.pickup.WorkUnit;
  * processed in simpleMode or not is controlled by the bundle settings not by the inherited configuration of this
  * client.
  */
-public class FilePickUpClient extends emissary.pickup.PickUpSpace {
+public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPickUp {
     /**
      * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from WorkSpace
      * or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the places busy.
