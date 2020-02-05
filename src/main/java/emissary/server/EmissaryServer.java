@@ -192,18 +192,6 @@ public class EmissaryServer {
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
-
-
-            // Make sure we clean up everything before the JVM exits. This includes
-            // calling System.exit() and user interrupt, such as typing ^C or a system-wide even,
-            // such as user logoff or system shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    LOG.debug("JVM going down, running stopServer");
-                    EmissaryServer.stopServer();
-                }
-            });
-
             return server;
         } catch (Throwable t) {
             t.printStackTrace(System.err);

@@ -5,12 +5,12 @@ public interface IPausable {
     /**
      * Stop taking work
      */
-    default void pause() { }
+    default void pause() {}
 
     /**
      * Resume taking work
      */
-    default void unpause() { }
+    default void unpause() {}
 
     /**
      * Check to see if the current thread is paused
