@@ -1,8 +1,8 @@
 package emissary.pickup;
 
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
+import emissary.core.Pausable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Monitor thread for a PickupQueue and return items for processing. Operates in pull mode from a PickupSpace or push
  * mode just monitoring the queue
  */
-public abstract class QueServer extends Thread {
+public abstract class QueServer extends Pausable {
     // Logger
     private static final Logger logger = LoggerFactory.getLogger(QueServer.class);
 
@@ -18,12 +18,8 @@ public abstract class QueServer extends Thread {
     public static final long DEFAULT_POLLING_INTERVAL = 1000L;
     protected long pollingInterval = DEFAULT_POLLING_INTERVAL;
 
-    public static final long DEFAULT_PAUSE_INTERVAL = TimeUnit.MINUTES.toMillis(1);
-    protected long pauseInterval = DEFAULT_PAUSE_INTERVAL;
-
     // Loop control
     protected boolean timeToShutdown = false;
-    protected boolean paused = false;
 
     // The queue this thread will monitor
     protected final PickupQueue queue;
@@ -83,19 +79,11 @@ public abstract class QueServer extends Thread {
                 logger.warn("Exception in checkQue():" + e, e);
             }
 
-            // check to see if we want to stop taking work
-            if (isPaused()) {
-                try {
-                    logger.info("QueServer currently paused, sleeping for {}", getPauseInterval());
-                    Thread.sleep(getPauseInterval());
-                } catch (InterruptedException ignore) {
-                    // empty catch block
-                }
+            if (checkPaused()) {
+                // check to see if we want to stop taking work
                 continue;
-            }
-
-            // If pull mode and we have room for one more.
-            else if (space.getSpaceCount() > 0 && queue.canHold(1)) {
+            } else if (space.getSpaceCount() > 0 && queue.canHold(1)) {
+                // If pull mode and we have room for one more.
                 logger.debug("Que can hold more, trying take()");
                 boolean status = space.take();
                 if (status) {
@@ -106,11 +94,9 @@ public abstract class QueServer extends Thread {
                     }
                     continue;
                 }
-            }
-
-            // We must be in push mode or the queue is full,
-            // just monitor the queue and try again
-            else {
+            } else {
+                // We must be in push mode or the queue is full,
+                // just monitor the queue and try again
                 logger.debug("Que full or push mode, waiting, space = " + space + " spacenames = " + space.getSpaceNames() + ", queCanHold(1)? = "
                         + queue.canHold(1));
                 try {
@@ -168,38 +154,6 @@ public abstract class QueServer extends Thread {
      * @return true if it worked
      */
     public abstract boolean processQueueItem(WorkBundle path);
-
-    /**
-     * Stop taking work off the queue
-     */
-    public void pause() {
-        paused = true;
-    }
-
-    /**
-     * Reusume taking work off the queue
-     */
-    public void unpause() {
-        paused = false;
-    }
-
-    /**
-     * Get the time to sleep before checking if the que server has been unpaused
-     *
-     * @return the pause check interval
-     */
-    public long getPauseInterval() {
-        return pauseInterval;
-    }
-
-    /**
-     * Check to see if the current queue is paused
-     *
-     * @return true if work is paused, false otherwise
-     */
-    public boolean isPaused() {
-        return paused;
-    }
 
     /**
      * Schedule this thread to stop soon

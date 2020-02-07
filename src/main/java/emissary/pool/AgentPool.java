@@ -204,14 +204,17 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                 int killedThisRound = 0;
                 setMaxIdle(0); // so the returnAgent call below destroys the agent
                 for (int i = 0; i < currentIdle; i++) {
-                    IMobileAgent a = null;
+                    IMobileAgent a;
                     try {
                         a = borrowAgent();
                     } catch (Exception e) {
                         logger.error("Error trying to borrowAgent", e);
+                        continue;
                     }
 
+                    logger.info("Stopping agent {}", a.getName());
                     a.killAgent();
+                    logger.info("Stopped agent {}", a.getName());
                     numberKilled++;
                     killedThisRound++;
 

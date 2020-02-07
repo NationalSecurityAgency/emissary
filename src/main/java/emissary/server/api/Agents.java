@@ -14,8 +14,8 @@ import emissary.client.response.AgentList;
 import emissary.client.response.AgentsResponseEntity;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
+import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
-import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import org.apache.http.client.methods.HttpGet;
@@ -72,15 +72,14 @@ public class Agents {
             String localName = localNode.getNodeName() + ":" + localNode.getNodePort();
             AgentList agents = new AgentList();
             agents.setHost(localName);
-            for (int i = 0; i < AgentPool.lookup().getMaxActive(); i++) {
-                String agentKey = MobileAgentFactory.AGENT_NAME + "-" + (i < 10 ? "0" : "") + i;
-                if (Namespace.exists(agentKey)) {
+            Namespace.keySet().stream().filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().forEach(agentKey -> {
+                try {
                     agents.addAgent(agentKey + ": " + Namespace.lookup(agentKey).toString());
-                } else {
+                } catch (NamespaceException e) {
                     logger.error("Missing an agent in the Namespace: {}", agentKey);
                     entity.addError("ERROR - Agent " + agentKey + " not found in Namespace");
                 }
-            }
+            });
             entity.setLocal(agents);
         } catch (EmissaryException e) {
             // should never happen
