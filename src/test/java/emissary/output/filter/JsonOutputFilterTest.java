@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,21 @@ public class JsonOutputFilterTest extends UnitTest {
 
         assertEquals("Filter should return success", IDropOffFilter.STATUS_SUCCESS, status);
         assertTrue("Filter output should have file type", output.toString().contains("\"FILETYPE\":[\"FTYPE\"]"));
+        assertTrue("Filter should have payload", output.toString().contains("\"payload\":\"VGhpcyBpcyB0aGUgZGF0YQ==\""));
     }
+
+    @Test
+    public void testNoPayloadOutputFromFilter() {
+        config.addEntry("EMIT_PAYLOAD", "false");
+        f.initialize(config, "FOO", config);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        int status = f.filter(Collections.singletonList(payload), new HashMap<>(), output);
+
+        assertEquals("Filter should return success", IDropOffFilter.STATUS_SUCCESS, status);
+        assertFalse("Filter should not have payload", output.toString().contains("\"payload\":"));
+    }
+
 
     @Test
     public void testMetadataRecordOutput() {
