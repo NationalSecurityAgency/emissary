@@ -80,7 +80,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
     /**
      * File extension used while cleanup of part files after coalescing has completed
      */
-    static final String ERROR_EXT = ".bgerror";
+    static final String ERROR_EXT = ".error";
     /**
      * Part/journal file matcher
      */
@@ -340,8 +340,8 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
 
     protected void renameToError(Path path) {
         try {
-            Path bgerror = Paths.get(path.toString() + ERROR_EXT);
-            Files.move(path, bgerror);
+            Path errorPath = Paths.get(path.toString() + ERROR_EXT);
+            Files.move(path, errorPath);
         } catch (IOException ex) {
             LOG.warn("Unable to rename file {}.", path.toString(), ex);
         }
