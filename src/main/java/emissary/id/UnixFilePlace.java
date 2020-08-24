@@ -14,6 +14,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
     protected boolean chop = true;
     protected boolean replace = false;
+    protected boolean replaceFiletype = false;
     protected boolean upcase = false;
     protected boolean removeCommas = false;
     protected boolean swallowIgnorableExceptions = false;
@@ -66,6 +67,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         this.replace = configG.findBooleanEntry("REPLACE", this.replace);
         this.upcase = configG.findBooleanEntry("UPCASE", this.upcase);
         this.removeCommas = configG.findBooleanEntry("REMOVE_COMMAS", this.removeCommas);
+        this.replaceFiletype = configG.findBooleanEntry("REPLACE_FILETYPE", this.replaceFiletype);
         for (final Map.Entry<String, String> entry : configG.findStringMatchMap("MIN_SIZE_").entrySet()) {
             try {
                 this.minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
@@ -122,7 +124,11 @@ public class UnixFilePlace extends emissary.id.IdPlace {
                     }
                 } else {
                     d.setCurrentForm(currentForm);
-                    d.setFileTypeIfEmpty(currentForm);
+                    if (replaceFiletype) {
+                        d.setFileType(currentForm);
+                    } else {
+                        d.setFileTypeIfEmpty(currentForm);
+                    }
                 }
             } else {
                 logger.debug("Unixfile result was null");
