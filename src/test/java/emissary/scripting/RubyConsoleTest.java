@@ -12,6 +12,7 @@ import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class RubyConsoleTest extends UnitTest {
         }
     }
 
-    // @Test
+    @Ignore
     // Reset is not working with JRuby 1.6.7,
     public void testConsoleReset() throws Exception {
         console.evalAndWait("$i=7*7", 50L);
@@ -91,7 +92,7 @@ public class RubyConsoleTest extends UnitTest {
         }
     }
 
-    // @Test
+    @Ignore
     // Timeout is not working at least with sleep
     public void testConsoleTimeout() {
         try {

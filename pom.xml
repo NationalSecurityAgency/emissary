@@ -67,9 +67,8 @@
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -749,7 +748,7 @@
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>[1.8,)</version>
+                    <version>[11,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence />
                 </rules>
@@ -907,7 +906,7 @@
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
+          <version>2.12.1</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
@@ -1349,13 +1348,7 @@
     </profile>
     <profile>
       <!-- Turn on the error-prone static analyzer during compilation.
-           NOTE this requires the use of a Java 8 compiler.  For
-           example:
-
-               $ JAVA_HOME=/path/to/jdk1.8.0 mvn -PerrorProne clean test-compile
-
-           will analyze the main and test code, with the analyzer's
-           report given as compiler error/warning/note messages. -->
+           NOTE this requires the use of a Java 9+ compiler. -->
       <id>errorProne</id>
       <activation>
         <property>
@@ -1367,23 +1360,39 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
             <configuration>
-              <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
-              <fork>true</fork>
+              <showWarnings>true</showWarnings>
               <compilerArgs>
-                <!-- The compiler normally stops at 100 warnings, and
-                     error-prone's static analysis warnings count
-                     against that total. -->
-                <arg>-Xmaxwarns</arg>
-                <arg>5000</arg>
-                <arg>-XepDisableWarningsInGeneratedCode</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne
+                  -Xep:Var:OFF
+                  -Xep:ConstantField:WARN
+                  -Xep:RemoveUnusedImports:WARN
+                  -Xep:WildcardImport:WARN
+                  -Xep:ArrayToString:WARN
+                  -Xep:ComparisonOutOfRange:WARN
+                  -Xep:DeadException:WARN
+                  -Xep:DefaultCharset:OFF
+                  -Xep:DepAnn:WARN
+                  -Xep:FormatString:WARN
+                  -Xep:LongLiteralLowerCaseSuffix:WARN
+                  -Xep:MethodCanBeStatic:WARN
+                  -Xep:MixedArrayDimensions:WARN
+                  -Xep:MultiVariableDeclaration:WARN
+                  -Xep:MultipleTopLevelClasses:WARN
+                  -Xep:NumericEquality:WARN
+                  -Xep:ParameterPackage:WARN
+                  -Xep:PrivateConstructorForUtilityClass:WARN
+                  -Xep:ThrowsUncheckedException:WARN
+                  -Xep:TryFailThrowable:WARN</arg>
+                <!--<arg>-XepDisableWarningsInGeneratedCode</arg>-->
                 <!-- Enable experimental checks. -->
-                <arg>-XepAllDisabledChecksAsWarnings</arg>
+                <!--<arg>-XepAllDisabledChecksAsWarnings</arg>-->
                 <!-- Removed because it was not adding useful help -->
-                <arg>-Xep:ArgumentParameterMismatch:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterMismatch:OFF</arg>-->
                 <!-- This one is buggy and crashes the compiler. -->
-                <arg>-Xep:ArgumentParameterSwap:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterSwap:OFF</arg>-->
                 <!-- This one is super noisy, because it wants all
                      modifiable variables marked with @Var and
                      complains about the use of final everywhere else.
@@ -1391,20 +1400,20 @@
                      removing the finals is only safe if you can
                      guarantee you never use the compiler *without*
                      this add-on. -->
-                <arg>-Xep:Var:OFF</arg>
+                <!--<arg>-Xep:Var:OFF</arg>-->
                 <!-- By default this is considered a "suggestion" that
                      doesn't get counted as a warning.  Change it to a
                      counted warning to make it easier to see how many
                      there are. -->
-                <arg>-Xep:ConstantField:WARN</arg>
-                <arg>-Xep:RemoveUnusedImports:WARN</arg>
-                <arg>-Xep:WildcardImport:WARN</arg>
+                <!--<arg>-Xep:ConstantField:WARN</arg>-->
+                <!--<arg>-Xep:RemoveUnusedImports:WARN</arg>-->
+                <!--<arg>-Xep:WildcardImport:WARN</arg>-->
                 <!-- By default these are set to errors.  Change them
                      to warnings so that it doesn't stop the build
                      from continuing its analysis. -->
-                <arg>-Xep:ArrayToString:WARN</arg>
-                <arg>-Xep:ComparisonOutOfRange:WARN</arg>
-                <arg>-Xep:DeadException:WARN</arg>
+                <!--<arg>-Xep:ArrayToString:WARN</arg>-->
+                <!--<arg>-Xep:ComparisonOutOfRange:WARN</arg>-->
+                <!--<arg>-Xep:DeadException:WARN</arg>
                 <arg>-Xep:DefaultCharset:OFF</arg>
                 <arg>-Xep:DepAnn:WARN</arg>
                 <arg>-Xep:FormatString:WARN</arg>
@@ -1417,8 +1426,15 @@
                 <arg>-Xep:ParameterPackage:WARN</arg>
                 <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
                 <arg>-Xep:ThrowsUncheckedException:WARN</arg>
-                <arg>-Xep:TryFailThrowable:WARN</arg>
+                <arg>-Xep:TryFailThrowable:WARN</arg>-->
               </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.4.0</version>
+                </path>
+              </annotationProcessorPaths>
             </configuration>
             <dependencies>
               <!-- override plexus-compiler-javac-errorprone's dependency on
