@@ -6,12 +6,12 @@
   <version>5.10.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
-  <description />
+  <description></description>
   <url>https://github.com/NationalSecurityAgency/emissary</url>
-  <organization />
-  <licenses />
-  <developers />
-  <mailingLists />
+  <organization></organization>
+  <licenses></licenses>
+  <developers></developers>
+  <mailingLists></mailingLists>
   <scm>
     <connection>scm:git:https://github.com/NationalSecurityAgency/emissary.git</connection>
     <developerConnection>scm:git:git@github.com:NationalSecurityAgency/emissary.git</developerConnection>
@@ -21,12 +21,12 @@
     <system>GitHub</system>
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
   </issueManagement>
-  <ciManagement />
-  <distributionManagement />
+  <ciManagement></ciManagement>
+  <distributionManagement></distributionManagement>
   <properties>
     <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
-    <argLine />
+    <argLine></argLine>
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
     <dep.commons-cli.version>1.4</dep.commons-cli.version>
     <dep.commons-codec.version>1.13</dep.commons-codec.version>
@@ -238,8 +238,8 @@
         <exclusions>
           <exclusion>
             <!-- causes conflict with Jersey, incompatible JAX-RS version -->
-            <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
+            <groupId>org.apache.cxf</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -250,8 +250,8 @@
         <exclusions>
           <exclusion>
             <!-- causes conflict with Jersey, incompatible JAX-RS version -->
-            <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-rt-rs-client</artifactId>
+            <groupId>org.apache.cxf</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -316,8 +316,8 @@
         <version>${dep.jersey.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -328,12 +328,12 @@
         <exclusions>
           <exclusion>
             <!-- need to exclude servlet-api 2.4 from this -->
-            <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
+            <groupId>com.github.spullara.mustache.java</groupId>
           </exclusion>
           <exclusion>
-            <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -426,8 +426,8 @@
         <scope>test</scope>
         <exclusions>
           <exclusion>
-            <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+            <groupId>javax.servlet</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -729,6 +729,21 @@
           <version>3.1.0</version>
         </plugin>
         <plugin>
+          <groupId>com.github.ekryd.sortpom</groupId>
+          <artifactId>sortpom-maven-plugin</artifactId>
+          <version>2.10.0</version>
+          <configuration>
+            <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+            <createBackupFile>false</createBackupFile>
+            <lineSeparator>\n</lineSeparator>
+            <expandEmptyElements>false</expandEmptyElements>
+            <nrOfIndentSpace>2</nrOfIndentSpace>
+            <sortDependencies>scope,groupId,artifactId</sortDependencies>
+            <sortProperties>true</sortProperties>
+            <verifyFail>Stop</verifyFail>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.0.0-M2</version>
@@ -746,7 +761,7 @@
                   <requireJavaVersion>
                     <version>[1.8,)</version>
                   </requireJavaVersion>
-                  <dependencyConvergence />
+                  <dependencyConvergence></dependencyConvergence>
                 </rules>
               </configuration>
             </execution>
@@ -772,10 +787,10 @@
           <executions>
             <execution>
               <id>attach-sources</id>
+              <phase>verify</phase>
               <goals>
                 <goal>jar</goal>
               </goals>
-              <phase>verify</phase>
             </execution>
           </executions>
         </plugin>
@@ -806,20 +821,6 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>3.1.0</version>
-          <configuration>
-            <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
-            <violationSeverity>warn</violationSeverity>
-            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <excludes />
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>com.puppycrawl.tools</groupId>
-              <artifactId>checkstyle</artifactId>
-              <version>8.29</version>
-            </dependency>
-          </dependencies>
           <executions>
             <execution>
               <id>check-style</id>
@@ -828,25 +829,39 @@
               </goals>
             </execution>
           </executions>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>8.29</version>
+            </dependency>
+          </dependencies>
+          <configuration>
+            <configLocation>${checkstyleFormatter}</configLocation>
+            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
+            <violationSeverity>warn</violationSeverity>
+            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+            <excludes></excludes>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.1.1</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+          </executions>
           <configuration>
             <quiet>true</quiet>
             <footer>Generated ${maven.build.timestamp}</footer>
             <doclint>all,-missing</doclint>
           </configuration>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-              <phase>verify</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -903,6 +918,15 @@
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
           <version>2.11.0</version>
+          <executions>
+            <execution>
+              <id>format-java-sources</id>
+              <phase>process-sources</phase>
+              <goals>
+                <goal>format</goal>
+              </goals>
+            </execution>
+          </executions>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
@@ -916,24 +940,11 @@
             <skipJsonFormatting>true</skipJsonFormatting>
             <skipXmlFormatting>true</skipXmlFormatting>
           </configuration>
-          <executions>
-            <execution>
-              <id>format-java-sources</id>
-              <goals>
-                <goal>format</goal>
-              </goals>
-              <phase>process-sources</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
           <version>1.3.2</version>
-          <configuration>
-            <groups>java.,javax.,*</groups>
-            <removeUnused>true</removeUnused>
-          </configuration>
           <executions>
             <execution>
               <id>sort-imports</id>
@@ -942,6 +953,10 @@
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <groups>java.,javax.,*</groups>
+            <removeUnused>true</removeUnused>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
@@ -950,10 +965,10 @@
           <executions>
             <execution>
               <id>sort-pom</id>
+              <phase>process-sources</phase>
               <goals>
                 <goal>sort</goal>
               </goals>
-              <phase>process-sources</phase>
               <configuration>
                 <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
                 <createBackupFile>false</createBackupFile>
@@ -979,10 +994,10 @@
             </execution>
             <execution>
               <id>default-report</id>
+              <phase>prepare-package</phase>
               <goals>
                 <goal>report</goal>
               </goals>
-              <phase>prepare-package</phase>
             </execution>
             <execution>
               <id>default-check</id>
@@ -1015,7 +1030,7 @@
           <artifactId>maven-pmd-plugin</artifactId>
           <version>3.12.0</version>
           <configuration>
-            <excludes />
+            <excludes></excludes>
             <failOnViolation>false</failOnViolation>
             <failurePriority>1</failurePriority>
             <format>xml</format>
@@ -1057,9 +1072,6 @@
           <groupId>com.spotify</groupId>
           <artifactId>dockerfile-maven-plugin</artifactId>
           <version>1.4.13</version>
-          <configuration>
-            <skipPush>true</skipPush>
-          </configuration>
           <executions>
             <execution>
               <id>tag-version</id>
@@ -1081,6 +1093,9 @@
               </configuration>
             </execution>
           </executions>
+          <configuration>
+            <skipPush>true</skipPush>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1095,6 +1110,20 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <!-- verify before compile; should be sorted already -->
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>verify-sorted-pom</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -1148,15 +1177,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <reuseForks>false</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
-        </configuration>
         <executions>
           <execution>
             <id>run-integration-tests</id>
@@ -1166,6 +1186,15 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <argLine>${surefire.argline}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <environmentVariables>
+            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+          </environmentVariables>
+          <reuseForks>false</reuseForks>
+          <forkCount>${surefire.forkCount}</forkCount>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -1287,6 +1316,14 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
               <outputDirectory>${project.build.directory}</outputDirectory>
               <formats>
@@ -1298,14 +1335,6 @@
               </descriptors>
               <finalName>emissary-${project.version}</finalName>
             </configuration>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-                <phase>package</phase>
-              </execution>
-            </executions>
           </plugin>
         </plugins>
       </build>
@@ -1355,6 +1384,20 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <dependencies>
+              <!-- override plexus-compiler-javac-errorprone's dependency on
+                   Error Prone with the latest version -->
+              <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_core</artifactId>
+                <version>2.3.1</version>
+              </dependency>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-javac-errorprone</artifactId>
+                <version>2.8.3</version>
+              </dependency>
+            </dependencies>
             <configuration>
               <compilerId>javac-with-errorprone</compilerId>
               <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
@@ -1408,20 +1451,6 @@
                 <arg>-Xep:TryFailThrowable:WARN</arg>
               </compilerArgs>
             </configuration>
-            <dependencies>
-              <!-- override plexus-compiler-javac-errorprone's dependency on
-                   Error Prone with the latest version -->
-              <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.3.1</version>
-              </dependency>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                <version>2.8.3</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
@@ -1434,10 +1463,6 @@
           <name>m2e.version</name>
         </property>
       </activation>
-      <properties>
-        <!-- enable compiler compliance when building in Eclipse -->
-        <maven.compiler.release>8</maven.compiler.release>
-      </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-eclipse</directory>
@@ -1461,7 +1486,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore></ignore>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1474,7 +1499,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore></ignore>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1487,7 +1512,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore></ignore>
                       </action>
                     </pluginExecution>
                     <pluginExecution>
@@ -1500,7 +1525,7 @@
                         </goals>
                       </pluginExecutionFilter>
                       <action>
-                        <ignore />
+                        <ignore></ignore>
                       </action>
                     </pluginExecution>
                   </pluginExecutions>
@@ -1510,6 +1535,10 @@
           </plugins>
         </pluginManagement>
       </build>
+      <properties>
+        <!-- enable compiler compliance when building in Eclipse -->
+        <maven.compiler.release>8</maven.compiler.release>
+      </properties>
     </profile>
     <profile>
       <id>netbeans</id>
