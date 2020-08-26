@@ -732,16 +732,6 @@
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
           <version>2.10.0</version>
-          <configuration>
-            <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
-            <createBackupFile>false</createBackupFile>
-            <lineSeparator>\n</lineSeparator>
-            <expandEmptyElements>false</expandEmptyElements>
-            <nrOfIndentSpace>2</nrOfIndentSpace>
-            <sortDependencies>scope,groupId,artifactId</sortDependencies>
-            <sortProperties>true</sortProperties>
-            <verifyFail>Stop</verifyFail>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -959,29 +949,6 @@
           </configuration>
         </plugin>
         <plugin>
-          <groupId>com.github.ekryd.sortpom</groupId>
-          <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
-          <executions>
-            <execution>
-              <id>sort-pom</id>
-              <phase>process-sources</phase>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-              <configuration>
-                <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
-                <createBackupFile>false</createBackupFile>
-                <lineSeparator>\n</lineSeparator>
-                <expandEmptyElements>false</expandEmptyElements>
-                <nrOfIndentSpace>2</nrOfIndentSpace>
-                <sortDependencies>scope,groupId,artifactId</sortDependencies>
-                <sortProperties>true</sortProperties>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.8.4</version>
@@ -1115,6 +1082,22 @@
         <groupId>com.github.ekryd.sortpom</groupId>
         <artifactId>sortpom-maven-plugin</artifactId>
         <executions>
+          <execution>
+            <id>sort-pom</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+            <configuration>
+              <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+              <createBackupFile>false</createBackupFile>
+              <lineSeparator>\n</lineSeparator>
+              <expandEmptyElements>false</expandEmptyElements>
+              <nrOfIndentSpace>2</nrOfIndentSpace>
+              <sortDependencies>scope,groupId,artifactId</sortDependencies>
+              <sortProperties>true</sortProperties>
+            </configuration>
+          </execution>
           <execution>
             <id>verify-sorted-pom</id>
             <phase>process-resources</phase>
