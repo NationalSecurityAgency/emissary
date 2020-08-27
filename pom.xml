@@ -729,6 +729,11 @@
           <version>3.1.0</version>
         </plugin>
         <plugin>
+          <groupId>com.github.ekryd.sortpom</groupId>
+          <artifactId>sortpom-maven-plugin</artifactId>
+          <version>2.10.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.0.0-M2</version>
@@ -944,29 +949,6 @@
           </executions>
         </plugin>
         <plugin>
-          <groupId>com.github.ekryd.sortpom</groupId>
-          <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
-          <executions>
-            <execution>
-              <id>sort-pom</id>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-              <phase>process-sources</phase>
-              <configuration>
-                <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
-                <createBackupFile>false</createBackupFile>
-                <lineSeparator>\n</lineSeparator>
-                <expandEmptyElements>false</expandEmptyElements>
-                <nrOfIndentSpace>2</nrOfIndentSpace>
-                <sortDependencies>scope,groupId,artifactId</sortDependencies>
-                <sortProperties>true</sortProperties>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>0.8.4</version>
@@ -1095,6 +1077,36 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <!-- verify before compile; should be sorted already -->
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <configuration>
+          <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+          <createBackupFile>false</createBackupFile>
+          <lineSeparator>\n</lineSeparator>
+          <expandEmptyElements>false</expandEmptyElements>
+          <nrOfIndentSpace>2</nrOfIndentSpace>
+          <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortProperties>true</sortProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>sort-pom</id>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+          <execution>
+            <id>verify-sorted-pom</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
