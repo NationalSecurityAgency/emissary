@@ -30,7 +30,7 @@
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
     <dep.commons-cli.version>1.4</dep.commons-cli.version>
     <dep.commons-codec.version>1.13</dep.commons-codec.version>
-    <dep.commons-collections.version>3.2.1</dep.commons-collections.version>
+    <dep.commons-collections.version>3.2.2</dep.commons-collections.version>
     <dep.commons-el.version>1.0</dep.commons-el.version>
     <dep.commons-exec.version>1.3</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
