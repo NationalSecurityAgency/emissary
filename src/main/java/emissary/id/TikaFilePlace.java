@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,12 +114,13 @@ public class TikaFilePlace extends emissary.id.IdPlace {
      * @return mediaType
      */
     private MediaType detectType(IBaseDataObject d) throws Exception {
-        Metadata metadata = new Metadata();
-        InputStream input = TikaInputStream.get(d.data(), metadata);
-        appendFilenameMimeTypeSupport(d, metadata);
-        MediaType mediaType = mimeTypes.detect(input, metadata);
-        logger.debug("Tika type: " + mediaType.toString());
-        return mediaType;
+        try (InputStream input = TikaInputStream.get(Channels.newInputStream(d.getDataContainer().channel()))) {
+            Metadata metadata = new Metadata();
+            appendFilenameMimeTypeSupport(d, metadata);
+            MediaType mediaType = mimeTypes.detect(input, metadata);
+            logger.debug("Tika type: " + mediaType.toString());
+            return mediaType;
+        }
     }
 
     /**
@@ -142,7 +144,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     @Override
     public void process(IBaseDataObject d) {
         // Bail out on empty data
-        if (d.data() == null || d.data().length == 0) {
+        if (d.getDataContainer().length() == 0) {
             d.setCurrentForm(emissary.core.Form.EMPTY);
             d.setFileType(emissary.core.Form.EMPTY);
             return;
@@ -150,7 +152,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
 
         try {
             MediaType mediaType = detectType(d);
-            int payloadLength = d.dataLength();
+            long payloadLength = d.getDataContainer().length();
 
             if (mediaType == null || ignores.contains(mediaType.toString()) || StringUtils.isBlank(mediaType.getType())
                     || StringUtils.isBlank(mediaType.getSubtype())) {

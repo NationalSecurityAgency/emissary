@@ -10,7 +10,7 @@ import emissary.core.IBaseDataObject;
  * Id place that sets the current form based on size of the data
  */
 public class SizeIdPlace extends IdPlace {
-    protected int[] SIZES = {0, // ZERO
+    protected long[] SIZES = {0, // ZERO
             200, // TINY
             3000, // SMALL
             40000, // MEDIUM
@@ -18,6 +18,7 @@ public class SizeIdPlace extends IdPlace {
             6000000, // HUGE
             70000000, // ENORMOUS
             900000000 // ASTRONOMICAL
+            // TODO 64 bit sizes
     };
 
     protected String[] LABELS = {"SIZE_ZERO", "SIZE_TINY", "SIZE_SMALL", "SIZE_MEDIUM", "SIZE_LARGE", "SIZE_HUGE", "SIZE_ENORMOUS",
@@ -31,7 +32,7 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Create the place
-     * 
+     *
      * @param config the configuration file or resource name
      */
     public SizeIdPlace(String config) throws IOException {
@@ -61,12 +62,12 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Process a payload
-     * 
+     *
      * @param payload the payload to process
      */
     @Override
     public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) {
-        String szType = fileTypeBySize(payload.dataLength());
+        String szType = fileTypeBySize(payload.getDataContainer().length());
         if (SETFT) {
             payload.setFileType(szType);
         }
@@ -79,13 +80,13 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Get a size label based on the size passed in
-     * 
-     * @param sz the size
+     *
+     * @param l the size
      * @return the corresponding label
      */
-    public String fileTypeBySize(int sz) {
+    public String fileTypeBySize(long l) {
         for (int i = 0; i < SIZES.length; i++) {
-            if (sz <= SIZES[i]) {
+            if (l <= SIZES[i]) {
                 return LABELS[i];
             }
         }

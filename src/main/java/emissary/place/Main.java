@@ -2,7 +2,12 @@ package emissary.place;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.channels.Channels;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +24,7 @@ import emissary.core.Factory;
 import emissary.core.Family;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.core.blob.IDataContainer;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.kff.KffDataObjectHandler;
@@ -35,6 +41,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -994,9 +1001,9 @@ public class Main {
         outStream.println("Current form: " + payload.getAllCurrentForms());
         outStream.println("File type: " + payload.getFileType());
         outStream.println("Encoding: " + payload.getFontEncoding());
-        outStream.println("Length: " + payload.dataLength());
-        if (payload.getNumAlternateViews() > 0) {
-            outStream.println("Alt views: " + payload.getAlternateViewNames());
+        outStream.println("Length: " + payload.getDataContainer().length());
+        if (payload.getViewManager().getNumAlternateViews() > 0) {
+            outStream.println("Alt views: " + payload.getViewManager().getAlternateViewNames());
         }
         if (payload.getNumChildren() > 0) {
             outStream.println("Attachments: " + payload.getNumChildren());
@@ -1014,9 +1021,15 @@ public class Main {
 
         boolean needTrailingCr = true;
 
-        if (payload.dataLength() > 0 && (isVerbose() || (viewsToPrint.contains("MAIN") && payload.getFilename().indexOf(Family.SEP) == -1))) {
+        if (payload.getDataContainer().length() > 0
+                && (isVerbose() || (viewsToPrint.contains("MAIN") && payload.getFilename().indexOf(Family.SEP) == -1))) {
             outStream.println("Data: <<EODATA");
-            outStream.write(payload.data(), 0, payload.dataLength());
+            try (InputStream is = Channels.newInputStream(payload.getDataContainer().channel())) {
+                IOUtils.copyLarge(is, outStream);
+            } catch (IOException e) {
+                outStream.print("Error writing payload");
+                logger.error("Error writing payload");
+            }
             outStream.println();
             outStream.println("EODATA");
             outStream.println();
@@ -1024,10 +1037,14 @@ public class Main {
         }
 
         for (String view : viewsToPrint) {
-            byte[] av = payload.getAlternateView(view);
+            IDataContainer av = payload.getViewManager().getAlternateViewContainer(view);
             if (av != null) {
                 outStream.println("Alternate View " + view);
-                outStream.write(av, 0, av.length);
+                try (InputStream vin = Channels.newInputStream(av.channel())) {
+                    IOUtils.copyLarge(vin, outStream);
+                } catch (IOException e) {
+                    logger.error("Error printing payload", e);
+                }
                 outStream.println();
                 outStream.println();
                 needTrailingCr = false;
@@ -1049,21 +1066,23 @@ public class Main {
      */
     public void handleSplitOutput(IBaseDataObject payload, List<IBaseDataObject> att) {
         String fn = getBaseOutputDir() + "/" + payload.shortName() + "." + payload.currentForm();
-        boolean status = Executrix.writeDataToFile(payload.data(), fn);
-        if (status) {
-            logger.debug("Wrote output to " + fn);
-        } else {
-            logger.error("Could not write output to " + fn);
+        try (OutputStream os = Files.newOutputStream(Paths.get(fn));
+                InputStream is = Channels.newInputStream(payload.getDataContainer().channel())) {
+            IOUtils.copyLarge(is, os);
+        } catch (IOException e) {
+            logger.error("Could not write output to {}", fn, e);
         }
+        logger.debug("Wrote output to {}", fn);
 
         for (IBaseDataObject part : att) {
             fn = getBaseOutputDir() + "/" + part.shortName() + "." + part.currentForm();
-            status = Executrix.writeDataToFile(part.data(), fn);
-            if (status) {
-                logger.debug("Wrote attachment output to " + fn);
-            } else {
-                logger.error("Could not write output to " + fn);
+            try (OutputStream os = Files.newOutputStream(Paths.get(fn));
+                    InputStream is = Channels.newInputStream(part.getDataContainer().channel())) {
+                IOUtils.copyLarge(is, os);
+            } catch (IOException e) {
+                logger.error("Could not write output to {}", fn, e);
             }
+            logger.debug("Wrote attachment output to {}", fn);
         }
     }
 

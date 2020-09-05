@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -109,9 +110,9 @@ public class SessionProducer {
                     for (Object valueItem : values) {
                         String viewName = baseViewName + (viewCounter > 0 ? ("." + Integer.toString(viewCounter)) : "");
                         if (valueItem instanceof byte[]) {
-                            dataObject.addAlternateView(viewName, (byte[]) valueItem);
+                            dataObject.getViewManager().addAlternateView(viewName).setData((byte[]) valueItem);
                         } else {
-                            dataObject.addAlternateView(viewName, valueItem.toString().getBytes());
+                            dataObject.getViewManager().addAlternateView(viewName).setData(valueItem.toString().getBytes(StandardCharsets.UTF_8));
                         }
                         viewCounter++;
                     }

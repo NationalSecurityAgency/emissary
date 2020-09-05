@@ -8,21 +8,22 @@ import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.UUID;
 
 import com.google.common.collect.LinkedListMultimap;
+import emissary.core.blob.IDataContainer;
+import emissary.core.blob.SelectingDataContainer;
+import emissary.core.view.IViewManager;
+import emissary.core.view.ViewManager;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.Priority;
 import emissary.place.IServiceProviderPlace;
-import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 import org.apache.commons.lang.StringUtils;
 
@@ -34,8 +35,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /* Including this here make serialization of this object faster. */
     private static final long serialVersionUID = 7362181964652092657L;
 
-    /* Our payload */
-    protected byte[] theData;
+    /** Our payload */
+    private IDataContainer theData = new SelectingDataContainer();
 
     /**
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
@@ -96,9 +97,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected int birthOrder = 0;
 
     /**
-     * Hash of alternate views of the data {@link String} current form is the key, byte[] is the value
+     * Alternate views of the data
      */
-    protected Map<String, byte[]> multipartAlternative = new TreeMap<>();
+    protected IViewManager multipartAlternative = new ViewManager();
 
     /**
      * Any header that goes along with the data
@@ -170,17 +171,55 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
-        this.theData = null;
         setCreationTimestamp(new Date(System.currentTimeMillis()));
     }
 
     /**
-     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation uses the passed in array
-     * directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with name passed in.
+     *
+     * @param name the name of the data item
+     */
+    public BaseDataObject(final String name) {
+        this();
+        setFilename(name);
+    }
+
+    /**
+     * Create a new BaseDataObject with name, and initial form
+     *
+     * @param name the name of the data item
+     * @param form the initial form of the data
+     */
+    public BaseDataObject(final String name, final String form) {
+        this(name);
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+    }
+
+    /**
+     *
+     * @param newData
+     * @param name
+     * @param form
+     * @param fileType
+     */
+    public BaseDataObject(final String name, final String form, final String fileType) {
+        this(name, form);
+        if (fileType != null) {
+            this.setFileType(fileType);
+        }
+    }
+
+    /**
+     * Create a new BaseDataObject with byte array and name passed in. WARNING: this implementation may use the passed in
+     * array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
+     * @deprecated prefer data initialisation using streaming
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name) {
         setData(newData);
         setFilename(name);
@@ -188,13 +227,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation uses the passed in
-     * array directly, no copy is made so the caller should not reuse the array.
+     * Create a new BaseDataObject with byte array, name, and initial form WARNING: this implementation may use the passed
+     * in array directly, no copy is made so the caller should not reuse the array.
      *
      * @param newData the bytes to hold
      * @param name the name of the data item
      * @param form the initial form of the data
+     * @deprecated prefer data initialisation using streaming
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form) {
         this(newData, name);
         if (form != null) {
@@ -202,6 +243,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    /**
+     *
+     * @param newData
+     * @param name
+     * @param form
+     * @param fileType
+     * @deprecated prefer data initialisation using streaming
+     */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form, final String fileType) {
         this(newData, name, form);
         if (fileType != null) {
@@ -262,45 +312,63 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         this.shortName = makeShortName();
     }
 
+    @Override
+    public IDataContainer getDataContainer() {
+        return this.theData;
+    }
+
+    @Override
+    public IDataContainer newDataContainer() {
+        this.theData = new SelectingDataContainer();
+        return this.theData;
+    }
+
+    @Override
+    public IViewManager getViewManager() {
+        return multipartAlternative;
+    }
+
     /**
      * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is made so
      * the caller must be aware that modifications to the returned array are live.
      *
      * @return byte array of the data
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
+    @Deprecated
     @Override
     public byte[] data() {
-        return this.theData;
+        return getDataContainer().data();
     }
 
     /**
-     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation uses the passed in array directly, no
-     * copy is made so the caller should not reuse the array.
+     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation may use the passed in array directly,
+     * no copy is made so the caller should not reuse the array.
      *
      * @param newData byte array to set replacing any existing data
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
      */
+    @Deprecated
     @Override
     public void setData(final byte[] newData) {
-        if (newData == null) {
-            this.theData = new byte[0];
-        } else {
-            this.theData = newData;
-        }
+        this.theData.setData(newData);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated Interaction with data should be via {@link #getDataContainer()}
+     */
+    @Deprecated
     @Override
     public void setData(final byte[] newData, final int offset, final int length) {
-        if (length <= 0 || newData == null) {
-            this.theData = new byte[0];
-        } else {
-            this.theData = new byte[length];
-            System.arraycopy(newData, offset, this.theData, 0, length);
-        }
+        this.theData.setData(newData, offset, length);
     }
 
+    @Deprecated
     @Override
     public int dataLength() {
-        return this.theData == null ? 0 : this.theData.length;
+        return this.theData.dataLength();
     }
 
     @Override
@@ -942,8 +1010,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public ByteBuffer dataBuffer() {
-        return ByteBuffer.wrap(data());
+        return getDataContainer().dataBuffer();
     }
 
     @Override
@@ -1020,40 +1089,34 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public int getNumAlternateViews() {
-        return this.multipartAlternative.size();
+        return getViewManager().getNumAlternateViews();
     }
 
     /**
-     * Return a specified multipart alternative view of the data WARNING: this implementation returns the actual array
-     * directly, no copy is made so the caller must be aware that modifications to the returned array are live.
+     * Return a specified multipart alternative view of the data WARNING: this implementation may return the actual array
+     * directly, so the caller must be aware that modifications to the returned array may be live.
      *
      * @param s the name of the view to retrieve
      * @return byte array of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public byte[] getAlternateView(final String s) {
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            return this.multipartAlternative.get(dict.map(s));
-        } catch (NamespaceException ex) {
-            return this.multipartAlternative.get(s);
-        }
+        return getViewManager().getAlternateView(s);
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data) {
-        appendAlternateView(name, data, 0, data.length);
+        getViewManager().appendAlternateView(name, data);
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        final byte[] av = getAlternateView(name);
-        if (av != null) {
-            addAlternateView(name, ByteUtil.glue(av, 0, av.length - 1, data, offset, offset + length - 1));
-        } else {
-            addAlternateView(name, data, offset, length);
-        }
+        getViewManager().appendAlternateView(name, data, offset, length);
     }
 
     /**
@@ -1063,55 +1126,28 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return buffer of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public ByteBuffer getAlternateViewBuffer(final String s) {
-        final byte[] viewdata = getAlternateView(s);
-        if (viewdata == null) {
-            return null;
-        }
-        return ByteBuffer.wrap(viewdata);
+        return getViewManager().getAlternateViewBuffer(s);
     }
 
     /**
-     * Add a multipart alternative view of the data WARNING: this implementation returns the actual array directly, no copy
-     * is made so the caller must be aware that modifications to the returned array are live.
+     * Add a multipart alternative view of the data WARNING: this implementation may store the actual array directly, so the
+     * caller must be aware that modifications to the returned array may be live.
      *
      * @param name the name of the new view
      * @param data the byte array of data for the view
      */
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
-        if (data == null) {
-            this.multipartAlternative.remove(mappedName);
-        } else {
-            this.multipartAlternative.put(mappedName, data);
-        }
+        getViewManager().addAlternateView(name, data);
     }
 
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
-        if (data == null || length <= 0) {
-            this.multipartAlternative.remove(mappedName);
-        } else {
-            final byte[] mpa = new byte[length];
-            System.arraycopy(data, offset, mpa, 0, length);
-            this.multipartAlternative.put(mappedName, mpa);
-        }
+        getViewManager().addAlternateView(name, data, offset, length);
     }
 
     /**
@@ -1121,7 +1157,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Set<String> getAlternateViewNames() {
-        return new TreeSet<>(this.multipartAlternative.keySet());
+        return getViewManager().getAlternateViewNames();
     }
 
     /**
@@ -1131,8 +1167,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return an map of alternate views ordered by name, key = String, value = byte[]
      */
     @Override
+    @Deprecated
     public Map<String, byte[]> getAlternateViews() {
-        return this.multipartAlternative;
+        return getViewManager().getAlternateViews();
     }
 
     @Override
@@ -1189,12 +1226,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public IBaseDataObject clone() throws CloneNotSupportedException {
         final BaseDataObject c = (BaseDataObject) super.clone();
-        if ((this.theData != null) && (this.theData.length > 0)) {
-            c.setData(this.theData, 0, this.theData.length);
-        }
+        c.theData = this.theData.clone();
         c.currentForm = new ArrayList<>(this.currentForm);
         c.history = new ArrayList<>(this.history);
-        c.multipartAlternative = new HashMap<>(this.multipartAlternative);
+        c.multipartAlternative = multipartAlternative.clone();
         c.priority = this.priority;
         c.creationTimestamp = this.creationTimestamp;
 

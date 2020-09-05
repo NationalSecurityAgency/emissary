@@ -63,7 +63,7 @@ public class KffDataObjectHandler {
     /**
      * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
      * status if so configured
-     * 
+     *
      * @param data the bytes to hash
      * @param name th name of the data (for reporting)
      * @return parameter entries suitable for a BaseDataObject
@@ -75,7 +75,7 @@ public class KffDataObjectHandler {
     /**
      * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
      * status if so configured
-     * 
+     *
      * @param data the bytes to hash
      * @param name th name of the data (for reporting)
      * @param prefix prepended to hash name entries
@@ -113,7 +113,7 @@ public class KffDataObjectHandler {
 
     /**
      * Compute the hash of a data object's data
-     * 
+     *
      * @param d the data object
      */
     public void hash(IBaseDataObject d) {
@@ -121,7 +121,7 @@ public class KffDataObjectHandler {
             removeHash(d);
         }
 
-        if (d != null && d.dataLength() > 0) {
+        if (d != null && d.getDataContainer().length() > 0) {
             // Compute and add the hashes
             d.putParameters(hashData(d.data(), d.shortName()));
 
@@ -142,7 +142,7 @@ public class KffDataObjectHandler {
 
     /**
      * Parent info has been copied in and must be reset for the child context
-     * 
+     *
      * @param d the data object
      */
     public static void parentToChild(IBaseDataObject d) {
@@ -155,7 +155,7 @@ public class KffDataObjectHandler {
 
     /**
      * Determine if a hash value is present
-     * 
+     *
      * @param d the payload
      */
     public static boolean hashPresent(IBaseDataObject d) {
@@ -165,7 +165,7 @@ public class KffDataObjectHandler {
 
     /**
      * Remove all hash params from the payload
-     * 
+     *
      * @param d the payload
      */
     public static void removeHash(IBaseDataObject d) {
@@ -179,7 +179,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SHA-1 hash value. It's the default. The standard. Don't leave home without it.
-     * 
+     *
      * @param d the payload
      */
     public static String getHashValue(IBaseDataObject d) {
@@ -188,7 +188,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the supplied hash into the right hash slot We can determine the right slot based on the value of the hash
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -223,7 +223,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the MD5 hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getMd5Value(IBaseDataObject d) {
@@ -232,7 +232,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the MD5 hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -242,7 +242,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SHA-1 hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getSha1Value(IBaseDataObject d) {
@@ -251,7 +251,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the SHA-1 hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -261,7 +261,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SHA-256 hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getSha256Value(IBaseDataObject d) {
@@ -270,7 +270,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the SHA-256 hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -280,7 +280,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SHA-384 hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getSha384Value(IBaseDataObject d) {
@@ -289,7 +289,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the SHA-384 hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -299,7 +299,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SHA-512 hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getSha512Value(IBaseDataObject d) {
@@ -308,7 +308,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the SHA-512 hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -318,7 +318,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the SSDEEP hash value
-     * 
+     *
      * @param d the payload
      */
     public static String getSsdeepValue(IBaseDataObject d) {
@@ -327,7 +327,7 @@ public class KffDataObjectHandler {
 
     /**
      * Set the SSDEEP hash value
-     * 
+     *
      * @param d the payload
      * @param hash the value
      */
@@ -337,7 +337,7 @@ public class KffDataObjectHandler {
 
     /**
      * Get the best of the available hashes, might be null of none are enabled
-     * 
+     *
      * @param d the payload
      * @return the best hash value we have
      */

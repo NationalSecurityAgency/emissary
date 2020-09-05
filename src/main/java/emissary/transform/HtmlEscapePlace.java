@@ -6,9 +6,14 @@
 package emissary.transform;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.channels.Channels;
+import java.util.Optional;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.view.IViewManager;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.HtmlEscape;
 import emissary.util.CharacterCounterSet;
@@ -68,42 +73,33 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
 
         logger.debug("HtmlEscapePlace just got a " + incomingForm);
 
-        byte[] newData = HtmlEscape.unescapeHtml(d.data(), counters);
-
-        if (newData != null && newData.length > 0) {
-            newData = HtmlEscape.unescapeEntities(newData, counters);
-            if (outputForm != null) {
-                d.setCurrentForm(outputForm);
-            }
-            // Track how much change in size there was
-            int variance = d.dataLength() - newData.length;
-            if (variance < 0)
-                variance *= -1;
-            d.setParameter("HTML_Entity_Decode_Variance", Integer.toString(variance));
-            d.setData(newData);
-            d.setFileTypeIfEmpty("HTML");
-
-            for (String key : counters.getKeys()) {
-                d.putParameter(key + "_HTML_ESCAPE", Integer.toString(counters.get(key)));
-            }
-
-        } else {
-            logger.warn("error doing HtmlEscape, unable to decode");
+        long len = d.getDataContainer().length();
+        try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
+                OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
+            HtmlEscape.unescape(oldData, newData, true, true, Optional.of(counters));
+            d.setCurrentForm(outputForm != null ? outputForm : incomingForm);
+        } catch (IOException e) {
+            logger.warn("error doing HtmlEscape, unable to decode", e);
             d.pushCurrentForm(emissary.core.Form.ERROR);
+        }
+        long variance = Math.abs(len - d.getDataContainer().length());
+        d.setParameter("HTML_Entity_Decode_Variance", Long.toString(variance));
+        d.setFileTypeIfEmpty("HTML");
+        for (String key : counters.getKeys()) {
+            d.putParameter(key + "_HTML_ESCAPE", Integer.toString(counters.get(key)));
         }
 
         // Unescape any TEXT alt views we may have
-        for (String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (String viewName : viewManager.getAlternateViewNames()) {
             if (viewName.startsWith("TEXT")) {
-                byte[] textView = d.getAlternateView(viewName);
-                if (textView != null && textView.length > 0) {
-                    byte[] s = HtmlEscape.unescapeHtml(textView);
-                    if (s != null && s.length > 0) {
-                        s = HtmlEscape.unescapeEntities(s);
-                        if (s != null) {
-                            d.addAlternateView(viewName, s);
-                        }
-                    }
+                long length = viewManager.getAlternateViewContainer(viewName).length();
+                try (InputStream oldData = Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel());
+                        OutputStream newData = Channels.newOutputStream(viewManager.addAlternateView(viewName).newChannel(length))) {
+                    HtmlEscape.unescape(oldData, newData, true, true, Optional.empty());
+                } catch (IOException e) {
+                    logger.warn("error doing HtmlEscape, unable to decode", e);
+                    d.pushCurrentForm(emissary.core.Form.ERROR);
                 }
             }
         }

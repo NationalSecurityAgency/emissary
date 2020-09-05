@@ -96,7 +96,7 @@ public class WebSubmissionPlace extends ServiceProviderPlace implements emissary
 
     /**
      * Take something from the store, if found removed from map
-     * 
+     *
      * @param token the web submission token
      * @return the stored family tree or null
      */
@@ -112,14 +112,14 @@ public class WebSubmissionPlace extends ServiceProviderPlace implements emissary
                 // Test current forms and file type
                 if (!matchesAny(d.getAllCurrentForms(), outputTypes) && !matchesAny(d.getFileType(), outputTypes)) {
                     logger.debug("Clearing data " + d.getAllCurrentForms() + ", " + d.getFileType());
-                    d.setData(null);
+                    d.getDataContainer().setData(null);
                 }
 
                 // Test alternate views
-                for (String avname : d.getAlternateViewNames()) {
+                for (String avname : d.getViewManager().getAlternateViewNames()) {
                     if (!matchesAny(avname, viewTypes)) {
                         logger.debug("Clearing alt view " + avname);
-                        d.addAlternateView(avname, null);
+                        d.getViewManager().removeView(avname);
                     }
                 }
             }

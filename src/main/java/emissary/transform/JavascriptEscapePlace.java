@@ -1,11 +1,14 @@
 /***********************************************************
- * This place transforms \\uxxxx Javascript escape 
+ * This place transforms \\uxxxx Javascript escape
  * stuff into normal unicode (utf-8 characters)
  **/
 
 package emissary.transform;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.Channels;
 
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
@@ -21,7 +24,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with specified location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      * @param dir the name of the controlling directory
      * @param placeLoc the string name for this place
@@ -33,7 +36,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with default location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      */
     public JavascriptEscapePlace(String cfgInfo) throws IOException {
@@ -69,16 +72,14 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
 
         logger.debug("JavascriptEscapePlace just got a " + incomingForm);
 
-        byte[] newData = JavascriptEscape.unescape(d.data());
 
-        if (newData != null && newData.length > 0) {
-            d.setData(newData);
-
-            if (outputForm != null) {
-                d.setCurrentForm(outputForm);
-            }
-        } else {
-            logger.warn("error doing JavascriptEscape, unable to decode");
+        long len = d.getDataContainer().length();
+        try (InputStream oldData = Channels.newInputStream(d.getDataContainer().channel());
+                OutputStream newData = Channels.newOutputStream(d.newDataContainer().newChannel(len))) {
+            JavascriptEscape.unescape(oldData, newData);
+            d.setCurrentForm(outputForm);
+        } catch (IOException e) {
+            logger.warn("error doing JsonEscape, unable to decode", e);
             d.pushCurrentForm(emissary.core.Form.ERROR);
         }
     }

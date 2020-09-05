@@ -15,6 +15,7 @@ import emissary.util.io.ResourceReader;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
@@ -54,6 +55,7 @@ public class UnitTest {
             this.retryCount = retryCount;
         }
 
+        @Override
         public Statement apply(Statement base, Description description) {
             return statement(base, description);
         }
@@ -127,9 +129,9 @@ public class UnitTest {
      * Configure the test stuff
      * <p>
      * Beware though, if you use @BeforeClass this will not have had a change to run. So you can do something like
-     * 
+     *
      * new UnitTest().setupSystemProperties();
-     * 
+     *
      * in the @BeforeClass. See FlexibleDateTimeParserTest for an example
      */
     protected void configure() {
@@ -178,6 +180,9 @@ public class UnitTest {
         for (String r : rs) {
             String[] s = {r};
             al.add(s);
+        }
+        if (al.isEmpty()) {
+            Assert.fail("Could not load test parameters.");
         }
         return al;
     }
@@ -228,6 +233,8 @@ public class UnitTest {
 
     /**
      * Restore config dir and pkg to original values
+     *
+     * @throws EmissaryException
      */
     protected void restoreConfig() throws EmissaryException {
         // Restore config paths

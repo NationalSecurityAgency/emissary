@@ -2,14 +2,18 @@ package emissary.output.filter;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
 import java.util.Map;
 import java.util.Set;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
+import emissary.core.view.IViewManager;
 import emissary.output.DropOffPlace;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Filter that writes unadorned data as raw bytes
@@ -18,7 +22,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Initialize reads the configuration items for this filter
-     * 
+     *
      * @param configG the configurator to read from
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig the configuration for the specific filter
@@ -33,7 +37,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Output one payload item
-     * 
+     *
      * @param d the payload
      * @param params the map of configuration items
      */
@@ -57,16 +61,18 @@ public class DataFilter extends AbstractFilter {
         int writeCount = 0;
 
         if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {
-            final byte[] data = d.data();
-            final boolean status = writeDataFile(d, tld, baseFileName, data, null);
+            final boolean status = writeDataFile(d, tld, baseFileName, () -> Channels.newInputStream(d.getDataContainer().channel()), null);
             writeCount += (status ? 1 : -1);
         }
 
         // Check each alt view
-        for (final String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (final String viewName : viewManager.getAlternateViewNames()) {
             if (isViewOutputtable(lang, fileType, currentForm, viewName)) {
                 final String fixedViewName = viewName.replace(" ", "_");
-                final boolean status = writeDataFile(d, tld, baseFileName, d.getAlternateView(viewName), fixedViewName);
+                final boolean status =
+                        writeDataFile(d, tld, baseFileName, () -> Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel()),
+                                fixedViewName);
                 writeCount += (status ? 1 : -1);
             }
         }
@@ -76,7 +82,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Output one payload item to the provided output stream
-     * 
+     *
      * @param d the payload
      * @param params the map of configuration items
      * @param output the output stream to write to
@@ -98,16 +104,17 @@ public class DataFilter extends AbstractFilter {
         int writeCount = 0;
 
         if (isPrimaryViewOutputtable(lang, fileType, currentForm)) {
-            final byte[] data = d.data();
-            final boolean status = writeDataStream(d, tld, output, data, null);
+            final boolean status = writeDataStream(d, tld, output, () -> Channels.newInputStream(d.getDataContainer().channel()), null);
             writeCount += (status ? 1 : -1);
         }
 
         // Check each alt view
-        for (final String viewName : d.getAlternateViewNames()) {
+        IViewManager viewManager = d.getViewManager();
+        for (final String viewName : viewManager.getAlternateViewNames()) {
             if (isViewOutputtable(lang, fileType, currentForm, viewName)) {
                 final String fixedViewName = viewName.replace(" ", "_");
-                final boolean status = writeDataStream(d, tld, output, d.getAlternateView(viewName), fixedViewName);
+                final boolean status = writeDataStream(d, tld, output,
+                        () -> Channels.newInputStream(viewManager.getAlternateViewContainer(viewName).channel()), fixedViewName);
                 writeCount += (status ? 1 : -1);
             }
         }
@@ -135,14 +142,14 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Write a file, either the primary view or an alt view
-     * 
+     *
      * @param d the DataObject to output
      * @param tld the TLD Object to extract metadata (if applicable)
      * @param baseFileName the base file name
      * @param data the bytes to write
      * @param type of data
      */
-    protected boolean writeDataFile(final IBaseDataObject d, final IBaseDataObject tld, final String baseFileName, final byte[] data,
+    protected boolean writeDataFile(final IBaseDataObject d, final IBaseDataObject tld, final String baseFileName, InputStreamSupplier data,
             final String type) {
         String fileName = baseFileName;
         if (type != null) {
@@ -160,31 +167,21 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Write it out
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(fileName);
-            fos.write(data, 0, data.length);
-            fos.close();
+        try (FileOutputStream fos = new FileOutputStream(fileName);
+                InputStream is = data.get()) {
+            IOUtils.copyLarge(is, fos);
         } catch (IOException ex) {
             logger.error("Cannot write output to " + fileName, ex);
             return false;
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ignore) {
-                    logger.debug("Error closing stream", ignore);
-                }
-            }
         }
 
         return true;
     }
 
-    protected boolean writeDataStream(final IBaseDataObject d, final IBaseDataObject tld, final OutputStream output, final byte[] data,
+    protected boolean writeDataStream(final IBaseDataObject d, final IBaseDataObject tld, final OutputStream output, InputStreamSupplier data,
             final String type) {
-        try {
-            output.write(data);
+        try (InputStream is = data.get()) {
+            IOUtils.copyLarge(is, output);
         } catch (IOException ex) {
             logger.error("Cannot write output", ex);
             return false;
@@ -206,5 +203,10 @@ public class DataFilter extends AbstractFilter {
         } catch (Exception ex) {
             System.err.println("Cannot configure filter: " + ex.getMessage());
         }
+    }
+
+    @FunctionalInterface
+    private interface InputStreamSupplier {
+        InputStream get() throws IOException;
     }
 }

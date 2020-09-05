@@ -2,10 +2,14 @@ package emissary.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.util.shell.Executrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +69,7 @@ public class UnixFile {
 
     /**
      * Load multiple magic files into one identification engine
-     * 
+     *
      * @param magicPaths the String names of magic files to load
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      */
@@ -91,8 +95,8 @@ public class UnixFile {
      * byte[])</code> and then calling <code>evaluateBinaryProperty
      * (bytes : byte[])</code>
      */
-    public String execute(byte[] bytes) throws IOException {
-        if (bytes == null || bytes.length < 1) {
+    public String execute(SeekableByteChannel bytes) throws IOException {
+        if (bytes.size() < 1) {
             return FILETYPE_EMPTY;
         }
 
@@ -108,20 +112,29 @@ public class UnixFile {
     /**
      * Statically tests a byte array to determine if the file representation can be of type ASCII or is binary. Simply
      * checks each byte value to be less then greater/equal then 127.
+     * 
+     * @throws IOException
      */
-    public static String evaluateBinaryProperty(byte[] bytes) {
-        if (bytes == null || bytes.length < 1) {
+    public static String evaluateBinaryProperty(SeekableByteChannel bytes) throws IOException {
+        if (bytes.size() < 1) {
             return FILETYPE_EMPTY;
         }
-
-        for (int i = 0; i < bytes.length; i++) {
-            try {
-                if (bytes[i] < 32) {
-                    return FILETYPE_BINARY;
+        long position = bytes.position();
+        try {
+            @SuppressWarnings("resource")
+            InputStream is = Channels.newInputStream(bytes);
+            int read = is.read();
+            while (read != -1) {
+                try {
+                    if (((byte) read) < 32) {
+                        return FILETYPE_BINARY;
+                    }
+                } catch (Exception ignore) {
+                    log.error("Exception on evaulateBinaryProperty", ignore);
                 }
-            } catch (Exception ignore) {
-                log.error("Exception on evaulateBinaryProperty", ignore);
             }
+        } finally {
+            bytes.position(position);
         }
         return FILETYPE_ASCII;
     }
@@ -129,7 +142,7 @@ public class UnixFile {
     /**
      * Evaluates the byte array against the collection of Magic numbers
      */
-    public String evaluateByMagicNumber(byte[] bytes) throws IOException {
+    public String evaluateByMagicNumber(SeekableByteChannel bytes) throws IOException {
         return util.describe(bytes);
     }
 
@@ -170,8 +183,9 @@ public class UnixFile {
             } else if (target.isDirectory()) {
                 System.out.println(args[argIndex] + ": DIRECTORY");
             } else {
-                byte[] data = Executrix.readDataFromFile(args[argIndex]);
-                System.out.println(args[argIndex] + ": " + unixfile.evaluateByMagicNumber(data));
+                try (SeekableByteChannel data = FileChannel.open(new File(args[argIndex]).toPath(), StandardOpenOption.READ)) {
+                    System.out.println(args[argIndex] + ": " + unixfile.evaluateByMagicNumber(data));
+                }
             }
             argIndex++;
         }
