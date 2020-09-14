@@ -29,19 +29,18 @@ import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.IPausable;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
-import emissary.pickup.PickUpPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
-import emissary.util.ServerUtil;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -187,24 +186,12 @@ public class EmissaryServer {
             LOG.debug(" with \n{}", envString);
 
             if (cmd.isPause()) {
-                ServerUtil.pauseServer();
+                pause(true);
             } else {
-                ServerUtil.unpauseServer();
+                unpause(true);
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
-
-
-            // Make sure we clean up everything before the JVM exits. This includes
-            // calling System.exit() and user interrupt, such as typing ^C or a system-wide even,
-            // such as user logoff or system shutdown
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    LOG.debug("JVM going down, running stopServer");
-                    EmissaryServer.stopServer();
-                }
-            });
-
             return server;
         } catch (Throwable t) {
             t.printStackTrace(System.err);
@@ -219,6 +206,47 @@ public class EmissaryServer {
      */
     public boolean isServerRunning() {
         return (this.server != null) && (this.server.isStarted());
+    }
+
+
+    /**
+     * Pause the server
+     *
+     * @throws NamespaceException if there is an issue
+     */
+    public static void pause() throws NamespaceException {
+        pause(false);
+    }
+
+    /**
+     * Pause the server
+     *
+     * @param silent true to silence {@link NamespaceException}, false otherwise
+     * @throws NamespaceException if there is an issue
+     */
+    public static void pause(boolean silent) throws NamespaceException {
+        LOG.debug("Pausing Emissary Server");
+        Namespace.lookup(IPausable.class, silent).forEach(IPausable::pause);
+    }
+
+    /**
+     * Unpause the server
+     *
+     * @throws NamespaceException if there is an issue
+     */
+    public static void unpause() throws NamespaceException {
+        unpause(false);
+    }
+
+    /**
+     * Unpause the server
+     *
+     * @param silent true to silence {@link NamespaceException}, false otherwise
+     * @throws NamespaceException if there is an issue
+     */
+    public static void unpause(boolean silent) throws NamespaceException {
+        LOG.debug("Unpausing Emissary Server");
+        Namespace.lookup(IPausable.class, silent).forEach(IPausable::unpause);
     }
 
     /**
@@ -249,20 +277,12 @@ public class EmissaryServer {
         LOG.info("Beginning shutdown of EmissaryServer {}", name);
         logThreadDump("Thread dump before anything");
 
-        // iterate over pickup places and shut those down first
-        for (String key : Namespace.keySet()) {
-            try {
-                Object obj = Namespace.lookup(key);
-                if (PickUpPlace.implementsPickUpPlace(obj.getClass())) {
-                    LOG.debug("Stopping {} ", obj);
-                    ((IServiceProviderPlace) obj).shutDown();
-                    LOG.debug("Done stopping place: {}", key);
-                }
-            } catch (Exception ex) {
-                LOG.error("Error shutting down " + key, ex);
-            }
+        try {
+            pause();
+            LOG.info("Done pausing server");
+        } catch (Exception ex) {
+            LOG.error("Error pausing server", ex);
         }
-        LOG.info("Done stopping all pickup places");
 
         try {
             AgentPool.lookup().close();
@@ -288,11 +308,11 @@ public class EmissaryServer {
         for (String key : Namespace.keySet()) {
             try {
                 Object obj = Namespace.lookup(key);
-                if (obj instanceof IServiceProviderPlace && !PickUpPlace.implementsPickUpPlace(obj.getClass())) {
-                    LOG.debug("Stopping {} ", obj);
+                if (obj instanceof IServiceProviderPlace) {
+                    LOG.info("Stopping {} ", obj);
                     ((IServiceProviderPlace) obj).shutDown();
+                    LOG.info("Done stopping place: {}", key);
                 }
-                LOG.debug("Done stopping place: {}", key);
             } catch (Exception ex) {
                 LOG.error("Error shutting down " + key, ex);
             }

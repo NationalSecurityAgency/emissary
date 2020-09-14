@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.Sets;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +38,7 @@ public class Namespace {
     /**
      * Find a registered classname
      * 
-     * @param arg the name of the registerd item
+     * @param arg the name of the registered item
      */
     public static Object lookup(final String arg) throws NamespaceException {
 
@@ -58,6 +60,32 @@ public class Namespace {
             throw new NamespaceException("Not found: " + arg);
         }
         return obj;
+    }
+
+    /**
+     * Find a set of objects of a particular registered class
+     *
+     * @param arg the class of the registered item
+     * @return a set of objects that are of the registered class
+     */
+    public static <T> Set<T> lookup(Class<T> arg) throws NamespaceException {
+        return lookup(arg, false);
+    }
+
+    /**
+     * Find a set of objects of a particular registered class
+     *
+     * @param arg the class of the registered item
+     * @param silent true to silence the {@link NamespaceException}, false to throw
+     * @return a set of objects that are of the registered class
+     */
+    public static <T> Set<T> lookup(Class<T> arg, boolean silent) throws NamespaceException {
+        Set<T> lookups = Sets.newHashSet();
+        map.values().stream().filter(arg::isInstance).forEach(o -> lookups.add((T) o));
+        if (!silent && CollectionUtils.isEmpty(lookups)) {
+            throw new NamespaceException("Not found: " + arg.getName());
+        }
+        return lookups;
     }
 
     /**

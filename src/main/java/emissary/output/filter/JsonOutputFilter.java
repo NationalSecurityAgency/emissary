@@ -48,6 +48,8 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected Map<String, Set<String>> blacklistValues;
     protected Set<String> stripPrefixes;
 
+    protected boolean emitPayload = true;
+
     protected ObjectMapper jsonMapper;
 
     @Override
@@ -62,6 +64,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         this.blacklistPrefixes.addAll(this.filterConfig.findEntries("BLACKLIST_PREFIX"));
         this.blacklistValues = this.filterConfig.findStringMatchMultiMap("BLACKLIST_VALUE_");
         this.stripPrefixes = this.filterConfig.findEntriesAsSet("STRIP_PARAM_PREFIX");
+        this.emitPayload = this.filterConfig.findBooleanEntry("EMIT_PAYLOAD", true);
         initJsonMapper();
     }
 
@@ -71,7 +74,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected void initJsonMapper() {
         jsonMapper = new ObjectMapper();
         jsonMapper.registerModule(new IbdoModule());
-        jsonMapper.addMixIn(IBaseDataObject.class, IbdoMixin.class);
+        jsonMapper.addMixIn(IBaseDataObject.class, emitPayload ? IbdoPayloadMixin.class : IbdoParameterMixin.class);
         // the id in addFilter must match the annotation for JsonFilter
         jsonMapper.setFilterProvider(new SimpleFilterProvider().addFilter("param_filter", new IbdoParameterFilter()));
     }
@@ -235,7 +238,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
      * This class is used so we do not have to annotate the IBaseDataObject. Set custom annotations on the method signatures
      * to include/exclude fields in the ibdo.
      */
-    abstract class IbdoMixin {
+    static abstract class IbdoMixin {
         @JsonProperty("internalId")
         abstract UUID getInternalId();
 
@@ -249,19 +252,10 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         @JsonFilter("param_filter")
         abstract Map<String, Collection<Object>> getParameters();
 
-        @JsonProperty("payload")
-        @JsonInclude(NON_EMPTY)
-        abstract byte[] data();
-
-        @JsonProperty("views")
-        @JsonInclude(NON_EMPTY)
-        abstract Map<String, byte[]> getAlternateViews();
-
         @JsonProperty("members")
         @JsonInclude(NON_EMPTY)
         abstract List<IBaseDataObject> getExtractedRecords();
 
-        /* Ignore the following methods */
         @JsonIgnore
         abstract int dataLength();
 
@@ -329,4 +323,21 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract String getProcessingError();
     }
 
+    static abstract class IbdoParameterMixin extends IbdoMixin {
+        @JsonIgnore
+        abstract byte[] data();
+
+        @JsonIgnore
+        abstract Map<String, byte[]> getAlternateViews();
+    }
+
+    static abstract class IbdoPayloadMixin extends IbdoMixin {
+        @JsonProperty("payload")
+        @JsonInclude(NON_EMPTY)
+        abstract byte[] data();
+
+        @JsonProperty("views")
+        @JsonInclude(NON_EMPTY)
+        abstract Map<String, byte[]> getAlternateViews();
+    }
 }

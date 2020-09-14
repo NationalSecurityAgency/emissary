@@ -561,9 +561,12 @@ public class HDMobileAgent extends MobileAgent {
      */
     @Override
     public String toString() {
-        if (!isInUse()) {
+        if (isZombie()) {
+            return "Closed";
+        } else if (!isInUse()) {
             return "Idle";
         }
+
         String sn = null;
         int sz = 0;
         if (this.payloadList != null && !this.payloadList.isEmpty()) {

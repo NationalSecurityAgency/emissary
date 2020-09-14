@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
+import emissary.server.EmissaryServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,19 +37,14 @@ public class ShutdownAction {
             }
         } finally {
             // need a new thread so the response will return
-            // this works because there is a shutdownHook that cleans everything up
-            // see the ServerCommand, otherwise you would run what that shutdownHook does
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        // swallow
-                    }
-                    System.exit(0);
+            new Thread(() -> {
+                try {
+                    EmissaryServer.stopServer();
+                } catch (Exception e) {
+                    // swallow
                 }
-            }.start();
+                System.exit(0);
+            }).start();
         }
     }
 

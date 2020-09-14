@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>5.8.0-SNAPSHOT</version>
+  <version>5.10.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -729,6 +729,11 @@
           <version>3.1.0</version>
         </plugin>
         <plugin>
+          <groupId>com.github.ekryd.sortpom</groupId>
+          <artifactId>sortpom-maven-plugin</artifactId>
+          <version>2.10.0</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>3.0.0-M2</version>
@@ -817,7 +822,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>8.18</version>
+              <version>8.29</version>
             </dependency>
           </dependencies>
           <executions>
@@ -940,29 +945,6 @@
               <goals>
                 <goal>sort</goal>
               </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>com.github.ekryd.sortpom</groupId>
-          <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
-          <executions>
-            <execution>
-              <id>sort-pom</id>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-              <phase>process-sources</phase>
-              <configuration>
-                <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
-                <createBackupFile>false</createBackupFile>
-                <lineSeparator>\n</lineSeparator>
-                <expandEmptyElements>false</expandEmptyElements>
-                <nrOfIndentSpace>2</nrOfIndentSpace>
-                <sortDependencies>scope,groupId,artifactId</sortDependencies>
-                <sortProperties>true</sortProperties>
-              </configuration>
             </execution>
           </executions>
         </plugin>
@@ -1095,6 +1077,36 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <!-- verify before compile; should be sorted already -->
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <configuration>
+          <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+          <createBackupFile>false</createBackupFile>
+          <lineSeparator>\n</lineSeparator>
+          <expandEmptyElements>false</expandEmptyElements>
+          <nrOfIndentSpace>2</nrOfIndentSpace>
+          <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortProperties>true</sortProperties>
+        </configuration>
+        <executions>
+          <execution>
+            <id>sort-pom</id>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+            <phase>process-sources</phase>
+          </execution>
+          <execution>
+            <id>verify-sorted-pom</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <phase>process-resources</phase>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>

@@ -8,7 +8,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import emissary.util.ServerUtil;
+import emissary.server.EmissaryServer;
 
 @Path("")
 // context is emissary
@@ -23,7 +23,7 @@ public class PauseAction {
     @Produces(MediaType.TEXT_HTML)
     public Response pauseQueServer(@Context HttpServletRequest request) {
         try {
-            ServerUtil.pauseServer();
+            EmissaryServer.pause();
             return Response.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class PauseAction {
     @Produces(MediaType.TEXT_HTML)
     public Response unpauseQueServer(@Context HttpServletRequest request) {
         try {
-            ServerUtil.unpauseServer();
+            EmissaryServer.unpause();
             return Response.ok().build();
         } catch (Exception e) {
             e.printStackTrace();

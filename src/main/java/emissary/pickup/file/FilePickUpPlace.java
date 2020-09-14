@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import emissary.pickup.IPickUp;
+
 /**
  * Monitor one or more directories and pickup files for the system
  */
-public class FilePickUpPlace extends emissary.pickup.PickUpPlace {
+public class FilePickUpPlace extends emissary.pickup.PickUpPlace implements IPickUp {
 
     // How often to check directories in millis
     protected int pollingInterval = 30000;
@@ -65,6 +67,44 @@ public class FilePickUpPlace extends emissary.pickup.PickUpPlace {
             logger.info("*** Stopping FilePickUpPlace ");
             i.next().shutdown();
         }
+    }
+
+    /**
+     * Pause the DataServers
+     */
+    @Override
+    public void pause() {
+        for (FileDataServer i : theDataServer) {
+            logger.info("*** Pausing {} for {}", i.getClass().getName(), getClass().getName());
+            i.pause();
+        }
+    }
+
+    /**
+     * Unpause the DataServers
+     */
+    @Override
+    public void unpause() {
+        for (FileDataServer i : theDataServer) {
+            logger.info("*** Unpausing {} for {}", i.getClass().getName(), getClass().getName());
+            i.unpause();
+        }
+    }
+
+
+    /**
+     * Check the status of the DataServers
+     *
+     * @return true if any data server is paused, false otherwise
+     */
+    @Override
+    public boolean isPaused() {
+        for (FileDataServer i : theDataServer) {
+            if (i.isPaused()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

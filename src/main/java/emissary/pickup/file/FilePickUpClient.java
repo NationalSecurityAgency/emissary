@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import emissary.core.IBaseDataObject;
+import emissary.pickup.IPickUp;
 import emissary.pickup.IPickUpSpace;
 import emissary.pickup.PickupQueue;
 import emissary.pickup.QueServer;
@@ -21,7 +22,7 @@ import emissary.pickup.WorkUnit;
  * processed in simpleMode or not is controlled by the bundle settings not by the inherited configuration of this
  * client.
  */
-public class FilePickUpClient extends emissary.pickup.PickUpSpace {
+public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPickUp {
     /**
      * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from WorkSpace
      * or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the places busy.
@@ -122,14 +123,18 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace {
     /**
      * Pause the QueServer to stop taking work
      */
-    public void pauseQueueServer() {
+    @Override
+    public void pause() {
+        logger.info("*** Pausing {} for {}", queServer.getClass().getName(), getClass().getName());
         queServer.pause();
     }
 
     /**
      * Unpause the QueServer to start taking work
      */
-    public void unpauseQueueServer() {
+    @Override
+    public void unpause() {
+        logger.info("*** Unpausing {} for {}", queServer.getClass().getName(), getClass().getName());
         queServer.unpause();
     }
 
@@ -138,7 +143,8 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace {
      *
      * @return true if the QueServer is paused, false otherwise
      */
-    public boolean isQueueServerPaused() {
+    @Override
+    public boolean isPaused() {
         return queServer.isPaused();
     }
 
