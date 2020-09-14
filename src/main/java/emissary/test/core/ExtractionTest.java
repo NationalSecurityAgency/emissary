@@ -21,7 +21,7 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
