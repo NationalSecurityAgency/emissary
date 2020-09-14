@@ -60,11 +60,11 @@ public class PeersCommand extends HttpCommand {
             // form peer config files
             HostAndPort peer = HostAndPort.fromString(KeyManipulator.getServiceHost(peerString));
 
-            if ((ignoreHost.hasPort() && !ignoreHost.equals(peer)) || !ignoreHost.getHostText().equals(peer.getHostText())) {
+            if ((ignoreHost.hasPort() && !ignoreHost.equals(peer)) || !ignoreHost.getHost().equals(peer.getHost())) {
                 if (wantPort) {
                     added.add(peer.toString());
                 } else {
-                    added.add(peer.getHostText());
+                    added.add(peer.getHost());
                 }
             }
         });
