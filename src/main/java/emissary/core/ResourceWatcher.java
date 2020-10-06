@@ -1,5 +1,6 @@
 package emissary.core;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
@@ -8,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.ExponentiallyDecayingReservoir;
+import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import emissary.place.IServiceProviderPlace;
@@ -148,15 +151,23 @@ public class ResourceWatcher implements Runnable {
 
     public void logStats(final Logger loggerArg) {
         for (final Map.Entry<String, Timer> e : this.metrics.getTimers().entrySet()) {
-            loggerArg.info(this.metricsFormatter.formatTimer(e.getKey(), e.getValue()));
+            // We only want to log stats for places that have had events
+            if (e.getValue().getCount() > 0) {
+                loggerArg.info(this.metricsFormatter.formatTimer(e.getKey(), e.getValue()));
+            }
         }
     }
 
     public void resetStats() {
-        // no reset but remove:
-        // https://github.com/codahale/metrics/issues/399
-        for (final Map.Entry<String, Timer> e : this.metrics.getTimers().entrySet()) {
-            this.metrics.remove(e.getKey());
+        // We use reflection to reset the histograms that track finished events, but leaves the namespace for active timers
+        for (Timer timer : this.metrics.getTimers().values()) {
+            try {
+                Field histogramField = Timer.class.getDeclaredField("histogram");
+                histogramField.setAccessible(true);
+                histogramField.set(timer, new Histogram(new ExponentiallyDecayingReservoir()));
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                LOG.error("Issue resetting placeStats in ResourceWatcher", e);
+            }
         }
     }
 

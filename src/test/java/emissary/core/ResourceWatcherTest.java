@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
+import com.codahale.metrics.Timer;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
@@ -65,7 +66,10 @@ public class ResourceWatcherTest extends UnitTest {
         assertEquals("Events must not be lost", (long) (threadCount * iterations), s.getCount());
 
         this.resourceWatcher.resetStats();
-        assertEquals("Stats must be cleared", 0, this.resourceWatcher.getStats().size());
+        assertTrue("Namespaces were not preserved", resourceWatcher.getStats().size() > 0);
+        for (Timer timer : this.resourceWatcher.getStats().values()) {
+            assertEquals("Stats must be cleared", 0, timer.getCount());
+        }
 
         this.resourceWatcher.quit();
     }
