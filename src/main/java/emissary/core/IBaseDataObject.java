@@ -30,6 +30,13 @@ public interface IBaseDataObject {
     byte[] data();
 
     /**
+     * Return BaseDataObjects byte array in a String form.
+     *
+     * @return String representation of the data
+     */
+    String dataAsString();
+
+    /**
      * Set BaseDataObjects data to byte array passed in.
      * 
      * @param newData byte array to set replacing any existing data

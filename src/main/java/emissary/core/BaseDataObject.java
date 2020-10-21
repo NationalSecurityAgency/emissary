@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /* Our payload */
     protected byte[] theData;
+
+    /**
+     * A string representation of the data
+     */
+    protected String dataString = null;
 
     /**
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
@@ -274,6 +280,20 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
+     * Return a String version of the data. If there is already a cached version of the dataString, then return that,
+     * otherwise generate the String to be returned and cache the result
+     *
+     * @return a String representation of the data
+     */
+    @Override
+    public String dataAsString() {
+        if (this.dataString == null) {
+            this.dataString = new String(this.theData, StandardCharsets.UTF_8);
+        }
+        return this.dataString;
+    }
+
+    /**
      * Set BaseDataObjects data to byte array passed in. WARNING: this implementation uses the passed in array directly, no
      * copy is made so the caller should not reuse the array.
      *
@@ -286,6 +306,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         } else {
             this.theData = newData;
         }
+
+        // Invalidate the cached String representation
+        this.dataString = null;
     }
 
     @Override
@@ -296,6 +319,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             this.theData = new byte[length];
             System.arraycopy(newData, offset, this.theData, 0, length);
         }
+
+        // Invalidate the cached String representation
+        this.dataString = null;
     }
 
     @Override
