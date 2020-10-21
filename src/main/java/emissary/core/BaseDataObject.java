@@ -174,7 +174,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
-        this.theData = null;
+        setDataByteIla(null);
         setCreationTimestamp(new Date(System.currentTimeMillis()));
     }
 
@@ -185,6 +185,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param newData the bytes to hold
      * @param name the name of the data item
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name) {
         setData(newData);
         setFilename(name);
@@ -199,6 +200,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param name the name of the data item
      * @param form the initial form of the data
      */
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form) {
         this(newData, name);
         if (form != null) {
@@ -206,10 +208,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    @Deprecated
     public BaseDataObject(final byte[] newData, final String name, final String form, final String fileType) {
         this(newData, name, form);
         if (fileType != null) {
             this.setFileType(fileType);
+        }
+    }
+
+    public BaseDataObject(final ByteIla newData, final String name, final String form, final String fileType) {
+        setDataByteIla(newData);
+        setFilename(name);
+        setCreationTimestamp(new Date(System.currentTimeMillis()));
+        if (form != null) {
+            pushCurrentForm(form);
+        }
+        if (fileType != null) {
+            setFileType(fileType);
         }
     }
 
@@ -220,8 +235,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param header the byte array of header data
      */
     @Override
+    @Deprecated
     public void setHeader(final byte[] header) {
-        setHeaderByteIla((header == null) ? null : ByteIlaFromArray.create(header));
+        setHeaderByteIla(getByteIlaOrNull(header));
     }
 
     @Override
@@ -256,8 +272,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param footer byte array of footer data
      */
     @Override
+    @Deprecated
     public void setFooter(final byte[] footer) {
-        setFooterByteIla((footer == null) ? null : ByteIlaFromArray.create(footer));
+        setFooterByteIla(getByteIlaOrNull(footer));
     }
 
     @Override
@@ -283,6 +300,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return byte array of the data
      */
     @Override
+    @Deprecated
     public byte[] data() {
         if (this.theData == null) {
             return null;
@@ -311,12 +329,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param newData byte array to set replacing any existing data
      */
     @Override
+    @Deprecated
     public void setData(final byte[] newData) {
-        if (newData == null) {
-            setDataByteIla(null);
-        } else {
-            setDataByteIla(ByteIlaFromArray.create(newData));
-        }
+        setDataByteIla(getByteIlaOrNull(newData));
     }
 
     @Override
@@ -329,19 +344,19 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public void setData(final byte[] newData, final int offset, final int length) {
         if (length <= 0 || newData == null) {
             this.theData = ByteIlaFromArray.create(new byte[0]);
         } else {
-            byte[] localTheData = new byte[length];
-            System.arraycopy(newData, offset, localTheData, 0, length);
-            this.theData = ByteIlaFromArray.create(localTheData);
+            this.theData = getByteIla(newData, offset, length);
         }
     }
 
     @Override
+    @Deprecated
     public int dataLength() {
-        return (int) getDataLength();
+        return (int) Math.min(getDataLength(), Integer.MAX_VALUE);
     }
 
     @Override
@@ -961,20 +976,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return byte array of header information or null if none
      */
     @Override
+    @Deprecated
     public byte[] header() {
-        if (header == null) {
-            return null;
-        } else {
-            final byte[] localHeader = new byte[(int) this.header.length()];
-
-            try {
-                this.header.toArray(localHeader, 0, 0, (int) this.header.length());
-            } catch (IOException e) {
-                // Should not happen, but do nothing for now.
-            }
-
-            return localHeader;
-        }
+        return getByteArrayOrNull(header);
     }
 
     @Override
@@ -983,6 +987,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public ByteBuffer headerBuffer() {
         return ByteBuffer.wrap(header());
     }
@@ -994,20 +999,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return byte array of footer data or null if none
      */
     @Override
+    @Deprecated
     public byte[] footer() {
-        if (footer == null) {
-            return null;
-        } else {
-            final byte[] localFooter = new byte[(int) this.footer.length()];
-
-            try {
-                this.footer.toArray(localFooter, 0, 0, (int) this.header.length());
-            } catch (IOException e) {
-                // Should not happen, but do nothing for now.
-            }
-
-            return localFooter;
-        }
+        return getByteArrayOrNull(footer);
     }
 
     @Override
@@ -1016,11 +1010,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public ByteBuffer footerBuffer() {
         return ByteBuffer.wrap(footer());
     }
 
     @Override
+    @Deprecated
     public ByteBuffer dataBuffer() {
         return ByteBuffer.wrap(data());
     }
@@ -1111,22 +1107,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return byte array of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public byte[] getAlternateView(final String s) {
-        final ByteIla alternateView = alternateViewByteIla(s);
-
-        if (alternateView == null) {
-            return null;
-        } else {
-            final byte[] alternateViewBytes = new byte[(int) alternateView.length()];
-
-            try {
-                alternateView.toArray(alternateViewBytes, 0, 0, alternateViewBytes.length);
-            } catch (IOException e) {
-                // Should not happen, but do nothing for now.
-            }
-
-            return alternateViewBytes;
-        }
+        return getByteArrayOrNull(alternateViewByteIla(s));
     }
 
     @Override
@@ -1140,6 +1123,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data) {
         appendAlternateView(name, data, 0, data.length);
     }
@@ -1150,6 +1134,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public void appendAlternateView(final String name, final byte[] data, final int offset, final int length) {
         final byte[] av = getAlternateView(name);
         if (av != null) {
@@ -1166,6 +1151,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return buffer of alternate view data or null if none
      */
     @Override
+    @Deprecated
     public ByteBuffer getAlternateViewBuffer(final String s) {
         final byte[] viewdata = getAlternateView(s);
         if (viewdata == null) {
@@ -1182,8 +1168,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param data the byte array of data for the view
      */
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data) {
-        addAlternateViewByteIla(name, (data == null) ? null : ByteIlaFromArray.create(data));
+        addAlternateViewByteIla(name, getByteIlaOrNull(data));
     }
 
     @Override
@@ -1204,6 +1191,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
         if (data == null) {
             addAlternateViewByteIla(name, null);
@@ -1233,19 +1221,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return an map of alternate views ordered by name, key = String, value = byte[]
      */
     @Override
+    @Deprecated
     public Map<String, byte[]> getAlternateViews() {
         final Map<String, byte[]> localMultipartAlternative = new TreeMap<>();
 
         for (Entry<String, ByteIla> entry : this.multipartAlternative.entrySet()) {
-            final ByteIla byteIla = entry.getValue();
-            final byte[] bytes = new byte[(int) byteIla.length()];
-
-            try {
-                byteIla.toArray(bytes, 0, 0, bytes.length);
-            } catch (IOException e) {
-                // Should not happen, but do nothing for now.
-            }
-            localMultipartAlternative.put(entry.getKey(), bytes);
+            localMultipartAlternative.put(entry.getKey(), getByteArrayOrNull(entry.getValue()));
         }
 
         return localMultipartAlternative;
@@ -1459,5 +1440,35 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    private ByteIla getByteIlaOrNull(final byte[] array) {
+        if (array == null) {
+            return null;
+        } else {
+            return ByteIlaFromArray.create(array);
+        }
+    }
+
+    private static ByteIla getByteIla(final byte[] array, final int offset, final int length) {
+        byte[] newArray = new byte[length];
+        System.arraycopy(array, offset, newArray, 0, length);
+        return ByteIlaFromArray.create(newArray);
+    }
+
+    private static byte[] getByteArrayOrNull(ByteIla byteIla) {
+        if (byteIla == null) {
+            return null;
+        } else {
+            final byte[] array = new byte[(int) Math.min(byteIla.length(), Integer.MAX_VALUE)];
+
+            try {
+                byteIla.toArray(array, 0, 0, array.length);
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+
+            return array;
+        }
     }
 }
