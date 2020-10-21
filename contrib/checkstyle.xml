@@ -12,9 +12,23 @@
   <property name="severity" value="warning"/>
   <property name="charset" value="UTF-8"/>
   <property name="fileExtensions" value="java, properties, xml"/>
-  <module name="SuppressWithNearbyCommentFilter"/>
+  <module name="LineLength">
+    <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    <property name="max" value="170"/>
+    <property name="tabWidth" value="4"/>
+  </module>
   <module name="TreeWalker">
-    <module name="FileContentsHolder"/>
+    <module name="SuppressWithNearbyCommentFilter"/>
+    <!-- Allow comments to turn individual rules on/off:
+      // CHECKSTYLE.OFF: RuleName
+      ...RuleName suppressed here...
+      // CHECKSTYLE.ON: RuleName
+    -->
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+      <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+      <property name="checkFormat" value="$1"/>
+    </module>
     <module name="OuterTypeFilename"/>
     <module name="IllegalTokenText">
       <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
@@ -28,11 +42,6 @@
       <property name="allowNonPrintableEscapes" value="true"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
     </module>
-    <module name="LineLength">
-      <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-      <property name="max" value="170"/>
-      <property name="tabWidth" value="4"/>
-    </module>
     <module name="AvoidStarImport"/>
     <module name="OneTopLevelClass"/>
     <module name="NoLineWrap"/>
@@ -41,10 +50,7 @@
       <property name="tokens" value="LITERAL_TRY, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_SWITCH"/>
     </module>
     <module name="NeedBraces"/>
-    <module name="LeftCurly">
-      <property name="maxLineLength" value="100"/>
-    </module>
-    <module name="RightCurly"/>
+    <module name="LeftCurly"/>
     <module name="RightCurly">
        <property name="option" value="alone"/>
        <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, LITERAL_DO, STATIC_INIT, INSTANCE_INIT"/>
@@ -203,16 +209,5 @@
   </module>
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
-  </module>
-  <!-- Allow comments to turn individual rules on/off:
-
-       // CHECKSTYLE.OFF: RuleName
-       ...RuleName suppressed here...
-       // CHECKSTYLE.ON: RuleName
-  -->
-  <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
-    <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
-    <property name="checkFormat" value="$1"/>
   </module>
 </module>
