@@ -302,19 +302,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public byte[] data() {
-        if (this.theData == null) {
-            return null;
-        } else {
-            final byte[] localTheData = new byte[(int) theData.length()];
-
-            try {
-                this.theData.toArray(localTheData, 0, 0, localTheData.length);
-            } catch (IOException e) {
-                // Should not happen, but do nothing for now.
-            }
-
-            return localTheData;
-        }
+        return getByteArrayOrNull(this.theData);
     }
 
     @Override
