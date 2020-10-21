@@ -1,5 +1,6 @@
 package emissary.core;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -12,12 +13,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
 import com.google.common.collect.LinkedListMultimap;
+import emissary.core.byteila.ByteIla;
+import emissary.core.byteila.ByteIlaFromArray;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.Priority;
@@ -35,7 +39,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     private static final long serialVersionUID = 7362181964652092657L;
 
     /* Our payload */
-    protected byte[] theData;
+    protected ByteIla theData;
 
     /**
      * Original name of the input data. Can only be set in the constructor of the DataObject. returned via the
@@ -98,17 +102,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Hash of alternate views of the data {@link String} current form is the key, byte[] is the value
      */
-    protected Map<String, byte[]> multipartAlternative = new TreeMap<>();
+    protected Map<String, ByteIla> multipartAlternative = new TreeMap<>();
 
     /**
      * Any header that goes along with the data
      */
-    protected byte[] header = null;
+    protected ByteIla header = null;
 
     /**
      * Any footer that goes along with the data
      */
-    protected byte[] footer = null;
+    protected ByteIla footer = null;
 
     /**
      * If the header has some encoding scheme record it
@@ -217,6 +221,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setHeader(final byte[] header) {
+        setHeaderByteIla((header == null) ? null : ByteIlaFromArray.create(header));
+    }
+
+    @Override
+    public void setHeaderByteIla(final ByteIla header) {
         this.header = header;
     }
 
@@ -248,6 +257,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void setFooter(final byte[] footer) {
+        setFooterByteIla((footer == null) ? null : ByteIlaFromArray.create(footer));
+    }
+
+    @Override
+    public void setFooterByteIla(final ByteIla footer) {
         this.footer = footer;
     }
 
@@ -270,6 +284,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] data() {
+        if (this.theData == null) {
+            return null;
+        } else {
+            final byte[] localTheData = new byte[(int) theData.length()];
+
+            try {
+                this.theData.toArray(localTheData, 0, 0, localTheData.length);
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+
+            return localTheData;
+        }
+    }
+
+    @Override
+    public ByteIla getDataByteIla() {
         return this.theData;
     }
 
@@ -282,7 +313,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setData(final byte[] newData) {
         if (newData == null) {
-            this.theData = new byte[0];
+            setDataByteIla(null);
+        } else {
+            setDataByteIla(ByteIlaFromArray.create(newData));
+        }
+    }
+
+    @Override
+    public void setDataByteIla(final ByteIla newData) {
+        if (newData == null) {
+            this.theData = ByteIlaFromArray.create(new byte[0]);
         } else {
             this.theData = newData;
         }
@@ -291,16 +331,22 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setData(final byte[] newData, final int offset, final int length) {
         if (length <= 0 || newData == null) {
-            this.theData = new byte[0];
+            this.theData = ByteIlaFromArray.create(new byte[0]);
         } else {
-            this.theData = new byte[length];
-            System.arraycopy(newData, offset, this.theData, 0, length);
+            byte[] localTheData = new byte[length];
+            System.arraycopy(newData, offset, localTheData, 0, length);
+            this.theData = ByteIlaFromArray.create(localTheData);
         }
     }
 
     @Override
     public int dataLength() {
-        return this.theData == null ? 0 : this.theData.length;
+        return (int) getDataLength();
+    }
+
+    @Override
+    public long getDataLength() {
+        return this.theData == null ? 0 : this.theData.length();
     }
 
     @Override
@@ -916,6 +962,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] header() {
+        if (header == null) {
+            return null;
+        } else {
+            final byte[] localHeader = new byte[(int) this.header.length()];
+
+            try {
+                this.header.toArray(localHeader, 0, 0, (int) this.header.length());
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+
+            return localHeader;
+        }
+    }
+
+    @Override
+    public ByteIla getHeaderByteIla() {
         return this.header;
     }
 
@@ -932,9 +995,25 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] footer() {
-        return this.footer;
+        if (footer == null) {
+            return null;
+        } else {
+            final byte[] localFooter = new byte[(int) this.footer.length()];
+
+            try {
+                this.footer.toArray(localFooter, 0, 0, (int) this.header.length());
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+
+            return localFooter;
+        }
     }
 
+    @Override
+    public ByteIla getFooterByteIla() {
+        return this.footer;
+    }
 
     @Override
     public ByteBuffer footerBuffer() {
@@ -1033,6 +1112,25 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] getAlternateView(final String s) {
+        final ByteIla alternateView = alternateViewByteIla(s);
+
+        if (alternateView == null) {
+            return null;
+        } else {
+            final byte[] alternateViewBytes = new byte[(int) alternateView.length()];
+
+            try {
+                alternateView.toArray(alternateViewBytes, 0, 0, alternateViewBytes.length);
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+
+            return alternateViewBytes;
+        }
+    }
+
+    @Override
+    public ByteIla alternateViewByteIla(final String s) {
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
             return this.multipartAlternative.get(dict.map(s));
@@ -1044,6 +1142,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void appendAlternateView(final String name, final byte[] data) {
         appendAlternateView(name, data, 0, data.length);
+    }
+
+    @Override
+    public void appendAlternateViewByteIla(final String name, final ByteIla data) {
+        addAlternateViewByteIla(name, data);
     }
 
     @Override
@@ -1080,6 +1183,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void addAlternateView(final String name, final byte[] data) {
+        addAlternateViewByteIla(name, (data == null) ? null : ByteIlaFromArray.create(data));
+    }
+
+    @Override
+    public void addAlternateViewByteIla(final String name, final ByteIla data) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
@@ -1097,20 +1205,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
-        if (data == null || length <= 0) {
-            this.multipartAlternative.remove(mappedName);
+        if (data == null) {
+            addAlternateViewByteIla(name, null);
         } else {
             final byte[] mpa = new byte[length];
+
             System.arraycopy(data, offset, mpa, 0, length);
-            this.multipartAlternative.put(mappedName, mpa);
+
+            addAlternateViewByteIla(name, ByteIlaFromArray.create(mpa));
         }
     }
 
@@ -1132,6 +1234,25 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public Map<String, byte[]> getAlternateViews() {
+        final Map<String, byte[]> localMultipartAlternative = new TreeMap<>();
+
+        for (Entry<String, ByteIla> entry : this.multipartAlternative.entrySet()) {
+            final ByteIla byteIla = entry.getValue();
+            final byte[] bytes = new byte[(int) byteIla.length()];
+
+            try {
+                byteIla.toArray(bytes, 0, 0, bytes.length);
+            } catch (IOException e) {
+                // Should not happen, but do nothing for now.
+            }
+            localMultipartAlternative.put(entry.getKey(), bytes);
+        }
+
+        return localMultipartAlternative;
+    }
+
+    @Override
+    public Map<String, ByteIla> getAlternateViewsByteIla() {
         return this.multipartAlternative;
     }
 
@@ -1189,9 +1310,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public IBaseDataObject clone() throws CloneNotSupportedException {
         final BaseDataObject c = (BaseDataObject) super.clone();
-        if ((this.theData != null) && (this.theData.length > 0)) {
-            c.setData(this.theData, 0, this.theData.length);
-        }
+        c.theData = this.theData;
         c.currentForm = new ArrayList<>(this.currentForm);
         c.history = new ArrayList<>(this.history);
         c.multipartAlternative = new HashMap<>(this.multipartAlternative);

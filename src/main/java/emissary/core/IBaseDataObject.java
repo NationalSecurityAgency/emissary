@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import emissary.core.byteila.ByteIla;
+
 public interface IBaseDataObject {
 
     /**
@@ -27,14 +29,20 @@ public interface IBaseDataObject {
      * 
      * @return byte array of the data
      */
+    @Deprecated
     byte[] data();
+
+    ByteIla getDataByteIla();
 
     /**
      * Set BaseDataObjects data to byte array passed in.
      * 
      * @param newData byte array to set replacing any existing data
      */
+    @Deprecated
     void setData(byte[] newData);
+
+    void setDataByteIla(ByteIla byteIla);
 
     /**
      * Set BaseDataObjects data to the portion of the byte array specified
@@ -43,6 +51,7 @@ public interface IBaseDataObject {
      * @param offset the index of the first byte to use
      * @param length the number of bytes to use
      */
+    @Deprecated
     void setData(final byte[] newData, int offset, int length);
 
     /**
@@ -50,35 +59,50 @@ public interface IBaseDataObject {
      * 
      * @return length in bytes of the data
      */
+    @Deprecated
     int dataLength();
+
+    long getDataLength();
 
     /**
      * Set the header byte array
      * 
      * @param arg1 the byte array of header data
      */
+    @Deprecated
     void setHeader(byte[] arg1);
+
+    void setHeaderByteIla(ByteIla byteIla);
 
     /**
      * Return a reference to the header byte array.
      * 
      * @return byte array of header information or null if none
      */
+    @Deprecated
     byte[] header();
+
+    ByteIla getHeaderByteIla();
 
     /**
      * Set the footer byte array
      * 
      * @param arg1 byte array of footer data
      */
+    @Deprecated
     void setFooter(byte[] arg1);
+
+    void setFooterByteIla(ByteIla byteIla);
 
     /**
      * Return a reference to the footer byte array.
      * 
      * @return byte array of footer data or null if none
      */
+    @Deprecated
     byte[] footer();
+
+    ByteIla getFooterByteIla();
 
 
     /**
@@ -157,6 +181,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated
     ByteBuffer headerBuffer();
 
     /**
@@ -164,6 +189,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated
     ByteBuffer footerBuffer();
 
     /**
@@ -171,6 +197,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated
     ByteBuffer dataBuffer();
 
     /**
@@ -392,7 +419,10 @@ public interface IBaseDataObject {
      * @param arg1 the name of the view to retrieve
      * @return byte array of alternate view data
      */
+    @Deprecated
     byte[] getAlternateView(String arg1);
+
+    ByteIla alternateViewByteIla(String arg1);
 
     /**
      * Return a specified multipart alternative view of the data in a buffer
@@ -400,6 +430,7 @@ public interface IBaseDataObject {
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
      */
+    @Deprecated
     ByteBuffer getAlternateViewBuffer(String arg1);
 
     /**
@@ -408,7 +439,10 @@ public interface IBaseDataObject {
      * @param name the name of the new view
      * @param data the byte array of data for the view
      */
+    @Deprecated
     void addAlternateView(String name, byte[] data);
+
+    void addAlternateViewByteIla(String name, ByteIla data);
 
     /**
      * Add a multipart alternative view of the data
@@ -418,6 +452,7 @@ public interface IBaseDataObject {
      * @param offset index of the first byte to use
      * @param length number of bytes to use
      */
+    @Deprecated
     void addAlternateView(String name, byte[] data, int offset, int length);
 
     /**
@@ -426,7 +461,10 @@ public interface IBaseDataObject {
      * @param name the name of the new view
      * @param data the byte array of data for the view
      */
+    @Deprecated
     void appendAlternateView(String name, byte[] data);
+
+    void appendAlternateViewByteIla(String name, ByteIla data);
 
     /**
      * Append to a multipart alternative view of the data
@@ -436,6 +474,7 @@ public interface IBaseDataObject {
      * @param offset index of the first byte to use
      * @param length number of bytes to use
      */
+    @Deprecated
     void appendAlternateView(String name, byte[] data, int offset, int length);
 
     /**
@@ -450,7 +489,10 @@ public interface IBaseDataObject {
      * 
      * @return map of alternate views, key = String, value = byte[]
      */
+    @Deprecated
     Map<String, byte[]> getAlternateViews();
+
+    Map<String, ByteIla> getAlternateViewsByteIla();
 
     /**
      * Test for broken document
