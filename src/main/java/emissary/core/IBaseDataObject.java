@@ -422,7 +422,7 @@ public interface IBaseDataObject {
     @Deprecated
     byte[] getAlternateView(String arg1);
 
-    ByteIla alternateViewByteIla(String arg1);
+    ByteIla getAlternateViewByteIla(String arg1);
 
     /**
      * Return a specified multipart alternative view of the data in a buffer

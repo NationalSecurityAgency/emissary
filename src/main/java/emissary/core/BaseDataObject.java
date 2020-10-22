@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import com.google.common.collect.LinkedListMultimap;
 import emissary.core.byteila.ByteIla;
+import emissary.core.byteila.ByteIlaConcatenate;
 import emissary.core.byteila.ByteIlaFromArray;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
@@ -1097,11 +1098,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public byte[] getAlternateView(final String s) {
-        return getByteArrayOrNull(alternateViewByteIla(s));
+        return getByteArrayOrNull(getAlternateViewByteIla(s));
     }
 
     @Override
-    public ByteIla alternateViewByteIla(final String s) {
+    public ByteIla getAlternateViewByteIla(final String s) {
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
             return this.multipartAlternative.get(dict.map(s));
@@ -1118,7 +1119,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void appendAlternateViewByteIla(final String name, final ByteIla data) {
-        addAlternateViewByteIla(name, data);
+        final ByteIla currentAlternateViewByteIla = getAlternateViewByteIla(name);
+
+        if (currentAlternateViewByteIla != null) {
+            addAlternateViewByteIla(name, ByteIlaConcatenate.create(currentAlternateViewByteIla, data));
+        } else {
+            addAlternateViewByteIla(name, data);
+        }
     }
 
     @Override
@@ -1171,7 +1178,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             // ignore
         }
 
-        if (data == null) {
+        if (data == null || data.length() == 0) {
             this.multipartAlternative.remove(mappedName);
         } else {
             this.multipartAlternative.put(mappedName, data);
@@ -1181,7 +1188,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        if (data == null) {
+        if (data == null || length <= 0) {
             addAlternateViewByteIla(name, null);
         } else {
             final byte[] mpa = new byte[length];
