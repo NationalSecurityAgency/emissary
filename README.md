@@ -133,7 +133,6 @@ Emissary is laid out in the following package structure:
 * place - various basic Places, including wrappers around other programming languages and execs
 * pool - thread pooling 
 * roll - Rollable framework for handling output
-* scripting - Ruby scripting console to interface with server
 * server - embedded Jetty code and all the accompanying endpoints
 * test - base test classes used in Emissary and other projects
 * util - assorted grab-bag of utilities for processing data/text

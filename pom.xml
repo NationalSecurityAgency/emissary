@@ -51,7 +51,6 @@
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>2.27</dep.jersey.version>
     <dep.jetty.version>9.4.18.v20190429</dep.jetty.version>
-    <dep.jruby-complete.version>9.2.9.0</dep.jruby-complete.version>
     <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
     <dep.logback.version>1.2.3</dep.logback.version>
@@ -358,11 +357,6 @@
         <version>${dep.jdom.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.jruby</groupId>
-        <artifactId>jruby-complete</artifactId>
-        <version>${dep.jruby-complete.version}</version>
-      </dependency>
-      <dependency>
         <!-- UnitTest, FunctionalTest and FTestServiceConfigGuide are in the emissary src/main vs src/test
            junit must be a compile time dependency.  Needs to be refactored -->
         <groupId>org.junit.jupiter</groupId>
@@ -611,10 +605,6 @@
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jruby</groupId>
-      <artifactId>jruby-complete</artifactId>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
