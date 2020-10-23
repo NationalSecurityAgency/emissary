@@ -64,6 +64,9 @@
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
     <dep.sun.mail.version>1.6.2</dep.sun.mail.version>
     <dep.tika.version>1.22</dep.tika.version>
+    <dep.webjars.bootstrap.version>4.5.3</dep.webjars.bootstrap.version>
+    <dep.webjars.jquery.version>3.5.1</dep.webjars.jquery.version>
+    <dep.webjars.popper.version>2.5.2</dep.webjars.popper.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
@@ -420,6 +423,21 @@
         <version>${dep.slf4j.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>bootstrap</artifactId>
+        <version>${dep.webjars.bootstrap.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>jquery</artifactId>
+        <version>${dep.webjars.jquery.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>popper.js</artifactId>
+        <version>${dep.webjars.popper.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jersey.test-framework.providers</groupId>
         <artifactId>jersey-test-framework-provider-jetty</artifactId>
         <version>${dep.jersey.version}</version>
@@ -651,6 +669,18 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>popper.js</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -1176,6 +1206,63 @@
               <goal>integration-test</goal>
               <goal>verify</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.webjars</groupId>
+                  <artifactId>bootstrap</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
+                  <includes>**/js/bootstrap.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars</groupId>
+                  <artifactId>bootstrap</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/css/lib</outputDirectory>
+                  <includes>**/css/bootstrap.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars</groupId>
+                  <artifactId>jquery</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
+                  <includes>**/jquery.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars</groupId>
+                  <artifactId>popper.js</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
+                  <includes>**/umd/popper.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
           </execution>
         </executions>
       </plugin>

@@ -1,38 +1,49 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <title>Emissary - Namespace Listing</title>
-    <link type="text/css" rel="stylesheet" href="/css/emissary.css">
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
+      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
-    <h1>Namespace Listing</h1>
+    <header></header>
+    <main class="container">
+        <h2>Namespace Listing</h2>
+        <table class="table table-striped">
+           <thead>
+              <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {{#namespaces}}
+              <tr class='{{clz}}'>
+                {{#isDir}}
+                  <td>
+                    <a href="{{dumpUrl}}">{{key}}</a>
+                    (<a href="{{transferUrl}}">xml</a>)
+                  </td>
+                  <td>
+                    {{value}}({{valueClassName}})
+                  </td>
+                {{/isDir}}
+                {{^isDir}}
+                    <td>{{key}}</td>
+                    <td>
+                      {{value}}({{valueClassName}})
+                    </td>
+                {{/isDir}}
+              </tr>
+              {{/namespaces}}
+           </tbody>
+         </table>
+    </main>
 
-    <table class="datagrid">
-       <thead>
-          <tr><th>Key</th><th>Value</th></tr>
-        </thead>
-        <tbody>
-          {{#namespaces}}
-          <tr class='{{clz}}'>
-            {{#isDir}}
-              <td>
-                <a href="{{dumpUrl}}">{{key}}</a>
-                (<a href="{{transferUrl}}">xml</a>)
-              </td>
-              <td>
-                {{value}}({{valueClassName}})
-              </td>
-            {{/isDir}}
-            {{^isDir}}
-                <td>{{key}}</td>
-                <td>
-                  {{value}}({{valueClassName}})
-                </td>
-            {{/isDir}}
-          </tr>
-          {{/namespaces}}
-       </tbody>
-     </table>
+      <script src="/js/lib/jquery.min.js"></script>
+      <script src="/js/lib/popper.min.js"></script>
+      <script src="/js/lib/bootstrap.min.js"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
   </body>
 </html>

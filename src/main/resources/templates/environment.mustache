@@ -1,11 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <title>Emissary - Environment</title>
-    <link type="text/css" rel="stylesheet" href="/css/emissary.css">
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
+      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
+  <header></header>
+  <main class="containter">
     <h2>Properties</h2>
     <pre>
     {{#systemproperties}}
@@ -18,7 +21,12 @@
     {{#environmentvariables}}
     {{string}}
     {{/environmentvariables}}
-
     </pre>
+  </main>
+
+    <script src="/js/lib/jquery.min.js"></script>
+    <script src="/js/lib/popper.min.js"></script>
+    <script src="/js/lib/bootstrap.min.js"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
   </body>
 </html>

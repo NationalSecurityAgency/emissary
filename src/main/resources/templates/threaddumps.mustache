@@ -1,25 +1,34 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <title>Emissary - Thread Dump</title>
-    <link type="text/css" rel="stylesheet" href="/css/emissary.css">
+      <title>Emissary - Thread Dump</title>
+      <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
+      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
-    <h1>Emissary Node Thread Dump</h1>
+     <header></header>
+     <main class="container">
+        <h2>Emissary Node Thread Dump</h2>
+        <strong>Emissary Version:</strong> {{ emissary.version }}<br />
+        <strong>JVM Version:</strong> {{ java.version }} <br />
+        <strong>JVM Name:</strong> {{ java.name }} <br />
+        <strong>Thread count:</strong> current= {{ threadcount.current }}, max= {{ threadcount.max }}, daemon= {{ threadcount.daemon }}<br />
+        <hr/>
+        <h3>Deadlocked Threads:</h3>
+        {{#deadlocks}}
+          <pre>{{ stack }}</pre>
+        {{/deadlocks}}
+        <hr/>
+        <h3>Thread Dump:</h3>
+        {{#threads}}
+          <pre>{{ stack }}</pre>
+        {{/threads}}
+     </main>
 
-    <strong>Emissary Version:</strong> {{ emissary.version }}<br />
-    <strong>JVM Version:</strong> {{ java.version }} <br />
-    <strong>JVM Name:</strong> {{ java.name }} <br />
-    <strong>Thread count:</strong> current= {{ threadcount.current }}, max= {{ threadcount.max }}, daemon= {{ threadcount.daemon }}<br />
-    <br />
-    <h2>Deadlocked Threads:</h2>
-    {{#deadlocks}}
-    <pre>{{ stack }}</pre>
-    {{/deadlocks}}
-    <h2>Thread Dump</h2>
-    {{#threads}}
-    <pre>{{ stack }}</pre>
-    {{/threads}}
+      <script src="/js/lib/jquery.min.js"></script>
+      <script src="/js/lib/popper.min.js"></script>
+      <script src="/js/lib/bootstrap.min.js"></script>
+      <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
   </body>
 </html>
