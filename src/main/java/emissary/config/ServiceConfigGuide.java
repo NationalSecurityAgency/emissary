@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -774,7 +775,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             return Collections.emptyMap();
         }
 
-        final Map<String, String> theHash = new HashMap<String, String>();
+        final Map<String, String> theHash = new LinkedHashMap<String, String>();
         final List<ConfigEntry> parameters = this.findStringMatchEntries(theParameter);
 
         for (final ConfigEntry el : parameters) {
