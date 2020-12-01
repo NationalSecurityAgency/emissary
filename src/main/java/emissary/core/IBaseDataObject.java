@@ -62,8 +62,6 @@ public interface IBaseDataObject {
     @Deprecated
     int dataLength();
 
-    long getDataLength();
-
     /**
      * Set the header byte array
      * 
@@ -491,8 +489,6 @@ public interface IBaseDataObject {
      */
     @Deprecated
     Map<String, byte[]> getAlternateViews();
-
-    Map<String, ByteIla> getAlternateViewsByteIla();
 
     /**
      * Test for broken document

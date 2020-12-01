@@ -345,12 +345,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public int dataLength() {
-        return (int) Math.min(getDataLength(), Integer.MAX_VALUE);
-    }
-
-    @Override
-    public long getDataLength() {
-        return this.theData == null ? 0 : this.theData.length();
+        return (int) Math.min(theData.length(), Integer.MAX_VALUE);
     }
 
     @Override
@@ -1178,7 +1173,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             // ignore
         }
 
-        if (data == null || data.length() == 0) {
+        if (data == null) {
             this.multipartAlternative.remove(mappedName);
         } else {
             this.multipartAlternative.put(mappedName, data);
@@ -1225,11 +1220,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
 
         return localMultipartAlternative;
-    }
-
-    @Override
-    public Map<String, ByteIla> getAlternateViewsByteIla() {
-        return this.multipartAlternative;
     }
 
     @Override
@@ -1437,7 +1427,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         this.transactionId = transactionId;
     }
 
-    private ByteIla getByteIlaOrNull(final byte[] array) {
+    private static ByteIla getByteIlaOrNull(final byte[] array) {
         if (array == null) {
             return null;
         } else {
