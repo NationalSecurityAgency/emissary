@@ -30,6 +30,8 @@ import emissary.place.IServiceProviderPlace;
 import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to hold byte array of data, header, footer, and attributes
@@ -345,6 +347,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     @Deprecated
     public int dataLength() {
+        if (theData.length() > Integer.MAX_VALUE) {
+            final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
+            logger.warn("Requested dataLength is incomplete! ByteIla.length()[{}] > Integer.MAX_VALUE", theData.length());
+        }
+
         return (int) Math.min(theData.length(), Integer.MAX_VALUE);
     }
 
@@ -1445,6 +1452,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if (byteIla == null) {
             return null;
         } else {
+            if (byteIla.length() > Integer.MAX_VALUE) {
+                final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
+                logger.warn("Requested byte[] is incomplete! ByteIla.length()[{}] > Integer.MAX_VALUE", byteIla.length());
+            }
+
             final byte[] array = new byte[(int) Math.min(byteIla.length(), Integer.MAX_VALUE)];
 
             try {
