@@ -85,6 +85,7 @@ Table of Contents
     * [Hanging tests](#hanging-tests)
     * [Can't run tests in Eclipse](#cant-run-tests-in-eclipse)
     * [Running tests in IntelliJ throw an error "Error: Could not find or load main class @\{argLine\}"](#running-tests-in-intellij-throw-an-error-error-could-not-find-or-load-main-class-argline)
+  * [Contact Us](#contact-us)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc.go)
 
@@ -525,7 +526,9 @@ mvn clean package -Pdist
 
 After a successful build, there will be a bundle located in the target directory:
 
-```target/emissary-<version>-dist.tar.gz```
+```
+target/emissary-<version>-dist.tar.gz
+```
 
 This zip file can be transferred to your cluster, extracted, configurations tweaked, then launched with the ```emissary```
 script. Example to run a distribution:
@@ -932,4 +935,10 @@ Did you read [the Eclipse section](#eclipse) carefully?
 
 Did you read [the IntelliJ section](#intellij) carefully?
 
- 
+## Contact Us (#contact-us)
+
+If you have any questions or concerns about this project, you can contact us at: EmissarySupport@evoforge.org
+
+### Security related questions
+
+For security questions and vulnerability reporting, please refer to SECURITY.md
