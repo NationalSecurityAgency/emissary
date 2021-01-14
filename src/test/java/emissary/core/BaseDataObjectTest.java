@@ -1047,7 +1047,7 @@ public class BaseDataObjectTest extends UnitTest {
         assertNotNull("Expected non-null extracted records", this.b.getExtractedRecords());
         assertEquals("Expected empty extracted records", 0, this.b.getExtractedRecords().size());
 
-        this.b.setExtractedRecords(Collections.<IBaseDataObject>singletonList(other));
+        this.b.setExtractedRecords(new ArrayList<>(Arrays.asList(other)));
         assertTrue("Expected extracted records", this.b.hasExtractedRecords());
         assertEquals("Expected a single extracted record", 1, this.b.getExtractedRecords().size());
         assertEquals("Expected a single extracted record", 1, this.b.getExtractedRecordCount());
