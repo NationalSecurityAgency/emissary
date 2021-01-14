@@ -1,18 +1,28 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <title>Emissary - Directory Listing</title>
-    <link type="text/css" rel="stylesheet" href="/css/emissary.css">
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
+      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
-    <h1>Directory Listing</h1>
-    <h2>{{directory-label}}</h2>
-
-    <h3>Directory Entries</h3>
-    <table class="datagrid">
+  <header></header>
+  <main class="container">
+    <h2>Directory Listing</h2>
+    <h6>{{directory-label}}</h6>
+    <p/>
+    <h4>Directory Entries</h4>
+    <table class="table table-striped">
        <thead>
-          <tr><th>Key</th><th>Cost</th><th>Quality</th><th title="Computed from Cost and quality">Expense</th><th title="Path Weight">PW</th><th title="HH:MM:SS">Age</th></tr>
+          <tr>
+              <th>Key</th>
+              <th>Cost</th>
+              <th>Quality</th>
+              <th title="Computed from Cost and quality">Expense</th>
+              <th title="Path Weight">PW</th>
+              <th title="HH:MM:SS">Age</th>
+          </tr>
        </thead>
        <tbody>
        {{#entrykeys}}
@@ -29,60 +39,20 @@
          {{/entrylist}}
        {{/entrykeys}}
        </tbody>
-     </table>
-
-     <hr />
-
-     <h3>Peer Directories</h3>
-     <ul>
-       {{#peers}}
-         <li> <a href="{{link}}">{{peerkey}}</a> {{status}}</li>
-       {{/peers}}
-     </ul>
-
-<!--      <% String relay = dir.getRelayDirectory();
-     if (relay != null) {
-        String rkey = KeyManipulator.getServiceHostURL(relay);
-        String rloc = KeyManipulator.getServiceLocation(relay);
-        boolean healthy = dir.isRemoteDirectoryAvailable(relay);
-     %>
- -->     <h3>Relay Directory (Parent)</h3>
-<!--      <ul>
-       <li><a href="<%=rkey%>emissary/DumpDirectory.action?targetDir=<%=rloc%>"><%=relay%></a>  <%=(healthy?"":"DOWN")%>
-     </ul>
-     <% } %>
-
-     <% java.util.Set<String> children = dir.getRegisteredChildren();
-     if (children.size() > 0) { %>
-     <h3>Child Directories</h3>
-     <ul>
-     <% for (String child : children) {
-         if (child != null) {
-            String ckey = KeyManipulator.getServiceHostURL(child);
-            String cloc = KeyManipulator.getServiceLocation(child);
-         %>
-            <li><a href="<%=ckey%>emissary/DumpDirectory.action?targetDir=<%=cloc%>"><%=child%></a></li>
-     <%    }
-        } %>
-     </ul>
-    <table border="1">
-       <tr><td>Relay Key</td><td>Cost</td><td>Quality</td><td>Expense</td><td>PW</td></tr>
-       <%
-       for (DirectoryEntry entry: dir.getRelayEntries()) {
-%>
-          <tr>
-            <td><%=entry.getKey()%></td>
-            <td><%=entry.getCost()%></td>
-            <td><%=entry.getQuality()%></td>
-            <td><%=entry.getExpense()%></td>
-            <td><%=entry.getPathWeight()%></td>
-          </tr>
-<%
-       }
-%>
     </table>
-     <% } %>
--->
- 
+
+    <h4>Peer Directories</h4>
+    <ul>
+      {{#peers}}
+        <li> <a href="{{link}}">{{peerkey}}</a> {{status}}</li>
+      {{/peers}}
+    </ul>
+  </main>
+
+    <script src="/js/lib/jquery.min.js"></script>
+    <script src="/js/lib/popper.min.js"></script>
+    <script src="/js/lib/bootstrap.min.js"></script>
+    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
+
   </body>
 </html>

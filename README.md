@@ -85,12 +85,13 @@ Table of Contents
     * [Hanging tests](#hanging-tests)
     * [Can't run tests in Eclipse](#cant-run-tests-in-eclipse)
     * [Running tests in IntelliJ throw an error "Error: Could not find or load main class @\{argLine\}"](#running-tests-in-intellij-throw-an-error-error-could-not-find-or-load-main-class-argline)
+  * [Contact Us](#contact-us)
 
 Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc.go)
 
 ## Introduction
 
-Emissary is a P2P based data-driven workflow engine that runs in a heterogenous 
+Emissary is a P2P based data-driven workflow engine that runs in a heterogeneous 
 possibly widely dispersed, multi-tiered P2P network of compute resources. Workflow 
 itineraries are not pre-planned as in conventional workflow engines, but are discovered as 
 more information is discovered about the data. There is typically no user interaction in an 
@@ -105,7 +106,7 @@ work on emissary.core.IBaseDataObject payloads.
 A variety of things can be done and the workflow is managed in
 stages, i.e. [STUDY](#study), [ID](#id), [COORDINATE](#coordinate), [TRANSFORM](#transform), [ANALYZE](#analyze), [IO](#io), [REVIEW](#review).
 
-The classes responsble for directing the workflow are the
+The classes responsible for directing the workflow are the
 emissary.core.MobileAgent and classes derived from it, which manage
 the path of a set of related payload objects through the workflow and
 the emissary.directory.DirectoryPlace which manages the available
@@ -119,7 +120,7 @@ Emissary is laid out in the following package structure:
 
 * admin - code that starts Places
 * analyze - interfaces/abstract classes for Analyzers and Extractors
-* client - client classes and reponse object
+* client - client classes and response object
 * command - JCommander classes
 * config - code for parsing configuration files
 * core - core data structures, including the IBaseDataObject
@@ -133,7 +134,6 @@ Emissary is laid out in the following package structure:
 * place - various basic Places, including wrappers around other programming languages and execs
 * pool - thread pooling 
 * roll - Rollable framework for handling output
-* scripting - Ruby scripting console to interface with server
 * server - embedded Jetty code and all the accompanying endpoints
 * test - base test classes used in Emissary and other projects
 * util - assorted grab-bag of utilities for processing data/text
@@ -175,7 +175,7 @@ Jetty threads used for handling requests
   * "FileInput-target/data/InputData" (standalone) - watches directory and processes files that show up
   * "FileQueServer" (cluster) - communicated with the Feeder and gets files for processing
   * "HeartbeatManager" (cluster) - tracks the state of the cluster
-  * "ResourceWatcher" - tracks the resource being consumed by Emisary/Place
+  * "ResourceWatcher" - tracks the resource being consumed by Emissary/Place
   * "MoveSpool" - this tracks the incoming data sent to Emissary
   * "MobileAgent" {1..n} - these are the processing thread that work on the data
 
@@ -208,7 +208,7 @@ This stage is designed to make no modifications to the data itself but can
 be used for
 
   * policy enforcement - ensuring that the incoming payload meets some minimum criteria or quality standards
-  * provenance - emitting events at the very beginning of the workflow that might indicated to an external system that
+  * provenance - emitting events at the very beginning of the workflow that might indicate to an external system that
    workflow has begun on a certain item.
 
 ##### Id
@@ -302,7 +302,7 @@ situation.
 
 Parsers need to make a quick identification of the format of the container. This is called
 out by the emissary.parser.ParserFactory and uses the emissary.parser.DataIdentifier as the
-engine to perform the identification. The engine is configured by name and can be replace
+engine to perform the identification. The engine is configured by name and can be replaced
 by anything that meets the required interface. The name of the format identified should
 have parsers that meet the SessionParser interface configured into the factory.
 
@@ -349,7 +349,7 @@ steps first.  Similarly, when you run *package*, Maven will run
 
 We also use [maven profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html).
 To activate specific functionality.  To activate profile abc, you would add `-Pabc`.  Mutliple profiles can be
-activated at once if you seperate them with a comma.  Something like `-Pprofile-1,profile-2`. 
+activated at once if you separate them with a comma.  Something like `-Pprofile-1,profile-2`. 
 
 #### Git 1.8+
 
@@ -422,7 +422,7 @@ Currently, the POM used .5C for the forkCount when running tests.  This means
 half the number of cores on your box.  So if you have 4 cores, it will use 2 forks.
 
 If you have a beefy box, you may see a speed up in tests by setting surefire.forkCount to
-something else.  You can hardcode a number, like 4 or use #C to multiple by the 
+something else.  You can hardcode a number, like 4 or use #C to multiply by the 
 number of cores.  For example, but YMMV
 
 ```
@@ -452,7 +452,7 @@ mvn clean package
 
 #### Verify
 
-Currently there are no integration tests running.  But when there are, those only run during the *verify*
+Currently, there are no integration tests running.  But when there are, those only run during the *verify*
 lifecycle, which is run before install.  So if you just wanted to run up to the integration tests, do
 
 ```
@@ -526,7 +526,9 @@ mvn clean package -Pdist
 
 After a successful build, there will be a bundle located in the target directory:
 
-```target/emissary-<version>-dist.tar.gz```
+```
+target/emissary-<version>-dist.tar.gz
+```
 
 This zip file can be transferred to your cluster, extracted, configurations tweaked, then launched with the ```emissary```
 script. Example to run a distribution:
@@ -593,7 +595,7 @@ will not remove this directory, but cleaning from Eclipse should remove it.
 The *eclipse* profile also configures some exclusions for the m2e plugin so it doesn't warn about not knowing how to 
 handle some of the Maven plugins used.
 
-When running tests in Eclipse, so you will need set the environment variable PROJECT_BASE to the directory
+When running tests in Eclipse, so you will need to set the environment variable PROJECT_BASE to the directory
 eclipse is using to build the project.  So in the run configuration of a test, add the following to the 
 Run Configuration -> Environment -> New
 
@@ -607,10 +609,10 @@ Unfortunately you will have to do this for every test, that's Eclipse with the M
 
 When [IntelliJ](https://www.jetbrains.com/idea/) runs a Maven project, a system property named
 *idea.version* is set.  We use this property to activate the *intellij* profile in the 
- pom and change the *project.build.directory* to target-idea, which is a sibiling to the target 
+ pom and change the *project.build.directory* to target-idea, which is a sibling to the target 
 directory.  The `mvn clean` command will not remove this directory, but cleaning from IntelliJ should remove it.
 
-Because we are using the jacoco plugin, we must put @argLine at the begining of the surefire plugin
+Because we are using the jacoco plugin, we must put @argLine at the beginning of the surefire plugin
 to allow jacoco to add what it needs.  See the second answer [here](http://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven).
 But that can cause IntelliJ to report this if you run a test
 
@@ -631,7 +633,7 @@ a Maven project, so we are unable to automatically activate the *netbeans* profi
 the *eclipse* and *intellij* profile.  Fortunately, it is easy to add a system property yourself.  
 Open Netbean's Preferences -> Java -> Maven and then add `-Dnetbeans.ide` into the *Global Execution Options*.  
 Afterwards, the *netbeans* profile will be activated in the pom and change 
-the *project.build.directory* to target-netbeans, which is a sibiling to the target directory.  
+the *project.build.directory* to target-netbeans, which is a sibling to the target directory.  
 The `mvn clean` command will not remove this directory, but cleaning from Netbeans should remove it.
 
 ## Running Emissary
@@ -667,7 +669,7 @@ of all the configuration subcommands and a brief description.
 
 ### Help
 
-Running `./emissary help` will give you the same output as running wiht no arguments.  If you want to see more
+Running `./emissary help` will give you the same output as running with no arguments.  If you want to see more
 detailed information on a command, add the command name after help.  For example, see all the 
 arguments with descriptions for the *what* command, run:
 
@@ -739,7 +741,7 @@ standalone server started above run
 ./emissary pool -p 8001
 ```
 
-This command is more useful for a cluster as it a more digestable view of every node.
+This command is more useful for a cluster as it a more digestible view of every node.
 
 ### Env
 
@@ -781,7 +783,7 @@ is similar to the standalone, but you need to *-m cluster* to tell the node to c
 clustered mode Emissary will also startup the PickUpClient instead of the PickUpPlace, so you will need to
 start a feeder.
 
-Look at the target/config/peers.cfg to see the rendevous peers.  In this case, there are 3.  Nodes running
+Look at the target/config/peers.cfg to see the rendezvous peers.  In this case, there are 3.  Nodes running
 on port 8001 and 9001 are just Emissary nodes.  The node running on 7001 is the feeder.  So let's start up
 8001 and 9001 in two different terminals.
 
@@ -823,8 +825,8 @@ information.  Run it like so:
 
 ### Pool (Cluster)
 
-Pool in clustered mode also does the same pool in standalone.  It start at the node (locahost:9001) by default
-then goes to all the nodes it knows about and aggregrates a collapsed view of the cluster.  Run it with
+Pool in clustered mode also does the same pool in standalone.  It starts at the node (locahost:9001) by default
+then goes to all the nodes it knows about and aggregates a collapsed view of the cluster.  Run it with
 
 ```
 ./emissary pool --cluster
@@ -933,4 +935,10 @@ Did you read [the Eclipse section](#eclipse) carefully?
 
 Did you read [the IntelliJ section](#intellij) carefully?
 
- 
+## Contact Us (#contact-us)
+
+If you have any questions or concerns about this project, you can contact us at: EmissarySupport@evoforge.org
+
+### Security related questions
+
+For security questions and vulnerability reporting, please refer to SECURITY.md
