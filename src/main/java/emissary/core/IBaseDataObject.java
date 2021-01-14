@@ -797,7 +797,7 @@ public interface IBaseDataObject {
      *
      * @param records the list of extracted children
      */
-    void setExtractedRecords(List<IBaseDataObject> records);
+    void setExtractedRecords(List<? extends IBaseDataObject> records);
 
     /**
      * Add an extracted child
