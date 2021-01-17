@@ -1,7 +1,6 @@
 package emissary.server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
@@ -626,7 +625,7 @@ public class EmissaryServer {
         sslContextFactory.setKeyStorePath(keystore);
         sslContextFactory.setKeyStorePassword(keystorePass);
         KeyStore trustStoreInstance = KeyStore.getInstance("JKS");
-        try (final InputStream is = new FileInputStream(trustStore)) {
+        try (final InputStream is = Files.newInputStream(Paths.get(trustStore))) {
             trustStoreInstance.load(is, trustStorePass.toCharArray());
         }
         sslContextFactory.setTrustStore(trustStoreInstance);

@@ -1,7 +1,9 @@
 package emissary.kff;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,17 +114,17 @@ public class KffChainLoader {
     public static void main(String[] args) throws Exception {
         KffChain kff = getChainInstance();
 
-        for (int i = 0; i < args.length; i++) {
-            FileInputStream is = new FileInputStream(args[i]);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+        for (String file : args) {
+            try (InputStream is = Files.newInputStream(Paths.get(file))) {
+                byte[] buffer = new byte[is.available()];
+                is.read(buffer);
 
-            KffResult r = kff.check(args[i], buffer);
-            System.out.println(args[i] + ": known=" + r.isKnown());
-            System.out.println("   CRC32: " + r.getCrc32());
-            for (String s : r.getResultNames()) {
-                System.out.println("   " + s + ": " + r.getResultString(s));
+                KffResult r = kff.check(file, buffer);
+                System.out.println(file + ": known=" + r.isKnown());
+                System.out.println("   CRC32: " + r.getCrc32());
+                for (String s : r.getResultNames()) {
+                    System.out.println("   " + s + ": " + r.getResultString(s));
+                }
             }
         }
     }

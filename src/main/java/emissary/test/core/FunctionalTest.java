@@ -3,8 +3,9 @@ package emissary.test.core;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 
 import emissary.admin.PlaceStarter;
 import emissary.command.ServerCommand;
@@ -72,9 +73,9 @@ public class FunctionalTest extends UnitTest {
         String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
         // Set up a password file
         File realmFile = new File(PROJECT_BASE + "/config", "jetty-users.properties");
-        FileOutputStream ros = new FileOutputStream(realmFile);
-        ros.write("emissary: test123, emissary".getBytes());
-        ros.close();
+        try (OutputStream ros = Files.newOutputStream(realmFile.toPath())) {
+            ros.write("emissary: test123, emissary".getBytes());
+        }
 
         String nodeName = "localhost";
         // System.setProperty(EmissaryNode.NODE_NAME_PROPERTY, nodeName);

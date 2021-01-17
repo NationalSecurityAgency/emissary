@@ -1,8 +1,9 @@
 package emissary.admin;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +97,7 @@ public class Startup {
     }
 
     private static String makeConfig(final String path, final String file) {
-        if (file.startsWith("/") && new File(file).exists()) {
+        if (file.startsWith("/") && Files.exists(Paths.get(file))) {
             return file;
         }
         return emissary.config.ConfigUtil.getConfigFile(path, file);
@@ -268,7 +269,7 @@ public class Startup {
         final List<String> hostParameters = this.hostsConfig.findEntries("LOCAL_DIRECTORY");
 
         final long start = System.currentTimeMillis();
-        final Map<String, String> dirStarts = new HashMap<String, String>();
+        final Map<String, String> dirStarts = new HashMap<>();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);

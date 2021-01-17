@@ -1,10 +1,11 @@
 package emissary.client;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -185,7 +186,7 @@ public class HTTPConnectionFactory {
             return null;
         }
         final KeyStore keyStore = KeyStore.getInstance(type);
-        try (final InputStream is = new FileInputStream(path)) {
+        try (final InputStream is = Files.newInputStream(Paths.get(path))) {
             keyStore.load(is, pazz);
         }
         return keyStore;
