@@ -3,7 +3,6 @@ package emissary.client;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -67,12 +66,10 @@ public class EmissaryClientTest extends UnitTest {
     }
 
     @Test
-    public void testRequestConfigFromConfigDir() {
+    public void testRequestConfigFromConfigDir() throws IOException {
         logger.debug("Starting testRequestConfigFromConfigDir");
         Path cfgFile = Paths.get(ConfigUtil.getConfigDirs().get(0) + "/emissary.client.EmissaryClient.cfg");
-        OutputStream out = null;
-        try {
-            out = new BufferedOutputStream(Files.newOutputStream(cfgFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND));
+        try (OutputStream out = Files.newOutputStream(cfgFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
             int newConnectionTimeout = 5000;
             int newConnectionManagerTimeout = 4000;
             int newSocketTimeout = 3000;
@@ -81,7 +78,6 @@ public class EmissaryClientTest extends UnitTest {
                             + "soTimeout = " + newSocketTimeout;
             byte[] data = cfg.getBytes();
             out.write(data, 0, data.length);
-            out.close();
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();
             RequestConfig requestConfig = client.getRequestConfig();
@@ -91,23 +87,8 @@ public class EmissaryClientTest extends UnitTest {
         } catch (IOException e) {
             logger.error("Problem with {}", cfgFile.toAbsolutePath().toString(), e);
         } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    // maybe already closed, just swallow
-                }
-            }
-            // put that file back
-            if (Files.exists(cfgFile)) {
-                try {
-                    Files.delete(cfgFile);
-                } catch (IOException e) {
-                    logger.error("Problem removing {}", cfgFile.toAbsolutePath().toString(), e);
-                }
-            }
+            Files.deleteIfExists(cfgFile);
         }
-
     }
 
     @Test
