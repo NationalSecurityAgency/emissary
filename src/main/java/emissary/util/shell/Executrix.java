@@ -3,15 +3,19 @@ package emissary.util.shell;
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -20,6 +24,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.directory.KeyManipulator;
 import emissary.util.io.FileManipulator;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +63,9 @@ public class Executrix {
     public static final int OUTPATH = 6;
 
     public static final String CYGHOME = System.getProperty("CYGHOME", "c:/cygwin").replaceAll("\\Q\\\\E", "/");
+    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
+    private static final OpenOption[] APPEND = new OpenOption[] {StandardOpenOption.CREATE, StandardOpenOption.APPEND};
+    private static final OpenOption[] DEFAULT = new OpenOption[] {};
 
     /**
      * Create using all defaults
@@ -157,21 +165,17 @@ public class Executrix {
      * @throws IOException on error
      */
     public static byte[] readFile(final String theFileName, final int length) throws IOException {
-        InputStream theStream = null;
-        byte[] theContent = null;
-        try {
-            theStream = new FileInputStream(theFileName);
-            final int avail = theStream.available();
-            if ((length == -1) || (length >= avail)) {
-                theContent = new byte[avail];
-            } else {
-                theContent = new byte[length];
+        byte[] theContent;
+        try (SeekableByteChannel channel = Files.newByteChannel(Paths.get(theFileName));
+                InputStream inputStream = Channels.newInputStream(channel)) {
+
+            long available = channel.size();
+            if (available > (long) MAX_BUFFER_SIZE) {
+                throw new IOException("Required array size too large max:" + MAX_BUFFER_SIZE + ", actual: " + available);
             }
-            theStream.read(theContent);
-        } finally {
-            if (theStream != null) {
-                theStream.close();
-            }
+
+            theContent = new byte[length == -1 || length >= available ? (int) available : length];
+            inputStream.read(theContent);
         }
         return theContent;
     }
@@ -187,32 +191,33 @@ public class Executrix {
      * @return true if it worked
      */
     public static boolean writeDataToFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append) {
-        if (filename == null) {
+        if (StringUtils.isBlank(filename)) {
             return false;
         }
 
-        final File dir = new File(filename).getParentFile();
-        if (dir != null && (!dir.exists())) {
-            final boolean status = dir.mkdirs();
-            if (!status) {
-                logger.warn("Unable to create directory path to fie " + filename);
+        final Path dir = Paths.get(filename).getParent();
+        if (!Files.exists(dir)) {
+            try {
+                Files.createDirectories(dir);
+            } catch (IOException e) {
+                logger.warn("Unable to create directory path to file {}", filename);
                 return false;
             }
         }
 
         if (filename.isEmpty()) {
-            logger.warn("Empty file name in writeFile:" + filename);
+            logger.warn("Empty file name in writeFile:{}", filename);
             return false;
         }
         if (theContent == null) {
-            logger.warn("Null content in writeFile:" + filename);
+            logger.warn("Null content in writeFile:{}", filename);
             return false;
         }
         try {
             writeFile(theContent, pos, len, filename, append);
             return true;
         } catch (IOException e) {
-            logger.error("writeDataToFile(" + filename + ") exception", e);
+            logger.error("writeDataToFile({}) exception", filename, e);
         }
         return false;
     }
@@ -259,11 +264,10 @@ public class Executrix {
      */
     public static void writeFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append)
             throws IOException {
-        final FileOutputStream theOutput = new FileOutputStream(filename, append);
-        final BufferedOutputStream theStream = new BufferedOutputStream(theOutput);
-        theStream.write(theContent, pos, len);
-        theStream.close();
-        theOutput.close();
+        try (final OutputStream theOutput = Files.newOutputStream(Paths.get(filename), append ? APPEND : DEFAULT);
+                final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
+            theStream.write(theContent, pos, len);
+        }
     }
 
     /**
@@ -459,9 +463,18 @@ public class Executrix {
      * @param outfile the file to copy to
      */
     public static void copyFile(final String infile, final String outfile) throws IOException {
-        final File fin = new File(infile);
-        final File fout = new File(outfile);
-        copyFile(fin, fout);
+        copyFile(Paths.get(infile), Paths.get(outfile));
+    }
+
+    /**
+     * Copy file given file objects
+     *
+     * @param frm the file to copy from
+     * @param to the file to copy to
+     */
+    @Deprecated
+    public static void copyFile(final File frm, final File to) throws IOException {
+        copyFile(frm.toPath(), to.toPath());
     }
 
     /**
@@ -470,9 +483,10 @@ public class Executrix {
      * @param frm the file to copy from
      * @param to the file to copy to
      */
-    public static void copyFile(final File frm, final File to) throws IOException {
+    public static void copyFile(final Path frm, final Path to) throws IOException {
         final byte[] buf = new byte[1024];
-        try (InputStream fis = new FileInputStream(frm); OutputStream fos = new BufferedOutputStream(new FileOutputStream(to))) {
+        try (InputStream fis = Files.newInputStream(frm);
+                OutputStream fos = new BufferedOutputStream(Files.newOutputStream(to))) {
             int len;
             while ((len = fis.read(buf)) != -1) {
                 fos.write(buf, 0, len);
