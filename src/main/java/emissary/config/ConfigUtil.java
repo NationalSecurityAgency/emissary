@@ -3,16 +3,16 @@ package emissary.config;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -406,9 +406,13 @@ public class ConfigUtil {
      */
     public static long getConfigFileLastModified(final String name) {
         final String sname = getConfigFile(name);
-        final File f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            return f.lastModified();
+        final Path f = Paths.get(sname);
+        if (Files.exists(f) && Files.isReadable(f)) {
+            try {
+                return Files.getLastModifiedTime(f).toMillis();
+            } catch (IOException e) {
+                logger.warn("There was an error getting the last modified time for {}", f, e);
+            }
         }
         return -1L;
     }
@@ -422,12 +426,12 @@ public class ConfigUtil {
     public static InputStream getConfigStream(final String name) throws IOException {
         // Try the new style override name first ( with package )
         String sname = getConfigFile(name);
-        File f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            logger.debug("Found config data as file {}", f.getPath());
-            return new FileInputStream(f);
+        Path f = Paths.get(sname);
+        if (Files.exists(f) && Files.isReadable(f)) {
+            logger.debug("Found config data as file {}", f);
+            return Files.newInputStream(f);
         }
-        logger.debug("No file config found using new style {}", f.getName());
+        logger.debug("No file config found using new style {}", f.getFileName());
 
         // Try the classpath loader
         final List<String> reznames = toResourceName(name);
@@ -452,12 +456,12 @@ public class ConfigUtil {
 
         // Try the old style override name ( no package )
         sname = getOldStyleConfigFile(name);
-        f = new File(sname);
-        if (f.exists() && f.canRead()) {
-            logger.debug("Found config data as file old style {}", f.getPath());
-            return new FileInputStream(f);
+        f = Paths.get(sname);
+        if (Files.exists(f) && Files.isReadable(f)) {
+            logger.debug("Found config data as file old style {}", f);
+            return Files.newInputStream(f);
         }
-        logger.debug("No file config found using old style {}", f.getName());
+        logger.debug("No file config found using old style {}", f.getFileName());
 
         throw new IOException("No config stream available for " + name);
     }
@@ -492,12 +496,12 @@ public class ConfigUtil {
      */
     public static Properties getPropertyInfo(final String name) throws IOException {
         final Properties props = new Properties();
-        final File f = new File(getConfigFile(name));
+        final Path f = Paths.get(getConfigFile(name));
         InputStream is = null;
 
         try {
-            if (f.exists() && f.canRead()) {
-                is = new FileInputStream(f);
+            if (Files.exists(f) && Files.isReadable(f)) {
+                is = Files.newInputStream(f);
             } else {
                 final List<String> cnameprefs = toResourceName(name);
                 for (final String cname : cnameprefs) {
@@ -602,7 +606,7 @@ public class ConfigUtil {
             is = new ByteArrayInputStream(ws.getContentString().getBytes("ISO8859_1"));
             logger.debug("Retrieve of {} worked, created InputStream", filename);
         } else {
-            is = new FileInputStream(filename);
+            is = Files.newInputStream(Paths.get(filename));
         }
         return is;
     }
@@ -615,29 +619,15 @@ public class ConfigUtil {
      * @throws IOException on read or write problems
      */
     public static void getConfigDataLocal(final String f, final String outputPath) throws IOException {
-        final InputStream is = getConfigData(f);
-        final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath));
-        try {
+        try (final InputStream is = getConfigData(f);
+                final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             final byte[] buf = new byte[4096];
             int thisReadOp = 0;
             while ((thisReadOp = is.read(buf)) > -1) {
                 os.write(buf, 0, thisReadOp);
             }
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ioex1) {
-                logger.debug("Failed to close stream", ioex1);
-            }
-            try {
-                os.close();
-            } catch (IOException ioex2) {
-                logger.debug("Failed to close stream", ioex2);
-            }
+            logger.debug("Retrieved {} to {}", f, outputPath);
         }
-        logger.debug("Retrieved {} to {}", f, outputPath);
     }
 
     /**
@@ -653,17 +643,15 @@ public class ConfigUtil {
      * @throws IOException If there is some I/O problem.
      */
     public static Configurator getMasterClassNames() throws IOException, EmissaryException {
-        final List<File> masterClassNames = new ArrayList<>();
+        final List<Path> masterClassNames = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(final File dir, final String name) {
-                    return name.startsWith("emissary.admin.MasterClassNames") && name.endsWith(".cfg");
-                }
-            });
-            // sort the files, to put emissary.admin.MasterClassNames.cfg before emssary.admin.MasterClassNames-blah.cfg
-            Arrays.sort(files);
-            masterClassNames.addAll(Arrays.asList(files));
+
+            final Path p = Paths.get(dir);
+            try (final DirectoryStream<Path> stream = Files.newDirectoryStream(p, "emissary.admin.MasterClassNames*.cfg")) {
+                stream.forEach(masterClassNames::add);
+            }
+
+            Collections.sort(masterClassNames);
         }
         // check to make sure we have at least one
         // TODO make a test for this
@@ -672,27 +660,27 @@ public class ConfigUtil {
         }
 
         ServiceConfigGuide scg = null;
-        for (final File f : masterClassNames) {
-            if (!f.exists() || !f.canRead()) {
-                logger.warn("Could not read MasterClassNames from " + f.getAbsolutePath());
+        for (final Path f : masterClassNames) {
+            if (!Files.exists(f) || !Files.isReadable(f)) {
+                logger.warn("Could not read MasterClassNames from {}", f.toAbsolutePath());
             } else {
-                logger.debug("Reading MasterClassNames from {}", f.getAbsolutePath());
+                logger.debug("Reading MasterClassNames from {}", f.toAbsolutePath());
             }
             if (null != configFlavors) {
                 final String cfgFlavor = getFlavorsFromCfgFile(f);
                 if (configFlavors.equals(cfgFlavor) || Arrays.asList(configFlavors.split(",")).contains(cfgFlavor)) {
-                    logger.warn("Config file {} appeared to be flavored with {}.", f.getName(), cfgFlavor);
+                    logger.warn("Config file {} appeared to be flavored with {}.", f.getFileName(), cfgFlavor);
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                scg = new ServiceConfigGuide(Files.newInputStream(f), "MasterClassNames");
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f), "MasterClassNames");
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
-                        logger.error("Tried to overwrite existing key from MasterClassNames:" + key + " in " + f.getAbsolutePath());
+                        logger.error("Tried to overwrite existing key from MasterClassNames:{} in {}", key, f.toAbsolutePath());
                         noErrorsForFile = false;
                         // System.exit(43); // this is swallowed in JettyServer in jetty 6
                     }
@@ -716,8 +704,21 @@ public class ConfigUtil {
      * @param f The file of interest.
      * @return String with parsed flavor name(s)
      */
+    @Deprecated
     static String getFlavorsFromCfgFile(final File f) {
-        final String filename = f.getName();
+        return getFlavorsFromCfgFile(f.toPath());
+    }
+
+    /**
+     * Gets the flavors as specified by the filename.
+     * <p>
+     * Returns the portion between the last - and .cfg in the file name
+     *
+     * @param f The file of interest.
+     * @return String with parsed flavor name(s)
+     */
+    static String getFlavorsFromCfgFile(final Path f) {
+        final String filename = f.getFileName().toString();
         if (!filename.endsWith(".cfg")) {
             logger.warn("Not a cfg file: {}", filename);
             return "";
@@ -728,7 +729,7 @@ public class ConfigUtil {
             return "";
         }
         if (parts.length > 2) {
-            logger.warn("Filename {} had multiple - characters, using the last to determin the flavor", filename);
+            logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
         return parts[parts.length - 1].replaceAll(".cfg", "");
     }
