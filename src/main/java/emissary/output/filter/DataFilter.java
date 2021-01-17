@@ -1,8 +1,9 @@
 package emissary.output.filter;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
@@ -160,24 +161,12 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Write it out
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(fileName);
+        try (OutputStream fos = Files.newOutputStream(Paths.get(fileName))) {
             fos.write(data, 0, data.length);
-            fos.close();
         } catch (IOException ex) {
             logger.error("Cannot write output to " + fileName, ex);
             return false;
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ignore) {
-                    logger.debug("Error closing stream", ignore);
-                }
-            }
         }
-
         return true;
     }
 

@@ -2,9 +2,11 @@ package emissary.jni;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -325,12 +327,9 @@ public class JNI implements Serializable {
         }
 
         // Save the contents into the disk file
-        try {
-            final FileOutputStream fos = new FileOutputStream(fullPathName);
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try (OutputStream fos = Files.newOutputStream(Paths.get(fullPathName));
+                final BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(libContents, 0, libContents.length);
-            bos.close();
-            fos.close();
         } catch (IOException ioe) {
             errmsg[0] = "Cannot write retrieved JNI library to " + fullPathName + ": " + ioe;
             return false;

@@ -2,6 +2,8 @@ package emissary.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -188,15 +190,31 @@ public final class MagicNumberUtil {
      * @see #load(java.io.File)
      * @see #load(byte[])
      */
+    @Deprecated
     public String describe(final File target) throws IOException {
+        return describe(target.toPath());
+    }
+
+    /**
+     * Input a byte array sample and it will be compared against the global magic number list. Descriptions for matching
+     * entries inclusive of continuations provided.
+     *
+     * @param target data a java.nio.file.Path
+     * @return A string representing matching description plus matching continuation descriptions or null.
+     * @throws RuntimeException If the magic file has not been loaded globally using the load methods.
+     * @throws IOException If a read error occurs loading the target file.
+     * @see #load(java.nio.file.Path)
+     * @see #load(byte[])
+     */
+    public String describe(final Path target) throws IOException {
         try {
-            if (!target.exists()) {
-                throw new IOException("Target file not found at: " + target.getAbsolutePath());
+            if (!Files.exists(target)) {
+                throw new IOException("Target file not found at: " + target.toAbsolutePath());
             }
         } catch (SecurityException se) {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
-        return describe(Executrix.readDataFromFile(target.getAbsolutePath()));
+        return describe(Executrix.readDataFromFile(target.toAbsolutePath().toString()));
     }
 
     /**
@@ -209,18 +227,33 @@ public final class MagicNumberUtil {
      * @return {@link String} representing the id description or null
      * @throws IOException If an IO error occurs while reading either file.
      */
+    @Deprecated
     public static String describe(final File target, final File magicConfig) throws IOException {
+        return describe(target.toPath(), magicConfig.toPath());
+    }
+
+    /**
+     * Do not load magic file globally and do not compare against the global magic number list and instead compare target
+     * against the specified magic file. The magic file will be read/parsed each time as the comparative file. Useful for
+     * debugging or if certain files can be narrowed down to a smaller magic file list improving id performance.
+     *
+     * @param target a java.nio.file.Path specifying the file to be id'd
+     * @param magicConfig the magic file containing the magic number entries to use
+     * @return {@link String} representing the id description or null
+     * @throws IOException If an IO error occurs while reading either file.
+     */
+    public static String describe(final Path target, final Path magicConfig) throws IOException {
         try {
-            if (!target.exists()) {
-                throw new IOException("Target file not found at: " + target.getAbsolutePath());
-            } else if (!magicConfig.exists()) {
-                throw new IOException("Magic config file not found at: " + magicConfig.getAbsolutePath());
+            if (!Files.exists(target)) {
+                throw new IOException("Target file not found at: " + target.toAbsolutePath());
+            } else if (!Files.exists(magicConfig)) {
+                throw new IOException("Magic config file not found at: " + magicConfig.toAbsolutePath());
             }
         } catch (SecurityException se) {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
 
-        return describe(Executrix.readDataFromFile(target.getAbsolutePath()), magicConfig);
+        return describe(Executrix.readDataFromFile(target.toAbsolutePath().toString()), magicConfig);
     }
 
     /**
@@ -233,17 +266,32 @@ public final class MagicNumberUtil {
      * @return {@link String} representing the id description or null
      * @throws IOException If an IO error occurs while reading either file.
      */
+    @Deprecated
     public static String describe(final byte[] sample, final File magicConfig) throws IOException {
+        return describe(sample, magicConfig.toPath());
+    }
+
+    /**
+     * Do not load magic file globally and do not compare against the global magic number list and compare target against
+     * the specified magic file instead. The magic file will be read/parsed each time as the comparative file. Useful for
+     * debugging or if certain files can be narrowed down to a smaller magic file list improving id performance.
+     *
+     * @param sample a byte[] containing the data to be id'd
+     * @param magicConfig the magic file containing the magic number entries to use
+     * @return {@link String} representing the id description or null
+     * @throws IOException If an IO error occurs while reading either file.
+     */
+    public static String describe(final byte[] sample, final Path magicConfig) throws IOException {
         try {
-            if (!magicConfig.exists()) {
-                throw new IOException("Magic config file not found at: " + magicConfig.getAbsolutePath());
+            if (!Files.exists(magicConfig)) {
+                throw new IOException("Magic config file not found at: " + magicConfig.toAbsolutePath());
             }
         } catch (SecurityException se) {
             throw new IOException("Security Exception reading file: " + se.getMessage());
         }
 
         final List<MagicNumber> magicNumberList =
-                MagicNumberFactory.buildMagicNumberList(Executrix.readDataFromFile(magicConfig.getAbsolutePath()), null, null);
+                MagicNumberFactory.buildMagicNumberList(Executrix.readDataFromFile(magicConfig.toAbsolutePath().toString()), null, null);
 
         String description = null;
         for (final MagicNumber item : magicNumberList) {
@@ -261,8 +309,9 @@ public final class MagicNumberUtil {
      * @param config the java.io.File pointing to the magic file
      * @exception IOException if one occurs while reading the config file or if a security access error occurs
      */
+    @Deprecated
     public void load(final File config) throws IOException {
-        load(config, false);
+        load(config.toPath());
     }
 
     /**
@@ -272,9 +321,31 @@ public final class MagicNumberUtil {
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      * @exception IOException if one occurs while reading the config file or if a security access error occurs
      */
+    @Deprecated
     public void load(final File config, final boolean swallowParseException) throws IOException {
+        load(config.toPath(), swallowParseException);
+    }
+
+    /**
+     * Load the magic number list globally.
+     *
+     * @param config the java.nio.file.Path pointing to the magic file
+     * @exception IOException if one occurs while reading the config file or if a security access error occurs
+     */
+    public void load(final Path config) throws IOException {
+        load(config, false);
+    }
+
+    /**
+     * Load the magic number list globally.
+     *
+     * @param config the java.nio.file.Path pointing to the magic file
+     * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
+     * @exception IOException if one occurs while reading the config file or if a security access error occurs
+     */
+    public void load(final Path config, final boolean swallowParseException) throws IOException {
         try {
-            if (!config.exists()) {
+            if (!Files.exists(config)) {
                 throw new IOException("File not found");
             }
         } catch (SecurityException se) {
@@ -287,7 +358,7 @@ public final class MagicNumberUtil {
             mErrorList = this.errorList;
             mExtErrorMap = this.extErrorMap;
         }
-        this.magicNumbers.addAll(MagicNumberFactory.buildMagicNumberList(Executrix.readDataFromFile(config.getAbsolutePath()), mErrorList,
+        this.magicNumbers.addAll(MagicNumberFactory.buildMagicNumberList(Executrix.readDataFromFile(config.toAbsolutePath().toString()), mErrorList,
                 mExtErrorMap, swallowParseException));
     }
 
