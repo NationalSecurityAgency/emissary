@@ -2,10 +2,13 @@ package emissary.util.roll;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,13 +28,13 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     /** Flag to let callers know if this class is currently rolling */
     volatile boolean rolling;
     /** Current output stream we're writing to */
-    FileOutputStream fileOutputStream;
+    OutputStream fileOutputStream;
     /** Current File we're writing to */
-    File currentFile;
+    Path currentFile;
     /** File Name Generator for creating unique file names */
     FileNameGenerator namegen;
     /** Directory we're writing to */
-    private File dir;
+    private Path dir;
     /** Number of bytes written to file */
     long bytesWritten;
     /** Whether to delete a zero byte file */
@@ -41,8 +44,13 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
      */
     private final AtomicLong seq = new AtomicLong();
 
+    @Deprecated
     public RollableFileOutputStream(FileNameGenerator namegen, File dir) throws IOException {
-        if (dir == null || !dir.exists() || !dir.isDirectory()) {
+        this(namegen, dir == null ? null : dir.toPath());
+    }
+
+    public RollableFileOutputStream(FileNameGenerator namegen, Path dir) throws IOException {
+        if (dir == null || !Files.exists(dir) || !Files.isDirectory(dir)) {
             throw new IllegalArgumentException("Directory is invalid: " + dir);
         }
         this.namegen = namegen;
@@ -52,70 +60,63 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     }
 
     public RollableFileOutputStream(FileNameGenerator namegen) throws IOException {
-        this(namegen, new File("."));
+        this(namegen, Paths.get("."));
     }
 
     private void handleOrphanedFiles() {
-        // Create FilenameFilter
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(".");
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(dir, path -> path.getFileName().toString().startsWith("."))) {
+            for (Path path : paths) {
+                LOG.info("Renaming orphaned file, {}, to non-dot file.", path.getFileName());
+                rename(path);
             }
-        };
-
-        // Look for any dot files in directory
-        for (File file : this.dir.listFiles(filter)) {
-            if (file.isFile()) {
-                LOG.info("Renaming orphaned file, " + file.getName() + ", to non-dot file.");
-                rename(file);
-            }
+        } catch (IOException ioe) {
+            LOG.error("There was an error cleaning orphaned files", ioe);
         }
     }
 
     private void open() throws IOException {
-        File newFile = getNewFile();
+        Path newFile = getNewFile();
         currentFile = newFile;
-        fileOutputStream = new FileOutputStream(newFile, true);
+        fileOutputStream = Files.newOutputStream(newFile, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
     }
 
-    private File getNewFile() {
+    private Path getNewFile() {
         String newName = namegen.nextFileName();
         String dotFile = "." + newName;
         String seqFname = "." + seq.get() + "_" + newName;
-        if (currentFile != null && (dotFile.equals(currentFile.getName()) || seqFname.equals(currentFile.getName()))) {
-            LOG.warn("Duplicate file name returned from " + namegen.getClass() + ". Using internal sequencer to uniquify.");
+        if (currentFile != null && (dotFile.equals(currentFile.getFileName()) || seqFname.equals(currentFile.getFileName()))) {
+            LOG.warn("Duplicate file name returned from {}. Using internal sequencer to uniquify.", namegen.getClass());
             dotFile = "." + seq.getAndIncrement() + "_" + newName;
         }
-        File newFile = new File(dir, dotFile);
-        return newFile;
+        return Paths.get(dir.toString(), dotFile);
     }
 
     private void closeAndRename() throws IOException {
         fileOutputStream.flush();
         if (!internalClose(fileOutputStream)) {
-            LOG.error("Error closing file " + currentFile.getAbsolutePath());
+            LOG.error("Error closing file {}", currentFile.toAbsolutePath());
         }
         rename(currentFile);
         bytesWritten = 0L;
     }
 
-    private void rename(File f) {
-        if (f.length() == 0L && deleteZeroByteFiles) {
-            LOG.debug("Deleting Zero Byte File " + f.getAbsolutePath());
-            f.delete();
+    private void rename(Path f) throws IOException {
+        if (f.toFile().length() == 0L && deleteZeroByteFiles) {
+            LOG.debug("Deleting Zero Byte File {}", f.toAbsolutePath());
+            Files.deleteIfExists(f);
             return;
         }
         // drop the dot...
-        String nonDot = f.getName().substring(1);
-        File nd = new File(dir, nonDot);
+        String nonDot = f.getFileName().toString().substring(1);
+        Path nd = Paths.get(dir.toString(), nonDot);
         // This shouldn't happen
-        if (nd.exists()) {
-            LOG.error("Non dot file " + nd.getAbsolutePath() + " already exists. Forcing unique name.");
-            nd = new File(dir, nonDot + UUID.randomUUID().toString());
+        if (Files.exists(nd)) {
+            LOG.error("Non dot file {} already exists. Forcing unique name.", nd.toAbsolutePath());
+            nd = Paths.get(dir.toString(), nonDot + UUID.randomUUID().toString());
         }
-        if (!f.renameTo(nd)) {
-            LOG.error("Rename from " + f.getAbsolutePath() + " to " + nd.getAbsolutePath() + " failed.");
+        Files.move(f, nd);
+        if (!Files.exists(nd)) {
+            LOG.error("Rename from {} to {} failed.", f.toAbsolutePath(), nd.toAbsolutePath());
         }
     }
 
