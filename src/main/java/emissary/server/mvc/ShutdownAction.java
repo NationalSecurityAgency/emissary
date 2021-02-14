@@ -1,7 +1,7 @@
 package emissary.server.mvc;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -9,10 +9,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
-import javax.ws.rs.core.Response;
 
 import emissary.server.EmissaryServer;
+import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +23,13 @@ public class ShutdownAction {
     @GET
     @Path("/Shutdown.action")
     @Produces(MediaType.TEXT_HTML)
-    public Response shutdownNow(@Context HttpServletRequest request) {
+    @Template(name = "/server_message")
+    public Map<String, String> shutdownNow(@Context HttpServletRequest request) {
+        Map<String, String> model = new HashMap<>();
         try {
             LOG.debug("Calling the stop method");
-            try {
-                // redirecting back to home page so a refresh doesn't shut down again
-                NewCookie cookie = new NewCookie("czar", "Emissary is shutting down.  Come again soon!", "/", "", "czar says", 1000000, false);
-                return Response.seeOther(new URI("/")).cookie(cookie).build();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-                return Response.serverError().entity(e.getMessage()).build();
-            }
+            model.put("message", "Shutdown initiated. Come again soon!");
+            return model;
         } finally {
             // need a new thread so the response will return
             new Thread(() -> {

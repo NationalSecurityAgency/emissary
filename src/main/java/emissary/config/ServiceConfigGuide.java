@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -769,12 +770,36 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public Map<String, String> findStringMatchMap(final String theParameter, final boolean preserveCase) {
+        return findStringMatchMap(theParameter, preserveCase, false);
+    }
 
+    /**
+     * Find entries beginning with the specified string and return a hash keyed on the remainder of the string with the
+     * value of the config line as the value of the hash
+     *
+     * <pre>
+     * {@code
+     * Example config entries
+     *    FOO_ONE: AAA
+     *    FOO_TWO: BBB
+     * Calling findStringMatchMap("FOO_",true)
+     * will yield a map with
+     *     ONE -> AAA
+     *     TWO -> BBB
+     * }
+     * </pre>
+     *
+     * @param theParameter the key to look for in the config file
+     * @param preserveCase if false all keys will be upcased
+     * @param preserveOrder if true key ordering is preserved
+     * @return map where key is remainder after match and value is the config value, or an empty map if none found
+     */
+    public Map<String, String> findStringMatchMap(final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
         if (theParameter == null) {
             return Collections.emptyMap();
         }
 
-        final Map<String, String> theHash = new HashMap<String, String>();
+        final Map<String, String> theHash = preserveOrder ? new LinkedHashMap<>() : new HashMap<>();
         final List<ConfigEntry> parameters = this.findStringMatchEntries(theParameter);
 
         for (final ConfigEntry el : parameters) {

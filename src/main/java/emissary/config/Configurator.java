@@ -71,6 +71,16 @@ public interface Configurator {
     Map<String, String> findStringMatchMap(String param, boolean preserveCase);
 
     /**
+     * Find all entry keys that begin with the specified string
+     *
+     * @param param the leading key startsWith
+     * @param preserveCase Case of key is preserved when true
+     * @param preserveOrder ordering of keys is preserved
+     * @return map with remaining key portion as key, value as value
+     */
+    Map<String, String> findStringMatchMap(String param, boolean preserveCase, boolean preserveOrder);
+
+    /**
      * Find all entry keys that begin with the specified string Remaining key portion is upper cased
      *
      * @param theParameter the parameter the leading key startsWith
