@@ -1,15 +1,16 @@
 package emissary.config;
 
+import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import emissary.core.EmissaryException;
 import emissary.test.core.FunctionalTest;
-import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -27,20 +28,22 @@ public class FTestServiceConfigGuide extends FunctionalTest {
     }
 
     @Parameterized.Parameters
-    public static Collection<?> data() throws EmissaryException {
+    public static Collection<?> data() throws IOException, EmissaryException {
         ConfigUtil.initialize();
 
         // look in config dir
-        Collection<File> configFiles = new ArrayList<>();
+        Collection<Path> configFiles = new ArrayList<>();
+
         for (String dir : ConfigUtil.getConfigDirs()) {
-            configFiles.addAll(FileUtils.listFiles(new File(dir), new String[] {"cfg"}, true));
+            configFiles.addAll(findFilesByExtension(Paths.get(dir), ".cfg"));
         }
 
         // look for cfg files under src
-        configFiles.addAll(FileUtils.listFiles(new File(ConfigUtil.projectRootDirectory() + "/src"), new String[] {"cfg"}, true));
+        Path root = Paths.get(ConfigUtil.projectRootDirectory()).getParent();
+        configFiles.addAll(findFilesByExtension(Paths.get(root.toString(), "src"), ".cfg"));
 
-        Collection<String[]> fileNames = new ArrayList<String[]>();
-        for (File f : configFiles) {
+        Collection<String[]> fileNames = new ArrayList<>();
+        for (Path f : configFiles) {
             fileNames.add(new String[] {f.toString()});
         }
 
@@ -54,13 +57,13 @@ public class FTestServiceConfigGuide extends FunctionalTest {
      */
     @Test
     public void testAllConfFiles() {
-        File underTest = new File(resource);
-        logger.debug("Parsing config file:" + underTest.getAbsolutePath());
+        Path underTest = Paths.get(resource).toAbsolutePath().normalize();
+        logger.debug("Parsing config file:" + underTest);
 
         try {
-            ConfigUtil.getConfigInfo(underTest.getAbsolutePath());
+            ConfigUtil.getConfigInfo(underTest.toString());
         } catch (IOException e) {
-            fail("Caught error in file" + underTest.getAbsolutePath() + ": " + e.getMessage());
+            fail("Caught error in file" + underTest + ": " + e.getMessage());
         }
     }
 }
