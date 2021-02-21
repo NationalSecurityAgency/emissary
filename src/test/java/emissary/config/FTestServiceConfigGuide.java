@@ -4,12 +4,10 @@ import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 import emissary.core.EmissaryException;
 import emissary.test.core.FunctionalTest;
@@ -23,6 +21,8 @@ import org.slf4j.LoggerFactory;
 public class FTestServiceConfigGuide extends FunctionalTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FTestServiceConfigGuide.class);
+
+    protected String resource;
 
     public FTestServiceConfigGuide(String resource) throws IOException {
         super(resource);
@@ -51,12 +51,6 @@ public class FTestServiceConfigGuide extends FunctionalTest {
 
         return fileNames;
     }
-
-    public static Collection<Path> walk(Path dir, String ext) throws IOException {
-        return Files.walk(dir).filter(p -> p.toString().endsWith(ext)).collect(Collectors.toList());
-    }
-
-    protected String resource;
 
     /**
      * Validates all config files in the "config" directory or down the src tree parse properly.

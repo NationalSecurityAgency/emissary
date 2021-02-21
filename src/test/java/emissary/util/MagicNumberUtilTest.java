@@ -16,15 +16,20 @@ public class MagicNumberUtilTest extends UnitTest {
         MagicNumberUtil m = new MagicNumberUtil();
         Path f1 = Files.createTempFile("magic", ".dat");
         Path f2 = Files.createTempFile("magic", ".dat");
-        try (OutputStream o1 = Files.newOutputStream(f1)) {
-            o1.write("0  string  pattern1  P1".getBytes());
+        try {
+            try (OutputStream o1 = Files.newOutputStream(f1)) {
+                o1.write("0  string  pattern1  P1".getBytes());
+            }
+            try (OutputStream o2 = Files.newOutputStream(f2)) {
+                o2.write("0  string  pattern2  P2".getBytes());
+            }
+            m.load(f1.toFile());
+            m.load(f2.toFile());
+            assertEquals("Rules from both files must load", 2, m.size());
+        } finally {
+            Files.deleteIfExists(f1);
+            Files.deleteIfExists(f2);
         }
-        try (OutputStream o2 = Files.newOutputStream(f2)) {
-            o2.write("0  string  pattern2  P2".getBytes());
-        }
-        m.load(f1.toFile());
-        m.load(f2.toFile());
-        assertEquals("Rules from both files must load", 2, m.size());
     }
 
     @Test

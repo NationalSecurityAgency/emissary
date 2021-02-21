@@ -114,18 +114,23 @@ public class UnixCommandPlaceTest extends UnitTest {
         // fake an output file and load it with some data
         String DATA = new String("test-test");
         Path outputFile = Paths.get(tmpdir, "output.out");
-        IOUtils.write(DATA, Files.newOutputStream(outputFile));
 
-        // null is returned in situations with a non-zero return code
-        assertNull(place.fileProcess(new String[] {"negative"}, outputFile.toAbsolutePath().toString()));
-        assertNull(place.fileProcess(new String[] {"positive"}, outputFile.toAbsolutePath().toString()));
+        try {
+            IOUtils.write(DATA, Files.newOutputStream(outputFile));
 
-        // a successful execution will return the bytes of the specified output file
-        assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString())));
+            // null is returned in situations with a non-zero return code
+            assertNull(place.fileProcess(new String[] {"negative"}, outputFile.toAbsolutePath().toString()));
+            assertNull(place.fileProcess(new String[] {"positive"}, outputFile.toAbsolutePath().toString()));
+
+            // a successful execution will return the bytes of the specified output file
+            assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString())));
+        } finally {
+            Files.deleteIfExists(outputFile);
+        }
     }
 
     @Test
-    public void testStdOutProcess() throws Exception {
+    public void testStdOutProcess() {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method

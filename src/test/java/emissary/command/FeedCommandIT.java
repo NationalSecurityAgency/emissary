@@ -3,6 +3,7 @@ package emissary.command;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,8 +15,10 @@ import java.util.List;
 import com.beust.jcommander.ParameterException;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
 import org.hamcrest.core.StringEndsWith;
 import org.hamcrest.junit.ExpectedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,6 +54,11 @@ public class FeedCommandIT extends UnitTest {
         baseDir = Paths.get(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
         inputDir = Files.createTempDirectory("input");
         arguments.clear();
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        UnitTestFileUtils.cleanupDirectoryRecursively(inputDir);
     }
 
     @Test(expected = ParameterException.class)

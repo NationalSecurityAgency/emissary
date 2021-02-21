@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import emissary.test.core.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class JournaledChannelPoolTest extends UnitTest {
     @Override
     public void tearDown() throws Exception {
         this.instance.close();
+        UnitTestFileUtils.cleanupDirectoryRecursively(this.directory);
         super.tearDown();
     }
 

@@ -4,16 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.Files;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,14 +25,17 @@ public class XmlOutputFilterTest extends UnitTest {
     private ServiceConfigGuide config;
     private IBaseDataObject payload;
     private IDropOffFilter f;
+    private Path tmpDir;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        tmpDir = java.nio.file.Files.createTempDirectory(null);
+
         config = new ServiceConfigGuide();
         config.removeAllEntries("OUTPUT_PATH");
         config.addEntry("OUTPUT_SPEC_FOO", "/tmp/%S%.%F%");
         config.addEntry("OUTPUT_SPEC_BAR", "/xyzzy/%S%.%F%");
-        config.addEntry("OUTPUT_PATH", Files.createTempDir().getAbsolutePath());
+        config.addEntry("OUTPUT_PATH", tmpDir.toAbsolutePath().toString());
 
         f = new XmlOutputFilter();
 
@@ -37,6 +43,12 @@ public class XmlOutputFilterTest extends UnitTest {
         payload.setData("This is the data".getBytes());
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        Files.deleteIfExists(tmpDir);
+        config = null;
     }
 
     @Test

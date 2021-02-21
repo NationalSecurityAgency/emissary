@@ -11,7 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
 import org.hamcrest.junit.ExpectedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +28,11 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
     public void setup() throws IOException {
         path = Files.createTempDirectory("config");
         converter = new PathExistsReadableConverter("path");
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        UnitTestFileUtils.cleanupDirectoryRecursively(path);
     }
 
     @Test
@@ -54,10 +61,16 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
         Files.setPosixFilePermissions(path, perms);
 
         // test
-        converter.convert(path.toString());
+        try {
+            converter.convert(path.toString());
 
-        // verify
-        expected.expectMessage("The option 'path' was configured with path '" + path + "' which is not readable");
+            // verify
+            expected.expectMessage("The option 'path' was configured with path '" + path + "' which is not readable");
+        } finally {
+            // reset perms for cleanup
+            perms.add(PosixFilePermission.OWNER_READ);
+            Files.setPosixFilePermissions(path, perms);
+        }
 
     }
 }
