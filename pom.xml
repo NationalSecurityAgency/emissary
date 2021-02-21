@@ -57,7 +57,7 @@
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7R4</dep.rhino.version>
     <dep.slf4j.version>1.7.29</dep.slf4j.version>
-    <dep.spullara.mustache.compiler.version>0.8.17</dep.spullara.mustache.compiler.version>
+    <dep.spullara.mustache.compiler.version>0.9.7</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
     <dep.tika.version>1.22</dep.tika.version>
     <dep.webjars.bootstrap.version>4.5.3</dep.webjars.bootstrap.version>

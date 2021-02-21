@@ -319,6 +319,21 @@ public class ServiceConfigGuideTest extends UnitTest {
         assertEquals("Mapped entry four", "blaze", map.get("four"));
         assertTrue("Mapped entry not upper cased", !map.containsKey("FOUR"));
 
+        // preserve order this time
+        map = c.findStringMatchMap("FOO_", true, true);
+        List<String> keys = new ArrayList<>(map.keySet());
+        List<String> values = new ArrayList<>(map.values());
+        assertNotNull("Mapped entries", map);
+        assertEquals("Mapped all entries", 4, map.size());
+        assertEquals("Mapped key one", "ONE", keys.get(0));
+        assertEquals("Mapped value one", "BAR", values.get(0));
+        assertEquals("Mapped key two", "TWO", keys.get(1));
+        assertEquals("Mapped value two", "BAZ", values.get(1));
+        assertEquals("Mapped key three", "THREE", keys.get(2));
+        assertEquals("Mapped value three", "SHAZAM", values.get(2));
+        assertEquals("Mapped key four", "four", keys.get(3));
+        assertEquals("Mapped value four", "blaze", values.get(3));
+
         // Try a nonexistent key
         map = c.findStringMatchMap("SHLOP_");
         assertNotNull("Map created for non existent key", map);
