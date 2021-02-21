@@ -1,10 +1,13 @@
 package emissary.output.filter;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.io.Files;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
@@ -27,12 +29,15 @@ public class JsonOutputFilterTest extends UnitTest {
     private ServiceConfigGuide config;
     private IBaseDataObject payload;
     private IDropOffFilter f;
+    private Path tmpDir;
 
     @Before
-    public void setup() {
+    public void setup() throws IOException {
+        tmpDir = Files.createTempDirectory(null);
+
         config = new ServiceConfigGuide();
         config.removeAllEntries("OUTPUT_PATH");
-        config.addEntry("OUTPUT_PATH", Files.createTempDir().getAbsolutePath());
+        config.addEntry("OUTPUT_PATH", tmpDir.toAbsolutePath().toString());
 
         f = new JsonOutputFilter();
 
@@ -45,7 +50,8 @@ public class JsonOutputFilterTest extends UnitTest {
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws IOException {
+        Files.deleteIfExists(tmpDir);
         config = null;
     }
 

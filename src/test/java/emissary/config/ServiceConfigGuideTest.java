@@ -626,5 +626,4 @@ public class ServiceConfigGuideTest extends UnitTest {
         assertEquals("Multi-valued property should return first non-null value", nonNullValue, multiValue);
         assertEquals("Multi-valued property with all nulls should return default", defaultValue, multiNullValue);
     }
-
 }

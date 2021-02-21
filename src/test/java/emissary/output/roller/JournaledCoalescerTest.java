@@ -88,29 +88,46 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNonDirectoryArgument() throws Exception {
         // test
-        new JournaledCoalescer(Files.createTempFile(".", "temp-name"), fileNameGenerator);
+        Path tmpFile = Files.createTempFile(".", "temp-name");
+        try {
+            new JournaledCoalescer(tmpFile, fileNameGenerator);
+        } finally {
+            Files.deleteIfExists(tmpFile);
+        }
     }
 
     @SuppressWarnings("resource")
     @Test(expected = IllegalAccessError.class)
-    public void testNonReadible() throws Exception {
+    public void testNonReadable() throws Exception {
         // setup
-        Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+        Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_WRITE);
 
         // test
-        new JournaledCoalescer(Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms)), fileNameGenerator);
+        Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
+        try {
+            new JournaledCoalescer(tmpdir, fileNameGenerator);
+        } finally {
+            perms.add(PosixFilePermission.OWNER_READ);
+            Files.setPosixFilePermissions(tmpdir, perms);
+            UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
+        }
     }
 
     @SuppressWarnings("resource")
     @Test(expected = IllegalAccessError.class)
     public void testNonWritable() throws Exception {
         // setup
-        Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+        Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
 
         // test
-        new JournaledCoalescer(Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms)), fileNameGenerator);
+        Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
+        try {
+            new JournaledCoalescer(tmpdir, fileNameGenerator);
+        } finally {
+            UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
+        }
     }
 
     @Test

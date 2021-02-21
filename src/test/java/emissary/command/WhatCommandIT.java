@@ -1,5 +1,6 @@
 package emissary.command;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +13,9 @@ import java.util.Set;
 import com.beust.jcommander.JCommander;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
 import org.hamcrest.junit.ExpectedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +51,12 @@ public class WhatCommandIT extends UnitTest {
         baseDir = Paths.get(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
         inputDir = Files.createTempDirectory("input");
         arguments.clear();
+    }
+
+    @After
+    @Override
+    public void tearDown() throws IOException {
+        UnitTestFileUtils.cleanupDirectoryRecursively(inputDir);
     }
 
     @Theory
@@ -109,7 +118,14 @@ public class WhatCommandIT extends UnitTest {
         perms.add(PosixFilePermission.OWNER_WRITE);
         Files.setPosixFilePermissions(inputDir, perms);
         arguments.add(inputDir.toAbsolutePath().toString());
-        command = WhatCommand.parse(WhatCommand.class, arguments);
+
+        try {
+            command = WhatCommand.parse(WhatCommand.class, arguments);
+        } finally {
+            // Reset perms for cleanup
+            perms.add(PosixFilePermission.OWNER_READ);
+            Files.setPosixFilePermissions(inputDir, perms);
+        }
 
         // test
         command.run(new JCommander());

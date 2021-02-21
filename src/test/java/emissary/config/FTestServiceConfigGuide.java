@@ -22,6 +22,8 @@ public class FTestServiceConfigGuide extends FunctionalTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FTestServiceConfigGuide.class);
 
+    protected String resource;
+
     public FTestServiceConfigGuide(String resource) throws IOException {
         super(resource);
         this.resource = resource;
@@ -49,8 +51,6 @@ public class FTestServiceConfigGuide extends FunctionalTest {
 
         return fileNames;
     }
-
-    protected String resource;
 
     /**
      * Validates all config files in the "config" directory or down the src tree parse properly.
