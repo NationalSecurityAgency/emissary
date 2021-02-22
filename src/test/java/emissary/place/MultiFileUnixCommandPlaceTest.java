@@ -14,12 +14,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
+import emissary.util.io.UnitTestFileUtils;
 import emissary.util.shell.Executrix;
 import org.junit.After;
 import org.junit.Before;
@@ -31,6 +33,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;
     private static Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
     private static String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
+    private static Path workDir;
     private File scriptFile = new File(tmpdir, "testMultiFileUnixCommand.sh");
     private static String W = "Президент Буш";
     private IBaseDataObject payload;
@@ -39,7 +42,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
     @Override
     @Before
     public void setUp() throws Exception {
-
+        workDir = Files.createTempDirectory(null);
 
         // We do this to make sure the place
         // reads our default config for it
@@ -49,6 +52,8 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
         try {
             is = rr.getConfigDataAsStream(this.getClass());
             place = new MultiFileUnixCommandPlace(is);
+            place.executrix.setTmpDir(workDir.toAbsolutePath().toString());
+            place.executrix.setTmpDirFile(new File(workDir.toAbsolutePath().toString()));
         } catch (Exception ex) {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
         } finally {
@@ -65,7 +70,6 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
 
         payload.putParameter("COPY_THIS", "copy value");
         payload.putParameter("IGNORE_THIS", "ignore value");
-
     }
 
     @Override
@@ -77,6 +81,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
         if (scriptFile.exists()) {
             scriptFile.delete();
         }
+        UnitTestFileUtils.cleanupDirectoryRecursively(workDir);
         validateMockitoUsage();
     }
 
