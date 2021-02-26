@@ -903,6 +903,10 @@ following articles:
 
 ## Docker
 
+Docker needs to be installed locally to build images. If developing on Linux, the maven plugin for Docker cannot be run 
+with ```sudo```. Please see the linux-postinstall page in the Docker documentation for instructions to manage Docker as 
+a non-root user. 
+
 ### Build Emissary Docker Image
 Maven can be used to create the docker image. There is a profile that was created to run the docker image build that, by default,
 has been turned off. We'll need to add the docker profile, along with the dist profile, to trigger an assembly. From the
@@ -961,7 +965,7 @@ give the container a hostname and pass that onto Emissary from the command line.
 docker run -it --rm --name emissary --hostname emissary-001 -p 8001:8001 emissary server -a 2 -p 8001 -s http -h emissary-001
 ```
 
-Then from a browser, go to http://localhost:8001/ to see the endpoints.
+Then from a browser, assuming container is running locally, go to http://localhost:8001/ to see the endpoints.
 
 ### Cluster Mode using Docker Compose
 We can use a Docker compose file to simulate cluster mode. We'll start a feeder and two workers by default. To start the cluster, run the 
