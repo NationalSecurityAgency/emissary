@@ -20,7 +20,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,12 +188,103 @@ public class JournalReader implements Closeable {
 
     public static Collection<Path> getJournalPaths(Path dir) throws IOException {
         ArrayList<Path> paths = new ArrayList<>();
+        logger.trace("Looking for journal files in {}", dir);
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + EXT)) {
             for (Path path : stream) {
+                logger.trace("Found journal file {}", path);
                 paths.add(path);
             }
         }
         return paths;
+    }
+
+    /**
+     * Search for {@link Journal} files in a directory
+     *
+     * @param dir the directory to search
+     * @return collection of Journal files
+     * @throws IOException if an error occurs
+     */
+    public static Collection<Journal> getJournals(Path dir) throws IOException {
+        return convert(getJournalPaths(dir));
+    }
+
+    /**
+     * Walk a file tree and search for {@link Journal} files
+     *
+     * @param dir the starting directory to search
+     * @param depth the maximum number of directory levels to search
+     * @return collection of {@link Journal} files
+     * @throws IOException if an error occurs
+     */
+    public static Collection<Journal> getJournals(Path dir, int depth) throws IOException {
+        logger.trace("Looking for journal files in {}, depth {}", dir, depth);
+        try (Stream<Path> walk = Files.find(dir, depth, ((path, attrs) -> path.toString().endsWith(EXT)))) {
+            return convert(walk);
+        }
+    }
+
+    /**
+     * Get {@link Journal} files from a list of {@link Path}s
+     *
+     * @param journals the {@link Journal} paths
+     * @return collection of {@link Journal} files
+     * @throws IOException if an error occurs
+     */
+    public static Collection<Journal> getJournals(Collection<Path> journals) throws IOException {
+        return convert(journals);
+    }
+
+    /**
+     * Given a collection of {@link Path}s, create a set of {@link Journal}s grouped using the {@link Journal#getKey()}
+     *
+     * @param journals the {@link Journal} paths
+     * @return collection of {@link Journal} files
+     * @throws IOException if an error occurs
+     */
+    public static Map<String, List<Journal>> getJournalsGroupedByKey(Collection<Path> journals) throws IOException {
+        return convert(journals).stream()
+                .collect(Collectors.groupingBy(Journal::getKey));
+    }
+
+    /**
+     * Convert a collection of paths into a collection of journals
+     *
+     * @param journals collection of {@link Journal} paths
+     * @return collection of {@link Journal}s
+     */
+    protected static Collection<Journal> convert(Collection<Path> journals) {
+        return convert(journals.stream());
+    }
+
+    /**
+     * Convert a collection of paths into a collection of journals
+     *
+     * @param stream of {@link Journal} paths
+     * @return collection of {@link Journal}s
+     */
+    protected static Collection<Journal> convert(Stream<Path> stream) {
+        return stream
+                .map(JournalReader::getJournal)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Read a {@link Journal} from a specified {@link Path} u sing a {@link JournalReader}.
+     *
+     * @param path the path of the {@link Journal} file
+     * @return the loaded Journal
+     */
+    public static Journal getJournal(Path path) {
+        logger.trace("Reading journal file {}", path);
+        try (JournalReader jr = new JournalReader(path)) {
+            logger.trace("Loaded journal file {}", path);
+            return jr.getJournal();
+        } catch (IOException ex) {
+            logger.error("Unable to load Journal {}", path.toString(), ex);
+        }
+        return null;
     }
 
     /**
