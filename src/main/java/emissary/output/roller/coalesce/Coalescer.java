@@ -28,11 +28,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Rollable implemenation that uses a journal to record offsets of completed writes to a pool of outputs. The
+ * Reads journal files that have recorded offsets of completed writes to a set of part files. The
  * Journal serves as a write ahead log and records positions of all open file handles until rolled.
  * <p>
- * During a roll, all Journals are identified and their outputs are combined into a destination filename denoted by the
- * FileNameGenerator.
+ * All Journals are identified and their outputs are combined into a destination filename denoted by the
+ * Journal key.
  *
  */
 public class Coalescer implements ICoalescer {
