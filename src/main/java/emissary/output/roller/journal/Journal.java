@@ -23,6 +23,7 @@ public final class Journal {
     // eight bytes and a null separator
     static final int NINE = 9;
     public static final String EXT = ".bgjournal";
+    public static final String ERROR_EXT = ".bgerror";
     static final String DELEXT = ".deletemarker";
     // Fields package protected for testing
     // not final to release on close

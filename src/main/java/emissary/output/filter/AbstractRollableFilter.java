@@ -4,7 +4,6 @@ import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
 import emissary.util.io.FileNameGenerator;
+import emissary.util.io.LocalOutputUtil;
 import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
@@ -101,15 +101,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
      * Create the local output directories
      */
     protected void setupLocalOutputDir() {
-        if (!Files.exists(this.outputPath)) {
-            logger.info("Attempting to create {} output directory, {}", getFilterName(), this.outputPath);
-            try {
-                Files.createDirectories(this.outputPath);
-            } catch (IOException e) {
-                logger.error("Unable to create directory for () output, exiting immediately. ", getFilterName(), e);
-                System.exit(1);
-            }
-        }
+        LocalOutputUtil.setup(this.outputPath, true);
     }
 
     /**
