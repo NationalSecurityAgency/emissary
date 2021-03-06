@@ -3,12 +3,6 @@ package emissary.server.api;
 import static emissary.server.api.ApiUtils.lookupPeers;
 import static emissary.server.api.ApiUtils.stripPeerString;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 import emissary.core.EmissaryException;
@@ -18,6 +12,11 @@ import emissary.directory.EmissaryNode;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.naming.directory.AttributeInUseException;
 
-import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
@@ -129,8 +128,6 @@ public class EmissaryServer {
             // TODO: rework this, no need for it be set with a context path but if this
             // is left out, it matches / and nothing works correctly
             emissaryHandler.setContextPath("/idontreallyservecontentnowdoi");
-            ContextHandler lbConfigHandler = buildLogbackConfigHandler();
-            lbConfigHandler.setContextPath("/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
             apiHandler.setContextPath("/api");
             ContextHandler mvcHandler = buildMVCHandler();
@@ -145,7 +142,6 @@ public class EmissaryServer {
 
             // secure some of the contexts
             final HandlerList securedHandlers = new HandlerList();
-            securedHandlers.addHandler(lbConfigHandler);
             securedHandlers.addHandler(apiHandler);
             securedHandlers.addHandler(mvcHandler);
             securedHandlers.addHandler(staticHandler);
@@ -595,14 +591,6 @@ public class EmissaryServer {
         return emissaryHolderContext;
     }
 
-    private ContextHandler buildLogbackConfigHandler() {
-        ServletHolder lbHolder = new ServletHolder("logback-config-holder", ViewStatusMessagesServlet.class);
-        ServletContextHandler lbHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        lbHolderContext.addServlet(lbHolder, "/*");
-
-        return lbHolderContext;
-    }
-
     @VisibleForTesting
     protected Server configureServer() throws IOException, GeneralSecurityException {
         int maxThreads = 250;
@@ -647,7 +635,7 @@ public class EmissaryServer {
         String trustStorePass = httpConnFactCfg.findStringEntry("javax.net.ssl.trustStorePassword", keystorePass);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
         // setup context to add to connector
-        SslContextFactory sslContextFactory = new SslContextFactory.Server();
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(keystore);
         sslContextFactory.setKeyStorePassword(keystorePass);
         KeyStore trustStoreInstance = KeyStore.getInstance("JKS");

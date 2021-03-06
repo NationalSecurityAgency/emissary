@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.config.ConfigUtil;
@@ -21,6 +18,8 @@ import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;

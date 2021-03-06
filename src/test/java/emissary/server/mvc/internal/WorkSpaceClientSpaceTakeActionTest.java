@@ -2,7 +2,7 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.CLIENT_NAME;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.SPACE_NAME;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -10,14 +10,13 @@ import static org.mockito.Mockito.spy;
 
 import java.util.Arrays;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
 import emissary.core.Namespace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

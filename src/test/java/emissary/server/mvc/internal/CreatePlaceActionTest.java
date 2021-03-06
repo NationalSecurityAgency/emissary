@@ -9,11 +9,10 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;

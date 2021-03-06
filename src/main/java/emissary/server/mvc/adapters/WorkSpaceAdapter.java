@@ -8,8 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.core.Namespace;
@@ -18,6 +16,7 @@ import emissary.directory.KeyManipulator;
 import emissary.pickup.IPickUpSpace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;

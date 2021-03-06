@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.core.MediaType;
-
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;

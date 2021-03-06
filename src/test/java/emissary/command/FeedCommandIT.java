@@ -1,7 +1,7 @@
 package emissary.command;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,6 @@ import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
 import org.hamcrest.core.StringEndsWith;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +25,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)

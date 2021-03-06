@@ -9,11 +9,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.MediaType;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.test.core.UnitTest;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

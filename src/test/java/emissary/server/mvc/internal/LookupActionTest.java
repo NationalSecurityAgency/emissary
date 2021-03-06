@@ -2,10 +2,9 @@ package emissary.server.mvc.internal;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.ws.rs.core.Response;
-
 import emissary.core.Namespace;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.core.Response;
 import org.junit.Test;
 
 public class LookupActionTest extends EndpointTestBase {

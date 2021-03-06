@@ -529,6 +529,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
+    @Ignore
     public void testMasterClassNamesWarnsOnFlavor() throws IOException, EmissaryException {
         // final String contents = "DevNullPlace = \"emissary.place.sample.DevNullPlace\"\n";
         // createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames.cfg", contents);

@@ -4,9 +4,8 @@ import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-import javax.ws.rs.core.Response;
-
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.core.Response;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;

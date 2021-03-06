@@ -33,41 +33,43 @@
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-exec.version>1.3</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
-    <dep.commons-io.version>2.4</dep.commons-io.version>
+    <dep.commons-io.version>2.8.0</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
     <dep.commons-logging.version>1.2</dep.commons-logging.version>
     <dep.commons-pool.version>1.6</dep.commons-pool.version>
     <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
-    <dep.guava.version>30.0-jre</dep.guava.version>
+    <dep.guava.version>30.1.1-jre</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
-    <dep.httpclient.version>4.5.1</dep.httpclient.version>
-    <dep.httpcore.version>4.4.3</dep.httpcore.version>
-    <dep.jackson.version>2.12.1</dep.jackson.version>
+    <dep.httpclient.version>4.5.13</dep.httpclient.version>
+    <dep.httpcore.version>4.4.14</dep.httpcore.version>
+    <dep.jackson.version>2.12.2</dep.jackson.version>
     <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
+    <dep.jaxb.runtime.version>3.0.0</dep.jaxb.runtime.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.32</dep.jersey.version>
-    <dep.jetty.version>9.4.37.v20210219</dep.jetty.version>
-    <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
-    <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
-    <dep.logback.version>1.2.3</dep.logback.version>
-    <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
-    <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
+    <dep.jersey.version>3.0.1</dep.jersey.version>
+    <dep.jetty.version>11.0.1</dep.jetty.version>
+    <dep.junit-jupiter.version>5.8.0-M1</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.8.0-M1</dep.junit-platform.version>
+    <dep.logback.version>1.3.0-alpha5</dep.logback.version>
+    <dep.maven-surefire-plugin.version>3.0.0-M5</dep.maven-surefire-plugin.version>
+    <dep.mockito-all.version>3.8.0</dep.mockito-all.version>
     <dep.oro.version>2.0.8</dep.oro.version>
-    <dep.rhino.version>1.7R4</dep.rhino.version>
-    <dep.slf4j.version>1.7.29</dep.slf4j.version>
+    <dep.rhino.version>1.7.13</dep.rhino.version>
+    <dep.slf4j.version>2.0.0-alpha1</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.7</dep.spullara.mustache.compiler.version>
-    <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
-    <dep.tika.version>1.22</dep.tika.version>
+    <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
+    <dep.tika.version>1.24</dep.tika.version>
     <dep.webjars.bootstrap.version>4.5.3</dep.webjars.bootstrap.version>
-    <dep.webjars.jquery.version>3.5.1</dep.webjars.jquery.version>
-    <dep.webjars.popper.version>2.5.2</dep.webjars.popper.version>
+    <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
+    <dep.webjars.popper.version>2.5.4</dep.webjars.popper.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
+    <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -124,6 +126,11 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${dep.guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>jakarta.activation</artifactId>
+        <version>2.0.0</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
@@ -184,6 +191,16 @@
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-servlets</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>5.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${dep.jaxb.runtime.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -275,6 +292,11 @@
         <version>${dep.jetty.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${dep.jaxb.runtime.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>
         <artifactId>jersey-container-jetty-http</artifactId>
         <version>${dep.jersey.version}</version>
@@ -298,12 +320,6 @@
         <groupId>org.glassfish.jersey.ext</groupId>
         <artifactId>jersey-mvc</artifactId>
         <version>${dep.jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.ext</groupId>
@@ -311,13 +327,8 @@
         <version>${dep.jersey.version}</version>
         <exclusions>
           <exclusion>
-            <!-- need to exclude servlet-api 2.4 from this -->
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -415,15 +426,9 @@
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-        <artifactId>jersey-test-framework-provider-jetty</artifactId>
+        <artifactId>jersey-test-framework-provider-simple</artifactId>
         <version>${dep.jersey.version}</version>
         <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -433,7 +438,7 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
+        <artifactId>mockito-core</artifactId>
         <version>${dep.mockito-all.version}</version>
         <scope>test</scope>
       </dependency>
@@ -511,6 +516,10 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.spy</groupId>
       <artifactId>spymemcached</artifactId>
     </dependency>
@@ -561,6 +570,10 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
@@ -636,17 +649,23 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
-      <artifactId>jersey-test-framework-provider-jetty</artifactId>
+      <artifactId>jersey-test-framework-provider-simple</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-junit</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -713,12 +732,12 @@
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
+          <version>2.12.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
+          <version>3.0.0-M3</version>
           <executions>
             <execution>
               <id>check-maven-version</id>
@@ -731,7 +750,7 @@
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>[1.8,)</version>
+                    <version>[11,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence />
                 </rules>
@@ -742,7 +761,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.2.0</version>
           <configuration>
             <delimiters>
               <delimiter>${*}</delimiter>
@@ -755,7 +774,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.2.1</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -779,7 +798,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.8.2</version>
+          <version>3.9.1</version>
           <configuration>
             <attach>true</attach>
             <relativizeDecorationLinks>false</relativizeDecorationLinks>
@@ -804,7 +823,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>8.36.2</version>
+              <version>8.41</version>
             </dependency>
           </dependencies>
           <executions>
@@ -819,7 +838,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.2.0</version>
           <configuration>
             <quiet>true</quiet>
             <footer>Generated ${maven.build.timestamp}</footer>
@@ -838,7 +857,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
+          <version>3.0.0-M1</version>
           <configuration>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <pushChanges>true</pushChanges>
@@ -850,17 +869,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>3.1.2</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>2.7</version>
+          <version>2.8.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -871,6 +890,7 @@
             <compilerArgs>
               <arg>-Xlint:-path,unchecked</arg>
             </compilerArgs>
+            <release>${maven.compiler.release}</release>
           </configuration>
         </plugin>
         <plugin>
@@ -884,12 +904,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
+          <version>2.13.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
@@ -916,7 +936,7 @@
         <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.3.2</version>
+          <version>1.4.1</version>
           <configuration>
             <groups>java.,javax.,*</groups>
             <removeUnused>true</removeUnused>
@@ -933,7 +953,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
+          <version>0.8.6</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>
@@ -977,7 +997,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.12.0</version>
+          <version>3.13.0</version>
           <configuration>
             <excludes />
             <failOnViolation>false</failOnViolation>
@@ -997,7 +1017,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>3.1.1</version>
           <configuration>
             <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
             <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
@@ -1391,7 +1411,7 @@
            NOTE this requires the use of a Java 8 compiler.  For
            example:
 
-               $ JAVA_HOME=/path/to/jdk1.8.0 mvn -PerrorProne clean test-compile
+               $ JAVA_HOME=/path/to/jdk_11 mvn -PerrorProne clean test-compile
 
            will analyze the main and test code, with the analyzer's
            report given as compiler error/warning/note messages. -->
@@ -1610,7 +1630,7 @@
         <jdk>[9,)</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
       </properties>
     </profile>
   </profiles>
