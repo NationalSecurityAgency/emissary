@@ -1,9 +1,8 @@
 package emissary.server.mvc;
 
-import javax.ws.rs.core.Application;
-
 import emissary.core.Namespace;
 import emissary.test.core.UnitTest;
+import jakarta.ws.rs.core.Application;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;

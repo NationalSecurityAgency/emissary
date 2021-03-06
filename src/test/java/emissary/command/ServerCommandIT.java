@@ -1,7 +1,7 @@
 package emissary.command;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.fail;
 
 import java.nio.file.Paths;

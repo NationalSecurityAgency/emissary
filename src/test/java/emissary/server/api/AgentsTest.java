@@ -7,8 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import javax.ws.rs.core.Response;
-
 import emissary.client.response.AgentsResponseEntity;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
@@ -16,6 +14,7 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.After;

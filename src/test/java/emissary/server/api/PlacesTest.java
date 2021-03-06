@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Response;
-
 import emissary.client.response.PlacesResponseEntity;
 import emissary.command.ServerCommand;
 import emissary.core.EmissaryException;
@@ -16,6 +14,7 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.After;
 import org.junit.Before;

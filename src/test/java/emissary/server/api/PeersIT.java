@@ -9,8 +9,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Response;
-
 import emissary.client.response.PeersResponseEntity;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
@@ -21,6 +19,7 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.core.Response;
 import org.hamcrest.collection.IsEmptyCollection;
 import org.hamcrest.collection.IsIterableWithSize;
 import org.hamcrest.junit.ExpectedException;
