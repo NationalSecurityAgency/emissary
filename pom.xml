@@ -1598,10 +1598,6 @@
             <artifactId>dockerfile-maven-plugin</artifactId>
             <configuration>
               <repository>emissary</repository>
-              <buildArgs>
-                <PROJ_VERS>${project.version}</PROJ_VERS>
-                <IMG_NAME>emissary</IMG_NAME>
-              </buildArgs>
             </configuration>
           </plugin>
         </plugins>
