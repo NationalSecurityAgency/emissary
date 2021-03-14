@@ -62,6 +62,7 @@
     <dep.tika.version>1.22</dep.tika.version>
     <dep.webjars.bootstrap.version>4.5.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.5.1</dep.webjars.jquery.version>
+    <dep.webjars.js.cookie.version>2.2.1</dep.webjars.js.cookie.version>
     <dep.webjars.popper.version>2.5.2</dep.webjars.popper.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
@@ -410,6 +411,11 @@
       </dependency>
       <dependency>
         <groupId>org.webjars</groupId>
+        <artifactId>js-cookie</artifactId>
+        <version>${dep.webjars.js.cookie.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars</groupId>
         <artifactId>popper.js</artifactId>
         <version>${dep.webjars.popper.version}</version>
       </dependency>
@@ -633,6 +639,11 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <version>5.4.5</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
@@ -1199,6 +1210,16 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
                   <includes>**/jquery.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars</groupId>
+                  <artifactId>js-cookie</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
+                  <includes>**/js.cookie.min.*</includes>
                   <fileMappers>
                     <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
                   </fileMappers>

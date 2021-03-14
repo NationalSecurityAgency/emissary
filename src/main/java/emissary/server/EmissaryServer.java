@@ -14,11 +14,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.naming.directory.AttributeInUseException;
+import javax.servlet.DispatcherType;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
@@ -57,6 +59,7 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
@@ -68,6 +71,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 public class EmissaryServer {
 
@@ -549,6 +554,11 @@ public class EmissaryServer {
 
         ServletContextHandler mvcHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         mvcHolderContext.addServlet(mvcHolder, "/*");
+
+        if (this.cmd.isCsrf()) {
+            FilterHolder fHolder = new FilterHolder(new CsrfFilter(CookieCsrfTokenRepository.withHttpOnlyFalse()));
+            mvcHolderContext.addFilter(fHolder, "/*", EnumSet.of(DispatcherType.REQUEST));
+        }
 
         return mvcHolderContext;
     }

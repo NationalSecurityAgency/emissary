@@ -116,7 +116,8 @@ public class ServerCommand extends ServiceCommand {
 
     protected void setServerState(String state) {
         LOG.debug("Setting state to {} for EmissaryServer", state);
-        EmissaryResponse response = performAction("/emissary/" + state + PauseAction.ACTION);
+        String action = "/emissary/" + state + PauseAction.ACTION;
+        EmissaryResponse response = performPost(action, getCsrfToken(performGet(action)));
         if (response.getStatus() != 200) {
             LOG.error("Setting Emissary server state to {} failed -- {}", state, response.getContentString());
         } else {

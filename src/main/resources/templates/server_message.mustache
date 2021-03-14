@@ -3,20 +3,42 @@
   <head>
     <title>Server Message</title>
     <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
-      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
+    <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
   <header></header>
   <main class="container">
       <div id="czar">
-          <p class="triangle-right left">{{message}}</p>
+          <p class="triangle-right left" id="czar-message">{{message}}</p>
       </div>
   </main>
 
-    <script src="/js/lib/jquery.min.js"></script>
-    <script src="/js/lib/popper.min.js"></script>
-    <script src="/js/lib/bootstrap.min.js"></script>
-    <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
+  <script src="/js/lib/jquery.min.js"></script>
+  <script src="/js/lib/popper.min.js"></script>
+  <script src="/js/lib/bootstrap.min.js"></script>
+  <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
+  <script src="/js/lib/js.cookie.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!(/^(GET|HEAD|OPTIONS)$/.test(settings.type)) && !this.crossDomain) {
+                    xhr.setRequestHeader('X-XSRF-TOKEN', Cookies.get('XSRF-TOKEN'));
+                }
+            }
+        });
+
+        $.post(window.location)
+            .done(function(data){
+                $("#czar-message").append(data);
+            })
+            .fail(function(){
+                $("#czar-message").append("request failed!");
+            });
+    });
+  </script>
+
   </body>
 </html>

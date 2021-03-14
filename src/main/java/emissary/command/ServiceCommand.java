@@ -1,12 +1,20 @@
 package emissary.command;
 
+import java.net.HttpCookie;
+import java.util.List;
+
+import javax.ws.rs.core.HttpHeaders;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.directory.EmissaryNode;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +29,9 @@ public abstract class ServiceCommand extends HttpCommand {
     public static String SERVICE_HEALTH_ENDPOINT = "/api/health";
     public static String SERVICE_SHUTDOWN_ENDPOINT = "/emissary/Shutdown.action";
 
+    @Parameter(names = {"--csrf"}, description = "disable csrf protection", arity = 1)
+    private boolean csrf = true;
+
     @Parameter(names = {"--stop"}, description = "Shutdown the service")
     private boolean stop = false;
 
@@ -29,6 +40,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     @Parameter(names = {"--unpause"}, description = "Allow a paused service to take work")
     private boolean unpause = false;
+
+    public boolean isCsrf() {
+        return csrf;
+    }
 
     public boolean isStop() {
         return stop;
@@ -76,7 +91,7 @@ public abstract class ServiceCommand extends HttpCommand {
 
         // let's check to see if the server is already running
         LOG.debug("Checking to see if Emissary {} is running at {}", getServiceName(), getServiceHealthEndpoint());
-        EmissaryResponse response = performAction(getServiceHealthEndpoint());
+        EmissaryResponse response = performGet(getServiceHealthEndpoint());
         boolean isRunning = response.getStatus() == 200;
         if (isStop()) {
             if (isRunning) {
@@ -106,7 +121,7 @@ public abstract class ServiceCommand extends HttpCommand {
      */
     protected void stopService() {
         LOG.info("Stopping Emissary {} at {}", getServiceName(), getServiceShutdownEndpoint());
-        EmissaryResponse response = performAction(getServiceShutdownEndpoint());
+        EmissaryResponse response = performPost(getServiceShutdownEndpoint(), getCsrfToken(performGet(getServiceShutdownEndpoint())));
         if (response.getStatus() != 200) {
             LOG.error("Problem shutting down {} -- {}", getServiceName(), response.getContentString());
         } else {
@@ -117,13 +132,21 @@ public abstract class ServiceCommand extends HttpCommand {
     /**
      * Send a get request using the {@link EmissaryClient}
      *
-     * @param actionEndpoint the endpoint i.e. /api/health
+     * @param request the http request i.e. /api/health
      * @return the response object
      */
-    protected EmissaryResponse performAction(String actionEndpoint) {
-        EmissaryClient client = new EmissaryClient();
-        String endpoint = getEndpoint(actionEndpoint);
-        return client.send(new HttpGet(endpoint));
+    protected EmissaryResponse performAction(HttpRequestBase request) {
+        return new EmissaryClient().send(request);
+    }
+
+    protected EmissaryResponse performGet(String actionEndpoint) {
+        return performAction(new HttpGet(getEndpoint(actionEndpoint)));
+    }
+
+    protected EmissaryResponse performPost(String actionEndpoint, String csrfToken) {
+        HttpPost post = new HttpPost(getEndpoint(actionEndpoint));
+        post.addHeader("X-XSRF-TOKEN", csrfToken);
+        return performAction(post);
     }
 
     /**
@@ -150,4 +173,18 @@ public abstract class ServiceCommand extends HttpCommand {
         return getScheme() + "://" + getHost() + ":" + getPort() + endpoint;
     }
 
+    protected String getCsrfToken(EmissaryResponse response) {
+        String csrfToken = "";
+        for (Header header : response.getHeaders()) {
+            if (HttpHeaders.SET_COOKIE.equals(header.getName())) {
+                List<HttpCookie> cookies = HttpCookie.parse(header.toString());
+                for (HttpCookie cookie : cookies) {
+                    if ("XSRF-TOKEN".equals(cookie.getName())) {
+                        csrfToken = cookie.getValue();
+                    }
+                }
+            }
+        }
+        return csrfToken;
+    }
 }
