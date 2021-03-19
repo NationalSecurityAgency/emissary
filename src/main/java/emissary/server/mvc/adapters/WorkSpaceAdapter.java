@@ -91,7 +91,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
     public EmissaryResponse outboundEnque(final String place, final WorkBundle path) {
 
         final String placeUrl = KeyManipulator.getServiceHostURL(place);
-        final HttpPost method = new HttpPost(placeUrl + CONTEXT + "/WorkSpaceClientEnqueue.action");
+        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientEnqueue.action");
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
 
@@ -127,7 +127,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
     public EmissaryResponse outboundOpenWorkSpace(final String place, final String space) {
 
         final String placeUrl = KeyManipulator.getServiceHostURL(place);
-        final HttpPost method = new HttpPost(placeUrl + CONTEXT + "/WorkSpaceClientOpenWorkSpace.action");
+        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientOpenWorkSpace.action");
 
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
@@ -167,7 +167,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
     public WorkBundle outboundWorkSpaceTake(final String space, final String place) {
 
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
-        final HttpPost method = new HttpPost(placeUrl + CONTEXT + "/WorkSpaceClientSpaceTake.action");
+        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientSpaceTake.action");
 
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
@@ -218,7 +218,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
      */
     public boolean outboundBundleCompletion(final String space, final String place, final String bundleId, final boolean itWorked) {
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
-        final HttpPost method = new HttpPost(placeUrl + CONTEXT + "/WorkBundleCompleted.action");
+        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkBundleCompleted.action");
 
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));

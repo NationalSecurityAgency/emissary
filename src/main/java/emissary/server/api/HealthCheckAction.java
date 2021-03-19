@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 public class HealthCheckAction {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static final String HEALTH = "health";
+
     @GET
-    @Path("/health")
+    @Path("/" + HEALTH)
     @Produces(MediaType.APPLICATION_JSON)
     public Response clusterAgents() {
         try {

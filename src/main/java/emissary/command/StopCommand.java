@@ -1,10 +1,10 @@
 package emissary.command;
 
+import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameters;
-import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +27,10 @@ public class StopCommand extends HttpCommand {
         return DEFAULT_PORT;
     }
 
+    public String getShutdownEndpoint() {
+        return SERVICE_SHUTDOWN_ENDPOINT;
+    }
+
     private static final Logger LOG = LoggerFactory.getLogger(StopCommand.class);
 
 
@@ -34,9 +38,7 @@ public class StopCommand extends HttpCommand {
     public void run(JCommander jc) {
         setup();
         LOG.info("Stopping Emissary Server at {}://{}:{}", getScheme(), getHost(), getPort());
-        EmissaryClient client = new EmissaryClient();
-        String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/emissary/Shutdown.action";
-        EmissaryResponse response = client.send(new HttpGet(endpoint));
+        EmissaryResponse response = performPost(getShutdownEndpoint());
         if (response.getStatus() != 200) {
             LOG.error("Problem shutting down");
             LOG.error(response.getContentString());

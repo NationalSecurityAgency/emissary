@@ -144,7 +144,7 @@ public class MoveToAdapter extends EmissaryClient {
         }
         url += CONTEXT + "/MoveTo.action";
 
-        final HttpPost method = new HttpPost(url);
+        final HttpPost method = createHttpPost(url, CONTEXT, "/MoveTo.action");
         method.setHeader("Content-type", "application/x-www-form-urlencoded; charset=ISO-8859-1");
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 

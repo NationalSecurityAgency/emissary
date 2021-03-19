@@ -1,12 +1,13 @@
 package emissary.command;
 
+import static emissary.server.api.HealthCheckAction.HEALTH;
+import static emissary.server.api.Shutdown.SHUTDOWN;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.directory.EmissaryNode;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +19,11 @@ public abstract class ServiceCommand extends HttpCommand {
     static final Logger LOG = LoggerFactory.getLogger(ServiceCommand.class);
 
     public static String COMMAND_NAME = "ServiceCommand";
-    public static String SERVICE_HEALTH_ENDPOINT = "/api/health";
-    public static String SERVICE_SHUTDOWN_ENDPOINT = "/emissary/Shutdown.action";
+    public static String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
+    public static String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
+
+    @Parameter(names = {"--csrf"}, description = "disable csrf protection", arity = 1)
+    private boolean csrf = true;
 
     @Parameter(names = {"--stop"}, description = "Shutdown the service")
     private boolean stop = false;
@@ -29,6 +33,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     @Parameter(names = {"--unpause"}, description = "Allow a paused service to take work")
     private boolean unpause = false;
+
+    public boolean isCsrf() {
+        return csrf;
+    }
 
     public boolean isStop() {
         return stop;
@@ -76,7 +84,7 @@ public abstract class ServiceCommand extends HttpCommand {
 
         // let's check to see if the server is already running
         LOG.debug("Checking to see if Emissary {} is running at {}", getServiceName(), getServiceHealthEndpoint());
-        EmissaryResponse response = performAction(getServiceHealthEndpoint());
+        EmissaryResponse response = performGet(getServiceHealthEndpoint());
         boolean isRunning = response.getStatus() == 200;
         if (isStop()) {
             if (isRunning) {
@@ -106,24 +114,12 @@ public abstract class ServiceCommand extends HttpCommand {
      */
     protected void stopService() {
         LOG.info("Stopping Emissary {} at {}", getServiceName(), getServiceShutdownEndpoint());
-        EmissaryResponse response = performAction(getServiceShutdownEndpoint());
+        EmissaryResponse response = performPost(getServiceShutdownEndpoint());
         if (response.getStatus() != 200) {
             LOG.error("Problem shutting down {} -- {}", getServiceName(), response.getContentString());
         } else {
             LOG.info("Emissary {} stopped", getServiceName());
         }
-    }
-
-    /**
-     * Send a get request using the {@link EmissaryClient}
-     *
-     * @param actionEndpoint the endpoint i.e. /api/health
-     * @return the response object
-     */
-    protected EmissaryResponse performAction(String actionEndpoint) {
-        EmissaryClient client = new EmissaryClient();
-        String endpoint = getEndpoint(actionEndpoint);
-        return client.send(new HttpGet(endpoint));
     }
 
     /**
@@ -138,16 +134,6 @@ public abstract class ServiceCommand extends HttpCommand {
      */
     protected void unpauseService() {
         throw new UnsupportedOperationException("Unpause not implemented for " + getServiceName());
-    }
-
-    /**
-     * Build the full url to the Emissary endpoint
-     * 
-     * @param endpoint the endpoint i.e. /api/health
-     * @return the full url
-     */
-    protected String getEndpoint(String endpoint) {
-        return getScheme() + "://" + getHost() + ":" + getPort() + endpoint;
     }
 
 }

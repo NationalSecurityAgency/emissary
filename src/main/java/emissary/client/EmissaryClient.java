@@ -18,6 +18,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.cookie.Cookie;
@@ -30,6 +31,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.security.Password;
+import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ public class EmissaryClient {
     public static final int DEFAULT_RETRIES = 3;
     public static final String DEFAULT_USERNAME = "emissary";
     public static final String DEFAULT_PASSWORD = "password";
+    public static final String CSRF_HEADER_PARAM = CsrfProtectionFilter.HEADER_NAME;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmissaryClient.class);
 
@@ -213,4 +216,32 @@ public class EmissaryClient {
             LOGGER.warn("Tried to set timeout to {}", timeout);
         }
     }
+
+    protected String getCsrfToken() {
+        return DEFAULT_CONTEXT;
+    }
+
+    public HttpPost createHttpPost(String uri, String context, String endpoint) {
+        return createHttpPost(uri + context + endpoint, getCsrfToken());
+    }
+
+    public HttpPost createHttpPost(String uri) {
+        return createHttpPost(uri, getCsrfToken());
+    }
+
+    public HttpPost createHttpPost(String uri, String csrfToken) {
+        HttpPost method = new HttpPost(uri);
+        setCsrfHeader(method, csrfToken);
+        return method;
+    }
+
+    public HttpRequestBase setCsrfHeader(HttpRequestBase request, String csrfToken) {
+        return setCsrfHeader(request, CSRF_HEADER_PARAM, csrfToken);
+    }
+
+    public HttpRequestBase setCsrfHeader(HttpRequestBase request, String csrfParam, String csrfToken) {
+        request.addHeader(csrfParam, csrfToken);
+        return request;
+    }
+
 }

@@ -1,4 +1,12 @@
 $(document).ready(function () {
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!(/^(GET|HEAD|OPTIONS)$/.test(settings.type)) && !this.crossDomain) {
+                xhr.setRequestHeader('X-Requested-By', 'emissary');
+            }
+        }
+    });
+
     $.get('/api/nav', function( data ) {
         document.title = document.title + ' - ' + data.appName;
         $('header').prepend('<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark"></nav>');
@@ -28,3 +36,13 @@ $(document).ready(function () {
         }).parent().addClass('active');
     });
 });
+
+function doPost( url, messageHolderId) {
+    $.post(url)
+        .done(function(data){
+            $("#" + messageHolderId).append(data);
+        })
+        .fail(function(){
+            $("#" + messageHolderId).append("request failed!");
+        });
+}

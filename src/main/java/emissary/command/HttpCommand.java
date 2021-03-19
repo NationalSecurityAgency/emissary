@@ -7,8 +7,11 @@ import java.util.Set;
 import com.beust.jcommander.Parameter;
 import com.google.common.net.HostAndPort;
 import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
 import emissary.command.converter.FileExistsConverter;
 import emissary.directory.EmissaryNode;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +112,40 @@ public abstract class HttpCommand extends BaseCommand {
         System.setProperty(EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
     }
 
+
+    /**
+     * Send a get request using the {@link EmissaryClient}
+     *
+     * @param endpoint the endpoint i.e. /api/health
+     * @return the response object
+     */
+    protected EmissaryResponse performGet(String endpoint) {
+        return new EmissaryClient().send(new HttpGet(getEndpoint(endpoint)));
+    }
+
+    /**
+     * Send a get request using the {@link EmissaryClient}
+     *
+     * @param endpoint the endpoint i.e. /api/health
+     * @return the response object
+     */
+    protected EmissaryResponse performPost(String endpoint) {
+        EmissaryClient client = new EmissaryClient();
+        HttpPost post = client.createHttpPost(getEndpoint(endpoint));
+        return client.send(post);
+    }
+
     public HostAndPort getHostAndPort() {
         return HostAndPort.fromParts(getHost(), getPort());
     }
 
+    /**
+     * Build the full url to the Emissary endpoint
+     *
+     * @param endpoint the endpoint i.e. /api/health
+     * @return the full url
+     */
+    protected String getEndpoint(String endpoint) {
+        return getScheme() + "://" + getHostAndPort() + endpoint;
+    }
 }
