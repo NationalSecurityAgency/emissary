@@ -8,29 +8,14 @@
     <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
     <link rel="stylesheet" href="/css/emissary.css">
 
-    <style>
-      html { box-sizing: border-box; overflow: -moz-scrollbars-vertical; overflow-y: scroll; }
-      *, *:before, *:after { box-sizing: inherit; }
-      body { margin:0; background: #fafafa; }
-      .col { width: auto; }
-      .download-contents { width: auto; }
-    </style>
-
-    <title>Emissary</title>
+    <title>Agents Listing</title>
 </head>
 <body>
     <header></header>
 
-    <main>
-        <div class="container">
-            <h2>Agents</h2>
-            <table id="agents" class="table table-striped"></table>
-        </div>
-        <div class="container">
-            <div id="czar">
-                <p id="bubble" class="triangle-right left"></p>
-            </div>
-        </div>
+    <main class="container">
+        <h2>Agents</h2>
+        <table id="agents" class="table table-striped"></table>
     </main>
 
     <script src="/js/lib/jquery.min.js"></script>
@@ -38,55 +23,16 @@
     <script src="/js/lib/bootstrap.min.js"></script>
     <script src="/js/emissary_nav.js" type="text/javascript" language="javascript"></script>
     <script>
-        // Parse URL Queries
-        function url_query( query ) {
-            query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-            var expr = "[\\?&]"+query+"=([^&#]*)";
-            var regex = new RegExp( expr );
-            var results = regex.exec( window.location.href );
-            if ( results !== null ) {
-                return results[1];
-            } else {
-                return false;
-            }
-        }
-
-        function getCookie(cname) {
-            var name = cname + "=";
-            var decodedCookie = decodeURIComponent(document.cookie);
-            var ca = decodedCookie.split(';');
-            for(var i = 0; i <ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        }
-
         $(document).ready(function () {
-           var url_param = url_query('loc');
-
-            var czar_says = getCookie('czar');
-            if (czar_says !== "") {
-                $('#bubble').css('display','block');
-                $('#bubble').html(czar_says);
-                // expire that cookie, so page refreshes don't show same message
-                document.cookie="czar=;expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-            } else {
-                $.ajax({
-                    url: "/api/agents"
-                }).then(function(data) {
-                    var trHTML = '';
-                    $.each(data.local.agents, function (i, item) {
-                        trHTML += '<tr><td>' + item + '</td></tr>';
-                    });
-                    $('#agents').append(trHTML);
+            $.ajax({
+                url: "/api/agents"
+            }).then(function(data) {
+                var trHTML = '';
+                $.each(data.local.agents, function (i, item) {
+                    trHTML += '<tr><td>' + item + '</td></tr>';
                 });
-            }
+                $('#agents').append(trHTML);
+            });
         });
     </script>
 </body>

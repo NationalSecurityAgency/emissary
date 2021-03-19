@@ -2,9 +2,10 @@ package emissary.util;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import emissary.test.core.UnitTest;
 import org.junit.Test;
@@ -13,17 +14,22 @@ public class MagicNumberUtilTest extends UnitTest {
     @Test
     public void testMultipleFileLoads() throws IOException {
         MagicNumberUtil m = new MagicNumberUtil();
-        File f1 = File.createTempFile("magic", ".dat");
-        File f2 = File.createTempFile("magic", ".dat");
-        FileOutputStream o1 = new FileOutputStream(f1);
-        o1.write("0  string  pattern1  P1".getBytes());
-        o1.close();
-        FileOutputStream o2 = new FileOutputStream(f2);
-        o2.write("0  string  pattern2  P2".getBytes());
-        o2.close();
-        m.load(f1);
-        m.load(f2);
-        assertEquals("Rules from both files must load", 2, m.size());
+        Path f1 = Files.createTempFile("magic", ".dat");
+        Path f2 = Files.createTempFile("magic", ".dat");
+        try {
+            try (OutputStream o1 = Files.newOutputStream(f1)) {
+                o1.write("0  string  pattern1  P1".getBytes());
+            }
+            try (OutputStream o2 = Files.newOutputStream(f2)) {
+                o2.write("0  string  pattern2  P2".getBytes());
+            }
+            m.load(f1.toFile());
+            m.load(f2.toFile());
+            assertEquals("Rules from both files must load", 2, m.size());
+        } finally {
+            Files.deleteIfExists(f1);
+            Files.deleteIfExists(f2);
+        }
     }
 
     @Test

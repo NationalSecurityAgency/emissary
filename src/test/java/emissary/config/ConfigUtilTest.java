@@ -6,10 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,35 +28,30 @@ import org.junit.Test;
 
 public class ConfigUtilTest extends UnitTest {
 
-    private static boolean isWindows = System.getProperty("os.name").indexOf("Window") != -1;
+    private static boolean isWindows = System.getProperty("os.name").contains("Window");
 
-    private static List<File> testFilesAndDirectories;
+    private static List<Path> testFilesAndDirectories;
 
     private static String configDir;
-    private File CDIR;
+    private Path CDIR;
 
     @Override
     @Before
     public void setUp() throws Exception {
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
-        CDIR = new File(configDir);
+        CDIR = Paths.get(configDir);
     }
 
     @After
     public void cleanupFlavorSettings() throws Exception {
         super.tearDown();
-        for (File f : testFilesAndDirectories) {
-            if (f.exists()) {
-                logger.trace("Removing " + f.getAbsolutePath());
-                try {
-                    if (f.isDirectory()) {
-                        FileUtils.deleteDirectory(f);
-                    } else {
-                        f.delete();
-                    }
-                } catch (IOException ex) {
-                    logger.error("Problem deleting " + f.getAbsolutePath(), ex);
+        for (Path f : testFilesAndDirectories) {
+            if (Files.exists(f)) {
+                if (Files.isDirectory(f)) {
+                    FileUtils.deleteDirectory(f.toFile());
+                } else {
+                    Files.delete(f);
                 }
             }
         }
@@ -157,15 +154,15 @@ public class ConfigUtilTest extends UnitTest {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         emissary.config.ConfigUtil.initialize();
 
-        final File baseFile = new File(configDir + "/emissary.blubber.Whale.cfg");
-        FileOutputStream ros = new FileOutputStream(baseFile);
-        ros.write("FOO = \"BAR\"\n".getBytes());
-        ros.close();
+        final Path baseFile = Paths.get(configDir, "emissary.blubber.Whale.cfg");
+        try (OutputStream ros = Files.newOutputStream(baseFile)) {
+            ros.write("FOO = \"BAR\"\n".getBytes());
+        }
 
-        final File flavFile = new File(configDir + "/emissary.blubber.Whale-TESTFLAVOR.cfg");
-        ros = new FileOutputStream(flavFile);
-        ros.write("FOO = \"BAR2\"\n".getBytes());
-        ros.close();
+        final Path flavFile = Paths.get(configDir, "emissary.blubber.Whale-TESTFLAVOR.cfg");
+        try (OutputStream ros = Files.newOutputStream(flavFile)) {
+            ros.write("FOO = \"BAR2\"\n".getBytes());
+        }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Whale.cfg");
         assertNotNull("Configuration should have been found", c);
@@ -178,12 +175,8 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         // Clean up tmp files
-        if (baseFile.exists()) {
-            baseFile.delete();
-        }
-        if (flavFile.exists()) {
-            flavFile.delete();
-        }
+        Files.deleteIfExists(baseFile);
+        Files.deleteIfExists(flavFile);
     }
 
     @Test
@@ -192,15 +185,15 @@ public class ConfigUtilTest extends UnitTest {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         emissary.config.ConfigUtil.initialize();
 
-        final File baseFile = new File(configDir + "/emissary.blubber.Shark.cfg");
-        FileOutputStream ros = new FileOutputStream(baseFile);
-        ros.write("FOO = \"BAR\"\n".getBytes());
-        ros.close();
+        final Path baseFile = Paths.get(configDir, "emissary.blubber.Shark.cfg");
+        try (OutputStream ros = Files.newOutputStream(baseFile)) {
+            ros.write("FOO = \"BAR\"\n".getBytes());
+        }
 
-        final File flavFile = new File(configDir + "/emissary.blubber.Shark-TESTFLAVOR.cfg");
-        ros = new FileOutputStream(flavFile);
-        ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
-        ros.close();
+        final Path flavFile = Paths.get(configDir, "emissary.blubber.Shark-TESTFLAVOR.cfg");
+        try (OutputStream ros = Files.newOutputStream(flavFile)) {
+            ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
+        }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
         assertNotNull("Configuration should have been found", c);
@@ -214,12 +207,8 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         // Clean up tmp files
-        if (baseFile.exists()) {
-            baseFile.delete();
-        }
-        if (flavFile.exists()) {
-            flavFile.delete();
-        }
+        Files.deleteIfExists(baseFile);
+        Files.deleteIfExists(flavFile);
     }
 
     @Test
@@ -247,10 +236,10 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
-        final File configDir1 = createTmpSubDir("config1");
+        final Path configDir1 = createTmpSubDir("config1");
         final String cfgName1 = "emissary.chunky.Monkey.cfg";
         createFileAndPopulate(configDir1, cfgName1, "FOO = \"BAR\"\n");
-        final File configDir2 = createTmpSubDir("config2");
+        final Path configDir2 = createTmpSubDir("config2");
         final String cfgName2 = "emissary.chunky.Panda.cfg";
         createFileAndPopulate(configDir2, cfgName2, "BUZZ = \"BAH\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
@@ -275,10 +264,10 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testMissingMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
-        final File configDir1 = createTmpSubDir("config1A");
+        final Path configDir1 = createTmpSubDir("config1A");
         final String cfgName1 = "emissary.grapes.Monkey.cfg";
         createFileAndPopulate(configDir1, cfgName1, "BOO = \"HOO\"\n");
-        final File cfgName2 = new File(CDIR + "/configgone/emissary.grapes.Panda.cfg");
+        final Path cfgName2 = Paths.get(CDIR.toString(), "configgone", "emissary.grapes.Panda.cfg");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + cfgName2.getParent());
 
@@ -289,7 +278,7 @@ public class ConfigUtilTest extends UnitTest {
         assertEquals("Entry BOO is wrong", "HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"));
         try {
             // This doesn't exist
-            ConfigUtil.getConfigInfo(cfgName2.getName());
+            ConfigUtil.getConfigInfo(cfgName2.getFileName().toString());
             fail("Should have thrown IOException");
         } catch (IOException e) {
             // swallow, this is expected
@@ -304,9 +293,9 @@ public class ConfigUtilTest extends UnitTest {
     public void testGetConfigDirWithMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
         final String cfgName = "emissary.phish.Food.cfg";
-        final File configDir1 = createTmpSubDir("config1B");
+        final Path configDir1 = createTmpSubDir("config1B");
         createFileAndPopulate(configDir1, cfgName, "BLACK = \"WHITE\"\n");
-        final File configDir2 = createTmpSubDir("config2B");
+        final Path configDir2 = createTmpSubDir("config2B");
         createFileAndPopulate(configDir2, cfgName, "BLACK = \"RED\"\nGREEN = \"YELLOW\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
@@ -330,9 +319,9 @@ public class ConfigUtilTest extends UnitTest {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
 
-        final File configDir1 = createTmpSubDir("config1S");
+        final Path configDir1 = createTmpSubDir("config1S");
         createFileAndPopulate(configDir1, "emissary.blubber.Shark.cfg", "FOO = \"BAR\"\n");
-        final File configDir2 = createTmpSubDir("config2B");
+        final Path configDir2 = createTmpSubDir("config2B");
         createFileAndPopulate(configDir2, "emissary.blubber.Shark-TESTFLAVOR.cfg", "QUUZ = \"@{FOO}\"\nGREEN = \"YELLOW\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
@@ -354,10 +343,10 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGetConfigDirWithMultiple() throws EmissaryException {
-        final File configDir1 = createTmpSubDir("config1D");
-        final File configDir2 = createTmpSubDir("config2D");
-        final File configDir3 = createTmpSubDir("config3D");
+    public void testGetConfigDirWithMultiple() throws EmissaryException, IOException {
+        final Path configDir1 = createTmpSubDir("config1D");
+        final Path configDir2 = createTmpSubDir("config2D");
+        final Path configDir3 = createTmpSubDir("config3D");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString() + "," + configDir3.toString());
 
@@ -373,9 +362,9 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testInitializeWithMultipleConfigDirs() throws EmissaryException {
-        final File configDir1 = createTmpSubDir("config1D");
-        final File configDir2 = createTmpSubDir("config2D");
+    public void testInitializeWithMultipleConfigDirs() throws EmissaryException, IOException {
+        final Path configDir1 = createTmpSubDir("config1D");
+        final Path configDir2 = createTmpSubDir("config2D");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
 
@@ -451,14 +440,14 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testOneMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
-        final File cfgDir1 = createTmpSubDir("cfg1AB");
-        final File cfgDir2 = createTmpSubDir("cfg2AB");
+        final Path cfgDir1 = createTmpSubDir("cfg1AB");
+        final Path cfgDir2 = createTmpSubDir("cfg2AB");
         final String one = "DevNullPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-cfgDir1.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-cfgDir2.cfg", two);
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.getAbsolutePath() + "," + cfgDir2.getAbsolutePath());
+        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
 
         // run
         ConfigUtil.initialize();
@@ -478,14 +467,14 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testSameMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
-        final File cfgDir1 = createTmpSubDir("cfg1ABC");
-        final File cfgDir2 = createTmpSubDir("cfg2ABC");
+        final Path cfgDir1 = createTmpSubDir("cfg1ABC");
+        final Path cfgDir2 = createTmpSubDir("cfg2ABC");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-sames.cfg", one);
         final String two = "Dev2NullPlace         = \"emissary.place.second.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-sames.cfg", two);
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.getAbsolutePath() + "," + cfgDir2.getAbsolutePath());
+        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
         emissary.config.ConfigUtil.initialize();
 
         // run
@@ -506,9 +495,9 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testMultipleMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
-        final File cfgDir1 = createTmpSubDir("cfg1ABCD");
-        final File cfgDir2 = createTmpSubDir("cfg2ABCD");
-        final File cfgDir3 = createTmpSubDir("cfg3ABCD");
+        final Path cfgDir1 = createTmpSubDir("cfg1ABCD");
+        final Path cfgDir2 = createTmpSubDir("cfg2ABCD");
+        final Path cfgDir3 = createTmpSubDir("cfg3ABCD");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-sames.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.second.DevNullPlace\"\n";
@@ -520,7 +509,7 @@ public class ConfigUtilTest extends UnitTest {
         createFileAndPopulate(cfgDir3, "emissary.admin.MasterClassNames-three.cfg", five);
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.getAbsolutePath() + "," + cfgDir2.getAbsolutePath() + "," + cfgDir3.getAbsolutePath());
+        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath() + "," + cfgDir3.toAbsolutePath());
         emissary.config.ConfigUtil.initialize();
 
         // run
@@ -561,31 +550,32 @@ public class ConfigUtilTest extends UnitTest {
 
     @Test
     public void testGetFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(new File(CDIR + "emissary.admin.MasterClassNames-flavor1.cfg"));
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString() + "emissary.admin.MasterClassNames-flavor1.cfg").toFile());
         assertEquals("Flavors didn't match", "flavor1", flavor);
     }
 
     @Test
     public void testGetMultipleFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(new File(CDIR + "emissary.junk.TrunkPlace-f1,f2,f3.cfg"));
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
         assertEquals("Flavors didn't match", "f1,f2,f3", flavor);
     }
 
     @Test
     public void testGetFlavorsNotACfgFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(new File(CDIR + "emissary.util.JunkPlace-f1.config"));
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.JunkPlace-f1.config").toFile());
         assertEquals("Should have been empty, not a cfg file", "", flavor);
     }
 
     @Test
     public void testGetNoFlavor() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(new File(CDIR + "emissary.util.PepperPlace.config"));
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.PepperPlace.config").toFile());
         assertEquals("Should have been empty, no flavor", "", flavor);
     }
 
     @Test
     public void testGetFlavorMultipleHyphens() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(new File(CDIR + "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg"));
+        final String flavor =
+                ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
         assertEquals("Should have been the last flavor", "flavor3", flavor);
 
     }
@@ -593,8 +583,8 @@ public class ConfigUtilTest extends UnitTest {
     @Test
     public void testDuplicateEntryInMasterClassNamesThrowsIOException() throws IOException, EmissaryException {
         // setup
-        final File cfgDir1 = createTmpSubDir("cfg1ABCDE");
-        final File cfgDir2 = createTmpSubDir("cfg2ABCDE");
+        final Path cfgDir1 = createTmpSubDir("cfg1ABCDE");
+        final Path cfgDir2 = createTmpSubDir("cfg2ABCDE");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
         createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.second.DevNullPlace\"\n";
@@ -602,7 +592,7 @@ public class ConfigUtilTest extends UnitTest {
         createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-hasdups.cfg", two + three);
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.getAbsolutePath() + "," + cfgDir2.getAbsolutePath());
+        System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
         emissary.config.ConfigUtil.initialize();
 
         // run
@@ -621,37 +611,24 @@ public class ConfigUtilTest extends UnitTest {
 
     }
 
-    private File createTmpSubDir(final String name) {
-
-        final File dir = new File(CDIR + "/" + name);
-        dir.mkdirs();
+    private Path createTmpSubDir(final String name) throws IOException {
+        final Path dir = Paths.get(CDIR.toString(), name);
+        Files.createDirectory(dir);
         testFilesAndDirectories.add(dir);
         return dir;
     }
 
-    private File createFileAndPopulate(final File dir, final String name, final String contents) {
-        final String filename = dir.getAbsolutePath() + "/" + name;
-        final File file = new File(filename);
+    private Path createFileAndPopulate(final Path dir, final String name, final String contents) {
+        final Path file = Paths.get(dir.toString(), name);
         testFilesAndDirectories.add(file);
-        FileOutputStream ros = null;
-        try {
-            ros = new FileOutputStream(file);
+        try (OutputStream ros = Files.newOutputStream(file)) {
             ros.write(contents.getBytes());
         } catch (FileNotFoundException ex) {
-            logger.error("Problem making " + filename, ex);
+            logger.error("Problem making {}", file, ex);
             throw new RuntimeException(ex);
         } catch (IOException ex) {
-            logger.error("Problem making " + filename, ex);
+            logger.error("Problem making {}", file, ex);
             throw new RuntimeException(ex);
-        } finally {
-            if (ros != null) {
-                try {
-                    ros.close();
-                } catch (IOException ex) {
-                    logger.error("Problem closing " + ros.toString(), ex);
-                    throw new RuntimeException(ex);
-                }
-            }
         }
         return file;
     }

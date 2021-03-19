@@ -13,10 +13,12 @@ import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
@@ -34,7 +36,7 @@ public class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;
     private static Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
     private static String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
-    private File scriptFile = new File(tmpdir, "testUnixCommand.sh");
+    private Path scriptFile = Paths.get(tmpdir, "testUnixCommand.sh");
     private static String W = "Президент Буш";
     private IBaseDataObject payload;
     private String FORM = "TEST";
@@ -59,9 +61,7 @@ public class UnixCommandPlaceTest extends UnitTest {
         place.shutDown();
         place = null;
         payload = null;
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
+        Files.deleteIfExists(scriptFile);
         validateMockitoUsage();
     }
 
@@ -113,19 +113,24 @@ public class UnixCommandPlaceTest extends UnitTest {
 
         // fake an output file and load it with some data
         String DATA = new String("test-test");
-        File outputFile = new File(tmpdir, "output.out");
-        IOUtils.write(DATA, new FileOutputStream(outputFile));
+        Path outputFile = Paths.get(tmpdir, "output.out");
 
-        // null is returned in situations with a non-zero return code
-        assertNull(place.fileProcess(new String[] {"negative"}, outputFile.getAbsolutePath()));
-        assertNull(place.fileProcess(new String[] {"positive"}, outputFile.getAbsolutePath()));
+        try {
+            IOUtils.write(DATA, Files.newOutputStream(outputFile));
 
-        // a successful execution will return the bytes of the specified output file
-        assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.getAbsolutePath())));
+            // null is returned in situations with a non-zero return code
+            assertNull(place.fileProcess(new String[] {"negative"}, outputFile.toAbsolutePath().toString()));
+            assertNull(place.fileProcess(new String[] {"positive"}, outputFile.toAbsolutePath().toString()));
+
+            // a successful execution will return the bytes of the specified output file
+            assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString())));
+        } finally {
+            Files.deleteIfExists(outputFile);
+        }
     }
 
     @Test
-    public void testStdOutProcess() throws Exception {
+    public void testStdOutProcess() {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method
@@ -147,37 +152,35 @@ public class UnixCommandPlaceTest extends UnitTest {
             "DEBUG script debug message"};
 
     private void createLogScript() throws IOException {
-        FileOutputStream fos = startScript();
+        try (OutputStream fos = startScript()) {
 
-        // Add messages to the log file, name matched to serviceName from place key
-        for (String msg : LOG_MSGS) {
-            fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes());
+            // Add messages to the log file, name matched to serviceName from place key
+            for (String msg : LOG_MSGS) {
+                fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes());
+            }
+
+            // Make some output
+            fos.write("cat ${1} > ${2}\n".getBytes());
+            scriptFile.toFile().setExecutable(true); // jdk 1.6+ only
         }
-
-        // Make some output
-        fos.write("cat ${1} > ${2}\n".getBytes());
-        fos.close();
-        scriptFile.setExecutable(true); // jdk 1.6+ only
     }
 
-    private FileOutputStream startScript() throws IOException {
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
-        FileOutputStream fos = new FileOutputStream(scriptFile);
+    private OutputStream startScript() throws IOException {
+        Files.deleteIfExists(scriptFile);
+        OutputStream fos = Files.newOutputStream(scriptFile);
         fos.write("#!/bin/bash\n".getBytes());
         return fos;
     }
 
     private void createScript(Executrix.OUTPUT_TYPE ot) throws IOException {
-        FileOutputStream fos = startScript();
-        fos.write(("echo '" + W + "'").getBytes());
-        if (ot == Executrix.OUTPUT_TYPE.FILE) {
-            fos.write(" > ${2}".getBytes());
+        try (OutputStream fos = startScript()) {
+            fos.write(("echo '" + W + "'").getBytes());
+            if (ot == Executrix.OUTPUT_TYPE.FILE) {
+                fos.write(" > ${2}".getBytes());
+            }
+            fos.write('\n');
+            scriptFile.toFile().setExecutable(true); // jdk 1.6+ only
         }
-        fos.write('\n');
-        fos.close();
-        scriptFile.setExecutable(true); // jdk 1.6+ only
     }
 
 }

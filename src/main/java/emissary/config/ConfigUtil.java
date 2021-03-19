@@ -1,10 +1,7 @@
 package emissary.config;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,12 +14,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import emissary.client.EmissaryClient;
-import emissary.client.EmissaryResponse;
 import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +42,8 @@ public class ConfigUtil {
     public static final String JS_FILE_ENDING = ResourceReader.JS_SUFFIX;
 
     /**
-     * This property specifies the config override directory. When present, we look here first for config info The directory
-     * can be remoted using http to allow centralized configuration or it can be on a local (possibly shared) filesystem. If
-     * not present we try and load from the classpath as a resource The property is set with -D{@value}
+     * This property specifies the config override directory. When present, we look here first for config info. If not
+     * present, we try and load from the classpath as a resource. The property is set with -D{@value}
      */
     public static final String CONFIG_DIR_PROPERTY = "emissary.config.dir";
 
@@ -86,9 +78,6 @@ public class ConfigUtil {
 
     /** The directories where config stuff may be found, searched in order */
     private static List<String> configDirs = null;
-
-    /** True if the configDir is local */
-    private static boolean isLocal = true;
 
     /** The project root directory */
     private static String projectRoot = null;
@@ -187,17 +176,6 @@ public class ConfigUtil {
                 logger.warn("Directory configured but didn't exist: " + dirNoTrailingSlash);
             }
         }
-        if (configDirs.size() > 1) {
-            // only local configs are supported as a array
-            for (final String dir : configDirs) {
-                if (isRemotePath(dir)) {
-                    throw new RuntimeException("Only local config dirs are supported when there are multiple");
-                }
-            }
-            isLocal = true;
-        } else {
-            isLocal = !isRemotePath(configDirProperty);
-        }
     }
 
     /**
@@ -229,13 +207,6 @@ public class ConfigUtil {
     }
 
     /**
-     * Test path for remoteness
-     */
-    public static boolean isRemotePath(final String s) {
-        return (s != null && (s.toUpperCase().startsWith("HTTP://") || s.toUpperCase().startsWith("HTTPS://")));
-    }
-
-    /**
      * Get a List of config directories.
      */
     public static List<String> getConfigDirs() {
@@ -261,38 +232,30 @@ public class ConfigUtil {
      */
     public static String getConfigFile(final String file) {
 
-        if (isRemotePath(file)) {
-            return file;
-        }
-
         if ((!isWindows && file.startsWith("/")) || (isWindows && file.charAt(1) == ':')) {
             return file;
         }
 
-        if (isLocal) {
-            if (getConfigDirs().size() > 1) {
-                final List<String> candidates = new ArrayList<String>();
-                for (final String dir : getConfigDirs()) {
-                    final String fname = dir + "/" + file;
-                    if (Files.exists(Paths.get(fname))) {
-                        candidates.add(fname);
-                    }
+        if (getConfigDirs().size() > 1) {
+            final List<String> candidates = new ArrayList<>();
+            for (final String dir : getConfigDirs()) {
+                final String fname = dir + "/" + file;
+                if (Files.exists(Paths.get(fname))) {
+                    candidates.add(fname);
                 }
-                if (candidates.isEmpty()) {
-                    logger.debug("No file found in any of the configured directories: " + file);
-                    return getFirstConfigDir() + "/" + file;
-                } else if (candidates.size() > 1) {
-                    logger.error("Multiple files found in the configured directories: " + file + ", returning the first.");
-                }
-                logger.trace("Returning {}", candidates.get(0));
-                return candidates.get(0);
-            } else { // much more efficient to do this, no file check each time
-                final String cfgFile = getFirstConfigDir() + "/" + file;
-                logger.trace("Returning {}", cfgFile);
-                return cfgFile;
             }
-        } else {
-            return getFirstConfigDir() + "/" + EmissaryClient.CONTEXT + "/ConfigFile.action?ConfigItem=" + file;
+            if (candidates.isEmpty()) {
+                logger.debug("No file found in any of the configured directories: " + file);
+                return getFirstConfigDir() + "/" + file;
+            } else if (candidates.size() > 1) {
+                logger.error("Multiple files found in the configured directories: " + file + ", returning the first.");
+            }
+            logger.trace("Returning {}", candidates.get(0));
+            return candidates.get(0);
+        } else { // much more efficient to do this, no file check each time
+            final String cfgFile = getFirstConfigDir() + "/" + file;
+            logger.trace("Returning {}", cfgFile);
+            return cfgFile;
         }
     }
 
@@ -303,23 +266,15 @@ public class ConfigUtil {
      * @param file the file to get,
      */
     public static String getConfigFile(final String path, final String file) {
-        if (isRemotePath(file)) {
-            return file;
-        }
-
         if (file.startsWith("/") || (isWindows && file.charAt(1) == ':')) {
             return file;
         }
 
-        final String pathNoTrailingSlash = removeTrailingSlash(path);
-        if (isRemotePath(pathNoTrailingSlash)) {
-            return pathNoTrailingSlash + "/" + EmissaryClient.CONTEXT + "/ConfigFile.action?ConfigItem=" + file;
-        }
-        return pathNoTrailingSlash + "/" + file;
+        return removeTrailingSlash(path) + "/" + file;
     }
 
     /**
-     * Get the config file for the specified name withtout package nameing
+     * Get the config file for the specified name without package naming
      */
     private static String getOldStyleConfigFile(final String name) {
         String file = name;
@@ -359,7 +314,7 @@ public class ConfigUtil {
     }
 
     /**
-     * Get configurator by tring the list of preferences in order and using the first one that is found.
+     * Get configurator by trying the list of preferences in order and using the first one that is found.
      *
      * @param preferences string names of configs to try
      * @return the configurator
@@ -399,7 +354,7 @@ public class ConfigUtil {
     }
 
     /**
-     * Get the last modofied time of a config file resource
+     * Get the last modified time of a config file resource
      *
      * @param name the name of the config resource
      * @return the lastModified timestamp or -1L if it doesn't exist
@@ -577,67 +532,18 @@ public class ConfigUtil {
     }
 
     /**
-     * Get the config data (possibly remote) for the config file named
+     * Get the config data for the config file named
      *
-     * @param f the named config item (path or http:// part not necessary) but will be used if present
+     * @param f the named config item (path not necessary, but will be used if present)
      * @return Input Stream, caller must close.
      */
     public static InputStream getConfigData(final String f) throws IOException {
         logger.debug("Request for config data from {}", f);
 
         // Add config.dir part if not already absolute
-        final String filename = (f.startsWith("/") || (isWindows && f.charAt(1) == ':') || isRemotePath(f)) ? f : getConfigFile(f);
+        final String filename = (f.startsWith("/") || (isWindows && f.charAt(1) == ':')) ? f : getConfigFile(f);
 
-        final InputStream is;
-        if (isRemotePath(filename)) {
-
-            logger.debug("Trying to retrieve {}", filename);
-
-            final EmissaryResponse ws = new EmissaryClient().send(new HttpGet(filename));
-            // TODO Consider putting this in the EmissaryResponse object
-            if (ws.getStatus() != HttpStatus.SC_OK) {
-                logger.error("Retrieve of " + filename + " failed: " + ws.getContentString());
-                throw new IOException("Unable to retrieve " + filename + ": " + ws.getContentString());
-            }
-            is = new ByteArrayInputStream(ws.getContentString().getBytes("ISO8859_1"));
-            logger.debug("Retrieve of {} worked, created InputStream", filename);
-        } else {
-            is = new FileInputStream(filename);
-        }
-        return is;
-    }
-
-    /**
-     * Bring remote config data to the local system if possible
-     *
-     * @param f config item to work with
-     * @param outputPath path and filename to write the config item data onto
-     * @throws IOException on read or write problems
-     */
-    public static void getConfigDataLocal(final String f, final String outputPath) throws IOException {
-        final InputStream is = getConfigData(f);
-        final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath));
-        try {
-            final byte[] buf = new byte[4096];
-            int thisReadOp = 0;
-            while ((thisReadOp = is.read(buf)) > -1) {
-                os.write(buf, 0, thisReadOp);
-            }
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ioex1) {
-                logger.debug("Failed to close stream", ioex1);
-            }
-            try {
-                os.close();
-            } catch (IOException ioex2) {
-                logger.debug("Failed to close stream", ioex2);
-            }
-        }
-        logger.debug("Retrieved {} to {}", f, outputPath);
+        return new FileInputStream(filename);
     }
 
     /**
