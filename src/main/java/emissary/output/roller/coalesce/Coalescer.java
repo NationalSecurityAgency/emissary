@@ -1,7 +1,8 @@
 package emissary.output.roller.coalesce;
 
+import static emissary.output.roller.journal.Journal.ERROR_EXT;
 import static emissary.output.roller.journal.Journal.EXT;
-import static emissary.output.roller.journal.JournalReader.renameToError;
+import static emissary.output.roller.journal.JournalReader.getJournalPaths;
 import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.READ;
@@ -12,8 +13,10 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.Collection;
 
@@ -37,6 +40,8 @@ public class Coalescer implements ICoalescer {
 
     private static final Logger LOG = LoggerFactory.getLogger(Coalescer.class);
 
+    public static final boolean DEFAULT_SETUP_OUTPUT_PATH = false;
+
     /**
      * The path to read input and write rolled output *
      */
@@ -53,25 +58,37 @@ public class Coalescer implements ICoalescer {
      * Part/journal file matcher
      */
     public static final String PART_GLOB = "*{" + EXTENSION + "," + EXT + "}";
+    /**
+     * Roll file matcher
+     */
+    public static final String ROLL_GLOB = "*{" + ROLLING_EXT + "," + ROLLED_EXT + "}";
 
     /**
-     * The Rollable with take all files in a Path and combine them into a single destination file on each roll.
+     * Take all files in a Path and combine them into a single destination file.
      *
      * @param outPath The Path to use for reading input and writing combined output
      * @throws IOException If there is some I/O problem.
      */
     public Coalescer(final Path outPath) throws IOException {
-        this(outPath, false);
+        this(outPath, DEFAULT_SETUP_OUTPUT_PATH);
     }
 
     /**
-     * The Rollable with take all files in a Path and combine them into a single destination file on each roll.
+     * Take all files in a Path and combine them into a single destination file.
      *
      * @param outPath The Path to use for reading input and writing combined output
+     * @param setupOutputPath Create the output path if it does not exist
      * @throws IOException If there is some I/O problem.
      */
     public Coalescer(final Path outPath, boolean setupOutputPath) throws IOException {
         this.outputPath = outPath.toAbsolutePath();
+        setup(setupOutputPath);
+    }
+
+    /**
+     * Setup the path matcher
+     */
+    protected void setup(boolean setupOutputPath) throws IOException {
         if (setupOutputPath) {
             setupOutputPath();
         }
@@ -116,18 +133,24 @@ public class Coalescer implements ICoalescer {
     protected void coalesceFiles(String key, Collection<Journal> journals) {
         try {
             // Create the path to the final outputFile
-            Path finalOutputPath = this.outputPath.resolve(key);
-            Path rolledOutputPath = this.outputPath.resolve(key + ROLLED_EXT);
+            Path finalOutputPath = getFinalOutputPath(key, journals);
+            Path rolledOutputPath = getRolledOutputPath(key, journals);
+
+            LOG.trace("Attempting to roll files for key {}", key);
 
             // Check to see if we already rolled files successfully and crashed on deletion
             if (Files.exists(rolledOutputPath)) {
-                LOG.warn("Full output file already found {}. Deleting old part files.", rolledOutputPath);
+                LOG.info("Full output file already found {}. Deleting old part files.", rolledOutputPath);
                 finalize(journals, rolledOutputPath, finalOutputPath);
                 return;
             }
 
+            preRollHook(key, journals);
+
+            LOG.info("Coalescing files with key {}", key);
+
             // Create the path to the working outputFile
-            Path workingOutputPath = this.outputPath.resolve(key + ROLLING_EXT);
+            Path workingOutputPath = getWorkingOutputPath(key, journals);
 
             // Create the working file output stream, truncating a bad file from a crashed run, if it exists
             try (FileChannel workingOutputChannel = FileChannel.open(workingOutputPath, CREATE, TRUNCATE_EXISTING, WRITE)) {
@@ -140,12 +163,66 @@ public class Coalescer implements ICoalescer {
             }
 
             Files.move(workingOutputPath, rolledOutputPath);
-            LOG.info("Successfully coalesced {} files into: {}. Size: {}", journals.size(), rolledOutputPath, Files.size(rolledOutputPath));
+            LOG.info("Successfully coalesced {} files into: {}. Size: {} bytes", journals.size(), rolledOutputPath, Files.size(rolledOutputPath));
 
             finalize(journals, rolledOutputPath, finalOutputPath);
         } catch (IOException ex) {
             LOG.error("IOException while processing journals for {}", key, ex);
         }
+    }
+
+    /**
+     * Get the path to the rolling file
+     *
+     * @param key the key for the output file
+     * @param journals the collection of journals
+     * @return the location of the rolling file
+     */
+    protected Path getWorkingOutputPath(String key, Collection<Journal> journals) {
+        return resolveOutputPath(journals, key + ROLLING_EXT);
+    }
+
+    /**
+     * Get the path to the rolled file
+     *
+     * @param key the key for the output file
+     * @param journals the collection of journals
+     * @return the location of the rolled file
+     */
+    protected Path getRolledOutputPath(String key, Collection<Journal> journals) {
+        return resolveOutputPath(journals, key + ROLLED_EXT);
+    }
+
+    /**
+     * Get the path to the final output file
+     *
+     * @param key the key for the output file
+     * @param journals the collection of journals
+     * @return the location of the final output file
+     */
+    protected Path getFinalOutputPath(String key, Collection<Journal> journals) {
+        return resolveOutputPath(journals, key);
+    }
+
+    /**
+     * Get the output path for a given file
+     *
+     * @param journals the collection of journals
+     * @param filename the file name to resolve
+     * @return the path to the file
+     */
+    protected Path resolveOutputPath(Collection<Journal> journals, String filename) {
+        return this.outputPath.resolve(filename);
+    }
+
+    /**
+     * Method called prior to rolling output part files
+     *
+     * @param key The path to use for reading and writing files
+     * @param journals The journal files currently needed to roll
+     */
+    protected void preRollHook(String key, Collection<Journal> journals) throws IOException {
+        // nothing to do
     }
 
     /**
@@ -227,20 +304,86 @@ public class Coalescer implements ICoalescer {
     }
 
     /**
+     * Add an error extension to a file
+     * 
+     * @param path to add an error ext
+     */
+    public static void renameToError(Path path) {
+        try {
+            Path errorPath = Paths.get(path.toString() + ERROR_EXT);
+            Files.move(path, errorPath);
+        } catch (IOException ex) {
+            LOG.warn("Unable to rename file {}.", path.toString(), ex);
+        }
+    }
+
+    /**
+     * Rename journals and entries to failed
+     * 
+     * @param journals the journals to mark as error
+     */
+    protected static void renameJournalAndPartsToError(Collection<Journal> journals) {
+        journals.forEach(Coalescer::renameJournalAndPartsToError);
+    }
+
+    /**
+     * Rename a journal and entries to failed
+     * 
+     * @param journal the journal to mark as error
+     */
+    protected static void renameJournalAndPartsToError(Journal journal) {
+        if (Files.exists(journal.getJournalPath())) {
+            LOG.trace("Renaming journal to error {}", journal.getJournalPath());
+            journal.getEntries().stream().distinct().forEach(journalEntry -> renameToError(Paths.get(journalEntry.getVal())));
+            renameToError(journal.getJournalPath());
+        }
+    }
+
+    /**
+     * Cleanup any rolling/rolled files
+     * 
+     * @param dir the directory to search
+     * @param key the key for the files
+     * @throws IOException if there is an error removing the files
+     */
+    protected static void removeRollFiles(Path dir, String key) throws IOException {
+        try (DirectoryStream<Path> paths = Files.newDirectoryStream(dir, key + ROLL_GLOB)) {
+            for (Path path : paths) {
+                LOG.trace("Deleting roll file {}", path);
+                Files.deleteIfExists(path);
+            }
+        }
+    }
+
+    /**
      * Sometimes the rolled files can hang around after a crash. If there is a rolled file, that means all of the files
      * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled
      * file. Otherwise, the rolled file will get cleaned up with the normal process.
      */
     protected void cleanupOrphanedRolledFiles() {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(outputPath, "*" + ROLLED_EXT)) {
-            for (Path entry : stream) {
+        cleanupOrphanedRolledFiles(1, outputPath + "/*" + ROLLED_EXT);
+    }
+
+    /**
+     * Sometimes the rolled files can hang around after a crash. If there is a rolled file, that means all of the files
+     * coalesced successfully but cleanup failed. If there are not any files with the same name, just rename the rolled
+     * file. Otherwise, the rolled file will get cleaned up with the normal process.
+     *
+     * @param depth number of level to search
+     * @param glob pattern to match
+     */
+    protected void cleanupOrphanedRolledFiles(final int depth, final String glob) {
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + glob);
+        try {
+            for (Path entry : getJournalPaths(outputPath, depth, matcher)) {
                 String finalOutputFilename = FilenameUtils.getBaseName(entry.toString());
-                if (isOrphanedFile(finalOutputFilename)) {
-                    finalize(entry, outputPath.resolve(finalOutputFilename));
+                Path parent = entry.getParent();
+                if (isOrphanedFile(parent, finalOutputFilename)) {
+                    finalize(entry, parent.resolve(finalOutputFilename));
                 }
             }
         } catch (IOException e) {
-            LOG.error("There was an error trying to cleanup rolled files {}", outputPath, e);
+            LOG.error("There was an error trying to cleanup rolled files in {}{}", outputPath, glob, e);
         }
     }
 
@@ -251,10 +394,16 @@ public class Coalescer implements ICoalescer {
      * @return true if no part/journal files exist, false otherwise
      * @throws IOException if there is an issue
      */
-    protected boolean isOrphanedFile(String startsWith) throws IOException {
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(outputPath, startsWith + PART_GLOB)) {
+    protected boolean isOrphanedFile(Path parent, String startsWith) throws IOException {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(parent, startsWith + PART_GLOB)) {
             return !stream.iterator().hasNext();
         }
     }
 
+    @Override
+    public String toString() {
+        return getClass().getName() + "{" +
+                "outputPath=" + outputPath +
+                '}';
+    }
 }

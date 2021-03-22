@@ -16,7 +16,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ListOpenFilesTest extends UnitTest {
+public class ListOpenFilesTest extends UnitTest {
 
     private ListOpenFiles instance;
     private Path tmpDir;
@@ -39,9 +39,13 @@ class ListOpenFilesTest extends UnitTest {
         super.tearDown();
     }
 
+    public static void testForLsof() {
+        assumeTrue(new Executrix().execute(new String[] {"lsof", "-v"}, new StringBuilder(), new StringBuilder()) == 0);
+    }
+
     @Test
     void isOpen() throws IOException {
-        assumeTrue(new Executrix().execute(new String[] {"lsof", "-v"}) == 0);
+        testForLsof();
 
         // open a file an test
         try (InputStream stream = Files.newInputStream(file)) {

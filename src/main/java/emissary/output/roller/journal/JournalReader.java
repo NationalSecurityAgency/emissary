@@ -2,7 +2,6 @@ package emissary.output.roller.journal;
 
 import static emissary.output.roller.journal.Journal.CURRENT_VERSION;
 import static emissary.output.roller.journal.Journal.ENTRY_LENGTH;
-import static emissary.output.roller.journal.Journal.ERROR_EXT;
 import static emissary.output.roller.journal.Journal.EXT;
 import static emissary.output.roller.journal.Journal.MAGIC;
 import static emissary.output.roller.journal.Journal.NINE;
@@ -16,6 +15,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -199,6 +199,16 @@ public class JournalReader implements Closeable {
         return paths;
     }
 
+    public static Collection<Path> getJournalPaths(final Path dir, final PathMatcher matcher) throws IOException {
+        return getJournalPaths(dir, Integer.MAX_VALUE, matcher);
+    }
+
+    public static Collection<Path> getJournalPaths(final Path dir, final int depth, final PathMatcher matcher) throws IOException {
+        try (Stream<Path> walk = Files.find(dir, depth, (path, attrs) -> matcher.matches(path))) {
+            return walk.collect(Collectors.toSet());
+        }
+    }
+
     /**
      * Search for {@link Journal} files in a directory
      *
@@ -285,21 +295,11 @@ public class JournalReader implements Closeable {
                 return jr.getJournal();
             } catch (IOException ex) {
                 logger.error("Unable to load Journal {}", path.toString(), ex);
-                renameToError(path);
             }
         } else {
             logger.warn("Unable to access the Journal file {}", path);
         }
         return null;
-    }
-
-    public static void renameToError(Path path) {
-        try {
-            Path errorPath = Paths.get(path.toString() + ERROR_EXT);
-            Files.move(path, errorPath);
-        } catch (IOException ex) {
-            logger.warn("Unable to rename file {}.", path.toString(), ex);
-        }
     }
 
     /**
