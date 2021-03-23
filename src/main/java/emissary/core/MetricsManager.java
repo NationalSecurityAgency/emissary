@@ -121,6 +121,7 @@ public class MetricsManager {
                 new FilePickUpPlaceHealthCheck(this.conf.findIntEntry("MAX_FILE_COUNT_BEFORE_UNHEALTHY", Integer.MAX_VALUE), this.conf.findLongEntry(
                         "MAX_AGGREGATE_FIZE_SIZE_BEFORE_UNHEALTHY_BYTES", Long.MAX_VALUE)));
         this.healthChecks.register("healthcheck.threaddeadlocks", new ThreadDeadlockHealthCheck());
+        this.healthChecks.register("healthcheck.agentpool", new AgentPoolHealthCheck());
     }
 
     protected void initMetrics() {
