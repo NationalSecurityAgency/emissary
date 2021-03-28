@@ -7,7 +7,7 @@ import emissary.pool.MobileAgentFactory;
 public class AgentPoolHealthCheck extends HealthCheck {
 
     @Override
-    protected Result check() throws Exception {
+    protected Result check() {
         int active = 0;
         int idle = 0;
         try {
