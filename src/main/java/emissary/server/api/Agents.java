@@ -18,6 +18,7 @@ import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class Agents {
     @GET
     @Path("/agents")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the current status of each agent", tags = {"agents"})
     public Response agents() {
         return Response.ok().entity(lookupAgents()).build();
     }
@@ -44,6 +46,7 @@ public class Agents {
     @GET
     @Path("/cluster/agents")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the current status of each agent across the cluster", tags = {"agents", "cluster"})
     public Response clusterAgents() {
         try {
             // Get our local information first

@@ -59,10 +59,12 @@
     <dep.slf4j.version>1.7.29</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.7</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.11.4</dep.spymemcached.version>
+    <dep.swagger.version>2.1.7</dep.swagger.version>
     <dep.tika.version>1.22</dep.tika.version>
     <dep.webjars.bootstrap.version>4.5.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.5.1</dep.webjars.jquery.version>
     <dep.webjars.popper.version>2.5.2</dep.webjars.popper.version>
+    <dep.webjars.swagger.ui.version>3.45.1</dep.webjars.swagger.ui.version>
     <dep.xmlbeans.version>2.6.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
@@ -184,6 +186,16 @@
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-servlets</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2</artifactId>
+        <version>${dep.swagger.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
+        <version>${dep.swagger.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
@@ -414,6 +426,11 @@
         <version>${dep.webjars.popper.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.webjars.npm</groupId>
+        <artifactId>swagger-ui-dist</artifactId>
+        <version>${dep.webjars.swagger.ui.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jersey.test-framework.providers</groupId>
         <artifactId>jersey-test-framework-provider-jetty</artifactId>
         <version>${dep.jersey.version}</version>
@@ -509,6 +526,24 @@
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlets</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-lang3</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.javassist</groupId>
+          <artifactId>javassist</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-jaxrs2-servlet-initializer</artifactId>
     </dependency>
     <dependency>
       <groupId>net.spy</groupId>
@@ -1209,6 +1244,26 @@
                   <overWrite>true</overWrite>
                   <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
                   <includes>**/umd/popper.min.*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars.npm</groupId>
+                  <artifactId>swagger-ui-dist</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/css/lib</outputDirectory>
+                  <includes>**/swagger-ui.css*</includes>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
+                  </fileMappers>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.webjars.npm</groupId>
+                  <artifactId>swagger-ui-dist</artifactId>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.outputDirectory}/public/js/lib</outputDirectory>
+                  <includes>**/swagger-ui-bundle.js*,**/swagger-ui-standalone-preset.js*</includes>
                   <fileMappers>
                     <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper />
                   </fileMappers>

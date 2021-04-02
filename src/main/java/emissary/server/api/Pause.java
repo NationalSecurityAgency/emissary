@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 
 import emissary.core.NamespaceException;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 
 @Path("")
 // context is api
@@ -21,6 +22,7 @@ public class Pause {
     @POST
     @Path("/" + PAUSE)
     @Produces(MediaType.TEXT_HTML)
+    @Operation(summary = "Pause a running server", tags = {"pause"})
     public Response pause(@Context HttpServletRequest request) {
         return doAction(true);
     }
@@ -28,6 +30,7 @@ public class Pause {
     @POST
     @Path("/" + UNPAUSE)
     @Produces(MediaType.TEXT_HTML)
+    @Operation(summary = "Unpause a running server", tags = {"pause"})
     public Response unpause(@Context HttpServletRequest request) {
         return doAction(false);
     }

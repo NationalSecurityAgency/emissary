@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ public class Shutdown {
     @POST
     @Path("/" + SHUTDOWN)
     @Produces(MediaType.TEXT_HTML)
+    @Operation(summary = "Shutdown a running server", tags = {"shutdown"})
     public Response shutdownNow(@Context HttpServletRequest request) {
         try {
             LOG.debug("Calling the stop method");
