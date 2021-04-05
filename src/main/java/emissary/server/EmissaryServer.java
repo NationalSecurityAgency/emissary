@@ -13,7 +13,6 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -470,14 +469,25 @@ public class EmissaryServer {
 
     private ConstraintSecurityHandler buildSecurityHandler() {
         ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
-        Constraint constraint = new Constraint();
-        constraint.setName("auth");
-        constraint.setAuthenticate(true);
-        constraint.setRoles(new String[] {"everyone", "emissary", "admin", "support", "manager"});
+
+        Constraint authConstraint = new Constraint();
+        authConstraint.setName("auth");
+        authConstraint.setAuthenticate(true);
+        authConstraint.setRoles(new String[] {"everyone", "emissary", "admin", "support", "manager"});
+
+        Constraint noAuthConstraint = new Constraint();
+        noAuthConstraint.setName("no_auth");
+        noAuthConstraint.setAuthenticate(false);
+
         ConstraintMapping mapping = new ConstraintMapping();
         mapping.setPathSpec("/*");
-        mapping.setConstraint(constraint);
-        handler.setConstraintMappings(Collections.singletonList(mapping));
+        mapping.setConstraint(authConstraint);
+
+        ConstraintMapping health = new ConstraintMapping();
+        health.setPathSpec("/api/health");
+        health.setConstraint(noAuthConstraint);
+
+        handler.setConstraintMappings(new ConstraintMapping[] {mapping, health});
         handler.setAuthenticator(new DigestAuthenticator());
         return handler;
     }
