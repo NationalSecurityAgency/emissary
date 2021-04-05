@@ -65,6 +65,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -523,8 +524,11 @@ public class EmissaryServer {
     private ContextHandler buildApiHandler() {
 
         final ResourceConfig application = new ResourceConfig();
+        application.setApplicationName("api");
+        application.register(MultiPartFeature.class);
         // setup rest endpoint
         application.packages("emissary.server.api").register(JacksonFeature.class);
+        csrfFilter(application);
 
         ServletHolder apiHolder = new ServletHolder(new org.glassfish.jersey.servlet.ServletContainer(application));
         // apiHolder.setInitOrder(0);
@@ -539,10 +543,12 @@ public class EmissaryServer {
     private ContextHandler buildMVCHandler() {
 
         final ResourceConfig application = new ResourceConfig();
+        application.setApplicationName("mvc");
         application.register(MultiPartFeature.class);
         // setup mustache templates
         application.property(MustacheMvcFeature.TEMPLATE_BASE_PATH, "/templates");
         application.register(MustacheMvcFeature.class).packages("emissary.server.mvc");
+        csrfFilter(application);
 
         ServletHolder mvcHolder = new ServletHolder(new org.glassfish.jersey.servlet.ServletContainer(application));
         // mvcHolder.setInitOrder(1);
@@ -551,6 +557,15 @@ public class EmissaryServer {
         mvcHolderContext.addServlet(mvcHolder, "/*");
 
         return mvcHolderContext;
+    }
+
+    protected void csrfFilter(ResourceConfig application) {
+        if (this.cmd.isCsrf()) {
+            LOG.debug("Enabling csrf protection filter for {}", application.getApplicationName());
+            application.register(CsrfProtectionFilter.class);
+        } else {
+            LOG.debug("Disabling csrf protection filter for {}", application.getApplicationName());
+        }
     }
 
     private ContextHandler buildEmissaryHandler() throws EmissaryException {

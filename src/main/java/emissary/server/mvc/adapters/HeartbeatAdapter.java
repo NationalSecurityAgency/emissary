@@ -57,7 +57,7 @@ public class HeartbeatAdapter extends EmissaryClient {
     public EmissaryResponse outboundHeartbeat(final String fromPlace, final String toPlace) {
 
         final String directoryUrl = KeyManipulator.getServiceHostURL(toPlace);
-        final HttpPost method = new HttpPost(directoryUrl + CONTEXT + "/Heartbeat.action");
+        final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/Heartbeat.action");
 
         final String loc = KeyManipulator.getServiceLocation(toPlace);
 

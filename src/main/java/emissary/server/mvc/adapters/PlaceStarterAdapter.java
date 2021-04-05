@@ -30,6 +30,8 @@ public class PlaceStarterAdapter extends EmissaryClient {
     public static final String CP_PLACE_NAME = "sppPlaceName";
     public static final String PLACE_OBJECT = "sppPlaceObject";
 
+    private static final String CREATE_PLACE_ENDPOINT = "/CreatePlace.action";
+
     String className;
     String location;
     String directory;
@@ -71,13 +73,12 @@ public class PlaceStarterAdapter extends EmissaryClient {
      */
     public EmissaryResponse outboundCreatePlace() {
 
+        final String placeUrl = getLocation().substring(0, getLocation().lastIndexOf("/") + 1);
         // Derive url from place location
-        final String url = getLocation().substring(0, getLocation().lastIndexOf("/") + 1) + CONTEXT + "/CreatePlace.action";
+        logger.debug("Creating post method for createPlace using URL {}{}{}", placeUrl, CONTEXT, CREATE_PLACE_ENDPOINT);
 
-        logger.debug("Creating post method for createPlace using URL " + url);
-
-        final HttpPost method = new HttpPost(url);
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final HttpPost method = createHttpPost(placeUrl, CONTEXT, CREATE_PLACE_ENDPOINT);
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CP_CLASS_NAME, getClassName()));
         nvps.add(new BasicNameValuePair(CP_LOCATION, getLocation()));
         if (getDirectory() != null) {

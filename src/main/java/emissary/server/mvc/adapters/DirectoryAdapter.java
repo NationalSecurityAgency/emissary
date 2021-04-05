@@ -144,7 +144,7 @@ public class DirectoryAdapter extends EmissaryClient {
             return new EmissaryResponse(response);
         } else {
             final String parentDirectoryUrl = KeyManipulator.getServiceHostURL(parentDirectory);
-            final HttpPost method = new HttpPost(parentDirectoryUrl + CONTEXT + "/RegisterPlace.action");
+            final HttpPost method = createHttpPost(parentDirectoryUrl, CONTEXT, "/RegisterPlace.action");
 
             final String parentLoc = KeyManipulator.getServiceLocation(parentDirectory);
             // Separate it out into lists
@@ -195,7 +195,7 @@ public class DirectoryAdapter extends EmissaryClient {
      */
     public EmissaryResponse outboundRemovePlaces(final String directory, final List<String> key, final boolean propagating) {
         final String directoryUrl = KeyManipulator.getServiceHostURL(directory);
-        final HttpPost method = new HttpPost(directoryUrl + CONTEXT + "/DeregisterPlace.action");
+        final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/DeregisterPlace.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
 
@@ -221,7 +221,7 @@ public class DirectoryAdapter extends EmissaryClient {
      */
     public EmissaryResponse outboundFailDirectory(final String directory, final String failKey, final boolean permanent) {
         final String directoryUrl = KeyManipulator.getServiceHostURL(directory);
-        final HttpPost method = new HttpPost(directoryUrl + CONTEXT + "/FailDirectory.action");
+        final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/FailDirectory.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -296,7 +296,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @param child the calling directory
      */
     public EmissaryResponse outboundAddChildDirectory(final String parent, final String child) {
-        final HttpPost method = new HttpPost(KeyManipulator.getServiceHostURL(parent) + CONTEXT + "/AddChildDirectory.action");
+        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(parent), CONTEXT, "/AddChildDirectory.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(parent);
 
@@ -344,7 +344,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @throws EmissaryException if remote returns an error
      */
     private DirectoryEntryMap zoneTransfer(final String key, final String myKey, final String action) throws EmissaryException {
-        final HttpPost method = new HttpPost(KeyManipulator.getServiceHostURL(key) + CONTEXT + action);
+        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(key), CONTEXT, action);
 
         final String parentLoc = KeyManipulator.getServiceLocation(key);
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();

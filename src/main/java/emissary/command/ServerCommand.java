@@ -11,7 +11,7 @@ import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
-import emissary.server.mvc.PauseAction;
+import emissary.server.api.Pause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,17 +106,17 @@ public class ServerCommand extends ServiceCommand {
 
     @Override
     protected void pauseService() {
-        setServerState(PauseAction.PAUSE);
+        setServerState(Pause.PAUSE);
     }
 
     @Override
     protected void unpauseService() {
-        setServerState(PauseAction.UNPAUSE);
+        setServerState(Pause.UNPAUSE);
     }
 
     protected void setServerState(String state) {
         LOG.debug("Setting state to {} for EmissaryServer", state);
-        EmissaryResponse response = performAction("/emissary/" + state + PauseAction.ACTION);
+        EmissaryResponse response = performPost("/api/" + state);
         if (response.getStatus() != 200) {
             LOG.error("Setting Emissary server state to {} failed -- {}", state, response.getContentString());
         } else {
