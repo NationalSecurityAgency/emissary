@@ -921,7 +921,7 @@ Alternatively, we can use Docker directly. First run a full maven build and then
 
 ```
 mvn clean package -Pdist
-docker build . -t emissary:latest
+docker build -f contrib/docker/Dockerfile . -t emissary:latest
 ```
 
 ### Run Emissary with Docker

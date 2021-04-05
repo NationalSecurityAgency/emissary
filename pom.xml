@@ -1598,6 +1598,7 @@
             <artifactId>dockerfile-maven-plugin</artifactId>
             <configuration>
               <repository>emissary</repository>
+              <dockerfile>contrib/docker/Dockerfile</dockerfile>
             </configuration>
           </plugin>
         </plugins>
