@@ -120,7 +120,7 @@ public abstract class HttpCommand extends BaseCommand {
      * @return the response object
      */
     protected EmissaryResponse performGet(String endpoint) {
-        return new EmissaryClient().send(new HttpGet(getEndpoint(endpoint)));
+        return new EmissaryClient().send(new HttpGet(getFullUrl(endpoint)));
     }
 
     /**
@@ -131,7 +131,7 @@ public abstract class HttpCommand extends BaseCommand {
      */
     protected EmissaryResponse performPost(String endpoint) {
         EmissaryClient client = new EmissaryClient();
-        HttpPost post = client.createHttpPost(getEndpoint(endpoint));
+        HttpPost post = client.createHttpPost(getFullUrl(endpoint));
         return client.send(post);
     }
 
@@ -145,7 +145,7 @@ public abstract class HttpCommand extends BaseCommand {
      * @param endpoint the endpoint i.e. /api/health
      * @return the full url
      */
-    protected String getEndpoint(String endpoint) {
+    protected String getFullUrl(String endpoint) {
         return getScheme() + "://" + getHostAndPort() + endpoint;
     }
 }
