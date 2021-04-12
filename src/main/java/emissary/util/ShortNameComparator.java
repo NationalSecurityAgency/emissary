@@ -19,34 +19,103 @@ public class ShortNameComparator implements Comparator<IBaseDataObject>, Seriali
     public int compare(IBaseDataObject obj1, IBaseDataObject obj2) {
         String s1 = obj1.shortName();
         String s2 = obj2.shortName();
+        int index1 = s1.indexOf(Family.SEP, 0);
+        int index2 = s2.indexOf(Family.SEP, 0);
 
-        String[] p1 = s1.split(Family.SEP);
-        String[] p2 = s2.split(Family.SEP);
-
-        for (int i = 1; i < p1.length; i++) {
-
-            if (i >= p2.length) {
+        while (index1 >= 0) {
+            if (index1 >= 0 && index2 < 0) {
                 return 1;
             }
 
-            if (p1[i].equals(p2[i])) {
+            index1 += Family.SEP.length();
+            index2 += Family.SEP.length();
+
+            final int nextIndex1 = s1.indexOf(Family.SEP, index1);
+            final int nextIndex2 = s2.indexOf(Family.SEP, index2);
+            final int length1 = ((nextIndex1 < 0) ? s1.length() : nextIndex1) - index1;
+            final int length2 = ((nextIndex2 < 0) ? s2.length() : nextIndex2) - index2;
+
+            if (length1 == length2 && s1.regionMatches(index1, s2, index2, length1)) {
+                index1 = nextIndex1;
+                index2 = nextIndex2;
+
                 continue;
             }
 
             try {
-                int i1 = Integer.parseInt(p1[i]);
-                int i2 = Integer.parseInt(p2[i]);
-                return i1 - i2;
-            } catch (NumberFormatException e) {
-                return p1[i].compareTo(p2[i]);
-            }
+                int int1 = parseInt(s1, 10, index1, length1);
+                int int2 = parseInt(s2, 10, index2, length2);
 
+                return int1 - int2;
+            } catch (NumberFormatException e) {
+                final String substring1 = s1.substring(index1, index1 + length1);
+                final String substring2 = s2.substring(index2, index2 + length2);
+
+                return substring1.compareTo(substring2);
+            }
         }
 
-        if (p2.length > p1.length) {
+        if (index1 < 0 && index2 >= 0) {
             return -1;
         }
+
         return 0;
     }
 
+    // Based on java.lang.Integer.parseInt()
+    public static int parseInt(final String s, final int radix, final int start,
+            final int length) throws NumberFormatException {
+        if (s == null) {
+            throw new NumberFormatException("null");
+        }
+
+        if (radix < Character.MIN_RADIX) {
+            throw new NumberFormatException("radix " + radix + " less than Character.MIN_RADIX");
+        }
+
+        if (radix > Character.MAX_RADIX) {
+            throw new NumberFormatException("radix " + radix + " greater than Character.MAX_RADIX");
+        }
+
+        int result = 0;
+        boolean negative = false;
+        int i = start, len = length;
+        int limit = -Integer.MAX_VALUE;
+        int multmin;
+        int digit;
+
+        if (len > 0) {
+            char firstChar = s.charAt(i);
+            if (firstChar < '0') { // Possible leading "+" or "-"
+                if (firstChar == '-') {
+                    negative = true;
+                    limit = Integer.MIN_VALUE;
+                } else if (firstChar != '+')
+                    throw new NumberFormatException(s);
+
+                if (len == 1) // Cannot have lone "+" or "-"
+                    throw new NumberFormatException(s);
+                i++;
+            }
+            multmin = limit / radix;
+            while ((i - start) < len) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                digit = Character.digit(s.charAt(i++), radix);
+                if (digit < 0) {
+                    throw new NumberFormatException(s);
+                }
+                if (result < multmin) {
+                    throw new NumberFormatException(s);
+                }
+                result *= radix;
+                if (result < limit + digit) {
+                    throw new NumberFormatException(s);
+                }
+                result -= digit;
+            }
+        } else {
+            throw new NumberFormatException(s);
+        }
+        return negative ? result : -result;
+    }
 }
