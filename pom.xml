@@ -37,7 +37,7 @@
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
     <dep.commons-logging.version>1.2</dep.commons-logging.version>
     <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
-    <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
+    <dep.dropwizard.metrics.version>3.2.6</dep.dropwizard.metrics.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
@@ -51,14 +51,14 @@
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>3.0.1</dep.jersey.version>
-    <dep.jetty.version>11.0.1</dep.jetty.version>
+    <dep.jetty.version>11.0.2</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.0-M1</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.8.0-M1</dep.junit-platform.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
     <dep.junit.version>4.12</dep.junit.version>
     <dep.logback.version>1.3.0-alpha5</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M5</dep.maven-surefire-plugin.version>
-    <dep.mockito-all.version>3.8.0</dep.mockito-all.version>
+    <dep.mockito-all.version>3.9.0</dep.mockito-all.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7.13</dep.rhino.version>
     <dep.slf4j.version>2.0.0-alpha1</dep.slf4j.version>
@@ -72,8 +72,6 @@
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -134,7 +132,7 @@
       <dependency>
         <groupId>com.sun.activation</groupId>
         <artifactId>jakarta.activation</artifactId>
-        <version>2.0.0</version>
+        <version>2.0.1</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
@@ -205,6 +203,11 @@
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${dep.javax.annotation-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.9.1</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
@@ -923,7 +926,7 @@
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
-            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
+            <compilerTargetPlatform>${maven.compiler.release}</compilerTargetPlatform>
             <configFile>${eclipseFormatterStyle}</configFile>
             <lineEnding>LF</lineEnding>
             <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
@@ -1016,7 +1019,7 @@
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
             <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-            <targetJdk>${maven.compiler.target}</targetJdk>
+            <targetJdk>${maven.compiler.release}</targetJdk>
           </configuration>
         </plugin>
         <plugin>
@@ -1417,14 +1420,6 @@
       </build>
     </profile>
     <profile>
-      <!-- Turn on the error-prone static analyzer during compilation.
-           NOTE this requires the use of a Java 8 compiler.  For
-           example:
-
-               $ JAVA_HOME=/path/to/jdk_11 mvn -PerrorProne clean test-compile
-
-           will analyze the main and test code, with the analyzer's
-           report given as compiler error/warning/note messages. -->
       <id>errorProne</id>
       <activation>
         <property>
@@ -1436,73 +1431,81 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
             <configuration>
-              <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
-              <fork>true</fork>
+              <showWarnings>true</showWarnings>
               <compilerArgs>
-                <!-- The compiler normally stops at 100 warnings, and
-                     error-prone's static analysis warnings count
-                     against that total. -->
-                <arg>-Xmaxwarns</arg>
-                <arg>5000</arg>
-                <arg>-XepDisableWarningsInGeneratedCode</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne
+                  -Xep:Var:OFF
+                  -Xep:ConstantField:WARN
+                  -Xep:RemoveUnusedImports:WARN
+                  -Xep:WildcardImport:WARN
+                  -Xep:ArrayToString:WARN
+                  -Xep:ComparisonOutOfRange:WARN
+                  -Xep:DeadException:WARN
+                  -Xep:DefaultCharset:OFF
+                  -Xep:DepAnn:WARN
+                  -Xep:FormatString:WARN
+                  -Xep:LongLiteralLowerCaseSuffix:WARN
+                  -Xep:MethodCanBeStatic:WARN
+                  -Xep:MixedArrayDimensions:WARN
+                  -Xep:MultiVariableDeclaration:WARN
+                  -Xep:MultipleTopLevelClasses:WARN
+                  -Xep:NumericEquality:WARN
+                  -Xep:PrivateConstructorForUtilityClass:WARN
+                  -Xep:ThrowsUncheckedException:WARN
+                  -Xep:TryFailThrowable:WARN</arg>
+                <!--<arg>-XepDisableWarningsInGeneratedCode</arg>-->
                 <!-- Enable experimental checks. -->
-                <arg>-XepAllDisabledChecksAsWarnings</arg>
+                <!--<arg>-XepAllDisabledChecksAsWarnings</arg>-->
                 <!-- Removed because it was not adding useful help -->
-                <arg>-Xep:ArgumentParameterMismatch:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterMismatch:OFF</arg>-->
                 <!-- This one is buggy and crashes the compiler. -->
-                <arg>-Xep:ArgumentParameterSwap:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterSwap:OFF</arg>-->
                 <!-- This one is super noisy, because it wants all
-                     modifiable variables marked with @Var and
-                     complains about the use of final everywhere else.
-                     I'd be okay with adding the annotations, but
-                     removing the finals is only safe if you can
-                     guarantee you never use the compiler *without*
-                     this add-on. -->
-                <arg>-Xep:Var:OFF</arg>
+                       modifiable variables marked with @Var and
+                       complains about the use of final everywhere else.
+                       I'd be okay with adding the annotations, but
+                       removing the finals is only safe if you can
+                       guarantee you never use the compiler *without*
+                       this add-on. -->
+                <!--<arg>-Xep:Var:OFF</arg>-->
                 <!-- By default this is considered a "suggestion" that
-                     doesn't get counted as a warning.  Change it to a
-                     counted warning to make it easier to see how many
-                     there are. -->
-                <arg>-Xep:ConstantField:WARN</arg>
-                <arg>-Xep:RemoveUnusedImports:WARN</arg>
-                <arg>-Xep:WildcardImport:WARN</arg>
+                       doesn't get counted as a warning.  Change it to a
+                       counted warning to make it easier to see how many
+                       there are. -->
+                <!--<arg>-Xep:ConstantField:WARN</arg>-->
+                <!--<arg>-Xep:RemoveUnusedImports:WARN</arg>-->
+                <!--<arg>-Xep:WildcardImport:WARN</arg>-->
                 <!-- By default these are set to errors.  Change them
-                     to warnings so that it doesn't stop the build
-                     from continuing its analysis. -->
-                <arg>-Xep:ArrayToString:WARN</arg>
-                <arg>-Xep:ComparisonOutOfRange:WARN</arg>
-                <arg>-Xep:DeadException:WARN</arg>
-                <arg>-Xep:DefaultCharset:OFF</arg>
-                <arg>-Xep:DepAnn:WARN</arg>
-                <arg>-Xep:FormatString:WARN</arg>
-                <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
-                <arg>-Xep:MethodCanBeStatic:WARN</arg>
-                <arg>-Xep:MixedArrayDimensions:WARN</arg>
-                <arg>-Xep:MultiVariableDeclaration:WARN</arg>
-                <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
-                <arg>-Xep:NumericEquality:WARN</arg>
-                <arg>-Xep:ParameterPackage:WARN</arg>
-                <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
-                <arg>-Xep:ThrowsUncheckedException:WARN</arg>
-                <arg>-Xep:TryFailThrowable:WARN</arg>
+                       to warnings so that it doesn't stop the build
+                       from continuing its analysis. -->
+                <!--<arg>-Xep:ArrayToString:WARN</arg>-->
+                <!--<arg>-Xep:ComparisonOutOfRange:WARN</arg>-->
+                <!--<arg>-Xep:DeadException:WARN</arg>
+                  <arg>-Xep:DefaultCharset:OFF</arg>
+                  <arg>-Xep:DepAnn:WARN</arg>
+                  <arg>-Xep:FormatString:WARN</arg>
+                  <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
+                  <arg>-Xep:MethodCanBeStatic:WARN</arg>
+                  <arg>-Xep:MixedArrayDimensions:WARN</arg>
+                  <arg>-Xep:MultiVariableDeclaration:WARN</arg>
+                  <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
+                  <arg>-Xep:NumericEquality:WARN</arg>
+                  <arg>-Xep:ParameterPackage:WARN</arg>
+                  <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
+                  <arg>-Xep:ThrowsUncheckedException:WARN</arg>
+                  <arg>-Xep:TryFailThrowable:WARN</arg>-->
               </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.6.0</version>
+                </path>
+              </annotationProcessorPaths>
             </configuration>
-            <dependencies>
-              <!-- override plexus-compiler-javac-errorprone's dependency on
-                   Error Prone with the latest version -->
-              <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.3.1</version>
-              </dependency>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                <version>2.8.3</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
