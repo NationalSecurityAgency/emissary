@@ -30,3 +30,6 @@ nbactions*.xml
 .settings/
 *.swp
 *.checkstyle
+
+# Formatter cache
+.cache
