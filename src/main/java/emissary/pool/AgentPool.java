@@ -189,12 +189,24 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         }
     }
 
+    /**
+     * @return the number of agents currently in the pool (active + idle)
+     */
+    public synchronized int getCurrentPoolSize() {
+        return getNumIdle() + getNumActive();
+    }
+
     protected void emptyPool() {
         int numberKilled = 0;
+        int numberToKill = getCurrentPoolSize();
+        if (numberToKill < initialPoolSize) {
+            logger.warn("Missing agents when emptying pool; expected {} but found {}", initialPoolSize, numberToKill);
+        }
+
         long waitTil = System.currentTimeMillis() + (30 * 60 * 1000); // 30 min
-        logger.debug("Going to kill {} agents", initialPoolSize);
+        logger.debug("Going to kill {} agents", numberToKill);
         try {
-            while (numberKilled < initialPoolSize) {
+            while (numberKilled < numberToKill) {
                 if (System.currentTimeMillis() > waitTil) {
                     throw new InterruptedException("Too long, tired of waiting. Some MobileAgents are going to die poorly");
                 }
@@ -228,7 +240,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                 }
                 logger.debug("Killed {} agents this round, {} total dead", killedThisRound, numberKilled);
                 // give some space for working agents to be returned
-                setMaxIdle(initialPoolSize - numberKilled);
+                setMaxIdle(numberToKill - numberKilled);
                 Thread.sleep(5000);
             }
             logger.info("Pool is now empty");
