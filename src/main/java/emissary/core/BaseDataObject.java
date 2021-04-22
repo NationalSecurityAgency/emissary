@@ -610,14 +610,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public boolean hasParameter(final String key) {
-        // Try remapping
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            return this.parameters.containsKey(dict.map(key));
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-            return this.parameters.containsKey(key);
-        }
+        return this.parameters.containsKey(key);
     }
 
     @Override
@@ -634,22 +627,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void putParameter(final String key, final Object val) {
-        // Try remapping
-        MetadataDictionary dict = null;
-        try {
-            dict = MetadataDictionary.lookup();
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-        }
-
-        final String n = dict != null ? dict.map(key) : key;
-
-        this.parameters.removeAll(n);
+        this.parameters.removeAll(key);
 
         if (val instanceof Iterable) {
-            this.parameters.putAll(n, (Iterable<?>) val);
+            this.parameters.putAll(key, (Iterable<?>) val);
         } else {
-            this.parameters.put(n, val);
+            this.parameters.put(key, val);
         }
     }
 
@@ -692,16 +675,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void putParameters(final Map<? extends String, ? extends Object> m, final MergePolicy policy) {
-        // Try remapping
-        MetadataDictionary dict = null;
-        try {
-            dict = MetadataDictionary.lookup();
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-        }
-
         for (final Map.Entry<? extends String, ? extends Object> entry : m.entrySet()) {
-            final String name = dict != null ? dict.map(entry.getKey()) : entry.getKey();
+            final String name = entry.getKey();
 
             if ((policy == MergePolicy.KEEP_EXISTING) && this.parameters.containsKey(name)) {
                 continue;
@@ -736,15 +711,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public List<Object> getParameter(final String key) {
-        // Try remapping
-        List<Object> v = null;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            v = this.parameters.get(dict.map(key));
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-            v = this.parameters.get(key);
-        }
+        List<Object> v = this.parameters.get(key);
+
         if ((v == null) || v.isEmpty()) {
             return null;
         }
@@ -753,28 +721,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void appendParameter(final String key, final CharSequence value) {
-        // Try remapping
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            this.parameters.put(dict.map(key), value);
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-            this.parameters.put(key, value);
-        }
+        this.parameters.put(key, value);
     }
 
     @Override
     public void appendParameter(final String key, final Iterable<? extends CharSequence> values) {
-        // Try remapping
-        String pkey = key;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            pkey = dict.map(key);
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-        }
-
-        this.parameters.putAll(pkey, values);
+        this.parameters.putAll(key, values);
     }
 
     /**
@@ -788,21 +740,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public boolean appendUniqueParameter(final String key, final CharSequence value) {
-        // Try remapping
-        MetadataDictionary dict = null;
-        try {
-            dict = MetadataDictionary.lookup();
-        } catch (NamespaceException ex) {
-            // Remapping not enabled
-        }
-
-        final String n = dict != null ? dict.map(key) : key;
-
-        if (this.parameters.containsEntry(n, value)) {
+        if (this.parameters.containsEntry(key, value)) {
             return false;
         }
 
-        this.parameters.put(n, value);
+        this.parameters.put(key, value);
         return true;
     }
 
@@ -869,13 +811,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public List<Object> deleteParameter(final String key) {
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            return this.parameters.removeAll(dict.map(key));
-        } catch (NamespaceException ex) {
-            // Renaming not enabled
-            return this.parameters.removeAll(key);
-        }
+        return this.parameters.removeAll(key);
     }
 
     @Override
@@ -1033,12 +969,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public byte[] getAlternateView(final String s) {
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            return this.multipartAlternative.get(dict.map(s));
-        } catch (NamespaceException ex) {
-            return this.multipartAlternative.get(s);
-        }
+        return this.multipartAlternative.get(s);
     }
 
     @Override
@@ -1080,37 +1011,21 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Override
     public void addAlternateView(final String name, final byte[] data) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
         if (data == null) {
-            this.multipartAlternative.remove(mappedName);
+            this.multipartAlternative.remove(name);
         } else {
-            this.multipartAlternative.put(mappedName, data);
+            this.multipartAlternative.put(name, data);
         }
     }
 
     @Override
     public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
-        String mappedName = name;
-        try {
-            final MetadataDictionary dict = MetadataDictionary.lookup();
-            mappedName = dict.map(name);
-        } catch (NamespaceException ex) {
-            // ignore
-        }
-
         if (data == null || length <= 0) {
-            this.multipartAlternative.remove(mappedName);
+            this.multipartAlternative.remove(name);
         } else {
             final byte[] mpa = new byte[length];
             System.arraycopy(data, offset, mpa, 0, length);
-            this.multipartAlternative.put(mappedName, mpa);
+            this.multipartAlternative.put(name, mpa);
         }
     }
 
