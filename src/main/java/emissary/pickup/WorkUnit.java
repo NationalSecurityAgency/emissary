@@ -1,5 +1,9 @@
 package emissary.pickup;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 /**
  * A WorkUnit is a unit of work a worker will process. The idea is to replace fileNameList. Currently, WorkBundle is set
  * to only have one file, and so there will only be one WorkUnit.
@@ -34,6 +38,22 @@ public class WorkUnit {
         this.transactionId = transactionId;
         this.failedToParse = failedToParse;
         this.failedToProcess = failedToProcess;
+    }
+
+    public static WorkUnit readFromStream(DataInputStream in) throws IOException {
+        final WorkUnit u = new WorkUnit(null);
+        u.fileName = in.readUTF();
+        u.transactionId = in.readUTF();
+        u.failedToParse = in.readBoolean();
+        u.failedToProcess = in.readBoolean();
+        return u;
+    }
+
+    public void writeToStream(DataOutputStream out) throws IOException {
+        out.writeUTF(fileName);
+        out.writeUTF(transactionId);
+        out.writeBoolean(failedToParse);
+        out.writeBoolean(failedToProcess);
     }
 
     /**

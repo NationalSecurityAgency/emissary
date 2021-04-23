@@ -1,6 +1,8 @@
 package emissary.pickup;
 
-import java.io.Serializable;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,10 +23,7 @@ import org.slf4j.LoggerFactory;
  * <p>
  * getOldestFileModificationTime() &lt;= getYoungestFileModificationTime()
  */
-public class WorkBundle implements Serializable, Comparable<WorkBundle> {
-
-    // Serializable
-    static final long serialVersionUID = 6339812801001572532L;
+public class WorkBundle implements Comparable<WorkBundle> {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkBundle.class);
 
@@ -108,6 +107,44 @@ public class WorkBundle implements Serializable, Comparable<WorkBundle> {
             this.addWorkUnits(that.getWorkUnitList());
         }
         resetBundleId();
+    }
+
+    public static WorkBundle readFromStream(DataInputStream in) throws IOException {
+        WorkBundle b = new WorkBundle();
+        b.bundleId = in.readUTF();
+        b.outputRoot = in.readUTF();
+        b.eatPrefix = in.readUTF();
+        b.caseId = in.readUTF();
+        b.sentTo = in.readUTF();
+        b.errorCount = in.readInt();
+        b.priority = in.readInt();
+        b.simpleMode = in.readBoolean();
+        b.oldestFileModificationTime = in.readLong();
+        b.youngestFileModificationTime = in.readLong();
+        b.totalFileSize = in.readLong();
+        int workUnitSize = in.readInt();
+        for (int i = 0; i < workUnitSize; i++) {
+            b.addWorkUnit(WorkUnit.readFromStream(in));
+        }
+        return b;
+    }
+
+    public void writeToStream(DataOutputStream out) throws IOException {
+        out.writeUTF(bundleId);
+        out.writeUTF(outputRoot);
+        out.writeUTF(eatPrefix);
+        out.writeUTF(caseId);
+        out.writeUTF(sentTo);
+        out.writeInt(errorCount);
+        out.writeInt(priority);
+        out.writeBoolean(simpleMode);
+        out.writeLong(oldestFileModificationTime);
+        out.writeLong(youngestFileModificationTime);
+        out.writeLong(totalFileSize);
+        out.writeInt(workUnitList.size());
+        for (WorkUnit u : workUnitList) {
+            u.writeToStream(out);
+        }
     }
 
     /**
