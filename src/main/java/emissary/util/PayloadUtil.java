@@ -1,11 +1,5 @@
 package emissary.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -14,7 +8,6 @@ import java.util.Map;
 
 import emissary.core.IBaseDataObject;
 import emissary.util.xml.JDOMUtil;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -108,49 +101,6 @@ public class PayloadUtil {
         return sb.toString();
     }
 
-    public static ByteBuffer serializeToByteBuffer(final Object payload) throws IOException {
-        return ByteBuffer.wrap(serializeToBytes(payload));
-    }
-
-    /**
-     * Serialize a payload object to bytes
-     */
-    public static byte[] serializeToBytes(final Object payload) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        serializeToStream(bos, payload);
-        return bos.toByteArray();
-    }
-
-    /**
-     * Serialize a payload object to string
-     */
-    public static String serializeToString(final Object payload) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        serializeToStream(bos, payload);
-        String agentData = null;
-        try {
-            agentData = bos.toString("8859_1");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Should always support 8859_1", e);
-            agentData = bos.toString();
-        }
-        return agentData;
-    }
-
-    /**
-     * Serialize a payload object onto the specified stream
-     */
-    public static void serializeToStream(final OutputStream os, final Object payload) throws IOException {
-        /* TODO: implement without using unsafe serialization, an Object is non-ideal here too */
-        throw new NotImplementedException("PayloadUtil.serializeToStream() is not implemented");
-
-    }
-
-    public static Object deserialize(final String s) {
-        /* TODO: implement without using unsafe serialization, an Object is non-ideal here too */
-        throw new NotImplementedException("PayloadUtil.deserialize() is not implemented");
-    }
-
     /**
      * Turn the payload into an xml jdom document
      * 
@@ -178,7 +128,7 @@ public class PayloadUtil {
         final Element meta = new Element("metadata");
         for (final String key : d.getParameters().keySet()) {
             final Element m = JDOMUtil.protectedElement("param", d.getStringParameter(key));
-            m.setAttribute("name", key.toString());
+            m.setAttribute("name", key);
             meta.addContent(m);
         }
         root.addContent(meta);
@@ -205,8 +155,7 @@ public class PayloadUtil {
         }
 
         logger.debug("Produced xml document for " + d.shortName());
-        final Document doc = new Document(root);
-        return doc;
+        return new Document(root);
     }
 
     /**
@@ -230,8 +179,7 @@ public class PayloadUtil {
             root.addContent(doc.detachRootElement());
             logger.debug("Adding xml content for " + d.shortName() + " to document");
         }
-        final Document doc = new Document(root);
-        return doc;
+        return new Document(root);
     }
 
     /**
@@ -252,7 +200,7 @@ public class PayloadUtil {
         final StringBuilder out = new StringBuilder();
         out.append(LS);
         for (final Map.Entry<String, Collection<Object>> entry : payload.getParameters().entrySet()) {
-            out.append(entry.getKey() + SEP + entry.getValue() + LS);
+            out.append(entry.getKey()).append(SEP).append(entry.getValue()).append(LS);
         }
         return out.toString();
     }
