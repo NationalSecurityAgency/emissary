@@ -3,8 +3,6 @@ package emissary.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -16,6 +14,7 @@ import java.util.Map;
 
 import emissary.core.IBaseDataObject;
 import emissary.util.xml.JDOMUtil;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -142,38 +141,14 @@ public class PayloadUtil {
      * Serialize a payload object onto the specified stream
      */
     public static void serializeToStream(final OutputStream os, final Object payload) throws IOException {
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(os);
-            oos.writeObject(payload);
-        } finally {
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
-        }
+        /* TODO: implement without using unsafe serialization, an Object is non-ideal here too */
+        throw new NotImplementedException("PayloadUtil.serializeToStream() is not implemented");
+
     }
 
     public static Object deserialize(final String s) {
-        ObjectInputStream ois = null;
-        try {
-            ois = new ObjectInputStream(new ByteArrayInputStream(s.getBytes("8859_1")));
-            return ois.readObject();
-        } catch (Exception e) {
-            logger.error("Cannot deserialize payload using " + (s == null ? -1 : s.length()) + " bytes", e);
-            throw new IllegalArgumentException("Cannot deserialize payload");
-        } finally {
-            if (ois != null) {
-                try {
-                    ois.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
-        }
+        /* TODO: implement without using unsafe serialization, an Object is non-ideal here too */
+        throw new NotImplementedException("PayloadUtil.deserialize() is not implemented");
     }
 
     /**
