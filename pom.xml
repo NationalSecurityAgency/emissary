@@ -36,7 +36,7 @@
     <dep.commons-io.version>2.4</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
     <dep.commons-logging.version>1.2</dep.commons-logging.version>
-    <dep.commons-pool.version>1.6</dep.commons-pool.version>
+    <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
     <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
     <dep.guava.version>30.0-jre</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
@@ -156,11 +156,6 @@
         <version>${dep.commons-logging.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>${dep.commons-pool.version}</version>
-      </dependency>
-      <dependency>
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-ganglia</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
@@ -204,6 +199,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${dep.commons-exec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
+        <version>${dep.commons-pool2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -487,10 +487,6 @@
       <artifactId>commons-lang</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-pool</groupId>
-      <artifactId>commons-pool</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-ganglia</artifactId>
     </dependency>
@@ -521,6 +517,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>

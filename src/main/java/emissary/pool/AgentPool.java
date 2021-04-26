@@ -3,7 +3,7 @@ package emissary.pool;
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,18 +104,17 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * @param name name of the pool in the namespace
      */
     protected void configurePool(String name) {
-        setMaxActive(initialPoolSize);
         namespaceName = name;
 
         // Set blocking policy
-        setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
+        setBlockWhenExhausted(true);
 
         // Set maximum wait time when blocking on exhausted pool
-        setMaxWait(1000 * 60 * 50); // 50 min
+        setMaxWaitMillis(1000 * 60 * 50); // 50 min
 
         logger.debug("Configuring AgentPool to use " + initialPoolSize + " agents");
 
-        // start them all
+        setMaxTotal(initialPoolSize);
         setMinIdle(initialPoolSize);
         setMaxIdle(initialPoolSize);
 
@@ -127,7 +126,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * Ensure the pool is full
      */
     protected void fillPool() {
-        int level = getMaxActive();
+        int level = getMaxTotal();
         // fill in the pool
         for (int i = 0; i < level; i++) {
             try {
@@ -143,9 +142,8 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * 
      * @param factory the new factory
      */
-    @SuppressWarnings("deprecation")
     public void resetFactory(MobileAgentFactory factory) {
-        // Ideally we will need to drop and recreate th entire pool
+        // Ideally we will need to drop and recreate the entire pool
         // in order to get around this deprecated method, but that has
         // impact on the global namespace, most weirdly for the caller
         // of this method since the reference they hold is obsoleted by
@@ -153,7 +151,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         // close(); // shutdown and unbind
         // logger.info("AgentPool#resetFactory caused Namespace registered instance to change");
         // new AgentPool(factory, getMaxActive(), getPoolName()); // reload and bind
-        setFactory(factory);
+        this.factory = factory;
         emptyPool();
         fillPool();
     }
@@ -189,12 +187,20 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         }
     }
 
+    /*
+     * Get the total current agents in the pool
+     */
+    public synchronized int getCurrentPoolSize() {
+        return getNumIdle() + getNumActive();
+    }
+
     protected void emptyPool() {
         int numberKilled = 0;
+        int numberToKill = getCurrentPoolSize();
         long waitTil = System.currentTimeMillis() + (30 * 60 * 1000); // 30 min
-        logger.debug("Going to kill {} agents", initialPoolSize);
+        logger.debug("Going to kill {} agents", numberToKill);
         try {
-            while (numberKilled < initialPoolSize) {
+            while (getCurrentPoolSize() != 0) {
                 if (System.currentTimeMillis() > waitTil) {
                     throw new InterruptedException("Too long, tired of waiting. Some MobileAgents are going to die poorly");
                 }
@@ -224,11 +230,10 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                     } catch (Exception e) {
                         logger.error("Error trying to returnAgent: {}", a.getName(), e);
                     }
-
                 }
-                logger.debug("Killed {} agents this round, {} total dead", killedThisRound, numberKilled);
+                logger.debug("Killed {} agents this round, {} total killed", killedThisRound, numberKilled);
                 // give some space for working agents to be returned
-                setMaxIdle(initialPoolSize - numberKilled);
+                setMaxIdle(numberToKill - numberKilled);
                 Thread.sleep(5000);
             }
             logger.info("Pool is now empty");
@@ -245,7 +250,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      */
     @Override
     public void close() {
-        setMaxActive(0);
+        setMaxTotal(0);
         emptyPool();
         Namespace.unbind(getPoolName());
         logger.info("Done stopping the agent pool");
@@ -254,7 +259,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
     /**
      * Return an agent to the pool
      */
-    public void returnAgent(IMobileAgent agent) throws Exception {
+    public void returnAgent(IMobileAgent agent) {
         logger.debug("Returning {}", agent.getName());
         returnObject(agent);
         logger.debug("POOL return active=" + getNumActive());

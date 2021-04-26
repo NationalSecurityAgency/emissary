@@ -1,6 +1,5 @@
 package emissary.core;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +23,7 @@ import org.slf4j.MDC;
 /**
  * An autonomous hunk of software
  */
-public abstract class MobileAgent implements Serializable, IMobileAgent, MobileAgentMBean, Runnable {
+public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // Serializable
     static final long serialVersionUID = 2656898442450171891L;
@@ -184,9 +183,7 @@ public abstract class MobileAgent implements Serializable, IMobileAgent, MobileA
      * Report whether we are busy or not
      */
     @Override
-    public boolean isInUse() {
-        // This is deliberately non-synchronized access
-        // to a normally synchronized instance variable
+    public synchronized boolean isInUse() {
         return (this.payload != null) && (this.arrivalPlace != null);
     }
 
