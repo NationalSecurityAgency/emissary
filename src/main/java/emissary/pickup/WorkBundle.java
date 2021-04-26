@@ -23,9 +23,11 @@ import org.slf4j.LoggerFactory;
  * <p>
  * getOldestFileModificationTime() &lt;= getYoungestFileModificationTime()
  */
-public class WorkBundle implements Comparable<WorkBundle> {
+public final class WorkBundle implements Comparable<WorkBundle> {
 
     private static final Logger logger = LoggerFactory.getLogger(WorkBundle.class);
+
+    static final int MAX_UNITS = 1024;
 
     // Unique ID for this work bundle
     String bundleId;
@@ -109,32 +111,49 @@ public class WorkBundle implements Comparable<WorkBundle> {
         resetBundleId();
     }
 
+    /**
+     * Deserialize a WorkBundle from a DataInputStream
+     *
+     * @param in the stream to read from
+     * @return the deserialized WorkBundle
+     * @throws IOException if there is a problem reading the stream or it contains more than <code>MAX_UNITS</code> work
+     *         units.
+     */
     public static WorkBundle readFromStream(DataInputStream in) throws IOException {
-        WorkBundle b = new WorkBundle();
-        b.bundleId = in.readUTF();
-        b.outputRoot = in.readUTF();
-        b.eatPrefix = in.readUTF();
-        b.caseId = in.readUTF();
-        b.sentTo = in.readUTF();
-        b.errorCount = in.readInt();
-        b.priority = in.readInt();
-        b.simpleMode = in.readBoolean();
-        b.oldestFileModificationTime = in.readLong();
-        b.youngestFileModificationTime = in.readLong();
-        b.totalFileSize = in.readLong();
+        WorkBundle wb = new WorkBundle();
+        wb.bundleId = readUTFOrNull(in);
+        wb.outputRoot = readUTFOrNull(in);
+        wb.eatPrefix = readUTFOrNull(in);
+        wb.caseId = readUTFOrNull(in);
+        wb.sentTo = readUTFOrNull(in);
+        wb.errorCount = in.readInt();
+        wb.priority = in.readInt();
+        wb.simpleMode = in.readBoolean();
+        wb.oldestFileModificationTime = in.readLong();
+        wb.youngestFileModificationTime = in.readLong();
+        wb.totalFileSize = in.readLong();
         int workUnitSize = in.readInt();
-        for (int i = 0; i < workUnitSize; i++) {
-            b.addWorkUnit(WorkUnit.readFromStream(in));
+        if (workUnitSize > MAX_UNITS) {
+            throw new IOException("Exception when reading: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitSize + ").");
         }
-        return b;
+        for (int i = 0; i < workUnitSize; i++) {
+            wb.addWorkUnit(WorkUnit.readFromStream(in));
+        }
+        return wb;
     }
 
+    /**
+     * Serialize this WorkBundle to a DataOutputStream
+     *
+     * @param out the stream to write to.
+     * @throws IOException if there is a problem writing to the stream.
+     */
     public void writeToStream(DataOutputStream out) throws IOException {
-        out.writeUTF(bundleId);
-        out.writeUTF(outputRoot);
-        out.writeUTF(eatPrefix);
-        out.writeUTF(caseId);
-        out.writeUTF(sentTo);
+        writeUTFOrNull(bundleId, out);
+        writeUTFOrNull(outputRoot, out);
+        writeUTFOrNull(eatPrefix, out);
+        writeUTFOrNull(caseId, out);
+        writeUTFOrNull(sentTo, out);
         out.writeInt(errorCount);
         out.writeInt(priority);
         out.writeBoolean(simpleMode);
@@ -142,8 +161,25 @@ public class WorkBundle implements Comparable<WorkBundle> {
         out.writeLong(youngestFileModificationTime);
         out.writeLong(totalFileSize);
         out.writeInt(workUnitList.size());
+        if (workUnitList.size() > MAX_UNITS) {
+            throw new IOException("Exception when writing: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitList.size() + ").");
+        }
         for (WorkUnit u : workUnitList) {
             u.writeToStream(out);
+        }
+    }
+
+    static String readUTFOrNull(DataInputStream in) throws IOException {
+        if (in.readBoolean()) {
+            return in.readUTF();
+        }
+        return null;
+    }
+
+    static void writeUTFOrNull(String s, DataOutputStream out) throws IOException {
+        out.writeBoolean(s != null);
+        if (s != null) {
+            out.writeUTF(s);
         }
     }
 
@@ -241,8 +277,13 @@ public class WorkBundle implements Comparable<WorkBundle> {
      *
      * @param workUnit the workUnit to add
      * @return number of WorkUnits in list after add
+     * @throws IllegalStateException if adding the unit would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     public int addWorkUnit(WorkUnit workUnit) {
+        if (workUnitList.size() >= MAX_UNITS) {
+            throw new IllegalStateException("WorkBundle may not contain more than " + MAX_UNITS + " WorkUnits.");
+        }
         workUnitList.add(workUnit);
         return size();
     }
@@ -252,10 +293,14 @@ public class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param workUnit the workUnit to add
      * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
+     * @param fileSize the size of the file added.
+     * @throws IllegalStateException if adding the unit would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      * @return number of files in this set after update
      */
     public int addWorkUnit(WorkUnit workUnit, long fileModificationTimeInMillis, long fileSize) {
-        workUnitList.add(workUnit);
+        addWorkUnit(workUnit);
+
         if (fileModificationTimeInMillis < oldestFileModificationTime) {
             oldestFileModificationTime = fileModificationTimeInMillis;
         }
@@ -268,8 +313,16 @@ public class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add from a list, without adjusting file modification time tracking.
+     * 
+     * @param list a list of WorkUnits to add to this bundle
+     * @return the total size of WorkUnits in this bundle
+     * @throws IllegalStateException if adding the units would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     protected int addWorkUnits(List<WorkUnit> list) { // This appears to only be used by unit tests and the copy constructor
+        if (workUnitList.size() + list.size() > MAX_UNITS) {
+            throw new IllegalStateException("WorkBundle may not contain more than " + MAX_UNITS + " WorkUnits.");
+        }
         workUnitList.addAll(list);
         return workUnitList.size();
     }
@@ -302,10 +355,11 @@ public class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param file string file name consistent with outputRoot
      * @return number of files in this set after update
+     * @throws IllegalStateException if adding the file would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     public int addFileName(String file) {
-        workUnitList.add(new WorkUnit(file));
-        return size();
+        return addWorkUnit(new WorkUnit(file));
     }
 
     /**
@@ -313,7 +367,10 @@ public class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param file string file name consistent with outputRoot
      * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
+     * @param fileSize the size of the file being added
      * @return number of files in this set after update
+     * @throws IllegalStateException if adding the file would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     public int addFileName(String file, long fileModificationTimeInMillis, long fileSize) {
         return addWorkUnit(new WorkUnit(file), fileModificationTimeInMillis, fileSize);
@@ -324,21 +381,27 @@ public class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param file string file names consistent with outputRoot
      * @return number of files in this set after update
+     * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     protected int addFileNames(String[] file) { // This appears to only be used by unit tests
-        for (int i = 0; file != null && i < file.length; i++) {
-            workUnitList.add(new WorkUnit(file[i]));
+        for (String f : file) {
+            addWorkUnit(new WorkUnit(f));
         }
         return size();
     }
 
     /**
      * Add from a list, without adjusting file modification time tracking.
+     * 
+     * @param list the list of files to add
+     * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
+     *         work units
      */
     protected int addFileNames(List<String> list) { // This appears to only be used by unit tests and the copy
                                                     // constructor
         for (String file : list) {
-            workUnitList.add(new WorkUnit(file));
+            addWorkUnit(new WorkUnit(file));
         }
         return size();
     }
