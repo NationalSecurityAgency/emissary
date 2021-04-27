@@ -4,11 +4,13 @@ import java.io.IOException;
 
 import emissary.core.Factory;
 import emissary.core.IMobileAgent;
-import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> {
+public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     // This is the default class when nothing else is
     // configured or passed on on a constructor. This value
@@ -86,7 +88,7 @@ public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> 
      * @return a newly Factory.create()ed instance
      */
     @Override
-    public IMobileAgent makeObject() {
+    public PooledObject<IMobileAgent> makeObject() {
         logger.debug("Calling MobileAgentFactory.makeObject for " + getClassString());
         IMobileAgent agent = null;
         String aname = AGENT_NAME + "-" + (objectsCreated < 10 ? "0" : "") + objectsCreated;
@@ -107,7 +109,29 @@ public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> 
             }
         }
         objectsCreated++;
-        return agent;
+        return new DefaultPooledObject<>(agent);
+    }
+
+    /**
+     * Called by the pool to activate an object
+     *
+     * @param o the object to be activated in the pool
+     */
+    @Override
+    public void activateObject(PooledObject<IMobileAgent> o) {
+        logger.trace("Activating {}", o.getObject().getName());
+        // no code
+    }
+
+    /**
+     * Called by the pool to passivate an object
+     *
+     * @param o the object to be passivated in the pool
+     */
+    @Override
+    public void passivateObject(PooledObject<IMobileAgent> o) {
+        logger.trace("Passivating {}", o.getObject().getName());
+        // no code
     }
 
     /**
@@ -117,11 +141,9 @@ public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> 
      * @return IMobileAgent.isInUse() with proper checking
      */
     @Override
-    public boolean validateObject(IMobileAgent o) {
-        if (!o.isInUse()) {
-            return true;
-        }
-        return false;
+    public boolean validateObject(PooledObject<IMobileAgent> o) {
+        logger.debug("Validating {}", o.getObject().getName());
+        return !o.getObject().isInUse();
     }
 
     /**
@@ -130,8 +152,9 @@ public class MobileAgentFactory extends BasePoolableObjectFactory<IMobileAgent> 
      * @param o the object to be removed from the pool and destroyed
      */
     @Override
-    public void destroyObject(IMobileAgent o) {
-        o.killAgentAsync();
+    public void destroyObject(PooledObject<IMobileAgent> o) {
+        logger.debug("Destroying {}", o.getObject().getName());
+        o.getObject().killAgentAsync();
     }
 
     /**

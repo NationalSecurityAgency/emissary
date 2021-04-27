@@ -72,7 +72,7 @@ public class Pool {
             int active = 0;
             int idle = 0;
             try {
-                for (int i = 0; i < AgentPool.lookup().getMaxActive(); i++) {
+                for (int i = 0; i < AgentPool.lookup().getMaxTotal(); i++) {
                     String agentKey = MobileAgentFactory.AGENT_NAME + "-" + String.format("%02d", i);
                     if (Namespace.exists(agentKey)) {
                         if (Namespace.lookup(agentKey).toString().startsWith("Idle")) {
