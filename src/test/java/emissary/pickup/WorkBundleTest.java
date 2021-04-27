@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import com.mchange.v1.identicator.IdList;
 import emissary.test.core.UnitTest;
 import org.junit.Test;
 
