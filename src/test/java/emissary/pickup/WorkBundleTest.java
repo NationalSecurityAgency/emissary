@@ -261,8 +261,6 @@ public class WorkBundleTest extends UnitTest {
         assertEquals(0, w1.compareTo(w2));
     }
 
-    public static final int MAX_METHODS = 4;
-
     @Test
     public void testLimitAdd() throws IOException {
         // generate test data.
