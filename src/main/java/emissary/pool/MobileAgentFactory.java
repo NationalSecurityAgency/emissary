@@ -143,10 +143,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
     @Override
     public boolean validateObject(PooledObject<IMobileAgent> o) {
         logger.debug("Validating {}", o.getObject().getName());
-        if (!o.getObject().isInUse()) {
-            return true;
-        }
-        return false;
+        return !o.getObject().isInUse();
     }
 
     /**
