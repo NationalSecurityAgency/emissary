@@ -8,6 +8,8 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.commons.codec.binary.Hex;
+
 public class Hexl {
 
     static final int CHARS_PER_LINE = 16;
@@ -18,20 +20,7 @@ public class Hexl {
      * Unformatted hex string
      */
     public static String toUnformattedHexString(byte[] data) {
-        StringBuilder output = new StringBuilder(2048);
-
-        int stop = data.length;
-
-        for (int i = 0; i < stop; i++) {
-            String s = Integer.toHexString(data[i] & 0xff);
-            if (s.length() < 2) {
-                output.append("0");
-            }
-            output.append(s);
-        }
-
-
-        return (output.toString());
+        return Hex.encodeHexString(data);
     }
 
 
