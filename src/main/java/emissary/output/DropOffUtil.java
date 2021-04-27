@@ -1014,7 +1014,7 @@ public class DropOffUtil {
         }
 
         for (final IBaseDataObject p : payloadList) {
-            final int level = p.shortName().split(emissary.core.Family.SEP).length;
+            final int level = StringUtils.countMatches(p.shortName(), emissary.core.Family.SEP) + 1;
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
@@ -1086,8 +1086,7 @@ public class DropOffUtil {
                 final List<IBaseDataObject> childObjList = p.getExtractedRecords();
                 Collections.sort(childObjList, new emissary.util.ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
-                    final int level2 = child.shortName().split("-att-").length;
-                    final int parentLevel = level2 - 1;
+                    final int parentLevel = StringUtils.countMatches(child.shortName(), emissary.core.Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);
                     if (parentFileType != null) {
                         child.setParameter("PARENT_FILETYPE", parentFileType);
