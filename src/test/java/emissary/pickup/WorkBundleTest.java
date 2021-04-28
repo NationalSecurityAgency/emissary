@@ -264,7 +264,7 @@ public class WorkBundleTest extends UnitTest {
     public void testLimitAdd() throws IOException {
         // generate test data.
         final List<WorkUnit> wul = new ArrayList<>();
-        for (int i = 0; i < WorkBundle.MAX_UNITS+2; i++) {
+        for (int i = 0; i < WorkBundle.MAX_UNITS + 2; i++) {
             String fileName = UUID.randomUUID().toString();
             wul.add(new WorkUnit(fileName));
         }
@@ -274,11 +274,9 @@ public class WorkBundleTest extends UnitTest {
             WorkBundle wb = new WorkBundle();
             wb.addWorkUnits(wul);
             fail("Did not catch expected exception when adding work unit list.");
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // this is the expected outcome.
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             fail("Unexpected Exception caught when adding work unit list: " + t);
 
         }
@@ -288,12 +286,10 @@ public class WorkBundleTest extends UnitTest {
             WorkBundle wb = new WorkBundle();
             wul.forEach(wb::addWorkUnit);
             fail("Did not catch expected exception when adding work unit.");
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // this is the expected outcome.
-        }
-        catch (Throwable t) {
-              fail("Unexpected Exception caught when adding work unit: " + t);
+        } catch (Throwable t) {
+            fail("Unexpected Exception caught when adding work unit: " + t);
         }
     }
 
@@ -305,7 +301,7 @@ public class WorkBundleTest extends UnitTest {
         WorkBundle wb1 = new WorkBundle();
         // generate test data.
         final List<WorkUnit> wul = new ArrayList<>();
-        for (int i = 0; i < WorkBundle.MAX_UNITS+2; i++) {
+        for (int i = 0; i < WorkBundle.MAX_UNITS + 2; i++) {
             String fileName = UUID.randomUUID().toString();
             wul.add(new WorkUnit(fileName));
         }
@@ -332,11 +328,9 @@ public class WorkBundleTest extends UnitTest {
         try {
             WorkBundle wb2 = WorkBundle.readFromStream(new DataInputStream(new ByteArrayInputStream(bout.toByteArray())));
             fail("Did not catch expected exception when deserializing work unit.");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             // expected
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             fail("Unexpected Exception caught when deserializing work unit: " + t);
 
         }

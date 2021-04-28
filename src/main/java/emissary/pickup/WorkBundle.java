@@ -134,7 +134,8 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         wb.totalFileSize = in.readLong();
         int workUnitSize = in.readInt();
         if (workUnitSize > MAX_UNITS) {
-            throw new IOException("Exception when reading: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitSize + ").");
+            throw new IOException(
+                    "Exception when reading: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitSize + ").");
         }
         for (int i = 0; i < workUnitSize; i++) {
             wb.addWorkUnit(WorkUnit.readFromStream(in));
@@ -162,7 +163,8 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         out.writeLong(totalFileSize);
         out.writeInt(workUnitList.size());
         if (workUnitList.size() > MAX_UNITS) {
-            throw new IOException("Exception when writing: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitList.size() + ").");
+            throw new IOException(
+                    "Exception when writing: WorkBundle may not contain more then " + MAX_UNITS + " WorkUnits (saw: " + workUnitList.size() + ").");
         }
         for (WorkUnit u : workUnitList) {
             u.writeToStream(out);
