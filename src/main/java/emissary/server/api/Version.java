@@ -18,6 +18,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class Version {
     @GET
     @Path("/version")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the current application version", tags = {"version"})
     public Response localVersion() {
         return Response.ok().entity(lookupVersion()).build();
     }
@@ -43,6 +45,7 @@ public class Version {
     @GET
     @Path("/cluster/version")
     @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Get the current application version across the cluster", tags = {"version", "cluster"})
     public Response clusterVersion() {
         try {
             // Get our local information first

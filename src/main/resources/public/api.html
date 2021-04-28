@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/lib/swagger-ui.css" >
+    <link rel="stylesheet" href="/css/emissary.css">
+
+    <title>API</title>
+</head>
+
+<body>
+    <header></header>
+
+    <main class="container">
+        <div id="swagger-ui"></div>
+    </main>
+
+    <script src="/js/lib/jquery.min.js"></script>
+    <script src="/js/lib/popper.min.js"></script>
+    <script src="/js/lib/bootstrap.min.js"></script>
+    <script src="/js/lib/swagger-ui-bundle.js"> </script>
+    <script src="/js/lib/swagger-ui-standalone-preset.js"></script>
+    <script src="/js/emissary.js"></script>
+    <script>
+        $(document).ready(function() {
+          // Build a system
+          const ui = SwaggerUIBundle({
+            url: window.location.protocol + "//" + window.location.host + "/docs/openapi.json",
+            dom_id: '#swagger-ui',
+            deepLinking: true,
+            requestInterceptor: function(req) {
+                if (!(['GET', 'HEAD', 'OPTIONS'].includes(req.method))) {
+                    req.headers['X-Requested-By'] = 'emissary';
+                }
+                return req;
+            },
+            presets: [
+              SwaggerUIBundle.presets.apis
+            ],
+            plugins: [
+              SwaggerUIBundle.plugins.DownloadUrl
+            ]
+          })
+          window.ui = ui
+        });
+      </script>
+</body>
+</html>
