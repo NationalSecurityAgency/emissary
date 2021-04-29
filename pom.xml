@@ -47,7 +47,7 @@
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.32</dep.jersey.version>
+    <dep.jersey.version>3.0.2</dep.jersey.version>
     <dep.jetty.version>9.4.37.v20210219</dep.jetty.version>
     <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
