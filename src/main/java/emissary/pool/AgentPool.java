@@ -177,7 +177,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
     public IMobileAgent borrowAgent() throws Exception {
         try {
             IMobileAgent a = borrowObject();
-            logger.debug("POOL borrow active=" + getNumActive());
+            logger.trace("POOL borrow active={}", getNumActive());
             return a;
         } catch (Exception e) {
 
@@ -260,9 +260,9 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * Return an agent to the pool
      */
     public void returnAgent(IMobileAgent agent) {
-        logger.debug("Returning {}", agent.getName());
+        logger.trace("Returning {}", agent.getName());
         returnObject(agent);
-        logger.debug("POOL return active=" + getNumActive());
+        logger.trace("POOL return active={}", getNumActive());
     }
 
     /**
