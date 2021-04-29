@@ -58,12 +58,10 @@ setup_from_development() {
   export PROJECT_BASE="${TGT_DIR}"
   
   # Setup the classpath by having maven dump the location
-  # of dependency jars in your local repo.  Delete this
-  # file if you change dependencies, it will not regenerate
+  # of dependency jars in your local repo.
   local MVN_CP_FILE="${SCRIPT_DIR}/.mvn-classpath"
-  if [ ! -e "${MVN_CP_FILE}" ]; then
-    mvn -DexcludeScope=provided dependency:build-classpath -Dmdep.outputFile=${MVN_CP_FILE}
-  fi
+  mvn -DexcludeScope=provided dependency:build-classpath -Dmdep.outputFile=${MVN_CP_FILE} -q
+
   # assumes mvn compile is current
   CP="${TGT_DIR}/classes:$(cat ${MVN_CP_FILE})"
 }
