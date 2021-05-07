@@ -1,10 +1,7 @@
 package emissary.server.mvc.adapters;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,43 +76,6 @@ public class WorkSpaceAdapter extends EmissaryClient {
 
     private WorkSpace lookupSpace(final String name) throws NamespaceException {
         return (WorkSpace) lookup(name);
-    }
-
-
-    /**
-     * Handle the packaging and sending of a enque call to a remote pickup client place
-     * 
-     * @param place the serviceLocation portion of the place
-     * @return status of operation
-     */
-    public EmissaryResponse outboundEnque(final String place, final WorkBundle path) {
-
-        final String placeUrl = KeyManipulator.getServiceHostURL(place);
-        final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientEnqueue.action");
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
-
-        String pathData = null;
-        try {
-            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            final ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(path);
-            oos.close();
-            try {
-                pathData = bos.toString("8859_1");
-            } catch (UnsupportedEncodingException e) {
-                pathData = bos.toString();
-            }
-        } catch (Exception e) {
-            logger.error("Cannot serialize WorkBundle object", e);
-            throw new IllegalArgumentException("Cannot serialize WorkBundle object: " + e.getMessage());
-        }
-
-        nvps.add(new BasicNameValuePair(WORK_BUNDLE_OBJ, pathData));
-        logger.debug("Sending {} file names to {} as {}", path.size(), place, path);
-
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.forName("8859_1")));
-        return send(method);
     }
 
     /**
