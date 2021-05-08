@@ -58,7 +58,7 @@ public class DirectoryXmlContainer {
 
         // Each directory entry
         for (final String dataId : dir.getEntryKeys()) {
-            final DirectoryEntryList list = dir.irdGetEntryListExcl(dataId, requester);
+            final DirectoryEntryList list = dir.getEntryList(dataId);
             logger.debug("List of " + dataId + " for " + requester + " has " + list.size() + " entries");
             // set up proxy for each entry
             for (final DirectoryEntry e : list) {

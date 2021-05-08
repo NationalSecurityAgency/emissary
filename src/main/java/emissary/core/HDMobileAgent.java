@@ -360,14 +360,6 @@ public class HDMobileAgent extends MobileAgent {
             recordHistory(newEntry, mypayload);
             nextKeyRecorded = true;
 
-            if (moveHandler(mypayload, currentPlace, newEntry)) {
-                // Clear them out
-                newEntry = null;
-                currentPlace = null;
-                break; // Moved or dead
-            }
-            // Let it try and go the the ERROR place if there is one
-            logger.error("MoveTo failed, giving up.");
             controlError = true;
             if (!KeyManipulator.isKeyComplete(mypayload.currentForm())) {
                 mypayload.replaceCurrentForm(ERROR_FORM);

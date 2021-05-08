@@ -293,14 +293,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 continue;
             }
 
-            // A remote place, move there
-            logger.debug("Moving to {}", newEntry.getFullKey());
-            if (moveHandler(mypayload, currentPlace, newEntry)) {
-                // We moved, clean it out
-                newEntry = null;
-                break; // Moved or dead
-            }
-            logger.error("MoveTo failed, giving up.");
             controlError = true;
             if (++this.moveErrorsOccurred > this.MAX_MOVE_ERRORS || this.payload.transformHistory().size() > this.MAX_ITINERARY_STEPS) {
                 logger.error("Too many move errors, giving up");
@@ -332,46 +324,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         if (newEntry == null) {
             logAgentCompletion(mypayload);
         }
-    }
-
-    /**
-     * Move an agent to a remote with retries and logging
-     *
-     * @param payloadArg data object we are holding at the top, log errors into it
-     * @param currentPlace in order to look up directory retries
-     * @param newEntryArg where we want to move to
-     * @return true if the move was successful, false otherwise
-     */
-    protected boolean moveHandler(final IBaseDataObject payloadArg, final IServiceProviderPlace currentPlace, final DirectoryEntry newEntryArg) {
-        int moveErrors = 0;
-
-        DirectoryEntry newEntry = newEntryArg;
-        while (!moveTo(newEntry)) {
-            // Track this fact as data may have become
-            // multipathed here...
-            this.moveErrorsOccurred++;
-            logger.info("moveErrorCount bumped to {} while trying {}", this.moveErrorsOccurred, newEntry.getServiceLocation());
-
-            // Dont allow too many move errors
-            if (++moveErrors > this.MAX_MOVE_ERRORS) {
-                payloadArg.addProcessingError("FATAL.ERROR.MOVETO." + newEntry.getServiceLocation() + "$1002");
-                return false;
-            }
-
-            // try again at a possibly different place
-            final DirectoryEntry nextEntry = getNextKey(currentPlace, payloadArg);
-            final String pseudoKey =
-                    newEntry.getDataType() + ".MOVE-ERROR." + newEntry.getServiceType() + "." + newEntry.getServiceLocation() + "$102";
-            payloadArg.addProcessingError(pseudoKey);
-            logger.warn("Could not move to {} retrying at {}", newEntry, nextEntry);
-            newEntry = nextEntry;
-            if (newEntry == null) {
-                return false;
-            }
-        }
-
-        // It must have worked
-        return true;
     }
 
     /**
@@ -663,43 +615,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         }
         logger.debug("nextKeyFromDirectory found {}", tmpEntry);
         return tmpEntry;
-    }
-
-    /**
-     * Wrapper around the http moveto posting code
-     *
-     * @param entry where we are going
-     */
-    protected boolean moveTo(final DirectoryEntry entry) {
-
-        long elapsedTime = System.currentTimeMillis();
-        // String place = entry.remotePlace();
-        final String place = entry.getKey();
-        // String url = KeyManipulator.serviceHostURL(place);
-        final String url = entry.getServiceHostURL();
-
-        logger.debug("in MobileAgent.moveTo(): place = {}, url={}", place, url);
-        try {
-            // TODO This should be uncommented when redoing the moveTo functionality
-            // final EmissaryClient emissaryClient = EmissaryClient.getInstance();
-            // final boolean status = emissaryClient.moveTo(place, this);
-            final boolean status = false;
-            if (!status) {
-                logger.error("Unable to move to {} with {}", place, getPayload().getFilename());
-                return false;
-            }
-        } catch (Throwable e) {
-            logger.error("moveTo Problem for {}: {}: elapsedTime: {}s {}", this.agentID, getPayload().currentForm(),
-                    ((System.currentTimeMillis() - elapsedTime) / 1000.0), getPayload().getFilename(), e);
-            return false;
-        }
-
-        // Yeah! it worked
-        if (logger.isDebugEnabled()) {
-            elapsedTime += System.currentTimeMillis();
-            logger.debug("MoveTo {} for {} took {}s", place, this.agentID, elapsedTime / 1000.0);
-        }
-        return true;
     }
 
     /**
