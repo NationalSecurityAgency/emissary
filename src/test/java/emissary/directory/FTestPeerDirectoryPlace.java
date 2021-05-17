@@ -260,7 +260,7 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
 
         // Build a payload and verify proper keys selected on peer1
         logger.debug("STARTING PAYLOAD RELAY FROM PEER TO CHILD");
-        IBaseDataObject payload = new BaseDataObject("test data".getBytes(), "test oject", "LOWER_CASE");
+        IBaseDataObject payload = new BaseDataObject("test data".getBytes(), "test object", "LOWER_CASE");
         payload.appendTransformHistory("UNKNOWN.UNIXFILE.ID.http://localhost:9005/UnixFilePlace");
         payload.appendTransformHistory("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8005/DirectoryPlace");
         this.peer1.process(payload);
@@ -423,18 +423,6 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
             super.peerUpdate(observableKey, peers);
             this.peerUpdate++;
             this.lastPeerSetSize = peers.size();
-        }
-
-        @Override
-        public void childAdded(final String observableKey, final DirectoryEntry child) {
-            super.childAdded(observableKey, child);
-            this.childAdded++;
-        }
-
-        @Override
-        public void childRemoved(final String observableKey, final DirectoryEntry child) {
-            super.childRemoved(observableKey, child);
-            this.childRemoved++;
         }
     }
 }

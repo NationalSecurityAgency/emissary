@@ -94,21 +94,6 @@ public class DirectoryObserverManager {
     }
 
     /**
-     * Count how many relay observers are being managed
-     * 
-     * @return count of observers on the relay list
-     */
-    public int getRelayObserverCount() {
-        int count = 0;
-        for (final DirectoryObserver d : this.observers) {
-            if (d instanceof RelayObserver) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    /**
      * Notify all peer observers of peer list change
      * 
      * @param peers the current list of peers to our directory
@@ -194,38 +179,6 @@ public class DirectoryObserverManager {
         for (final DirectoryEntry entry : placeEntries) {
             placeUpdate(Action.PLACE_REMOVE, entry.getFullKey());
         }
-    }
-
-    /**
-     * Notify all relay observers of child add
-     * 
-     * @param child the child that was added
-     */
-    public void childAdded(final DirectoryEntry child) {
-        int count = 0;
-        for (final DirectoryObserver d : this.observers) {
-            if (d instanceof RelayObserver) {
-                ((RelayObserver) d).childAdded(this.directoryKey, child);
-                count++;
-            }
-        }
-        logger.debug("Notified " + count + " RelayObserver instances");
-    }
-
-    /**
-     * Notify all relay observers of child remove
-     * 
-     * @param child the child that was removed
-     */
-    public void childRemoved(final DirectoryEntry child) {
-        int count = 0;
-        for (final DirectoryObserver d : this.observers) {
-            if (d instanceof RelayObserver) {
-                ((RelayObserver) d).childRemoved(this.directoryKey, child);
-                count++;
-            }
-        }
-        logger.debug("Notified " + count + " RelayObserver instances");
     }
 
     /**

@@ -282,9 +282,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
-     * Find an optional peer config stream or file and initialize tracking of the rendezvous and relay peers found there. We
-     * don't actually contact any of the remote directories here so we can get the heck out of the constructor code and get
-     * this place registered in the namespace quick! so other directories can find us in a timely fashion.
+     * Find an optional peer config stream or file and initialize tracking of the peers found there.
+     *
+     * We don't actually contact any of the remote directories here so we can get the heck out of the constructor code and
+     * get this place registered in the namespace quick! so other directories can find us in a timely fashion.
      */
     private void configureNetworkTopology() {
         if (!this.emissaryNode.isValid()) {
@@ -704,7 +705,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final Set<String> peerSet = new HashSet<String>();
         for (final DirectoryEntry newEntry : entryList) {
             // Make a note of any possible new peer directory
-            // We should only be seeing keys for peers and relays
             if (!isLocal(newEntry)) {
                 final String peerKey = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());
                 if (!isKnownPeer(peerKey) && !peerSet.contains(peerKey)) {
@@ -889,8 +889,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
-     * Established or re-established contact with a remote directory. Check for presence on peer or relay and initiate zone
-     * transfer if needed.
+     * Established or re-established contact with a remote directory. Check for presence on peer and initiate zone transfer
+     * if needed.
      *
      * @param key the key of the directory we contacted
      */
@@ -1095,7 +1095,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                     continue;
                 }
 
-                // If equal or lower cost and not relaying, no point in using the entry
+                // If equal or lower cost, no point in using the entry
                 if ((trialEntry.getExpense() <= lastPlace.getExpense()) && trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
                     logger.debug("nextKey skip lower cost not relaying " + trialEntry.getFullKey());
                     continue;
@@ -1379,7 +1379,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
-     * Shutdown this place and deregister and notify any peers, relays and observers that this directory is closing
+     * Shutdown this place and deregister and notify any peers and observers that this directory is closing
      */
     @Override
     public void shutDown() {
