@@ -54,7 +54,7 @@
     <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
-    <dep.junit.version>4.12</dep.junit.version>
+    <dep.junit.version>4.13.1</dep.junit.version>
     <dep.logback.version>1.2.3</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
     <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
