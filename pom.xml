@@ -43,14 +43,18 @@
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.14</dep.httpcore.version>
     <dep.jackson.version>2.12.3</dep.jackson.version>
+    <!-- jersey brings in 2.3.3; tika brings in 2.3.2; converge on latest -->
+    <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
     <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.32</dep.jersey.version>
+    <dep.jersey.version>2.34</dep.jersey.version>
     <dep.jetty.version>9.4.40.v20210413</dep.jetty.version>
     <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
+    <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
+    <dep.junit.version>4.12</dep.junit.version>
     <dep.logback.version>1.2.3</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
     <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
@@ -181,9 +185,20 @@
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${dep.jakarta.xml.bind-api.version}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${dep.javax.annotation-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${dep.junit.version}</version>
+        <!-- can't be test scope due to package locations -->
       </dependency>
       <dependency>
         <groupId>net.spy</groupId>

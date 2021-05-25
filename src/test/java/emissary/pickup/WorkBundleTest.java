@@ -7,6 +7,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -233,4 +239,100 @@ public class WorkBundleTest extends UnitTest {
         assertEquals(7L, w.getOldestFileModificationTime());
     }
 
+    @Test
+    public void testSerDe() throws IOException {
+        WorkBundle w1 = new WorkBundle("/output/root", "/etc/prefix");
+        w1.addFileName("file1.txt", 15L, 4L);
+        w1.addFileName("<file2.txt&foo=bar>", 7L, 10L);
+
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bout);
+        w1.writeToStream(out);
+        out.close();
+        bout.close();
+
+        byte[] b = bout.toByteArray();
+
+        ByteArrayInputStream bin = new ByteArrayInputStream(b);
+        DataInputStream in = new DataInputStream(bin);
+        WorkBundle w2 = WorkBundle.readFromStream(in);
+
+        assertEquals(0, w1.compareTo(w2));
+    }
+
+    @Test
+    public void testLimitAdd() throws IOException {
+        // generate test data.
+        final List<WorkUnit> wul = new ArrayList<>();
+        for (int i = 0; i < WorkBundle.MAX_UNITS + 2; i++) {
+            String fileName = UUID.randomUUID().toString();
+            wul.add(new WorkUnit(fileName));
+        }
+
+        // test add list of WorkUnits
+        try {
+            WorkBundle wb = new WorkBundle();
+            wb.addWorkUnits(wul);
+            fail("Did not catch expected exception when adding work unit list.");
+        } catch (IllegalStateException e) {
+            // this is the expected outcome.
+        } catch (Throwable t) {
+            fail("Unexpected Exception caught when adding work unit list: " + t);
+
+        }
+
+        // test add individual WorkUnits
+        try {
+            WorkBundle wb = new WorkBundle();
+            wul.forEach(wb::addWorkUnit);
+            fail("Did not catch expected exception when adding work unit.");
+        } catch (IllegalStateException e) {
+            // this is the expected outcome.
+        } catch (Throwable t) {
+            fail("Unexpected Exception caught when adding work unit: " + t);
+        }
+    }
+
+    @Test
+    public void testLimitSerDe() throws IOException {
+        // Craft an illegal stream.
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bout);
+        WorkBundle wb1 = new WorkBundle();
+        // generate test data.
+        final List<WorkUnit> wul = new ArrayList<>();
+        for (int i = 0; i < WorkBundle.MAX_UNITS + 2; i++) {
+            String fileName = UUID.randomUUID().toString();
+            wul.add(new WorkUnit(fileName));
+        }
+
+        WorkBundle.writeUTFOrNull(wb1.bundleId, out);
+        WorkBundle.writeUTFOrNull(wb1.outputRoot, out);
+        WorkBundle.writeUTFOrNull(wb1.eatPrefix, out);
+        WorkBundle.writeUTFOrNull(wb1.caseId, out);
+        WorkBundle.writeUTFOrNull(wb1.sentTo, out);
+        out.writeInt(wb1.errorCount);
+        out.writeInt(wb1.priority);
+        out.writeBoolean(wb1.simpleMode);
+        out.writeLong(wb1.oldestFileModificationTime);
+        out.writeLong(wb1.youngestFileModificationTime);
+        out.writeLong(wb1.totalFileSize);
+        out.writeInt(WorkBundle.MAX_UNITS + 2);
+        for (WorkUnit u : wul) {
+            u.writeToStream(out);
+        }
+
+        out.close();
+        bout.close();
+
+        try {
+            WorkBundle wb2 = WorkBundle.readFromStream(new DataInputStream(new ByteArrayInputStream(bout.toByteArray())));
+            fail("Did not catch expected exception when deserializing work unit.");
+        } catch (IOException e) {
+            // expected
+        } catch (Throwable t) {
+            fail("Unexpected Exception caught when deserializing work unit: " + t);
+
+        }
+    }
 }

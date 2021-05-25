@@ -1,13 +1,5 @@
 package emissary.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -109,73 +101,6 @@ public class PayloadUtil {
         return sb.toString();
     }
 
-    public static ByteBuffer serializeToByteBuffer(final Object payload) throws IOException {
-        return ByteBuffer.wrap(serializeToBytes(payload));
-    }
-
-    /**
-     * Serialize a payload object to bytes
-     */
-    public static byte[] serializeToBytes(final Object payload) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        serializeToStream(bos, payload);
-        return bos.toByteArray();
-    }
-
-    /**
-     * Serialize a payload object to string
-     */
-    public static String serializeToString(final Object payload) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        serializeToStream(bos, payload);
-        String agentData = null;
-        try {
-            agentData = bos.toString("8859_1");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Should always support 8859_1", e);
-            agentData = bos.toString();
-        }
-        return agentData;
-    }
-
-    /**
-     * Serialize a payload object onto the specified stream
-     */
-    public static void serializeToStream(final OutputStream os, final Object payload) throws IOException {
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(os);
-            oos.writeObject(payload);
-        } finally {
-            if (oos != null) {
-                try {
-                    oos.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
-        }
-    }
-
-    public static Object deserialize(final String s) {
-        ObjectInputStream ois = null;
-        try {
-            ois = new ObjectInputStream(new ByteArrayInputStream(s.getBytes("8859_1")));
-            return ois.readObject();
-        } catch (Exception e) {
-            logger.error("Cannot deserialize payload using " + (s == null ? -1 : s.length()) + " bytes", e);
-            throw new IllegalArgumentException("Cannot deserialize payload");
-        } finally {
-            if (ois != null) {
-                try {
-                    ois.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
-        }
-    }
-
     /**
      * Turn the payload into an xml jdom document
      * 
@@ -203,7 +128,7 @@ public class PayloadUtil {
         final Element meta = new Element("metadata");
         for (final String key : d.getParameters().keySet()) {
             final Element m = JDOMUtil.protectedElement("param", d.getStringParameter(key));
-            m.setAttribute("name", key.toString());
+            m.setAttribute("name", key);
             meta.addContent(m);
         }
         root.addContent(meta);
@@ -230,8 +155,7 @@ public class PayloadUtil {
         }
 
         logger.debug("Produced xml document for " + d.shortName());
-        final Document doc = new Document(root);
-        return doc;
+        return new Document(root);
     }
 
     /**
@@ -255,8 +179,7 @@ public class PayloadUtil {
             root.addContent(doc.detachRootElement());
             logger.debug("Adding xml content for " + d.shortName() + " to document");
         }
-        final Document doc = new Document(root);
-        return doc;
+        return new Document(root);
     }
 
     /**
@@ -277,7 +200,7 @@ public class PayloadUtil {
         final StringBuilder out = new StringBuilder();
         out.append(LS);
         for (final Map.Entry<String, Collection<Object>> entry : payload.getParameters().entrySet()) {
-            out.append(entry.getKey() + SEP + entry.getValue() + LS);
+            out.append(entry.getKey()).append(SEP).append(entry.getValue()).append(LS);
         }
         return out.toString();
     }

@@ -122,14 +122,6 @@ public class PayloadUtilTest extends UnitTest {
     }
 
     @Test
-    public void testByteSerialization() throws Exception {
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "testfile", Form.UNKNOWN);
-        final byte[] bytes = PayloadUtil.serializeToBytes(d);
-        final String s1 = new String(bytes);
-        assertTrue("Serializedion must include data from payload", s1.indexOf("abc") > -1);
-    }
-
-    @Test
     public void testXmlSerizliaztion() throws Exception {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "testfile", Form.UNKNOWN);
         d.addAlternateView("AV", "def".getBytes());
