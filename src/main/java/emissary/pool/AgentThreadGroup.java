@@ -20,13 +20,6 @@ public class AgentThreadGroup extends ThreadGroup {
             logger.error("Fatal ThreadDeath on " + thread.getName() + " had ThreadDeath exception", throwable);
             throw (java.lang.ThreadDeath) throwable;
         }
-        logger.error("#######    #    #######    #    #      ");
-        logger.error("#         # #      #      # #   #      ");
-        logger.error("#        #   #     #     #   #  #      ");
-        logger.error("#####   #     #    #    #     # #      ");
-        logger.error("#       #######    #    ####### #      ");
-        logger.error("#       #     #    #    #     # #      ");
-        logger.error("#       #     #    #    #     # #######");
         logger.error("Fatal Thread Error on " + thread.getName() + " had an uncaught exception", throwable);
     }
 }
