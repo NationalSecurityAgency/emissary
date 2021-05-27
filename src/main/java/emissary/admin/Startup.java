@@ -186,7 +186,7 @@ public class Startup {
         //
         // Setup the Local Directories in a hashtable
         //
-        final boolean status = localDirectorySetup(directoryAction, this.localDirectories);
+        final boolean status = localDirectorySetup(this.localDirectories);
 
         if (!status) {
             logger.warn("Startup: local directory setup failed.");
@@ -260,12 +260,12 @@ public class Startup {
         return total;
     }
 
-    protected boolean localDirectorySetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg) {
+    protected boolean localDirectorySetup(final Map<String, String> localDirectoriesArg) {
 
         final List<String> hostParameters = this.hostsConfig.findEntries("LOCAL_DIRECTORY");
 
         final long start = System.currentTimeMillis();
-        final Map<String, String> dirStarts = new HashMap<String, String>();
+        final Map<String, String> dirStarts = new HashMap<>();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);
@@ -279,9 +279,10 @@ public class Startup {
                     localDirectoriesArg.put(host, p.toString());
                 } else {
                     localDirectoriesArg.remove(thePlaceLocation);
-                    logger.debug("Giving up on directory {}", thePlaceLocation);
+                    logger.warn("Giving up on directory {}", thePlaceLocation);
                 }
-                continue;
+            } else {
+                logger.warn("Directory location is not local: {}", thePlaceLocation);
             }
         }
 
