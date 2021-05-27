@@ -44,21 +44,6 @@ public interface IDirectoryPlace extends IServiceProviderPlace {
     List<DirectoryEntry> getMatchingEntries(String pattern);
 
     /**
-     * Make relay contents available for debug or display and analysis
-     *
-     * @return List of relay DirectoryEntries (copies)
-     */
-    List<DirectoryEntry> getRelayEntries();
-
-    /**
-     * Get list of relay DirectoryEntry that match the key pattern
-     *
-     * @param pattern a key pattern to match
-     * @return List of DirectoryEntry (copies)
-     */
-    List<DirectoryEntry> getMatchingRelayEntries(String pattern);
-
-    /**
      * Make directory contents entry keys available for display and transfer
      *
      * @return Iterator of String in the DataID format DATATYPE::SERVICETYPE
@@ -79,20 +64,6 @@ public interface IDirectoryPlace extends IServiceProviderPlace {
      * @return set of string keys for peer directories
      */
     Set<String> getPeerDirectories();
-
-    /**
-     * Get a list of the keys of all children directories known here
-     *
-     * @return set of string keys for children
-     */
-    Set<String> getRegisteredChildren();
-
-    /**
-     * Get the key of the relay (parent) directory or null if none
-     *
-     * @return string key of parent directory
-     */
-    String getRelayDirectory();
 
     /**
      * Add an observer for one of the observable activities in the directory The runtime class of the observer determines

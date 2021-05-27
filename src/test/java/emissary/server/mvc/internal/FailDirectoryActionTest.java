@@ -94,7 +94,7 @@ public class FailDirectoryActionTest extends EndpointTestBase {
         // TODO This needs to be investigated to try and get the DirectoryPlace setup correctly recognize peer
         // spy until we can figure out proper DirectoryPlace conf
         DirectoryPlace spy = spy(directory);
-        doReturn(1).when(spy).irdFailRemoteDirectory(FAIL_DIR, true);
+        doReturn(1).when(spy).irdFailDirectory(FAIL_DIR, true);
         Namespace.unbind(TARGET_DIR);
         Namespace.bind(TARGET_DIR, spy);
         formParams.put(ADD_PROPAGATION_FLAG, Arrays.asList("true"));

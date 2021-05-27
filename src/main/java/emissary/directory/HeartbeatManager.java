@@ -279,7 +279,7 @@ public class HeartbeatManager {
         final String myKey = KeyManipulator.getServiceLocation(this.thisDirectory);
         try {
             final IRemoteDirectory d = (IRemoteDirectory) Namespace.lookup(myKey);
-            final int count = d.irdFailRemoteDirectory(key, permanent);
+            final int count = d.irdFailDirectory(key, permanent);
             logger.info("Notified " + myKey + " of failed directory " + key + (permanent ? " permanently!" : "") + ", " + count + " keys removed");
         } catch (NamespaceException ne) {
             logger.error("Tried to fail a remote directory " + key + " but cannot look up my own directory using " + myKey, ne);

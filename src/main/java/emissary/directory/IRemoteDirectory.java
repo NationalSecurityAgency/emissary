@@ -32,20 +32,13 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     int irdRemovePlaces(List<String> keys, boolean propagating);
 
     /**
-     * Add a child directory to this one
-     * 
-     * @param key string key for child directory
-     */
-    void irdAddChildDirectory(String key);
-
-    /**
-     * Remove places for a failed remote machine
-     * 
+     * Remove directory
+     *
      * @param key string key of failed directory
      * @param propagating true if headed back down the directory chain
      * @return count of how many places were removed locally
      */
-    int irdFailRemoteDirectory(String key, boolean propagating);
+    int irdFailDirectory(String key, boolean propagating);
 
     /**
      * Add a Set of peer directory to this one
@@ -55,23 +48,14 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     void irdAddPeerDirectories(Set<String> keys);
 
     /**
-     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the requester
-     * 
-     * @param dataId the key to the entry Map set of DirectoryEntryList objects
-     * @param requester key of the place requesting the list
-     * @return a DirectoryEntryList object for the key or null if none
-     */
-    DirectoryEntryList irdGetEntryListExcl(String dataId, String requester);
-
-    /**
      * Helper class to lookup an instance of the local directory cast to this interface if possible
      */
-    public class Lookup {
+    class Lookup {
         private final Logger logger = LoggerFactory.getLogger(Lookup.class);
 
         /**
          * Look up the local directory using one of two methods. The easier method almost always works, the case where it
-         * doesn't in when there are multilpe configured Emissary nodes on the same local JVM through a single jetty with
+         * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
          * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
          * 
          * @param name name of the local directory or null for default

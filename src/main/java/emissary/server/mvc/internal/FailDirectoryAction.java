@@ -56,7 +56,7 @@ public class FailDirectoryAction {
             }
 
             MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));
-            int count = localDirectory.irdFailRemoteDirectory(failedDirectory, propagate);
+            int count = localDirectory.irdFailDirectory(failedDirectory, propagate);
             logger.debug("Modified {} entries from {} due to failure of remote {}", count, localDirectory, targetDirectory);
             return Response.ok().entity("Modified " + count + " entries from " + localDirectory + " due to failure of remote " + failedDirectory)
                     .build();
