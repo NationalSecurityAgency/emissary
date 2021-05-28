@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import emissary.client.EmissaryResponse;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
@@ -19,8 +18,6 @@ import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
-import emissary.server.mvc.adapters.PlaceStarterAdapter;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,7 +186,7 @@ public class Startup {
         //
         // Setup the Local Directories in a hashtable
         //
-        final boolean status = localDirectorySetup(directoryAction, this.localDirectories);
+        final boolean status = localDirectorySetup(this.localDirectories);
 
         if (!status) {
             logger.warn("Startup: local directory setup failed.");
@@ -263,18 +260,18 @@ public class Startup {
         return total;
     }
 
-    protected boolean localDirectorySetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg) {
+    protected boolean localDirectorySetup(final Map<String, String> localDirectoriesArg) {
 
         final List<String> hostParameters = this.hostsConfig.findEntries("LOCAL_DIRECTORY");
 
         final long start = System.currentTimeMillis();
-        final Map<String, String> dirStarts = new HashMap<String, String>();
+        final Map<String, String> dirStarts = new HashMap<>();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);
 
             if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
-                logger.debug("Doing local startup for directory {} ", thePlaceLocation);
+                logger.info("Doing local startup for directory {} ", thePlaceLocation);
                 final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
                 final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, (InputStream) null, thePlaceClassStr, (String) null);
                 if (p != null) {
@@ -282,34 +279,13 @@ public class Startup {
                     localDirectoriesArg.put(host, p.toString());
                 } else {
                     localDirectoriesArg.remove(thePlaceLocation);
-                    logger.debug("Giving up on directory {}", thePlaceLocation);
+                    logger.warn("Giving up on directory {}", thePlaceLocation);
                 }
-                continue;
-            }
-
-            if (dirStarts.get(host) != null) {
-                logger.warn("Duplicate directory for host {} : previously {}, now {}, skipping it.", host, dirStarts.get(host), thePlaceLocation);
-                continue;
-            }
-
-            if (directoryActionArg == DIRECTORYSTART) {
-
-                startOneDirectory(thePlaceLocation);
-                logger.info("Trying to start local directory {} on {}", thePlaceLocation, host);
-                dirStarts.put(host, thePlaceLocation);
-
-            } else if (directoryActionArg == DIRECTORYADD) {
-
-                startOneDirectory(thePlaceLocation);
-                logger.info("Trying to add local directory {} on {}", thePlaceLocation, host);
-                dirStarts.put(host, thePlaceLocation);
-
             } else {
-                logger.error("Have not reimlpemented this action ({})", directoryActionArg);
+                logger.warn("Directory location is not local: {}", thePlaceLocation);
             }
         }
 
-        // wait for them all to either completely start or fail
         // All local directories must be up before proceeding
         logger.debug("Waiting for all local directories to start, expecting {}", dirStarts.size());
         int prevCount = 0;
@@ -333,64 +309,13 @@ public class Startup {
     }
 
     /**
-     * Start one local directory with retry in a threaded fashion
-     */
-    private void startOneDirectory(final String thePlaceLocation) {
-
-        final Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final String thePlaceHost = placeHost(thePlaceLocation);
-
-                final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                if (thePlaceClassStr == null) {
-                    logger.error("Unable to start {} : No class string", thePlaceLocation);
-                    Startup.this.failedLocalDirectories.put(thePlaceHost, thePlaceLocation);
-                    return;
-                }
-
-                String localDirectory = null;
-
-
-                for (int tries = 0; tries < 4 && localDirectory == null; tries++) {
-                    String key = null;
-
-                    PlaceStarterAdapter psa = new PlaceStarterAdapter(thePlaceClassStr, thePlaceLocation, null);
-                    EmissaryResponse response = psa.outboundCreatePlace();
-                    // TODO consider putting this method on the EmissaryReponse
-                    if (response.getStatus() == HttpStatus.SC_OK) {
-                        key = response.getContentString();
-                    }
-
-                    if (key == null) {
-                        logger.error("Could not create local directory at {}", thePlaceLocation);
-                    } else {
-                        localDirectory = key;
-                    }
-
-                    if (localDirectory == null || localDirectory.length() == 0) {
-                        logger.error("ERROR: Directory startup failed on {}", thePlaceHost);
-                        Startup.this.failedLocalDirectories.put(thePlaceHost, thePlaceLocation);
-                        return;
-                    }
-                    logger.trace("Starting up {} on {}", localDirectory, thePlaceHost);
-                    Startup.this.localDirectories.put(thePlaceHost, localDirectory);
-                }
-            }
-        });
-
-        t.start();
-    }
-
-    /**
-     * Start all places on the list on a thread, return control immediately All places in hostParameters list must be for
+     * Start all places on the list on a thread, return control immediately. All places in hostParameters list must be for
      * the same host:port!
      */
     protected boolean placeSetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg, final Map<String, String> placesArg,
             final List<String> hostParameters) {
 
         // Track how many places we are trying to start
-        // globalPlacesStarted += hostParameters.size();
         this.placesToStart.addAll(hostParameters);
 
         final Thread t = new Thread(new Runnable() {
@@ -441,7 +366,7 @@ public class Startup {
                             continue;
                         }
 
-                        logger.debug("Doing local startup on place {}", thePlaceLocation);
+                        logger.info("Doing local startup on place {}", thePlaceLocation);
                         final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
                         final IServiceProviderPlace p =
                                 PlaceStarter.createPlace(thePlaceLocation, (InputStream) null, thePlaceClassStr, localDirectory);
@@ -462,40 +387,6 @@ public class Startup {
                         logger.info("Skipping {}, already exists", thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
                         continue;
-                    }
-
-
-                    String thePlaceFinal = null;
-
-                    int tryCounter = 0;
-
-                    // Create the instanceretries
-                    while (tryCounter < 3 && thePlaceFinal == null) {
-
-                        final PlaceStarterAdapter psa = new PlaceStarterAdapter(thePlaceClassString, thePlaceLocation, localDirectory);
-                        final EmissaryResponse response = psa.outboundCreatePlace();
-                        // TODO consider putting this on the EmissaryReponse object
-                        if (response.getStatus() == HttpStatus.SC_OK) {
-                            thePlaceFinal = response.getContentString();
-                        }
-
-                        if (thePlaceFinal == null) {
-                            logger.warn("error with PlaceStarter.createPlace: Cannot instantiate {} try {} failed!", thePlaceLocation, tryCounter);
-                            if (tryCounter++ > 2) {
-                                // globalPlacesStarted --;
-                                Startup.this.placesToStart.remove(thePlaceLocation);
-                                break;
-                            }
-
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException junke) {
-                                // empty catch block
-                            }
-                        } else {
-                            placesArg.put(thePlaceLocation, thePlaceFinal);
-                            logger.debug("Started place {}", thePlaceLocation);
-                        }
                     }
                 }
             }
