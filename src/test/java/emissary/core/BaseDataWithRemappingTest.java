@@ -37,7 +37,7 @@ public class BaseDataWithRemappingTest extends UnitTest {
     @Override
     @Before
     public void setUp() throws Exception {
-        b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
+        b = new BaseDataObjectWithRemapping("This is a test".getBytes(), "filename.txt");
         b.pushCurrentForm("ONE");
         b.pushCurrentForm("TWO");
         b.pushCurrentForm("THREE");
