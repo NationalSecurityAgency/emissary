@@ -1,7 +1,7 @@
 package emissary.server.mvc.internal;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,11 +11,13 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 
+import emissary.config.ConfigUtil;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
-import org.hamcrest.core.StringStartsWith;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -28,21 +30,29 @@ public class HeartbeatActionTest extends EndpointTestBase {
     @DataPoints
     public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
     private MultivaluedHashMap<String, String> formParams;
-    private static final String FROM_PLACE = "http://some-other-host:8001/DirectoryPlace";
-    private static final String TO_PLACE = "http://localhost:8001/DirectoryPlace";
+    private static final String FROM_PLACE = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://remoteHost:8888/DirectoryPlace";
+    private static final String TO_PLACE = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace";
     private static final String HEARTBEAT_ACTION = "Heartbeat.action";
     private DirectoryPlace dp;
+    private EmissaryNode node;
 
     @Before
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
         formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Arrays.asList(FROM_PLACE));
         formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Arrays.asList(TO_PLACE));
-        dp = mock(DirectoryPlace.class);
-        when(dp.isRunning()).thenReturn(true);
-        when(dp.toString()).thenReturn(TO_PLACE);
-        when(dp.getKey()).thenReturn("toPlaceKey");
+        node = mock(EmissaryNode.class);
+        when(node.isValid()).thenReturn(true);
+        when(node.getPeerConfigurator()).thenReturn(ConfigUtil.getConfigInfo("peer-TESTING.cfg"));
+        dp = new DirectoryPlace("peer-TESTING.cfg", TO_PLACE, node);
         Namespace.bind(TO_PLACE, dp);
+        Namespace.bind(FROM_PLACE, dp);
+    }
+
+    @After
+    public void tearDown() {
+        Namespace.unbind(TO_PLACE);
+        Namespace.unbind(FROM_PLACE);
     }
 
     @Theory
@@ -56,25 +66,25 @@ public class HeartbeatActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, StringStartsWith.startsWith("Heartbeat failed"));
+        assertTrue(result.startsWith("Heartbeat failed"));
     }
 
     @Test
-    public void heartbeat() throws Exception {
+    public void heartbeat() {
         // test
         final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo(TO_PLACE));
+        assertEquals(dp.toString(), result);
     }
 
     @Test
-    public void directoryNotRunning() throws Exception {
+    public void directoryNotRunning() {
         // setup
         Namespace.unbind(TO_PLACE);
         when(dp.isRunning()).thenReturn(true);
@@ -85,9 +95,9 @@ public class HeartbeatActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo(TO_PLACE));
+        assertEquals(dp.toString(), result);
     }
 
 }

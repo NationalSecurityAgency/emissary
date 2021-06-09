@@ -2,6 +2,7 @@ package emissary.server.api;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,11 +31,14 @@ import org.junit.Rule;
 import org.junit.Test;
 
 public class PeersIT extends EndpointTestBase {
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
     public static final String DIRNAME = "http://" + TestEmissaryNode.TEST_NODE_PORT + "/DirectoryPlace";
-    public static final String PEER = "*.*.*.http://somehost:123456/DirectoryPlace";
-    public static final Set<String> PEERS = new HashSet<>(Arrays.asList(PEER));
+    public static final String SELF = "*.*.*.http://localhost:9999/DirectoryPlace";
+    public static final String PEER1 = "*.*.*.http://remoteHost:8888/DirectoryPlace";
+    public static final String PEER2 = "*.*.*.http://remoteHost2:8888/DirectoryPlace";
+    public static final Set<String> PEERS = new HashSet<>(Arrays.asList(SELF, PEER1, PEER2));
 
     @Before
     public void setup() throws Exception {
@@ -48,7 +52,6 @@ public class PeersIT extends EndpointTestBase {
         cmd.setupServer();
         EmissaryServer server = new EmissaryServer(cmd, emissaryNode);
         Namespace.bind("EmissaryServer", server);
-
     }
 
     @After
@@ -68,8 +71,7 @@ public class PeersIT extends EndpointTestBase {
         assertThat(entity.getErrors(), IsEmptyCollection.empty());
         assertThat(entity.getCluster(), equalTo(null));
         assertThat(entity.getLocal().getHost(), equalTo(TestEmissaryNode.TEST_NODE_PORT));
-        assertThat(entity.getLocal().getPeers(), equalTo(PEERS));
-
+        assertTrue(entity.getLocal().getPeers().containsAll(PEERS));
     }
 
     @Test
@@ -86,7 +88,7 @@ public class PeersIT extends EndpointTestBase {
         PeersResponseEntity entity = response.readEntity(PeersResponseEntity.class);
         assertThat(entity.getLocal().getHost(), equalTo("Namespace lookup error, host unknown"));
         assertThat(entity.getErrors(), IsIterableWithSize.iterableWithSize(0));
-        assertThat(entity.getLocal().getPeers(), equalTo(PEERS));
+        assertTrue(entity.getLocal().getPeers().containsAll(PEERS));
     }
 
     @Test
@@ -138,7 +140,7 @@ public class PeersIT extends EndpointTestBase {
 
         public Configurator getPeerConfigurator() throws IOException {
             // just go get this from the src/test/resources directory
-            return ConfigUtil.getConfigInfo("emissary.directory.peer-inoexist.cfg");
+            return ConfigUtil.getConfigInfo("peer-TESTING.cfg");
         }
     }
 }

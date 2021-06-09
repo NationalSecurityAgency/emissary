@@ -17,7 +17,6 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
 import emissary.place.IServiceProviderPlace;
-import emissary.server.mvc.adapters.HeartbeatAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -377,15 +376,6 @@ public class Startup {
                             logger.debug("Giving up on {}", thePlaceLocation);
                         }
 
-                        continue;
-                    }
-
-                    if (directoryActionArg == DIRECTORYADD) {
-                        final HeartbeatAdapter adapter = new HeartbeatAdapter();
-                        adapter.outboundHeartbeat("ADMIN.START.STARTUP.http://localhost:8181/Startup", "*.*.*." + thePlaceLocation);
-                        // Already exists do not replace
-                        logger.info("Skipping {}, already exists", thePlaceLocation);
-                        Startup.this.placesToStart.remove(thePlaceLocation);
                         continue;
                     }
                 }
