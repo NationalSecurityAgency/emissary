@@ -19,7 +19,7 @@ public class ListOpenFiles {
         boolean fileOpen = false;
 
         if (Files.exists(path)) {
-            int returnVal = exec.execute(new String[] {"lsof", path.toString()});
+            int returnVal = exec.execute(new String[] {"lsof", path.toString()}, new StringBuilder(), new StringBuilder());
             if (returnVal == 0) {
                 fileOpen = true;
             }

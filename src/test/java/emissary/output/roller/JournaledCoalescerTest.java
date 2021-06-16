@@ -1,6 +1,7 @@
 package emissary.output.roller;
 
-import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
+import static emissary.output.roller.coalesce.Coalescer.ROLLED_EXT;
+import static emissary.output.roller.coalesce.Coalescer.ROLLING_EXT;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -9,8 +10,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,23 +17,17 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import emissary.output.io.SimpleFileNameGenerator;
-import emissary.output.roller.journal.Journal;
-import emissary.output.roller.journal.JournalEntry;
-import emissary.output.roller.journal.JournalReader;
-import emissary.output.roller.journal.JournalWriter;
 import emissary.output.roller.journal.JournaledChannelPool;
 import emissary.output.roller.journal.KeyedOutput;
 import emissary.test.core.UnitTest;
 import emissary.util.io.FileNameGenerator;
 import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -157,8 +150,8 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testAddFilesBeforeRoll() throws Exception {
         // test
-        Path bud1destination = null;
-        Path bud2destination = null;
+        Path bud1destination;
+        Path bud2destination;
         try (KeyedOutput one = journaledCoalescer.getOutput(); KeyedOutput two = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD1, one);
             bud1destination = one.getFinalDestination();
@@ -184,7 +177,7 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testAddFilesWithRoll() throws Exception {
         // setup
-        String expectedPrefix1 = null;
+        String expectedPrefix1;
 
         // test
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
@@ -195,7 +188,7 @@ public class JournaledCoalescerTest extends UnitTest {
 
         journaledCoalescer.roll();
 
-        String expectedPrefix2 = null;
+        String expectedPrefix2;
 
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD2, one);
@@ -220,7 +213,7 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testCrashWhileRolling() throws Exception {
         // setup
-        Path finalBudOutput = null;
+        Path finalBudOutput;
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD1, one);
             finalBudOutput = one.getFinalDestination();
@@ -256,7 +249,7 @@ public class JournaledCoalescerTest extends UnitTest {
         }
 
         // create the rolled file
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
         try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
@@ -276,7 +269,7 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testCrashAfterRolledNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
         new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
@@ -295,7 +288,7 @@ public class JournaledCoalescerTest extends UnitTest {
             two.commit();
         }
 
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + ROLLED_EXT));
 
         try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
             assertThat(Files.exists(oldRolled), equalTo(true));
@@ -310,7 +303,7 @@ public class JournaledCoalescerTest extends UnitTest {
     @Test
     public void testCrashAfterRolledEmptyNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
-        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
+        Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + ROLLED_EXT));
 
         new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
@@ -323,7 +316,7 @@ public class JournaledCoalescerTest extends UnitTest {
     public void testRollEmptyFiles() throws Exception {
         // setup
         Files.write(tempBUD1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
-        Path finalBudOutput = null;
+        Path finalBudOutput;
         try (KeyedOutput os = journaledCoalescer.getOutput()) {
             // make sure we create an empty file
             finalBudOutput = os.getFinalDestination();
@@ -334,40 +327,4 @@ public class JournaledCoalescerTest extends UnitTest {
         // verify
         assertThat(Files.exists(finalBudOutput), equalTo(false));
     }
-
-    @Test
-    public void testRollBadFiles() throws Exception {
-        // setup
-        Path target = Files.createTempFile(targetBUDPath, "badfile", "");
-        String key = target.toString();
-        try (JournalWriter jw = new JournalWriter(targetBUDPath, key);
-                SeekableByteChannel c = Files.newByteChannel(target, StandardOpenOption.WRITE)) {
-            ArrayList<String> strings = new ArrayList<>(BUD1_LINES);
-            strings.addAll(BUD2_LINES);
-            for (String line : strings) {
-                c.write(ByteBuffer.wrap(line.getBytes()));
-                jw.write(new JournalEntry(key, c.position()));
-            }
-            // phony write
-            jw.write(new JournalEntry(key, c.position() + 1000));
-
-        }
-        long partSize = Files.size(target);
-        // open journal
-        Journal j;
-        try (JournalReader jr = new JournalReader(Paths.get(key + Journal.EXT))) {
-            j = jr.getJournal();
-        }
-        Path rolled = Files.createTempFile(targetBUDPath, "rolled_badfile", "");
-        try (SeekableByteChannel sbc = Files.newByteChannel(rolled, StandardOpenOption.WRITE)) {
-            journaledCoalescer.combineFiles(j, sbc);
-        }
-
-        long rolledSize = Files.size(rolled);
-
-        // verify
-        assertThat(rolledSize, equalTo(partSize));
-        assertThat(j.getLastEntry().getOffset(), Matchers.greaterThan(partSize));
-    }
-
 }
