@@ -53,7 +53,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     /**
      * Statically configured peers. Remember them even when they shutdown. A subset of peerDirectories
      */
-    protected Set<String> staticPeers = new HashSet<String>();
+    protected Set<String> staticPeers = new HashSet<>();
 
     /** Heartbeat manager for checking up on remote directories */
     protected HeartbeatManager heartbeat;
@@ -370,7 +370,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             return;
         }
 
-
         boolean changeMade = false;
 
         for (final String key : keys) {
@@ -385,6 +384,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                 continue;
             }
 
+            if (!isStaticPeer(key)) {
+                logger.warn("Unknown peer requesting to be added: {}", key);
+                continue;
+            }
 
             if (!isKnownPeer(key)) {
                 this.peerDirectories.add(new DirectoryEntry(key));
@@ -436,7 +439,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         logger.debug("Doing zone transfer with peer " + peerKey);
         // TODO See DirectoryPlace for spy example which needs to be addressed
-        final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap, true);
+        final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap);
         if ((newEntries == null) || newEntries.isEmpty()) {
             logger.debug("We got nothing back from the peer zone xfer");
             return;
@@ -475,10 +478,15 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
      * @return the new entries
      */
-    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap, final boolean isPeer) {
+    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap) {
 
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot load remote entries in standalone nodes");
+            return null;
+        }
+
+        if (!isStaticPeer(key)) {
+            logger.debug("Ignoring non-configured peer {}", key);
             return null;
         }
 
@@ -489,17 +497,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final long startZone = System.currentTimeMillis();
         DirectoryEntryMap map = null;
         try {
-            if (isPeer) {
-                // Also registers as a peer with them
-                // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
-                final DirectoryAdapter da = new DirectoryAdapter();
-                map = da.outboundRegisterPeer(key, myKey);
-            } else {
-                // Just do the transfer
-                // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
-                final DirectoryAdapter da = new DirectoryAdapter();
-                map = da.outboundZoneTransfer(key, myKey);
-            }
+            // Also registers as a peer with them
+            // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
+            final DirectoryAdapter da = new DirectoryAdapter();
+            map = da.outboundRegisterPeer(key, myKey);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Retrieved " + map.entryCount() + " entries in zone transfer from " + key + " in "
@@ -736,6 +737,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
+     * Determine if key represents a configured peer
+     */
+    public boolean isStaticPeer(final String key) {
+        return this.staticPeers.contains(key);
+    }
+
+    /**
      * Determine if key represents a known peer
      */
     private boolean isKnownPeer(final String key) {
@@ -853,7 +861,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
             // Remove from peer list
             if (isKnownPeer(dirKey)) {
-                if (!this.staticPeers.contains(dirKey)) {
+                if (!isStaticPeer(dirKey)) {
                     logger.debug("Removing non-static peer " + dirKey);
                     removePeer(dirKey);
                 } else {
@@ -898,7 +906,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(myKey));
         logger.debug("Established contact with " + key);
 
-        if (isKnownPeer(key)) {
+        if (isStaticPeer(key) && isKnownPeer(key)) {
             loadPeerEntries(key);
         } else {
             logger.warn("Contact established with {} but it is not a peer", key);
