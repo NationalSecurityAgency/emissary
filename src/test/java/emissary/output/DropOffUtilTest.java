@@ -363,7 +363,7 @@ public class DropOffUtilTest extends UnitTest {
         this.util.processMetadata(family);
 
         assertEquals("Parent should have filext of tar.gz", "tar.gz", parent.getStringParameter("FILEXT"));
-        assertEquals("Parent should have filext of docx", "docx", child.getStringParameter("FILEXT"));
+        assertEquals("Child should have filext of docx", "docx", child.getStringParameter("FILEXT"));
 
         assertNull("Parent should not have extended filetype", parent.getParameter("EXTENDED_FILETYPE"));
 
