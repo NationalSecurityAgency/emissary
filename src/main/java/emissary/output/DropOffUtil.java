@@ -1019,13 +1019,11 @@ public class DropOffUtil {
             parentTypes.put("" + level, p.getFileType());
 
             final String fn = p.getStringParameter("Original-Filename");
-            if (fn != null && fn.indexOf(".") > -1) {
-                final int pos = fn.lastIndexOf(".") + 1;
-                if (pos < fn.length()) {
-                    final String fext = fn.substring(pos);
-                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                        p.setParameter("FILEXT", fext.toLowerCase());
-                    }
+            if (StringUtils.isNotEmpty(fn)) {
+                final int pos = fn.indexOf('.') + 1;
+                final String fext = fn.substring(pos).toLowerCase();
+                if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                    p.setParameter("FILEXT", fext);
                 }
             }
 
