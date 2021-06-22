@@ -1021,9 +1021,11 @@ public class DropOffUtil {
             final String fn = p.getStringParameter("Original-Filename");
             if (StringUtils.isNotEmpty(fn)) {
                 final int pos = fn.indexOf('.') + 1;
-                final String fext = fn.substring(pos).toLowerCase();
-                if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                    p.setParameter("FILEXT", fext);
+                if (pos < fn.length()) {
+                    final String fext = fn.substring(pos).toLowerCase();
+                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                        p.setParameter("FILEXT", fext);
+                    }
                 }
             }
 
