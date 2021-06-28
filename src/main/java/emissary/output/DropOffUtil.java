@@ -1018,14 +1018,22 @@ public class DropOffUtil {
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
-            final String fn = p.getStringParameter("Original-Filename");
-            if (StringUtils.isNotEmpty(fn)) {
-                final int pos = fn.indexOf('.') + 1;
-                if (pos < fn.length()) {
-                    final String fext = fn.substring(pos).toLowerCase();
-                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                        p.setParameter("FILEXT", fext);
+            if (p.hasParameter("Original-Filename")) {
+                final List<String> extensions = new ArrayList<>();
+                for (Object filename : p.getParameter("Original-Filename")) {
+                    final String fn = (String) filename;
+                    if (StringUtils.isNotEmpty(fn)) {
+                        final int pos = fn.indexOf('.') + 1;
+                        if (pos < fn.length()) {
+                            final String fext = fn.substring(pos).toLowerCase();
+                            if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                                extensions.add(fext);
+                            }
+                        }
                     }
+                }
+                if (!extensions.isEmpty()) {
+                    p.setParameter("FILEXT", extensions);
                 }
             }
 
