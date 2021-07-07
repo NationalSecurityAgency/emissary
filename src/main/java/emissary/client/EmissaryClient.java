@@ -1,6 +1,7 @@
 package emissary.client;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -15,6 +16,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -133,9 +135,12 @@ public class EmissaryClient {
         }
 
         REQUEST_CONFIG =
-                RequestConfig.custom().setConnectTimeout(new Long(CONNECTION_TIMEOUT).intValue())
-                        .setConnectionRequestTimeout(new Long(CONNECTION_MANAGER_TIMEOUT).intValue())
-                        .setSocketTimeout(new Long(SOCKET_TIMEOUT).intValue()).build();
+                RequestConfig.custom().setConnectTimeout(Long.valueOf(CONNECTION_TIMEOUT).intValue())
+                        .setConnectionRequestTimeout(Long.valueOf(CONNECTION_MANAGER_TIMEOUT).intValue())
+                        .setSocketTimeout(Long.valueOf(SOCKET_TIMEOUT).intValue())
+                        .setTargetPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
+                        .setProxyPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
+                        .build();
 
         CLIENT =
                 HttpClientBuilder.create().setConnectionManager(CONNECTION_MANAGER).setDefaultCredentialsProvider(CRED_PROV)
