@@ -1,7 +1,7 @@
 package emissary.server.mvc.internal;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
+import java.io.DataInputStream;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -49,8 +49,8 @@ public class WorkSpaceClientEnqueueAction {
                 throw new IllegalArgumentException("No client place found using name " + clientName);
             }
 
-            final ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(workBundleString.getBytes("8859_1")));
-            WorkBundle paths = (WorkBundle) ois.readObject();
+            final DataInputStream ois = new DataInputStream(new ByteArrayInputStream(workBundleString.getBytes("8859_1")));
+            WorkBundle paths = WorkBundle.readFromStream(ois);
             success = place.enque(paths);
         } catch (Exception e) {
             logger.warn("WorkSpaceClientEnqueWorker exception", e);
