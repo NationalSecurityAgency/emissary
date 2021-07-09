@@ -37,24 +37,12 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * Compute the default size for the pool
      */
     public static int computePoolSize() {
-        // UNUSED - Investigate this block, sizePerAgent var was never used
-        // int sizePerAgent = 1024 * 1024; // default
-        // try {
-        // emissary.config.Configurator conf = emissary.config.ConfigUtil.getConfigInfo(AgentPool.class);
-        // // Size should be in kb so multiply by 1024
-        // sizePerAgent = conf.findIntEntry("agent.average_size_kb", 1024) * 1024;
-        // }
-        // catch (IOException ex) {
-        // logger.info("Cannot read config file " + ex.getMessage() + ", using default agent size");
-        // }
 
         long maxMem = Runtime.getRuntime().maxMemory();
-        // UNUSED
-        // float headRoom = 0.40f; // space for places
 
         // 15 if less than 1 Gb
-        // 20 for first Gb, +5 for each additional Gb
-        int size = (((int) (maxMem / (1024 * 1024 * 1024)) - 1) * 5) + 20;
+        // 20 for first Gb, +5 for each additional Gb, no more then 50 when calculated
+        int size = Math.min((((int) (maxMem / (1024 * 1024 * 1024)) - 1) * 5) + 20, 50);
 
         // Allow override based on property
         size = Integer.getInteger("agent.poolsize", size).intValue();
