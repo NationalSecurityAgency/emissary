@@ -37,6 +37,15 @@ public class ShortNameComparatorTest extends UnitTest {
         assertEquals("Bad components sort in alpha order", "foo-att-abc", l.get(0).shortName());
     }
 
+    @Test
+    public void testNoChildren() {
+        final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
+        l.add(DataObjectFactory.getInstance(new Object[] {null, "def"}));
+        l.add(DataObjectFactory.getInstance(new Object[] {null, "abc"}));
+        Collections.sort(l, new ShortNameComparator());
+        assertEquals("Bad components sort in alpha order", "def", l.get(0).shortName());
+    }
+
     private void fillList(final List<IBaseDataObject> l) {
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "1"}));
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3"}));
@@ -44,6 +53,7 @@ public class ShortNameComparatorTest extends UnitTest {
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(2)}));
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(1)}));
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "2"}));
+        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "10"}));
         l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(1) + Family.sep(1)}));
 
     }
@@ -56,15 +66,7 @@ public class ShortNameComparatorTest extends UnitTest {
         assertEquals("Ordering of sort", this.ba + "3" + Family.sep(1), l.get(4).shortName());
         assertEquals("Ordering of sort", this.ba + "3" + Family.sep(1) + Family.sep(1), l.get(5).shortName());
         assertEquals("Ordering of sort", this.ba + "3" + Family.sep(2), l.get(6).shortName());
-    }
-
-    @Test
-    public void testImplComparator() {
-        final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
-
-        fillList(l);
-        Collections.sort(l, new ShortNameComparator());
-        checkList(l);
+        assertEquals("Ordering of sort", this.ba + "10", l.get(7).shortName());
     }
 
     @Test
