@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * This class implements all of the emissary.directory.DirectoryPlace observer interfaces with null implementations so
  * that it is easy to extend and just provide behaviour for the methods of interest.
  */
-public class DirectoryAdapter implements PeerObserver, PlaceObserver, RelayObserver {
+public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     // Our logger
     protected static final Logger logger = LoggerFactory.getLogger(DirectoryAdapter.class);
@@ -86,28 +86,6 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver, RelayObser
     @Override
     public void peerUpdate(final String observableKey, final Set<DirectoryEntry> peers) {
         logger.debug("Peer group updates from " + observableKey + " set is now " + peers);
-    }
-
-    /**
-     * Called when a child is added to the relay poing
-     * 
-     * @param observableKey the key of the directory being observed
-     * @param child the child added to the relay point
-     */
-    @Override
-    public void childAdded(final String observableKey, final DirectoryEntry child) {
-        logger.debug("Relay group updates from " + observableKey + " added " + child.getKey());
-    }
-
-    /**
-     * Called when a child is removed from the relay poing
-     * 
-     * @param observableKey the key of the directory being observed
-     * @param child the child removed from the relay point
-     */
-    @Override
-    public void childRemoved(final String observableKey, final DirectoryEntry child) {
-        logger.debug("Relay group updates from " + observableKey + " remove " + child.getKey());
     }
 
     /**

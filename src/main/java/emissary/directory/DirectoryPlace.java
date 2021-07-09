@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import emissary.client.EmissaryResponse;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -19,7 +18,6 @@ import emissary.core.Namespace;
 import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
-import org.apache.http.HttpStatus;
 import org.slf4j.MDC;
 
 /**
@@ -29,28 +27,19 @@ import org.slf4j.MDC;
  * pattern.
  *
  * <p>
- * We try to support some network topographic constructions by providing a set of peer directories and a set of child
- * directories. Child directory elements are proxied through this host/place when advertised to peers. Peers are
- * monitored and checked automatically by HeartbeatManager and the peer network is assumed to be fully connected. Parent
- * directories act as relay points (in the JXTA sense of the word) for their childrenwhile peer directories are like
- * JXTA Peers. The JXTA RendezVous service is provided by the, currently fairly static, list of peer directories
- * initially read from a config file. At least one host must be listed in order to bootstrap the network.
+ * We try to support some network topographic constructions by providing a set of peer directories. Peers are monitored
+ * and checked automatically by HeartbeatManager and the peer network is assumed to be fully connected. Peer directories
+ * are a, fairly static, list of peer directories read from a config file. At least one host must be listed in order to
+ * bootstrap the network.
  *
  * <p>
  * Emissary directory instances are also observable with respect to Peer activities, and Place activities. Peer
  * observers will be called with a list of current members of the peer group (including this directory) whenever the
  * peer group loses or gains members. Place observers will be called with a key that matches the pattern supplied on
- * thier subscription and an indication of whether it is a register or deregister or cost change.
+ * their subscription and an indication of whether it is a register or deregister or cost change.
  *
- * <p>
- * For resiliency of the resulting topology, more than one statically configured rendezvous host should be present in
- * each peer group. The relay directory must have visibility with all of the machines in the peer subgroup it relays
- * for. We only allow one relay point for a subgroup with this version. That should eventually change to allow multple
- * connections through the relay point if the physical network will support it.
  */
-public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPlace, IRemoteDirectory {
-    // My parent connects into the next higher level peer group
-    DirectoryEntry theParent = null;
+public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirectory {
 
     /**
      * Map of DirectoryEntryList objects by data id. This map contains the actual advertisements seen by this directory and
@@ -64,19 +53,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     /**
      * Statically configured peers. Remember them even when they shutdown. A subset of peerDirectories
      */
-    protected Set<String> staticPeers = new HashSet<String>();
+    protected Set<String> staticPeers = new HashSet<>();
 
-    /**
-     * List of known peers in the child network, just the keys
-     */
-    protected Set<DirectoryEntry> childDirectories = new CopyOnWriteArraySet<DirectoryEntry>();
-
-    /**
-     * Child directories to this one, map of dataId to list of entry list. for the network being relayed
-     */
-    protected DirectoryEntryMap childEntries = new DirectoryEntryMap();
-
-    /** Heartbeat manager for checking up on remote child directories */
+    /** Heartbeat manager for checking up on remote directories */
     protected HeartbeatManager heartbeat;
 
     /** Manage observers */
@@ -120,7 +99,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final String placeLoc) throws IOException {
         super(placeLoc);
         this.emissaryNode = new EmissaryNode();
-        setupDirectory(null);
+        setupDirectory();
     }
 
     /**
@@ -134,7 +113,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final String placeLoc, EmissaryNode node) throws IOException {
         super(placeLoc);
         this.emissaryNode = node;
-        setupDirectory(null);
+        setupDirectory();
     }
 
     /**
@@ -163,7 +142,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final String configInfo, final String parentDir, final String placeLoc) throws IOException {
         super(configInfo, parentDir, placeLoc);
         this.emissaryNode = new EmissaryNode();
-        setupDirectory(parentDir);
+        setupDirectory();
     }
 
     /**
@@ -176,10 +155,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      */
     @Deprecated
     // need to pass in EmissaryNode
+    // is actually/accidentally the one used by Startup/PlaceStarter.createPlace and probably shouldn't be?
     public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc) throws IOException {
         super(configStream, parentDir, placeLoc);
         this.emissaryNode = new EmissaryNode();
-        setupDirectory(parentDir);
+        setupDirectory();
     }
 
     /**
@@ -194,7 +174,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc, final EmissaryNode node) throws IOException {
         super(configStream, parentDir, placeLoc);
         this.emissaryNode = node;
-        setupDirectory(parentDir);
+        setupDirectory();
     }
 
     /**
@@ -208,7 +188,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final String configInfo, final String placeLoc, final EmissaryNode node) throws IOException {
         super(configInfo, placeLoc);
         this.emissaryNode = node;
-        setupDirectory(null);
+        setupDirectory();
     }
 
     /**
@@ -222,7 +202,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryPlace(final InputStream configStream, final String placeLoc, final EmissaryNode node) throws IOException {
         super(configStream, placeLoc);
         this.emissaryNode = node;
-        setupDirectory(null);
+        setupDirectory();
     }
 
     /**
@@ -236,10 +216,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      * <li>HEARTBEAT_FAILURE_THRESHOLD, set transient failure count, default owned by HeartbeatManager</li>
      * <li>HEARTBEAT_PERMANENT_FAILURE_THRESHOLD, set permanent failure count, default owned by HeartbeatManager</li>
      * </ul>
-     *
-     * @param parentDir the parent directory or null if none
      */
-    private void setupDirectory(final String parentDir) {
+    private void setupDirectory() {
         if (this.emissaryNode.isValid() && !this.emissaryNode.isStandalone()) {
             // Start a heart beat manager with initial and interval seconds
             final int initialSeconds = configG.findIntEntry("HEARTBEAT_DELAY_SECONDS", 30);
@@ -287,12 +265,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             addFacet(new JSAcceptFacet());
         }
 
-        // Configure the relay/parent
-        if (parentDir != null) {
-            logger.debug("Specified the parent directory " + parentDir + " in the place constructor rather than as a RELAY_HOST.");
-            setParent(parentDir);
-        }
-
         // Configure my initial rendezvous peers
         configureNetworkTopology();
 
@@ -310,9 +282,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Find an optional peer config stream or file and initialize tracking of the rendezvous and relay peers found there. We
-     * don't actually contact any of the remote directories here so we can get the heck out of the constructor code and get
-     * this place registered in the namespace quick! so other directories can find us in a timely fashion.
+     * Find an optional peer config stream or file and initialize tracking of the peers found there.
+     *
+     * We don't actually contact any of the remote directories here so we can get the heck out of the constructor code and
+     * get this place registered in the namespace quick! so other directories can find us in a timely fashion.
      */
     private void configureNetworkTopology() {
         if (!this.emissaryNode.isValid()) {
@@ -335,68 +308,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
             logger.debug("Configured " + this.peerDirectories.size() + " rendezvous peers from " + peers.size() + " config entries.");
             logger.debug("This directory is " + (this.rdvPeer ? "" : "NOT (yet) ") + "a rendezvous peer.");
-
-            final String relayKey = peerConfig.findStringEntry("RELAY_HOST");
-            if (relayKey != null) {
-                if (isLocal(relayKey)) {
-                    logger.debug("Cannot be my own parent, " + "ignoring RELAY_HOST=" + relayKey);
-                } else if (this.theParent != null) {
-                    if (!relayKey.equals(this.theParent.getKey())) {
-                        logger.warn("Woah there! Parent already set via constructor to " + this.theParent.getKey() + " ignoring configured value "
-                                + relayKey);
-                    }
-                } else {
-                    setParent(relayKey);
-                }
-            }
         } catch (IOException iox) {
             logger.debug("There is no peer.cfg data available");
-        }
-    }
-
-    /**
-     * Attach this directory instance to the parent directory for relaying
-     *
-     * @param dir the string key of the parent directory
-     */
-    protected void setParent(final String dir) {
-        if (dir != null) {
-            logger.debug("This directory will relay through " + dir);
-            this.theParent = new DirectoryEntry(dir);
-
-            // Set up a heartbeat to monitor the parent
-            if (!this.emissaryNode.isStandalone()) {
-                this.heartbeat.addRemoteDirectory(dir, HeartbeatManager.NO_CONTACT);
-            }
-
-        }
-    }
-
-    /**
-     * Used to notify parent that we are the child and do a zone tranfer Should be used when the parent is initially set and
-     * whenever the parent comes back into an online status.
-     */
-    protected void resetParentStatus() {
-        if (this.theParent != null && !this.emissaryNode.isStandalone()) {
-            final String parentKey = this.theParent.getKey();
-            logger.debug("(Re)registering with  myParent key=" + parentKey);
-            final DirectoryAdapter da = new DirectoryAdapter();
-            final EmissaryResponse response = da.outboundAddChildDirectory(parentKey, myKey);
-            // TODO consider adding this to EmissaryResponse object
-            boolean status = (response.getStatus() == HttpStatus.SC_OK);
-
-            // Follow logic to irdAddChildDirectory on receiving end
-            if (!status) {
-                logger.warn("Unable to notify parent of relay status");
-                this.heartbeat.setHealthStatus(parentKey, HeartbeatManager.NO_CONTACT, "Failed child registration");
-            } else {
-                // If and only if we registered as a child of the parent
-                // do a zone transfer from the parent
-                logger.debug("Registration with parent " + parentKey + " worked, do a zone transfer now");
-                loadParentEntries();
-            }
-        } else {
-            logger.info("The parent is null, nothing to do.");
         }
     }
 
@@ -418,48 +331,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      */
     private boolean isLocal(final DirectoryEntry entry) {
         return isLocal(entry.getKey());
-    }
-
-    /**
-     * Return true if the entry is via my parent
-     *
-     * @param entry the entry to test
-     */
-    private boolean isOnMyRelay(final DirectoryEntry entry) {
-        return isOnMyRelay(entry.getKey());
-    }
-
-    /**
-     * Return true if the entry key is via my parent
-     *
-     * @param key the key to test
-     */
-    private boolean isOnMyRelay(final String key) {
-        if ((this.theParent != null) && KeyManipulator.isLocalTo(this.theParent.getKey(), key)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Return true if the entry key is one of my children
-     */
-    private boolean isMyChild(final DirectoryEntry entry) {
-        return isMyChild(entry.getKey());
-    }
-
-    /**
-     * Return true if the entry key is one of my children
-     */
-    private boolean isMyChild(final String key) {
-        final String dkey = KeyManipulator.getDefaultDirectoryKey(key);
-        for (final DirectoryEntry d : this.childDirectories) {
-            // String compare the default wildcarded keys
-            if (d.getKey().equals(dkey)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -499,7 +370,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             return;
         }
 
-
         boolean changeMade = false;
 
         for (final String key : keys) {
@@ -514,6 +384,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
                 continue;
             }
 
+            if (!isStaticPeer(key)) {
+                logger.warn("Unknown peer requesting to be added: {}", key);
+                continue;
+            }
 
             if (!isKnownPeer(key)) {
                 this.peerDirectories.add(new DirectoryEntry(key));
@@ -565,20 +439,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
         logger.debug("Doing zone transfer with peer " + peerKey);
         // TODO See DirectoryPlace for spy example which needs to be addressed
-        final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap, true);
+        final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap);
         if ((newEntries == null) || newEntries.isEmpty()) {
             logger.debug("We got nothing back from the peer zone xfer");
             return;
-        }
-
-        // Set up proxy paths for children
-        final List<DirectoryEntry> proxies = asProxy(newEntries.allEntries());
-
-        // Send the list of proxified keys to each child
-        for (final DirectoryEntry child : this.childDirectories) {
-            if (this.heartbeat.isAlive(child.getKey())) {
-                registerWith(child, proxies, true);
-            }
         }
 
         // We just did this guy remove his stuff
@@ -587,11 +451,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         // Remove local stuff
         newEntries.removeAllOnDirectory(myKey);
 
-        // Make note of ay possible new peer directory
+        // Make note of any possible new peer directory
         // We should only be seeing peers here
         final Set<String> newPeers = new HashSet<String>();
         for (final DirectoryEntry newEntry : newEntries.allEntries()) {
-            if (!isLocal(newEntry) && !isOnMyRelay(newEntry) && !isMyChild(newEntry)) {
+            if (!isLocal(newEntry)) {
                 final String possiblePeer = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());
                 if (!isKnownPeer(possiblePeer) && !newPeers.contains(possiblePeer)) {
                     logger.debug("Discovered new peer " + possiblePeer + " from " + newEntry.getKey() + " during zt with " + peerKey);
@@ -606,93 +470,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Retrieve and load (zone transfer) all the entries frm my parent Zone transfers do not trigger observables like
-     * addPlaces does
-     */
-    protected void loadParentEntries() {
-        if (this.theParent != null) {
-            logger.debug("Doing zone transfer with parent " + this.theParent.getKey());
-            final DirectoryEntryMap newEntries = loadRemoteEntries(this.theParent.getKey(), this.entryMap, false);
-            if (logger.isDebugEnabled() && newEntries != null) {
-                logger.debug("Load from parent found " + newEntries.entryCount() + " new entries");
-                for (final DirectoryEntry d : newEntries.allEntries()) {
-                    logger.debug(" >> " + d.getFullKey());
-                }
-            } else if (newEntries == null) {
-                logger.debug("Got back <null> from loadRemoteEntries " + "on parent " + this.theParent.getKey());
-            }
-        }
-    }
-
-    /**
-     * Retrieve and load (zone transfer) all the entries from the specified child directory. Notify parent, peers and other
-     * child directories if necessary. Zone transfers do not trigger observables like addPlaces does
-     *
-     * @param childKey the key of the child directory
-     */
-    protected void loadChildEntries(final String childKey) {
-        if (this.emissaryNode.isStandalone()) {
-            logger.debug("Cannot load child entries in standalone nodes");
-            return;
-        }
-
-        logger.debug("Doing zone transfer with child " + childKey);
-
-        // Get the entries returned, dont let loadRemote add them to a map
-        // It can take a while so remember the time when we start
-        // loadRemoteEntries normally does this but we are using
-        // a null loadmap in this instance so it must be done here
-        final long startZone = System.currentTimeMillis();
-        final DirectoryEntryMap newChildEntries = loadRemoteEntries(childKey, null, false);
-        if (newChildEntries != null) {
-            logger.debug("Got back " + newChildEntries.entryCount() + " entries from child load on " + childKey);
-
-            // Remove and notify of any stale entries in child map and
-            // entry map
-            if (logger.isDebugEnabled()) {
-                logger.debug("Removing possibly stale entries from " + childKey + " the zone xfer took " + (System.currentTimeMillis() - startZone)
-                        + " millis");
-            }
-            removeChildEntries(childKey, startZone - this.zoneSlopWindowMillis, newChildEntries);
-
-            // Remove local entries from the new map
-            // We already know about our local stuff.
-            logger.debug("Clean and cost-bumping " + newChildEntries.entryCount() + " new child entries");
-            cleanLoadNotifyEntries(newChildEntries, null, myKey, REMOTE_COST_OVERHEAD);
-
-            // Proxify and add them to the maps
-            logger.debug("Adding remaining " + newChildEntries.entryCount() + " new child entries via addChildEntries");
-
-            final List<DirectoryEntry> proxies = addChildEntries(newChildEntries);
-
-            // Notify parent
-            if (this.theParent != null && this.heartbeat.isAlive(this.theParent.getKey())) {
-                registerWith(this.theParent, proxies, false);
-            }
-
-            // Notify all alive peers
-            // This may fail if the peer is not up yet. That is normal.
-            for (final DirectoryEntry peer : this.peerDirectories) {
-                if (this.heartbeat.isAlive(peer.getKey())) {
-                    registerWith(peer, proxies, false);
-                }
-            }
-
-            // Send it to each alive child except the one they came from
-            if (this.childDirectories.size() > 1) {
-                for (final DirectoryEntry child : this.childDirectories) {
-                    if (!KeyManipulator.isLocalTo(child.getKey(), childKey) && this.heartbeat.isAlive(child.getKey())) {
-                        registerWith(child, proxies, true);
-                    }
-                }
-            }
-        } else {
-            logger.debug("Got back <null> from child load on " + childKey);
-        }
-    }
-
-
-    /**
      * Retrieve and load (zone transfer) all the entries from specified remote directory into the specified map. Remove any
      * stale entries from the destination map if one is specified and merge in the new entries. Zone transfers do not
      * trigger observables like addPlaces does
@@ -701,10 +478,15 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
      * @return the new entries
      */
-    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap, final boolean isPeer) {
+    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap) {
 
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot load remote entries in standalone nodes");
+            return null;
+        }
+
+        if (!isStaticPeer(key)) {
+            logger.debug("Ignoring non-configured peer {}", key);
             return null;
         }
 
@@ -715,17 +497,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         final long startZone = System.currentTimeMillis();
         DirectoryEntryMap map = null;
         try {
-            if (isPeer) {
-                // Also registers as a peer with them
-                // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
-                final DirectoryAdapter da = new DirectoryAdapter();
-                map = da.outboundRegisterPeer(key, myKey);
-            } else {
-                // Just do the transfer
-                // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
-                final DirectoryAdapter da = new DirectoryAdapter();
-                map = da.outboundZoneTransfer(key, myKey);
-            }
+            // Also registers as a peer with them
+            // TODO should we need to get the current EmissaryClient to ensure parameters are set correctly
+            final DirectoryAdapter da = new DirectoryAdapter();
+            map = da.outboundRegisterPeer(key, myKey);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Retrieved " + map.entryCount() + " entries in zone transfer from " + key + " in "
@@ -914,125 +689,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Return key to our relay (parent) directory or null if none
-     *
-     * @return string key of parent directory or null if none
-     */
-    @Override
-    public String getRelayDirectory() {
-        return this.theParent != null ? this.theParent.getKey() : null;
-    }
-
-    /**
-     * Return the set of keys for children directories.
-     *
-     * @return set of keys
-     */
-    @Override
-    public Set<String> getRegisteredChildren() {
-        final Set<String> ret = new HashSet<String>();
-        for (final DirectoryEntry d : this.childDirectories) {
-            ret.add(d.getKey());
-        }
-        return ret;
-    }
-
-    /**
-     * Add a child directory to this one
-     *
-     * @param key string key for child directory
-     */
-    @Override
-    public void irdAddChildDirectory(final String key) {
-        if (this.emissaryNode.isStandalone()) {
-            logger.debug("Cannot add child in standalone nodes");
-            return;
-        }
-
-        logger.debug("irdAddChildDirectory " + key);
-
-        // Validate remote input
-        if (!KeyManipulator.isValid(key)) {
-            logger.warn("Ignoring irdAddChildDirectory called with invalid key " + key);
-            return;
-        }
-
-        final String dkey = KeyManipulator.getDefaultDirectoryKey(key);
-
-        if (myKey.equals(dkey)) {
-            logger.error("Cannot be own child: " + key);
-            return;
-        }
-
-        if (isOnMyRelay(dkey)) {
-            logger.error("Cannot parent my own relay connection " + key + "!");
-            return;
-        }
-
-        logger.debug("Adding child directory " + dkey);
-        this.childDirectories.add(new DirectoryEntry(dkey));
-
-        // Setup heartbeat to new child directory
-        this.heartbeat.addRemoteDirectory(dkey, HeartbeatManager.IS_ALIVE);
-
-        // notify relay observers
-        this.observerManager.childAdded(new DirectoryEntry(dkey));
-
-        // Child may be in constructor so this might fail. But if it
-        // is a reconnect, this is the only thing that will get
-        // us all the entries
-        loadChildEntries(dkey);
-    }
-
-    /**
-     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
-     * nextKeys type lookup in the child map to effect the relaying function.
-     *
-     * @param newEntries the new entries to add
-     * @return the list of proxy entries that are created
-     */
-    protected List<DirectoryEntry> addChildEntries(final DirectoryEntryMap newEntries) {
-        return addChildEntries(newEntries.allEntries());
-    }
-
-    /**
-     * Add entries to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
-     * nextKeys type lookup in the child map to effect the relaying function.
-     *
-     * @param newEntries the new entries to add (non-proxified)
-     * @return the list of proxy entries that are created
-     */
-    protected List<DirectoryEntry> addChildEntries(final List<DirectoryEntry> newEntries) {
-        final List<DirectoryEntry> proxies = asProxy(newEntries);
-        this.childEntries.addEntries(newEntries);
-        addEntries(proxies);
-        return proxies;
-    }
-
-    /**
-     * Add an entry to the child and regular entry maps This is a key we will proxy for in the entry map but need to perform
-     * nextKeys type lookup in the child map to effect the relaying function.
-     *
-     * @param newEntry the new entry to add
-     * @return the proxy entry that is created
-     */
-    protected DirectoryEntry addChildEntry(final DirectoryEntry newEntry) {
-        logger.debug("Adding child entry " + newEntry.getKey());
-
-        // Add it to the child entries map
-        this.childEntries.addEntry(newEntry);
-
-        // Set up the proxy and overhead the cost
-        final DirectoryEntry proxyEntry = new DirectoryEntry(newEntry);
-        proxyEntry.proxyFor(myKey);
-        logger.debug("Created proxy entry in addChildEntry with key " + proxyEntry.getKey());
-
-        // Add it to the regular map now that it is proxied
-        addEntry(proxyEntry);
-        return proxyEntry;
-    }
-
-    /**
      * Add a list of entries to the directory Entries are kept in a Hash by "datatype::serviceType" Each entry is a List of
      * sorted DirectoryEntries sorted order on cost and then quality, held in a DirectoryEntryList object
      *
@@ -1050,8 +706,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         final Set<String> peerSet = new HashSet<String>();
         for (final DirectoryEntry newEntry : entryList) {
             // Make a note of any possible new peer directory
-            // We should only be seeing keys for peers and relays
-            if (!isLocal(newEntry) && !isOnMyRelay(newEntry) && !isMyChild(newEntry)) {
+            if (!isLocal(newEntry)) {
                 final String peerKey = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());
                 if (!isKnownPeer(peerKey) && !peerSet.contains(peerKey)) {
                     logger.debug("Discovered new peer " + peerKey + " from  addEntries " + newEntry.getKey());
@@ -1082,22 +737,17 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
+     * Determine if key represents a configured peer
+     */
+    public boolean isStaticPeer(final String key) {
+        return this.staticPeers.contains(key);
+    }
+
+    /**
      * Determine if key represents a known peer
      */
     private boolean isKnownPeer(final String key) {
         for (final DirectoryEntry sde : this.peerDirectories) {
-            if (KeyManipulator.isLocalTo(sde.getKey(), key)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Determine if key represents a known child
-     */
-    private boolean isKnownChild(final String key) {
-        for (final DirectoryEntry sde : this.childDirectories) {
             if (KeyManipulator.isLocalTo(sde.getKey(), key)) {
                 return true;
             }
@@ -1147,136 +797,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Remove a child from the child list
-     *
-     * @param key the child to remove
-     */
-    private DirectoryEntry removeChild(final String key) {
-        if (this.emissaryNode.isStandalone()) {
-            logger.debug("Cannot remove child from standalone nodes");
-            return null;
-        }
-
-        DirectoryEntry exchild = null;
-
-        // Find it
-        for (final DirectoryEntry sde : this.childDirectories) {
-            if (KeyManipulator.isLocalTo(sde.getKey(), key)) {
-                // nb. COWSet does not support iterator.remove
-                exchild = sde;
-                break;
-            }
-        }
-
-        // Nuke it
-        if (exchild != null) {
-            // Remove from cow set
-            this.childDirectories.remove(exchild);
-
-            // Remove from heartbeat manager
-            this.heartbeat.removeRemoteDirectory(exchild.getKey());
-
-            // Remove child entries from relay map and
-            // corresponding proxy entries from main map
-            removeChildEntries(KeyManipulator.getHostMatchKey(exchild.getKey()), Long.MAX_VALUE, null);
-
-            // Notify observers
-            this.observerManager.childRemoved(exchild);
-        }
-        return exchild;
-    }
-
-    /**
-     * Remove all entries from child list matching patterns and entries corresponding in mainmap
-     *
-     * @param patterns list of string key patterns to remove
-     * @param checkpoint only remove entries older than this
-     * @return count of entries removed from entry map
-     */
-    private int removeChildEntries(final List<String> patterns, final long checkpoint) {
-        int count = 0;
-        for (final String pat : patterns) {
-            count += removeChildEntries(pat, checkpoint, null);
-        }
-        return count;
-    }
-
-    /**
-     * Remove child entry keys matching pattern and their corresponding entries in the entryMap Entries older than
-     * checkpoint that do not appear in newEntries (if not null) are stale and must be removed.
-     *
-     * @param pattern the key pattern to match in the child map
-     * @param checkpoint only remove entries older than this
-     * @param newEntries map of newly arriving entries to allow freshness determination or null if no new entries (i.e. zone
-     *        transfer) triggered this action
-     * @return count of entries removed from entry map
-     */
-    private int removeChildEntries(final String pattern, final long checkpoint, final DirectoryEntryMap newEntries) {
-
-        // Remove child keys from relay map
-        final List<DirectoryEntry> removed = removeStaleEntries(this.childEntries, pattern, checkpoint, newEntries, false);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Removed " + removed.size() + " entries from " + "relay mapping for pattern " + pattern + " using checkpoint " + checkpoint
-                    + " and " + (newEntries == null ? 0 : newEntries.size()) + " new entries");
-        }
-
-        int removeCount = 0;
-
-        // Remove them from entryMap but must check
-        // to see that nothing else is the same proxy
-        for (final DirectoryEntry d : removed) {
-            // Search main map by proxy key
-            final String searchKey = KeyManipulator.removeExpense(KeyManipulator.makeProxyKey(d.getKey(), myKey, d.getExpense()));
-
-            final List<DirectoryEntry> possibles = this.entryMap.collectAllMatching(searchKey);
-
-            logger.debug("Found " + possibles.size() + " possible entries in our map to check from key " + searchKey);
-
-            final String dataId = KeyManipulator.getDataID(d.getKey());
-
-            // Check childEntries for the data Id in question
-            final DirectoryEntryList remaining = this.childEntries.get(dataId);
-
-            final List<String> removedProxies = new ArrayList<String>();
-
-            for (final DirectoryEntry rm : possibles) {
-                // If too cheap to be remote, it isn't remote
-                if (rm.getExpense() < REMOTE_EXPENSE_OVERHEAD) {
-                    logger.debug("Not removing " + rm.getKey() + " expense too low to be proxy of child " + pattern);
-                } else if ((remaining != null) && !remaining.isEmpty()) {
-                    // If more things proxy for this, don't remove
-                    logger.debug("Not removing " + rm.getKey() + " since " + remaining.size()
-                            + " entries are still left in childEntries map with dataId " + dataId);
-                } else {
-                    // Else go ahead and remove it and notify peers/parent
-                    logger.debug("Marking proxy entry " + rm.getKey() + " for removal");
-                    removedProxies.add(rm.getKey());
-                }
-            }
-
-            if (!removedProxies.isEmpty()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Calling removePlaces to trigger removal and propagation on " + removedProxies.size() + " keys " + removedProxies);
-                }
-
-                removePlaces(removedProxies);
-                removeCount = removedProxies.size();
-            }
-
-        }
-        return removeCount;
-    }
-
-    /**
-     * Remove places for a failed remote machine. Called from the heartbeat manager and from the EmissaryClient
+     * Remove directory. Called from the heartbeat manager and from the EmissaryClient
      *
      * @param key string key of failed directory
      * @param permanent true if from a normal shutdown rather than a transient error
      * @return count of how many places were removed locally
      */
     @Override
-    public int irdFailRemoteDirectory(final String key, final boolean permanent) {
+    public int irdFailDirectory(final String key, final boolean permanent) {
 
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot fail remotes in standalone nodes");
@@ -1285,7 +813,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
         // Validate remote input
         if (!KeyManipulator.isValid(key)) {
-            logger.warn("Ignoring irdFailRemoteDirectory called with invalid key " + key);
+            logger.warn("Ignoring, called with invalid key {}", key);
             return 0;
         }
 
@@ -1305,23 +833,16 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         final String hmKey = KeyManipulator.getHostMatchKey(key);
         int count = 0;
 
-        logger.debug("irdFailRemoteDirectory " + key + (permanent ? "is" : "is not") + " permanent");
+        logger.debug("irdFailDirectory " + key + (permanent ? "is" : "is not") + " permanent");
 
         // Modify local entries for the failed remote directory
         // Permanent failure removes entries on failed directory.
         // Transient failure adjusts weight of entries on failed directory.
         if (permanent) {
-            // Permanent! Remove entries for the failed directory
-            // and propagate to parent and children
-            if (isMyChild(key)) {
-                logger.debug("Permanent failure of child " + key);
-                count += removeChildEntries(hmKey, Long.MAX_VALUE, null);
-            } else {
-                logger.debug("Permanent failure of remote " + key);
-                count += removePlaces(Arrays.asList(new String[] {hmKey}));
-            }
+            logger.debug("Permanent failure of remote " + key);
+            count += removePlaces(Arrays.asList(new String[] {hmKey}));
         } else {
-            // Change the weight of the paths for all places matchng the
+            // Change the weight of the paths for all places matching the
             // failed directory. This has the effect of causing them
             // not to be chosen as much.
             final List<DirectoryEntry> list = this.entryMap.collectAllMatching(hmKey);
@@ -1338,22 +859,16 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             // if under the timer check time
             this.heartbeat.setHealthStatus(key, HeartbeatManager.NO_CONTACT, "Permanent deregistration");
 
-            // Remove from peer list, child list or parent
+            // Remove from peer list
             if (isKnownPeer(dirKey)) {
-                if (!this.staticPeers.contains(dirKey)) {
+                if (!isStaticPeer(dirKey)) {
                     logger.debug("Removing non-static peer " + dirKey);
                     removePeer(dirKey);
                 } else {
                     logger.debug("Static peer " + dirKey + " is deregistered but monitoring continues");
                 }
-            } else if (isKnownChild(dirKey)) {
-                logger.info("Child directory failed, detaching");
-                removeChild(dirKey);
-            } else if (this.theParent != null && KeyManipulator.isLocalTo(dirKey, this.theParent.getKey())) {
-                logger.info("Parent directory failed, running in detached mode");
-                this.heartbeat.setHealthStatus(this.theParent.getKey(), HeartbeatManager.NO_CONTACT, "Parent directory failed or shutdown");
             } else {
-                logger.warn("Diretory " + dirKey + " failed but it isn't a peer, child,or parent??");
+                logger.warn("Directory {} failed but it isn't a peer??", dirKey);
             }
         }
 
@@ -1377,14 +892,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         try {
             new DirectoryAdapter().outboundFailDirectory(directory.getKey(), failKey, permanent);
         } catch (Exception ex) {
-            logger.error("DirectoryPlace.irdFailRemoteDirectory: " + "Problem talking to directory " + directory.getKey() + " to fail " + failKey,
-                    ex);
+            logger.error("Problem talking to directory {} to fail {}", directory.getKey(), failKey, ex);
         }
     }
 
     /**
-     * Established or re-established contact with a remote directory. Check for presence on peer or relay and initiate zone
-     * transfer if needed.
+     * Established or re-established contact with a remote directory. Check for presence on peer and initiate zone transfer
+     * if needed.
      *
      * @param key the key of the directory we contacted
      */
@@ -1392,14 +906,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(myKey));
         logger.debug("Established contact with " + key);
 
-        if (isKnownPeer(key)) {
+        if (isStaticPeer(key) && isKnownPeer(key)) {
             loadPeerEntries(key);
-        } else if (isOnMyRelay(key)) {
-            resetParentStatus();
-        } else if (isMyChild(key)) {
-            loadChildEntries(key);
         } else {
-            logger.warn("Contact established with " + key + " but it is not a peer, child or parent");
+            logger.warn("Contact established with {} but it is not a peer", key);
         }
         MDC.remove(MDCConstants.SERVICE_LOCATION);
     }
@@ -1454,12 +964,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         // We should check that they are and throw if not
         final String place = entryList.get(0).getKey(); // !!
         final boolean isLocal = isLocal(place);
-        final boolean isFromChild = isMyChild(place);
-        final boolean isFromParent = isOnMyRelay(place);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Starting irdAddPlaces with " + entryList.size() + " entries for " + (isLocal ? "local" : "non-local") + " place "
-                    + (isFromChild ? "from" : "not from") + " my child network, " + (isFromParent ? "from" : "not from") + " my parent relay"
                     + " - place=" + place + ", myKey=" + myKey);
         }
 
@@ -1479,106 +986,25 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             }
         }
 
-        // Get a proxy list of the bumped-cost entries
-        final List<DirectoryEntry> proxies = asProxy(entries);
+        logger.debug("Doing addEntries for " + entries.size() + " new entries");
+        addEntries(entries);
 
-        // If the new place is coming from one of my children,
-        // fix the key to force peer traffic through here.
-        // Store the real keys in the child map and the fixed key
-        // in the entry map.
-        if (isFromChild) {
-            // Add the entries to the relay map, the proxy entry to
-            // the real map and get the proxy entry for notifying
-            // all interested parties. BUT, do not recompute isLocal
-            // or any of the others. The proxy key always looks local,
-            // that's just the idea of it.
-            logger.debug("Doing addEntries (child) for " + entries.size() + " new entries/proxies");
-            addEntries(proxies);
-            this.childEntries.addEntries(entries);
-        } else {
-            logger.debug("Doing addEntries (non-child) for " + entries.size() + " new entries");
-            addEntries(entries);
-        }
-
-        // Inform parent directory if we have one and we didn't
-        // get it from a higher level directory
-        if (!isFromParent && this.theParent != null) {
-            if (this.heartbeat.isAlive(this.theParent.getKey())) {
-                logger.debug("Registering " + entries.size() + " with my parent/relay");
-                registerWith(this.theParent, (isFromChild ? proxies : entries), false);
-            } else {
-                logger.debug("Not registering " + entries.size() + " with my parent/relay, not alive");
-            }
-        }
-
-        // Notify peers if entries are being added locally or from
-        // a child directory.
-        // Since the parent tells all my peers, I don't need to if it
-        // is coming from the relay parent.
-        if ((isLocal || isFromChild) && !this.peerDirectories.isEmpty()) {
+        // Notify peers if entries are being added locally
+        if (isLocal && !this.peerDirectories.isEmpty()) {
             // This may fail if the peer is not up yet. That is normal.
             for (final DirectoryEntry peer : this.peerDirectories) {
                 if (this.heartbeat.isAlive(peer.getKey())) {
-                    registerWith(peer, (isFromChild ? proxies : entries), false);
+                    registerWith(peer, entries, false);
                 } else {
                     logger.debug("Not registering " + entries.size() + " with peer " + peer.getKey() + ", not alive right now");
                 }
             }
         }
-
-        // If we have children, propagate it to them unless it came from there
-        // Set up the proxy path for the children
-        if (!this.childDirectories.isEmpty()) {
-            // Send it to each child except the one it came from (if isFromChild)
-            for (final DirectoryEntry child : this.childDirectories) {
-                if (this.heartbeat.isAlive(child.getKey())) {
-                    if (!KeyManipulator.isLocalTo(child.getKey(), entries.get(0).getKey())) {
-                        registerWith(child, proxies, true);
-                    }
-                } else {
-                    logger.debug("Not registering " + entries.size() + " with child " + child.getKey() + ", not alive right now");
-                }
-
-            }
-        }
     }
 
     /**
-     * Copy and proxify the supplied list of DirectoryEntry into proxies through this place
-     *
-     * @param list the list to copy as proxy
-     * @return copy of the list proxied through here
-     */
-    private List<DirectoryEntry> asProxy(final List<DirectoryEntry> list) {
-        logger.debug("asProxy(" + list.size() + " entries)");
-        final List<DirectoryEntry> proxies = new ArrayList<DirectoryEntry>(list.size());
-        for (final DirectoryEntry d : list) {
-            final DirectoryEntry proxy = new DirectoryEntry(d, DirectoryEntry.PRESERVE_TIME);
-            proxy.proxyFor(myKey);
-            logger.debug("Created proxy entry " + proxy.getFullKey());
-            proxies.add(proxy);
-        }
-        logger.debug("returning list of " + proxies.size() + " proxy entries");
-        return proxies;
-    }
-
-    /**
-     * Private helper to register with parent and children directories
-     *
-     * @param dir the place entry to register
-     * @param entry the entry to register
-     * @param propagating true if propagating back down from higher level directory
-     */
-    protected void registerWith(final DirectoryEntry dir, final DirectoryEntry entry, final boolean propagating) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("registerWith(" + dir.getKey() + "," + entry.getKey() + "," + propagating + ")");
-        }
-        registerWith(dir, Arrays.asList(new DirectoryEntry[] {entry}), propagating);
-    }
-
-    /**
-     * Private helper to register with parent and children directories. This method handles multiple directory entries, each
-     * can have separate key, description, cost, and quality
+     * Private helper to register directories. This method handles multiple directory entries, each can have separate key,
+     * description, cost, and quality
      *
      * @param dir the place entry to register
      * @param entryList the new entries
@@ -1616,30 +1042,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         if ((entries != null) && !entries.isEmpty()) {
             if (logger.isDebugEnabled()) {
                 logger.debug("nextKey produced " + entries.size() + " entries from main map " + entries);
-            }
-
-            // Obviously we are asking this question because the
-            // agent is local to this directory. Less obvious, if the
-            // single answer is some proxy key of this very directory
-            // there's no reason to have the agent leave only to visit
-            // the process(IBaseDataObject) just so it can be looked up
-            // in the child entry map. We can do that now and just skip
-            // the extra step since we are already on the machine that
-            // has visibility with the network of child machines
-            // represented in the child entry map
-            if ((entries.size() == 1) && entries.get(0).getServiceLocation().equals(KeyManipulator.getServiceLocation(myKey))) {
-                final List<DirectoryEntry> centries = nextKeys(dataID, payload, lastPlace, this.childEntries);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("nextKey reevaluation for proxy keys found " + (centries != null ? centries.size() : -1)
-                            + " entries from child map " + centries);
-                }
-                // If we found something return that instead
-                if ((centries != null) && !centries.isEmpty()) {
-                    entries = centries;
-                } else {
-                    logger.error("Configuration in main map points to proxy key " + entries.get(0).getFullKey()
-                            + " but child map check produced nothing.");
-                }
             }
         }
         return entries;
@@ -1701,7 +1103,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
                     continue;
                 }
 
-                // If equal or lower cost and not relaying, no point in using the entry
+                // If equal or lower cost, no point in using the entry
                 if ((trialEntry.getExpense() <= lastPlace.getExpense()) && trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
                     logger.debug("nextKey skip lower cost not relaying " + trialEntry.getFullKey());
                     continue;
@@ -1776,19 +1178,17 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
         if (d.currentForm().equals(this.myKey)) {
             logger.debug("Probe routing has been removed");
         } else {
-            logger.debug("Doing relay routing on '" + d.shortName() + "'");
-            handleRelayRouting(d);
+            logger.debug("Doing routing on '{}'", d.shortName());
+            handleRouting(d);
         }
     }
 
     /**
-     * Provide a mechanism to traverse this directory that is acting as a relay point. The payload might want to traverse
-     * from the child up into the current or peer network, or it might be coming from a peer and want to traverse into the
-     * child network. This is determined by looking at the history to determine where the payload came from.
+     * Handle the routing for a payload
      *
      * @param d the visiting payload
      */
-    protected void handleRelayRouting(final IBaseDataObject d) {
+    protected void handleRouting(final IBaseDataObject d) {
         // The source entry we are interested in is the one that got us
         // here. The "lastPlaceVisited" should be my own key, so we want
         // the one before that.
@@ -1800,8 +1200,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             sourceEntry = this.getDirectoryEntry();
         }
 
-        final boolean isChild = isMyChild(sourceEntry);
-
         // Last place visited shows the key that cause the payload
         // to arrive at this place since it is logged into the history
         // just before calling this method. The dataId on this entry
@@ -1812,24 +1210,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
         if (logger.isDebugEnabled()) {
             logger.debug("Relay payload '" + d.shortName() + "' arrived" + " with form " + d.currentForm() + " coming from " + sourceEntry.getKey()
-                    + " arrival entry " + thisEntry.getKey() + " arrival dataID=" + dataId + ", isFromChild=" + isChild);
+                    + " arrival entry " + thisEntry.getKey() + " arrival dataID=" + dataId);
         }
 
         // Where we want to go from here
-        List<DirectoryEntry> destination = null;
-
-        // If it is from a child, perform nextKeys on the entryMap
-        if (isChild) {
-            // By leaving off the entryMap third param here we
-            // will handle the child to child routing
-            destination = nextKeys(dataId, d, sourceEntry);
-        } else {
-            // from a peer/parent, perform nextKeys on the childDirectory map
-            destination = nextKeys(dataId, d, sourceEntry, this.childEntries);
-        }
+        List<DirectoryEntry> destination = nextKeys(dataId, d, sourceEntry);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Relay selected " + destination.size() + " entries " + destination + " from incoming " + sourceEntry.getKey()
+            logger.debug("Selected " + destination.size() + " entries " + destination + " from incoming " + sourceEntry.getKey()
                     + " and data id " + dataId + " current form=" + d.currentForm());
         }
 
@@ -1868,29 +1256,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Make relay contents available for debug or display and analysis
-     *
-     * @return List of relay DirectoryEntries (copies)
-     */
-    @Override
-    public List<DirectoryEntry> getRelayEntries() {
-        final List<DirectoryEntry> entries = this.childEntries.allEntries();
-        return DirectoryEntryList.deepCopy(entries, true);
-    }
-
-    /**
-     * Get list of relay DirectoryEntry that match the key pattern
-     *
-     * @param pattern a key pattern to match
-     * @return List of DirectoryEntry (copies)
-     */
-    @Override
-    public List<DirectoryEntry> getMatchingRelayEntries(final String pattern) {
-        final List<DirectoryEntry> entries = this.childEntries.collectAllMatching(pattern);
-        return DirectoryEntryList.deepCopy(entries, true);
-    }
-
-    /**
      * Make directory contents entry keys available for display and transfer
      *
      * @return Set of String in the DataID format DATATYPE::SERVICETYPE
@@ -1910,39 +1275,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     public DirectoryEntryList getEntryList(final String dataId) {
         final DirectoryEntryList value = this.entryMap.get(dataId);
         return new DirectoryEntryList(value, DirectoryEntryList.DEEP_COPY, DirectoryEntryList.PRESERVE_TIME);
-    }
-
-    /**
-     * Get the requested directory entry list excluding all entries that actually proxy for a place local to the requester
-     * From IRemoteDirectory interface
-     *
-     * @param dataId the key to the entry Map set of DirectoryEntryList objects
-     * @param requester key of the place requesting the list
-     * @return a DirectoryEntryList object for the key or null if none
-     */
-    @Override
-    public DirectoryEntryList irdGetEntryListExcl(final String dataId, final String requester) {
-        // this is a deep copy, not attached to the directory internal map
-        final DirectoryEntryList d = getEntryList(dataId);
-        logger.debug("EntryList for " + dataId + " starts with " + d.size());
-        if (requester != null && isMyChild(requester)) {
-            // NB: cannot remove through iterator on COWArrayList, cannot
-            // remove through enhanced for loop
-            for (int i = d.size() - 1; i >= 0; i--) {
-                final DirectoryEntry e = d.get(i);
-                // Construct what the child entry would be on the requester
-                final DirectoryEntry possible = new DirectoryEntry(e, DirectoryEntry.PRESERVE_TIME);
-                possible.setServiceLocation(KeyManipulator.getServiceLocation(requester));
-                final DirectoryEntryList centries = this.childEntries.get(possible.getDataID());
-                // Remove if there is only one and it is this child
-                if ((centries != null) && (centries.size() == 1) && KeyManipulator.isLocalTo(centries.get(0).getKey(), requester)) {
-                    logger.debug("removing " + e.getKey() + " since " + centries.get(0).getKey() + " is on the requester " + requester);
-                    d.remove(i);
-                }
-            }
-        }
-        logger.debug("EntryList for " + dataId + " ends with " + d.size());
-        return d;
     }
 
     /**
@@ -1984,35 +1316,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             }
         }
 
-        // If these entries are coming from a child
-        // we need to not be in this method as
-        // removeChildEntries will call here once the
-        // appropriate changes are made to the child map
-        // and the proxies computed.
-        // So divide the keys up into child and non-child
-        final List<String> childKeys = new ArrayList<String>();
-        for (final String k : keys) {
-            if (isMyChild(k)) {
-                childKeys.add(k);
-            }
-        }
-
-        // Process the child entries (will recursively come back
-        // to this method at most one times
-        if (!childKeys.isEmpty()) {
-            logger.debug("Sending " + childKeys.size() + " child entries " + " for removal");
-            removeChildEntries(childKeys, Long.MAX_VALUE);// nothing is stale by time
-        }
-
-        // Bail out of here if there are no non-child keys to
-        // process. If there is a mix, then the matching
-        // routine will handle below will handle just pulling
-        // matches from the main entryMap
-        if (childKeys.size() == keys.size()) {
-            logger.debug("All the entries to be removed were from the child");
-            return 0;
-        }
-
         // Note we don't just pull the dataId from the map
         // because we anticipate the incoming keys will be
         // wildcarded as places go away rather than individual
@@ -2044,13 +1347,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             this.observerManager.placeRemove(e.getFullKey());
         }
 
-        // Inform parent directory if we have one and we didn't
-        // get it from a higher level directory
-        if (!propagating && this.theParent != null && this.heartbeat.isAlive(this.theParent.getKey())) {
-            logger.debug("Deregistering " + keys.size() + " keys from parent");
-            deregisterFrom(this.theParent, keys, false);
-        }
-
         // Notify peers if local entries are being removed
         if (!this.peerDirectories.isEmpty() && (localCount > 0)) {
             // This may fail if the peer is not up. That is normal.
@@ -2062,76 +1358,20 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             }
         }
 
-        // If some keys are non-local (i.e. peer or parent) we
-        // need to remove proxies to the keys rather than actual keys
-        // Divide them into two buckets, local and remote
-        List<String> remoteKeys = new ArrayList<String>();
-        final List<String> localKeys = new ArrayList<String>();
+        final List<String> localKeys = new ArrayList<>();
         for (final DirectoryEntry match : matches) {
             final String key = match.getKey();
             if (isLocal(key)) {
                 logger.debug("Removed " + key + " putting in local bucket");
                 localKeys.add(key);
-            } else {
-                logger.debug("Removed " + key + " putting in remote bucket");
-                remoteKeys.add(key);
             }
         }
 
-        // Turn the remote keys into proxies
-        remoteKeys = generateDeregisterableProxies(remoteKeys);
-
-        // If we have children, propagate it to them
-        // Remove proxy from children
-        for (final DirectoryEntry child : this.childDirectories) {
-            if (this.heartbeat.isAlive(child.getKey())) {
-                if (!localKeys.isEmpty()) {
-                    logger.debug("Deregistering " + localKeys.size() + " local keys from child " + child.getKey());
-                    deregisterFrom(child, localKeys, true);
-                }
-                if (!remoteKeys.isEmpty()) {
-                    logger.debug("Deregistering " + remoteKeys.size() + " proxy keys " + "from cild " + child.getKey());
-                    deregisterFrom(child, remoteKeys, true);
-                }
-            }
-        }
-
-        return remoteKeys.size() + localKeys.size();
+        return localKeys.size();
     }
 
     /**
-     * Deregister the proxies of the passed in keys if nothing remaining acts as a proxy for the same thing
-     *
-     * @param keys the list of keys the place can handle (SERVICE_PROXY)
-     * @return list of string keys that are deregisterable
-     */
-    protected List<String> generateDeregisterableProxies(final List<String> keys) {
-        // Generate proxy keys
-        final List<String> proxyKeys = new ArrayList<String>();
-        for (final String k : keys) {
-            // See if anything else we have proxies for the same key
-            // We need DATATYPE:*:SERVICETYPE:localhost:port/DirectoryPlace
-            final String wcproxyKey = KeyManipulator.makeProxyKey(k, myKey, -1);
-            final int proxyMatchCount = this.entryMap.countAllMatching(wcproxyKey);
-
-            // This one has already been removed from entryMap, any more?
-            if (proxyMatchCount == 0) {
-                logger.debug("Good, nothing left for " + wcproxyKey + " so we can generate the proxy key for removal");
-                proxyKeys.add(KeyManipulator.makeProxyKey(k, myKey, -1));
-            } else {
-                logger.debug("We stil have " + proxyMatchCount + " keys for " + wcproxyKey + " so not deregistering from child");
-            }
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Generated " + proxyKeys.size() + " removeable proxy keys " + proxyKeys);
-        }
-
-        return proxyKeys;
-    }
-
-    /**
-     * Private helper to deregister entry from parent and children directories
+     * Private helper to deregister entry from directories
      *
      * @param dir the remote directory to deregister from
      * @param keys the list of keys the place can handle (SERVICE_PROXY)
@@ -2147,7 +1387,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
     }
 
     /**
-     * Shutdown this place and deregister and notify any peers, relays and observers that this directory is closing
+     * Shutdown this place and deregister and notify any peers and observers that this directory is closing
      */
     @Override
     public void shutDown() {
@@ -2169,18 +1409,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
             for (final DirectoryEntry peer : this.peerDirectories) {
                 logger.debug("Sending fail msg to peer " + peer);
                 sendFailMessage(peer, myKey, true);
-            }
-
-            // Notify relay parent of my demise
-            if (this.theParent != null) {
-                logger.debug("Sending fail msg to parent " + this.theParent.getKey());
-                sendFailMessage(this.theParent, myKey, true);
-            }
-
-            // Notify my children of my demise
-            for (final DirectoryEntry child : this.childDirectories) {
-                logger.debug("Sending fail msg to child " + child.getKey());
-                sendFailMessage(child, myKey, true);
             }
         }
 
@@ -2246,7 +1474,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
 
     /**
      * Get the sync status of a remote directory as seen from this directory. Note that this method only can return true for
-     * things that the HeartbeatManager is tracking, i.e. parent, child or peer directories of this instance.
+     * things that the HeartbeatManager is tracking, i.e. peer directories of this instance.
      *
      * @param key the key of the remote directory
      * @return true if remote is reported as being up, false otherwise
@@ -2260,10 +1488,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      * Force a heartbeat with a particular directory Directory represented by key does not necessarily need to be one that
      * the HeartbeatManager is already tracking and calling this method will not add it permanently to any list to be
      * tracked. This is a one time event and can be used at the callers discretion. Note however,that if the key is not a
-     * peer, child or parent of this directory, a warning will be issued here when the success or failure action is taken by
-     * the heartbeat manager. It can be ignored in this case. Note also, that a true return from this method merely means
-     * that the remote directory responded to the heartbeat method, not that the remote directory is in sync yet with this
-     * one.
+     * peer of this directory, a warning will be issued here when the success or failure action is taken by the heartbeat
+     * manager. It can be ignored in this case. Note also, that a true return from this method merely means that the remote
+     * directory responded to the heartbeat method, not that the remote directory is in sync yet with this one.
      *
      * @see #isRemoteDirectoryAvailable(String)
      * @param key the key of the remote directory
@@ -2300,11 +1527,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IDirectoryPl
      * @param de the directory entry to associate this function with
      * @param script the javascript accept function
      * @param isDefault is a default rule for SERVICE_NAME
-     * @throws Exception if script does not compile
      * @return true if the function is added
      */
     @Override
-    public boolean addRoutingFunction(final DirectoryEntry de, final String script, final boolean isDefault) throws Exception {
+    public boolean addRoutingFunction(final DirectoryEntry de, final String script, final boolean isDefault) {
         boolean added = false;
         try {
             final JSAcceptFacet facet = JSAcceptFacet.of(this);

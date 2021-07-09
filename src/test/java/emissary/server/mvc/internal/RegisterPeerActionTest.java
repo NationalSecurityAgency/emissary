@@ -2,8 +2,10 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 
+import emissary.config.ConfigUtil;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
@@ -29,26 +32,29 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     @DataPoints
     public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
     private MultivaluedHashMap<String, String> formParams;
-    private static final String PEER_KEY = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY_REGISTERPEERTEST.STUDY.http://junkme:9001/DirectoryPlace";
-    private static final String DIRNAME = "http://junkme:10001/DirectoryPlace";
+    private static final String PEER_KEY_GOOD = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://remoteHost:8888/DirectoryPlace";
+    private static final String PEER_KEY_BAD = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://otherRemoteHost:8888/DirectoryPlace";
+    private static final String DIRNAME = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace$5050";
     private static final String REGISTER_PEER_ACTION = "RegisterPeer.action";
     private static final String SUCCESS_RESULT = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-            + "<directory location=\"EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://junkme:10001/DirectoryPlace\">\r\n"
+            + "<directory location=\"EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace\">\r\n"
             + "  <entryList dataid=\"EMISSARY_DIRECTORY_SERVICES::STUDY\">\r\n" + "    <entry>\r\n"
-            + "      <key>EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://junkme:10001/DirectoryPlace</key>\r\n" + "      <description />\r\n"
+            + "      <key>EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace</key>\r\n" + "      <description />\r\n"
             + "      <cost>50</cost>\r\n" + "      <quality>50</quality>\r\n" + "      <expense>5050</expense>\r\n" + "    </entry>\r\n"
             + "  </entryList>\r\n" + "</directory>\r\n";
+    private EmissaryNode node;
 
     @Before
     public void setup() throws IOException {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(DIRECTORY_NAME, Arrays.asList(PEER_KEY));
+        formParams.put(DIRECTORY_NAME, Arrays.asList(PEER_KEY_GOOD));
         formParams.put(TARGET_DIRECTORY, Arrays.asList(DIRNAME));
+
+        node = mock(EmissaryNode.class);
+        when(node.isValid()).thenReturn(true);
+        when(node.getPeerConfigurator()).thenReturn(ConfigUtil.getConfigInfo("peer-TESTING.cfg"));
         // make a new directory place and register it in the Namespace @ dirName
-        DirectoryPlace directoryPlace = new DirectoryPlace(DIRNAME, new TestEmissaryNode());
-        // TODO Probably an integration test but need to verify actually pulling all the directories from a peer, can't
-        // do in standalone mode
-        // directoryPlace.addPlaces(Arrays.asList("INITIAL.FILE_PICKUP_CLIENT.INPUT.http://junkme:8001/FilePickUpClient"));
+        DirectoryPlace directoryPlace = new DirectoryPlace("peer-TESTING.cfg", DIRNAME, node);
         Namespace.bind(DIRNAME, directoryPlace);
     }
 
@@ -68,22 +74,38 @@ public class RegisterPeerActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad Params: "), equalTo(true));
-
+        assertTrue(result.startsWith("Bad Params: "));
     }
 
     @Test
     public void registerPeerSuccessfully() {
         // test
+
         Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo(SUCCESS_RESULT));
+        assertEquals(SUCCESS_RESULT, result);
+    }
+
+    @Test
+    public void failUnknownPeerRegistration() {
+        MultivaluedHashMap<String, String> newFormParams = new MultivaluedHashMap<>();
+        newFormParams.put(DIRECTORY_NAME, Arrays.asList(PEER_KEY_BAD));
+        newFormParams.put(TARGET_DIRECTORY, Arrays.asList(DIRNAME));
+
+        // test
+        Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(newFormParams));
+
+        // verify
+        final int status = response.getStatus();
+        assertEquals(500, status);
+        final String result = response.readEntity(String.class);
+        assertTrue(result.startsWith("Registration failed"));
     }
 
     @Test
@@ -96,36 +118,8 @@ public class RegisterPeerActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Remote directory lookup failed for dirName: " + DIRNAME));
+        assertEquals("Remote directory lookup failed for dirName: " + DIRNAME, result);
     }
-
-    static class TestEmissaryNode extends EmissaryNode {
-        // public TestEmissaryNode() {
-        // nodeNameIsDefault = true;
-        // }
-        //
-        @Override
-        public int getNodePort() {
-            return 10001;
-        }
-
-        @Override
-        public String getNodeName() {
-            return "junkme";
-        }
-
-        //
-        // @Override
-        // public String getNodeType() {
-        // return "trs80";
-        // }
-
-        @Override
-        public boolean isStandalone() {
-            return false;
-        }
-    }
-
 }
