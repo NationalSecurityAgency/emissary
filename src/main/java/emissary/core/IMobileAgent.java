@@ -3,8 +3,6 @@ package emissary.core;
 import java.io.Serializable;
 import java.util.List;
 
-import emissary.server.mvc.adapters.MoveToAdapter;
-
 /**
  * Interface to the MobileAgent
  */
@@ -59,9 +57,8 @@ public interface IMobileAgent extends Serializable, Runnable {
     boolean isInUse();
 
     /**
-     * Get the payload as an object for serialization during transport Should only be called by the MoveToAdapter
-     * 
-     * @see MoveToAdapter
+     * Get the payload as an object for serialization during transport.
+     *
      */
     Object getPayloadForTransport();
 
