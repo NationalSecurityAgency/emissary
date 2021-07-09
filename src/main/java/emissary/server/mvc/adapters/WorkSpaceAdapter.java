@@ -1,7 +1,7 @@
 package emissary.server.mvc.adapters;
 
 import java.io.ByteArrayInputStream;
-import java.io.ObjectInputStream;
+import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
