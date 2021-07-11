@@ -715,6 +715,7 @@ public class DropOffUtil {
      * @param metaData map of payload metadata
      * @return the file type (also added to metaData if not present)
      */
+    @Deprecated
     public String getFileType(final Map<String, String> metaData) {
         return getFileType(metaData, null);
     }
@@ -726,6 +727,7 @@ public class DropOffUtil {
      * @param formsArg space separated string of current forms
      * @return the file type (also added to metaData if not present)
      */
+    @Deprecated
     public String getFileType(final Map<String, String> metaData, final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
@@ -772,7 +774,76 @@ public class DropOffUtil {
     }
 
     /**
-     * Parameters that are used to determine filetype in {@link #getFileType(Map, String)}
+     * Get the file type from the metadata or the form string passed in
+     *
+     * @param bdo IBaseDataObject
+     * @return the file type
+     */
+    public static String getFileType(final IBaseDataObject bdo) {
+        return getAndPutFileType(bdo, null, null);
+    }
+
+    /**
+     * Get the file type from the IBaseDataObject or the form string passed in
+     *
+     * @param bdo IBaseDataObject
+     * @param metaData Optional map of metadata that might be modified.
+     * @param formsArg Optional space separated string of current forms
+     * @return the file type
+     */
+    public static String getAndPutFileType(final IBaseDataObject bdo, final Map<String, String> metaData, final String formsArg) {
+        String forms = formsArg;
+        if (forms == null) {
+            forms = bdo.getStringParameter(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
+            if (forms == null) {
+                forms = "";
+            }
+        }
+
+        String fileType;
+        if (bdo.hasParameter(FileTypeCheckParameter.FILETYPE.getFieldName())) {
+            fileType = bdo.getStringParameter(FileTypeCheckParameter.FILETYPE.getFieldName());
+        } else if (bdo.hasParameter(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
+            fileType = bdo.getStringParameter(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            logger.debug("FINAL_ID FileType is ({})", fileType);
+            if (metaData != null) {
+                metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
+            }
+        } else {
+            if (forms.contains(" ")) {
+                fileType = forms.substring(0, forms.indexOf(" ")).trim();
+                if (metaData != null) {
+                    metaData.put(FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName(), forms);
+                }
+            } else {
+                fileType = forms;
+            }
+            if (StringUtils.isEmpty(fileType)) {
+                if (bdo.hasParameter(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
+                    fileType = "TEXT";
+                } else {
+                    fileType = "UNKNOWN";
+                }
+            }
+
+            if (metaData != null) {
+                metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
+            }
+        }
+
+        if ("UNKNOWN".equals(fileType) && forms.contains("MSWORD")) {
+            fileType = "MSWORD_FRAGMENT";
+        }
+
+        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith("LANG-") || fileType.startsWith("ENCODING(")) {
+            fileType = "TEXT";
+        }
+
+        return fileType;
+    }
+
+    /**
+     * Parameters that are used to determine filetype in {@link #getAndPutFileType(IBaseDataObject, Map, String)}
      */
     public enum FileTypeCheckParameter {
         COMPLETE_FILETYPE("COMPLETE_FILETYPE"), FILETYPE("FILETYPE"), FINAL_ID("FINAL_ID"), FONT_ENCODING("FontEncoding"), POPPED_FORMS(
@@ -1043,7 +1114,7 @@ public class DropOffUtil {
                     }
                 }
                 if (extended_filetypes.size() > 0) {
-                    final StringBuilder extft = new StringBuilder(getFileType(p.getCookedParameters()));
+                    final StringBuilder extft = new StringBuilder(getFileType(p));
                     for (final String s : extended_filetypes) {
                         extft.append("//").append(s);
                     }
