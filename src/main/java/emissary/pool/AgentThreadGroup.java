@@ -17,16 +17,9 @@ public class AgentThreadGroup extends ThreadGroup {
     @Override
     public void uncaughtException(Thread thread, Throwable throwable) {
         if (throwable instanceof java.lang.ThreadDeath) {
-            logger.error("Fatal ThreadDeath on " + thread.getName() + " had ThreadDeath exception", throwable);
+            logger.error("Fatal ThreadDeath on {} had ThreadDeath exception ", thread.getName(), throwable);
             throw (java.lang.ThreadDeath) throwable;
         }
-        logger.error("#######    #    #######    #    #      ");
-        logger.error("#         # #      #      # #   #      ");
-        logger.error("#        #   #     #     #   #  #      ");
-        logger.error("#####   #     #    #    #     # #      ");
-        logger.error("#       #######    #    ####### #      ");
-        logger.error("#       #     #    #    #     # #      ");
-        logger.error("#       #     #    #    #     # #######");
-        logger.error("Fatal Thread Error on " + thread.getName() + " had an uncaught exception", throwable);
+        logger.error("Fatal Thread Error on {} had an uncaught exception ", thread.getName(), throwable);
     }
 }
