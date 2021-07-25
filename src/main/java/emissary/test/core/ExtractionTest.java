@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -21,6 +19,7 @@ import emissary.kff.KffDataObjectHandler;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jdom2.Attribute;

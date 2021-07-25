@@ -44,14 +44,14 @@
     <dep.httpcore.version>4.4.14</dep.httpcore.version>
     <dep.jackson.version>2.12.3</dep.jackson.version>
     <!-- jersey brings in 2.3.3; tika brings in 2.3.2; converge on latest -->
-    <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
+    <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jaxb.runtime.version>3.0.0</dep.jaxb.runtime.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>3.0.1</dep.jersey.version>
-    <dep.jetty.version>11.0.2</dep.jetty.version>
+    <dep.jersey.version>3.0.2</dep.jersey.version>
+    <dep.jetty.version>11.0.6</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.0-M1</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.8.0-M1</dep.junit-platform.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
@@ -67,7 +67,7 @@
     <dep.tika.version>1.24</dep.tika.version>
     <dep.webjars.bootstrap.version>5.0.0</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
-    <dep.webjars.popper.version>2.9.4</dep.webjars.popper.version>
+    <dep.webjars.popper.version>2.9.2</dep.webjars.popper.version>
     <dep.xmlbeans.version>5.0.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.release>11</maven.compiler.release>
@@ -198,6 +198,11 @@
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${dep.jakarta.xml.bind-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>1.1.1</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>
