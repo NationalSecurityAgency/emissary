@@ -1,23 +1,20 @@
 package emissary.server.mvc.adapters;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.client.EmissaryClient;
-import emissary.client.EmissaryResponse;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Stuff for adapting the Directory heartbeat calls to HTTP
  */
 public class HeartbeatAdapter extends EmissaryClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(HeartbeatAdapter.class);
 
     public static final String FROM_PLACE_NAME = "hbf";
     public static final String TO_PLACE_NAME = "hbt";
@@ -32,6 +29,14 @@ public class HeartbeatAdapter extends EmissaryClient {
             throw new IllegalArgumentException("No place specified in msg from " + fromName);
         }
 
+        logger.debug("Servicing inbound heartbeat for {} to {}", fromName, toName);
+
+        final DirectoryPlace d = (DirectoryPlace) Namespace.lookup(toName);
+        if (!d.isStaticPeer(KeyManipulator.getDefaultDirectoryKey(fromName))) {
+            logger.warn("Contact attempted from {} but it is not a configured peer", fromName);
+            return null;
+        }
+
         IServiceProviderPlace place = null;
 
         try {
@@ -44,28 +49,8 @@ public class HeartbeatAdapter extends EmissaryClient {
             throw new IllegalArgumentException("No place found using name " + toName + " from " + fromName);
         }
 
+        logger.debug("Heartbeat returning {}", place);
+
         return place;
-    }
-
-    /**
-     * Handle the packaging and sending of a hearbeat call to a remote directory
-     *
-     * @param fromPlace the key of the place location sending
-     * @param toPlace the keyof the place location to receive
-     * @return status of operation
-     */
-    public EmissaryResponse outboundHeartbeat(final String fromPlace, final String toPlace) {
-
-        final String directoryUrl = KeyManipulator.getServiceHostURL(toPlace);
-        final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/Heartbeat.action");
-
-        final String loc = KeyManipulator.getServiceLocation(toPlace);
-
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair(FROM_PLACE_NAME, fromPlace));
-        nvps.add(new BasicNameValuePair(TO_PLACE_NAME, loc));
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
-
-        return send(method);
     }
 }

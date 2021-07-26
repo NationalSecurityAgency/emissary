@@ -14,6 +14,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.directory.DirectoryPlace;
 import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
@@ -58,7 +61,20 @@ public class RegisterPeerAction {
             return Response.serverError().entity("Remote directory lookup failed for dirName: " + dirName).build();
         }
 
-        final Set<String> set = new HashSet<String>();
+        logger.info("Attempting to register peer {} with {}", peerKey, dirName);
+
+        try {
+            final DirectoryPlace d = (DirectoryPlace) Namespace.lookup(dirName);
+            if (!d.isStaticPeer(KeyManipulator.getDefaultDirectoryKey(peerKey))) {
+                logger.warn("Contact attempted from {} but it is not a configured peer", peerKey);
+                return Response.serverError().entity("Registration failed for peer: " + peerKey).build();
+            }
+        } catch (NamespaceException e) {
+            logger.warn("Problem performing namespace lookup for {}", dirName);
+            return Response.serverError().entity("Registration failed for peer: " + peerKey).build();
+        }
+
+        final Set<String> set = new HashSet<>();
         set.add(KeyManipulator.getDefaultDirectoryKey(peerKey));
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(dir.getKey()));
         try {
@@ -67,7 +83,8 @@ public class RegisterPeerAction {
             MDC.remove(MDCConstants.SERVICE_LOCATION);
         }
 
-        logger.debug("Registered peer {} with local dir", peerKey);
+        logger.info("Registered peer {}", peerKey);
+
         return Response.ok().entity(DirectoryXmlContainer.toXmlString(dir)).build();
     }
 }

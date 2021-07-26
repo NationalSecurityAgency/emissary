@@ -279,7 +279,7 @@ public class HeartbeatManager {
         final String myKey = KeyManipulator.getServiceLocation(this.thisDirectory);
         try {
             final IRemoteDirectory d = (IRemoteDirectory) Namespace.lookup(myKey);
-            final int count = d.irdFailRemoteDirectory(key, permanent);
+            final int count = d.irdFailDirectory(key, permanent);
             logger.info("Notified " + myKey + " of failed directory " + key + (permanent ? " permanently!" : "") + ", " + count + " keys removed");
         } catch (NamespaceException ne) {
             logger.error("Tried to fail a remote directory " + key + " but cannot look up my own directory using " + myKey, ne);
@@ -287,8 +287,7 @@ public class HeartbeatManager {
     }
 
     /**
-     * Notify our directory that a directory has been contacted If parent considers this a rdv or rly host they this could
-     * initiate a zone transfer or other action
+     * Notify our directory that a directory has been contacted. This could initiate a zone transfer or other action
      *
      * @param key string key of the directory that was contacted
      */
@@ -296,8 +295,12 @@ public class HeartbeatManager {
         final String myKey = KeyManipulator.getServiceLocation(this.thisDirectory);
         try {
             final DirectoryPlace d = (DirectoryPlace) Namespace.lookup(myKey);
-            logger.info("Notifying " + myKey + " of re-established contact with " + key);
-            d.contactedRemoteDirectory(key);
+            if (d.isStaticPeer(key)) {
+                logger.info("Notifying {} of re-established contact with {}", myKey, key);
+                d.contactedRemoteDirectory(key);
+            } else {
+                logger.info("Ignoring contact with non-configured peer {}", key);
+            }
         } catch (NamespaceException ne) {
             logger.error("Tried to reestablish a remote directory " + key + " but cannot look up my own directory using " + myKey, ne);
         }

@@ -251,7 +251,7 @@ public class DirectoryAdapter extends EmissaryClient {
 
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));
         try {
-            count = localDirectory.irdFailRemoteDirectory(remoteDir, RequestUtil.getBooleanParam(req, ADD_PROPAGATION_FLAG));
+            count = localDirectory.irdFailDirectory(remoteDir, RequestUtil.getBooleanParam(req, ADD_PROPAGATION_FLAG));
         } finally {
             MDC.remove(MDCConstants.SERVICE_LOCATION);
         }
@@ -262,53 +262,7 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Call addChildDirectory on locally specified directory
-     *
-     * @param req the inbound request object
-     */
-    public void inboundAddChildDirectory(final HttpServletRequest req) {
-
-        final String parent = RequestUtil.getParameter(req, TARGET_DIRECTORY);
-        final String child = RequestUtil.getParameter(req, DIRECTORY_NAME);
-
-        if (child == null) {
-            throw new IllegalArgumentException("Missing required parameters");
-        }
-
-        final IRemoteDirectory localDirectory = getLocalDirectory(parent);
-
-        if (localDirectory == null) {
-            throw new IllegalArgumentException("No parent directory found using name " + parent);
-        }
-
-        MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));
-        try {
-            localDirectory.irdAddChildDirectory(child);
-        } finally {
-            MDC.remove(MDCConstants.SERVICE_LOCATION);
-        }
-    }
-
-    /**
-     * Send remote addChildDirectory call
-     *
-     * @param parent the directory we want to register with
-     * @param child the calling directory
-     */
-    public EmissaryResponse outboundAddChildDirectory(final String parent, final String child) {
-        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(parent), CONTEXT, "/AddChildDirectory.action");
-
-        final String parentLoc = KeyManipulator.getServiceLocation(parent);
-
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
-        nvps.add(new BasicNameValuePair(DIRECTORY_NAME, child));
-        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
-        return send(method);
-    }
-
-    /**
-     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map of
+     * Request the XML directory entry markup from a remote directory peer and turn the response XML into a Map of
      * String,DirectoryEntryList for return
      *
      * @param key the key of the remote directory to request the zone transfer from
@@ -334,7 +288,7 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Request the XML directory entry markup from a remote directory peer or child and turn the response XML into a Map of
+     * Request the XML directory entry markup from a remote directory peer and turn the response XML into a Map of
      * String,DirectoryEntryList for return.
      *
      * @param key the key of the remote directory to request the zone transfer from
@@ -398,7 +352,7 @@ public class DirectoryAdapter extends EmissaryClient {
 
     /**
      * Look up the local directory using one of two methods. The easier method almost always works, the case where it
-     * doesn't in when there are multilpe configured Emissary nodes on the same local JVM through a single jetty with
+     * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
      * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
      *
      * @param name name of the local directory or null for default
