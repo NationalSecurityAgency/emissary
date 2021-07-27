@@ -69,9 +69,8 @@
     <dep.webjars.popper.version>2.9.2</dep.webjars.popper.version>
     <dep.xmlbeans.version>5.0.0</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
+    <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -728,7 +727,7 @@
         <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
+          <version>2.12.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -746,7 +745,7 @@
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>[1.8,)</version>
+                    <version>[11,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence />
                 </rules>
@@ -819,7 +818,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>8.42</version>
+              <version>8.44</version>
             </dependency>
           </dependencies>
           <executions>
@@ -834,7 +833,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.1</version>
+          <version>3.2.0</version>
           <configuration>
             <quiet>true</quiet>
             <footer>Generated ${maven.build.timestamp}</footer>
@@ -886,6 +885,7 @@
             <compilerArgs>
               <arg>-Xlint:-path,unchecked</arg>
             </compilerArgs>
+            <release>${maven.compiler.release}</release>
           </configuration>
         </plugin>
         <plugin>
@@ -904,11 +904,11 @@
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
+          <version>2.13.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
-            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
+            <compilerTargetPlatform>${maven.compiler.release}</compilerTargetPlatform>
             <configFile>${eclipseFormatterStyle}</configFile>
             <lineEnding>LF</lineEnding>
             <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
@@ -931,7 +931,7 @@
         <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.3.2</version>
+          <version>1.4.1</version>
           <configuration>
             <groups>java.,javax.,*</groups>
             <removeUnused>true</removeUnused>
@@ -948,7 +948,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
+          <version>0.8.6</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>
@@ -992,7 +992,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.12.0</version>
+          <version>3.13.0</version>
           <configuration>
             <excludes />
             <failOnViolation>false</failOnViolation>
@@ -1001,7 +1001,7 @@
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
             <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-            <targetJdk>${maven.compiler.target}</targetJdk>
+            <targetJdk>${maven.compiler.release}</targetJdk>
           </configuration>
         </plugin>
         <plugin>
@@ -1421,73 +1421,81 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
             <configuration>
-              <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
-              <fork>true</fork>
+              <showWarnings>true</showWarnings>
               <compilerArgs>
-                <!-- The compiler normally stops at 100 warnings, and
-                     error-prone's static analysis warnings count
-                     against that total. -->
-                <arg>-Xmaxwarns</arg>
-                <arg>5000</arg>
-                <arg>-XepDisableWarningsInGeneratedCode</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne
+                  -Xep:Var:OFF
+                  -Xep:ConstantField:WARN
+                  -Xep:RemoveUnusedImports:WARN
+                  -Xep:WildcardImport:WARN
+                  -Xep:ArrayToString:WARN
+                  -Xep:ComparisonOutOfRange:WARN
+                  -Xep:DeadException:WARN
+                  -Xep:DefaultCharset:OFF
+                  -Xep:DepAnn:WARN
+                  -Xep:FormatString:WARN
+                  -Xep:LongLiteralLowerCaseSuffix:WARN
+                  -Xep:MethodCanBeStatic:WARN
+                  -Xep:MixedArrayDimensions:WARN
+                  -Xep:MultiVariableDeclaration:WARN
+                  -Xep:MultipleTopLevelClasses:WARN
+                  -Xep:NumericEquality:WARN
+                  -Xep:PrivateConstructorForUtilityClass:WARN
+                  -Xep:ThrowsUncheckedException:WARN
+                  -Xep:TryFailThrowable:WARN</arg>
+                <!--<arg>-XepDisableWarningsInGeneratedCode</arg>-->
                 <!-- Enable experimental checks. -->
-                <arg>-XepAllDisabledChecksAsWarnings</arg>
+                <!--<arg>-XepAllDisabledChecksAsWarnings</arg>-->
                 <!-- Removed because it was not adding useful help -->
-                <arg>-Xep:ArgumentParameterMismatch:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterMismatch:OFF</arg>-->
                 <!-- This one is buggy and crashes the compiler. -->
-                <arg>-Xep:ArgumentParameterSwap:OFF</arg>
+                <!--<arg>-Xep:ArgumentParameterSwap:OFF</arg>-->
                 <!-- This one is super noisy, because it wants all
-                     modifiable variables marked with @Var and
-                     complains about the use of final everywhere else.
-                     I'd be okay with adding the annotations, but
-                     removing the finals is only safe if you can
-                     guarantee you never use the compiler *without*
-                     this add-on. -->
-                <arg>-Xep:Var:OFF</arg>
+                       modifiable variables marked with @Var and
+                       complains about the use of final everywhere else.
+                       I'd be okay with adding the annotations, but
+                       removing the finals is only safe if you can
+                       guarantee you never use the compiler *without*
+                       this add-on. -->
+                <!--<arg>-Xep:Var:OFF</arg>-->
                 <!-- By default this is considered a "suggestion" that
-                     doesn't get counted as a warning.  Change it to a
-                     counted warning to make it easier to see how many
-                     there are. -->
-                <arg>-Xep:ConstantField:WARN</arg>
-                <arg>-Xep:RemoveUnusedImports:WARN</arg>
-                <arg>-Xep:WildcardImport:WARN</arg>
+                       doesn't get counted as a warning.  Change it to a
+                       counted warning to make it easier to see how many
+                       there are. -->
+                <!--<arg>-Xep:ConstantField:WARN</arg>-->
+                <!--<arg>-Xep:RemoveUnusedImports:WARN</arg>-->
+                <!--<arg>-Xep:WildcardImport:WARN</arg>-->
                 <!-- By default these are set to errors.  Change them
-                     to warnings so that it doesn't stop the build
-                     from continuing its analysis. -->
-                <arg>-Xep:ArrayToString:WARN</arg>
-                <arg>-Xep:ComparisonOutOfRange:WARN</arg>
-                <arg>-Xep:DeadException:WARN</arg>
-                <arg>-Xep:DefaultCharset:OFF</arg>
-                <arg>-Xep:DepAnn:WARN</arg>
-                <arg>-Xep:FormatString:WARN</arg>
-                <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
-                <arg>-Xep:MethodCanBeStatic:WARN</arg>
-                <arg>-Xep:MixedArrayDimensions:WARN</arg>
-                <arg>-Xep:MultiVariableDeclaration:WARN</arg>
-                <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
-                <arg>-Xep:NumericEquality:WARN</arg>
-                <arg>-Xep:ParameterPackage:WARN</arg>
-                <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
-                <arg>-Xep:ThrowsUncheckedException:WARN</arg>
-                <arg>-Xep:TryFailThrowable:WARN</arg>
+                       to warnings so that it doesn't stop the build
+                       from continuing its analysis. -->
+                <!--<arg>-Xep:ArrayToString:WARN</arg>-->
+                <!--<arg>-Xep:ComparisonOutOfRange:WARN</arg>-->
+                <!--<arg>-Xep:DeadException:WARN</arg>
+                  <arg>-Xep:DefaultCharset:OFF</arg>
+                  <arg>-Xep:DepAnn:WARN</arg>
+                  <arg>-Xep:FormatString:WARN</arg>
+                  <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
+                  <arg>-Xep:MethodCanBeStatic:WARN</arg>
+                  <arg>-Xep:MixedArrayDimensions:WARN</arg>
+                  <arg>-Xep:MultiVariableDeclaration:WARN</arg>
+                  <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
+                  <arg>-Xep:NumericEquality:WARN</arg>
+                  <arg>-Xep:ParameterPackage:WARN</arg>
+                  <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
+                  <arg>-Xep:ThrowsUncheckedException:WARN</arg>
+                  <arg>-Xep:TryFailThrowable:WARN</arg>-->
               </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>2.6.0</version>
+                </path>
+              </annotationProcessorPaths>
             </configuration>
-            <dependencies>
-              <!-- override plexus-compiler-javac-errorprone's dependency on
-                   Error Prone with the latest version -->
-              <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.3.1</version>
-              </dependency>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                <version>2.8.3</version>
-              </dependency>
-            </dependencies>
           </plugin>
         </plugins>
       </build>
@@ -1502,7 +1510,7 @@
       </activation>
       <properties>
         <!-- enable compiler compliance when building in Eclipse -->
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
       </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
@@ -1622,10 +1630,10 @@
     <profile>
       <id>jdk-release-flag</id>
       <activation>
-        <jdk>[9,)</jdk>
+        <jdk>[12,)</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
       </properties>
     </profile>
   </profiles>
