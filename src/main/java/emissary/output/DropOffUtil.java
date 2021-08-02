@@ -995,6 +995,27 @@ public class DropOffUtil {
         return date;
     }
 
+    private void extractFileExtensions(IBaseDataObject p) {
+        if (p.hasParameter("Original-Filename")) {
+            final List<String> extensions = new ArrayList<>();
+            for (Object filename : p.getParameter("Original-Filename")) {
+                final String fn = (String) filename;
+                if (StringUtils.isNotEmpty(fn)) {
+                    final int pos = fn.lastIndexOf('.') + 1;
+                    if (pos < fn.length()) {
+                        final String fext = fn.substring(pos).toLowerCase();
+                        if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                            extensions.add(fext);
+                        }
+                    }
+                }
+            }
+            if (!extensions.isEmpty()) {
+                p.setParameter("FILEXT", extensions);
+            }
+        }
+    }
+
     /**
      * Process metadata before doing any output
      *
@@ -1018,24 +1039,7 @@ public class DropOffUtil {
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
-            if (p.hasParameter("Original-Filename")) {
-                final List<String> extensions = new ArrayList<>();
-                for (Object filename : p.getParameter("Original-Filename")) {
-                    final String fn = (String) filename;
-                    if (StringUtils.isNotEmpty(fn)) {
-                        final int pos = fn.lastIndexOf('.') + 1;
-                        if (pos < fn.length()) {
-                            final String fext = fn.substring(pos).toLowerCase();
-                            if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                                extensions.add(fext);
-                            }
-                        }
-                    }
-                }
-                if (!extensions.isEmpty()) {
-                    p.setParameter("FILEXT", extensions);
-                }
-            }
+            extractFileExtensions(p);
 
             if (p.getStringParameter("EXTENDED_FILETYPE") == null) {
                 final List<String> extended_filetypes = new ArrayList<String>();
