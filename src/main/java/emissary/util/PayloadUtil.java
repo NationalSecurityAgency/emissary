@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import emissary.core.IBaseDataObject;
+import emissary.output.DropOffUtil;
 import emissary.util.xml.JDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -58,14 +59,31 @@ public class PayloadUtil {
         final String fileName = payload.getFilename();
         final List<String> currentForms = payload.getAllCurrentForms();
         final Date creationTimestamp = payload.getCreationTimestamp();
+        final String fileType = getFileType(payload);
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
-                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
+                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")
                 .append("   transform history (").append(th.size()).append(") :").append("\n");
         for (final String h : th) {
             sb.append("     ").append(h).append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Helper function to get file type of payload.
+     * Run payload with null file type through DropOffUtil.getFileType()
+     *
+     * @param payload the payload to describe
+     * @return non-null file type
+     */
+    private static String getFileType(final IBaseDataObject payload) {
+        if (payload.getFileType() == null) {
+            DropOffUtil dropOffUtil = new DropOffUtil(null);
+            return dropOffUtil.getFileType(payload.getCookedParameters());
+        } else {
+            return payload.getFileType();
+        }
     }
 
     /**

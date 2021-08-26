@@ -91,6 +91,13 @@ public class PayloadUtilTest extends UnitTest {
                 answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"));
         assertTrue("Answer did not contain the correct transform history entry",
                 answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"));
+
+        // test with null file type
+        d.setFileType(null);
+        final String nullFileTypeAnswer = PayloadUtil.getPayloadDisplayString(d, false);
+
+        // verify
+        assertTrue("Answer did not contain the correct filetype", nullFileTypeAnswer.contains("filetype: UNKNOWN"));
     }
 
     @Test
