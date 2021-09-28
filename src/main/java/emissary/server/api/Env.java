@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 // context is /api
 public class Env {
 
+    public static final String EMISSARY_SERVER = "EmissaryServer";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @GET
@@ -44,7 +45,7 @@ public class Env {
     private MapResponseEntity getEnv() {
         MapResponseEntity entity = new MapResponseEntity();
         try {
-            EmissaryServer server = (EmissaryServer) Namespace.lookup("EmissaryServer");
+            EmissaryServer server = (EmissaryServer) Namespace.lookup(EMISSARY_SERVER);
             ServerCommand command = server.getServerCommand();
             entity.addKeyValue("CONFIG_DIR", command.getConfig().toAbsolutePath().toString());
             entity.addKeyValue("PROJECT_BASE", command.getProjectBase().toAbsolutePath().toString());
@@ -55,7 +56,8 @@ public class Env {
             entity.addKeyValue("SCHEME", command.getScheme());
             logger.debug("Returning env: {}", entity.getResponse());
         } catch (NamespaceException e) {
-            entity.addError(e.getMessage());
+            logger.error("Error looking up namespace \"EMISSARY_SERVER\": {}", e.getMessage());
+            entity.addError("Error looking up namespace \"" + EMISSARY_SERVER + "\"");
         }
         return entity;
     }

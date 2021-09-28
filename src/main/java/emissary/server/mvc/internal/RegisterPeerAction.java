@@ -21,6 +21,7 @@ import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+import emissary.util.web.HtmlEscaper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +47,8 @@ public class RegisterPeerAction {
     @Produces(MediaType.APPLICATION_XML)
     public Response registerPeerPost(@FormParam(DIRECTORY_NAME) String directoryName, @FormParam(TARGET_DIRECTORY) String targetDirectory) {
         if (StringUtils.isBlank(directoryName) || StringUtils.isBlank(targetDirectory)) {
-            return Response.serverError()
-                    .entity("Bad Params: " + DIRECTORY_NAME + " - " + directoryName + ", " + TARGET_DIRECTORY + " - " + targetDirectory).build();
+            return Response.serverError().entity(HtmlEscaper.escapeHtml(
+                    "Bad Params: " + DIRECTORY_NAME + " - " + directoryName + ", " + TARGET_DIRECTORY + " - " + targetDirectory)).build();
         }
         return processRegisterPeer(directoryName, targetDirectory);
     }
@@ -58,7 +59,8 @@ public class RegisterPeerAction {
             // If we get here, there was a problem looking up the IRemoteDirectory
             // old RegisterPlaceWorker failure
             // return new WorkerStatus(WorkerStatus.FAILURE, "Could not register peer " + peerKey);
-            return Response.serverError().entity("Remote directory lookup failed for dirName: " + dirName).build();
+            return Response.serverError().entity(
+                    "Remote directory lookup failed for dirName: " + HtmlEscaper.escapeHtml(dirName)).build();
         }
 
         logger.info("Attempting to register peer {} with {}", peerKey, dirName);
@@ -67,11 +69,11 @@ public class RegisterPeerAction {
             final DirectoryPlace d = (DirectoryPlace) Namespace.lookup(dirName);
             if (!d.isStaticPeer(KeyManipulator.getDefaultDirectoryKey(peerKey))) {
                 logger.warn("Contact attempted from {} but it is not a configured peer", peerKey);
-                return Response.serverError().entity("Registration failed for peer: " + peerKey).build();
+                return Response.serverError().entity("Registration failed for peer: " + HtmlEscaper.escapeHtml(peerKey)).build();
             }
         } catch (NamespaceException e) {
             logger.warn("Problem performing namespace lookup for {}", dirName);
-            return Response.serverError().entity("Registration failed for peer: " + peerKey).build();
+            return Response.serverError().entity("Registration failed for peer: " + HtmlEscaper.escapeHtml(peerKey)).build();
         }
 
         final Set<String> set = new HashSet<>();
