@@ -141,7 +141,7 @@ public class FTestFailedPickupClient extends FunctionalTest {
 
         pause(100);
 
-        int byteSize = 0;
+        long byteSize = 0;
         int fileCount = 0;
         int bundleCount = 0;
         int clientCount = 1;
@@ -238,7 +238,7 @@ public class FTestFailedPickupClient extends FunctionalTest {
         }
     }
 
-    private void checkFileCounts(WorkSpace space, int files, int bytes, int bundles, int places, int outbound, int pending, int retried) {
+    private void checkFileCounts(WorkSpace space, int files, long bytes, int bundles, int places, int outbound, int pending, int retried) {
         assertEquals("files processed", files, space.getFilesProcessed());
         assertEquals("bytes processed", bytes, space.getBytesProcessed());
         assertEquals("bundles processed", bundles, space.getBundlesProcessed());
