@@ -287,42 +287,6 @@ public class DropOffUtil {
         return this.placeOutputData;
     }
 
-    public String getOutputDirectory(final IBaseDataObject DO) {
-        String dir = DO.getStringParameter("ABSOLUTETARGETBIN");
-        logger.debug("ABSOLUTETARGETBIN is " + DO.getParameter("ABSOLUTETARGETBIN"));
-        if (dir == null) {
-            dir = getOutputDirectory();
-        }
-
-        // ugly mess for moving between Windows and Unix paths
-        if (osIsWindows) {
-            // was it picked up on Unix?
-            if (dir.indexOf(this.unixRoot) >= 0) {
-                dir = dir.replaceFirst("\\A.*" + this.unixRoot, this.winRoot);
-            }
-        } else {
-            // dropping off on Unix
-
-            // was it picked up on Windows?
-            if (dir.indexOf(this.winRoot) >= 0) {
-                dir = dir.replaceFirst(this.winRoot, this.unixRoot);
-                dir = dir.replace('\\', '/');
-            }
-        }
-
-        File f = this.outputDirectories.get(dir);
-        if (f == null) {
-            f = new File(dir);
-            if (!f.exists()) {
-                f.mkdirs();
-            }
-            if (this.outputDirectories.size() < 100) {
-                this.outputDirectories.put(dir, f);
-            }
-        }
-        return dir;
-    }
-
     /**
      * Create a path name from the spec for the specified spec using d as the TLD if d is a TLD, null otherwise
      *
