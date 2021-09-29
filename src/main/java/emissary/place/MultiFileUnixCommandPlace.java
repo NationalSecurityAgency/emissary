@@ -44,6 +44,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected Executrix executrix;
     protected String logfilename;
     protected String charset = "UTF-8";
+    protected boolean singleOutputAsChild = false;
+    protected boolean preserveParentData = false;
 
     String placeDisplayName = "Some Place";
 
@@ -99,6 +101,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * <li>CUSTOM_FILE_TYPES: special mapping to set type by file extension</li>
      * <li>LOG_FILE_NAME: name of output file to translate into logger commands, default: [servicename].log from key</li>
      * <li>OUTPUT_CHARSET: charset of the process output, default UTF-8</li>
+     * <li>SINGLE_OUTPUT_AS_CHILD: If only one output file keep it as a child and do not replace the parent.</li>
+     * <li>PRESERVE_PARENT_DATA: Stops the parent from getting replaced by output data</li>
      * </ul>
      */
     @Override
@@ -130,6 +134,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         setTitleToFile = configG.findBooleanEntry("SET_TITLE_TO_FILENAME", true);
         placeDisplayName = configG.findStringEntry("SERVICE_DISPLAY_NAME", placeName);
         logfilename = configG.findStringEntry("LOG_FILE_NAME", KeyManipulator.getServiceName(keys.get(0)) + ".log");
+        singleOutputAsChild = configG.findBooleanEntry("SINGLE_OUTPUT_AS_CHILD", singleOutputAsChild);
+        preserveParentData = configG.findBooleanEntry("PRESERVE_PARENT_DATA", preserveParentData);
 
         for (String name : configG.findEntries("CUSTOM_FILE_TYPES")) {
             String tmp = configG.findStringEntry(name + "_EXT", null);
@@ -356,11 +362,13 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
             finishSprout(parent, fileCount, actualFileCount, newData);
 
-            try {
-                parent.setData(newData.toString().getBytes(charset));
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("SproutResults charset problem", e);
-                parent.setData(newData.toString().getBytes());
+            if (!preserveParentData) {
+                try {
+                    parent.setData(newData.toString().getBytes(charset));
+                } catch (UnsupportedEncodingException e) {
+                    logger.debug("SproutResults charset problem", e);
+                    parent.setData(newData.toString().getBytes());
+                }
             }
         }
         return sprouts;
@@ -535,8 +543,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         addParentInformation(tData, entries);
 
-        // we'll replace parent with its one child when we can
-        if (executrix.getOutput().equals("FILE") && entries.size() == 1 && contentFile == null) {
+        // Replace parent if single child and singleOutputAsChild is false
+        if (executrix.getOutput().equals("FILE") && entries.size() == 1 && contentFile == null && !singleOutputAsChild) {
             IBaseDataObject d = entries.get(0);
             tData.setData(d.data());
             if (KEEP_PARENT_HASHES_FOR_SINGLE_CHILD) {
