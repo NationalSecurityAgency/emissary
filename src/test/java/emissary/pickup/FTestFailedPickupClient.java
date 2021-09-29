@@ -160,7 +160,8 @@ public class FTestFailedPickupClient extends FunctionalTest {
         pause(1500);
 
         for (File f : workingFiles) {
-            byteSize += f.length();
+            // explicit cast to address warning for implicit narrowing conversion
+            byteSize += (int) f.length();
         }
         bundleCount++;
         fileCount += 2;

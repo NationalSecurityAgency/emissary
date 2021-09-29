@@ -80,7 +80,7 @@ public class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
         final int status = response.getStatus();
         assertThat(status, equalTo(500));
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Not found: host:7001/WorkSpace"));
+        assertThat(result, equalTo("There was an exception in the WorkSpaceClientSpaceTake"));
     }
 
 
