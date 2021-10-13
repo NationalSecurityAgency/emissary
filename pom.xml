@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.1.0-SNAPSHOT</version>
+  <version>7.2.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -50,14 +50,14 @@
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom.version>2.0.2</dep.jdom.version>
     <dep.jersey.version>2.34</dep.jersey.version>
-    <dep.jetty.version>9.4.42.v20210604</dep.jetty.version>
+    <dep.jetty.version>9.4.43.v20210629</dep.jetty.version>
     <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
     <dep.junit.version>4.12</dep.junit.version>
     <dep.logback.version>1.2.3</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
-    <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
+    <dep.mockito-core.version>2.28.2</dep.mockito-core.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7.13</dep.rhino.version>
     <dep.slf4j.version>1.7.30</dep.slf4j.version>
@@ -448,8 +448,8 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${dep.mockito-all.version}</version>
+        <artifactId>mockito-core</artifactId>
+        <version>${dep.mockito-core.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -661,7 +661,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
