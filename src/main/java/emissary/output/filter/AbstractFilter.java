@@ -458,7 +458,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected Set<String> getTypesToCheckForNamedView(final IBaseDataObject d, final String viewName) {
         final Set<String> checkTypes = new HashSet<String>();
         final String lang = this.dropOffUtil.getLanguage(d);
-        final String fileType = this.dropOffUtil.getFileType(d.getCookedParameters());
+        final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
 
         // skip over blacklisted alt views
