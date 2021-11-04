@@ -242,6 +242,10 @@ public class EmissaryNode {
         emissary.util.JavaCharSetLoader.initialize();
         logger.debug("Initialized charset mapping subsystem...");
 
+        // Initialize the image io imports
+        emissary.util.ImageIOClassLoader.initialize();
+        logger.debug("Initialized ImageIO import class...");
+
         // / Initialize the metadata dictionary
         emissary.core.MetadataDictionary.initialize();
         logger.debug("Initialized the metadata dictionary...");
