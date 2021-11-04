@@ -111,24 +111,4 @@ public interface IDirectoryPlace extends IServiceProviderPlace {
      * @return true if shutdown initiated
      */
     boolean isShutdownInitiated();
-
-    /**
-     * Add a Routing acceptor function for the specified directory entry
-     *
-     * @param de the directory entry to associate this function with
-     * @param script the javascript accept function
-     * @param isDefault is a default rule for SERVICE_NAME
-     * @return true if the function is added
-     * @throws Exception if script does not compile
-     */
-    boolean addRoutingFunction(DirectoryEntry de, String script, boolean isDefault) throws Exception;
-
-    /**
-     * Remove a routing function
-     *
-     * @param de the directory entry's function to remove
-     * @param isDefault if true remove the default routing rule
-     * @return true if a function was removed
-     */
-    boolean removeRoutingFunction(DirectoryEntry de, boolean isDefault);
 }
