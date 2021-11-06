@@ -347,8 +347,10 @@ public class DropOffUtilTest extends UnitTest {
 
         final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(), "item1", "PARENT_FORM", "PARENT_FTYPE");
         parent.putParameter("FOO", "PARENT_FOO");
+        parent.putParameter("Original-Filename", "parent.tar.gz");
 
         final IBaseDataObject child = DataObjectFactory.getInstance("This is a test".getBytes(), "item1-att-1", "CHILD_FORM", "CHILD_FTYPE");
+        child.putParameter("Original-Filename", "child.docx");
         child.putParameter("FOO_FILETYPE", "myFoo");
         child.putParameter("BAR_FILETYPE", "myBar1");
         child.appendParameter("BAR_FILETYPE", "myBar2");
@@ -359,6 +361,9 @@ public class DropOffUtilTest extends UnitTest {
         family.add(child);
 
         this.util.processMetadata(family);
+
+        assertEquals("Parent should have filext of gz", "gz", parent.getStringParameter("FILEXT"));
+        assertEquals("Child should have filext of docx", "docx", child.getStringParameter("FILEXT"));
 
         assertNull("Parent should not have extended filetype", parent.getParameter("EXTENDED_FILETYPE"));
 
