@@ -991,8 +991,10 @@ public class DropOffUtil {
         // relies on the attachments being sorted
         final Map<String, String> parentTypes = new HashMap<String, String>();
         final IBaseDataObject tld = payloadList.get(0);
+        final List<String> extended_filetypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());
-        for (final String param : this.parentParams) {
+        for (int i = 0; i < parentParams.size(); i++) {
+            final String param = parentParams.get(i);
             if (tld.hasParameter(param)) {
                 parentTypes.put("1" + param, tld.getStringParameter(param));
             }
@@ -1006,9 +1008,9 @@ public class DropOffUtil {
             extractFileExtensions(p);
 
             if (p.getStringParameter("EXTENDED_FILETYPE") == null) {
-                final List<String> extended_filetypes = new ArrayList<String>();
+                extended_filetypes.clear();
                 for (final Map.Entry<String, Collection<Object>> entry : p.getParameters().entrySet()) {
-                    final String key = entry.getKey().toString();
+                    final String key = entry.getKey();
                     if (key != null && key.endsWith("_FILETYPE")) {
                         for (final Object value : entry.getValue()) {
                             final String vs = value.toString();
@@ -1018,16 +1020,18 @@ public class DropOffUtil {
                         }
                     }
                 }
-                if (extended_filetypes.size() > 0) {
+                if (!extended_filetypes.isEmpty()) {
                     final StringBuilder extft = new StringBuilder(getFileType(p.getCookedParameters()));
-                    for (final String s : extended_filetypes) {
+                    for (int j = 0; j < extended_filetypes.size(); j++) {
+                        final String s = extended_filetypes.get(j);
                         extft.append("//").append(s);
                     }
                     p.setParameter("EXTENDED_FILETYPE", extft.toString());
                 }
             }
 
-            for (final String param : this.parentParams) {
+            for (int j = 0; j < parentParams.size(); j++) {
+                final String param = parentParams.get(j);
                 if (p.hasParameter(param)) {
                     parentTypes.put("" + level + param, p.getStringParameter(param));
                 } else {
@@ -1047,7 +1051,8 @@ public class DropOffUtil {
                 } else {
                     p.setParameter("PARENT_FILETYPE", parentTypes.get("1"));
                 }
-                for (final String param : this.parentParams) {
+                for (int j = 0; j < parentParams.size(); j++) {
+                    final String param = parentParams.get(j);
                     int plvl = parentLevel;
                     while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
                         plvl--;
@@ -1067,7 +1072,8 @@ public class DropOffUtil {
                     if (parentFileType != null) {
                         child.setParameter("PARENT_FILETYPE", parentFileType);
                     }
-                    for (final String param : this.parentParams) {
+                    for (int k = 0; k < parentParams.size(); k++) {
+                        final String param = parentParams.get(k);
                         int plvl = parentLevel;
                         while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
                             plvl--;
