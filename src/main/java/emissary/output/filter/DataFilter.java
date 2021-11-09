@@ -10,6 +10,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
+import emissary.output.DropOffUtil;
 
 /**
  * Filter that writes unadorned data as raw bytes
@@ -49,7 +50,7 @@ public class DataFilter extends AbstractFilter {
 
         // Set up base location from configured spec
         final String baseFileName = dropOffUtil.getPathFromSpec(outputSpec, d, tld);
-        final String fileType = dropOffUtil.getFileType(d.getCookedParameters());
+        final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
         getCharset(d, "UTF-8");
         final String lang = dropOffUtil.getLanguage(d);
@@ -91,7 +92,7 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Set up base location from configured spec
-        final String fileType = dropOffUtil.getFileType(d.getCookedParameters());
+        final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
         final String lang = dropOffUtil.getLanguage(d);
 
