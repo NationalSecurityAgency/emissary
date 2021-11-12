@@ -20,7 +20,6 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.output.DropOffUtil.FileTypeCheckParameter;
 import emissary.test.core.UnitTest;
 import emissary.util.TimeUtil;
 import org.junit.After;
@@ -564,6 +563,34 @@ public class DropOffUtilTest extends UnitTest {
         metadata.clear();
         formsArg = "QUOTED-PRINTABLE";
         testFileType(bdo, metadata, "TEXT", formsArg);
+    }
+
+    @Test
+    public void testExtractFileExtensions() {
+        // these should be constants
+        final String FILEXT = "FILEXT";
+        final String ORIGINAL_FILENAME = "Original-Filename";
+        DropOffUtil util = new DropOffUtil();
+
+        final IBaseDataObject bdo = new BaseDataObject();
+        bdo.appendParameter(ORIGINAL_FILENAME, "name_with_no_period");
+
+        util.extractFileExtensions(bdo);
+
+        List<Object> fileExts = bdo.getParameter(FILEXT);
+        assertNull("FILEXT value should be null if no Original-Filename contains a period", fileExts);
+
+        bdo.appendParameter(ORIGINAL_FILENAME, "lower.case.zip");
+        bdo.appendParameter(ORIGINAL_FILENAME, "UPPER.CASE.MP3");
+        assertEquals("bdo should now have 3 Original-Filename values", 3, bdo.getParameter(ORIGINAL_FILENAME).size());
+
+        util.extractFileExtensions(bdo);
+        fileExts = bdo.getParameter(FILEXT);
+
+        // validate extracted FILEXT values
+        assertEquals("bdo should now have 2 FILEXT values ", 2, fileExts.size());
+        assertTrue("FILEXT values should contain \"zip\"", fileExts.contains("zip"));
+        assertTrue("FILEXT values should contain \"mp3\"", fileExts.contains("mp3"));
     }
 
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
