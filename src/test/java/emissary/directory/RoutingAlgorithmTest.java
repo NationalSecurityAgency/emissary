@@ -260,11 +260,11 @@ public class RoutingAlgorithmTest extends UnitTest {
         loadAllTestEntries();
         final DirectoryEntry eplace = new DirectoryEntry("ERROR.e1.IO.http://example.com:8001/E$5050");
         this.dir.addTestEntry(eplace);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
+        this.payload.pushCurrentForm("OTHER1");
+        this.payload.pushCurrentForm("OTHER2");
         this.payload.pushCurrentForm(emissary.core.Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Error in error handling place removes all forms", 0, this.payload.currentFormSize());
+        assertEquals("Error in error handling place removes all other forms", 1, this.payload.currentFormSize());
         assertNull("Error in Error handling must not re-route to error handler but we got " + result, result);
     }
 

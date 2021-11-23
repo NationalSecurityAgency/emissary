@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -393,35 +392,21 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public int deleteCurrentForm(final String form) {
-        int count = 0;
-
-        if (this.currentForm == null || this.currentForm.isEmpty()) {
-            return count;
-        }
-
-        // Remove all matching
-        for (final Iterator<String> i = this.currentForm.iterator(); i.hasNext();) {
-            final String val = i.next();
-            if (val.equals(form)) {
-                i.remove();
-                count++;
-            }
-        }
-        return count;
+    public void deleteCurrentForm(final String form) {
+        if (this.currentForm.contains(form))
+            this.currentForm.remove(form);
     }
 
     @Override
-    public int deleteCurrentFormAt(final int i) {
-        // Make sure its a legal position.
+    public void deleteCurrentFormAt(final int i) {
+        // Make sure it's a legal position.
         if ((i >= 0) && (i < this.currentForm.size())) {
             this.currentForm.remove(i);
         }
-        return this.currentForm.size();
     }
 
     @Override
-    public int addCurrentFormAt(final int i, final String newForm) {
+    public void addCurrentFormAt(final int i, final String newForm) {
         if (newForm == null) {
             throw new IllegalArgumentException("caller attempted to add a null form value at position " + i);
         }
@@ -431,26 +416,26 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         } else {
             this.currentForm.add(newForm);
         }
-        return this.currentForm.size();
     }
 
     @Override
-    public int enqueueCurrentForm(final String newForm) {
+    public void enqueueCurrentForm(final String newForm) {
         if (newForm == null) {
             throw new IllegalArgumentException("caller attempted to enqueue a null form value");
         }
 
         this.currentForm.add(newForm);
-        return this.currentForm.size();
     }
 
     @Override
-    public int pushCurrentForm(final String newForm) {
+    public void pushCurrentForm(final String newForm) {
         if (newForm == null) {
             throw new IllegalArgumentException("caller attempted to push a null form value");
         }
-
-        return addCurrentFormAt(0, newForm);
+        if (this.currentForm.contains(newForm)) {
+            deleteCurrentForm(newForm);
+        }
+        addCurrentFormAt(0, newForm);
     }
 
     @Override
@@ -480,14 +465,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void pullFormToTop(final String curForm) {
-        if (this.currentForm.size() > 1) {
+        if (this.currentForm.contains(curForm)) {
             // Delete it
-            final int count = deleteCurrentForm(curForm);
-
-            // If deleted, add it back on top
-            if (count > 0) {
-                this.currentForm.add(0, curForm);
-            }
+            deleteCurrentForm(curForm);
+            // add it back on top
+            this.currentForm.add(0, curForm);
         }
     }
 

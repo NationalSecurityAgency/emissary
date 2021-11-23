@@ -251,8 +251,8 @@ public class BaseDataObjectTest extends UnitTest {
 
     @Test
     public void testCurrentFormEnqueue() {
-        final int i = this.b.enqueueCurrentForm("FOUR");
-        assertEquals("Enqueue return value", 4, i);
+        this.b.enqueueCurrentForm("FOUR");
+        assertEquals("New size of form list", 4, this.b.currentFormSize());
         assertEquals("Current form push", "THREE", this.b.currentForm());
         assertEquals("Prev bottom form", "ONE", this.b.currentFormAt(2));
         assertEquals("Bottom form", "FOUR", this.b.currentFormAt(3));
@@ -332,8 +332,8 @@ public class BaseDataObjectTest extends UnitTest {
 
     @Test
     public void testDeleteFormFromMiddle() {
-        final int i = this.b.deleteCurrentFormAt(1);
-        assertEquals("Delete return value", 2, i);
+        this.b.deleteCurrentFormAt(1);
+        assertEquals("New size of form list", 2, this.b.currentFormSize());
         assertEquals("Form remaining on top", "THREE", this.b.currentForm());
         assertEquals("Form remaining on bottom", "ONE", this.b.currentFormAt(1));
         assertEquals("Stack size after delete", 2, this.b.currentFormSize());
@@ -352,7 +352,12 @@ public class BaseDataObjectTest extends UnitTest {
         while (this.b.currentFormSize() > 0) {
             this.b.popCurrentForm();
         }
-        assertEquals("Delete from empty current forms failed", 0, this.b.deleteCurrentFormAt(0));
+        assertNull("Delete from empty current forms failed", this.b.popCurrentForm());
+    }
+
+    @Test
+    public void testNoDuplicateFormInStack() {
+        // this.b.
     }
 
     @Test

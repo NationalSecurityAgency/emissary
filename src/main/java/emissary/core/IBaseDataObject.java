@@ -560,7 +560,7 @@ public interface IBaseDataObject {
      * @param form the value to remove
      * @return the number of elements removed from the stack
      */
-    int deleteCurrentForm(String form);
+    void deleteCurrentForm(String form);
 
     /**
      * Remove a form at the specified location of the itinerary stack
@@ -568,7 +568,7 @@ public interface IBaseDataObject {
      * @param i the position to delete
      * @return the new size of the itinerary stack
      */
-    int deleteCurrentFormAt(int i);
+    void deleteCurrentFormAt(int i);
 
     /**
      * Add current form newForm at idx
@@ -577,7 +577,7 @@ public interface IBaseDataObject {
      * @param val the value to insert
      * @return size of the new stack
      */
-    int addCurrentFormAt(int i, String val);
+    void addCurrentFormAt(int i, String val);
 
     /**
      * Add a form to the end of the list (the bottom of the stack)
@@ -585,7 +585,7 @@ public interface IBaseDataObject {
      * @param val the new value to add to the tail of the stack
      * @return the new size of the itinerary stack
      */
-    int enqueueCurrentForm(String val);
+    void enqueueCurrentForm(String val);
 
     /**
      * Push a form onto the head of the list
@@ -593,7 +593,7 @@ public interface IBaseDataObject {
      * @param val the new value to push on the stack
      * @return the new size of the itinerary stack
      */
-    int pushCurrentForm(String val);
+    void pushCurrentForm(String val);
 
     /**
      * Replaces the current form of the data with a new form Does a pop() followed by a push(newForm) to simulate what would

@@ -451,18 +451,10 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // clean up and try for error drop off
         final String curKey = payloadArg.currentForm();
         if (ERROR_FORM.equals(curKey)) {
-            if (payloadArg.currentFormSize() > 1 && ERROR_FORM.equals(payloadArg.currentFormAt(1))) {
-                logger.error("ERROR handling place produced an error, purging all current forms");
-                while (payloadArg.currentFormSize() > 0) {
-                    payloadArg.popCurrentForm();
-                }
-                payloadArg.appendTransformHistory("ERROR.SKIP.*.http://Previous_Error_Bypass$99999");
-            } else {
-                if (payloadArg.currentFormSize() > 1) {
-                    logger.warn("Got current form of ERROR, clearing form stack on {}: {}", payloadArg.shortName(), payloadArg.getAllCurrentForms());
-                }
-                purgeNonFinalForms(payloadArg);
+            if (payloadArg.currentFormSize() > 1) {
+                logger.warn("Got current form of ERROR, clearing form stack on {}: {}", payloadArg.shortName(), payloadArg.getAllCurrentForms());
             }
+            purgeNonFinalForms(payloadArg);
         }
 
         // If we have a fully specified key as current form
@@ -588,7 +580,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * before calling this method again.
      */
     protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
-            final IBaseDataObject payloadArg) {
+                                                  final IBaseDataObject payloadArg) {
 
         try {
             logger.debug("Trying nextKey for {} with last={}, atPlace={}", dataID, lastEntry, place);
@@ -670,7 +662,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public synchronized void arrive(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final int moveErrorCount,
-            final List<DirectoryEntry> queuedItineraryItems) throws Exception {
+                                    final List<DirectoryEntry> queuedItineraryItems) throws Exception {
 
         if (dataObject instanceof IBaseDataObject) {
             clear();
