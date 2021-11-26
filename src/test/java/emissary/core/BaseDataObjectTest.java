@@ -356,6 +356,22 @@ public class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    public void testNoDuplicateFormsAllowed() {
+        final String newForm = "NEWFORM";
+        this.b.addCurrentFormAt(0, newForm);
+        this.b.enqueueCurrentForm(newForm);
+        this.b.pushCurrentForm(newForm);
+        this.b.setCurrentForm(newForm);
+        int count = 0;
+        for (int i = 0; i < this.b.currentFormSize(); i++) {
+            if (this.b.currentFormAt(i).equals(newForm)) {
+                count++;
+            }
+        }
+        assertEquals("Only one instance of NEWFORM exists after adding it multiple times in different ways: ", 1, count);
+    }
+
+    @Test
     public void testPrintMeta() {
         this.b.putParameter("FOO", "QUUZ");
         assertTrue("PrintMeta returnss valid params", this.b.printMeta().indexOf("QUUZ") > -1);

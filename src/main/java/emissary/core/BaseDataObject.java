@@ -426,6 +426,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             throw new IllegalArgumentException("caller attempted to add a null form value at position " + i);
         }
 
+        this.currentForm.remove(newForm); //this will remove the form if already in the stack, preventing duplicates
         if (i < this.currentForm.size()) {
             this.currentForm.add(i, newForm);
         } else {
@@ -440,6 +441,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             throw new IllegalArgumentException("caller attempted to enqueue a null form value");
         }
 
+        this.currentForm.remove(newForm); //this will remove the form if already in the stack, preventing duplicates
         this.currentForm.add(newForm);
         return this.currentForm.size();
     }
