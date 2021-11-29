@@ -37,7 +37,7 @@ RUN chown -R ${user}:${group} /opt/emissary && chmod -R 744 /opt/emissary
 
 USER ${user}
 WORKDIR /opt/emissary
-RUN mvn clean package && \
+RUN mvn clean install && \
     rm -f .mvn-classpath || true
 
 VOLUME /opt/emissary/target/data
