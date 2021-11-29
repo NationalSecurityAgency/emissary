@@ -25,17 +25,17 @@ RUN yum install -y which && \
     useradd -u ${uid} -g ${group} -s /bin/sh -m ${user}
 
 COPY pom.xml /opt/emissary/pom.xml
-RUN chown -R emissary:emissary /opt/emissary
+RUN chown -R ${user}:${group} /opt/emissary
 
-USER emissary
+USER ${user}
 WORKDIR /opt/emissary
 RUN mvn dependency:go-offline
 
 USER root
 COPY . /opt/emissary
-RUN chown -R emissary:emissary /opt/emissary && chmod -R 744 /opt/emissary
+RUN chown -R ${user}:${group} /opt/emissary && chmod -R 744 /opt/emissary
 
-USER emissary
+USER ${user}
 WORKDIR /opt/emissary
 RUN mvn clean package && \
     rm -f .mvn-classpath || true
