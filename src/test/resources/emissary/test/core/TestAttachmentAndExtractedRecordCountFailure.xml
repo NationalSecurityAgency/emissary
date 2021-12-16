@@ -1,0 +1,53 @@
+<result>
+  <setup>
+    <initialForm>MESSAGE</initialForm>
+  </setup>
+  
+  <answers>
+    <numAttachments>0</numAttachments>
+    <currentForm>MIME-PROCESSED</currentForm>
+    <currentFormSize>1</currentFormSize>
+    <fileType>MESSAGE</fileType>
+    <shortName>MESSAGE.dat</shortName>
+    <extractCount>0</extractCount>
+    
+    <extract1>
+        <currentForm>XML_RECORD</currentForm>
+        <fileType>XML_RECORD</fileType>
+        <shortName>XML.dat-att-1-att-1</shortName>
+        <meta>
+            <name>root.element1</name>
+            <value>elementValue</value>
+        </meta>
+    </extract1>
+    <extract2>
+        <currentForm>XML_RECORD</currentForm>
+        <fileType>XML_RECORD</fileType>
+        <shortName>XML.dat-att-1-att-2-att-1</shortName>
+        <meta>
+            <name>root.element2.child1</name>
+            <value>child1Value</value>
+        </meta>
+    </extract2>
+    <extract3>
+        <currentForm>XML_RECORD</currentForm>
+        <fileType>XML_RECORD</fileType>
+        <shortName>XML.dat-att-1-att-2-att-2</shortName>
+        <meta>
+            <name>root.element2.child2..attribute1</name>
+            <value>attribute1Value</value>
+        </meta>
+        <meta>
+            <name>root.element2.child2..attribute2</name>
+            <value>attribute2Value</value>
+        </meta>
+    </extract3>
+    <att1>
+        <currentFormSize>1</currentFormSize>
+        <currentForm>UNKNOWN</currentForm>
+        <dataLength>19</dataLength>
+        <data><value>just the body pls&#10;&#10;</value></data>
+    </att1>
+
+  </answers>
+</result>
