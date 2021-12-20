@@ -3,6 +3,8 @@ package emissary.place;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1040,31 +1042,69 @@ public class Main {
     }
 
     /**
-     * Split the output to separate files. This is for doing followon processing on the data, so just the data gets output
+     * Split the output to separate files. This is for doing follow on processing on the data, so just the data gets output
      * here. One payload or attachment per file. Directories will be created as needed underneath the baseOutputDir (can be
-     * specified with -d)
+     * specified with -d).
+     * <p>
+     * Note: Output will be suppressed if an IBDO form or filename would yield an output path outside the configured
+     * {@link #getBaseOutputDir() base output directory} path
+     * </p>
      *
      * @param payload the processed payload
      * @param att the list of attachments
      */
     public void handleSplitOutput(IBaseDataObject payload, List<IBaseDataObject> att) {
         String fn = getBaseOutputDir() + "/" + payload.shortName() + "." + payload.currentForm();
-        boolean status = Executrix.writeDataToFile(payload.data(), fn);
-        if (status) {
-            logger.debug("Wrote output to " + fn);
-        } else {
-            logger.error("Could not write output to " + fn);
-        }
 
+        String safePath;
+        try {
+            safePath = filePathIsWithinBaseDirectory(getBaseOutputDir(), fn);
+            if (Executrix.writeDataToFile(payload.data(), safePath)) {
+                logger.debug("Wrote output to {}", safePath);
+            } else {
+                logger.error("Could not write output to {}", safePath);
+            }
+        } catch (IllegalArgumentException e) {
+            logger.error("Could not write output to {}", fn, e);
+        }
         for (IBaseDataObject part : att) {
             fn = getBaseOutputDir() + "/" + part.shortName() + "." + part.currentForm();
-            status = Executrix.writeDataToFile(part.data(), fn);
-            if (status) {
-                logger.debug("Wrote attachment output to " + fn);
-            } else {
-                logger.error("Could not write output to " + fn);
+            try {
+                safePath = filePathIsWithinBaseDirectory(getBaseOutputDir(), fn);
+                if (Executrix.writeDataToFile(payload.data(), safePath)) {
+                    logger.debug("Wrote attachment output to " + safePath);
+                } else {
+                    logger.error("Could not write output to " + safePath);
+                }
+            } catch (IllegalArgumentException e) {
+                logger.error("Could not write output to {}", fn, e);
             }
         }
+    }
+
+    /**
+     * Normalizes the provided paths and tests to see whether the file path is within the required base directory.
+     *
+     * @param requiredBase required base directory
+     * @param filePath file path to be tested
+     * @return the normalized file path is within the required base directory
+     * @throws IllegalArgumentException if the filePath contains illegal characters or is outside the required base
+     *         directory
+     */
+    static String filePathIsWithinBaseDirectory(String requiredBase, String filePath) throws IllegalArgumentException {
+        // probably an overly simplistic test
+        if (filePath.contains("..")) {
+            throw new IllegalArgumentException("filePath contains illegal character sequence \"..\"");
+        }
+        Path normalizedBasePath = Paths.get(requiredBase).normalize().toAbsolutePath();
+        Path normalizedFilePath = Paths.get(filePath).normalize().toAbsolutePath();
+
+        // append path separator to defeat traversal via a sibling directory with a similar name
+        if (!normalizedFilePath.startsWith(normalizedBasePath.toString() + "/")) {
+            throw new IllegalArgumentException("Normalized file path (\"" + filePath + "\") is outside the required base path (\""
+                    + requiredBase + "\")");
+        }
+        return normalizedFilePath.toString();
     }
 
     /**
