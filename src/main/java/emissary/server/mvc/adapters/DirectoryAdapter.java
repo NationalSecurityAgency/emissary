@@ -362,31 +362,6 @@ public class DirectoryAdapter extends EmissaryClient {
     }
 
     /**
-     * Register caller as a peer in local directory
-     *
-     * @param req the inbound request object
-     */
-    public boolean inboundRegisterPeer(final HttpServletRequest req) {
-        final String peerKey = RequestUtil.getParameter(req, DIRECTORY_NAME);
-        final String localDir = RequestUtil.getParameter(req, TARGET_DIRECTORY);
-        final IRemoteDirectory dir = getLocalDirectory(localDir);
-        if (dir != null) {
-            final Set<String> set = new HashSet<String>();
-            set.add(KeyManipulator.getDefaultDirectoryKey(peerKey));
-
-            MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(dir.getKey()));
-            try {
-                dir.irdAddPeerDirectories(set);
-            } finally {
-                MDC.remove(MDCConstants.SERVICE_LOCATION);
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
      * Helper utility class to collect arguments for addPlaces call
      */
     static class AddPlacesRequestBean {
