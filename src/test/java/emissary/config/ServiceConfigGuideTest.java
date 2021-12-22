@@ -517,6 +517,66 @@ public class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
+    public void testImportFileWhenFileExists() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+        final byte[] importfile = new String("FOO = \"BAR\"\n").getBytes();
+
+        boolean importFileFound = true;
+        String result = "";
+
+        final Configurator c;
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            Executrix.writeDataToFile(importfile, impname);
+            c = new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // should not be reached due to IMPORT_FILE existing
+            importFileFound = false;
+            result = iox.toString();
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+
+        assertTrue(result, importFileFound);
+
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testImportFileWhenFileDoesNotExist() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+
+        boolean importFileFound = true;
+        String result = "";
+
+        final Configurator c;
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            c = new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
+            importFileFound = false;
+            result = iox.toString();
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+
+        // fails, because IMPORT_FILE is not found
+        assertTrue(result, importFileFound);
+    }
+
+    @Test
     public void testOptImportWhenOptionalFileExists() throws IOException {
         // Write the config bytes out to a temp file
         final String dir = System.getProperty("java.io.tmpdir");
