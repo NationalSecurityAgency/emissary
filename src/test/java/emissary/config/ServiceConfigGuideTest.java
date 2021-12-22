@@ -526,7 +526,6 @@ public class ServiceConfigGuideTest extends UnitTest {
         final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
         final byte[] importfile = new String("FOO = \"BAR\"\n").getBytes();
 
-        boolean importFileFound = true;
         String result = "";
 
         final Configurator c;
@@ -536,18 +535,17 @@ public class ServiceConfigGuideTest extends UnitTest {
             c = new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // should not be reached due to IMPORT_FILE existing
-            importFileFound = false;
             result = iox.toString();
         } finally {
             Files.deleteIfExists(Paths.get(priname));
             Files.deleteIfExists(Paths.get(impname));
         }
 
-        assertTrue(result, importFileFound);
+        assertEquals(result, 0, result.length());
 
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testImportFileWhenFileDoesNotExist() throws IOException {
         // Write the config bytes out to a temp file
         final String dir = System.getProperty("java.io.tmpdir");
@@ -556,8 +554,8 @@ public class ServiceConfigGuideTest extends UnitTest {
 
         final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
 
-        boolean importFileFound = true;
         String result = "";
+        String importFileName = Paths.get(impname).getFileName().toString();
 
         final Configurator c;
         try {
@@ -565,15 +563,16 @@ public class ServiceConfigGuideTest extends UnitTest {
             c = new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
-            importFileFound = false;
             result = iox.toString();
         } finally {
             Files.deleteIfExists(Paths.get(priname));
             Files.deleteIfExists(Paths.get(impname));
         }
 
-        // fails, because IMPORT_FILE is not found
-        assertTrue(result, importFileFound);
+        String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
+                + " on the specified path. \nMake sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
+
+        assertTrue("IMPORT_FAIL Message Not What Was Expected.", result.contains(noImportExpectedMessage));
     }
 
     @Test
