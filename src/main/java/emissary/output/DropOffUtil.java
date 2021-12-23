@@ -10,9 +10,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 
@@ -1033,14 +1035,14 @@ public class DropOffUtil {
     /**
      * Extracts from the provided {@link IBaseDataObject} the last file extension from each value in the "Original-Filename"
      * parameter, if that value contains "." before its last character. If one or more file extensions are extracted, the
-     * IBaseDataObject's "FILEXT" parameter is set as the list of extracted file extensions, converted to lowercase.
+     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
      *
      * @param p IBaseDataObject to process
      *
      */
-    void extractFileExtensions(IBaseDataObject p) {
+    void extractUniqueFileExtensions(IBaseDataObject p) {
         if (p.hasParameter("Original-Filename")) {
-            final List<String> extensions = new ArrayList<>();
+            final Set<String> extensions = new HashSet<>();
             for (Object filename : p.getParameter("Original-Filename")) {
                 final String fn = (String) filename;
                 if (StringUtils.isNotEmpty(fn) && fn.lastIndexOf('.') > -1) {
@@ -1084,7 +1086,7 @@ public class DropOffUtil {
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
-            extractFileExtensions(p);
+            extractUniqueFileExtensions(p);
 
             if (p.getStringParameter("EXTENDED_FILETYPE") == null) {
                 extended_filetypes.clear();

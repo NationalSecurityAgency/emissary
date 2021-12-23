@@ -566,7 +566,7 @@ public class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    public void testExtractFileExtensions() {
+    public void testExtractUniqueFileExtensions() {
         // these should be constants
         final String FILEXT = "FILEXT";
         final String ORIGINAL_FILENAME = "Original-Filename";
@@ -575,16 +575,17 @@ public class DropOffUtilTest extends UnitTest {
         final IBaseDataObject bdo = new BaseDataObject();
         bdo.appendParameter(ORIGINAL_FILENAME, "name_with_no_period");
 
-        util.extractFileExtensions(bdo);
+        util.extractUniqueFileExtensions(bdo);
 
         List<Object> fileExts = bdo.getParameter(FILEXT);
         assertNull("FILEXT value should be null if no Original-Filename contains a period", fileExts);
 
         bdo.appendParameter(ORIGINAL_FILENAME, "lower.case.zip");
         bdo.appendParameter(ORIGINAL_FILENAME, "UPPER.CASE.MP3");
-        assertEquals("bdo should now have 3 Original-Filename values", 3, bdo.getParameter(ORIGINAL_FILENAME).size());
+        bdo.appendParameter(ORIGINAL_FILENAME, "duplicated.mp3");
+        assertEquals("bdo should now have 4 Original-Filename values", 4, bdo.getParameter(ORIGINAL_FILENAME).size());
 
-        util.extractFileExtensions(bdo);
+        util.extractUniqueFileExtensions(bdo);
         fileExts = bdo.getParameter(FILEXT);
 
         // validate extracted FILEXT values
