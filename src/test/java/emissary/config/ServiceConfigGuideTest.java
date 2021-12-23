@@ -563,7 +563,7 @@ public class ServiceConfigGuideTest extends UnitTest {
         }
 
         String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
-                + " on the specified path. \nMake sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
+                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
 
         assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
     }

@@ -326,7 +326,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                     if ("IMPORT_FILE".equals(parmName) && i == 0) {
                         String importFileName = Paths.get(svalArg).getFileName().toString();
                         throw new IOException("In " + filename + ", cannot find IMPORT_FILE: " + sval
-                                + " on the specified path. \nMake sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.",
+                                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.",
                                 e);
                     }
                 }
