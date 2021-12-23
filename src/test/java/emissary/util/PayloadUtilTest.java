@@ -1,11 +1,15 @@
 package emissary.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
@@ -19,12 +23,18 @@ import org.junit.Test;
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
+    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
+    private static Set<Character> validFormChars = new HashSet<>();
 
     @BeforeClass
     public static void setup() {
         // Needed to ensure correct output strings on the dates
         timezone = System.getProperty("user.timezone");
         System.setProperty("user.timezone", "GMT");
+
+        for (char character : validFormCharsString.toCharArray()) {
+            validFormChars.add(character);
+        }
     }
 
     @AfterClass
@@ -150,5 +160,67 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue("Xml serizliazation must include header data", lxml.indexOf("mno") > -1);
         assertTrue("Xml serizliazation must include footer data", lxml.indexOf("pqr") > -1);
         assertTrue("Xml serizliazation must include history data", lxml.indexOf("stu") > -1);
+    }
+
+    @Test
+    public void testIsValidForm() {
+        // Check that all expected valid characters are valid
+        String alphaLow = "abcdefghijklmnopqrstuvwxyz";
+        assertTrue("Lower case alpha characters are not considered valid", PayloadUtil.isValidForm(alphaLow));
+        assertTrue("Upper case alpha characters are not considered valid", PayloadUtil.isValidForm(alphaLow.toUpperCase()));
+        assertTrue("Numeric characters are not considered valid", PayloadUtil.isValidForm("0123456789"));
+        assertTrue("Dash and underscore aren't considered valid", PayloadUtil.isValidForm("-_"));
+        assertFalse("Dot isn't considered valid", PayloadUtil.isValidForm("."));
+        assertFalse("Space isn't considered valid", PayloadUtil.isValidForm(" "));
+
+        // Cycle through all characters and see how many are valid and that we have the expected number
+        int validChars = 0;
+        for (int i = 0; i < Character.MAX_VALUE; i++) {
+            if (PayloadUtil.isValidForm(Character.toString((char) i))) {
+                validChars++;
+            }
+        }
+        assertEquals("Unexpected number of valid characters.", validFormChars.size(), validChars);
+
+        // Create a set with possible form characters for randomly generated cases
+        Set<Character> formChars = new HashSet<Character>(validFormChars);
+        // Add an invalid character to generate some false cases
+        formChars.add('.');
+
+        Character[] formCharArray = new Character[formChars.size()];
+        formChars.toArray(formCharArray);
+        // Seed the random for consistent output
+        Random rand = new Random(0);
+        // Generate N example forms and test if set and regex implementation produce identical results
+        for (int i = 0; i < 4000000; i++) {
+            StringBuilder word = new StringBuilder();
+            int size = rand.nextInt(20);
+            for (int n = 0; n < size; n++) {
+                word.append(formCharArray[rand.nextInt(formChars.size())]);
+            }
+            String form = word.toString();
+            assertEquals("Regex implementation and Set implementation of form check are not equal on iteration " + i, PayloadUtil.isValidForm(form),
+                    isValidFormSetImplementation(form));
+        }
+    }
+
+    /**
+     * Compares the form to a set of valid characters
+     *
+     * This implementation is marginally faster than the regex implementation, but is less maintainable
+     *
+     * @param form The form to be tested
+     * @return Whether the form is considered valid
+     */
+    private boolean isValidFormSetImplementation(String form) {
+        if (form.length() > 0) {
+            for (int i = 0; i < form.length(); i++) {
+                if (!validFormChars.contains(form.charAt(i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }
