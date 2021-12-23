@@ -526,23 +526,17 @@ public class ServiceConfigGuideTest extends UnitTest {
         final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
         final byte[] importfile = new String("FOO = \"BAR\"\n").getBytes();
 
-        String result = "";
-
-        final Configurator c;
         try {
             Executrix.writeDataToFile(primary, priname);
             Executrix.writeDataToFile(importfile, impname);
-            c = new ServiceConfigGuide(priname);
+            new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // should not be reached due to IMPORT_FILE existing
-            result = iox.toString();
+            fail("IMPORT_FILE not found.");
         } finally {
             Files.deleteIfExists(Paths.get(priname));
             Files.deleteIfExists(Paths.get(impname));
         }
-
-        assertEquals(result, 0, result.length());
-
     }
 
     @Test
@@ -557,13 +551,12 @@ public class ServiceConfigGuideTest extends UnitTest {
         String result = "";
         String importFileName = Paths.get(impname).getFileName().toString();
 
-        final Configurator c;
         try {
             Executrix.writeDataToFile(primary, priname);
-            c = new ServiceConfigGuide(priname);
+            new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
-            result = iox.toString();
+            result = iox.getMessage();
         } finally {
             Files.deleteIfExists(Paths.get(priname));
             Files.deleteIfExists(Paths.get(impname));
@@ -572,7 +565,7 @@ public class ServiceConfigGuideTest extends UnitTest {
         String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
                 + " on the specified path. \nMake sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
 
-        assertTrue("IMPORT_FAIL Message Not What Was Expected.", result.contains(noImportExpectedMessage));
+        assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
     }
 
     @Test
