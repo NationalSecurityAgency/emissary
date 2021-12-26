@@ -29,13 +29,23 @@ public class LineTokenizerTest extends UnitTest {
         LineTokenizer lt = new LineTokenizer("ABC\nDEF\r\nGHI\n\nJKL\r\n\r\nMNO".getBytes());
         assertEquals("Line counting", 7, lt.countTokens());
         assertTrue("Token setup", lt.hasMoreTokens());
+        assertEquals("Index should be at the beginning of the string", 0, lt.index);
         assertEquals("Line parsing with LF", "ABC", lt.nextToken());
+        assertEquals("Index should be at the index of 'D'", 4, lt.index);
         assertEquals("Line parsing with CRLF", "DEF\r", lt.nextToken());
+        assertEquals("Index should be at the index of 'G'", 9, lt.index);
         assertEquals("Line parsing before double LF", "GHI", lt.nextToken());
+        assertEquals("Index should be at the index of the '\n' before 'JKL'", 13, lt.index);
         assertEquals("Blank line with LF", "", lt.nextToken());
+        assertEquals("Index should be at the index of 'J'", 14, lt.index);
         assertEquals("Line pargin before double CRLF", "JKL\r", lt.nextToken());
+        assertEquals("Index should be at the index of '\r' before '\nMNO'", 19, lt.index);
         assertEquals("Blank line with CRLF", "\r", lt.nextToken());
+        assertEquals("Index should at the index of 'M'", 21, lt.index);
         assertEquals("Trailing portion without LF", "MNO", lt.nextToken());
+        assertEquals("Index should be at the end of the string", 24, lt.index);
+        assertEquals("No remaining tokens", null, lt.nextToken());
+        assertEquals("Index should not have changed", 24, lt.index);
     }
 
     @Test
@@ -61,15 +71,34 @@ public class LineTokenizerTest extends UnitTest {
         LineTokenizer lt = new LineTokenizer("ABC\nDEF\nGHI\nJKL\n".getBytes());
         assertEquals("Line counting", 4, lt.countTokens());
         assertEquals("First token", "ABC", lt.nextToken());
+        assertEquals("Index should be at the index of 'D'", 4, lt.index);
         lt.pushBack();
+        assertEquals("Index should be at the start of the string", 0, lt.index);
         assertEquals("Line counting after push", 4, lt.countTokens());
         assertEquals("First token after push", "ABC", lt.nextToken());
+        assertEquals("Index should be at the index of 'D'", 4, lt.index);
 
         assertEquals("Second token", "DEF", lt.nextToken());
+        assertEquals("Index should be at the index of 'G'", 8, lt.index);
         lt.pushBack();
+        assertEquals("Index should be at the index of 'D'", 4, lt.index);
         assertEquals("Second token after push", "DEF", lt.nextToken());
+        assertEquals("Index should be at the index of 'G'", 8, lt.index);
         lt.pushBack();
+        assertEquals("Index should be at the index of 'D'", 4, lt.index);
         assertEquals("Second token after push", "DEF", lt.nextToken());
+        assertEquals("Index should be at the index of 'G'", 8, lt.index);
+
+        lt.nextToken();
+        assertEquals("End of the string", "JKL", lt.nextToken());
+        assertEquals("Index should be at the end of the string", 15, lt.index);
+
+        lt.pushBack();
+        assertEquals("Index should at the index of 'J'", 12, lt.index);
+        assertEquals("End of the string", "JKL", lt.nextToken());
+        assertEquals("Index should be at the end of the string", 15, lt.index);
+        assertEquals("No remaining tokens", null, lt.nextToken());
+        assertEquals("Index should not have changed", 15, lt.index);
     }
 
 }
