@@ -37,6 +37,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -1072,9 +1073,9 @@ public class Main {
             try {
                 safePath = filePathIsWithinBaseDirectory(getBaseOutputDir(), fn);
                 if (Executrix.writeDataToFile(payload.data(), safePath)) {
-                    logger.debug("Wrote attachment output to " + safePath);
+                    logger.debug("Wrote attachment output to {}", safePath);
                 } else {
-                    logger.error("Could not write output to " + safePath);
+                    logger.error("Could not write output to {}", safePath);
                 }
             } catch (IllegalArgumentException e) {
                 logger.error("Could not write output to {}", fn, e);
@@ -1087,11 +1088,20 @@ public class Main {
      *
      * @param requiredBase required base directory
      * @param filePath file path to be tested
-     * @return the normalized file path is within the required base directory
+     * @return the normalized file path
      * @throws IllegalArgumentException if the filePath contains illegal characters or is outside the required base
      *         directory
      */
-    static String filePathIsWithinBaseDirectory(String requiredBase, String filePath) throws IllegalArgumentException {
+    static String filePathIsWithinBaseDirectory(final String requiredBase, final String filePath) throws IllegalArgumentException {
+
+        if (StringUtils.isBlank(requiredBase)) {
+            throw new IllegalArgumentException("requiredBase must not be blank");
+        }
+
+        if (StringUtils.isBlank(filePath)) {
+            throw new IllegalArgumentException("filePath must not be blank");
+        }
+
         // probably an overly simplistic test
         if (filePath.contains("..")) {
             throw new IllegalArgumentException("filePath contains illegal character sequence \"..\"");
