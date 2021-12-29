@@ -33,15 +33,12 @@ RUN mvn dependency:go-offline
 
 USER root
 COPY . /opt/emissary
-RUN chown -R ${user}:${group} /opt/emissary && chmod -R 744 /opt/emissary
+RUN chown -R ${user}:${group} /opt/emissary && chmod -R 744 /opt/emissary &&\
+    (rm -f .mvn-classpath || true)
 
 USER ${user}
 WORKDIR /opt/emissary
-RUN mvn clean install && \
-    rm -f .mvn-classpath || true
-
-VOLUME /opt/emissary/target/data
-VOLUME /opt/emissary/target/localoutput
+RUN mvn clean install
 
 EXPOSE 8000 8001
 
