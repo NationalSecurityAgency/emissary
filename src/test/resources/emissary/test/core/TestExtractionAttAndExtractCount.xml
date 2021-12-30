@@ -1,0 +1,24 @@
+<result>
+  <answers>
+  
+    <numAttachments>1</numAttachments>
+    <extractCount>1</extractCount>
+    
+    <att1>
+      <currentFormSize>1</currentFormSize>
+      <currentForm>UNKNOWN</currentForm>
+      <dataLength>19</dataLength>
+      <data><value>just the body pls&#10;&#10;</value></data>
+    </att1>
+    <extract1>
+      <currentForm>XML_RECORD</currentForm>
+      <fileType>XML_RECORD</fileType>
+      <shortName>XML.dat-att-1-att-1</shortName>
+      <meta>
+        <name>root.element1</name>
+        <value>elementValue</value>
+      </meta>
+    </extract1>
+
+  </answers>
+</result>
