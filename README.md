@@ -1005,6 +1005,17 @@ Use docker copy to run a file through Emissary:
 docker cp emissary-knight.png docker_emissary-feeder_1:/opt/emissary/target/data/InputData/
 ```
 
+### Optionally Build and Test Emissary with a Docker Dev Image
+
+Let's use the dev image to build Emissary with Maven and Java:
+```
+docker build . -t emissary:test -f contrib/docker/Dockerfile.dev
+```
+Once the build succeeds, we can start a container:
+```
+docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
+```
+
 ## Coding standards
 
 Many of coding standards are defined the formatter config file.  Here are some 
