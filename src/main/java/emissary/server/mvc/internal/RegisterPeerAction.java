@@ -77,7 +77,7 @@ public class RegisterPeerAction {
         }
 
         final Set<String> set = new HashSet<>();
-        set.add(KeyManipulator.getDefaultDirectoryKey(peerKey));
+        set.add(KeyManipulator.getDefaultDirectoryKey("#" + peerKey));
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(dir.getKey()));
         try {
             dir.irdAddPeerDirectories(set);
