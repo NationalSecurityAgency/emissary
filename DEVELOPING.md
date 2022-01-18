@@ -2,120 +2,16 @@
 
 Table of Contents
 =================
+* [Overview](#overview)
 * [Requirements](#requirements)
 * [IDE integration](#ide-integration)
 * [Coding Standards](#coding-standards)
-* [Internals](#internals)
 * [Commands](#commands)
 * [Running Emissary](#running-emissary)
 * [Docker](#docker)
 * [Troubleshooting](#troubleshooting)
 
-## Requirements
-
-### Preferred OS/Environment
-
-Emissary is best developed and run in a Unix environment.
-
-Preferred operating systems are Linux or macOS.
-
-### Java 1.8
-
-Java 1.6 and Java 1.7 are no longer supported in this codebase, only 
-[Java 1.8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html).  
-Emissary now supports both OpenJDK and Oracle JDK. Be sure to use a recent version of
-1.8 as there are bugs in earlier versions.
-
-### Apache Maven 3.6+
-
-Download and install [Apache Maven 3.6+](http://maven.apache.org).
-
-We recommend being familiar with the following Maven concepts:
-
-* [5 Minute Tutorial and Basic Commands](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
-* [Maven Lifecycles](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)
-* [Maven Profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html)
-
-## IDE integration
-
-The pom.xml file is set up to use a different *project.build.directory* depending on the IDE you are using.  The
-reason for this is so that running Maven on the command line and using your IDE will not interfere with each
-other.  So keep in mind, your IDE will not build to the *./target* directory.
-
-You can run/debug the [emissary.Emissary](src/main/java/emissary/Emissary.java) class in your IDE.  Just setup the same 
-arguments you would use on the command line.  Running tests in your IDE is also supported.  IntelliJ and Netbeans will 
-read the surefire plugin configuration and use it.  Eclipse does not read the surefire configuration, so the process
-is explained below.
-
-### IntelliJ
-
-When [IntelliJ](https://www.jetbrains.com/idea/) runs a Maven project, a system property named
-*idea.version* is set.  We use this property to activate the *intellij* profile in the
-pom and change the *project.build.directory* to *${project.basedir}/target-idea*, which is a sibling to the target
-directory.  The `mvn clean` command will not remove this directory, but cleaning from IntelliJ should remove it.
-
-Because we are using the jacoco plugin, we typically must put *@argLine* at the beginning of the surefire plugin
-to allow jacoco to add what it needs.  See the second answer 
-[here](http://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven).
-But that can cause IntelliJ to report this if you run a test:
-
-```
-Error: Could not find or load main class @{argLine}
-```
-
-The fix is to tell IntelliJ not to use that.  Uncheck **argLine** from
-Preferences -> Build,Execution,Deployment -> Build Tools -> Maven -> Running Tests.
-See [stackoverflow](http://stackoverflow.com/questions/24115142/intellij-error-when-running-unit-test-could-not-find-or-load-main-class-suref)
-for more info
-
-### Eclipse
-
-When [Eclipse](https://eclipse.org/) runs with the [M2E](http://www.eclipse.org/m2e/) plugin, a system property named
-*m2e.version* is set.  We can use that fact to activate the *eclipse* profile in the pom and then change
-the *project.build.directory* to *${project.basedir}/target-eclipse*, which is a sibling to the default *target*directory.  
-The `mvn clean` command will not remove this directory, but cleaning from Eclipse should remove it.
-
-The *eclipse* profile also configures some exclusions for the m2e plugin, so it doesn't warn about not knowing how to
-handle some Maven plugins used.
-
-When running tests in Eclipse, so you will need to set the environment variable *PROJECT_BASE* to the directory
-eclipse is using to build the project.  So in the run configuration of a test, add the following to the
-Run Configuration -> Environment -> New
-
-```
-PROJECT_BASE = ${project_loc}/target-eclipse
-```
-
-Unfortunately you will have to do this for every test, that's Eclipse with the M2E plugin for you.
-
-### Netbeans
-
-Unfortunately, I could not find a system property [Netbeans](https://netbeans.org/) sets when running
-a Maven project, so we are unable to automatically activate the *netbeans* profile like we can with
-the *eclipse* and *intellij* profile.  Fortunately, it is easy to add a system property yourself.  
-Open Netbean's Preferences -> Java -> Maven and then add `-Dnetbeans.ide` into the *Global Execution Options*.  
-Afterwards, the *netbeans* profile will be activated in the pom and change
-the *project.build.directory* to target-netbeans, which is a sibling to the target directory.  
-The `mvn clean` command will not remove this directory, but cleaning from Netbeans should remove it.
-
-## Coding Standards
-
-Many of coding standards are defined the [formatter config file](contrib/formatter.xml). Here are some
-additional things to consider when developing:
-
-* Never call System.exit for any reason.
-* Never use Thread.stop for any reason.
-* Never cut and paste any code -- refactor instead.
-* Configure your editor to use spaces to indent code not tabs.
-* Passing tests should be completely silent (no output).
-* Never write to System.out except from main.
-* Fix all compiler warnings and lint before committing.
-* Fix all javadoc warnings before committing (will have to run mvn verify)
-* The repository version should always compile and pass all the tests.
-* If you fix a bug, add a test.
-* If you answer a question, add some documentation.
-
-## Internals
+## Overview
 
 ### Code Organization
 
@@ -200,9 +96,9 @@ REVIEW        | Finish off                   | No
 The name for this stage came from the idea behind [Perl's Regex study](http://perldoc.perl.org/functions/study.html)
 method -- some work that can be done up-front to optimize or prepare for the remaining work to come.
 This stage is designed to make no modifications to the data itself but can be used for:
- * policy enforcement - ensuring that the incoming payload meets some minimum criteria or quality standards
- * provenance - emitting events at the very beginning of the workflow that might indicate to an external system that
-   workflow has begun on a certain item.
+* policy enforcement - ensuring that the incoming payload meets some minimum criteria or quality standards
+* provenance - emitting events at the very beginning of the workflow that might indicate to an external system that
+  workflow has begun on a certain item.
 
 #### Id
 
@@ -232,8 +128,7 @@ workflow engine will go back to the ID phase and start evaluating for places tha
 
 #### PostTransform
 
-Since the other primary phases of the workflow had "hook" stages in between them, it seemed
-good to have one here too. Nothing past this phase will cause the workflow engine to go back
+Nothing past this phase will cause the workflow engine to go back
 to the ID phase of the workflow, things must continue forward in the workflow stages from here.
 
 #### Analyze
@@ -293,6 +188,110 @@ It is important to have in mind that the
 Parser framework is operating on the single-threaded side of the system and handing items over to the
 multi-threaded (MobileAgent) side of the system. This necessitates that the parsers are fast enough
 to keep the number of configured threads busy.
+
+## Requirements
+
+### Preferred OS/Environment
+
+Emissary is best developed and run in a Unix environment.
+
+Preferred operating systems are Linux or macOS.
+
+### Java 1.8
+
+Java 1.6 and Java 1.7 are no longer supported in this codebase, only 
+[Java 1.8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html).  
+Emissary now supports both OpenJDK and Oracle JDK. Be sure to use a recent version of
+1.8 as there are bugs in earlier versions.
+
+### Apache Maven 3.6+
+
+Download and install [Apache Maven 3.6+](http://maven.apache.org).
+
+We recommend being familiar with the following Maven concepts:
+
+* [5 Minute Tutorial and Basic Commands](https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html)
+* [Maven Lifecycles](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html)
+* [Maven Profiles](http://maven.apache.org/guides/introduction/introduction-to-profiles.html)
+
+## IDE integration
+
+The pom.xml file is set up to use a different *project.build.directory* depending on the IDE you are using.  The
+reason for this is so that running Maven on the command line and using your IDE will not interfere with each
+other.  So keep in mind, your IDE will not build to the *./target* directory.
+
+You can run/debug the [emissary.Emissary](src/main/java/emissary/Emissary.java) class in your IDE.  Just setup the same 
+arguments you would use on the command line.  Running tests in your IDE is also supported.  IntelliJ and Netbeans will 
+read the surefire plugin configuration and use it.  Eclipse does not read the surefire configuration, so the process
+is explained below.
+
+### IntelliJ
+
+When [IntelliJ](https://www.jetbrains.com/idea/) runs a Maven project, a system property named
+*idea.version* is set.  We use this property to activate the *intellij* profile in the
+pom and change the *project.build.directory* to *${project.basedir}/target-idea*, which is a sibling to the target
+directory.  The `mvn clean` command will not remove this directory, but cleaning from IntelliJ should remove it.
+
+Because we are using the jacoco plugin, we typically must put *@argLine* at the beginning of the surefire plugin
+to allow jacoco to add what it needs.  See the second answer 
+[here](http://stackoverflow.com/questions/23190107/cannot-use-jacoco-jvm-args-and-surefire-jvm-args-together-in-maven).
+But that can cause IntelliJ to report this if you run a test:
+
+```
+Error: Could not find or load main class @{argLine}
+```
+
+The fix is to tell IntelliJ not to use that.  Uncheck **argLine** from
+Preferences -> Build,Execution,Deployment -> Build Tools -> Maven -> Running Tests.
+See [stackoverflow](http://stackoverflow.com/questions/24115142/intellij-error-when-running-unit-test-could-not-find-or-load-main-class-suref)
+for more info
+
+### Eclipse
+
+When [Eclipse](https://eclipse.org/) runs with the [M2E](http://www.eclipse.org/m2e/) plugin, a system property named
+*m2e.version* is set.  We can use that fact to activate the *eclipse* profile in the pom and then change
+the *project.build.directory* to *${project.basedir}/target-eclipse*, which is a sibling to the default *target*directory.  
+The `mvn clean` command will not remove this directory, but cleaning from Eclipse should remove it.
+
+The *eclipse* profile also configures some exclusions for the m2e plugin, so it doesn't warn about not knowing how to
+handle some Maven plugins used.
+
+When running tests in Eclipse, so you will need to set the environment variable *PROJECT_BASE* to the directory
+eclipse is using to build the project.  So in the run configuration of a test, add the following to the
+Run Configuration -> Environment -> New
+
+```
+PROJECT_BASE = ${project_loc}/target-eclipse
+```
+
+Unfortunately you will have to do this for every test, that's Eclipse with the M2E plugin for you.
+
+### Netbeans
+
+Unfortunately, we could not find a system property [Netbeans](https://netbeans.org/) sets when running
+a Maven project, so we are unable to automatically activate the *netbeans* profile like we can with
+the *eclipse* and *intellij* profile.  Fortunately, it is easy to add a system property yourself.  
+Open Netbean's Preferences -> Java -> Maven and then add `-Dnetbeans.ide` into the *Global Execution Options*.  
+Afterwards, the *netbeans* profile will be activated in the pom and change
+the *project.build.directory* to target-netbeans, which is a sibling to the target directory.  
+The `mvn clean` command will not remove this directory, but cleaning from Netbeans should remove it.
+
+## Coding Standards
+
+Many of coding standards are defined the [formatter config file](contrib/formatter.xml). Here are some
+additional things to consider when developing:
+
+* Never call System.exit for any reason.
+* Never use Thread.stop for any reason.
+* Never cut and paste any code -- refactor instead.
+* Configure your editor to use spaces to indent code not tabs.
+* Passing tests should be completely silent (no output).
+* Never write to System.out except from main.
+* Fix all compiler warnings and lint before committing.
+* Fix all javadoc warnings before committing (will have to run mvn verify)
+* The repository version should always compile and pass all the tests.
+* If you fix a bug, add a test.
+* If you answer a question, add some documentation.
 
 ## Commands
 
@@ -494,7 +493,7 @@ speed up things, but for Emissary it is unlikely to speed up much.
 ## Running Emissary
 
 There is one bash script in Emissary that runs everything.  It is in the top level Emissary directory.
-This script setups up a few environment variables and Java system properties.  It also sets up the 
+This script sets up a few environment variables and Java system properties.  It also sets up the 
 classpath in a couple of ways.  The script then runs the [emissary.Emissary](src/main/java/emissary/Emissary.java) class
 which has several [JCommander](http://jcommander.org/) commands available to handle different functions.
 

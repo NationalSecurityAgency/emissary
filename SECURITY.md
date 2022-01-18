@@ -8,7 +8,7 @@ will be addressed with an updated minor or patch version.
 
 ## Reporting a Vulnerability
 
-Please report any security issues to EmissarySupport@evoforge.org.
+Please report any security issues to EmissarySupport@uwe.nsa.gov.
 
 We will make every effort to address any vulnerabilities discovered and 
 responsibly disclosed in a timely fashion.

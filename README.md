@@ -97,7 +97,7 @@ See the *help -c <commandName>* for each command to get more info.
 #### What
 
 This command will use the configured engines to identify the file.  Emissary currently only comes with the 
-SizeIdPlace, so the id will TINY or SMALL etc.  See that class for more info.  The *-i or --input* argument
+SizeIdPlace, so the id will be TINY or SMALL etc.  See that class for more info.  The *-i or --input* argument
 is required as well as *-b*.  Here is how to run the command
 
 ```
@@ -123,7 +123,7 @@ which is emissary and emissary123.
 
 The default PickUpPlace is configured to read files from _target/data/InputData_.  If you copy
 files into that directory, you will see Emissary process them.  Keep in mind, only toUpper and toLower are
-configured, so the output will be to interesting.
+configured, so the output will not be too interesting.
 
 #### Agents (Standalone)
 
@@ -228,7 +228,7 @@ information.  Run it like so:
 
 #### Pool (Cluster)
 
-Pool in clustered mode also does the same pool in standalone.  It starts at the node (locahost:9001) by default
+Pool in clustered mode also does the same as pool in standalone.  It starts at the node (locahost:9001) by default
 then goes to all the nodes it knows about and aggregates a collapsed view of the cluster.  Run it with
 
 ```
@@ -237,7 +237,7 @@ then goes to all the nodes it knows about and aggregates a collapsed view of the
 
 #### Topology (Clustered)
 
-The topology talks to the configured node (localhost:8001 by default) and talks to every it knows about.
+The topology talks to the configured node (localhost:8001 by default) and talks to every node it knows about.
 The response is what all those nodes know about, so you can build up a network topology of your cluster.
 Run it with 
 
@@ -247,10 +247,10 @@ Run it with
 
 #### Running server with SSL
 
-The keystore and keystore password are in the emissary.client.EmissaryClient-SSL.cfg file.  Included and configured
-by default is a sample keystore you can use for testing this functionality -- it is not recommended using in 
-production environments.  To use your own keystore, change configuration values in the 
-emissary.client.EmissaryClient-SSL.cfg file.
+The keystore and keystore password are in the [emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) 
+file.  Included and configured by default is a sample keystore you can use for testing this functionality. We do not 
+recommend using the sample keystorein production environments.  To use your own keystore, change configuration values in the
+[emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) file.
 
 Standalone
 
@@ -270,7 +270,7 @@ mkdir ~/Desktop/feed1
 
 ### General Questions
 
-If you have any questions or concerns about this project, you can contact us at: EmissarySupport@evoforge.org
+If you have any questions or concerns about this project, you can contact us at: EmissarySupport@uwe.nsa.gov
 
 ### Security Questions
 
