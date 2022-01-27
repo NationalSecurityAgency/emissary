@@ -6,7 +6,6 @@ Table of Contents
 * [Introduction](#introduction)
 * [Minimum Requirements](#minimum-requirements)
 * [Getting Started](#getting-started)
-* [Docker](#docker)
 * [Contact Us](#contact-us)
 
 
@@ -25,7 +24,9 @@ classes that extend [emissary.place.ServiceProviderPlace](src/main/java/emissary
 work on [emissary.core.IBaseDataObject](src/main/java/emissary/core/IBaseDataObject.java) payloads.
 
 A variety of things can be done and the workflow is managed in
-stages, i.e. [STUDY](#study), [ID](#id), [COORDINATE](#coordinate), [TRANSFORM](#transform), [ANALYZE](#analyze), [IO](#io), [REVIEW](#review).
+stages, e.g. [STUDY](DEVELOPING.md#study), [ID](DEVELOPING.md#id), [COORDINATE](DEVELOPING.md#coordinate), 
+[TRANSFORM](DEVELOPING.md#transform), [ANALYZE](DEVELOPING.md#analyze), [IO](DEVELOPING.md#io), 
+[REVIEW](DEVELOPING.md#review).
 
 The classes responsible for directing the workflow are the
 [emissary.core.MobileAgent](src/main/java/emissary/core/MobileAgent.java) and classes derived from it, which manage
@@ -127,7 +128,7 @@ configured, so the output will not be too interesting.
 
 #### Agents (Standalone)
 
-The agents command shows you the number of MobileAgents for the configured host and what those
+The agents command shows the number of MobileAgents for the configured host and what those
 agents are doing.  By default, the port is 9001, but you can use *-p or --port* to change that.  
 Assuming you are running on 8001 from the server command above, try:
 
@@ -137,7 +138,7 @@ Assuming you are running on 8001 from the server command above, try:
 
 #### Pool (Standalone)
 
-Pool is a collapsed view of agents for a node.  It too defaults to port 9001.  To run for the 
+Pool is a collapsed view of agents for a node.  It, too, defaults to port 9001.  To run for the 
 standalone server started above run
 
 ```
@@ -183,7 +184,7 @@ If you need to pass flags to the main method, use *--* to stop parsing flags and
 
 Emissary is fun in standalone, but running cluster is more appropriate for real work.  The way to run clustered
 is similar to the standalone, but you need to *-m cluster* to tell the node to connect to other nodes.  In
-clustered mode Emissary will also startup the PickUpClient instead of the PickUpPlace, so you will need to
+clustered mode Emissary will also start up the PickUpClient instead of the PickUpPlace, so you will need to
 start a feeder.
 
 Look at the target/config/peers.cfg to see the rendezvous peers.  In this case, there are 3.  Nodes running
@@ -204,8 +205,8 @@ hostname with *-h*.
 #### Feed (Cluster)
 
 With nodes started on port 8001 and 9001, we need to start the feeder.  The feed command uses port 7001 by default,
-but we need to setup a directory that the feeder will read from.  Files dropped into that directory will be available 
-for worker nodes to take and the work should be distributed amongst the cluster.  Let's startup the feed with
+but we need to set up a directory that the feeder will read from.  Files dropped into that directory will be available 
+for worker nodes to take and the work should be distributed amongst the cluster.  Start up the feed with
 
 ```
 mkdir ~/Desktop/feed1
@@ -220,7 +221,7 @@ take a minute for them to start processing
 
 Agents in clustered mode again shows details about the mobileAgents.  It starts at with the node you 
 configure (localhost:9001 by default), then calls out to all nodes it knows about and gets the same 
-information.  Run it like so:
+information.  Run it with:
 
 ```
 ./emissary agents --cluster
@@ -249,7 +250,7 @@ Run it with
 
 The keystore and keystore password are in the [emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) 
 file.  Included and configured by default is a sample keystore you can use for testing this functionality. We do not 
-recommend using the sample keystorein production environments.  To use your own keystore, change configuration values in the
+recommend using the sample keystore in production environments.  To use your own keystore, change configuration values in the
 [emissary.client.EmissaryClient-SSL.cfg](src/main/config/emissary.client.EmissaryClient-SSL.cfg) file.
 
 Standalone

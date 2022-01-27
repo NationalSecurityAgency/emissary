@@ -28,7 +28,7 @@ Emissary is laid out in the following package structure:
 * **jni** - hooks for running JNI
 * **kff** - "Known File Filter" - mean to hook in checking hashes against databases of hashes
 * **log** - various add-ons to increased logging functionality
-* **output** - code relating to tasks of writing and manipulating output
+* **output** - code relating to task of writing and manipulating output
 * **parser** - basic routines for providing parsing capability
 * **pickup** - code for picking inputs
 * **place** - various basic Places, including wrappers around other programming languages and execs
@@ -41,8 +41,11 @@ Emissary is laid out in the following package structure:
 
 ### Startup
 
-There are two ways to run Emissary - through a "standalone" mode where a node runs in isolation and
-"cluster" where nodes connect and form P2P network.  All startup goes through the [emissary.Emissary](src/main/java/emissary/Emissary.java)
+There are two ways to run Emissary -
+* **standalone mode** - node runs in isolation 
+* **cluster mode** - nodes connect and form P2P network
+
+All startup goes through the [emissary.Emissary](src/main/java/emissary/Emissary.java)
 class.
 
 ### Base Data Object
@@ -52,8 +55,8 @@ Data is sessionized and passed through Emissary in the form of a [BaseDataObject
 ### Processing Flow
 
 There are various adapters to abstract how data is picked up by Emissary. Ultimately the data is received in PickUpPlace
-and is broken out into BaseDataObject sessions.  PickUpPlace then pulls a MobileAgent from the thread pool and hands off
-the session for processing in [assignToPooledAgent()](src/main/java/emissary/pickup/PickUpPlace.java).
+and is broken out into BaseDataObject sessions.  [PickUpPlace](src/main/java/emissary/pickup/PickUpPlace.java) then pulls 
+a MobileAgent from the thread pool and hands off the session for processing in _assignToPooledAgent_.
 
 ### Processing Routing
 
@@ -63,11 +66,11 @@ There are two types of MobileAgent:
 * [MobileAgent](src/main/java/emissary/core/MobileAgent.java) - Used for processing a single payload
 * [HDMobileAgent](src/main/java/emissary/core/HDMobileAgent.java) - Used for processing a bundle of payloads
 
-Processing starts when PickUpPlace's assignToPooledAgent() calls [agent.go(payload, startingLocation)](src/main/java/emissary/pickup/PickUpPlace.java)
+Processing starts when [PickUpPlace's](src/main/java/emissary/pickup/PickUpPlace.java) assignToPooledAgent() calls _agent.go(payload, startingLocation)_
 
-The MobileAgent processing loop is handled in [agentControl()](src/main/java/emissary/core/MobileAgent.java)
+The [MobileAgent](src/main/java/emissary/core/MobileAgent.java) processing loop is handled in _agentControl()_
 
-To identify which ServiceProviderPlace the MobileAgent will visit next, it calls [getNextKey()](src/main/java/emissary/core/MobileAgent.java)
+To identify which [ServiceProviderPlace](src/main/java/emissary/place/ServiceProviderPlace.java) the [MobileAgent](src/main/java/emissary/core/MobileAgent.java) will visit next, it calls _getNextKey()_
 
 ### Workflow
 
@@ -102,14 +105,14 @@ This stage is designed to make no modifications to the data itself but can be us
 
 #### Id
 
-The Id phase of the workflow is for identification of data. Service places operating in this phase
+Id phase of the workflow is for identification of data. Service places operating in this phase
 are expected to modify the currentForm and fileType of the payload. They are expected to not change
 the payload bytes of the data or extract any other metadata, unwrap child payload objects, or extract
 metadata.
 
 #### Coordinate
 
-The coordinate phase of the workflow is a natural fit for the emissary.place.CoordinationPlace
+Coordinate phase of the workflow is a natural fit for the emissary.place.CoordinationPlace
 which is designed to wrap any number of otherwise instantiated processing places and lock down
 the workflow among them without regard to cost. So that we don't have to create and remember
 an artificially low cost for the CoordinatePlace, setting into this phase of the work flow causes
@@ -122,7 +125,7 @@ where that could happen.
 
 #### Transform
 
-The Transform phase of the workflow is expected to modify the bytes of the payload, set the current form to something
+Transform phase of the workflow is expected to modify the bytes of the payload, set the current form to something
 new when appropriate, extract nested child payload objects, record metadata. After a Transform phase service place the
 workflow engine will go back to the ID phase and start evaluating for places that are interested in the currentForm.
 
@@ -133,7 +136,7 @@ to the ID phase of the workflow, things must continue forward in the workflow st
 
 #### Analyze
 
-The analyze phase is designed to collect metadata and add value in ways that do not affect the
+Analyze phase is designed to collect metadata and add value in ways that do not affect the
 currentForm, fileType or bytes of the payload. In future versions Analyze places that apply
 may be done in parallel.
 
@@ -178,7 +181,8 @@ out by the [emissary.parser.ParserFactory](src/main/java/emissary/parser/ParserF
 [emissary.parser.DataIdentifier](src/main/java/emissary/parser/DataIdentifier.java) as the
 engine to perform the identification. The engine is configured by name and can be replaced
 by anything that meets the required interface. The name of the format identified should
-have parsers that meet the SessionParser interface configured into the factory.
+have parsers that meet the [SessionParser](src/main/java/emissary/parser/SessionParser.java) interface 
+configured into the factory.
 
 Once the container is identified, items are parsed out of it, built into IBaseDataObject instances
 by the SessionParser appropriate for that data type, and handed over to MobileAgent instances
@@ -421,10 +425,7 @@ Then open target/site/jacoco/index.html in your browser to see code coverage.
 The *install* task runs after *verify* and copies any included
 artifacts made in the *package* phase to your local Maven repo.  This
 repository is usually ~/.m2/repository unless you set to be somewhere
-else.  See the [settings.xml.sample](settings.xml.sample) file for
-details about moving that off.  It is useful, for example, when your
-home directory is slow.  You can move your Maven repo to a faster
-drive.
+else.
 
 Run the *install* task with
 
@@ -517,8 +518,8 @@ see the *emissary* but no pom, so it will load class from the lib directory
 
 ### Logging
 
-Logging is handled by [logback](Logback Home).  By default, the file logback.xml in the \<configDir\> will be
-used.  You can point to another file with the *--logbackConfig* argument.  Feel free to modify the file
+Logging is handled by [logback](http://https://logback.qos.ch/).  By default, the file logback.xml in the \<configDir\> 
+will be used.  You can point to another file with the *--logbackConfig* argument.  Feel free to modify the file
 in target/config if you want different logging.  The logback.xml is configured to only log to the console
 currently.
 
@@ -552,7 +553,7 @@ you will see all the running threads and what code they are currently executing.
   
 ### Debugging
 
-The _emissary_ script allows you to remote debug any command.  Simply use `DEBUG=true` before the command and it will 
+The _emissary_ script allows you to remote debug any command.  Simply use `DEBUG=true` before the command, and it will 
 wait for a remote debugger to attach at port 8000.  If you want to change that port, use `DEBUG_PORT` instead.  
 For example:
 ```
