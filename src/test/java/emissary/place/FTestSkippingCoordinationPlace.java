@@ -4,20 +4,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.place.sample.ToLowerPlace;
 import emissary.test.core.FunctionalTest;
 import emissary.util.io.ResourceReader;
+import org.apache.commons.lang.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +38,9 @@ class FTestSkippingCoordinationPlace extends FunctionalTest {
         InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
         place = new CoordinationSkipperPlace(configStream);
         config = ConfigUtil.getConfigInfo(new ResourceReader().getConfigDataAsStream(this));
+
+        Namespace.bind("ResourceWatcher", mock(ResourceWatcher.class));
+        Namespace.bind(Thread.currentThread().getName(), mock(MobileAgent.class));
     }
 
     @Override
@@ -43,8 +50,9 @@ class FTestSkippingCoordinationPlace extends FunctionalTest {
     }
 
     @Test
-    void testRequiredPlaceCreation() throws Exception {
-        for (String key : config.findEntries("SERVICE_COORDINATION")) {
+    public void testRequiredPlaceCreation() throws Exception {
+        for (String key : config.findEntries("SERVICE_COORDINATION").stream().map(s -> StringUtils.substringBefore(s, ":"))
+                .collect(Collectors.toList())) {
             assertNotNull(Namespace.lookup(key)); // will throw exception if not present
         }
     }

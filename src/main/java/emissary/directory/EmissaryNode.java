@@ -124,7 +124,7 @@ public class EmissaryNode {
      * Get the value as a url
      */
     public String asUrlKey() {
-        return "http://" + getNodeName() + ":" + getNodePort() + "/";
+        return getNodeScheme() + "://" + getNodeName() + ":" + getNodePort() + "/";
     }
 
     /**

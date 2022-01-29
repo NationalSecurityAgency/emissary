@@ -1,12 +1,10 @@
 package emissary.admin;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.Factory;
 import emissary.core.Namespace;
@@ -24,20 +22,6 @@ import org.slf4j.LoggerFactory;
  */
 public class PlaceStarter {
     private static final Logger logger = LoggerFactory.getLogger(PlaceStarter.class);
-
-    private static Configurator classConf = null;
-
-    protected static final String defaultClassName = "emissary.place.sample.DevNullPlace";
-
-    static {
-        try {
-            classConf = ConfigUtil.getMasterClassNames();
-        } catch (IOException | EmissaryException iox) {
-            logger.error("Missing MasterClassNames.cfg: all places will become " + defaultClassName
-                    + " which is probably not what you want. Config is now " + System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY), iox);
-            System.exit(1);
-        }
-    }
 
     /**
      * Create a place using File based config
@@ -169,21 +153,6 @@ public class PlaceStarter {
             // empty catch block
         }
         return null;
-    }
-
-    public static String getClassString(final String theLocation) {
-        final String thePlaceName = Startup.placeName(theLocation);
-        if (thePlaceName == null || thePlaceName.length() == 0) {
-            logger.error("Illegal location specified " + theLocation + ", has no place name");
-        }
-        final List<String> classStringList = classConf.findEntries(thePlaceName);
-        if (classStringList.size() < 1) {
-            logger.error("Need a CLASS config entry for " + thePlaceName + " check entry in emissary.admin.MasterClassNames.cfg, using default "
-                    + defaultClassName + " which is probably not what you want.");
-            return defaultClassName;
-        }
-        final String out = classStringList.get(0);
-        return out;
     }
 
     /** This class is not meant to be instantiated. */

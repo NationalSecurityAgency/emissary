@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
-import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
@@ -41,20 +41,20 @@ public class Startup {
     protected Configurator hostsConfig = null;
 
     // Successfully started directories
-    protected final Map<String, String> localDirectories = new ConcurrentHashMap<String, String>();
+    protected final Map<String, String> localDirectories = new ConcurrentHashMap<>();
 
     // Failed directories
-    protected final Map<String, String> failedLocalDirectories = new ConcurrentHashMap<String, String>();
+    protected final Map<String, String> failedLocalDirectories = new ConcurrentHashMap<>();
 
     // Collection of the places as they finish coming up
-    protected final Map<String, String> places = new ConcurrentHashMap<String, String>();
+    protected final Map<String, String> places = new ConcurrentHashMap<>();
 
     // Collection of places that are being started
-    protected final Set<String> placesToStart = ConcurrentHashMap.newKeySet();
+    protected final Set<PlaceEntry> placesToStart = ConcurrentHashMap.newKeySet();
 
     // sorted lists of the place types, grouped by hostname
-    protected final Map<String, List<String>> placeLists = new ConcurrentHashMap<String, List<String>>();
-    protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<String, List<String>>();
+    protected final Map<String, List<PlaceEntry>> placeLists = new ConcurrentHashMap<>();
+    protected final Map<String, List<PlaceEntry>> pickupLists = new ConcurrentHashMap<>();
 
     /**
      * n return the full DNS name and port without the protocol part
@@ -199,7 +199,9 @@ public class Startup {
         //
         // Setup the rest of the Places except no pickups
         //
-        sortPlaces(this.hostsConfig.findEntries("PLACE"));
+        sortPlaces(this.hostsConfig.findEntries("PLACE")
+                .stream().map(s -> s.split(":"))
+                .collect(Collectors.toMap(ld -> ld[0], ld -> ld[1])));
 
         logger.info("Ready to start {}  places and {} PickUp places.", hashListSize(this.placeLists), hashListSize(this.pickupLists));
 
@@ -231,10 +233,10 @@ public class Startup {
 
     }
 
-    void startMapOfPlaces(final Map<String, List<String>> m) {
+    void startMapOfPlaces(final Map<String, List<PlaceEntry>> entries) {
 
-        if (hashListSize(m) > 0) {
-            for (final List<String> placeList : m.values()) {
+        if (hashListSize(entries) > 0) {
+            for (final List<PlaceEntry> placeList : entries.values()) {
                 final boolean status = placeSetup(directoryAction, this.localDirectories, this.places, placeList);
 
                 if (!status) {
@@ -245,16 +247,16 @@ public class Startup {
 
         }
 
-        logger.info("done with map of " + hashListSize(m) + " places");
+        logger.info("done with map of {} places", hashListSize(entries));
     }
 
     /**
      * Count all entries in lists of a map
      */
-    private int hashListSize(final Map<String, List<String>> m) {
+    private int hashListSize(final Map<String, List<PlaceEntry>> m) {
         int total = 0;
         if (m != null) {
-            for (final List<String> l : m.values()) {
+            for (final List<PlaceEntry> l : m.values()) {
                 if (l != null) {
                     total += l.size();
                 }
@@ -265,18 +267,24 @@ public class Startup {
 
     protected boolean localDirectorySetup(final Map<String, String> localDirectoriesArg) {
 
-        final List<String> hostParameters = this.hostsConfig.findEntries("LOCAL_DIRECTORY");
+        final Map<String, String> localDirEntries =
+                this.hostsConfig.findEntries("LOCAL_DIRECTORY").stream()
+                        .map(s -> s.split(":"))
+                        .collect(Collectors.toMap(ld -> ld[0], ld -> ld[1]));
 
         final long start = System.currentTimeMillis();
         final Map<String, String> dirStarts = new HashMap<>();
-        for (final String thePlaceLocation : hostParameters) {
-
+        final String nodeUrl = node.asUrlKey();
+        for (final Map.Entry<String, String> localDirMap : localDirEntries.entrySet()) {
+            String placeName = localDirMap.getKey();
+            String thePlaceLocation = nodeUrl + placeName;
             final String host = placeHost(thePlaceLocation);
 
-            if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
+            if (KeyManipulator.isLocalTo(thePlaceLocation,
+                    this.node.getNodeScheme() + "://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
                 logger.info("Doing local startup for directory {} ", thePlaceLocation);
-                final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, (InputStream) null, thePlaceClassStr, (String) null);
+                final String thePlaceClassStr = localDirMap.getValue();
+                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null);
                 if (p != null) {
                     dirStarts.put(host, thePlaceLocation);
                     localDirectoriesArg.put(host, p.toString());
@@ -316,76 +324,73 @@ public class Startup {
      * the same host:port!
      */
     protected boolean placeSetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg, final Map<String, String> placesArg,
-            final List<String> hostParameters) {
+            final List<PlaceEntry> placeEntries) {
 
         // Track how many places we are trying to start
-        this.placesToStart.addAll(hostParameters);
+        this.placesToStart.addAll(placeEntries);
 
-        final Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        final Thread t = new Thread(() -> {
 
-                final String thePlaceHost = placeHost(hostParameters.get(0));
+            final String thePlaceHost = placeHost(placeEntries.get(0).getHost());
 
-                final String localDirectory = localDirectoriesArg.get(thePlaceHost);
+            final String localDirectory = localDirectoriesArg.get(thePlaceHost);
 
-                if (localDirectory == null) {
-                    Startup.this.placesToStart.removeAll(hostParameters);
-                    if (Startup.this.failedLocalDirectories.get(thePlaceHost) != null) {
-                        logger.warn("Skipping {} due to previously failed directory", thePlaceHost);
-                    } else {
-                        logger.warn("Skipping {} : local Directory not found", thePlaceHost);
-                    }
+            if (localDirectory == null) {
+                placeEntries.forEach(Startup.this.placesToStart::remove);
+                if (Startup.this.failedLocalDirectories.get(thePlaceHost) != null) {
+                    logger.warn("Skipping {} due to previously failed directory", thePlaceHost);
+                } else {
+                    logger.warn("Skipping {} : local Directory not found", thePlaceHost);
+                }
+                return;
+            }
+
+            if (directoryActionArg != DIRECTORYSTART && directoryActionArg != DIRECTORYADD) {
+                placeEntries.forEach(Startup.this.placesToStart::remove);
+                return;
+            }
+
+            logger.info("Using localDir={} to create {} places on {}", localDirectory, placeEntries.size(), thePlaceHost);
+
+            // Create a stream of places that can be configured to start in parallel
+            boolean parallelPlaceStartup = hostsConfig.findBooleanEntry(PARALLEL_PLACE_STARTUP_CONFIG, false);
+            Stream<PlaceEntry> placeEntryStream = StreamSupport.stream(placeEntries.spliterator(), parallelPlaceStartup);
+            logger.info("Parallel place startup: {}", placeEntryStream.isParallel());
+
+            // Start everything in hostParameters
+            // (PLACE lines from cfg file for a given host
+            placeEntryStream.forEach(placeEntry -> {
+
+                // Get the class name and Class object for what we want to make
+                final String thePlaceClassString = placeEntry.getClassName();
+                if (thePlaceClassString == null) {
+                    logger.warn("Skipping {}, no class string", placeEntry.getLocation());
+                    Startup.this.placesToStart.remove(placeEntry);
                     return;
                 }
-
-                if (directoryActionArg != DIRECTORYSTART && directoryActionArg != DIRECTORYADD) {
-                    Startup.this.placesToStart.removeAll(hostParameters);
-                    return;
-                }
-
-                logger.info("Using localDir={} to create {} places on {}", localDirectory, hostParameters.size(), thePlaceHost);
-
-                // Create a stream of places that can be configured to start in parallel
-                boolean parallelPlaceStartup = hostsConfig.findBooleanEntry(PARALLEL_PLACE_STARTUP_CONFIG, false);
-                Stream<String> hostParametersStream = StreamSupport.stream(hostParameters.spliterator(), parallelPlaceStartup);
-                logger.info("Parallel place startup: {}", hostParametersStream.isParallel());
-
-                // Start everything in hostParameters
-                // (PLACE lines from cfg file for a given host
-                hostParametersStream.forEach(thePlaceLocation -> {
-                    placeName(thePlaceLocation);
-
-                    // Get the class name and Class object for what we want to make
-                    final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);
-                    if (thePlaceClassString == null) {
-                        logger.warn("Skipping {}, no class string", thePlaceLocation);
-                        Startup.this.placesToStart.remove(thePlaceLocation);
+                logger.debug("Starting place {}", placeEntry);
+                if (KeyManipulator.isLocalTo(placeEntry.getLocation(),
+                        String.format("%s://%s:%s/StartupEngine", Startup.this.node.getNodeScheme(), Startup.this.node.getNodeName(),
+                                Startup.this.node.getNodePort()))) {
+                    if (directoryActionArg == DIRECTORYADD && emissary.core.Namespace.exists(placeEntry.getLocation())) {
+                        logger.info("Local place already exists: {}", placeEntry.getLocation());
+                        Startup.this.placesToStart.remove(placeEntry);
                         return;
                     }
-                    logger.debug("Starting place {}", thePlaceLocation);
-                    if (KeyManipulator.isLocalTo(thePlaceLocation,
-                            String.format("http://{}:{}/StartupEngine", Startup.this.node.getNodeName(), Startup.this.node.getNodePort()))) {
-                        if (directoryActionArg == DIRECTORYADD && Namespace.exists(thePlaceLocation)) {
-                            logger.info("Local place already exists: {}", thePlaceLocation);
-                            Startup.this.placesToStart.remove(thePlaceLocation);
-                            return;
-                        }
 
-                        logger.info("Doing local startup on place {}", thePlaceLocation);
-                        final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                        final IServiceProviderPlace p =
-                                PlaceStarter.createPlace(thePlaceLocation, (InputStream) null, thePlaceClassStr, localDirectory);
-                        if (p != null) {
-                            placesArg.put(thePlaceLocation, thePlaceLocation);
-                        } else {
-                            Startup.this.placesToStart.remove(thePlaceLocation);
-                            logger.debug("Giving up on {}", thePlaceLocation);
-                        }
-
+                    logger.info("Doing local startup on place {}", placeEntry.getLocation());
+                    final String thePlaceClassStr = placeEntry.getClassName();
+                    final IServiceProviderPlace p =
+                            PlaceStarter.createPlace(placeEntry.getLocation(), null, thePlaceClassStr, localDirectory);
+                    if (p != null) {
+                        placesArg.put(placeEntry.getLocation(), placeEntry.getLocation());
+                    } else {
+                        Startup.this.placesToStart.remove(placeEntry);
+                        logger.debug("Giving up on {}", placeEntry.getLocation());
                     }
-                });
-            }
+
+                }
+            });
         });
 
         t.start();
@@ -452,35 +457,57 @@ public class Startup {
     /**
      * sort all the PLACE entries into either a processing place or a pickup place
      */
-    protected void sortPlaces(final List<String> allPlaces) {
+    protected void sortPlaces(Map<String, String> allPlaces) {
 
-        for (final String theLocation : allPlaces) {
-            Startup.placeName(theLocation);
-            final String className = PlaceStarter.getClassString(theLocation);
-            if (className == null) {
-                continue;
-            }
-
+        String nodeUrl = node.asUrlKey();
+        for (final Map.Entry<String, String> placesMap : allPlaces.entrySet()) {
+            String placeName = placesMap.getKey();
+            String className = placesMap.getValue();
+            String theLocation = nodeUrl + placeName;
+            final String host = placeHost(theLocation);
+            PlaceEntry placeEntry = new PlaceEntry(placeName, className, theLocation, host);
 
             try {
-                if (PickUpPlace.implementsPickUpPlace(Class.forName(className))) {
-                    sortPickupOrPlace(theLocation, this.pickupLists);
-                } else {
-                    sortPickupOrPlace(theLocation, this.placeLists);
-                }
+                getPlaceEntryMap(className)
+                        .computeIfAbsent(placeEntry.getHost(), k -> new ArrayList<>())
+                        .add(placeEntry);
             } catch (ClassNotFoundException e) {
                 logger.error("Could not create place {}", className, e);
             }
         }
     }
 
-    private void sortPickupOrPlace(String theLocation, Map<String, List<String>> placeList) {
-        final String host = placeHost(theLocation);
-        List<String> l = placeList.get(host);
-        if (l == null) {
-            l = new ArrayList<String>();
-            placeList.put(host, l);
+    private Map<String, List<PlaceEntry>> getPlaceEntryMap(String className) throws ClassNotFoundException {
+        return PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? this.pickupLists : this.placeLists;
+    }
+
+    static class PlaceEntry {
+        String name;
+        String className;
+        String location;
+        String host;
+
+        PlaceEntry(String name, String className, String location, String host) {
+            this.name = name;
+            this.className = className;
+            this.location = location;
+            this.host = host;
         }
-        l.add(theLocation);
+
+        public String getName() {
+            return name;
+        }
+
+        public String getClassName() {
+            return className;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public String getHost() {
+            return host;
+        }
     }
 }

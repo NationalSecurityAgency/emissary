@@ -2,7 +2,6 @@ package emissary.config;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
@@ -551,74 +549,6 @@ public class ConfigUtil {
         final String filename = (f.startsWith("/") || (isWindows && f.charAt(1) == ':')) ? f : getConfigFile(f);
 
         return new FileInputStream(filename);
-    }
-
-    /**
-     * Gets all MasterClassNames from configured file.
-     * <p>
-     * For a single entry in 'emissary.config.dir' or comma separated list of config directories, every file that starts
-     * with 'emissary.admin.MasterClassNames' will be combined into a Configurator. This means files like
-     * 'emissary.admin.MasterClassNames.cfg', 'emissary.admin.MasterClassNames-module1.cfg' and
-     * 'emissary.admin.MasterClassNames-whatever.cfg' will be used. The concept of flavoring no longer applies to the
-     * MasterClassNames.
-     *
-     * @return Configurator with all emissary.admin.MasterClassNames
-     * @throws IOException If there is some I/O problem.
-     */
-    public static Configurator getMasterClassNames() throws IOException, EmissaryException {
-        final List<File> masterClassNames = new ArrayList<>();
-        for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(final File dir, final String name) {
-                    return name.startsWith("emissary.admin.MasterClassNames") && name.endsWith(".cfg");
-                }
-            });
-            // sort the files, to put emissary.admin.MasterClassNames.cfg before emssary.admin.MasterClassNames-blah.cfg
-            Arrays.sort(files);
-            masterClassNames.addAll(Arrays.asList(files));
-        }
-        // check to make sure we have at least one
-        // TODO make a test for this
-        if (masterClassNames.size() < 1) {
-            throw new EmissaryException("No emissary.admin.MasterClassNames.cfg files found.  No places to start");
-        }
-
-        ServiceConfigGuide scg = null;
-        for (final File f : masterClassNames) {
-            if (!f.exists() || !f.canRead()) {
-                logger.warn("Could not read MasterClassNames from " + f.getAbsolutePath());
-            } else {
-                logger.debug("Reading MasterClassNames from {}", f.getAbsolutePath());
-            }
-            if (null != configFlavors) {
-                final String cfgFlavor = getFlavorsFromCfgFile(f);
-                if (configFlavors.equals(cfgFlavor) || Arrays.asList(configFlavors.split(",")).contains(cfgFlavor)) {
-                    logger.warn("Config file {} appeared to be flavored with {}.", f.getName(), cfgFlavor);
-                }
-            }
-            if (scg == null) { // first one
-                scg = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
-            } else {
-                final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
-                boolean noErrorsForFile = true;
-                for (final String key : scgToMerge.entryKeys()) {
-                    if (existingKeys.contains(key)) {
-                        logger.error("Tried to overwrite existing key from MasterClassNames:" + key + " in " + f.getAbsolutePath());
-                        noErrorsForFile = false;
-                        // System.exit(43); // this is swallowed in JettyServer in jetty 6
-                    }
-                }
-                // only merge if there are no errors
-                if (noErrorsForFile) {
-                    scg.merge(scgToMerge);
-                } else {
-                    configErrors = true;
-                }
-            }
-        }
-        return scg;
     }
 
     /**

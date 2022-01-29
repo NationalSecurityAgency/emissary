@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import emissary.admin.PlaceStarter;
 import emissary.core.IBaseDataObject;
@@ -26,7 +28,7 @@ import emissary.directory.KeyManipulator;
 public class CoordinationPlace extends ServiceProviderPlace {
 
     // The list of place keys we coordinate for
-    protected List<String> placeKeys;
+    protected Map<String, String> placeKeys;
 
     // The list of place references we coordinate for
     protected List<IServiceProviderPlace> placeRefs;
@@ -91,11 +93,14 @@ public class CoordinationPlace extends ServiceProviderPlace {
         outputForm = configG.findStringEntry("OUTPUT_FORM", null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);
 
-        placeKeys = configG.findEntries("SERVICE_COORDINATION");
+        placeKeys = configG.findEntries("SERVICE_COORDINATION")
+                .stream().map(s -> s.split(":"))
+                .collect(Collectors.toMap(ld -> ld[0], ld -> ld[1]));
+        ;
         logger.debug("We got {} entries to coordinate", placeKeys.size());
 
         placeRefs = new ArrayList<>();
-        for (String s : placeKeys) {
+        for (String s : placeKeys.keySet()) {
             try {
                 // See if the place already exists
                 Object ref = Namespace.lookup(s);
@@ -110,8 +115,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 try {
                     String skey = KeyManipulator.getServiceHostURL(keys.get(0)) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
-                    String sclz = PlaceStarter.getClassString(skey);
-                    IServiceProviderPlace p = PlaceStarter.createPlace(skey, (InputStream) null, sclz, dirPlace);
+                    String sclz = placeKeys.get(s);
+                    IServiceProviderPlace p = PlaceStarter.createPlace(skey, null, sclz, dirPlace);
                     if (p != null) {
                         placeRefs.add(p);
                         logger.debug("Place created: {}", p);
