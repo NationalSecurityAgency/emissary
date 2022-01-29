@@ -120,6 +120,7 @@ public class Emissary {
         } catch (UnmatchedArgumentException e) {
             dumpBanner();
             LOG.error("Undefined command: {}", Arrays.toString(args));
+            LOG.error("\t {}", e.getLocalizedMessage());
             HelpCommand.dumpCommands(cli);
             exit(1);
         } catch (Exception e) {
