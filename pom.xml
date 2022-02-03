@@ -74,7 +74,6 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
