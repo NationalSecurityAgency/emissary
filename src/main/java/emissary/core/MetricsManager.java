@@ -10,26 +10,22 @@ import java.util.concurrent.TimeUnit;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.JmxReporter;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricFilter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.codahale.metrics.Timer;
-import com.codahale.metrics.ganglia.GangliaReporter;
 import com.codahale.metrics.graphite.Graphite;
 import com.codahale.metrics.graphite.GraphiteReporter;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.codahale.metrics.health.jvm.ThreadDeadlockHealthCheck;
+import com.codahale.metrics.jmx.JmxReporter;
 import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.directory.EmissaryNode;
-import info.ganglia.gmetric4j.gmetric.GMetric;
-import info.ganglia.gmetric4j.gmetric.GMetric.UDPAddressingMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +108,6 @@ public class MetricsManager {
         initJmxReporter();
         initGraphiteReporter();
         initSlf4jReporter();
-        initGangliaReporter();
     }
 
     protected void initHealthChecks() {
@@ -203,46 +198,6 @@ public class MetricsManager {
 
         if (interval > 0) {
             graphiteReporter.start(interval, intervalUnit);
-        }
-    }
-
-    protected void initGangliaReporter() {
-        if (!this.conf.findBooleanEntry("GANGLIA_METRICS_ENABLED", false)) {
-            logger.debug("Ganglia Metrics are disabled");
-            return;
-        }
-
-        logger.debug("Ganglia Metrics are enabled");
-
-        final boolean useMulticast = this.conf.findBooleanEntry("GANGLIA_METRICS_MULTICAST", false);
-
-        final String gangliaAddress = this.conf.findStringEntry("GANGLIA_METRICS_ADDRESS", "239.2.11.71");
-        final int gangliaPort = this.conf.findIntEntry("GANGLIA_METRICS_PORT", 8649);
-
-        final int interval = this.conf.findIntEntry("GANGLIA_METRICS_INTERVAL", -1);
-
-        final TimeUnit intervalUnit = TimeUnit.valueOf(this.conf.findStringEntry("GANGLIA_METRICS_INTERVAL_UNIT", TimeUnit.MINUTES.name()));
-        final TimeUnit rateUnit = TimeUnit.valueOf(this.conf.findStringEntry("GANGLIA_RATE_UNIT", TimeUnit.SECONDS.name()));
-        final TimeUnit durationUnit = TimeUnit.valueOf(this.conf.findStringEntry("GANGLIA_DURATION_UNIT", TimeUnit.MILLISECONDS.name()));
-
-        logger.debug("Sending ganglia stats every " + interval + " " + intervalUnit);
-
-        try {
-            final GMetric ganglia;
-            if (useMulticast) {
-                ganglia = new GMetric(gangliaAddress, gangliaPort, UDPAddressingMode.MULTICAST, 1);
-            } else {
-                ganglia = new GMetric(gangliaAddress, gangliaPort, UDPAddressingMode.UNICAST, 1);
-            }
-            final GangliaReporter gangliaReporter =
-                    GangliaReporter.forRegistry(this.metrics).prefixedWith(System.getProperty(EmissaryNode.NODE_PORT_PROPERTY))
-                            .convertRatesTo(rateUnit).convertDurationsTo(durationUnit).build(ganglia);
-            logger.debug("using prefix " + System.getProperty(EmissaryNode.NODE_PORT_PROPERTY));
-            gangliaReporter.start(interval, intervalUnit);
-
-        } catch (IOException e) {
-            logger.error("Error creating GangliaReporter " + e);
-            return;
         }
     }
 }
