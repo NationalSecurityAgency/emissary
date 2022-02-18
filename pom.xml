@@ -63,7 +63,7 @@
     <dep.slf4j.version>1.7.36</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
-    <dep.tika.version>1.24</dep.tika.version>
+    <dep.tika.version>1.28.1</dep.tika.version>
     <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
