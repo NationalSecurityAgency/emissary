@@ -7,16 +7,15 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
 import emissary.config.ConfigUtil;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

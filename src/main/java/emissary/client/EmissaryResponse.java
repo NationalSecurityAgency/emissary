@@ -3,10 +3,9 @@ package emissary.client;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.ws.rs.core.MediaType;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import emissary.client.response.BaseEntity;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

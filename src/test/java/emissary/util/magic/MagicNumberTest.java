@@ -3,9 +3,8 @@ package emissary.util.magic;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.xml.bind.DatatypeConverter;
-
 import emissary.test.core.UnitTest;
+import jakarta.xml.bind.DatatypeConverter;
 import org.junit.Test;
 
 public class MagicNumberTest extends UnitTest {

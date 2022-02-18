@@ -10,14 +10,13 @@ import static org.mockito.Mockito.spy;
 
 import java.util.Arrays;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
 import emissary.core.Namespace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 import emissary.server.mvc.EndpointTestBase;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

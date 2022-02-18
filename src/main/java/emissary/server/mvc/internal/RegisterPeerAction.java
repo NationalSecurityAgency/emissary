@@ -6,14 +6,6 @@ import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryPlace;
@@ -22,6 +14,13 @@ import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
 import emissary.util.web.HtmlEscaper;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -43,35 +43,30 @@
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.15</dep.httpcore.version>
     <dep.jackson.version>2.13.1</dep.jackson.version>
-    <!-- jersey brings in 2.3.3; tika brings in 2.3.2; converge on latest -->
-    <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
-    <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
-    <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.72</dep.jcommander.version>
     <dep.jdom.version>2.0.6.1</dep.jdom.version>
-    <dep.jersey.version>2.35</dep.jersey.version>
-    <dep.jetty.version>9.4.44.v20210927</dep.jetty.version>
-    <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
-    <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
-    <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
-    <dep.junit.version>4.12</dep.junit.version>
-    <dep.logback.version>1.2.9</dep.logback.version>
+    <dep.jersey.version>3.0.4</dep.jersey.version>
+    <dep.jetty.version>11.0.8</dep.jetty.version>
+    <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.8.2</dep.junit-platform.version>
+    <dep.junit.version>4.13.2</dep.junit.version>
+    <dep.logback.version>1.3.0-alpha14</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M5</dep.maven-surefire-plugin.version>
     <dep.mockito-core.version>2.28.2</dep.mockito-core.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.rhino.version>1.7.14</dep.rhino.version>
-    <dep.slf4j.version>1.7.36</dep.slf4j.version>
+    <dep.slf4j.version>2.0.0-alpha6</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
-    <dep.tika.version>1.28.1</dep.tika.version>
+    <dep.tika.version>2.3.0</dep.tika.version>
     <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
     <dep.xmlbeans.version>5.0.3</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -129,6 +124,29 @@
         <artifactId>guava</artifactId>
         <version>${dep.guava.version}</version>
       </dependency>
+      <!-- These exclusions conflict from tika-parsers-standard-package -->
+      <dependency>
+        <groupId>com.healthmarketscience.jackcess</groupId>
+        <artifactId>jackcess</artifactId>
+        <version>4.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.healthmarketscience.jackcess</groupId>
+        <artifactId>jackcess-encrypt</artifactId>
+        <version>4.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
@@ -185,16 +203,6 @@
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
-        <groupId>jakarta.xml.bind</groupId>
-        <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>${dep.jakarta.xml.bind-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>${dep.javax.annotation-api.version}</version>
-      </dependency>
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${dep.junit.version}</version>
@@ -205,6 +213,7 @@
         <artifactId>spymemcached</artifactId>
         <version>${dep.spymemcached.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
@@ -234,23 +243,15 @@
         <groupId>org.apache.tika</groupId>
         <artifactId>tika-core</artifactId>
         <version>${dep.tika.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- causes conflict with Jersey, incompatible JAX-RS version -->
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.tika</groupId>
-        <artifactId>tika-parsers</artifactId>
+        <artifactId>tika-parsers-standard-package</artifactId>
         <version>${dep.tika.version}</version>
         <exclusions>
           <exclusion>
-            <!-- causes conflict with Jersey, incompatible JAX-RS version -->
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -258,12 +259,6 @@
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
         <version>${dep.xmlbeans.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -319,28 +314,11 @@
         <groupId>org.glassfish.jersey.ext</groupId>
         <artifactId>jersey-mvc</artifactId>
         <version>${dep.jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.ext</groupId>
         <artifactId>jersey-mvc-mustache</artifactId>
         <version>${dep.jersey.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- need to exclude servlet-api 2.4 from this -->
-            <groupId>com.github.spullara.mustache.java</groupId>
-            <artifactId>compiler</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.inject</groupId>
@@ -435,14 +413,20 @@
         <version>${dep.webjars.popper.version}</version>
       </dependency>
       <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.1.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jersey.test-framework.providers</groupId>
         <artifactId>jersey-test-framework-provider-jetty</artifactId>
         <version>${dep.jersey.version}</version>
         <scope>test</scope>
         <exclusions>
           <exclusion>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -528,6 +512,10 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>net.spy</groupId>
       <artifactId>spymemcached</artifactId>
     </dependency>
@@ -553,7 +541,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers</artifactId>
+      <artifactId>tika-parsers-standard-package</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>
@@ -911,7 +899,7 @@
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
           <!--2.17.0 requires Java 11+ -->
-          <version>2.16.0</version>
+          <version>2.17.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
