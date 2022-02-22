@@ -29,7 +29,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -133,7 +133,7 @@ public class KffMemcachedTest extends UnitTest {
 
         MemcachedClient localMockMemcachedClient = mock(MemcachedClient.class);
 
-        when(localMockMemcachedClient.asyncGet(Matchers.anyString())).thenAnswer(new Answer<TestGetFuture<Object>>() {
+        when(localMockMemcachedClient.asyncGet(ArgumentMatchers.anyString())).thenAnswer(new Answer<TestGetFuture<Object>>() {
             @Override
             public TestGetFuture<Object> answer(InvocationOnMock invocation) throws Throwable {
 
@@ -142,23 +142,24 @@ public class KffMemcachedTest extends UnitTest {
             }
         });
 
-        when(localMockMemcachedClient.set(Matchers.anyString(), Matchers.anyInt(), Matchers.anyObject())).thenAnswer(new Answer<Future<Boolean>>() {
-            @Override
-            public Future<Boolean> answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                String key = (String) args[0];
+        when(localMockMemcachedClient.set(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt(), ArgumentMatchers.any(Object.class)))
+                .thenAnswer(new Answer<Future<Boolean>>() {
+                    @Override
+                    public Future<Boolean> answer(InvocationOnMock invocation) throws Throwable {
+                        Object[] args = invocation.getArguments();
+                        String key = (String) args[0];
 
-                if (!key.equals(expectedKey)) {
-                    throw new Exception("Key :" + key + " not equal to expected key: " + expectedKey);
-                }
+                        if (!key.equals(expectedKey)) {
+                            throw new Exception("Key :" + key + " not equal to expected key: " + expectedKey);
+                        }
 
-                if (!isBinaryConnection) {
-                    checkForValidAscii(key);
-                }
+                        if (!isBinaryConnection) {
+                            checkForValidAscii(key);
+                        }
 
-                return new OperationFuture<Boolean>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
-            }
-        });
+                        return new OperationFuture<Boolean>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
+                    }
+                });
 
         return localMockMemcachedClient;
     }

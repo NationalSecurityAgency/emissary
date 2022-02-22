@@ -3,10 +3,10 @@ package emissary.place;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -105,9 +105,9 @@ public class UnixCommandPlaceTest extends UnitTest {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method
-        when(e.execute(eq(new String[] {"negative"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(-1);
-        when(e.execute(eq(new String[] {"zero"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(0);
-        when(e.execute(eq(new String[] {"positive"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(1);
+        when(e.execute(eq(new String[] {"negative"}), isNull(), isA(StringBuilder.class))).thenReturn(-1);
+        when(e.execute(eq(new String[] {"zero"}), isNull(), isA(StringBuilder.class))).thenReturn(0);
+        when(e.execute(eq(new String[] {"positive"}), isNull(), isA(StringBuilder.class))).thenReturn(1);
 
         place.setExecutrix(e);
 
