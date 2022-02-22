@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.beust.jcommander.IUsageFormatter;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -21,7 +22,6 @@ public class HelpCommand implements EmissaryCommand {
     @Parameter(arity = 1, description = "display usage for this subcommand ")
     public List<String> subcommands = new ArrayList<>();
 
-
     public List<String> getSubcommands() {
         return subcommands;
     }
@@ -38,7 +38,7 @@ public class HelpCommand implements EmissaryCommand {
     @Override
     public void run(JCommander jc) {
         setup();
-        if (subcommands.size() == 0) {
+        if (subcommands.isEmpty()) {
             dumpCommands(jc);
         } else if (subcommands.size() > 1) {
             LOG.error("You can only see help for 1 command at a time");
@@ -47,7 +47,11 @@ public class HelpCommand implements EmissaryCommand {
             String subcommand = getSubcommand();
             LOG.info("Detailed help for: " + subcommand);
             try {
-                jc.usage(subcommand);
+                // TODO: Once jCommander 1.83 or higher is released, swap back to jc#usage(subcommand)...
+                IUsageFormatter uf = jc.getUsageFormatter();
+                StringBuilder sb = new StringBuilder();
+                uf.usage(subcommand, sb);
+                jc.getConsole().println(sb.toString());
             } catch (ParameterException e) {
                 LOG.error("ERROR: invalid command name: " + subcommand);
                 dumpCommands(jc);
@@ -64,7 +68,7 @@ public class HelpCommand implements EmissaryCommand {
         System.out.println("Available commands:");
         for (Entry<String, JCommander> cmd : jc.getCommands().entrySet()) {
             String name = cmd.getKey();
-            String description = jc.getCommandDescription(name);
+            String description = jc.getUsageFormatter().getCommandDescription(name);
             LOG.info("\t" + String.format("%1$-15s", name) + " " + description);
         }
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");

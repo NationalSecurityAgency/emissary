@@ -43,7 +43,7 @@
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.15</dep.httpcore.version>
     <dep.jackson.version>2.13.1</dep.jackson.version>
-    <dep.jcommander.version>1.72</dep.jcommander.version>
+    <dep.jcommander.version>1.82</dep.jcommander.version>
     <dep.jdom.version>2.0.6.1</dep.jdom.version>
     <dep.jersey.version>3.0.4</dep.jersey.version>
     <dep.jetty.version>11.0.8</dep.jetty.version>
