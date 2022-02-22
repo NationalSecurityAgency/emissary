@@ -64,9 +64,10 @@
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
     <dep.xmlbeans.version>5.0.3</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
+    <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
+    <maven.compiler.target>${maven.compiler.release}</maven.compiler.target>
     <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -243,6 +244,12 @@
         <groupId>org.apache.tika</groupId>
         <artifactId>tika-core</artifactId>
         <version>${dep.tika.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.tika</groupId>
@@ -252,6 +259,10 @@
           <exclusion>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -740,7 +751,7 @@
                     <version>[${maven.min-version},)</version>
                   </requireMavenVersion>
                   <requireJavaVersion>
-                    <version>[1.8,)</version>
+                    <version>[1.11,)</version>
                   </requireJavaVersion>
                   <dependencyConvergence/>
                 </rules>
@@ -973,9 +984,6 @@
                       <limit implementation="org.jacoco.report.check.Limit">
                         <counter>COMPLEXITY</counter>
                         <value>COVEREDRATIO</value>
-                        <!--
-                        <minimum>0.37</minimum>
-                        -->
                       </limit>
                     </limits>
                   </rule>
@@ -1419,7 +1427,6 @@
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
               <fork>true</fork>
               <compilerArgs>
                 <!-- The compiler normally stops at 100 warnings, and
@@ -1498,7 +1505,7 @@
       </activation>
       <properties>
         <!-- enable compiler compliance when building in Eclipse -->
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
       </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
@@ -1621,7 +1628,7 @@
         <jdk>[9,)</jdk>
       </activation>
       <properties>
-        <maven.compiler.release>8</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
       </properties>
     </profile>
   </profiles>
