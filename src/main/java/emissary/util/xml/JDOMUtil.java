@@ -267,7 +267,7 @@ public class JDOMUtil {
         try {
             x = Integer.parseInt(val);
         } catch (NumberFormatException ex) {
-            logger.debug("Unable to parse {} as an integer", val);
+            logger.debug("Unable to parse String as an integer");
         }
         return x;
     }
@@ -281,7 +281,7 @@ public class JDOMUtil {
         try {
             x = Long.parseLong(val);
         } catch (NumberFormatException ex) {
-            logger.debug("Unable to parse {} as an long", val);
+            logger.debug("Unable to parse String as an long");
         }
         return x;
     }
