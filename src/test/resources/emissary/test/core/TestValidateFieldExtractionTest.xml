@@ -1,0 +1,16 @@
+<result>
+    <answers>
+    	<meta validateField="true">
+        	<name>CHECKSUM_MD5</name>
+        	<value>1;2;3;4;5</value>
+        </meta>
+        <meta matchMode="collection" seperator=";" validateField="true">
+        	<name>NAMESPACE</name>
+        	<value>1;2;3;4;5</value>
+        </meta>
+        <meta>
+        	<name>ValidateFieldFalse</name>
+        	<value>1;2;3;4;5</value>
+        </meta>
+    </answers>
+</result>

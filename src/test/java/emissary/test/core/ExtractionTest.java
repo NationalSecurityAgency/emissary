@@ -4,9 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +19,9 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
+import emissary.output.filter.DataFilter;
+import emissary.output.filter.JsonOutputFilter;
+import emissary.output.filter.XmlOutputFilter;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
@@ -52,6 +56,8 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected String resource;
+
+    protected ArrayList<String> filterList = new ArrayList<>();
 
     /**
      * Called by the Parameterized Runner
@@ -214,6 +220,26 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals("Broken status in " + tname, broke, payload.isBroken() ? "true" : "false");
         }
 
+        // Check for Filter to validate against and see if it exists
+        String filters = el.getChildTextTrim("filters");
+        if (filters != null && filters.length() > 0) {
+            String[] filterList;
+            String filterName;
+            if (filters.contains(",")) {
+                filterList = filters.split(",");
+                for (String currentFilter : filterList) {
+                    filterName = currentFilter.replace(" ", "");
+                    assertTrue("Filter " + filterName + " could not be found in emissary/output/filter or burrito/output/filters. " +
+                            "Verify filter exists and name is entered correctly in .xml.", findFilter(filterName));
+                }
+            } else {
+                filterName = filters;
+                assertTrue("Filter " + filterName + " could not be found in emissary/output/filter or burrito/output/filters. " +
+                        "Verify filter exists and name is entered correctly in .xml.", findFilter(filterName));
+
+            }
+        }
+
         // Check specified metadata
         for (Element meta : el.getChildren("meta")) {
             String key = meta.getChildTextTrim("name");
@@ -290,7 +316,20 @@ public abstract class ExtractionTest extends UnitTest {
         String key = meta.getChildTextTrim("name");
         String value = meta.getChildText("value");
         String matchMode = "equals";
+        String validateField = "false";
         Attribute mm = meta.getAttribute("matchMode");
+        Attribute vf = meta.getAttribute("validateField");
+
+        if (vf != null) {
+            validateField = vf.getValue();
+        }
+
+        // meta validateField must be set to true to validate against LogFilter
+        // this is currently set to false unless explicitly set to true in .xml
+        // see method validateFieldInLogFilter() below for more info
+        if (validateField.equals("true")) {
+            validateFieldInFilter(key, tname);
+        }
 
         if (value == null) {
             return; // checking the value is optional
@@ -328,6 +367,211 @@ public abstract class ExtractionTest extends UnitTest {
         } else {
             fail("Problematic matchMode specified for test '" + matchMode + "' on " + key + " in element " + meta.getName());
         }
+    }
+
+    /**
+     * Method to validate a meta key name against LogFilter.cfg fields/parameters. Currently, this is set to NOT RUN unless
+     * the meta field specifies it in the .xml file like:
+     *
+     * meta validateField="true"
+     *
+     * *IF RUNNING THROUGH BURRITO* Right now, it is only set to be able to find DataFilter, JsonOutputFilter, and
+     * XmlOutputFilter when looking for Emissary filters. If more filers are added, they will need to be added here and in
+     * findFilter(). This is due to the import of the class and the getResourceAsStream() necessary to grab Emissary filters
+     * in Burrito.
+     *
+     * @param key the current meta key name to validate against LogFilter
+     * @param tname the current test name
+     */
+    protected void validateFieldInFilter(String key, String tname) {
+        String resourceName;
+
+        // config properties to check
+        String blacklistField = "BLACKLIST_FIELD";
+        String extraParam = "EXTRA_PARAM";
+        String extraTldParam = "EXTRA_TLD_PARAM";
+        // config prefix properties to check
+        String extraPrefix = "EXTRA_PREFIX";
+        String extraTldPrefix = "EXTRA_TLD_PREFIX";
+        // prefix initialization
+        String prefix;
+
+        int lineCount = 1;
+
+        // check all files in filterList to validate field against
+        for (int i = 0; i < filterList.size(); i++) {
+            try {
+                resourceName = filterList.get(i);
+                // initialize variables
+                File filterFile;
+                InputStream emissaryStream = null;
+                InputStreamReader isr = null;
+                BufferedReader reader;
+                String fileName;
+                // Check to see if resourceName includes "InputStream"
+                if (!resourceName.contains("InputStream")) {
+                    // set resource to File and set BufferedReader to read this File
+                    filterFile = new File(resourceName);
+                    reader = new BufferedReader(new FileReader(filterFile));
+                } else {
+                    // set resource to matching class and filter stream, and set BufferedReader to read this InputStream
+                    resourceName = resourceName.replace("InputStream", "");
+                    if (resourceName.contains("DataFilter")) {
+                        emissaryStream = DataFilter.class.getResourceAsStream("DataFilter.cfg");
+                    } else if (resourceName.contains("JsonOutputFilter")) {
+                        emissaryStream = JsonOutputFilter.class.getResourceAsStream("JsonOutputFilter.cfg");
+                    } else if (resourceName.contains("XmlOutputFilter")) {
+                        emissaryStream = XmlOutputFilter.class.getResourceAsStream("XmlOutputFilter.cfg");
+                    } else {
+                        logger.warn("No InputStream will be found for " + resourceName + ". Make sure the Class and Resource are referenced in" +
+                                " ExtractionTest within validateFieldInFilter.");
+                    }
+                    assert emissaryStream != null;
+                    isr = new InputStreamReader(emissaryStream);
+                    reader = new BufferedReader(isr);
+                }
+                // Gets simplified fileName
+                fileName = Paths.get(resourceName).getFileName().toString();
+
+                // Run through current file with reader
+                while (reader.ready()) {
+                    String currentLine = reader.readLine();
+                    // if line is commented out, go to next line without check
+                    if (!currentLine.startsWith("#")) {
+                        // check if EXTRA_PARAM = "*" is defined
+                        // if yes, pass validation
+                        if (currentLine.equals("EXTRA_PARAM = \"*\"")) {
+                            logger.info("In " + fileName + ": EXTRA_PARAM = \"*\" on line " + lineCount + " validates \"" + key + "\".");
+                            reader.close();
+                            return;
+                        }
+                        // check if BLACKLIST_FIELD, EXTRA_PARAM, or EXTRA_TLD_PARAM = passed key (meta name)
+                        else if (currentLine.contains(blacklistField) || currentLine.contains(extraParam) || currentLine.contains(extraTldParam)) {
+                            if (currentLine.contains(key)) {
+                                logger.info(
+                                        "In " + fileName + ": Parameter \"" + key + "\" found on line " + lineCount + ". \"" + key
+                                                + "\" is validated.");
+                                reader.close();
+                                return;
+                            }
+                        }
+                        // check if a prefix is defined in either EXTRA_PREFIX or EXTRA_TLD_PREFIX
+                        // if prefix is defined and key has matching prefix, pass validation
+                        else if (currentLine.contains(extraPrefix) || currentLine.contains(extraTldPrefix)) {
+                            // cut string down to be just the prefix in quotations
+                            int preStart = currentLine.indexOf("\"") + 1;
+                            int preEnd = currentLine.length() - 1;
+                            prefix = currentLine.substring(preStart, preEnd);
+                            if (key.startsWith(prefix)) {
+                                logger.info("In " + fileName + ": Parameter Prefix \"" + prefix + "\" found on line " + lineCount + ". \"" + key
+                                        + "\" is validated.");
+                                reader.close();
+                                return;
+                            }
+                        }
+                    }
+                    lineCount++;
+                }
+                reader.close();
+                emissaryStream.close();
+                isr.close();
+                if ((i + 1) == filterList.size()) {
+                    logger.warn(key + " not found in " + fileName + ".");
+                } else {
+                    logger.warn(key + " not found in " + fileName + ". Moving to next file.");
+                }
+            } catch (Exception e) {
+                if ((i + 1) == filterList.size()) {
+                    logger.warn("Error while validating " + key + ": " + e);
+                } else {
+                    logger.warn("Error while validating " + key + ": " + e + ". Moving to next file.");
+                }
+            }
+        }
+        // if loops through all files and cannot find matching field/param for key, then validation fails
+        if (filterList.size() == 0) {
+            fail("No filters were passed to validate against from " + tname);
+        } else {
+            // Remove all added path info, just get filter name
+            ArrayList<String> simpleFilterList = new ArrayList<>();
+            for (String s : filterList) {
+                String cFilter = Paths.get(s).getFileName().toString().replace("InputStream", "");
+                simpleFilterList.add(cFilter);
+            }
+            fail(tname + " - Field \"" + key + "\" not found in Filter files: " + simpleFilterList);
+        }
+
+    }
+
+    /**
+     * Method that searches to see if filter exists in Emissary or Burrito filter folders.
+     * Validates filter exists, then adds it to filterList.
+     * If filter does not exist, returns false
+     * This causes an Assertion error as it should return true. Tells user to check filter in .xml.
+     *
+     * @param filterName
+     * @return
+     */
+    protected boolean findFilter(String filterName) {
+        boolean result = false;
+
+        String filter;
+        if (filterName.endsWith(".cfg")) {
+            filter = filterName;
+        } else {
+            filter = filterName + ".cfg";
+        }
+
+        // Base file paths for filters
+        File emissaryFilterFolder = new File("./src/main/resources/emissary/output/filter");
+        File burritoFilterFolder = new File("./src/main/resources/com/burrito/output/filters");
+
+        // These are the blacklist and whitelist .cfg. Not sure if needed here, but added in case
+        // String burritoTestFilters = "./core/src/test/resources/com/burrito/output/filters";
+
+        String filterPath;
+
+        // Check if emissaryFilterFolder exists, this will only be the case when run through Emissary, and will only accept
+        // Emissary filters
+        if (emissaryFilterFolder.exists() && (emissaryFilterFolder.list() != null)) {
+            String[] emissaryFilterList = emissaryFilterFolder.list();
+            for (String currentFile : emissaryFilterList) {
+                if (currentFile.equals(filter)) {
+                    filterPath = emissaryFilterFolder.getPath() + "/" + filter;
+                    filterList.add(filterPath);
+                    logger.info(filter + " exists in burrito/output/filters. Filter added to list to validate field against.");
+                    result = true;
+                }
+            }
+        }
+        // Check if burritoFilterFolder exists, this will only be the case when run through Burrito
+        else if (burritoFilterFolder.exists() && (burritoFilterFolder.list() != null)) {
+            String[] burritoFilterList = burritoFilterFolder.list();
+            // If filter passed through .xml is one of the Emissary existing filters, this is where it checks this
+            if (filter.equals("JsonOutputFilter.cfg") || filter.equals("DataFilter.cfg") || filter.equals("XmlOutputFilter.cfg")) {
+                // Set filterPath to be different from the Emissary path to specifiy that the InputStream is necessary
+                filterPath = "InputStream" + filter;
+                filterList.add(filterPath);
+                logger.info(filter + " will be read through InputStream (necessary in Burrito). Filter added to list to validate field against.");
+                result = true;
+            }
+            // This checks against explicitly Burrito filters
+            else {
+                for (String currentFile : burritoFilterList) {
+                    if (currentFile.equals(filter)) {
+                        filterPath = burritoFilterFolder.getPath() + "/" + filter;
+                        filterList.add(filterPath);
+                        logger.info(filter + " exists in burrito/output/filters. Filter added to list to validate field against.");
+                        result = true;
+                    }
+                }
+            }
+        }
+
+        if (!result)
+            logger.info(filter
+                    + " could not be found in emissary/output/filter or burrito/output/filters. Verify filter exists and name is entered correctly in .xml.");
+        return result;
     }
 
     protected void setupPayload(IBaseDataObject payload, Document doc) {
