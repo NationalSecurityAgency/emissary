@@ -35,7 +35,6 @@
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
     <dep.commons-io.version>2.8.0</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
-    <dep.commons-logging.version>1.2</dep.commons-logging.version>
     <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
     <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
@@ -153,11 +152,6 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${dep.commons-lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${dep.commons-logging.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
