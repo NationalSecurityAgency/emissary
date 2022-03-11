@@ -122,7 +122,6 @@ public class MagicNumber {
      * Tests the sample and if successful provides the description
      */
     public String describe(byte[] data) {
-        log.debug("COMPARING AGAINST: " + toString());
         String desc = describeSelf(data);
         if (desc == null)
             return null;
