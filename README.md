@@ -391,7 +391,7 @@ The autoformat profile is run unless you use '-DskipFormat'.  There is a java so
 uses a [special file](link here)
  to format Java source code and formatter to sort pom files.  The 2 formatter are attached
 to the *process-sources* lifecycle, which as you know from reading the lifecycles is run before *compile*.  So
-typically you do not need to run this separatelty.  But you could run the following to just format everything:
+typically you do not need to run this separately.  But you could run the following to just format everything:
 
 ```
 mvn clean process-sources
