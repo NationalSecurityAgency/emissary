@@ -123,17 +123,17 @@ public final class MagicNumberUtil {
             // make sure the magic file exists
             final File magicFile = new File(args[0]);
             if (!magicFile.exists()) {
-                log.info("Could not find the magic config file at: " + magicFile.getAbsolutePath());
+                log.info("Could not find the magic config file at: {}", magicFile.getAbsolutePath());
                 System.exit(0);
             }
             // make sure the target file can be found as well
             final File target = new File(args[1]);
             if (!target.exists()) {
-                log.info("Could not find the target file at: " + target.getAbsolutePath());
+                log.info("Could not find the target file at: {}", target.getAbsolutePath());
             }
 
             // load the magic numbers
-            log.info("LOAD MAGIC NUMBER LIST AT: " + args[0]);
+            log.info("LOAD MAGIC NUMBER LIST AT: {}", args[0]);
             util.load(new File(args[0]));
             log.info("FINISHED LOADING MAGIC NUMBER LIST");
 
@@ -165,10 +165,10 @@ public final class MagicNumberUtil {
      * @see #load(byte[])
      */
     public String describe(final byte[] data) {
-        log.debug("Checking against " + this.magicNumbers.size() + " magic items");
+        log.debug("Checking against {} magic items", this.magicNumbers.size());
         String description = null;
         for (final MagicNumber item : this.magicNumbers) {
-            log.debug("Checking magic item " + item);
+            log.debug("Checking magic item {}", item);
             description = item.describe(data);
             if (description != null && !description.isEmpty()) {
                 break;
