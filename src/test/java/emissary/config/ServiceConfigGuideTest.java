@@ -517,6 +517,58 @@ public class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
+    public void testImportFileWhenFileExists() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+        final byte[] importfile = new String("FOO = \"BAR\"\n").getBytes();
+
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            Executrix.writeDataToFile(importfile, impname);
+            new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // should not be reached due to IMPORT_FILE existing
+            fail("IMPORT_FILE not found.");
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+    }
+
+    @Test
+    public void testImportFileWhenFileDoesNotExist() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+
+        String result = "";
+        String importFileName = Paths.get(impname).getFileName().toString();
+
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
+            result = iox.getMessage();
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+
+        String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
+                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
+
+        assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
+    }
+
+    @Test
     public void testOptImportWhenOptionalFileExists() throws IOException {
         // Write the config bytes out to a temp file
         final String dir = System.getProperty("java.io.tmpdir");

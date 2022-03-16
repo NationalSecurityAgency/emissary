@@ -41,6 +41,41 @@ services, their cost and quality and keep the P2P network connected.
 - [Apache Maven 3.6+](http://maven.apache.org)
 
 ## Getting Started
+=======
+```
+git clean -dxf
+```
+
+#### Clean
+
+Remove everything under 'project.build.directory' which will be target from the command line
+
+```
+mvn clean
+```
+
+#### Format code
+
+The autoformat profile is run unless you use '-DskipFormat'.  There is a java source code formatter that
+uses a [special file](link here)
+ to format Java source code and formatter to sort pom files.  The 2 formatter are attached
+to the *process-sources* lifecycle, which as you know from reading the lifecycles is run before *compile*.  So
+typically you do not need to run this separately.  But you could run the following to just format everything:
+
+```
+mvn clean process-sources
+```
+
+TODO: fill this out when we have a resources jar
+
+#### Compile
+
+Will compile all Java code under the src/main directory.  Useful if you change something and want to run Emissary
+with the changes, but that is discussed in the section below about running.
+
+```
+mvn clean compile
+```
 
 Read through the [DEVELOPING.md](DEVELOPING.md) guide for information on installing required components, pulling the 
 source code, building and running Emissary.

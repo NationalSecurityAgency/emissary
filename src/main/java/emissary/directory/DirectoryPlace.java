@@ -73,12 +73,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     /** Emissary node configuration for network topology */
     protected EmissaryNode emissaryNode = null;
 
-    /** True if a JSAcceptFacet should be configured in */
-    protected boolean useJSAcceptFacet = true;
-
-    /** True if an ItineraryFacet should be configured in */
-    protected boolean useItineraryFacet = false;
-
     /**
      * Window of slop between asking for a zone and purging "stale" entries from the entry map. Since there is a window of
      * time when the remote directory might be spewing out addPlace calls while we are asking for the zone transfer we can't
@@ -211,8 +205,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * <ul>
      * <li>HEARTBEAT_DELAY_SECONDS, default is 30</li>
      * <li>HEARTBEAT_INTERVAL_SECONDS, default is 30</li>
-     * <li>USE_JS_ACCEPT_FACET, default is true</li>
-     * <li>USE_ITINERARY_FACET, default is false</li>
      * <li>HEARTBEAT_FAILURE_THRESHOLD, set transient failure count, default owned by HeartbeatManager</li>
      * <li>HEARTBEAT_PERMANENT_FAILURE_THRESHOLD, set permanent failure count, default owned by HeartbeatManager</li>
      * </ul>
@@ -236,10 +228,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             }
         }
 
-        // Read some config items
-        this.useJSAcceptFacet = configG.findBooleanEntry("USE_JS_ACCEPT_FACET", this.useJSAcceptFacet);
-        this.useItineraryFacet = configG.findBooleanEntry("USE_ITINERARY_FACET", this.useItineraryFacet);
-
         // Set up deferred stuff from ServiceProviderPlace
         // for directories only we are our own localDirPlace
         // and the key is our own key
@@ -248,22 +236,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         // Start an observer manager
         this.observerManager = new DirectoryObserverManager(myKey);
-
-        // Add any configured itinerary faces in a facet manager
-        // and add the itinerary facet to this object
-        if (this.useItineraryFacet) {
-            logger.debug("Turning on itinerary facet");
-            addFacet(new ItineraryFacet(configG));
-        }
-
-        // Add a Javascript acceptance execution facet
-        // Allows service providers to build an accept() function
-        // and provide it in javascript that will restrict
-        // things that would normally be routed to their service
-        if (this.useJSAcceptFacet) {
-            logger.debug("Turning on JSAccept facet");
-            addFacet(new JSAcceptFacet());
-        }
 
         // Configure my initial rendezvous peers
         configureNetworkTopology();
@@ -1117,33 +1089,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         }
 
-        // See if any configured Itinerary Facets want to comment on the
-        // selection that we have made the old fashioned way
-        try {
-            final ItineraryFacet facet = ItineraryFacet.of(this);
-            if (facet != null) {
-                facet.thinkOn(dataID, payload, keyList, entries);
-            }
-        } catch (Exception ex) {
-            logger.error("Cannot use itinerary facet for " + dataID, ex);
-        }
-
-        // See if any configured JSAccept Facets want to comment on
-        // this selection and possibly remove itinerary steps
-        try {
-            final JSAcceptFacet facet = JSAcceptFacet.of(this);
-            if (facet != null) {
-                final int beforeCount = keyList.size();
-                facet.accept(payload, keyList);
-                final int afterCount = keyList.size();
-                if (afterCount != beforeCount) {
-                    logger.debug("JSAcceptFacet removed " + (beforeCount - afterCount) + " itinerary steps");
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("Cannot use JSAccept facet for " + dataID, ex);
-        }
-
         return keyList;
     }
 
@@ -1519,53 +1464,5 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public boolean isShutdownInitiated() {
         return this.shutdownInitiated;
-    }
-
-    /**
-     * Add a Routing acceptor function for the specified directory entry
-     *
-     * @param de the directory entry to associate this function with
-     * @param script the javascript accept function
-     * @param isDefault is a default rule for SERVICE_NAME
-     * @return true if the function is added
-     */
-    @Override
-    public boolean addRoutingFunction(final DirectoryEntry de, final String script, final boolean isDefault) {
-        boolean added = false;
-        try {
-            final JSAcceptFacet facet = JSAcceptFacet.of(this);
-            if (facet != null) {
-                added = facet.add(de, script, isDefault);
-            }
-        } catch (Exception ignore) {
-            // empty catch block
-        }
-
-        return added;
-    }
-
-    /**
-     * Remove a routing acceptor function for the specified directory entry. If it had been read in from the config subsytem
-     * or the jar resources and it is still there, removing it will only be temporary as it will be reread from the same
-     * source the next time it is needed. In order to remove the effect of such a function you must add or replace the
-     * function in the configuration subsystem with a function definition that always returns true.
-     *
-     * @param de the directory entry's function to remove
-     * @param isDefault if true remove the default routing rule
-     * @return true if a function was removed
-     */
-    @Override
-    public boolean removeRoutingFunction(final DirectoryEntry de, final boolean isDefault) {
-        boolean removed = false;
-        try {
-            final JSAcceptFacet facet = JSAcceptFacet.of(this);
-            if (facet != null) {
-                removed = isDefault ? facet.removeDefault(de) : facet.remove(de);
-            }
-        } catch (Exception ignore) {
-            // empty catch block
-        }
-
-        return removed;
     }
 }
