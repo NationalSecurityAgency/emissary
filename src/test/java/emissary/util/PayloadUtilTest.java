@@ -23,7 +23,7 @@ import org.junit.Test;
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
-    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
+    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(";
     private static Set<Character> validFormChars = new HashSet<>();
 
     @BeforeClass
@@ -142,24 +142,24 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("stu");
 
         final String xml = PayloadUtil.toXmlString(d);
-        assertTrue("Xml serizliazation must include payload data", xml.indexOf("abc") > -1);
-        assertTrue("Xml serizliazation must include av data", xml.indexOf("def") > -1);
-        assertTrue("Xml serizliazation must include param data", xml.indexOf("ghi") > -1);
-        assertTrue("Xml serizliazation must include error data", xml.indexOf("jkl") > -1);
-        assertTrue("Xml serizliazation must include header data", xml.indexOf("mno") > -1);
-        assertTrue("Xml serizliazation must include footer data", xml.indexOf("pqr") > -1);
-        assertTrue("Xml serizliazation must include history data", xml.indexOf("stu") > -1);
+        assertTrue("Xml serialization must include payload data", xml.indexOf("abc") > -1);
+        assertTrue("Xml serialization must include av data", xml.indexOf("def") > -1);
+        assertTrue("Xml serialization must include param data", xml.indexOf("ghi") > -1);
+        assertTrue("Xml serialization must include error data", xml.indexOf("jkl") > -1);
+        assertTrue("Xml serialization must include header data", xml.indexOf("mno") > -1);
+        assertTrue("Xml serialization must include footer data", xml.indexOf("pqr") > -1);
+        assertTrue("Xml serialization must include history data", xml.indexOf("stu") > -1);
 
         final List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
         list.add(d);
         final String lxml = PayloadUtil.toXmlString(list);
-        assertTrue("Xml serizliazation must include payload data", lxml.indexOf("abc") > -1);
-        assertTrue("Xml serizliazation must include av data", lxml.indexOf("def") > -1);
-        assertTrue("Xml serizliazation must include param data", lxml.indexOf("ghi") > -1);
-        assertTrue("Xml serizliazation must include error data", lxml.indexOf("jkl") > -1);
-        assertTrue("Xml serizliazation must include header data", lxml.indexOf("mno") > -1);
-        assertTrue("Xml serizliazation must include footer data", lxml.indexOf("pqr") > -1);
-        assertTrue("Xml serizliazation must include history data", lxml.indexOf("stu") > -1);
+        assertTrue("Xml serialization must include payload data", lxml.indexOf("abc") > -1);
+        assertTrue("Xml serialization must include av data", lxml.indexOf("def") > -1);
+        assertTrue("Xml serialization must include param data", lxml.indexOf("ghi") > -1);
+        assertTrue("Xml serialization must include error data", lxml.indexOf("jkl") > -1);
+        assertTrue("Xml serialization must include header data", lxml.indexOf("mno") > -1);
+        assertTrue("Xml serialization must include footer data", lxml.indexOf("pqr") > -1);
+        assertTrue("Xml serialization must include history data", lxml.indexOf("stu") > -1);
     }
 
     @Test
@@ -170,6 +170,7 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue("Upper case alpha characters are not considered valid", PayloadUtil.isValidForm(alphaLow.toUpperCase()));
         assertTrue("Numeric characters are not considered valid", PayloadUtil.isValidForm("0123456789"));
         assertTrue("Dash and underscore aren't considered valid", PayloadUtil.isValidForm("-_"));
+        assertTrue("Parentheses aren't considered valid", PayloadUtil.isValidForm("formName-(suffixInParens)"));
         assertFalse("Dot isn't considered valid", PayloadUtil.isValidForm("."));
         assertFalse("Space isn't considered valid", PayloadUtil.isValidForm(" "));
 
@@ -183,7 +184,7 @@ public class PayloadUtilTest extends UnitTest {
         assertEquals("Unexpected number of valid characters.", validFormChars.size(), validChars);
 
         // Create a set with possible form characters for randomly generated cases
-        Set<Character> formChars = new HashSet<Character>(validFormChars);
+        Set<Character> formChars = new HashSet<>(validFormChars);
         // Add an invalid character to generate some false cases
         formChars.add('.');
 
@@ -199,7 +200,7 @@ public class PayloadUtilTest extends UnitTest {
                 word.append(formCharArray[rand.nextInt(formChars.size())]);
             }
             String form = word.toString();
-            assertEquals("Regex implementation and Set implementation of form check are not equal on iteration " + i, PayloadUtil.isValidForm(form),
+            assertEquals("Regex and Set implementations of form check differ for form \"" + form + "\"", PayloadUtil.isValidForm(form),
                     isValidFormSetImplementation(form));
         }
     }
