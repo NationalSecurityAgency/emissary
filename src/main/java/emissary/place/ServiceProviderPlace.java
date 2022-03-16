@@ -40,8 +40,8 @@ import org.slf4j.MDC;
  * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
  * throughout the system.
  */
-public abstract class ServiceProviderPlace extends emissary.core.AggregateObject implements emissary.place.IServiceProviderPlace,
-        emissary.core.IAggregator, ServiceProviderPlaceMBean {
+public abstract class ServiceProviderPlace implements emissary.place.IServiceProviderPlace,
+        ServiceProviderPlaceMBean {
 
     /**
      * Container for all configuration parameters read from the configuration file for this place. The net result is that
