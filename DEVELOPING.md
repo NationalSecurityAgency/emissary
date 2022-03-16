@@ -6,7 +6,7 @@ Table of Contents
 * [Requirements](#requirements)
 * [IDE integration](#ide-integration)
 * [Coding Standards](#coding-standards)
-* [Commands](#commands)
+* [Helpful Commands](#helpful-commands)
 * [Running Emissary](#running-emissary)
 * [Docker](#docker)
 * [Troubleshooting](#troubleshooting)
@@ -58,7 +58,16 @@ There are various adapters to abstract how data is picked up by Emissary. Ultima
 and is broken out into BaseDataObject sessions.  [PickUpPlace](src/main/java/emissary/pickup/PickUpPlace.java) then pulls 
 a MobileAgent from the thread pool and hands off the session for processing in _assignToPooledAgent_.
 
-### Processing Routing
+### Routing
+
+Decisions on how data gets sent to Places revolves around the concept of DirectoryEntry, which is also referred to as a
+Key within the code.  A DirectoryEntry is of the form:
+
+FORM.SERVICENAME.STAGE.URL$EXPENSE
+
+Routing uses a combination of the FORM, STAGE and EXPENSE to decide where to send the data.  The STAGEs define an order
+for the processing flow within the framework.  Places are bound to specific STAGEs and will not be run outside that
+STAGE.
 
 MobileAgent walks a given session through all the relevant places.
 
@@ -72,7 +81,7 @@ The [MobileAgent](src/main/java/emissary/core/MobileAgent.java) processing loop 
 
 To identify which [ServiceProviderPlace](src/main/java/emissary/place/ServiceProviderPlace.java) the [MobileAgent](src/main/java/emissary/core/MobileAgent.java) will visit next, it calls _getNextKey()_
 
-### Workflow
+### Stages
 
 The Emissary data driven workflow has stages. These are specified by [emissary.core.Stage](src/main/java/emissary/core/Stage.java).
 The stages of the workflow are used to control certain aspects of unwrapping and processing and help to ensure that the
@@ -155,18 +164,7 @@ before we can proceed.
 Post IO most of the currentForms are stripped off as they are handled by the IO places.
 The itinerary is available and could be used in post-processing provenance events.
 
-#### Routing
-
-Decisions on how data gets sent to Places revolves around the concept of DirectoryEntry, which is also referred to as a
-Key within the code.  A DirectoryEntry is of the form:
-
-FORM.SERVICENAME.STAGE.URL$EXPENSE
-
-Routing uses a combination of the FORM, STAGE and EXPENSE to decide where to send the data.  The STAGEs define an order
-for the processing flow within the framework.  Places are bound to specific STAGEs and will not be run outside that
-STAGE.
-
-#### Parsers vs Places
+### Parsers vs Places
 
 Emissary Places are for identifying, processing, transforming, and analyzing data of interest.
 
@@ -297,7 +295,7 @@ additional things to consider when developing:
 * If you fix a bug, add a test.
 * If you answer a question, add some documentation.
 
-## Commands
+## Helpful Commands
 
 ### Cleaning
 
@@ -485,12 +483,6 @@ debugger attaches, and you can then step through the code.
 mvn clean test -Dtest=ServerCommandTest -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
 ```
 
-### Potential Speed-up
-
-The above commands all have 'clean' in the command.  It is safest to do that.  But it is 
-possible to omit the 'clean' and maven will then only compile files that have changed.  This can
-speed up things, but for Emissary it is unlikely to speed up much.
-
 ## Running Emissary
 
 There is one bash script in Emissary that runs everything.  It is in the top level Emissary directory.
@@ -500,7 +492,7 @@ which has several [JCommander](http://jcommander.org/) commands available to han
 
 ### Classpath
 
-The classpath is set up in one of 2 ways.  
+The classpath is set up differently depending on the method and location used to run: 
 
 #### Development
 
