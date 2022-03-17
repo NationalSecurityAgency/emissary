@@ -12,6 +12,7 @@ public class AgentsCommand extends MonitorCommand<AgentsResponseEntity> {
 
     public static String COMMAND_NAME = "agents";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }

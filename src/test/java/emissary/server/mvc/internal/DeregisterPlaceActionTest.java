@@ -45,6 +45,7 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
         Namespace.bind(TARGET_DIR, directory);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.unbind(TARGET_DIR);

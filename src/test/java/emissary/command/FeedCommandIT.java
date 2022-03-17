@@ -56,6 +56,7 @@ public class FeedCommandIT extends UnitTest {
         arguments.clear();
     }
 
+    @Override
     @After
     public void tearDown() throws IOException {
         UnitTestFileUtils.cleanupDirectoryRecursively(inputDir);

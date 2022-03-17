@@ -49,6 +49,7 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
         Namespace.bind(WORKSPACE_BIND_KEY, ws);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.unbind(WORKSPACE_BIND_KEY);

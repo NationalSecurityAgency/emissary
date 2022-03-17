@@ -49,6 +49,7 @@ public class HeartbeatActionTest extends EndpointTestBase {
         Namespace.bind(FROM_PLACE, dp);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.unbind(TO_PLACE);

@@ -28,6 +28,7 @@ public class CoordinationPlaceTest extends UnitTest {
     CoordinationPlace place;
     IServiceProviderPlace mockCoordPlace;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -42,6 +43,7 @@ public class CoordinationPlaceTest extends UnitTest {
         Namespace.bind(Thread.currentThread().getName(), mock(MobileAgent.class));
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         Namespace.unbind("ResourceWatcher");

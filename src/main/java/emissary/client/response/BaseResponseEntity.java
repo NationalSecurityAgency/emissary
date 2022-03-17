@@ -19,10 +19,12 @@ public class BaseResponseEntity implements Serializable, BaseEntity {
     @XmlElement(name = "errors")
     private final Set<String> errors = new HashSet<>();
 
+    @Override
     public void addError(String error) {
         errors.add(error);
     }
 
+    @Override
     public Set<String> getErrors() {
         return this.errors;
     }

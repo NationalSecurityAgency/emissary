@@ -166,6 +166,7 @@ public class DirectoryPlaceTest extends UnitTest {
             return false;
         }
 
+        @Override
         public Configurator getPeerConfigurator() throws IOException {
             // just go get this from the src/test/resources directory
             return ConfigUtil.getConfigInfo("emissary.directory.peer-stupidnode_example_com-3700.cfg");

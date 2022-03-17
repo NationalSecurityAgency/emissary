@@ -40,6 +40,7 @@ public class WhatCommand extends BaseCommand {
 
     public static String COMMAND_NAME = "what";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
