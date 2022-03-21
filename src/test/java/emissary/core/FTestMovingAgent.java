@@ -3,7 +3,6 @@ package emissary.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -104,7 +103,7 @@ public class FTestMovingAgent extends FunctionalTest {
                 logger.debug("Found pool after reset to " + agentClass);
                 spool.resetPool();
             } catch (emissary.core.NamespaceException ex) {
-                fail("Agent pool is missing after reset to " + agentClass);
+                throw new AssertionError("Agent pool is missing after reset to " + agentClass, ex);
             }
         } else if (agentClass != null) {
             logger.debug("Factory already using " + agentClass);

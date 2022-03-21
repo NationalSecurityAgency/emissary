@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.UnsupportedCharsetException;
 
@@ -221,12 +221,7 @@ public class ByteMatcherTest extends UnitTest {
 
     @Test
     public void testBadConditionOnByteAt() {
-        try {
-            this.b.byteAt(this.data.length() + 5);
-            fail("Should have thrown exception on byteAt out of bounds");
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            // expected
-        }
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> this.b.byteAt(this.data.length() + 5));
     }
 
     @Test

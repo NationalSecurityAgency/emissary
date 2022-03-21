@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,12 +44,7 @@ public class SimpleParserTest extends UnitTest {
         SimpleParser sp = new SimpleParser(DATA);
         DecomposedSession sd = sp.getNextSession();
         assertTrue("Session decomposed", sd.isValid());
-        try {
-            sp.getNextSession();
-            fail("Produced extra session rather than throw ParserEOF");
-        } catch (ParserEOFException ex) {
-            // expected
-        }
+        assertThrows(ParserEOFException.class, () -> sp.getNextSession());
     }
 
     @Test

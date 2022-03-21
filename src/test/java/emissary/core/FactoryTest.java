@@ -4,8 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-
-import java.util.Iterator;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
@@ -23,8 +22,8 @@ public class FactoryTest extends UnitTest {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-            Namespace.unbind(i.next());
+        for (String s : Namespace.keySet()) {
+            Namespace.unbind(s);
         }
     }
 
@@ -61,188 +60,127 @@ public class FactoryTest extends UnitTest {
 
     @Test
     public void testWithVarArgsAndBogusCtor() {
-        Object o;
-        try {
-            o = Factory.create("java.lang.Throwable", Integer.valueOf(1), Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4));
-        } catch (Error expected) {
-            return;
-        }
-        fail("Factory vararg on bogus args " + o);
+        assertThrows(Error.class, () -> Factory.create("java.lang.Throwable", 1, 2, 3, 4));
     }
 
     @Test
     public void testWithBogusSubclassArg() {
-        Object[] args = {"Here is a string", Integer.valueOf(5)};
-        Object o;
-        try {
-            o = Factory.create("java.lang.Throwable", args);
-        } catch (Error expected) {
-            return;
-        }
-        fail("Factory creation should fail " + o);
+        Object[] args = {"Here is a string", 5};
+        assertThrows(Error.class, () -> Factory.create("java.lang.Throwable", args));
     }
 
     @Test
     public void testBogusConstructor() {
-        Object[] args = {Integer.valueOf(5), Integer.valueOf(6), Integer.valueOf(7), Integer.valueOf(8)};
-        Object o;
-        try {
-            o = Factory.create("java.lang.Integer", args);
-        } catch (Error expected) {
-            return;
-        }
-        fail("Factory creation should fail " + o);
+        Object[] args = {5, 6, 7, 8};
+        assertThrows(Error.class, () -> Factory.create("java.lang.Integer", args));
     }
 
     @Test
     public void testCreateNoRegister() {
-        Object[] args = {Integer.valueOf(5)};
+        Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args);
         assertNotNull("Factory creation", o);
         assertTrue("Type of object", o instanceof java.lang.Integer);
-        for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-            fail("Namespace should be empty but has " + i.next());
+        for (String s : Namespace.keySet()) {
+            fail("Namespace should be empty but has " + s);
         }
     }
 
     @Test
-    public void testCreateAndRegister() {
+    public void testCreateAndRegister() throws NamespaceException {
         String key = "http://host.domain.com:8001/thePlace";
-        Object[] args = {Integer.valueOf(5)};
+        Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args, key);
         assertNotNull("Factory creation", o);
         assertTrue("Type of object", o instanceof java.lang.Integer);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Registered object", o2);
-            assertTrue("Type of registered object", o2 instanceof java.lang.Integer);
-            assertEquals("Creation matches registration", o, o2);
-        } catch (NamespaceException e) {
-            fail("Registragion failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Registered object", o2);
+        assertTrue("Type of registered object", o2 instanceof java.lang.Integer);
+        assertEquals("Creation matches registration", o, o2);
     }
 
     @Test
-    public void testSelfBindingInstanceWithVarargs() {
+    public void testSelfBindingInstanceWithVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/SelfBindingInstance";
         Object o = Factory.createV("emissary.core.FactoryTest$SelfBinder", key, key);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Self registered object should be found", o2);
-            assertTrue("Type of self registered object", o2 instanceof SelfBinder);
-            assertEquals("Proper instance should be self bound", o2, o);
-        } catch (NamespaceException e) {
-            fail("Registration failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Self registered object should be found", o2);
+        assertTrue("Type of self registered object", o2 instanceof SelfBinder);
+        assertEquals("Proper instance should be self bound", o2, o);
         Namespace.unbind(key);
     }
 
     @Test
-    public void testSelfBindingInstanceWithVarargsButNoFactoryKey() {
+    public void testSelfBindingInstanceWithVarargsButNoFactoryKey() throws NamespaceException {
         String key = "http://host.domain.com:8001/SelfBindingInstance";
         Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", key);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Self registered object should be found", o2);
-            assertTrue("Type of self registered object", o2 instanceof SelfBinder);
-            assertEquals("Proper instance should be self bound", o2, o);
-        } catch (NamespaceException e) {
-            fail("Registration failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Self registered object should be found", o2);
+        assertTrue("Type of self registered object", o2 instanceof SelfBinder);
+        assertEquals("Proper instance should be self bound", o2, o);
         Namespace.unbind(key);
     }
 
     @Test
-    public void testFactoryBindingInstanceWithVarargs() {
+    public void testFactoryBindingInstanceWithVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/FactoryBindingInstance";
         Object o = Factory.createV("emissary.core.FactoryTest$FactoryBinder", key, key);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Factory registered object should be found", o2);
-            assertTrue("Type of factory registered object", o2 instanceof FactoryBinder);
-            assertEquals("Proper instance should be bound by factory", o2, o);
-        } catch (NamespaceException e) {
-            fail("Registration failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Factory registered object should be found", o2);
+        assertTrue("Type of factory registered object", o2 instanceof FactoryBinder);
+        assertEquals("Proper instance should be bound by factory", o2, o);
         Namespace.unbind(key);
     }
 
     @Test
-    public void testSelfBindingInstanceWithoutVarargs() {
+    public void testSelfBindingInstanceWithoutVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/SelfBindingInstance";
         Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", new Object[] {key}, key);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Self registered object should be found", o2);
-            assertTrue("Type of self registered object", o2 instanceof SelfBinder);
-            assertEquals("Proper instance should be self bound", o2, o);
-        } catch (NamespaceException e) {
-            fail("Registration failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Self registered object should be found", o2);
+        assertTrue("Type of self registered object", o2 instanceof SelfBinder);
+        assertEquals("Proper instance should be self bound", o2, o);
         Namespace.unbind(key);
     }
 
     @Test
     public void testNonExistentClassName() {
-        try {
-            Factory.create("foo.bar.baz.Quux");
-        } catch (Error expected) {
-            return;
-        }
-        fail("It should be harder to create non-existent classes");
+        assertThrows(Error.class, () -> Factory.create("foo.bar.baz.Quux"));
     }
 
     @Test
     public void testCreatingAnInterface() {
-        try {
-            Factory.create("emissary.core.IBaseDataObject");
-        } catch (Error expected) {
-            return;
-        }
-        fail("It should be harder to create instances of an interface");
+        assertThrows(Error.class, () -> Factory.create("emissary.core.IBaseDataObject"));
     }
 
     @Test
     public void testCreatingAnAbstractClass() {
-        try {
-            Factory.create("emissary.id.IdPlace");
-        } catch (Error expected) {
-        }
+        assertThrows(Error.class, () -> Factory.create("emissary.id.IdPlace"));
     }
 
     @Test
     public void testCreatingFromAPrivateConstructor() {
-        try {
-            Factory.create("emissary.core.Factory");
-        } catch (Error expected) {
-        }
+        Factory.create("emissary.core.Factory");
     }
 
     @Test
     public void testCreatingFromConstructorThatThrowsThrowable() {
-        try {
-            Factory.create("emissary.core.FactoryTest$DemoClassThatThrowsThrowableFromConstructor");
-        } catch (Error expected) {
-        }
+        assertThrows(Error.class, () -> Factory.create("emissary.core.FactoryTest$DemoClassThatThrowsThrowableFromConstructor"));
     }
 
     @Test
-    public void testFactoryBindingInstanceWithoutVarargs() {
+    public void testFactoryBindingInstanceWithoutVarargs() throws NamespaceException {
         String key = "http://host.domain.com:8001/FactoryBindingInstance";
         Object o = Factory.create("emissary.core.FactoryTest$FactoryBinder", new Object[] {key}, key);
-        try {
-            Object o2 = Namespace.lookup(key);
-            assertNotNull("Factory registered object should be found", o2);
-            assertTrue("Type of factory registered object", o2 instanceof FactoryBinder);
-            assertEquals("Proper instance should be factory bound", o2, o);
-        } catch (NamespaceException e) {
-            fail("Registration failed: " + e);
-        }
+        Object o2 = Namespace.lookup(key);
+        assertNotNull("Factory registered object should be found", o2);
+        assertTrue("Type of factory registered object", o2 instanceof FactoryBinder);
+        assertEquals("Proper instance should be factory bound", o2, o);
         Namespace.unbind(key);
     }
 
     public static class SelfBinder {
-        private String myKey;
+        private final String myKey;
 
         public SelfBinder(String myKey) {
             this.myKey = myKey;
@@ -256,7 +194,7 @@ public class FactoryTest extends UnitTest {
     }
 
     public static class FactoryBinder {
-        private String myKey;
+        private final String myKey;
 
         public FactoryBinder(String myKey) {
             this.myKey = myKey;

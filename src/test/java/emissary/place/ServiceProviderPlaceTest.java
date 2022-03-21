@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -261,12 +262,10 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
     @Test
     public void testRequireOfCostParameter() {
-        try {
+        assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingCost);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
-            fail("Should have required SERIVICE_COST in config stream");
-        } catch (IOException expected) {
-        }
+        });
     }
 
     @Test
@@ -318,22 +317,18 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
     @Test
     public void testRequireOfTypeParameter() {
-        try {
+        assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingType);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
-            fail("Should have required SERVICE_TYPE in config stream");
-        } catch (IOException expected) {
-        }
+        });
     }
 
     @Test
     public void testRequireOfProxyOrKey() {
-        try {
+        assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingProxy);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
-            fail("Should have required SERVICE_PROXY or SERVICE_KEY in config stream");
-        } catch (IOException expected) {
-        }
+        });
     }
 
     @Test
@@ -427,22 +422,18 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
     @Test
     public void testNoKeyInConfig() {
-        try {
+        assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configNoKeysData);
             new PlaceTest(config);
-            fail("Should have failed with no keys configured");
-        } catch (IOException expected) {
-        }
+        });
     }
 
     @Test
     public void testBadKeyInConfig() {
-        try {
+        assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configBadKeyData);
             new PlaceTest(config);
-            fail("Should have failed with bad key in config");
-        } catch (IOException expected) {
-        }
+        });
     }
 
     @Test
@@ -492,7 +483,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
                     assertNotNull("Place must be found by service location", place);
                     assertTrue("Place bound by service location must be correct object", place == tp);
                 } catch (Exception ex) {
-                    fail("Should have found " + sl + " in namespace");
+                    throw new AssertionError("Should have found " + sl + " in namespace", ex);
                 }
             }
 
