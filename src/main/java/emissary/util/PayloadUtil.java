@@ -21,7 +21,11 @@ public class PayloadUtil {
     public static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class);
 
     private static final String LS = System.getProperty("line.separator");
-    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
+    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/+]+$");
+
+    public enum validForm {
+        VALID, DOT, NOT_VALID
+    }
 
     /**
      * Try really hard to get a meaningful name for a payload object
@@ -208,15 +212,22 @@ public class PayloadUtil {
     }
 
     /**
-     * Checks whether the form complies with form rules established by a regex
-     *
-     * Approved forms can contain alpha-numerics, '-', or '_'
+     * Checks whether the form complies with form rules established by a regex Approved forms can contain alpha-numerics,
+     * '-', '_', '()', '/', '+'
      *
      * @param form The form to be tested
      * @return Whether the form is Emissary compliant
      */
-    public static boolean isValidForm(String form) {
-        return validFormRegex.matcher(form).find();
+    public static validForm isValidForm(String form) {
+        if (form.contains(".")) {
+            logger.error("INVALID FORM: The form can not contain '.'. Given form: {}", form);
+            return validForm.DOT;
+        } else if (!validFormRegex.matcher(form).find()) {
+            logger.warn("INVALID FORM: The form should only contain a-z, A-Z, 0-9, '-', '_', '()', '/', '+'. Given form: {}", form);
+            return validForm.NOT_VALID;
+        } else {
+            return validForm.VALID;
+        }
     }
 
     /** This class is not meant to be instantiated. */

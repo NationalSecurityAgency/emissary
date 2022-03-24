@@ -1,5 +1,6 @@
 package emissary.util;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import emissary.core.DataObjectFactory;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
-    private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/";
+    private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/+";
     private static final Set<Character> validFormChars = new HashSet<>();
 
     @BeforeAll
@@ -166,64 +166,23 @@ public class PayloadUtilTest extends UnitTest {
     void testIsValidForm() {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
-        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm("-_"), "Dash and underscore aren't considered valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses aren't considered valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "Slash aren't considered valid");
-        assertFalse(PayloadUtil.isValidForm("."), "Dot isn't considered valid");
-        assertFalse(PayloadUtil.isValidForm(" "), "Space isn't considered valid");
+        assertSame("Lower case alpha characters are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm(alphaLow));
+        assertSame("Upper case alpha characters are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm(alphaLow.toUpperCase()));
+        assertSame("Numeric characters are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm("0123456789"));
+        assertSame("Dash and underscore are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm("-_"));
+        assertSame("Parentheses are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm("formName-(suffixInParens)"));
+        assertSame("Slash are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm("formName-(application/xml)"));
+        assertSame("Plus are valid", PayloadUtil.validForm.VALID, PayloadUtil.isValidForm("formName-(application+xml)"));
+        assertSame("Dot isn't considered valid", PayloadUtil.validForm.DOT, PayloadUtil.isValidForm("."));
+        assertSame("Space isn't considered valid", PayloadUtil.validForm.NOT_VALID, PayloadUtil.isValidForm(" "));
 
         // Cycle through all characters and see how many are valid and that we have the expected number
         int validChars = 0;
         for (int i = 0; i < Character.MAX_VALUE; i++) {
-            if (PayloadUtil.isValidForm(Character.toString((char) i))) {
+            if (PayloadUtil.isValidForm(Character.toString((char) i)) == PayloadUtil.validForm.VALID) {
                 validChars++;
             }
         }
         assertEquals(validFormChars.size(), validChars, "Unexpected number of valid characters.");
-
-        // Create a set with possible form characters for randomly generated cases
-        Set<Character> formChars = new HashSet<>(validFormChars);
-        // Add an invalid character to generate some false cases
-        formChars.add('.');
-
-        Character[] formCharArray = new Character[formChars.size()];
-        formChars.toArray(formCharArray);
-        // Seed the random for consistent output
-        Random rand = new Random(0);
-        // Generate N example forms and test if set and regex implementation produce identical results
-        for (int i = 0; i < 4000000; i++) {
-            StringBuilder word = new StringBuilder();
-            int size = rand.nextInt(20);
-            for (int n = 0; n < size; n++) {
-                word.append(formCharArray[rand.nextInt(formChars.size())]);
-            }
-            String form = word.toString();
-            assertEquals(PayloadUtil.isValidForm(form),
-                    isValidFormSetImplementation(form),
-                    "Regex and Set implementations of form check differ for form \"" + form + "\"");
-        }
-    }
-
-    /**
-     * Compares the form to a set of valid characters
-     * <p>
-     * This implementation is marginally faster than the regex implementation, but is less maintainable
-     *
-     * @param form The form to be tested
-     * @return Whether the form is considered valid
-     */
-    private boolean isValidFormSetImplementation(String form) {
-        if (form.length() > 0) {
-            for (int i = 0; i < form.length(); i++) {
-                if (!validFormChars.contains(form.charAt(i))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
     }
 }
