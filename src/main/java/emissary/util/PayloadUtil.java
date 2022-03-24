@@ -21,7 +21,7 @@ public class PayloadUtil {
     public static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class);
 
     private static final String LS = System.getProperty("line.separator");
-    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
+    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/+]+$");
 
     /**
      * Try really hard to get a meaningful name for a payload object
