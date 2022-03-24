@@ -23,7 +23,7 @@ import org.junit.Test;
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
-    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/";
+    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/+";
     private static Set<Character> validFormChars = new HashSet<>();
 
     @BeforeClass
@@ -172,6 +172,7 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue("Dash and underscore aren't considered valid", PayloadUtil.isValidForm("-_"));
         assertTrue("Parentheses aren't considered valid", PayloadUtil.isValidForm("formName-(suffixInParens)"));
         assertTrue("Slash aren't considered valid", PayloadUtil.isValidForm("formName-(application/xml)"));
+        assertTrue("Plus aren't considered valid", PayloadUtil.isValidForm("formName-(application+xml)"));
         assertFalse("Dot isn't considered valid", PayloadUtil.isValidForm("."));
         assertFalse("Space isn't considered valid", PayloadUtil.isValidForm(" "));
 
