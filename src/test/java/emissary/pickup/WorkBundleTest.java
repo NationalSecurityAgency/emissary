@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -270,27 +271,11 @@ public class WorkBundleTest extends UnitTest {
         }
 
         // test add list of WorkUnits
-        try {
-            WorkBundle wb = new WorkBundle();
-            wb.addWorkUnits(wul);
-            fail("Did not catch expected exception when adding work unit list.");
-        } catch (IllegalStateException e) {
-            // this is the expected outcome.
-        } catch (Throwable t) {
-            fail("Unexpected Exception caught when adding work unit list: " + t);
-
-        }
+        WorkBundle wb = new WorkBundle();
+        assertThrows(IllegalStateException.class, () -> wb.addWorkUnits(wul));
 
         // test add individual WorkUnits
-        try {
-            WorkBundle wb = new WorkBundle();
-            wul.forEach(wb::addWorkUnit);
-            fail("Did not catch expected exception when adding work unit.");
-        } catch (IllegalStateException e) {
-            // this is the expected outcome.
-        } catch (Throwable t) {
-            fail("Unexpected Exception caught when adding work unit: " + t);
-        }
+        assertThrows(IllegalStateException.class, () -> wul.forEach(wb::addWorkUnit));
     }
 
     @Test
@@ -325,14 +310,6 @@ public class WorkBundleTest extends UnitTest {
         out.close();
         bout.close();
 
-        try {
-            WorkBundle wb2 = WorkBundle.readFromStream(new DataInputStream(new ByteArrayInputStream(bout.toByteArray())));
-            fail("Did not catch expected exception when deserializing work unit.");
-        } catch (IOException e) {
-            // expected
-        } catch (Throwable t) {
-            fail("Unexpected Exception caught when deserializing work unit: " + t);
-
-        }
+        assertThrows(IOException.class, () -> WorkBundle.readFromStream(new DataInputStream(new ByteArrayInputStream(bout.toByteArray()))));
     }
 }
