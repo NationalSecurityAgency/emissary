@@ -1,16 +1,18 @@
 <result>
     <answers>
+    	<filters>
+    	    <filter1>emissary.output.filter.JsonOutputFilter</filter1>
+    	    <filter2>emissary.output.filter.DataFilter</filter2>
+    	</filters>
     	<meta validateField="true">
-        	<name>CHECKSUM_MD5</name>
-        	<value>1;2;3;4;5</value>
+            <name>CHECKSUM_MD5</name>
         </meta>
         <meta matchMode="collection" seperator=";" validateField="true">
-        	<name>NAMESPACE</name>
-        	<value>1;2;3;4;5</value>
+            <name>NAMESPACE</name>
+            <value>1;2;3;4;5</value>
         </meta>
         <meta>
-        	<name>ValidateFieldFalse</name>
-        	<value>1;2;3;4;5</value>
+            <name>ValidateFieldFalse</name>
         </meta>
     </answers>
 </result>
