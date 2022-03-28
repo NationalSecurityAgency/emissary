@@ -210,7 +210,7 @@ public class PayloadUtil {
     /**
      * Checks whether the form complies with form rules established by a regex
      *
-     * Approved forms can contain alpha-numerics, '-', or '_'
+     * Approved forms can contain alpha-numerics, '-', '_', '()', '/', '+'
      *
      * @param form The form to be tested
      * @return Whether the form is Emissary compliant
