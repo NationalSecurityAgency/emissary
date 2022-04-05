@@ -1,0 +1,2 @@
+emissary.spi.JavaCharSetInitializationProvider
+emissary.spi.MetadataDictionaryInitializationProvider
