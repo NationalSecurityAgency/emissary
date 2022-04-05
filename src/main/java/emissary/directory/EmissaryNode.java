@@ -240,6 +240,7 @@ public class EmissaryNode {
         emissary.core.ResourceWatcher watcher = new emissary.core.ResourceWatcher(metricsManager);
         logger.debug("Started resource watcher..." + watcher.toString());
 
+        // Load SPI implementations that support initialization of the Emissary server
         ServiceLoader<InitializationProvider> loader = ServiceLoader
                 .load(InitializationProvider.class);
         loader.forEach(InitializationProvider::initialize);
