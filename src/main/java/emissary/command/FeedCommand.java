@@ -23,12 +23,14 @@ public class FeedCommand extends ServiceCommand {
 
     public static String COMMAND_NAME = "feed";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
     public static int DEFAULT_PORT = 7001;
 
+    @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }

@@ -15,12 +15,14 @@ public class TopologyCommand extends HttpCommand {
 
     public static String COMMAND_NAME = "topology";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
     public static int DEFAULT_PORT = 8001;
 
+    @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.4.0-SNAPSHOT</version>
+  <version>7.5.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -35,9 +35,10 @@
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
     <dep.commons-io.version>2.8.0</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
-    <dep.commons-logging.version>1.2</dep.commons-logging.version>
     <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
     <dep.dropwizard.metrics.version>4.2.9</dep.dropwizard.metrics.version>
+    <dep.errorprone.javac.version>9+181-r4173-1</dep.errorprone.javac.version>
+    <dep.errorprone.version>2.10.0</dep.errorprone.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
@@ -72,7 +73,6 @@
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -153,11 +153,6 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${dep.commons-lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${dep.commons-logging.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
@@ -886,7 +881,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
+          <version>3.9.0</version>
           <configuration>
             <showWarnings>${maven.compiler.showWarnings}</showWarnings>
             <compilerArgs>
@@ -1408,16 +1403,9 @@
       </build>
     </profile>
     <profile>
-      <!-- Turn on the error-prone static analyzer during compilation.
-           NOTE this requires the use of a Java 8 compiler.  For
-           example:
-
-               $ JAVA_HOME=/path/to/jdk1.8.0 mvn -PerrorProne clean test-compile
-
-           will analyze the main and test code, with the analyzer's
-           report given as compiler error/warning/note messages. -->
       <id>errorProne</id>
       <activation>
+        <jdk>1.8</jdk>
         <property>
           <name>errorProne</name>
         </property>
@@ -1428,70 +1416,30 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-              <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
+              <source>1.8</source>
+              <target>1.8</target>
+              <encoding>UTF-8</encoding>
               <fork>true</fork>
-              <compilerArgs>
-                <!-- The compiler normally stops at 100 warnings, and
-                     error-prone's static analysis warnings count
-                     against that total. -->
-                <arg>-Xmaxwarns</arg>
-                <arg>5000</arg>
-                <arg>-XepDisableWarningsInGeneratedCode</arg>
-                <!-- Enable experimental checks. -->
-                <arg>-XepAllDisabledChecksAsWarnings</arg>
-                <!-- Removed because it was not adding useful help -->
-                <arg>-Xep:ArgumentParameterMismatch:OFF</arg>
-                <!-- This one is buggy and crashes the compiler. -->
-                <arg>-Xep:ArgumentParameterSwap:OFF</arg>
-                <!-- This one is super noisy, because it wants all
-                     modifiable variables marked with @Var and
-                     complains about the use of final everywhere else.
-                     I'd be okay with adding the annotations, but
-                     removing the finals is only safe if you can
-                     guarantee you never use the compiler *without*
-                     this add-on. -->
-                <arg>-Xep:Var:OFF</arg>
-                <!-- By default this is considered a "suggestion" that
-                     doesn't get counted as a warning.  Change it to a
-                     counted warning to make it easier to see how many
-                     there are. -->
-                <arg>-Xep:ConstantField:WARN</arg>
-                <arg>-Xep:RemoveUnusedImports:WARN</arg>
-                <arg>-Xep:WildcardImport:WARN</arg>
-                <!-- By default these are set to errors.  Change them
-                     to warnings so that it doesn't stop the build
-                     from continuing its analysis. -->
-                <arg>-Xep:ArrayToString:WARN</arg>
-                <arg>-Xep:ComparisonOutOfRange:WARN</arg>
-                <arg>-Xep:DeadException:WARN</arg>
-                <arg>-Xep:DefaultCharset:OFF</arg>
-                <arg>-Xep:DepAnn:WARN</arg>
-                <arg>-Xep:FormatString:WARN</arg>
-                <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
-                <arg>-Xep:MethodCanBeStatic:WARN</arg>
-                <arg>-Xep:MixedArrayDimensions:WARN</arg>
-                <arg>-Xep:MultiVariableDeclaration:WARN</arg>
-                <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
-                <arg>-Xep:NumericEquality:WARN</arg>
-                <arg>-Xep:ParameterPackage:WARN</arg>
-                <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
-                <arg>-Xep:ThrowsUncheckedException:WARN</arg>
-                <arg>-Xep:TryFailThrowable:WARN</arg>
+              <compilerArgs combine.children="append">
+                <!-- TODO: remove bootclasspath when JDK is upgraded to 9+ -->
+                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${dep.errorprone.javac.version}/javac-${dep.errorprone.javac.version}.jar</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -Xmaxwarns 5000 -XepDisableWarningsInGeneratedCode -XepAllDisabledChecksAsWarnings -Xep:Var:OFF -Xep:ConstantField:WARN -Xep:RemoveUnusedImports:WARN -Xep:WildcardImport:WARN -Xep:ArrayToString:WARN -Xep:ComparisonOutOfRange:WARN -Xep:DeadException:WARN -Xep:DefaultCharset:OFF -Xep:DepAnn:WARN -Xep:FormatString:WARN -Xep:LongLiteralLowerCaseSuffix:WARN -Xep:MethodCanBeStatic:WARN -Xep:MixedArrayDimensions:WARN -Xep:MultiVariableDeclaration:WARN -Xep:MultipleTopLevelClasses:WARN -Xep:NumericEquality:WARN -Xep:PrivateConstructorForUtilityClass:WARN -Xep:ThrowsUncheckedException:WARN -Xep:TryFailThrowable:WARN -Xep:Java7ApiChecker:OFF -Xep:AndroidJdkLibsChecker:OFF -Xep:InlineMeSuggester:OFF</arg>
               </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${dep.errorprone.version}</version>
+                </path>
+              </annotationProcessorPaths>
             </configuration>
             <dependencies>
-              <!-- override plexus-compiler-javac-errorprone's dependency on
-                   Error Prone with the latest version -->
               <dependency>
+                <!-- TODO: remove javac dependency when JDK is upgraded to 9+ -->
                 <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.3.1</version>
-              </dependency>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                <version>2.8.3</version>
+                <artifactId>javac</artifactId>
+                <version>${dep.errorprone.javac.version}</version>
               </dependency>
             </dependencies>
           </plugin>

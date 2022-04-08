@@ -20,6 +20,7 @@ public class EnvCommand extends HttpCommand {
 
     public static int DEFAULT_PORT = 8001;
 
+    @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }

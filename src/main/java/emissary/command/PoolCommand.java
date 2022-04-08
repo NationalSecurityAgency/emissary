@@ -16,6 +16,7 @@ public class PoolCommand extends MonitorCommand<MapResponseEntity> {
 
     public static String COMMAND_NAME = "pool";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }

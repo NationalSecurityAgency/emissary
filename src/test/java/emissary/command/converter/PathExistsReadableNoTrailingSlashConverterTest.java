@@ -30,6 +30,7 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
         converter = new PathExistsReadableConverter("path");
     }
 
+    @Override
     @After
     public void tearDown() throws IOException {
         UnitTestFileUtils.cleanupDirectoryRecursively(path);

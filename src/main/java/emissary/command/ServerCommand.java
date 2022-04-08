@@ -20,12 +20,14 @@ public class ServerCommand extends ServiceCommand {
 
     public static String COMMAND_NAME = "server";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
     public static int DEFAULT_PORT = 8001;
 
+    @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }

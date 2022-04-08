@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
+import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
@@ -25,6 +28,7 @@ public class Startup {
     public static final int DIRECTORYSTART = 0;
     public static final int DIRECTORYADD = 1;
     public static final int DIRECTORYDELETE = 2;
+    private static final String PARALLEL_PLACE_STARTUP_CONFIG = "PARALLEL_PLACE_STARTUP";
     static int directoryAction = DIRECTORYADD;
 
     // If we are an emissary node these will be present
@@ -342,10 +346,14 @@ public class Startup {
 
                 logger.info("Using localDir={} to create {} places on {}", localDirectory, hostParameters.size(), thePlaceHost);
 
+                // Create a stream of places that can be configured to start in parallel
+                boolean parallelPlaceStartup = hostsConfig.findBooleanEntry(PARALLEL_PLACE_STARTUP_CONFIG, false);
+                Stream<String> hostParametersStream = StreamSupport.stream(hostParameters.spliterator(), parallelPlaceStartup);
+                logger.info("Parallel place startup: {}", hostParametersStream.isParallel());
+
                 // Start everything in hostParameters
                 // (PLACE lines from cfg file for a given host
-                for (int i = 0; i < hostParameters.size(); i++) {
-                    final String thePlaceLocation = hostParameters.get(i);
+                hostParametersStream.forEach(thePlaceLocation -> {
                     placeName(thePlaceLocation);
 
                     // Get the class name and Class object for what we want to make
@@ -353,16 +361,15 @@ public class Startup {
                     if (thePlaceClassString == null) {
                         logger.warn("Skipping {}, no class string", thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
-                        continue;
+                        return;
                     }
-
                     logger.debug("Starting place {}", thePlaceLocation);
                     if (KeyManipulator.isLocalTo(thePlaceLocation,
                             String.format("http://{}:{}/StartupEngine", Startup.this.node.getNodeName(), Startup.this.node.getNodePort()))) {
-                        if (directoryActionArg == DIRECTORYADD && emissary.core.Namespace.exists(thePlaceLocation)) {
+                        if (directoryActionArg == DIRECTORYADD && Namespace.exists(thePlaceLocation)) {
                             logger.info("Local place already exists: {}", thePlaceLocation);
                             Startup.this.placesToStart.remove(thePlaceLocation);
-                            continue;
+                            return;
                         }
 
                         logger.info("Doing local startup on place {}", thePlaceLocation);
@@ -376,9 +383,8 @@ public class Startup {
                             logger.debug("Giving up on {}", thePlaceLocation);
                         }
 
-                        continue;
                     }
-                }
+                });
             }
         });
 

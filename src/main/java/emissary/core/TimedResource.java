@@ -75,6 +75,7 @@ public class TimedResource implements AutoCloseable {
         }
     }
 
+    @Override
     public void close() {
         lock.lock();
         try {

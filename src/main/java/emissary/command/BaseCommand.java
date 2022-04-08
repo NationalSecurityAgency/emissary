@@ -206,6 +206,7 @@ public abstract class BaseCommand implements EmissaryCommand {
         }
     }
 
+    @Override
     public void outputBanner() {
         if (getQuiet() == false) {
             new Banner().dump();
