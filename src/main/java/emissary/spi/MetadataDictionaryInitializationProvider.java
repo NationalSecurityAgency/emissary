@@ -10,6 +10,5 @@ public class MetadataDictionaryInitializationProvider implements InitializationP
     public void initialize() {
         // / Initialize the metadata dictionary
         emissary.core.MetadataDictionary.initialize();
-        logger.debug("Initialized the metadata dictionary...");
     }
 }

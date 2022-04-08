@@ -10,6 +10,5 @@ public class JavaCharSetInitializationProvider implements InitializationProvider
     public void initialize() {
         // Initialize charset mappings
         emissary.util.JavaCharSetLoader.initialize();
-        logger.debug("Initialized charset mapping subsystem...");
     }
 }

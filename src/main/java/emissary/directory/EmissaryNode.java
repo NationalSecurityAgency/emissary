@@ -241,9 +241,12 @@ public class EmissaryNode {
         logger.debug("Started resource watcher..." + watcher.toString());
 
         // Load SPI implementations that support initialization of the Emissary server
-        ServiceLoader<InitializationProvider> loader = ServiceLoader
-                .load(InitializationProvider.class);
-        loader.forEach(InitializationProvider::initialize);
+        ServiceLoader<InitializationProvider> loader = ServiceLoader.load(InitializationProvider.class);
+
+        loader.forEach(provider -> {
+            provider.initialize();
+            logger.info("Initialized {}", provider.getClass().getName());
+        });
 
         // Initialize the rolling framework
         RollManager.getManager();
