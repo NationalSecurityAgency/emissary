@@ -168,7 +168,7 @@ public class LineTokenizer {
     /**
      * Next token as an array of bytes
      * 
-     * @return the next line as a array of bytes
+     * @return the next line as an array of bytes
      */
     public byte[] nextTokenBytes() {
 
@@ -186,10 +186,11 @@ public class LineTokenizer {
         System.arraycopy(data, index, tok, 0, end - index);
 
         tokenCount--;
-
+        previousIndex = index;
         if (tokenCount > 0 && data[end] == delim) {
-            previousIndex = index;
             index = end + 1;
+        } else {
+            index = end;
         }
 
         return tok;
