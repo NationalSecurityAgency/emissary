@@ -58,6 +58,7 @@ public class RegisterPeerActionTest extends EndpointTestBase {
         Namespace.bind(DIRNAME, directoryPlace);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.unbind(DIRNAME);

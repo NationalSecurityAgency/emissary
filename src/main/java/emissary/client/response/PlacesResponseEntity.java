@@ -56,6 +56,7 @@ public class PlacesResponseEntity extends BaseResponseEntity {
         }
     }
 
+    @Override
     public void dumpToConsole() {
         getLocal().dumpToConsole();
         for (PlaceList placeList : getCluster()) {

@@ -51,6 +51,7 @@ public class FailDirectoryActionTest extends EndpointTestBase {
         Namespace.bind(TARGET_DIR, directory);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.unbind(TARGET_DIR);
