@@ -30,7 +30,6 @@ import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
-import emissary.util.JavaCharSetLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -227,9 +226,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         // The order of the following initialization calls
         // is touchy. NPE all over if you mess up here.
-
-        // Initialize charset typing mechanism
-        JavaCharSetLoader.initialize();
 
         // Set ServicePlace config items
         configureServicePlace(placeLocation);

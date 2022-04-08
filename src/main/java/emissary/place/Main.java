@@ -644,14 +644,6 @@ public class Main {
                     System.clearProperty(EmissaryNode.NODE_PORT_PROPERTY);
                 }
             }
-
-            // Initialize charset mappings
-            emissary.util.JavaCharSetLoader.initialize();
-            logger.debug("Initialized charset mapping subsystem...");
-
-            // / Initialize the metadata dictionary
-            emissary.core.MetadataDictionary.initialize();
-            logger.debug("Initialized the metadata dictionary...");
         }
 
         // Create the place
