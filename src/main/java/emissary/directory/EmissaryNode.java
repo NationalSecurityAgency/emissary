@@ -6,6 +6,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 import emissary.admin.Startup;
 import emissary.config.ConfigUtil;
@@ -16,6 +17,7 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
+import emissary.spi.InitializationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,13 +240,13 @@ public class EmissaryNode {
         emissary.core.ResourceWatcher watcher = new emissary.core.ResourceWatcher(metricsManager);
         logger.debug("Started resource watcher..." + watcher.toString());
 
-        // Initialize charset mappings
-        emissary.util.JavaCharSetLoader.initialize();
-        logger.debug("Initialized charset mapping subsystem...");
+        // Load SPI implementations that support initialization of the Emissary server
+        ServiceLoader<InitializationProvider> loader = ServiceLoader.load(InitializationProvider.class);
 
-        // / Initialize the metadata dictionary
-        emissary.core.MetadataDictionary.initialize();
-        logger.debug("Initialized the metadata dictionary...");
+        loader.forEach(provider -> {
+            provider.initialize();
+            logger.info("Initialized {}", provider.getClass().getName());
+        });
 
         // Initialize the rolling framework
         RollManager.getManager();
