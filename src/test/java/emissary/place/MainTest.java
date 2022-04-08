@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -259,33 +260,19 @@ public final class MainTest extends UnitTest {
         assertEquals(basePath + "/sub/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/sub/././otherfile"));
 
         // Each of these should thrown an Exception
-        try {
-            filePathIsWithinBaseDirectory(basePath, "/var/log/somelog");
-            fail("Expected an IllegalArgumentException from input " + "/var/log/somelog");
-        } catch (IllegalArgumentException e) {
-            /* this is expected */
-        }
+        assertThrows(IllegalArgumentException.class, () -> filePathIsWithinBaseDirectory(basePath, "/var/log/somelog"));
 
-        try {
-            filePathIsWithinBaseDirectory(basePath, basePath + "/../foo2/otherfile");
-            fail("Expected an IllegalArgumentException from input " + basePath + "/../foo2/otherfile");
-        } catch (IllegalArgumentException e) {
-            /* this is expected */
-        }
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../foo2/otherfile"),
+                "Expected an IllegalArgumentException from input " + basePath + "/../foo2/otherfile");
 
-        try {
-            filePathIsWithinBaseDirectory(basePath, basePath + "/../../somefile");
-            fail("Expected an IllegalArgumentException from input " + basePath + "/../../somefile");
-        } catch (IllegalArgumentException e) {
-            /* this is expected */
-        }
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../../somefile"),
+                "Expected an IllegalArgumentException from input " + basePath + "/../../somefile");
 
-        try {
-            filePathIsWithinBaseDirectory(basePath, basePath + "/path/../../../otherpath");
-            fail("Expected an IllegalArgumentException from input " + basePath + "/path/../../../otherpath");
-        } catch (IllegalArgumentException e) {
-            /* this is expected */
-        }
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/path/../../../otherpath"),
+                "Expected an IllegalArgumentException from input " + basePath + "/path/../../../otherpath");
     }
 
     // Override the hooks. The calls to super in these

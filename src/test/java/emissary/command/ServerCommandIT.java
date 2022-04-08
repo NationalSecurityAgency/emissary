@@ -2,7 +2,7 @@ package emissary.command;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.file.Paths;
 
@@ -34,12 +34,9 @@ public class ServerCommandIT extends UnitTest {
 
     @Test
     public void testStandaloneAndClusterError() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        try {
-            ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone", "--flavor", "NORMAL,cluster");
-            fail("Should have failed with standalone and cluster");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), equalTo("Can not run a server in both STANDALONE and CLUSTER"));
-        }
+        Exception e = assertThrows(Exception.class,
+                () -> ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone", "--flavor", "NORMAL,cluster"));
+        assertThat(e.getMessage(), equalTo("Can not run a server in both STANDALONE and CLUSTER"));
     }
 
     @Test

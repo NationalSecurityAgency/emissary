@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -111,13 +112,9 @@ public class ServiceConfigGuideTest extends UnitTest {
     public void testBadQuoting() {
         final byte[] configData = "FOO = 123.123.123.123\nBAR = \"234.234.234.234\"\n".getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        try {
-            ConfigUtil.getConfigInfo(str);
-            fail("Bad quoting should throw exception");
-        } catch (IOException iox) {
-            final String msg = iox.getMessage();
-            assertTrue("Exception message must have line number", msg.indexOf("line 1?") > -1);
-        }
+        IOException iox = assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(str));
+        final String msg = iox.getMessage();
+        assertTrue("Exception message must have line number", msg.indexOf("line 1?") > -1);
     }
 
     @Test
@@ -204,13 +201,9 @@ public class ServiceConfigGuideTest extends UnitTest {
     public void testBadSpacing() {
         final byte[] configData = "FOO=123\n".getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        try {
-            ConfigUtil.getConfigInfo(str);
-            fail("Bad spacing should throw exception");
-        } catch (IOException iox) {
-            final String msg = iox.getMessage();
-            assertTrue("Exception message must have line number: " + msg, msg.indexOf("line 1?") > -1);
-        }
+        IOException iox = assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(str));
+        final String msg = iox.getMessage();
+        assertTrue("Exception message must have line number: " + msg, msg.indexOf("line 1?") > -1);
     }
 
     @Test
@@ -532,7 +525,7 @@ public class ServiceConfigGuideTest extends UnitTest {
             new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // should not be reached due to IMPORT_FILE existing
-            fail("IMPORT_FILE not found.");
+            throw new AssertionError("IMPORT_FILE not found.", iox);
         } finally {
             Files.deleteIfExists(Paths.get(priname));
             Files.deleteIfExists(Paths.get(impname));

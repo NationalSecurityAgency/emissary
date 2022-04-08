@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -95,11 +96,7 @@ public class ConfigUtilTest extends UnitTest {
 
     @Test
     public void testOldStyleNestedClassConfig() {
-        try {
-            ConfigUtil.getConfigInfo(Dummy.class);
-            fail("This configuration should not exist");
-        } catch (IOException expected) {
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(Dummy.class));
     }
 
     @Test
@@ -108,11 +105,7 @@ public class ConfigUtilTest extends UnitTest {
         prefs.add("foo");
         prefs.add("bar");
         prefs.add("quuz");
-        try {
-            ConfigUtil.getConfigInfo(prefs);
-            fail("None of these prefs should exist");
-        } catch (IOException expected) {
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(prefs));
     }
 
     @Test
@@ -277,13 +270,7 @@ public class ConfigUtilTest extends UnitTest {
 
         // assert
         assertEquals("Entry BOO is wrong", "HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"));
-        try {
-            // This doesn't exist
-            ConfigUtil.getConfigInfo(cfgName2.getFileName().toString());
-            fail("Should have thrown IOException");
-        } catch (IOException e) {
-            // swallow, this is expected
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(cfgName2.getFileName().toString()));
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);

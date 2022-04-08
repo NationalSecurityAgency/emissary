@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -39,7 +38,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertTrue("CRC-32 alg used for default ctor", algs.contains("CRC32"));
             assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
@@ -58,7 +57,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertTrue("Using CRC and in alg set", algs.contains("CRC32"));
             assertTrue("CRC computed", cr.getCrc() != -1L);
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
@@ -76,7 +75,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertFalse("Not using CRC", cc.getUseCRC());
             assertTrue("CRC not computed", cr.getCrc() == -1L);
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
@@ -95,7 +94,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertTrue("Using CRC", cc.getUseCRC());
             assertTrue("CRC computed", cr.getCrc() != -1L);
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
@@ -114,7 +113,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertFalse("Not using CRC", cc.getUseCRC());
             assertTrue("CRC not computed", cr.getCrc() == -1L);
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
@@ -138,7 +137,7 @@ public class ChecksumCalculatorTest extends UnitTest {
             assertFalse("Not using CRC", cc.getUseCRC());
             assertTrue("CRC not computed", cr.getCrc() == -1L);
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 or SHA-256 algorithm");
+            throw new AssertionError("Unable to get SHA-1 or SHA-256 algorithm", ex);
         }
     }
 }

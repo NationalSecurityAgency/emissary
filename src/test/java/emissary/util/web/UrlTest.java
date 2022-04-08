@@ -1,7 +1,7 @@
 package emissary.util.web;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import emissary.test.core.UnitTest;
 import org.junit.Before;
@@ -22,24 +22,16 @@ public class UrlTest extends UnitTest {
 
     @Test
     public void testDoUrlWithNull() {
-        try {
-            Url.doUrl(null);
-            fail("did not get expected illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // expected, can be ignored.
-        }
+        assertThrows(IllegalArgumentException.class, () -> Url.doUrl(null));
     }
 
     @Test
     public void testDoUrlWithHead() {
-        try {
+        assertThrows(IllegalArgumentException.class, () -> {
             final UrlData urlData = new UrlData();
             urlData.setTheMethod(Url.HEAD);
             Url.doUrl(urlData);
-            fail("did not get expected illegal argument exception.");
-        } catch (IllegalArgumentException e) {
-            // expected, can be ignored.
-        }
+        });
     }
 
 
