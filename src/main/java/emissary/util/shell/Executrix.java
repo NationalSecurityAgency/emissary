@@ -649,7 +649,7 @@ public class Executrix {
             out.append(bout.toString());
         }
         if ((err != null) && (berr != null)) {
-            err.append(err.toString());
+            err.append(berr.toString());
         }
         return status;
     }
