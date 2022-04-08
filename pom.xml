@@ -56,7 +56,7 @@
     <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
     <dep.junit.version>4.12</dep.junit.version>
-    <dep.logback.version>1.2.9</dep.logback.version>
+    <dep.logback.version>1.2.11</dep.logback.version>
     <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
     <dep.mockito-core.version>2.28.2</dep.mockito-core.version>
     <dep.oro.version>2.0.8</dep.oro.version>
