@@ -36,7 +36,7 @@
     <dep.commons-io.version>2.8.0</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
     <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
-    <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
+    <dep.dropwizard.metrics.version>4.2.9</dep.dropwizard.metrics.version>
     <dep.errorprone.javac.version>9+181-r4173-1</dep.errorprone.javac.version>
     <dep.errorprone.version>2.10.0</dep.errorprone.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
@@ -156,17 +156,17 @@
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-ganglia</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-graphite</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-healthchecks</artifactId>
+        <version>${dep.dropwizard.metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
@@ -504,15 +504,15 @@
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-ganglia</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-graphite</artifactId>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-healthchecks</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
