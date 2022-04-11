@@ -28,47 +28,46 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.commons-cli.version>1.4</dep.commons-cli.version>
+    <dep.commons-cli.version>1.5.0</dep.commons-cli.version>
     <dep.commons-codec.version>1.15</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-exec.version>1.3</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
-    <dep.commons-io.version>2.8.0</dep.commons-io.version>
+    <dep.commons-io.version>2.11.0</dep.commons-io.version>
     <dep.commons-lang.version>2.6</dep.commons-lang.version>
-    <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
+    <dep.commons-pool2.version>2.11.1</dep.commons-pool2.version>
     <dep.dropwizard.metrics.version>4.2.4</dep.dropwizard.metrics.version>
     <dep.errorprone.javac.version>9+181-r4173-1</dep.errorprone.javac.version>
     <dep.errorprone.version>2.10.0</dep.errorprone.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
-    <dep.httpcore.version>4.4.14</dep.httpcore.version>
+    <dep.httpcore.version>4.4.15</dep.httpcore.version>
     <dep.jackson.version>2.12.6</dep.jackson.version>
-    <!-- jersey brings in 2.3.3; tika brings in 2.3.2; converge on latest -->
+    <!-- jersey and tika provide; converge on latest -->
     <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
-    <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
+    <!-- jersey and tika-parsers provide; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
-    <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.34</dep.jersey.version>
-    <dep.jetty.version>9.4.44.v20210927</dep.jetty.version>
-    <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
-    <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
-    <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
-    <dep.junit.version>4.12</dep.junit.version>
+    <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
+    <dep.jersey.version>2.35</dep.jersey.version>
+    <dep.jetty.version>9.4.46.v20220331</dep.jetty.version>
+    <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
+    <dep.junit-platform.version>1.8.2</dep.junit-platform.version>
+    <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
+    <dep.junit.version>4.13.2</dep.junit.version>
     <dep.logback.version>1.2.11</dep.logback.version>
-    <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
+    <dep.maven-surefire-plugin.version>3.0.0-M5</dep.maven-surefire-plugin.version>
     <dep.mockito-core.version>2.28.2</dep.mockito-core.version>
     <dep.oro.version>2.0.8</dep.oro.version>
-    <dep.rhino.version>1.7.13</dep.rhino.version>
-    <dep.slf4j.version>1.7.30</dep.slf4j.version>
-    <dep.spullara.mustache.compiler.version>0.9.7</dep.spullara.mustache.compiler.version>
+    <dep.slf4j.version>1.7.36</dep.slf4j.version>
+    <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.tika.version>1.24</dep.tika.version>
-    <dep.webjars.bootstrap.version>5.0.0</dep.webjars.bootstrap.version>
+    <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
-    <dep.webjars.popper.version>2.9.2</dep.webjars.popper.version>
-    <dep.xmlbeans.version>5.0.0</dep.xmlbeans.version>
+    <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
+    <dep.xmlbeans.version>5.0.3</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -354,8 +353,8 @@
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>${dep.jdom.version}</version>
+        <artifactId>jdom2</artifactId>
+        <version>${dep.jdom2.version}</version>
       </dependency>
       <dependency>
         <!-- UnitTest, FunctionalTest and FTestServiceConfigGuide are in the emissary src/main vs src/test
@@ -388,11 +387,6 @@
         <groupId>org.junit.vintage</groupId>
         <artifactId>junit-vintage-engine</artifactId>
         <version>${dep.junit-jupiter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mozilla</groupId>
-        <artifactId>rhino</artifactId>
-        <version>${dep.rhino.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -637,10 +631,6 @@
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
