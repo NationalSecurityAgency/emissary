@@ -170,6 +170,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
      *
      * @return a KeyedOutput
      */
+    @Override
     public final KeyedOutput getOutput() throws IOException {
         lock.lock();
         try {

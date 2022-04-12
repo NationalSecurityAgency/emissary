@@ -38,6 +38,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
     private static String W = "Президент Буш";
     private IBaseDataObject payload;
     private String FORM = "TEST";
+    private static final String PAYLOAD_STRING = "abcdefg";
 
     @Override
     @Before
@@ -66,7 +67,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
             }
         }
 
-        payload = DataObjectFactory.getInstance(new Object[] {"abcdefg".getBytes(), "myPayload", FORM});
+        payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(), "myPayload", FORM});
 
         payload.putParameter("COPY_THIS", "copy value");
         payload.putParameter("IGNORE_THIS", "ignore value");
@@ -135,6 +136,21 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
 
         assertEquals("Parent should have propagating metadata value", "copy value", payload.getStringParameter("COPY_THIS"));
         assertEquals("Parent should still have non-propagating metadata value", "ignore value", payload.getStringParameter("IGNORE_THIS"));
+    }
+
+    @Test
+    public void testMultiFileUnixCommandPlaceFileWithSingleChildAsOutput() throws Exception {
+        assertNotNull("Place must be created", place);
+        place.setFileOutputCommand();
+        createScript(Executrix.OUTPUT_TYPE.FILE, 1);
+
+        place.preserveParentData = true;
+        place.singleOutputAsChild = true;
+
+        List<IBaseDataObject> att = place.processHeavyDuty(payload);
+        assertEquals("One Attachment should be created", 1, att.size());
+        assertEquals("Parent data should be preserved", PAYLOAD_STRING, new String(payload.data()));
+        assertEquals("Child payload should match script output", W, new String(att.get(0).data()).trim());
     }
 
     @Test

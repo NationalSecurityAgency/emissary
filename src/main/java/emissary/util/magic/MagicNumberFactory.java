@@ -4,14 +4,18 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MagicNumberFactory {
 
-    private static Log log = LogFactory.getLog(MagicNumberFactory.class);
+    private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);
 
     private static Map<String, Integer> typeMap = null;
     public static final String EMPTYSTRING = "";
@@ -143,7 +147,7 @@ public class MagicNumberFactory {
             if (finger != null && extensions.size() > 0)
                 addExtensionsLayer(extensions, finger);
         } catch (IOException ioe) {
-            log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): " + ioe.getMessage(), ioe);
+            log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): {}", ioe.getMessage(), ioe);
             /** Doing all of this in memory - yes, one could erroneously use one of the IO objects but ... */
             throw new RuntimeException(ioe);
         } finally {
@@ -218,8 +222,8 @@ public class MagicNumberFactory {
             item.offsetUnary = resolveOffsetUnary(columns, item);
             item.offset = resolveOffset(columns, item);
         } catch (Exception e) {
-            // log.error ("original entry \t: " + entry);
-            // log.error ("Error on column 0\t: " + columns[0], e);
+            // log.error ("original entry \t: {}", entry);
+            // log.error ("Error on column 0\t: {}", columns[0], e);
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
         try {
@@ -231,10 +235,10 @@ public class MagicNumberFactory {
             if (swallowParseException) {
                 // This means you put TRUE in SWALLOW_IGNORABLE_EXCEPTIONS in a UnixFilePlace.cfg file
                 // so let's log at debug level so you can hide these message easily
-                log.debug("Warning unable to read column 1\t: " + columns[1] + " - " + e.getMessage());
+                log.debug("Warning unable to read column 1\t: {} - {}", columns[1], e.getMessage());
             } else {
-                log.error("original entry   \t: " + entry);
-                log.error("Error on column 1\t: " + columns[1], e);
+                log.error("original entry   \t: {}", entry);
+                log.error("Error on column 1\t: {}", columns[1], e);
             }
             throw new ParseException("Parse Error on column 1:" + columns[1] + ". " + e.getMessage());
         }
@@ -244,8 +248,8 @@ public class MagicNumberFactory {
             item.value = resolveValue(columns, item);
             item.dataTypeLength = item.value.length;
         } catch (Exception e) {
-            // log.error ("original entry \t: " + entry);
-            // log.error ("Error on column 2\t: " + columns[2], e);
+            // log.error ("original entry \t: {}", entry);
+            // log.error ("Error on column 2\t: {}", columns[2], e);
             throw new ParseException("Error on column 2:" + columns[2] + ". " + e.getMessage());
         }
         // column D parsing

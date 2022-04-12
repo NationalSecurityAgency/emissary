@@ -45,6 +45,7 @@ public class XmlOutputFilterTest extends UnitTest {
         payload.setFilename("/this/is/a/testfile");
     }
 
+    @Override
     @After
     public void tearDown() throws IOException {
         Files.deleteIfExists(tmpDir);

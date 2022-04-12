@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -52,12 +53,7 @@ public class SimpleNioParserTest extends UnitTest {
         SimpleNioParser sp = new SimpleNioParser(channel);
         DecomposedSession sd = sp.getNextSession();
         assertTrue("Session decomposed", sd.isValid());
-        try {
-            sp.getNextSession();
-            fail("Produced extra session rather than throw ParserEOF");
-        } catch (ParserEOFException ex) {
-            // expected
-        }
+        assertThrows(ParserEOFException.class, () -> sp.getNextSession());
     }
 
     @Before

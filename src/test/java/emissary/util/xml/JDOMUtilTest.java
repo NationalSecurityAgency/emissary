@@ -1,7 +1,6 @@
 package emissary.util.xml;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import emissary.test.core.UnitTest;
 import org.jdom2.Document;
@@ -25,8 +24,7 @@ public class JDOMUtilTest extends UnitTest {
             final Document doc = JDOMUtil.createDocument(plist_xml, null, false);
             assertNotNull("Document should be created", doc);
         } catch (Throwable t) {
-            t.printStackTrace();
-            fail("An exception should not be thrown here, perhaps the DTD validation is not fully disabled " + t);
+            throw new AssertionError("An exception should not be thrown here, perhaps the DTD validation is not fully disabled.", t);
         }
     }
 }

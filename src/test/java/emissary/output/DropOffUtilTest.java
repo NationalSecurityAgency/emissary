@@ -347,8 +347,10 @@ public class DropOffUtilTest extends UnitTest {
 
         final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(), "item1", "PARENT_FORM", "PARENT_FTYPE");
         parent.putParameter("FOO", "PARENT_FOO");
+        parent.putParameter("Original-Filename", "parent.tar.gz");
 
         final IBaseDataObject child = DataObjectFactory.getInstance("This is a test".getBytes(), "item1-att-1", "CHILD_FORM", "CHILD_FTYPE");
+        child.putParameter("Original-Filename", "child.docx");
         child.putParameter("FOO_FILETYPE", "myFoo");
         child.putParameter("BAR_FILETYPE", "myBar1");
         child.appendParameter("BAR_FILETYPE", "myBar2");
@@ -359,6 +361,9 @@ public class DropOffUtilTest extends UnitTest {
         family.add(child);
 
         this.util.processMetadata(family);
+
+        assertEquals("Parent should have filext of gz", "gz", parent.getStringParameter("FILEXT"));
+        assertEquals("Child should have filext of docx", "docx", child.getStringParameter("FILEXT"));
 
         assertNull("Parent should not have extended filetype", parent.getParameter("EXTENDED_FILETYPE"));
 
@@ -466,51 +471,137 @@ public class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGetFileType() {
+    public void testDeprecatedGetFileType() {
         Map<String, String> metadata = new HashMap<>();
-        testFileType(metadata, "UNKNOWN", null);
+        testDeprecatedFileType(metadata, "UNKNOWN", null);
 
         String poppedForms = "myPoppedForms";
-        setupMetadata(metadata, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
-        testFileType(metadata, poppedForms, null);
+        setupDeprecatedMetadata(metadata, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
+        testDeprecatedFileType(metadata, poppedForms, null);
 
         String formsArg = "myFile";
-        setupMetadata(metadata, formsArg, DropOffUtil.FileTypeCheckParameter.FILETYPE);
-        testFileType(metadata, formsArg, formsArg);
+        setupDeprecatedMetadata(metadata, formsArg, DropOffUtil.FileTypeCheckParameter.FILETYPE);
+        testDeprecatedFileType(metadata, formsArg, formsArg);
 
         String finalId = "myFinalId";
-        setupMetadata(metadata, finalId, DropOffUtil.FileTypeCheckParameter.FINAL_ID);
+        setupDeprecatedMetadata(metadata, finalId, DropOffUtil.FileTypeCheckParameter.FINAL_ID);
         formsArg = "differentFileType";
-        testFileType(metadata, finalId, formsArg);
+        testDeprecatedFileType(metadata, finalId, formsArg);
 
         formsArg = "myFile  ";
         metadata.clear();
-        testFileType(metadata, "myFile", formsArg);
+        testDeprecatedFileType(metadata, "myFile", formsArg);
         assertEquals(formsArg,
                 metadata.get(DropOffUtil.FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName()));
 
         formsArg = "";
         String fontEncoding = "fontEncoding";
-        setupMetadata(metadata, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
-        testFileType(metadata, "TEXT", formsArg);
+        setupDeprecatedMetadata(metadata, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
+        testDeprecatedFileType(metadata, "TEXT", formsArg);
 
         metadata.clear();
         formsArg = " MSWORD";
-        testFileType(metadata, "MSWORD_FRAGMENT", formsArg);
+        testDeprecatedFileType(metadata, "MSWORD_FRAGMENT", formsArg);
 
         metadata.clear();
         formsArg = "QUOTED-PRINTABLE";
-        testFileType(metadata, "TEXT", formsArg);
+        testDeprecatedFileType(metadata, "TEXT", formsArg);
     }
 
-    private void setupMetadata(Map<String, String> metadata, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
+    private void setupDeprecatedMetadata(Map<String, String> metadata, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
         metadata.clear();
         metadata.put(fileTypeCheckParameter.getFieldName(), fieldValue);
     }
 
-    private void testFileType(Map<String, String> metadata, String expectedResults, String formsArg) {
+    private void testDeprecatedFileType(Map<String, String> metadata, String expectedResults, String formsArg) {
         String fileType;
         fileType = util.getFileType(metadata, formsArg);
+        assertEquals(expectedResults, fileType);
+    }
+
+    @Test
+    public void testGetFileType() {
+        final IBaseDataObject bdo = new BaseDataObject();
+
+        testFileType(bdo, null, "UNKNOWN", null);
+
+        Map<String, String> metadata = new HashMap<>();
+        testFileType(bdo, metadata, "UNKNOWN", null);
+
+        String poppedForms = "myPoppedForms";
+        setupMetadata(bdo, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
+        testFileType(bdo, metadata, poppedForms, null);
+
+        String formsArg = "myFile";
+        setupMetadata(bdo, formsArg, DropOffUtil.FileTypeCheckParameter.FILETYPE);
+        testFileType(bdo, metadata, formsArg, formsArg);
+
+        String finalId = "myFinalId";
+        setupMetadata(bdo, finalId, DropOffUtil.FileTypeCheckParameter.FINAL_ID);
+        formsArg = "differentFileType";
+        testFileType(bdo, null, finalId, formsArg);
+        testFileType(bdo, metadata, finalId, formsArg);
+
+        formsArg = "myFile  ";
+        bdo.clearParameters();
+        metadata.clear();
+        testFileType(bdo, null, "myFile", formsArg);
+        testFileType(bdo, metadata, "myFile", formsArg);
+        assertEquals(formsArg,
+                metadata.get(DropOffUtil.FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName()));
+
+        formsArg = "";
+        String fontEncoding = "fontEncoding";
+        setupMetadata(bdo, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
+        testFileType(bdo, metadata, "TEXT", formsArg);
+
+        bdo.clearParameters();
+        metadata.clear();
+        formsArg = " MSWORD";
+        testFileType(bdo, metadata, "MSWORD_FRAGMENT", formsArg);
+
+        metadata.clear();
+        formsArg = "QUOTED-PRINTABLE";
+        testFileType(bdo, metadata, "TEXT", formsArg);
+    }
+
+    @Test
+    public void testExtractUniqueFileExtensions() {
+        // these should be constants
+        final String FILEXT = "FILEXT";
+        final String ORIGINAL_FILENAME = "Original-Filename";
+        DropOffUtil util = new DropOffUtil();
+
+        final IBaseDataObject bdo = new BaseDataObject();
+        bdo.appendParameter(ORIGINAL_FILENAME, "name_with_no_period");
+
+        util.extractUniqueFileExtensions(bdo);
+
+        List<Object> fileExts = bdo.getParameter(FILEXT);
+        assertNull("FILEXT value should be null if no Original-Filename contains a period", fileExts);
+
+        bdo.appendParameter(ORIGINAL_FILENAME, "lower.case.zip");
+        bdo.appendParameter(ORIGINAL_FILENAME, "UPPER.CASE.MP3");
+        bdo.appendParameter(ORIGINAL_FILENAME, "duplicated.mp3");
+        assertEquals("bdo should now have 4 Original-Filename values", 4, bdo.getParameter(ORIGINAL_FILENAME).size());
+
+        util.extractUniqueFileExtensions(bdo);
+        fileExts = bdo.getParameter(FILEXT);
+
+        // validate extracted FILEXT values
+        assertEquals("bdo should now have 2 FILEXT values ", 2, fileExts.size());
+        assertTrue("FILEXT values should contain \"zip\"", fileExts.contains("zip"));
+        assertTrue("FILEXT values should contain \"mp3\"", fileExts.contains("mp3"));
+    }
+
+    private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
+        bdo.clearParameters();
+        bdo.putParameter(fileTypeCheckParameter.getFieldName(), fieldValue);
+    }
+
+    private void testFileType(IBaseDataObject bdo, Map<String, String> metadata, String expectedResults, String formsArg) {
+        String fileType;
+        fileType = DropOffUtil.getAndPutFileType(bdo, metadata, formsArg);
         assertEquals(expectedResults, fileType);
     }
 }

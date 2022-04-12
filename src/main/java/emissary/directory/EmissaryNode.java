@@ -16,6 +16,7 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
+import emissary.spi.SPILoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,13 +239,8 @@ public class EmissaryNode {
         emissary.core.ResourceWatcher watcher = new emissary.core.ResourceWatcher(metricsManager);
         logger.debug("Started resource watcher..." + watcher.toString());
 
-        // Initialize charset mappings
-        emissary.util.JavaCharSetLoader.initialize();
-        logger.debug("Initialized charset mapping subsystem...");
-
-        // / Initialize the metadata dictionary
-        emissary.core.MetadataDictionary.initialize();
-        logger.debug("Initialized the metadata dictionary...");
+        // Initialize list of configured spi classes
+        SPILoader.load();
 
         // Initialize the rolling framework
         RollManager.getManager();

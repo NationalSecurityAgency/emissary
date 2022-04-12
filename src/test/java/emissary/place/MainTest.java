@@ -1,12 +1,15 @@
 package emissary.place;
 
+import static emissary.place.Main.filePathIsWithinBaseDirectory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -25,11 +28,16 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public final class MainTest extends UnitTest {
     private String className = "emissary.place.sample.DevNullPlace";
     private String[] defaultArgs = {"-s"};
+
+    @Rule
+    public TemporaryFolder testOutputFolder = new TemporaryFolder();
 
     @Override
     @Before
@@ -204,6 +212,68 @@ public final class MainTest extends UnitTest {
         assertTrue("Should have recorded record metadata - " + s, s.indexOf("RECORD_KEY") > -1);
     }
 
+    @Test
+    public void testHandleSplitOutput() throws IOException {
+        File outputFolder = testOutputFolder.newFolder("testmain.dat");
+        String[] args = {"-S", "-d", outputFolder.getCanonicalPath()};
+        Main m = new Main(this.className, args);
+        m.parseArguments();
+        try {
+            m.run();
+        } catch (Throwable t) {
+            fail("Main runner allowed exception to escape: " + t);
+        }
+        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
+        List<IBaseDataObject> atts = new ArrayList<>();
+        IBaseDataObject att1 = DataObjectFactory.getInstance("bbb".getBytes(), "safe_attempt", "SAFE_ATTEMPT");
+        atts.add(att1);
+        IBaseDataObject att2 = DataObjectFactory.getInstance("ccc".getBytes(), "escape_attempt", "./../../pwned/ESCAPE_ATTEMPT");
+        atts.add(att2);
+
+        IBaseDataObject att3 = DataObjectFactory.getInstance("ccc".getBytes(), "attempt", "./../../testmain.dat_sibling/ESCAPE_ATTEMPT");
+        atts.add(att3);
+
+        m.handleSplitOutput(payload, atts);
+
+        // validate that output files "test.UNKNOWN" and "safe_attempt.SAFE_ATTEMPT" were created, but file
+        // "escape_attempt../../../pwned/ESCAPE_ATTEMPT" was not
+        String normalizedPath = outputFolder + "/" + payload.shortName() + "." + payload.currentForm();
+        assertTrue("File \"" + normalizedPath + "\" should have been created", Files.exists(Paths.get(normalizedPath).normalize()));
+
+        normalizedPath = outputFolder + "/" + att1.shortName() + "." + att1.currentForm();
+        assertTrue("File \"" + normalizedPath + "\" should have been created", Files.exists(Paths.get(normalizedPath).normalize()));
+
+        normalizedPath = outputFolder + "/" + att2.shortName() + "." + att2.currentForm();
+        assertFalse("File \"" + normalizedPath + "\" should have NOT been created", Files.exists(Paths.get(normalizedPath).normalize()));
+
+        normalizedPath = outputFolder + "/" + att3.shortName() + "." + att3.currentForm();
+        assertFalse("File \"" + normalizedPath + "\" should have NOT been created", Files.exists(Paths.get(normalizedPath).normalize()));
+    }
+
+    @Test
+    public void testFilePathIsWithinBaseDirectory() throws IOException {
+
+        String basePath = testOutputFolder.newFolder("foo").getPath();
+        assertEquals(basePath + "/somefile", filePathIsWithinBaseDirectory(basePath, basePath + "/somefile"));
+        assertEquals(basePath + "/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "//otherfile"));
+        assertEquals(basePath + "/foo/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/./foo/otherfile"));
+        assertEquals(basePath + "/sub/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/sub/././otherfile"));
+
+        // Each of these should thrown an Exception
+        assertThrows(IllegalArgumentException.class, () -> filePathIsWithinBaseDirectory(basePath, "/var/log/somelog"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../foo2/otherfile"),
+                "Expected an IllegalArgumentException from input " + basePath + "/../foo2/otherfile");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../../somefile"),
+                "Expected an IllegalArgumentException from input " + basePath + "/../../somefile");
+
+        assertThrows(IllegalArgumentException.class,
+                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/path/../../../otherpath"),
+                "Expected an IllegalArgumentException from input " + basePath + "/path/../../../otherpath");
+    }
 
     // Override the hooks. The calls to super in these
     // hooks are not normal, but help us mark the super class

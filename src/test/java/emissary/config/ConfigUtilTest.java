@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.Properties;
 import emissary.core.EmissaryException;
 import emissary.test.core.LogbackCapture;
 import emissary.test.core.UnitTest;
+import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -94,11 +96,7 @@ public class ConfigUtilTest extends UnitTest {
 
     @Test
     public void testOldStyleNestedClassConfig() {
-        try {
-            ConfigUtil.getConfigInfo(Dummy.class);
-            fail("This configuration should not exist");
-        } catch (IOException expected) {
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(Dummy.class));
     }
 
     @Test
@@ -107,11 +105,7 @@ public class ConfigUtilTest extends UnitTest {
         prefs.add("foo");
         prefs.add("bar");
         prefs.add("quuz");
-        try {
-            ConfigUtil.getConfigInfo(prefs);
-            fail("None of these prefs should exist");
-        } catch (IOException expected) {
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(prefs));
     }
 
     @Test
@@ -276,13 +270,7 @@ public class ConfigUtilTest extends UnitTest {
 
         // assert
         assertEquals("Entry BOO is wrong", "HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"));
-        try {
-            // This doesn't exist
-            ConfigUtil.getConfigInfo(cfgName2.getFileName().toString());
-            fail("Should have thrown IOException");
-        } catch (IOException e) {
-            // swallow, this is expected
-        }
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(cfgName2.getFileName().toString()));
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -609,6 +597,37 @@ public class ConfigUtilTest extends UnitTest {
         assertEquals("BlahBlahPlace should not have been", null, c.findStringEntry("BlahBlahPlace"));
         assertEquals("Should have a config error", true, ConfigUtil.hasConfigErrors());
 
+    }
+
+    @Test
+    public void testMissingImportFileInConfig() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"").getBytes();
+
+        // Initialize String[] for files for getConfigInfo(final String[] preferences)
+        final String[] files = new String[] {priname};
+
+        String result = "";
+        String importFileName = Paths.get(impname).getFileName().toString();
+
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            ConfigUtil.getConfigInfo(files);
+        } catch (IOException iox) {
+            // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
+            result = iox.getMessage();
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+
+        String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
+                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
+
+        assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
     }
 
     private Path createTmpSubDir(final String name) throws IOException {

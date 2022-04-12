@@ -1,0 +1,47 @@
+FROM centos:7
+
+ARG user=emissary
+ARG group=emissary
+ARG uid=1000
+ARG gid=1000
+ARG maven_version=3.6.3
+ARG java_version=1.8.0
+
+ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -XX:MaxPermSize=128M -Djava.awt.headless=true
+ENV MAVEN_HOME /opt/maven
+ENV JAVA_HOME /usr/lib/jvm/java-${java_version}-amazon-corretto
+ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+
+RUN yum install -y which && \
+    rpm --import https://yum.corretto.aws/corretto.key && \
+    curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo  && \
+    yum install -y java-${java_version}-amazon-corretto-devel && \
+    curl -L -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz && \
+    tar xvf /tmp/maven.tar.gz -C /opt && \
+    rm /tmp/maven.tar.gz && \
+    ln -s /opt/apache-maven-${maven_version} ${MAVEN_HOME} && \
+    ln -s /opt/maven/bin/mvn /usr/bin/mvn && \
+    groupadd -g ${gid} ${group} && \
+    useradd -u ${uid} -g ${group} -s /bin/sh -m ${user}
+
+COPY pom.xml /opt/emissary/pom.xml
+RUN chown -R ${user}:${group} /opt/emissary
+
+USER ${user}
+WORKDIR /opt/emissary
+RUN mvn dependency:go-offline
+
+USER root
+COPY . /opt/emissary
+RUN chown -R ${user}:${group} /opt/emissary && chmod -R 744 /opt/emissary &&\
+    (rm -f .mvn-classpath || true)
+
+USER ${user}
+WORKDIR /opt/emissary
+RUN mvn clean install
+
+EXPOSE 8000 8001
+
+ENTRYPOINT ["./emissary"]
+
+CMD ["server", "-a", "5", "-p", "8001", "-h", "emissary"]

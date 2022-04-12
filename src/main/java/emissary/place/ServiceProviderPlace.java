@@ -30,7 +30,6 @@ import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
-import emissary.util.JavaCharSetLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -40,8 +39,8 @@ import org.slf4j.MDC;
  * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
  * throughout the system.
  */
-public abstract class ServiceProviderPlace extends emissary.core.AggregateObject implements emissary.place.IServiceProviderPlace,
-        emissary.core.IAggregator, ServiceProviderPlaceMBean {
+public abstract class ServiceProviderPlace implements emissary.place.IServiceProviderPlace,
+        ServiceProviderPlaceMBean {
 
     /**
      * Container for all configuration parameters read from the configuration file for this place. The net result is that
@@ -227,9 +226,6 @@ public abstract class ServiceProviderPlace extends emissary.core.AggregateObject
 
         // The order of the following initialization calls
         // is touchy. NPE all over if you mess up here.
-
-        // Initialize charset typing mechanism
-        JavaCharSetLoader.initialize();
 
         // Set ServicePlace config items
         configureServicePlace(placeLocation);

@@ -17,6 +17,7 @@ public class PriorityDirectoryConverterTest extends UnitTest {
     private PriorityDirectoryConverter converter;
     private PriorityDirectory pd;
 
+    @Override
     @Before
     public void setUp() {
         converter = new PriorityDirectoryConverter();

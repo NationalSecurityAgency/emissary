@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -111,13 +112,9 @@ public class ServiceConfigGuideTest extends UnitTest {
     public void testBadQuoting() {
         final byte[] configData = "FOO = 123.123.123.123\nBAR = \"234.234.234.234\"\n".getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        try {
-            ConfigUtil.getConfigInfo(str);
-            fail("Bad quoting should throw exception");
-        } catch (IOException iox) {
-            final String msg = iox.getMessage();
-            assertTrue("Exception message must have line number", msg.indexOf("line 1?") > -1);
-        }
+        IOException iox = assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(str));
+        final String msg = iox.getMessage();
+        assertTrue("Exception message must have line number", msg.indexOf("line 1?") > -1);
     }
 
     @Test
@@ -204,13 +201,9 @@ public class ServiceConfigGuideTest extends UnitTest {
     public void testBadSpacing() {
         final byte[] configData = "FOO=123\n".getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        try {
-            ConfigUtil.getConfigInfo(str);
-            fail("Bad spacing should throw exception");
-        } catch (IOException iox) {
-            final String msg = iox.getMessage();
-            assertTrue("Exception message must have line number: " + msg, msg.indexOf("line 1?") > -1);
-        }
+        IOException iox = assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(str));
+        final String msg = iox.getMessage();
+        assertTrue("Exception message must have line number: " + msg, msg.indexOf("line 1?") > -1);
     }
 
     @Test
@@ -514,6 +507,58 @@ public class ServiceConfigGuideTest extends UnitTest {
         assertEquals("Old values removed on *", 1, c1.findEntries("FOO").size());
         assertEquals("Specified value removed when listed", 1, c1.findEntries("KEY1").size());
         assertEquals("Non-specified value remains after remove", "VAL1", c1.findStringEntry("KEY1"));
+    }
+
+    @Test
+    public void testImportFileWhenFileExists() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+        final byte[] importfile = new String("FOO = \"BAR\"\n").getBytes();
+
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            Executrix.writeDataToFile(importfile, impname);
+            new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // should not be reached due to IMPORT_FILE existing
+            throw new AssertionError("IMPORT_FILE not found.", iox);
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+    }
+
+    @Test
+    public void testImportFileWhenFileDoesNotExist() throws IOException {
+        // Write the config bytes out to a temp file
+        final String dir = System.getProperty("java.io.tmpdir");
+        final String priname = dir + "/primary.cfg";
+        final String impname = dir + "/import.cfg";
+
+        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
+
+        String result = "";
+        String importFileName = Paths.get(impname).getFileName().toString();
+
+        try {
+            Executrix.writeDataToFile(primary, priname);
+            new ServiceConfigGuide(priname);
+        } catch (IOException iox) {
+            // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
+            result = iox.getMessage();
+        } finally {
+            Files.deleteIfExists(Paths.get(priname));
+            Files.deleteIfExists(Paths.get(impname));
+        }
+
+        String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
+                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
+
+        assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
     }
 
     @Test

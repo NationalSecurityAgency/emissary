@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
@@ -510,26 +511,10 @@ public class BaseDataObjectTest extends UnitTest {
 
     @Test
     public void testCurrentFormNullHandling() {
-        try {
-            this.b.pushCurrentForm(null);
-            fail("Current form cannot push null");
-        } catch (IllegalArgumentException expected) {
-        }
-        try {
-            this.b.enqueueCurrentForm(null);
-            fail("Current form cannot enqueue null");
-        } catch (IllegalArgumentException expected) {
-        }
-        try {
-            this.b.setCurrentForm(null);
-            fail("Current form cannot set null");
-        } catch (IllegalArgumentException expected) {
-        }
-        try {
-            this.b.addCurrentFormAt(0, null);
-            fail("Current form cannot set null");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.pushCurrentForm(null));
+        assertThrows(IllegalArgumentException.class, () -> this.b.enqueueCurrentForm(null));
+        assertThrows(IllegalArgumentException.class, () -> this.b.setCurrentForm(null));
+        assertThrows(IllegalArgumentException.class, () -> this.b.addCurrentFormAt(0, null));
     }
 
     @Test
@@ -985,7 +970,7 @@ public class BaseDataObjectTest extends UnitTest {
             this.b.popCurrentForm();
             assertEquals("Current form stack must be detached after clone", this.b.currentFormSize(), clone.currentFormSize() - 1);
         } catch (CloneNotSupportedException ex) {
-            fail("Clone must be supported on BaseDataObject");
+            throw new AssertionError("Clone must be supported on BaseDataObject", ex);
         }
     }
 
@@ -1029,11 +1014,7 @@ public class BaseDataObjectTest extends UnitTest {
 
     @Test
     public void testNullTimestampSettingThrowsException() {
-        try {
-            this.b.setCreationTimestamp(null);
-            fail("Should not be able to set null timestamp");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.setCreationTimestamp(null));
     }
 
     @Test
@@ -1052,17 +1033,9 @@ public class BaseDataObjectTest extends UnitTest {
         assertEquals("Expected a single extracted record", 1, this.b.getExtractedRecords().size());
         assertEquals("Expected a single extracted record", 1, this.b.getExtractedRecordCount());
 
-        try {
-            this.b.setExtractedRecords(null);
-            fail("Shoud not be able to add null extracted record list");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.setExtractedRecords(null));
 
-        try {
-            this.b.addExtractedRecord(null);
-            fail("Should not be able to add null extracted record");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.addExtractedRecord(null));
 
         this.b.addExtractedRecord(other);
         assertTrue("Expected extracted records", this.b.hasExtractedRecords());
@@ -1082,25 +1055,13 @@ public class BaseDataObjectTest extends UnitTest {
         list.add(new BaseDataObject());
         list.add(null);
 
-        try {
-            this.b.setExtractedRecords(list);
-            fail("Should not be able to use a list with null elements");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.setExtractedRecords(list));
 
-        try {
-            this.b.addExtractedRecords(list);
-            fail("Should not be able to use a list with null elements");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.addExtractedRecords(list));
 
         list.remove(1);
 
-        try {
-            this.b.addExtractedRecords(null);
-            fail("Should fail to add null list");
-        } catch (IllegalArgumentException expected) {
-        }
+        assertThrows(IllegalArgumentException.class, () -> this.b.addExtractedRecords(null));
 
         this.b.addExtractedRecords(list);
         assertEquals("Expect one extracted record", 1, this.b.getExtractedRecordCount());

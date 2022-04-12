@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Iterator;
 
@@ -24,12 +25,9 @@ public class NamespaceTest extends UnitTest {
 
     @Test
     public void testEmpty() {
-        try {
-            final Object o = Namespace.lookup("myObject");
-            fail("Found object in empty namespace " + o.getClass().getName());
-        } catch (NamespaceException e) {
-            // expected;
-        }
+        assertThrows(NamespaceException.class,
+                () -> Namespace.lookup("myObject"),
+                "Found object in empty namespace ");
     }
 
     @Test
@@ -48,12 +46,9 @@ public class NamespaceTest extends UnitTest {
     public void testUnbind() {
         Namespace.bind("myObject2", new Object());
         Namespace.unbind("myObject2");
-        try {
-            final Object o = Namespace.lookup("myObject2");
-            fail("Failed to unbind object from namespace " + o.getClass().getName());
-        } catch (NamespaceException e) {
-            // expected
-        }
+        assertThrows(NamespaceException.class,
+                () -> Namespace.lookup("myObject2"),
+                "Failed to unbind object from namespace");
     }
 
     @Test
@@ -66,12 +61,7 @@ public class NamespaceTest extends UnitTest {
         } catch (NamespaceException e) {
             fail("Lookup failed: " + e.getMessage());
         }
-        try {
-            Namespace.lookup("BadStuffPlace");
-            fail("Lookup should fail for BadStuffPlace");
-        } catch (NamespaceException e) {
-            // expected
-        }
+        assertThrows(NamespaceException.class, () -> Namespace.lookup("BadStuffPlace"));
     }
 
     @Test

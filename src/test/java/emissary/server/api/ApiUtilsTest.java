@@ -51,6 +51,7 @@ public class ApiUtilsTest extends UnitTest {
         Namespace.bind("EmissaryServer", mockServer);
     }
 
+    @Override
     @After
     public void tearDown() {
         Namespace.clear();

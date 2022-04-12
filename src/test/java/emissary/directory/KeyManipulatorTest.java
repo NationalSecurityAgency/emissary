@@ -123,6 +123,20 @@ public class KeyManipulatorTest extends UnitTest {
         assertTrue("Host match matches default directory", KeyManipulator.gmatch(wc, hc));
     }
 
+    /**
+     * Validates that getDefaultDirectoryKey ignores arbitrary characters before the first separator
+     */
+    @Test
+    public void testGetDefaultDirectoryKeyIgnoresNonSeparatorPrefix() {
+
+        final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
+        final String prefix = "#";
+
+        String expected = KeyManipulator.getDefaultDirectoryKey(s);
+        String actual = KeyManipulator.getDefaultDirectoryKey(prefix + s);
+        assertEquals("Non-separator prefix should be ignored", expected, actual);
+    }
+
     @Test
     public void testServiceTypeExtraction() {
         final String dataId = "FOO::BAR";

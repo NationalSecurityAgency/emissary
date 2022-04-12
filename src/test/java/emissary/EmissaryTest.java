@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -32,12 +32,7 @@ public class EmissaryTest extends UnitTest {
 
     @Test
     public void testDefaultCommandsUnmodifiable() {
-        try {
-            Emissary.EMISSARY_COMMANDS.put("junk", new JunkCommand());
-            fail("Should have thrown");
-        } catch (UnsupportedOperationException e) {
-            // this is the right path
-        }
+        assertThrows(UnsupportedOperationException.class, () -> Emissary.EMISSARY_COMMANDS.put("junk", new JunkCommand()));
     }
 
     @Test

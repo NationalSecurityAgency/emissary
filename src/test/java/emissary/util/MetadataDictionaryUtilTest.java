@@ -2,7 +2,6 @@ package emissary.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class MetadataDictionaryUtilTest extends UnitTest {
             assertEquals(1, map.get("key").size());
             assertTrue(map.get("key").contains("val1"));
         } catch (IOException e) {
-            fail("Exception occurred while converting lines to map");
+            throw new AssertionError("Exception occurred while converting lines to map", e);
         }
     }
 

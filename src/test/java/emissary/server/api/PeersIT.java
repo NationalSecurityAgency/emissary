@@ -138,6 +138,7 @@ public class PeersIT extends EndpointTestBase {
             return false;
         }
 
+        @Override
         public Configurator getPeerConfigurator() throws IOException {
             // just go get this from the src/test/resources directory
             return ConfigUtil.getConfigInfo("peer-TESTING.cfg");

@@ -2,7 +2,7 @@ package emissary.command;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -38,13 +38,11 @@ public class RunCommandIT extends UnitTest {
     @Test
     public void testClassMustExist() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String clazzName = "com.junk.Who";
-        try {
+        Exception e = assertThrows(Exception.class, () -> {
             RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
             cmd.run(new JCommander());
-            fail("Should have thrown exception");
-        } catch (Exception e) {
-            assertThat(e.getMessage(), containsString("Could not find fully qualified class named " + clazzName));
-        }
+        });
+        assertThat(e.getMessage(), containsString("Could not find fully qualified class named " + clazzName));
     }
 
     @Test
