@@ -1,7 +1,9 @@
 package emissary.command;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,8 +18,6 @@ import com.beust.jcommander.ParameterException;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.core.StringEndsWith;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +26,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
@@ -79,29 +80,29 @@ public class FeedCommandIT extends UnitTest {
         command = FeedCommand.parse(FeedCommand.class, arguments);
 
         // verify required
-        assertThat(command.getPriorityDirectories().size(), equalTo(1));
-        assertThat(command.getPriorityDirectories().get(0).getDirectoryName(), equalTo(inputDir.toString() + "/"));
-        assertThat(command.getProjectBase(), equalTo(baseDir));
+        assertEquals(1, command.getPriorityDirectories().size());
+        assertEquals(inputDir.toString() + "/", command.getPriorityDirectories().get(0).getDirectoryName());
+        assertEquals(baseDir, command.getProjectBase());
 
         // verify defaults
-        assertThat(command.getBundleSize(), equalTo(1));
-        assertThat(command.getCaseClass(), equalTo(""));
-        assertThat(command.getCaseId(), equalTo("auto"));
-        assertThat(command.getClientPattern(), equalTo("INITIAL.FILE_PICK_UP_CLIENT.INPUT.*"));
-        assertThat(command.getEatPrefix(), equalTo(""));
-        assertThat(command.getHost(), equalTo("localhost"));
-        assertThat(command.getLogbackConfig(), equalTo(baseDir + "/config/logback.xml"));
-        assertThat(command.getOutputRoot(), StringEndsWith.endsWith("/DoneParsedData"));
-        assertThat(command.getPort(), equalTo(7001));
-        assertThat(command.getSort(), equalTo(null));
-        assertThat(command.getWorkspaceClass(), equalTo("emissary.pickup.WorkSpace"));
-        assertThat(command.getWorkspaceName(), equalTo("WorkSpace"));
-        assertThat(command.isFileTimestamp(), equalTo(false));
-        assertThat(command.isSimple(), equalTo(false));
-        assertThat(command.isIncludeDirs(), equalTo(false));
-        assertThat(command.isLoop(), equalTo(true));
-        assertThat(command.isRetry(), equalTo(true));
-        assertThat(command.isSkipDotFile(), equalTo(true));
+        assertEquals(1, command.getBundleSize());
+        assertEquals("", command.getCaseClass());
+        assertEquals("auto", command.getCaseId());
+        assertEquals("INITIAL.FILE_PICK_UP_CLIENT.INPUT.*", command.getClientPattern());
+        assertEquals("", command.getEatPrefix());
+        assertEquals("localhost", command.getHost());
+        assertEquals(baseDir + "/config/logback.xml", command.getLogbackConfig());
+        assertTrue(command.getOutputRoot().endsWith("/DoneParsedData"));
+        assertEquals(7001, command.getPort());
+        assertNull(command.getSort());
+        assertEquals("emissary.pickup.WorkSpace", command.getWorkspaceClass());
+        assertEquals("WorkSpace", command.getWorkspaceName());
+        assertFalse(command.isFileTimestamp());
+        assertFalse(command.isSimple());
+        assertFalse(command.isIncludeDirs());
+        assertTrue(command.isLoop());
+        assertTrue(command.isRetry());
+        assertTrue(command.isSkipDotFile());
     }
 
     @Theory
@@ -126,21 +127,21 @@ public class FeedCommandIT extends UnitTest {
     @Test
     public void testFeedCommandGetClusterFlavor() throws Exception {
         FeedCommand.parse(FeedCommand.class, "-b ", baseDir.toAbsolutePath().toString(), "-i", inputDir.toAbsolutePath().toString());
-        assertThat(System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY), equalTo("CLUSTER"));
+        assertEquals("CLUSTER", System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY));
     }
 
     @Test
     public void testFeedCommandGetsFlavors() throws Exception {
         FeedCommand.parse(FeedCommand.class, "-b ", baseDir.toAbsolutePath().toString(), "-i", inputDir.toAbsolutePath().toString(), "--flavor",
                 "JUNK,trunk"); // trunk will be upcased
-        assertThat(System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY), equalTo("CLUSTER,JUNK,TRUNK"));
+        assertEquals("CLUSTER,JUNK,TRUNK", System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY));
     }
 
     @Test
     public void testFeedDedupesFlavors() throws Exception {
         FeedCommand.parse(FeedCommand.class, "-b ", baseDir.toAbsolutePath().toString(), "-i", inputDir.toAbsolutePath().toString(), "--flavor",
                 "CLUSTER,FUDGE,JUNK,FUDGE");
-        assertThat(System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY), equalTo("CLUSTER,FUDGE,JUNK"));
+        assertEquals("CLUSTER,FUDGE,JUNK", System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY));
 
     }
 

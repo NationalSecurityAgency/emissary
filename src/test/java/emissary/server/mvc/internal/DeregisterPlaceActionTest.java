@@ -2,8 +2,8 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
@@ -64,9 +64,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -79,9 +79,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("No directory found using name CantFindThis"));
+        assertEquals("No directory found using name CantFindThis", result);
     }
 
     @Test
@@ -91,9 +91,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]"));
+        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]", result);
     }
 
     @Test
@@ -105,10 +105,10 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
         // Notice that ALL keys must be well formed or none of them get processed
-        assertThat(result, equalTo("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]"));
+        assertEquals("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]", result);
     }
 
     @Test
@@ -120,9 +120,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]"));
+        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]", result);
     }
 
     // TODO can we clean this up and just use an EmissaryNode?

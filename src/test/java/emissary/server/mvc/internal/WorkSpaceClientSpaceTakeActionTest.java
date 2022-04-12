@@ -2,9 +2,9 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.CLIENT_NAME;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.SPACE_NAME;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
@@ -64,9 +64,9 @@ public class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -79,9 +79,9 @@ public class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("There was an exception in the WorkSpaceClientSpaceTake"));
+        assertEquals("There was an exception in the WorkSpaceClientSpaceTake", result);
     }
 
 
@@ -93,10 +93,10 @@ public class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
         final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
-        assertThat(resultWb, notNullValue());
+        assertNotNull(resultWb);
     }
 
     @Test
@@ -112,11 +112,11 @@ public class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
         // test
         Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams));
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
         final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
-        assertThat(wb.getFileNameList(), equalTo(resultWb.getFileNameList()));
-        assertThat(wb.getBundleId(), equalTo(resultWb.getBundleId()));
+        assertEquals(resultWb.getFileNameList(), wb.getFileNameList());
+        assertEquals(resultWb.getBundleId(), wb.getBundleId());
     }
 
 

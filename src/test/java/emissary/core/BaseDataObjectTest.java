@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,8 +28,6 @@ import emissary.config.Configurator;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
 import emissary.test.core.UnitTest;
-import org.hamcrest.core.Is;
-import org.hamcrest.core.IsNull;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,11 +63,11 @@ public class BaseDataObjectTest extends UnitTest {
     public void testConstructors() {
         final BaseDataObject b2 = new BaseDataObject("This is a test".getBytes(), "filename.txt", "ONE");
         assertEquals("Current form in ctor", "ONE", b2.currentForm());
-        assertThat(b2.getCreationTimestamp(), IsNull.notNullValue());
+        assertNotNull(b2.getCreationTimestamp());
 
         final BaseDataObject b3 = new BaseDataObject("test".getBytes(), "filename.txt", null);
         assertEquals("Current form with null in ctor", "", b3.currentForm());
-        assertThat(b3.getCreationTimestamp(), IsNull.notNullValue());
+        assertNotNull(b3.getCreationTimestamp());
     }
 
     @Test
@@ -997,7 +994,7 @@ public class BaseDataObjectTest extends UnitTest {
         final BaseDataObject ibdo = new BaseDataObject();
 
         // verify
-        assertThat(ibdo.getCreationTimestamp(), IsNull.notNullValue());
+        assertNotNull(ibdo.getCreationTimestamp());
     }
 
     @Test
@@ -1009,7 +1006,7 @@ public class BaseDataObjectTest extends UnitTest {
         this.b.setCreationTimestamp(date);
 
         // verify
-        assertThat(this.b.getCreationTimestamp(), Is.is(date));
+        assertEquals(date, this.b.getCreationTimestamp());
     }
 
     @Test

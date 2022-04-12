@@ -1,8 +1,7 @@
 package emissary.command;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -42,7 +41,7 @@ public class RunCommandIT extends UnitTest {
             RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
             cmd.run(new JCommander());
         });
-        assertThat(e.getMessage(), containsString("Could not find fully qualified class named " + clazzName));
+        assertTrue(e.getMessage().contains("Could not find fully qualified class named " + clazzName));
     }
 
     @Test
@@ -52,7 +51,7 @@ public class RunCommandIT extends UnitTest {
 
         captureStdOutAndStdErrAndRunCommand(cmd);
 
-        assertThat(outContent.toString(), containsString("I am a test that runs myself.  My args are []"));
+        assertTrue(outContent.toString().contains("I am a test that runs myself.  My args are []"));
     }
 
     @Test
@@ -65,7 +64,7 @@ public class RunCommandIT extends UnitTest {
 
         captureStdOutAndStdErrAndRunCommand(cmd);
 
-        assertThat(outContent.toString(), containsString("I am a test that runs myself.  My args are [" + arg1 + ", " + arg2 + ", " + arg3 + "]"));
+        assertTrue(outContent.toString().contains("I am a test that runs myself.  My args are [" + arg1 + ", " + arg2 + ", " + arg3 + "]"));
     }
 
     @Test
@@ -80,7 +79,7 @@ public class RunCommandIT extends UnitTest {
 
         captureStdOutAndStdErrAndRunCommand(cmd);
 
-        assertThat(outContent.toString(), containsString("I am a test that runs myself.  My args are [" + arg1 + ", " + arg2 + ", " + arg3 + ", "
+        assertTrue(outContent.toString().contains("I am a test that runs myself.  My args are [" + arg1 + ", " + arg2 + ", " + arg3 + ", "
                 + arg4 + "]"));
 
     }

@@ -1,11 +1,14 @@
 package emissary.server.api;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
 
 import javax.ws.rs.core.Response;
 
@@ -16,8 +19,6 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
-import org.hamcrest.collection.IsEmptyCollection;
-import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -57,12 +58,12 @@ public class AgentsTest extends EndpointTestBase {
         Response response = target("agents").request().get();
 
         // verify
-        assertThat(response.getStatus(), equalTo(200));
+        assertEquals(200, response.getStatus());
         AgentsResponseEntity entity = response.readEntity(AgentsResponseEntity.class);
-        assertThat(entity.getErrors(), IsEmptyCollection.empty());
-        assertThat(entity.getCluster(), IsEmptyCollection.empty());
-        assertThat(entity.getLocal().getHost(), equalTo("localhost:8001"));
-        assertThat(entity.getLocal().getAgents(), IsIterableContainingInOrder.contains(EXPECTED_AGENTS));
+        assertTrue(entity.getErrors().isEmpty());
+        assertTrue(entity.getCluster().isEmpty());
+        assertEquals("localhost:8001", entity.getLocal().getHost());
+        assertIterableEquals(Arrays.asList(EXPECTED_AGENTS), entity.getLocal().getAgents());
     }
 
     @Ignore

@@ -4,8 +4,8 @@ import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_ID;
 import static emissary.server.mvc.adapters.WorkSpaceAdapter.WORK_BUNDLE_STATUS;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.CLIENT_NAME;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.SPACE_NAME;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
@@ -68,9 +68,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -83,9 +83,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -98,11 +98,11 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(
-                result,
-                equalTo("There was a problem while processing the WorkBundle: Not found: http://workBundleCompletedActionTest:7001/WorkSpaceThisWillMiss"));
+        assertEquals(
+                "There was a problem while processing the WorkBundle: Not found: http://workBundleCompletedActionTest:7001/WorkSpaceThisWillMiss",
+                result);
     }
 
     @Test
@@ -115,9 +115,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -127,9 +127,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith(""), equalTo(true));
+        assertTrue(result.startsWith(""));
     }
 
     @Test
@@ -146,8 +146,8 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Work Bundle Completed"));
+        assertEquals("Work Bundle Completed", result);
     }
 }

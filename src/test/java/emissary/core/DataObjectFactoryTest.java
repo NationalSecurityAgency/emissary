@@ -1,10 +1,9 @@
 package emissary.core;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
 import org.junit.After;
@@ -33,19 +32,19 @@ public class DataObjectFactoryTest extends UnitTest {
     @Test
     public void testFactory() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
-        assertNotNull("DataObject created", d);
-        assertTrue("Proper class hierarchy", d instanceof IBaseDataObject);
+        assertNotNull(d, "DataObject created");
+        assertTrue(d instanceof IBaseDataObject, "Proper class hierarchy");
     }
 
     @Test
     public void testSetImpl() {
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
-        assertEquals("Impl class set", MyDataObject.class.getName(), DataObjectFactory.getImplementingClass());
+        assertEquals(MyDataObject.class.getName(), DataObjectFactory.getImplementingClass(), "Impl class set");
         final IBaseDataObject d = DataObjectFactory.getInstance();
-        assertNotNull("DataObject created", d);
-        assertTrue("Proper class hierarchy", d instanceof IBaseDataObject);
-        assertTrue("Proper class hierarchy", d instanceof BaseDataObject);
-        assertTrue("Proper class hierarchy", d instanceof MyDataObject);
+        assertNotNull(d, "DataObject created");
+        assertTrue(d instanceof IBaseDataObject, "Proper class hierarchy");
+        assertTrue(d instanceof BaseDataObject, "Proper class hierarchy");
+        assertTrue(d instanceof MyDataObject, "Proper class hierarchy");
     }
 
     @Test
@@ -53,27 +52,27 @@ public class DataObjectFactoryTest extends UnitTest {
         final Object[] args = new Object[] {"This is a test".getBytes(), "TestItem"};
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         final IBaseDataObject d = DataObjectFactory.getInstance(args);
-        assertNotNull("DataObject created", d);
+        assertNotNull(d, "DataObject created");
     }
 
     @Test
     public void testWtihFullSet() {
         byte[] testPayload = "This is a test".getBytes();
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "form", "type");
-        assertThat(ibdo.getFilename(), equalTo("filename"));
-        assertThat(ibdo.currentForm(), equalTo("form"));
-        assertThat(ibdo.getFileType(), equalTo("type"));
-        assertThat(ibdo.data(), equalTo(testPayload));
+        assertEquals("filename", ibdo.getFilename());
+        assertEquals("form", ibdo.currentForm());
+        assertEquals("type", ibdo.getFileType());
+        assertSame(testPayload, ibdo.data());
     }
 
     @Test
     public void testFormAndFileType() {
         byte[] testPayload = "This is a test".getBytes();
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "formAndFileType");
-        assertThat(ibdo.getFilename(), equalTo("filename"));
-        assertThat(ibdo.currentForm(), equalTo("formAndFileType"));
-        assertThat(ibdo.getFileType(), equalTo("formAndFileType"));
-        assertThat(ibdo.data(), equalTo(testPayload));
+        assertEquals("filename", ibdo.getFilename());
+        assertEquals("formAndFileType", ibdo.currentForm());
+        assertEquals("formAndFileType", ibdo.getFileType());
+        assertSame(testPayload, ibdo.data());
     }
 
     public static class MyDataObject extends BaseDataObject {
