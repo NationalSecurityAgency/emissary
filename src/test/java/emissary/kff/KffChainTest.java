@@ -1,9 +1,8 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,10 +16,6 @@ public class KffChainTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
-    // echo -n "This is a test" | openssl sha1
-    static final String DATA_SHA1 = "a54d88e06612d820bc3be72877c74f257b561b19";
-
-
     @Test
     public void testAlgorithmsUsedWithAddAlgorithm() {
         KffChain chain = new KffChain();
@@ -28,19 +23,19 @@ public class KffChainTest extends UnitTest {
         chain.addAlgorithm("SHA-1");
         chain.addAlgorithm("SHA-256");
 
-        assertEquals("Algorithms stored in chain", 3, chain.getAlgorithms().size());
+        assertEquals(3, chain.getAlgorithms().size(), "Algorithms stored in chain");
 
         try {
             ChecksumResults cr = chain.computeSums(DATA);
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithm set returned", algs);
-            assertEquals("All results present", 3, algs.size());
+            assertNotNull(algs, "Algorithm set returned");
+            assertEquals(3, algs.size(), "All results present");
             Iterator<String> i = algs.iterator();
-            assertEquals("MD5 alg present", "MD5", i.next());
-            assertEquals("SHA-1 alg present", "SHA-1", i.next());
-            assertEquals("SHA-256 alg present", "SHA-256", i.next());
+            assertEquals("MD5", i.next(), "MD5 alg present");
+            assertEquals("SHA-1", i.next(), "SHA-1 alg present");
+            assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (Exception ex) {
-            fail("Could not compute results: " + ex.getMessage());
+            throw new AssertionError("Could not compute results: " + ex.getMessage());
         }
     }
 
@@ -52,18 +47,18 @@ public class KffChainTest extends UnitTest {
         myAlgs.add("SHA-1");
         myAlgs.add("SHA-256");
         chain.setAlgorithms(myAlgs);
-        assertEquals("Algorithms stored in chain", 3, chain.getAlgorithms().size());
+        assertEquals(3, chain.getAlgorithms().size(), "Algorithms stored in chain");
         try {
             ChecksumResults cr = chain.computeSums(DATA);
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithm set returned", algs);
-            assertEquals("All results present", 3, algs.size());
+            assertNotNull(algs, "Algorithm set returned");
+            assertEquals(3, algs.size(), "All results present");
             Iterator<String> i = algs.iterator();
-            assertEquals("MD5 alg present", "MD5", i.next());
-            assertEquals("SHA-1 alg present", "SHA-1", i.next());
-            assertEquals("SHA-256 alg present", "SHA-256", i.next());
+            assertEquals("MD5", i.next(), "MD5 alg present");
+            assertEquals("SHA-1", i.next(), "SHA-1 alg present");
+            assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (Exception ex) {
-            fail("Could not compute results: " + ex.getMessage());
+            throw new AssertionError("Could not compute results: " + ex.getMessage());
         }
     }
 
@@ -76,32 +71,32 @@ public class KffChainTest extends UnitTest {
         myAlgs.add("SHA-256");
         chain.setAlgorithms(myAlgs);
 
-        assertEquals("Algorithms stored in chain", 3, chain.getAlgorithms().size());
-        assertEquals("Size of chain is zero", 0, chain.size());
+        assertEquals(3, chain.getAlgorithms().size(), "Algorithms stored in chain");
+        assertEquals(0, chain.size(), "Size of chain is zero");
         try {
             KffResult kr = chain.check("TEST ITEM", DATA);
             Set<String> algs = kr.getResultNames();
-            assertNotNull("Algorithm set returned", algs);
-            assertEquals("All results present", 3, algs.size());
+            assertNotNull(algs, "Algorithm set returned");
+            assertEquals(3, algs.size(), "All results present");
             Iterator<String> i = algs.iterator();
-            assertEquals("MD5 alg present", "MD5", i.next());
-            assertEquals("SHA-1 alg present", "SHA-1", i.next());
-            assertEquals("SHA-256 alg present", "SHA-256", i.next());
-            assertEquals("Item name copied", "TEST ITEM", kr.getItemName());
+            assertEquals("MD5", i.next(), "MD5 alg present");
+            assertEquals("SHA-1", i.next(), "SHA-1 alg present");
+            assertEquals("SHA-256", i.next(), "SHA-256 alg present");
+            assertEquals("TEST ITEM", kr.getItemName(), "Item name copied");
 
             // Test values on convenience methods match
-            assertEquals("SHA-1 convenience method", kr.getResultString("SHA-1"), kr.getShaString());
+            assertEquals(kr.getResultString("SHA-1"), kr.getShaString(), "SHA-1 convenience method");
 
             byte[] md5c = kr.getMd5();
             byte[] md5r = kr.getResult("MD5");
-            assertEquals("MD5 Results match", md5c.length, md5r.length);
+            assertEquals(md5c.length, md5r.length, "MD5 Results match");
             for (int j = 0; j < md5c.length; j++) {
-                assertEquals("MD5 results match at pos " + j, md5r[j], md5c[j]);
+                assertEquals(md5r[j], md5c[j], "MD5 results match at pos " + j);
             }
 
-            assertFalse("Canot have a hit on zero length chain", kr.isHit());
+            assertFalse(kr.isHit(), "Cannot have a hit on zero length chain");
         } catch (Exception ex) {
-            fail("Could not compute results: " + ex.getMessage());
+            throw new AssertionError("Could not compute results: " + ex.getMessage());
         }
     }
 

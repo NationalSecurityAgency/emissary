@@ -1,7 +1,6 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -36,7 +35,7 @@ public final class SsdeepTest extends UnitTest {
         final byte[] input = getStringAsUtf8(text);
         final String hash = ss.fuzzy_hash(input);
         if (!expectedHash.equals(hash)) {
-            fail("input \"" + text + "\" hashed to " + hash + " instead of the expected " + expectedHash);
+            throw new AssertionError("input \"" + text + "\" hashed to " + hash + " instead of the expected " + expectedHash);
         }
     }
 
@@ -83,7 +82,7 @@ public final class SsdeepTest extends UnitTest {
         new Random(BIG_RANDOM_ARRAY_SEED).nextBytes(input);
         final String hash = ss.fuzzy_hash(input);
         if (!BIG_RANDOM_EXPECTED_HASH.equals(hash)) {
-            fail("random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ") hashed to \"" + hash
+            throw new AssertionError("random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ") hashed to \"" + hash
                     + "\" instead of the expected \"" + BIG_RANDOM_EXPECTED_HASH + "\"");
         }
     }
@@ -134,7 +133,8 @@ public final class SsdeepTest extends UnitTest {
 
         if ((totalInputBytes != MANY_RANDOM_EXPECTED_INPUT_BYTES) || (totalHashChars != MANY_RANDOM_EXPECTED_HASH_CHARS)
                 || !digestHex.equals(MANY_RANDOM_EXPECTED_HEX_DIGEST)) {
-            fail("mismatch in random arrays: expected " + MANY_RANDOM_EXPECTED_INPUT_BYTES + " bytes, " + MANY_RANDOM_EXPECTED_HASH_CHARS
+            throw new AssertionError("mismatch in random arrays: expected " + MANY_RANDOM_EXPECTED_INPUT_BYTES + " bytes, "
+                    + MANY_RANDOM_EXPECTED_HASH_CHARS
                     + " hash characters, digest \"" + MANY_RANDOM_EXPECTED_HEX_DIGEST + "\" but got " + totalInputBytes + ", " + totalHashChars
                     + ", \"" + digestHex + "\"");
         }
@@ -144,14 +144,14 @@ public final class SsdeepTest extends UnitTest {
     public void testCompareEqualHashes() {
         final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
         final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-        assertEquals("signatures from identical strings should produce a perfect score", 100, ss.Compare(hash1, hash2));
+        assertEquals(100, ss.Compare(hash1, hash2), "signatures from identical strings should produce a perfect score");
     }
 
     @Test
     public void testCompareCommutative() {
         final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
         final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM + "x")));
-        assertEquals("signature comparisons should not depend on the order", ss.Compare(hash1, hash2), ss.Compare(hash2, hash1));
+        assertEquals(ss.Compare(hash1, hash2), ss.Compare(hash2, hash1), "signature comparisons should not depend on the order");
     }
 
     // Changing the parameters will require a corresponding update in the expected scores.
@@ -196,7 +196,7 @@ public final class SsdeepTest extends UnitTest {
                     b.append(String.format(" (%d: got %d expected %d)", i, scores[i], RANDOM_COMPARE_EXPECTED_SCORES[i]));
                 }
             }
-            fail(b.toString());
+            throw new AssertionError(b.toString());
         }
     }
 }
