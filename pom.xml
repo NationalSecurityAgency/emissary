@@ -57,7 +57,8 @@
     <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
     <dep.junit.version>4.13.2</dep.junit.version>
     <dep.logback.version>1.2.11</dep.logback.version>
-    <dep.maven-surefire-plugin.version>3.0.0-M5</dep.maven-surefire-plugin.version>
+    <!-- seems to have an impact with java 11 integration, update with caution -->
+    <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
     <dep.mockito-core.version>2.28.2</dep.mockito-core.version>
     <dep.oro.version>2.0.8</dep.oro.version>
     <dep.slf4j.version>1.7.36</dep.slf4j.version>
