@@ -1,7 +1,7 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -14,22 +14,18 @@ public class ChecksumResultsTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
-    // echo -n "This is a test" | openssl sha1
-    static final String DATA_SHA1 = "a54d88e06612d820bc3be72877c74f257b561b19";
-
-
     @Test
     public void testResultPresentSet() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256"});
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results obect returned", cr);
+            assertNotNull(cr, "Results obect returned");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithm set returned", algs);
-            assertEquals("All results present", 2, algs.size());
+            assertNotNull(algs, "Algorithm set returned");
+            assertEquals(2, algs.size(), "All results present");
             Iterator<String> i = algs.iterator();
-            assertEquals("SHA-1 alg present", "SHA-1", i.next());
-            assertEquals("SHA-256 alg present", "SHA-256", i.next());
+            assertEquals("SHA-1", i.next(), "SHA-1 alg present");
+            assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (NoSuchAlgorithmException ex) {
             throw new AssertionError("Unable to get SHA-1 or SHA-256 algorithm", ex);
         }

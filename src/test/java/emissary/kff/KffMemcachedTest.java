@@ -1,7 +1,8 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
@@ -57,6 +58,14 @@ public class KffMemcachedTest extends UnitTest {
         validateMockitoUsage();
     }
 
+    @Test
+    public void testKffMemcachedCreation() throws Exception {
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
+        mcdFilter.setPreferredAlgorithm("SHA-256");
+        assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
+        assertEquals("KFF", mcdFilter.getName());
+        assertEquals(FilterType.Duplicate, mcdFilter.getFilterType());
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testThrowsWithNonAsciiAndDups() throws Exception {
@@ -68,26 +77,26 @@ public class KffMemcachedTest extends UnitTest {
     @Test
     public void testNoHitNoStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.FALSE, testUnformattedIdHash);
-        assertFalse("Filter should not hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertFalse(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
     public void testHitNoStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.TRUE, null);
-        assertTrue("Filter should hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertTrue(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should hit");
     }
 
     @Test
     public void testNoHitWithStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.FALSE, testUnformattedIdHash);
-        assertFalse("Filter should not hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertFalse(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
     public void testHitWithStoreIdDupe() throws Exception {
         isBinaryConnection = true;
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
-        assertTrue("Filter should hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertTrue(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should hit");
     }
 
     private ChecksumResults createSums(KffMemcached mcd) throws NoSuchAlgorithmException {
@@ -133,13 +142,10 @@ public class KffMemcachedTest extends UnitTest {
 
         MemcachedClient localMockMemcachedClient = mock(MemcachedClient.class);
 
-        when(localMockMemcachedClient.asyncGet(Matchers.anyString())).thenAnswer(new Answer<TestGetFuture<Object>>() {
-            @Override
-            public TestGetFuture<Object> answer(InvocationOnMock invocation) throws Throwable {
+        when(localMockMemcachedClient.asyncGet(Matchers.anyString())).thenAnswer((Answer<TestGetFuture<Object>>) invocation -> {
 
-                Object[] args = invocation.getArguments();
-                return new TestGetFuture<Object>(new CountDownLatch(1), 500, (String) args[0]);
-            }
+            Object[] args = invocation.getArguments();
+            return new TestGetFuture<>(new CountDownLatch(1), 500, (String) args[0]);
         });
 
         when(localMockMemcachedClient.set(Matchers.anyString(), Matchers.anyInt(), Matchers.anyObject())).thenAnswer(new Answer<Future<Boolean>>() {
@@ -156,7 +162,7 @@ public class KffMemcachedTest extends UnitTest {
                     checkForValidAscii(key);
                 }
 
-                return new OperationFuture<Boolean>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
+                return new OperationFuture<>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
             }
         });
 
