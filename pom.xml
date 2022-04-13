@@ -939,7 +939,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
+          <version>0.8.8</version>
           <executions>
             <execution>
               <id>default-prepare-agent</id>
@@ -961,12 +961,10 @@
               </goals>
               <configuration>
                 <rules>
-                  <!-- implementation is needed only for Maven 2 -->
-                  <rule implementation="org.jacoco.maven.RuleConfiguration">
+                  <rule>
                     <element>BUNDLE</element>
                     <limits>
-                      <!-- implementation is needed only for Maven 2 -->
-                      <limit implementation="org.jacoco.report.check.Limit">
+                      <limit>
                         <counter>COMPLEXITY</counter>
                         <value>COVEREDRATIO</value>
                         <!--
