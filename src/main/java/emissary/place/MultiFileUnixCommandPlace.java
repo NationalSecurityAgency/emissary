@@ -636,9 +636,6 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                 if (errbuf.length() > 0) {
                     tData.addProcessingError(errbuf.toString());
                 }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("STD process => " + parentData.toString() + " ERR process => " + errbuf.toString());
-                }
             }
 
             // Clean out any proxies that would cause an infinite loop.
@@ -685,9 +682,6 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         StringBuilder outbuf = new StringBuilder();
         StringBuilder errbuf = new StringBuilder();
         int status = processCommand(cmd, outbuf, errbuf);
-        if (outbuf.length() > 0 && logger.isDebugEnabled()) {
-            logger.debug("Discarding process stdout " + outbuf.toString());
-        }
         if (errbuf.length() > 0 && logger.isDebugEnabled()) {
             logger.debug("Discarding process stderr " + errbuf.toString());
         }
