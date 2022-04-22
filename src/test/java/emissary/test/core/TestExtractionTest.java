@@ -58,16 +58,11 @@ class TestExtractionTest extends UnitTest {
     public void testFindFilter() throws IOException {
         WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
 
-        boolean t1 = test.findFilter("emissary.output.filter.DataFilter");
-        boolean t2 = test.findFilter("emissary.output.filter.JsonOutputFilter");
-        boolean t3 = test.findFilter("this.should.not.be.found");
-        boolean t4 = test.findFilter("DataFilter");
-
         // verify boolean "result" from findFilter() is returning correctly
-        Assert.assertTrue("DataFilter should be found.", t1);
-        Assert.assertTrue("JsonOutputFilter should be found.", t2);
-        Assert.assertFalse("This filter should not be found.", t3);
-        Assert.assertFalse("Should return false since path not provided.", t4);
+        Assert.assertTrue("DataFilter should be found.", test.findFilter("emissary.output.filter.DataFilter"));
+        Assert.assertTrue("JsonOutputFilter should be found.", test.findFilter("emissary.output.filter.JsonOutputFilter"));
+        Assert.assertFalse("This filter should not be found.", test.findFilter("this.should.not.be.found"));
+        Assert.assertFalse("Should return false since path not provided.", test.findFilter("DataFilter"));
 
         // verify only found filters paths are added to filterList, should be 2 in this case
         Assert.assertEquals("filterList<InputStream> should have size 2.", 2, test.filterList.size());

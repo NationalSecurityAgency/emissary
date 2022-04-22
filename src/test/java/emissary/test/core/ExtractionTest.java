@@ -401,7 +401,7 @@ public abstract class ExtractionTest extends UnitTest {
                         // check if EXTRA_PARAM = "*" is defined
                         // if yes, pass validation
                         if (currentLine.equals("EXTRA_PARAM = \"*\"")) {
-                            logger.info("In " + filterName + ": EXTRA_PARAM = \"*\" validates \"" + key + "\".");
+                            logger.debug("In {}: {} validated by EXTRA_PARAM = \"*\".", filterName, key);
                             reader.close();
                             isr.close();
                             is.close();
@@ -411,9 +411,7 @@ public abstract class ExtractionTest extends UnitTest {
                         else if (currentLine.contains(blacklistField) || currentLine.contains(extraParam)
                                 || currentLine.contains(extraTldParam)) {
                             if (currentLine.contains(key)) {
-                                logger.info(
-                                        "In " + filterName + ": Parameter \"" + key + "\" found. \"" + key
-                                                + "\" is validated.");
+                                logger.debug("In {}: {} is found and validated.", filterName, key);
                                 reader.close();
                                 isr.close();
                                 is.close();
@@ -428,8 +426,7 @@ public abstract class ExtractionTest extends UnitTest {
                             int preEnd = currentLine.length() - 1;
                             prefix = currentLine.substring(preStart, preEnd);
                             if (key.startsWith(prefix)) {
-                                logger.info("In " + filterName + ": Parameter Prefix \"" + prefix + "\" found. \"" + key
-                                        + "\" is validated.");
+                                logger.debug("In {}: Parameter Prefix is found. {} validated", filterName, key);
                                 reader.close();
                                 isr.close();
                                 is.close();
@@ -440,9 +437,9 @@ public abstract class ExtractionTest extends UnitTest {
                 }
                 // meta name not validated by current filter, log this information
                 if ((i + 1) == filterList.size()) {
-                    logger.info(key + " not found in " + filterName + ".");
+                    logger.debug("{} not found in {}.", key, filterName);
                 } else {
-                    logger.info(key + " not found in " + filterName + ". Moving to next file.");
+                    logger.debug("{} not found in {}. Moving to next file.", key, filterName);
                 }
                 // close InputSteam, InputStreamReader, and BufferedReader
                 reader.close();
@@ -454,9 +451,9 @@ public abstract class ExtractionTest extends UnitTest {
                 // however, if another error occured, it should be output to the log
                 if (!e.toString().contains("NullPointerException")) {
                     if ((i + 1) < filterList.size()) {
-                        logger.warn("Error while validating " + key + ": " + e);
+                        logger.warn("Error while validating {}", key, e);
                     } else {
-                        logger.warn("Error while validating " + key + ": " + e + ". Moving to next file.");
+                        logger.warn("Error while validating {}. Moving to next file.", key, e);
                     }
                 }
             }
