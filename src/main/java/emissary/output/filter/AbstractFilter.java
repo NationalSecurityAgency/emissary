@@ -234,10 +234,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params) {
         // Important to process them in order, if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
-            params.put(PRE_SORTED, Boolean.TRUE);
-        }
 
         int status = 0;
         for (final IBaseDataObject d : list) {
@@ -256,11 +252,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
-        // Important to process them in order, if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
-            params.put(PRE_SORTED, Boolean.TRUE);
-        }
 
         int status = 0;
         for (final IBaseDataObject d : list) {
@@ -268,16 +259,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         return status;
     }
-
-    /**
-     * The method that all filter have to provide
-     * 
-     * @param payload the payload to run the filter on
-     * @param params map of params
-     * @return status value
-     */
-    @Override
-    public abstract int filter(IBaseDataObject payload, Map<String, Object> params);
 
     /**
      * The method that all filter have to provide for stream based output

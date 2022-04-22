@@ -157,13 +157,11 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params);
     }
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params, final OutputStream output) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params, output);
     }
 
@@ -186,11 +184,6 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
 
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
-        // Important to process them in order if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator());
-            params.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
-        }
 
         // We subtract 1 from the list because the first element is currently assumed to be the TLD
         list.get(0).putParameter("DESCENDANT_COUNT", list.size() - 1);
