@@ -1,16 +1,16 @@
 package emissary.server.api;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class MetricsActionTest extends EndpointTestBase {
+class MetricsActionTest extends EndpointTestBase {
 
-    @Ignore
+    @Disabled("Not yet implemented")
     @Test
-    public void test() {
+    void test() {
         fail("Not yet implemented");
     }
 

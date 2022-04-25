@@ -19,18 +19,18 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class AgentsTest extends EndpointTestBase {
+class AgentsTest extends EndpointTestBase {
 
     private static final String[] EXPECTED_AGENTS = {"MobileAgent-00: Idle", "MobileAgent-01: Idle", "MobileAgent-02: Idle", "MobileAgent-03: Idle",
             "MobileAgent-04: Idle", "MobileAgent-05: Idle", "MobileAgent-06: Idle", "MobileAgent-07: PHASE.FORM.Place", "MobileAgent-08: Idle",
             "MobileAgent-09: Idle"};
 
-    @Before
+    @BeforeEach
     public void setup() {
         EmissaryServer mockServer = mock(EmissaryServer.class);
         EmissaryNode node = spy(new EmissaryNode());
@@ -43,17 +43,16 @@ public class AgentsTest extends EndpointTestBase {
         Namespace.bind("AgentPool", pool);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         Namespace.unbind("EmissaryServer");
         Namespace.unbind("AgentPool");
     }
 
 
-    @Ignore
-    // TODO: stop mocking and run a server since we made it so easy
+    @Disabled("stop mocking and run a server since we made it so easy")
     @Test
-    public void agents() throws Exception {
+    void agents() {
         // test
         Response response = target("agents").request().get();
 
@@ -66,10 +65,8 @@ public class AgentsTest extends EndpointTestBase {
         assertIterableEquals(Arrays.asList(EXPECTED_AGENTS), entity.getLocal().getAgents());
     }
 
-    @Ignore
+    @Disabled("Look at putting this into an integration test with two real EmissaryServers stood up")
     @Test
-    public void clusterAgents() throws Exception {
-        // TODO Look at putting this into an integration test with two real EmissaryServers stood up
-    }
+    void clusterAgents() {}
 
 }

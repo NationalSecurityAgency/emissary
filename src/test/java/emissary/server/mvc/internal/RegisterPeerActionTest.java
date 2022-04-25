@@ -2,13 +2,13 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -47,8 +47,8 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     @Before
     public void setup() throws IOException {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(DIRECTORY_NAME, Arrays.asList(PEER_KEY_GOOD));
-        formParams.put(TARGET_DIRECTORY, Arrays.asList(DIRNAME));
+        formParams.put(DIRECTORY_NAME, Collections.singletonList(PEER_KEY_GOOD));
+        formParams.put(TARGET_DIRECTORY, Collections.singletonList(DIRNAME));
 
         node = mock(EmissaryNode.class);
         when(node.isValid()).thenReturn(true);
@@ -67,8 +67,8 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     @Theory
     public void badParamValues(String badValue) {
         // setup
-        formParams.replace(DIRECTORY_NAME, Arrays.asList(badValue));
-        formParams.replace(TARGET_DIRECTORY, Arrays.asList(badValue));
+        formParams.replace(DIRECTORY_NAME, Collections.singletonList(badValue));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badValue));
 
         // test
         Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
@@ -96,8 +96,8 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     @Test
     public void failUnknownPeerRegistration() {
         MultivaluedHashMap<String, String> newFormParams = new MultivaluedHashMap<>();
-        newFormParams.put(DIRECTORY_NAME, Arrays.asList(PEER_KEY_BAD));
-        newFormParams.put(TARGET_DIRECTORY, Arrays.asList(DIRNAME));
+        newFormParams.put(DIRECTORY_NAME, Collections.singletonList(PEER_KEY_BAD));
+        newFormParams.put(TARGET_DIRECTORY, Collections.singletonList(DIRNAME));
 
         // test
         Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(newFormParams));

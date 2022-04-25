@@ -1,14 +1,14 @@
 package emissary.server;
 
 import emissary.test.core.UnitTest;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class InitializeContextTest extends UnitTest {
+class InitializeContextTest extends UnitTest {
 
-    @Ignore
+    @Disabled("Not yet implemented")
     @Test
-    public void test() {
+    void test() {
         // fail("Not yet implemented");
     }
 

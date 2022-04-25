@@ -16,25 +16,26 @@ import com.beust.jcommander.JCommander;
 import emissary.command.BaseCommand;
 import emissary.command.EmissaryCommand;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EmissaryTest extends UnitTest {
+class EmissaryTest extends UnitTest {
 
 
     @Test
-    public void testDefaultCommands() {
+    void testDefaultCommands() {
         assertTrue(Emissary.EMISSARY_COMMANDS.size() > 0);
     }
 
     @Test
-    public void testDefaultCommandsUnmodifiable() {
-        assertThrows(UnsupportedOperationException.class, () -> Emissary.EMISSARY_COMMANDS.put("junk", new JunkCommand()));
+    void testDefaultCommandsUnmodifiable() {
+        JunkCommand cmd = new JunkCommand();
+        assertThrows(UnsupportedOperationException.class, () -> Emissary.EMISSARY_COMMANDS.put("junk", cmd));
     }
 
     @Test
-    public void testCommandNamesAreSorted() {
+    void testCommandNamesAreSorted() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         cmds.put("aaaa", new JunkCommand());
         cmds.put("zzzz", new JunkCommand());
@@ -43,16 +44,16 @@ public class EmissaryTest extends UnitTest {
 
         Emissary emissary = new Emissary(cmds);
 
-        ArrayList<String> sortedNames = new ArrayList<String>(cmds.keySet());
+        ArrayList<String> sortedNames = new ArrayList<>(cmds.keySet());
         Collections.sort(sortedNames);
-        ArrayList<String> namesAsStored = new ArrayList<String>(emissary.getJCommander().getCommands().keySet());
+        ArrayList<String> namesAsStored = new ArrayList<>(emissary.getJCommander().getCommands().keySet());
 
         assertIterableEquals(namesAsStored, sortedNames);
     }
 
 
     @Test
-    public void testExecuteWithNoArgs() {
+    void testExecuteWithNoArgs() {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(new String[] {});
@@ -61,7 +62,7 @@ public class EmissaryTest extends UnitTest {
     }
 
     @Test
-    public void testExecuteWithUndefinedCommand() {
+    void testExecuteWithUndefinedCommand() {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(makeArgs("notherebro"));
@@ -70,7 +71,7 @@ public class EmissaryTest extends UnitTest {
     }
 
     @Test
-    public void testExecuteHelp() {
+    void testExecuteHelp() {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(makeArgs("help", "server"));
@@ -80,7 +81,7 @@ public class EmissaryTest extends UnitTest {
     }
 
     @Test
-    public void testExecuteHappyPath() {
+    void testExecuteHappyPath() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         cmds.put("junk", new JunkCommand());
 
@@ -93,7 +94,7 @@ public class EmissaryTest extends UnitTest {
     }
 
     @Test
-    public void testExecuteCommmandThrows() {
+    void testExecuteCommmandThrows() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         cmds.put("broke", new BrokeCommand());
 
@@ -107,7 +108,7 @@ public class EmissaryTest extends UnitTest {
 
 
     @Test
-    public void testVerbose() {
+    void testVerbose() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         // like is done in the emissary script
         System.setProperty("set.jcommander.debug", "true");
@@ -121,14 +122,12 @@ public class EmissaryTest extends UnitTest {
 
     private String[] makeArgs(String... args) {
         String[] ret = new String[args.length];
-        for (int i = 0; i < args.length; i++) {
-            ret[i] = args[i];
-        }
+        System.arraycopy(args, 0, ret, 0, args.length);
         return ret;
     }
 
     // need to replace System.exit so we have time to see results
-    class Emissary2 extends Emissary {
+    static class Emissary2 extends Emissary {
 
         final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
@@ -162,7 +161,7 @@ public class EmissaryTest extends UnitTest {
         }
     }
 
-    class JunkCommand implements EmissaryCommand {
+    static class JunkCommand implements EmissaryCommand {
         final Logger LOG = LoggerFactory.getLogger(JunkCommand.class);
 
         @Override
@@ -187,7 +186,7 @@ public class EmissaryTest extends UnitTest {
         }
     }
 
-    class BrokeCommand implements EmissaryCommand {
+    static class BrokeCommand implements EmissaryCommand {
 
         @Override
         public String getCommandName() {
@@ -211,7 +210,7 @@ public class EmissaryTest extends UnitTest {
         }
     }
 
-    class AnotherBaseCommand extends BaseCommand {
+    static class AnotherBaseCommand extends BaseCommand {
         // need to extend BaseCommand to get verbose options
         final Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.class);
 

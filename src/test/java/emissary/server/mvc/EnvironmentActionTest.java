@@ -1,13 +1,13 @@
 package emissary.server.mvc;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class EnvironmentActionTest extends EndpointTestBase {
+class EnvironmentActionTest extends EndpointTestBase {
 
-    @Ignore
+    @Disabled("Not yet implemented")
     @Test
-    public void test() {
+    void test() {
         // fail("Not yet implemented");
     }
 
