@@ -1,10 +1,11 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -24,11 +25,11 @@ import emissary.core.Namespace;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ServiceProviderPlaceTest extends UnitTest {
+class ServiceProviderPlaceTest extends UnitTest {
     private IServiceProviderPlace place = null;
 
     private static final byte[] configData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
@@ -70,7 +71,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         InputStream config = new ByteArrayInputStream(configData);
@@ -78,7 +79,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         place.shutDown();
@@ -86,29 +87,29 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testConfiguration() {
-        assertNotNull("Place created and configured", place);
-        assertEquals("Configured place name", "PlaceTest", place.getPlaceName());
-        assertEquals("Primary proxy", "TEST_SERVICE_PROXY", place.getPrimaryProxy());
-        assertEquals("Key generation", "TEST_SERVICE_PROXY.TEST_SERVICE_NAME.ANALYZE.http://localhost:8001/PlaceTest", place.getKey());
+    void testConfiguration() {
+        assertNotNull(place, "Place created and configured");
+        assertEquals("PlaceTest", place.getPlaceName(), "Configured place name");
+        assertEquals("TEST_SERVICE_PROXY", place.getPrimaryProxy(), "Primary proxy");
+        assertEquals("TEST_SERVICE_PROXY.TEST_SERVICE_NAME.ANALYZE.http://localhost:8001/PlaceTest", place.getKey(), "Key generation");
         DirectoryEntry de = place.getDirectoryEntry();
-        assertNotNull("Directory entry", de);
-        assertEquals("Cost in directory entry", 60, de.getCost());
-        assertEquals("Quality in directory entry", 90, de.getQuality());
-        assertEquals("Description in directory entry", "test place", de.getDescription());
+        assertNotNull(de, "Directory entry");
+        assertEquals(60, de.getCost(), "Cost in directory entry");
+        assertEquals(90, de.getQuality(), "Quality in directory entry");
+        assertEquals("test place", de.getDescription(), "Description in directory entry");
 
         place.addServiceProxy("FOO");
         place.addServiceProxy("BAR");
         Set<String> proxies = place.getProxies();
-        assertNotNull("Proxies as a set", proxies);
-        assertEquals("Size of proxies set", 3, proxies.size());
-        assertTrue("Proxies contains original in set", proxies.contains("TEST_SERVICE_PROXY"));
-        assertTrue("Proxies contains new in set", proxies.contains("FOO"));
-        assertTrue("Proxies contains last in set", proxies.contains("BAR"));
+        assertNotNull(proxies, "Proxies as a set");
+        assertEquals(3, proxies.size(), "Size of proxies set");
+        assertTrue(proxies.contains("TEST_SERVICE_PROXY"), "Proxies contains original in set");
+        assertTrue(proxies.contains("FOO"), "Proxies contains new in set");
+        assertTrue(proxies.contains("BAR"), "Proxies contains last in set");
     }
 
     @Test
-    public void testNukem() {
+    void testNukem() {
         place.addServiceProxy("FOO-*");
         place.addServiceProxy("BAR(*)");
 
@@ -116,80 +117,80 @@ public class ServiceProviderPlaceTest extends UnitTest {
         d.pushCurrentForm("TEST_SERVICE_PROXY");
 
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove default form", 0, d.currentFormSize());
+        assertEquals(0, d.currentFormSize(), "Remove default form");
 
         d.pushCurrentForm("BAZ");
         d.pushCurrentForm("TEST_SERVICE_PROXY");
         d.pushCurrentForm("QUUZ");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove default form leaving others", 2, d.currentFormSize());
+        assertEquals(2, d.currentFormSize(), "Remove default form leaving others");
 
         d.replaceCurrentForm(null);
 
         d.pushCurrentForm("FOO-WILD");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove dash-wild form", 0, d.currentFormSize());
+        assertEquals(0, d.currentFormSize(), "Remove dash-wild form");
 
         d.pushCurrentForm("BAR(WILD)");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove paren-wild form", 0, d.currentFormSize());
+        assertEquals(0, d.currentFormSize(), "Remove paren-wild form");
 
         d.pushCurrentForm("FOO(WILD)");
         d.pushCurrentForm("BAR-WILD");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Do not remove on dash-paren cross wild", 2, d.currentFormSize());
+        assertEquals(2, d.currentFormSize(), "Do not remove on dash-paren cross wild");
         d.replaceCurrentForm(null);
 
         d.pushCurrentForm("FOO-BAR-BAZ");
         d.pushCurrentForm("FOO-BAR-BAR(WILD)");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove multi layered wild", 0, d.currentFormSize());
+        assertEquals(0, d.currentFormSize(), "Remove multi layered wild");
 
         d.pushCurrentForm("QUUZ(BANG)");
         d.pushCurrentForm("BANG(QUUZ)-FOO(BAR)");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Do not remove on dash-paren cross wild", 2, d.currentFormSize());
+        assertEquals(2, d.currentFormSize(), "Do not remove on dash-paren cross wild");
         d.pushCurrentForm("TEST_SERVICE_PROXY");
         place.addServiceProxy("*");
         ((PlaceTest) place).testNukeMyProxies(d);
-        assertEquals("Remove all on full wild", 0, d.currentFormSize());
+        assertEquals(0, d.currentFormSize(), "Remove all on full wild");
     }
 
     @Test
-    public void testDuplicateProxy() {
+    void testDuplicateProxy() {
         Set<String> proxies = place.getProxies();
-        assertEquals("Place original proxy count ", 1, proxies.size());
+        assertEquals(1, proxies.size(), "Place original proxy count ");
         place.addServiceProxy("FOO");
         proxies = place.getProxies();
-        assertEquals("Place proxy count after addServiceProxy", 2, proxies.size());
+        assertEquals(2, proxies.size(), "Place proxy count after addServiceProxy");
         place.addServiceProxy("FOO");
         proxies = place.getProxies();
-        assertEquals("Place proxy count after duplicate addServcieProxy", 2, proxies.size());
+        assertEquals(2, proxies.size(), "Place proxy count after duplicate addServcieProxy");
 
         place.removeServiceProxy("BAR");
         proxies = place.getProxies();
-        assertEquals("Place proxy count after remove bogus entry", 2, proxies.size());
+        assertEquals(2, proxies.size(), "Place proxy count after remove bogus entry");
 
         place.removeServiceProxy("FOO");
         proxies = place.getProxies();
-        assertEquals("Place proxy count after removeServiceProxy", 1, proxies.size());
+        assertEquals(1, proxies.size(), "Place proxy count after removeServiceProxy");
 
         place.removeServiceProxy("TEST_SERVICE_PROXY");
         proxies = place.getProxies();
-        assertNotNull("No proxy place returns empty set not null", proxies);
-        assertEquals("Place has all proxies removed!", 0, proxies.size());
+        assertNotNull(proxies, "No proxy place returns empty set not null");
+        assertEquals(0, proxies.size(), "Place has all proxies removed!");
 
         place.addServiceProxy("FOO");
         proxies = place.getProxies();
-        assertEquals("Place has 1 proxies after add onto an empty", 1, proxies.size());
+        assertEquals(1, proxies.size(), "Place has 1 proxies after add onto an empty");
     }
 
     @Test
-    public void testLocOnlyConstructorWithResourceConfigData() {
+    void testLocOnlyConstructorWithResourceConfigData() {
         try {
             MyStreamConfigedTestPlace mtp = new MyStreamConfigedTestPlace("http://example.com:8001/MyStreamConfigedTestPlace");
 
-            assertTrue("MyStreamConfigedTestPlace did not initialize", mtp.getFinishedSuperConstructor());
+            assertTrue(mtp.getFinishedSuperConstructor(), "MyStreamConfigedTestPlace did not initialize");
 
             mtp.shutDown();
         } catch (IOException iox) {
@@ -198,12 +199,12 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testLocOnlyConstructorWithFileConfigDataAndNoPackage() throws IOException, EmissaryException {
+    void testLocOnlyConstructorWithFileConfigDataAndNoPackage() throws IOException, EmissaryException {
         runFileConfiguredTest(false, 1);
     }
 
     @Test
-    public void testLocOnlyConstructorWithFileConfigDataAndPackage() throws IOException, EmissaryException {
+    void testLocOnlyConstructorWithFileConfigDataAndPackage() throws IOException, EmissaryException {
         runFileConfiguredTest(true, 1);
     }
 
@@ -237,9 +238,9 @@ public class ServiceProviderPlaceTest extends UnitTest {
                 mtp = new MyFileConfigedTestPlace(config, null, "http://example.com:8001/MyTestPlace");
             }
 
-            assertNotNull("Test run with bad ctypeType arg?", mtp);
+            assertNotNull(mtp, "Test run with bad ctypeType arg?");
 
-            assertTrue("MyFileConfigedTestPlace did not initialize", mtp.getFinishedSuperConstructor());
+            assertTrue(mtp.getFinishedSuperConstructor(), "MyFileConfigedTestPlace did not initialize");
 
             mtp.shutDown();
         } catch (IOException iox) {
@@ -248,6 +249,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
             // Clean up the tmp config settings
             restoreConfig();
 
+            assert cfg != null;
             Files.deleteIfExists(cfg);
 
             if (fos != null) {
@@ -261,7 +263,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testRequireOfCostParameter() {
+    void testRequireOfCostParameter() {
         assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingCost);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
@@ -269,17 +271,17 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testMBeanInteration() throws Exception {
+    void testMBeanInteration() throws Exception {
         InputStream config = new ByteArrayInputStream(configDataWithResourceLimit);
         place = new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
 
         if (place instanceof ServiceProviderPlaceMBean) {
             List<String> a = ((ServiceProviderPlaceMBean) place).getRunningConfig();
-            assertTrue("Running config must have some entries", a.size() > 0);
+            assertTrue(a.size() > 0, "Running config must have some entries");
             String stats = ((ServiceProviderPlaceMBean) place).getPlaceStats();
-            assertNotNull("Stats expected", stats);
+            assertNotNull(stats, "Stats expected");
             long resourceLimit = ((ServiceProviderPlaceMBean) place).getResourceLimitMillis();
-            assertEquals("Resource limit must be saved and returned", 10, resourceLimit);
+            assertEquals(10, resourceLimit, "Resource limit must be saved and returned");
 
             // These send output to the logger, just verify that they don't npe, they are
             // slightly useful to keep around for using in jconsole
@@ -293,30 +295,30 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
 
     @Test
-    public void testWithMissingPlaceLocation() throws Exception {
+    void testWithMissingPlaceLocation() throws Exception {
         InputStream config = new ByteArrayInputStream(configData);
         IServiceProviderPlace p = new PlaceTest(config, null, null);
-        assertNotNull("Place should be created with default location", p);
-        assertTrue("Place default location should be in key", p.getKey().indexOf("/PlaceTest") > -1);
+        assertNotNull(p, "Place should be created with default location");
+        assertTrue(p.getKey().contains("/PlaceTest"), "Place default location should be in key");
 
         config = new ByteArrayInputStream(configData);
         p = new PlaceTest(config, null);
-        assertNotNull("Place should be created with default location", p);
-        assertTrue("Place default location should be in key", p.getKey().indexOf("/PlaceTest") > -1);
+        assertNotNull(p, "Place should be created with default location");
+        assertTrue(p.getKey().contains("/PlaceTest"), "Place default location should be in key");
 
         config = new ByteArrayInputStream(configData);
         p = new PlaceTest(config);
-        assertNotNull("Place should be created with default location", p);
-        assertTrue("Place default location should be in key", p.getKey().indexOf("/PlaceTest") > -1);
+        assertNotNull(p, "Place should be created with default location");
+        assertTrue(p.getKey().contains("/PlaceTest"), "Place default location should be in key");
 
         config = new ByteArrayInputStream(configData);
         p = new PlaceTest(config);
-        assertNotNull("Place should be created with default location", p);
-        assertTrue("Place default location should be in key", p.getKey().indexOf("/PlaceTest") > -1);
+        assertNotNull(p, "Place should be created with default location");
+        assertTrue(p.getKey().contains("/PlaceTest"), "Place default location should be in key");
     }
 
     @Test
-    public void testRequireOfTypeParameter() {
+    void testRequireOfTypeParameter() {
         assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingType);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
@@ -324,7 +326,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testRequireOfProxyOrKey() {
+    void testRequireOfProxyOrKey() {
         assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configDataMissingProxy);
             new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
@@ -332,77 +334,77 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testServiceKeyConfig() {
+    void testServiceKeyConfig() {
         try {
             // TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
-            assertEquals("Primary proxy", "TPROXY", tp.getPrimaryProxy());
-            assertEquals("Key generation", "TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
+            assertEquals("TPROXY", tp.getPrimaryProxy(), "Primary proxy");
+            assertEquals("TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey(), "Key generation");
             DirectoryEntry de = tp.getDirectoryEntry();
-            assertNotNull("Directory entry", de);
-            assertEquals("Cost in directory entry", 50, de.getCost());
-            assertEquals("Quality in directory entry", 50, de.getQuality());
-            assertEquals("Description in directory entry", "test place", de.getDescription());
+            assertNotNull(de, "Directory entry");
+            assertEquals(50, de.getCost(), "Cost in directory entry");
+            assertEquals(50, de.getQuality(), "Quality in directory entry");
+            assertEquals("test place", de.getDescription(), "Description in directory entry");
 
             Set<String> keys = tp.getKeys();
-            assertNotNull("Keys as a set", keys);
-            assertEquals("Size of Keys", 1, keys.size());
+            assertNotNull(keys, "Keys as a set");
+            assertEquals(1, keys.size(), "Size of Keys");
 
             Set<String> proxies = tp.getProxies();
-            assertNotNull("Proxies as a set", proxies);
-            assertEquals("Size of proxies set", 1, proxies.size());
-            assertTrue("Proxies contains original in set", proxies.contains("TPROXY"));
+            assertNotNull(proxies, "Proxies as a set");
+            assertEquals(1, proxies.size(), "Size of proxies set");
+            assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }
     }
 
     @Test
-    public void testKeyConfigAddKey() {
+    void testKeyConfigAddKey() {
         try {
             // TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
 
             tp.addKey("TPROXY2.TNAME.IO.http://localhost:8001/TPlaceName$6050");
 
             Set<String> keys = tp.getKeys();
-            assertNotNull("Keys as a set", keys);
-            assertEquals("Size of Keys", 2, keys.size());
+            assertNotNull(keys, "Keys as a set");
+            assertEquals(2, keys.size(), "Size of Keys");
 
-            assertEquals("Key generation uses first on list", "TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey());
+            assertEquals("TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey(), "Key generation uses first on list");
 
             // Add a bad key
             tp.addKey("TPROXY3.TNAME.http://localhost:8001/TPlaceName$6050");
             keys = tp.getKeys();
-            assertNotNull("Keys as a set after bad key add", keys);
-            assertEquals("Size of Keys after bad key add", 2, keys.size());
+            assertNotNull(keys, "Keys as a set after bad key add");
+            assertEquals(2, keys.size(), "Size of Keys after bad key add");
 
 
             Set<String> proxies = tp.getProxies();
-            assertNotNull("Proxies as a set", proxies);
-            assertEquals("Size of proxies set", 2, proxies.size());
-            assertTrue("Proxies contains original in set", proxies.contains("TPROXY"));
-            assertTrue("Proxies contains original in set", proxies.contains("TPROXY2"));
+            assertNotNull(proxies, "Proxies as a set");
+            assertEquals(2, proxies.size(), "Size of proxies set");
+            assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
+            assertTrue(proxies.contains("TPROXY2"), "Proxies contains original in set");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }
     }
 
     @Test
-    public void testKeyConfigPlaceNameCtor() {
+    void testKeyConfigPlaceNameCtor() {
         try {
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config);
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
-            assertEquals("Key generation uses first on list", "TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
+            assertEquals("TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey(), "Key generation uses first on list");
 
             Set<String> keys = tp.getKeys();
-            assertNotNull("Keys as a set", keys);
-            assertEquals("Size of Keys", 1, keys.size());
+            assertNotNull(keys, "Keys as a set");
+            assertEquals(1, keys.size(), "Size of Keys");
 
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
@@ -410,18 +412,18 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testKeyConfigShortPlaceName() {
+    void testKeyConfigShortPlaceName() {
         try {
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config, null, "PlaceTest");
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }
     }
 
     @Test
-    public void testNoKeyInConfig() {
+    void testNoKeyInConfig() {
         assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configNoKeysData);
             new PlaceTest(config);
@@ -429,7 +431,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testBadKeyInConfig() {
+    void testBadKeyInConfig() {
         assertThrows(IOException.class, () -> {
             InputStream config = new ByteArrayInputStream(configBadKeyData);
             new PlaceTest(config);
@@ -437,12 +439,12 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testNoArgCtor() throws EmissaryException {
+    void testNoArgCtor() throws EmissaryException {
         // Point config to this package to find default config
         setConfig(null, true);
         try {
             PlaceTest tp = new PlaceTest();
-            assertEquals("Configured place name", "TestFooPlace", tp.getPlaceName());
+            assertEquals("TestFooPlace", tp.getPlaceName(), "Configured place name");
         } catch (IOException iox) {
             fail("Place should have configured with no arg ctor: " + iox.getMessage());
         } finally {
@@ -451,7 +453,7 @@ public class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testKeysConfig() {
+    void testKeysConfig() {
         try {
             // SERVICE_KEY = "TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050"
             // SERVICE_KEY = "TP2.TNAME.TRANSFORM.http://@{TGT_HOST}:@{TGT_PORT}/TP2PlaceName$6050"
@@ -459,29 +461,29 @@ public class ServiceProviderPlaceTest extends UnitTest {
             // SERVICE_KEY = "TP4.TNAME.IO.http://@{TGT_HOST}:@{TGT_PORT}/TP4PlaceName$8050"
             InputStream config = new ByteArrayInputStream(configKeysData);
             PlaceTest tp = new PlaceTest(config);
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
-            assertEquals("Primary proxy", "TPROXY", tp.getPrimaryProxy());
-            assertEquals("Key generation uses first key", "TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
+            assertEquals("TPROXY", tp.getPrimaryProxy(), "Primary proxy");
+            assertEquals("TPROXY.TNAME.ID.http://localhost:8001/TPlaceName", tp.getKey(), "Key generation uses first key");
 
             // Check directory entries
             DirectoryEntry de = tp.getDirectoryEntry();
-            assertNotNull("Directory entry", de);
-            assertEquals("Cost in directory entry", 50, de.getCost());
-            assertEquals("Quality in directory entry", 50, de.getQuality());
-            assertEquals("Description in directory entry", "test place", de.getDescription());
+            assertNotNull(de, "Directory entry");
+            assertEquals(50, de.getCost(), "Cost in directory entry");
+            assertEquals(50, de.getQuality(), "Quality in directory entry");
+            assertEquals("test place", de.getDescription(), "Description in directory entry");
 
             // Check keys
             Set<String> keys = tp.getKeys();
-            assertNotNull("Keys as a set", keys);
-            assertEquals("Size of Keys", 4, keys.size());
+            assertNotNull(keys, "Keys as a set");
+            assertEquals(4, keys.size(), "Size of Keys");
 
             // Check namespace
             for (String k : keys) {
                 String sl = KeyManipulator.getServiceLocation(k);
                 try {
                     Object place = Namespace.lookup(sl);
-                    assertNotNull("Place must be found by service location", place);
-                    assertTrue("Place bound by service location must be correct object", place == tp);
+                    assertNotNull(place, "Place must be found by service location");
+                    assertSame(place, tp, "Place bound by service location must be correct object");
                 } catch (Exception ex) {
                     throw new AssertionError("Should have found " + sl + " in namespace", ex);
                 }
@@ -489,43 +491,43 @@ public class ServiceProviderPlaceTest extends UnitTest {
 
             // Check proxies
             Set<String> proxies = tp.getProxies();
-            assertNotNull("Proxies as a set", proxies);
-            assertEquals("Size of proxies set", 4, proxies.size());
-            assertTrue("Proxies contains original in set", proxies.contains("TPROXY"));
-            assertTrue("Proxies contains original in set", proxies.contains("TP2"));
-            assertTrue("Proxies contains original in set", proxies.contains("TP3"));
-            assertTrue("Proxies contains original in set", proxies.contains("TP4"));
+            assertNotNull(proxies, "Proxies as a set");
+            assertEquals(4, proxies.size(), "Size of proxies set");
+            assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
+            assertTrue(proxies.contains("TP2"), "Proxies contains original in set");
+            assertTrue(proxies.contains("TP3"), "Proxies contains original in set");
+            assertTrue(proxies.contains("TP4"), "Proxies contains original in set");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }
     }
 
     @Test
-    public void testKeyRemoval() {
+    void testKeyRemoval() {
         try {
             // TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config);
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
             tp.removeKey("TPROXY.TNAME.ID.http://localhost:8001/TPlaceName$5050");
-            assertEquals("Primary proxy empty after key removal", "", tp.getPrimaryProxy());
-            assertEquals("Key size after removal must be 0", 0, tp.getKeys().size());
-            assertEquals("Proxy size after removal must be 0", 0, tp.getProxies().size());
+            assertEquals("", tp.getPrimaryProxy(), "Primary proxy empty after key removal");
+            assertEquals(0, tp.getKeys().size(), "Key size after removal must be 0");
+            assertEquals(0, tp.getProxies().size(), "Proxy size after removal must be 0");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }
     }
 
     @Test
-    public void testBogusKeyRemoval() {
+    void testBogusKeyRemoval() {
         try {
             // TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050
             InputStream config = new ByteArrayInputStream(configKeyData);
             PlaceTest tp = new PlaceTest(config);
-            assertEquals("Configured place name", "TPlaceName", tp.getPlaceName());
+            assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
             tp.removeKey("TPROXY.TNAME.ANALYZE.http://localhost:8001/TPlaceName$5050");
-            assertEquals("Primary proxy present after bogus key removal", "TPROXY", tp.getPrimaryProxy());
-            assertEquals("Key size after bogus removal must be 1", 1, tp.getKeys().size());
+            assertEquals("TPROXY", tp.getPrimaryProxy(), "Primary proxy present after bogus key removal");
+            assertEquals(1, tp.getKeys().size(), "Key size after bogus removal must be 1");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }

@@ -1,6 +1,6 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,23 +10,22 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.core.IMobileAgent;
-import emissary.directory.DirectoryEntry;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ServiceProviderPlaceGetTLDTest extends UnitTest {
+class ServiceProviderPlaceGetTLDTest extends UnitTest {
 
-    @Before
+    @BeforeEach
     public void setupLoggers() {
 
 
     }
 
     @Test
-    public void testGettingTLDThroughPlace() throws Exception {
+    void testGettingTLDThroughPlace() throws Exception {
 
         // Set up place, pool, agent
         IServiceProviderPlace place = new PlaceTest();
@@ -37,18 +36,19 @@ public class ServiceProviderPlaceGetTLDTest extends UnitTest {
         IBaseDataObject payload = DataObjectFactory.getInstance("test".getBytes(), "test.1", "PARENT");
         payload.putParameter("PARENT_INFO", "this is a secret held by the parent");
         IBaseDataObject child = DataObjectFactory.getInstance("test child".getBytes(), "test.1" + Family.SEP + "1", "CHILD");
-        List<IBaseDataObject> payloadList = new ArrayList<IBaseDataObject>();
+        List<IBaseDataObject> payloadList = new ArrayList<>();
         payloadList.add(child);
         payloadList.add(payload);
 
         // Hand payload to agent and wait for agent to be idle
-        agent.arrive(payloadList, place, 0, new ArrayList<DirectoryEntry>());
+        agent.arrive(payloadList, place, 0, new ArrayList<>());
         while (agent.isInUse()) {
             Thread.sleep(10);
         }
 
-        assertEquals("Child should have obtained access to parent metadata", payload.getStringParameter("PARENT_INFO").toUpperCase(),
-                child.getStringParameter("CHILD_INFO"));
+        assertEquals(payload.getStringParameter("PARENT_INFO").toUpperCase(),
+                child.getStringParameter("CHILD_INFO"),
+                "Child should have obtained access to parent metadata");
 
         place.shutDown();
         agent.killAgentAsync();

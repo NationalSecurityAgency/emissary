@@ -1,10 +1,10 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,40 +16,30 @@ import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class MultiFileServerPlaceTest extends UnitTest {
+class MultiFileServerPlaceTest extends UnitTest {
     MFSPlace mfsp = null;
     IBaseDataObject parent = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
-
         ResourceReader rr = new ResourceReader();
-        InputStream is = null;
-        try {
-            is = rr.getConfigDataAsStream(this.getClass());
+        try (InputStream is = rr.getConfigDataAsStream(this.getClass())) {
             mfsp = new MFSPlace(is, "THIS.THAT.OTHER.http://localhost:8888/MFSPlace");
         } catch (Exception ex) {
             logger.error("Cannot create MFSPlace", ex);
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ignore) {
-                // empty catch block
-            }
         }
+        // empty catch block
         parent = DataObjectFactory.getInstance("This is the parent data".getBytes(), "/name/of/the/parent", "PARENT_FORM");
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         mfsp.shutDown();
@@ -58,55 +48,55 @@ public class MultiFileServerPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testClassificationCopy() {
+    void testClassificationCopy() {
         parent.setClassification("FOO//BAR//BAZ");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals("Classification must be copied", parent.getClassification(), children.get(0).getClassification());
+        assertEquals(parent.getClassification(), children.get(0).getClassification(), "Classification must be copied");
     }
 
 
     @Test
-    public void testMetadataCopy() {
+    void testMetadataCopy() {
         parent.setParameter("FOO", "BAR");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertNull("Metadata must not be copied unless configured", children.get(0).getStringParameter("FOO"));
+        assertNull(children.get(0).getStringParameter("FOO"), "Metadata must not be copied unless configured");
     }
 
     @Test
-    public void testCurrentForms() {
+    void testCurrentForms() {
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals("Parent form should not change", "PARENT_FORM", parent.currentForm());
-        assertEquals("Child form is wrong", "CHILD_FORM", children.get(0).currentForm());
+        assertEquals("PARENT_FORM", parent.currentForm(), "Parent form should not change");
+        assertEquals("CHILD_FORM", children.get(0).currentForm(), "Child form is wrong");
     }
 
     @Test
-    public void testCopyOfMultiValuedParam() {
+    void testCopyOfMultiValuedParam() {
         parent.appendParameter("COPY_ME", "BAR1");
         parent.appendParameter("COPY_ME", "BAR2");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals("Child parameter copy must maintain separate multi-valued values", 2, children.get(0).getParameter("COPY_ME").size());
+        assertEquals(2, children.get(0).getParameter("COPY_ME").size(), "Child parameter copy must maintain separate multi-valued values");
     }
 
     @Test
-    public void testFileTypeHandling() {
+    void testFileTypeHandling() {
         mfsp.cft = "CHILD_WOW";
         parent.setFileType("PARENT_WOW");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertEquals("Child filetype must be preserved for default call", "CHILD_WOW", children.get(0).getFileType());
+        assertEquals("CHILD_WOW", children.get(0).getFileType(), "Child filetype must be preserved for default call");
     }
 
     @Test
-    public void testTransformHistoryCopy() {
+    void testTransformHistoryCopy() {
         parent.appendTransformHistory("a.b.c.http://localhost:8888/defg");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertTrue("Child must have parent transform history", children.get(0).hasVisited("a.b.c.*"));
+        assertTrue(children.get(0).hasVisited("a.b.c.*"), "Child must have parent transform history");
     }
 
     @Test
-    public void testFileTypeRemoval() {
+    void testFileTypeRemoval() {
         parent.setFileType("PARENT_FT");
         List<IBaseDataObject> children = mfsp.processHeavyDuty(parent);
-        assertTrue("Child must not have parent file type", children.get(0).getFileType() == null);
+        assertNull(children.get(0).getFileType(), "Child must not have parent file type");
     }
 
     private static final class MFSPlace extends MultiFileServerPlace {
@@ -128,7 +118,7 @@ public class MultiFileServerPlaceTest extends UnitTest {
         @Override
         public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) {
             // Does nothing but creates a sprout to use.
-            List<IBaseDataObject> sprouts = new ArrayList<IBaseDataObject>();
+            List<IBaseDataObject> sprouts = new ArrayList<>();
 
             IBaseDataObject s = DataObjectFactory.getInstance();
             s.setFilename(payload.getFilename() + Family.initial());
@@ -146,12 +136,12 @@ public class MultiFileServerPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testValidateDataHook() {
+    void testValidateDataHook() {
         IBaseDataObject d = DataObjectFactory.getInstance();
         d.setData(new byte[] {'1'});
         IBaseDataObject emptyd = DataObjectFactory.getInstance();
-        assertTrue("failed to validate " + d, mfsp.shouldProcess(d));
-        assertFalse("failed to reject " + emptyd, mfsp.shouldProcess(emptyd));
-        assertFalse("failed to reject null", mfsp.shouldProcess(null));
+        assertTrue(mfsp.shouldProcess(d), "failed to validate " + d);
+        assertFalse(mfsp.shouldProcess(emptyd), "failed to reject " + emptyd);
+        assertFalse(mfsp.shouldProcess(null), "failed to reject null");
     }
 }
