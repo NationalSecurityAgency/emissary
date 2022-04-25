@@ -1,8 +1,8 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,41 +14,41 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DataUtilTest extends UnitTest {
+class DataUtilTest extends UnitTest {
 
     @Test
-    public void testPushDedupedForm() {
+    void testPushDedupedForm() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         final String myform = "FOO";
         DataUtil.pushDedupedForm(d, myform);
-        assertTrue("failed to add " + myform, d.getAllCurrentForms().contains(myform));
-        assertEquals("wrong number of forms", 1, d.getAllCurrentForms().size());
+        assertTrue(d.getAllCurrentForms().contains(myform), "failed to add " + myform);
+        assertEquals(1, d.getAllCurrentForms().size(), "wrong number of forms");
         // now make sure adding again doesn't create dupe
         DataUtil.pushDedupedForm(d, myform);
-        assertTrue("failed to add " + myform, d.getAllCurrentForms().contains(myform));
-        assertEquals("wrong number of forms", 1, d.getAllCurrentForms().size());
+        assertTrue(d.getAllCurrentForms().contains(myform), "failed to add " + myform);
+        assertEquals(1, d.getAllCurrentForms().size(), "wrong number of forms");
     }
 
     @Test
-    public void testPushDedupedForms() {
+    void testPushDedupedForms() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         // this has a duplicate value
         final Collection<String> myforms = Arrays.asList("FOO", "FOO", "BAR");
         DataUtil.pushDedupedForms(d, myforms);
-        assertTrue("failed to add FOO", d.getAllCurrentForms().contains("FOO"));
-        assertTrue("failed to add BAR", d.getAllCurrentForms().contains("BAR"));
-        assertEquals("wrong number of forms", 2, d.getAllCurrentForms().size());
+        assertTrue(d.getAllCurrentForms().contains("FOO"), "failed to add FOO");
+        assertTrue(d.getAllCurrentForms().contains("BAR"), "failed to add BAR");
+        assertEquals(2, d.getAllCurrentForms().size(), "wrong number of forms");
     }
 
     @Test
-    public void testEmptyData() {
+    void testEmptyData() {
         final byte[] empty = {};
         final IBaseDataObject d1 = DataObjectFactory.getInstance();
         d1.setData(empty);
-        assertTrue("empty: " + d1, DataUtil.isEmpty(d1));
-        assertFalse("not empty: " + d1, DataUtil.isNotEmpty(d1));
+        assertTrue(DataUtil.isEmpty(d1), "empty: " + d1);
+        assertFalse(DataUtil.isNotEmpty(d1), "not empty: " + d1);
 
         final byte[] whitespace = {' '};
         final byte[] whitespaces = {' ', ' '};
@@ -58,63 +58,63 @@ public class DataUtilTest extends UnitTest {
         final byte[] whitencontrol = {' ', ' ', '1', ByteUtil.Ascii_ESC};
         final byte[] W = "Президент Буш".getBytes();
         for (final byte[] bytes : Arrays.asList(whitespace, whitespaces, control, foo, whiten, whitencontrol, W)) {
-            assertFalse("empty: " + bytes, DataUtil.isEmpty(bytes));
+            assertFalse(DataUtil.isEmpty(bytes), "empty: " + Arrays.toString(bytes));
             final IBaseDataObject d2 = DataObjectFactory.getInstance();
             d2.setData(bytes);
-            assertFalse("empty: " + d2, DataUtil.isEmpty(d2));
-            assertTrue("empty: " + d2, DataUtil.isNotEmpty(d2));
+            assertFalse(DataUtil.isEmpty(d2), "empty: " + d2);
+            assertTrue(DataUtil.isNotEmpty(d2), "empty: " + d2);
         }
     }
 
     @Test
-    public void testEmptyWorkUnit() {
-        assertTrue("Empty work unit is empty", DataUtil.isEmpty(new WorkUnit()));
-        assertFalse("Work unit is not empty", DataUtil.isEmpty(new WorkUnit("foo", "abc".getBytes(), Form.UNKNOWN)));
+    void testEmptyWorkUnit() {
+        assertTrue(DataUtil.isEmpty(new WorkUnit()), "Empty work unit is empty");
+        assertFalse(DataUtil.isEmpty(new WorkUnit("foo", "abc".getBytes(), Form.UNKNOWN)), "Work unit is not empty");
     }
 
     @Test
-    public void testSetEmpty() {
+    void testSetEmpty() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         DataUtil.setEmptySession(d);
-        assertEquals("Session must be set empty", d.currentForm(), d.getFileType());
+        assertEquals(d.currentForm(), d.getFileType(), "Session must be set empty");
     }
 
     @Test
-    public void testCsvEscape() {
-        assertEquals("Doesn't need escaping", "foo", DataUtil.csvescape("foo"));
-        assertEquals("Comma escaping", "\"foo,bar\"", DataUtil.csvescape("foo,bar"));
-        assertEquals("CR escaping", "foo bar", DataUtil.csvescape("foo\nbar"));
-        assertEquals("LF escaping", "foo bar", DataUtil.csvescape("foo\rbar"));
-        assertEquals("DQ escaping", "\"foo\"\"bar\"", DataUtil.csvescape("foo\"bar"));
+    void testCsvEscape() {
+        assertEquals("foo", DataUtil.csvescape("foo"), "Doesn't need escaping");
+        assertEquals("\"foo,bar\"", DataUtil.csvescape("foo,bar"), "Comma escaping");
+        assertEquals("foo bar", DataUtil.csvescape("foo\nbar"), "CR escaping");
+        assertEquals("foo bar", DataUtil.csvescape("foo\rbar"), "LF escaping");
+        assertEquals("\"foo\"\"bar\"", DataUtil.csvescape("foo\"bar"), "DQ escaping");
     }
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetEventDate() {
+    void testGetEventDate() {
         // TODO: fix up deprecated methods
         final IBaseDataObject d = DataObjectFactory.getInstance();
         final Calendar now = DataUtil.getCal(new Date());
         Calendar dcal = DataUtil.getEventDate(d);
-        assertEquals("Default eventDate is now", TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()));
+        assertEquals(TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()), "Default eventDate is now");
 
         d.putParameter("FILE_DATE", "2013-01-01 12:34:56");
         dcal = DataUtil.getEventDate(d);
-        assertEquals("FILE_DATE is used when present", "2013-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()));
+        assertEquals("2013-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()), "FILE_DATE is used when present");
 
         d.putParameter("EventDate", "2012-01-01 12:34:56");
         dcal = DataUtil.getEventDate(d);
-        assertEquals("EventDate is used when present", "2012-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()));
+        assertEquals("2012-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()), "EventDate is used when present");
 
         d.setParameter("EventDate", "ArmyBoots");
         dcal = DataUtil.getEventDate(d);
-        assertEquals("Now is used when field is invalid", TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()));
+        assertEquals(TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()), "Now is used when field is invalid");
     }
 
     @Test
-    public void testSetCurrentFormAndFiletype() {
+    void testSetCurrentFormAndFiletype() {
         final IBaseDataObject d = DataObjectFactory.getInstance(null, "foo", "UNKNOWN");
         DataUtil.setCurrentFormAndFiletype(d, "PETERPAN");
-        assertEquals("Set current form", "PETERPAN", d.currentForm());
-        assertEquals("Set file type", "PETERPAN", d.getFileType());
+        assertEquals("PETERPAN", d.currentForm(), "Set current form");
+        assertEquals("PETERPAN", d.getFileType(), "Set file type");
     }
 }

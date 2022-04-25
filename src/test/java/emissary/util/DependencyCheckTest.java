@@ -1,7 +1,7 @@
 package emissary.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -10,38 +10,38 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class DependencyCheckTest extends UnitTest {
+class DependencyCheckTest extends UnitTest {
 
     private final String BIN_DIR = System.getProperty(ConfigUtil.CONFIG_BIN_PROPERTY);
 
     @Test
-    public void testExecutableExist() {
+    void testExecutableExist() {
         boolean exists = DependencyCheck.executableExists("bash");
-        assertTrue("Executable should exist", exists);
+        assertTrue(exists, "Executable should exist");
     }
 
     @Test
-    public void testExecutableDoesNotExist() {
+    void testExecutableDoesNotExist() {
         boolean exists = DependencyCheck.executableExists("foobarbaz");
-        assertFalse("Executable should not exist", exists);
+        assertFalse(exists, "Executable should not exist");
     }
 
     @Test
-    public void testDirectoryDoesNotExists() {
+    void testDirectoryDoesNotExists() {
         boolean exists = DependencyCheck.directoryExists("./missing");
-        assertFalse("Directory should not exist", exists);
+        assertFalse(exists, "Directory should not exist");
     }
 
     @Test
-    public void testFileDoesNotExists() {
+    void testFileDoesNotExists() {
         boolean exists = DependencyCheck.fileExists(BIN_DIR + "/missing.txt");
-        assertFalse("File should not exist", exists);
+        assertFalse(exists, "File should not exist");
     }
 
     @Test
-    public void testDependencyReport() throws Exception {
+    void testDependencyReport() {
         Configurator conf = new ServiceConfigGuide();
         conf.addEntry("REQUIRED_EXECUTABLE", "bash");
         conf.addEntry("REQUIRED_DIRECTORY", BIN_DIR);
@@ -57,6 +57,6 @@ public class DependencyCheckTest extends UnitTest {
         d.printDependencyReport();
         System.setOut(originalOut);
         myOut.close();
-        assertTrue("Report must exist", baos.size() > 0);
+        assertTrue(baos.size() > 0, "Report must exist");
     }
 }

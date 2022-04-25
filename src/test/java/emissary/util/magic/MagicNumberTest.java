@@ -1,238 +1,238 @@
 package emissary.util.magic;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.xml.bind.DatatypeConverter;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MagicNumberTest extends UnitTest {
+class MagicNumberTest extends UnitTest {
 
     @Test
-    public void testCrLf() throws ParseException {
+    void testCrLf() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\r\\n\\r\\n FOO");
-        assertTrue("NEW_LINE in string operators must match " + m, m.test("\r\n\r\nBadCafe".getBytes()));
-        assertFalse("NEW_LINE in string operators must not match bad data " + m, m.test("x\r\n\r\nBadCafe".getBytes()));
+        assertTrue(m.test("\r\n\r\nBadCafe".getBytes()), "NEW_LINE in string operators must match " + m);
+        assertFalse(m.test("x\r\n\r\nBadCafe".getBytes()), "NEW_LINE in string operators must not match bad data " + m);
     }
 
     @Test
-    public void testCrLfNotAtEnd() throws ParseException {
+    void testCrLfNotAtEnd() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string \\r\\n\\r\\nBad FOO");
-        assertTrue("NEW_LINE in string operators must match " + m, m.test("\r\n\r\nBadCafe".getBytes()));
-        assertFalse("NEW_LINE in string operators must not match bad data " + m, m.test("x\r\n\r\nBadCafe".getBytes()));
+        assertTrue(m.test("\r\n\r\nBadCafe".getBytes()), "NEW_LINE in string operators must match " + m);
+        assertFalse(m.test("x\r\n\r\nBadCafe".getBytes()), "NEW_LINE in string operators must not match bad data " + m);
     }
 
     @Test
-    public void testBelong() throws ParseException {
+    void testBelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong 0x41424344 FOO");
-        assertTrue("BELONG hex magic operator must match", m.test("ABCD".getBytes()));
-        assertFalse("BELONG hex magic operator must not match", m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "BELONG hex magic operator must match");
+        assertFalse(m.test("ABCC".getBytes()), "BELONG hex magic operator must not match");
     }
 
     @Test
-    public void testBelongDecimal() throws ParseException {
+    void testBelongDecimal() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong 1094861636 FOO");
-        assertTrue("BELONG decimal magic operator must match: " + m, m.test("ABCD".getBytes()));
-        assertFalse("BELONG decimal magic operator must not match: " + m, m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "BELONG decimal magic operator must match: " + m);
+        assertFalse(m.test("ABCC".getBytes()), "BELONG decimal magic operator must not match: " + m);
     }
 
     @Test
-    public void testLelong() throws ParseException {
+    void testLelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 lelong 0x41424344 FOO");
-        assertTrue("LELONG hex magic operator must match: " + m, m.test("DCBA".getBytes()));
-        assertFalse("LELONG hex magic operator must not match: " + m, m.test("ABCC".getBytes()));
+        assertTrue(m.test("DCBA".getBytes()), "LELONG hex magic operator must match: " + m);
+        assertFalse(m.test("ABCC".getBytes()), "LELONG hex magic operator must not match: " + m);
     }
 
     @Test
-    public void testLelongDecimal() throws ParseException {
+    void testLelongDecimal() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 lelong 1094861636 FOO");
-        assertTrue("LELONG hex magic operator must match: " + m, m.test("DCBA".getBytes()));
-        assertFalse("LELONG hex magic operator must not match: " + m, m.test("ABCC".getBytes()));
+        assertTrue(m.test("DCBA".getBytes()), "LELONG hex magic operator must match: " + m);
+        assertFalse(m.test("ABCC".getBytes()), "LELONG hex magic operator must not match: " + m);
     }
 
     @Test
-    public void testGreaterThanBelong() throws ParseException {
+    void testGreaterThanBelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong >0x41424344 FOO");
-        assertTrue("Greater than magic operator failed", m.test("ABCE".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCE".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("ABCD".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "Greater than magic operator failed");
     }
 
     @Test
-    public void testGreaterEqualBelong() throws ParseException {
+    void testGreaterEqualBelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong >=0x41424344 FOO");
-        assertTrue("GreaterEqual magic operator failed", m.test("ABCE".getBytes()));
-        assertTrue("GreaterEqual magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("GreaterEqual magic operator failed", m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCE".getBytes()), "GreaterEqual magic operator failed");
+        assertTrue(m.test("ABCD".getBytes()), "GreaterEqual magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "GreaterEqual magic operator failed");
     }
 
     @Test
-    public void testLessThanBelong() throws ParseException {
+    void testLessThanBelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong <0x41424344 FOO");
-        assertTrue("Less than magic operator failed", m.test("ABCC".getBytes()));
-        assertFalse("Less than magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("Less than magic operator failed", m.test("ABCE".getBytes()));
+        assertTrue(m.test("ABCC".getBytes()), "Less than magic operator failed");
+        assertFalse(m.test("ABCD".getBytes()), "Less than magic operator failed");
+        assertFalse(m.test("ABCE".getBytes()), "Less than magic operator failed");
     }
 
     @Test
-    public void testLessEqualBelong() throws ParseException {
+    void testLessEqualBelong() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 belong <=0x41424344 FOO");
-        assertTrue("LessEqual magic operator failed", m.test("ABCC".getBytes()));
-        assertTrue("LessEqual magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("LessEqual magic operator failed", m.test("ABCE".getBytes()));
+        assertTrue(m.test("ABCC".getBytes()), "LessEqual magic operator failed");
+        assertTrue(m.test("ABCD".getBytes()), "LessEqual magic operator failed");
+        assertFalse(m.test("ABCE".getBytes()), "LessEqual magic operator failed");
     }
 
     @Test
-    public void testBeshort() throws ParseException {
+    void testBeshort() throws ParseException {
         // AB
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort 0x4142 FOO");
-        assertTrue("Greater than magic operator failed", m.test("AB".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("AC".getBytes()));
+        assertTrue(m.test("AB".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("AC".getBytes()), "Greater than magic operator failed");
     }
 
     @Test
-    public void testGreaterThanBeshort() throws ParseException {
+    void testGreaterThanBeshort() throws ParseException {
         // AB
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort >0x4142 FOO");
-        assertTrue("Greater than magic operator failed", m.test("AC".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("AB".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("AA".getBytes()));
+        assertTrue(m.test("AC".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("AB".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("AA".getBytes()), "Greater than magic operator failed");
     }
 
     @Test
-    public void testGreaterEqualBeshort() throws ParseException {
+    void testGreaterEqualBeshort() throws ParseException {
         // AB
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort >=0x4142 FOO");
-        assertTrue("GreaterEqual magic operator failed", m.test("AB".getBytes()));
-        assertTrue("GreaterEqual magic operator failed", m.test("AC".getBytes()));
-        assertFalse("GreaterEqual magic operator failed", m.test("AA".getBytes()));
+        assertTrue(m.test("AB".getBytes()), "GreaterEqual magic operator failed");
+        assertTrue(m.test("AC".getBytes()), "GreaterEqual magic operator failed");
+        assertFalse(m.test("AA".getBytes()), "GreaterEqual magic operator failed");
     }
 
     @Test
-    public void testLessThanBeshort() throws ParseException {
+    void testLessThanBeshort() throws ParseException {
         // AB
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort <0x4142 FOO");
-        assertTrue("Less than magic operator failed", m.test("AA".getBytes()));
-        assertFalse("Less than magic operator failed", m.test("AB".getBytes()));
-        assertFalse("Less than magic operator failed", m.test("AC".getBytes()));
+        assertTrue(m.test("AA".getBytes()), "Less than magic operator failed");
+        assertFalse(m.test("AB".getBytes()), "Less than magic operator failed");
+        assertFalse(m.test("AC".getBytes()), "Less than magic operator failed");
     }
 
     @Test
-    public void testLessEqualBeshort() throws ParseException {
+    void testLessEqualBeshort() throws ParseException {
         // AB
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 beshort <=0x4142 FOO");
-        assertTrue("LessEqual magic operator failed", m.test("AA".getBytes()));
-        assertTrue("LessEqual magic operator failed", m.test("AB".getBytes()));
-        assertFalse("LessEqual magic operator failed", m.test("AC".getBytes()));
+        assertTrue(m.test("AA".getBytes()), "LessEqual magic operator failed");
+        assertTrue(m.test("AB".getBytes()), "LessEqual magic operator failed");
+        assertFalse(m.test("AC".getBytes()), "LessEqual magic operator failed");
     }
 
     @Test
-    public void testString() throws ParseException {
+    void testString() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string ABCD FOO");
-        assertTrue("String magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("String magic operator failed", m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "String magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "String magic operator failed");
     }
 
     @Test
-    public void testSubstring() throws ParseException {
+    void testSubstring() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("1 string BCD FOO");
-        assertTrue("String magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("String magic operator failed", m.test("ABCC".getBytes()));
-        assertFalse("String magic operator failed", m.test("BCD".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "String magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "String magic operator failed");
+        assertFalse(m.test("BCD".getBytes()), "String magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("2 string CD FOO");
-        assertTrue("String magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("String magic operator failed", m.test("ABCC".getBytes()));
-        assertFalse("String magic operator failed", m.test("CD".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "String magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "String magic operator failed");
+        assertFalse(m.test("CD".getBytes()), "String magic operator failed");
     }
 
     @Test
-    public void testStringWithHex() throws ParseException {
+    void testStringWithHex() throws ParseException {
         // ABCD
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 string ABC\\x44 FOO");
-        assertTrue("Greater than magic operator failed", m.test("ABCD".getBytes()));
-        assertFalse("Greater than magic operator failed", m.test("ABCC".getBytes()));
+        assertTrue(m.test("ABCD".getBytes()), "Greater than magic operator failed");
+        assertFalse(m.test("ABCC".getBytes()), "Greater than magic operator failed");
     }
 
     @Test
-    public void testByte() throws ParseException {
+    void testByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte 0x09");
-        assertTrue("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("09")));
-        assertFalse("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("AB")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("09")), "Equal magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "Equal magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("AB")), "Equal magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte 0xF2");
-        assertTrue("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("F2")));
-        assertFalse("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("Equal magic operator failed", m.test(DatatypeConverter.parseHexBinary("AB")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")), "Equal magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "Equal magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("AB")), "Equal magic operator failed");
     }
 
     @Test
-    public void testGreaterThanByte() throws ParseException {
+    void testGreaterThanByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte >0x09 FOO");
-        assertTrue("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("01")));
-        assertFalse("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("09")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")), "Greater than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("01")), "Greater than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("09")), "Greater than magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte >0xF2 FOO");
-        assertFalse("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertTrue("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F8")));
-        assertFalse("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("91")));
-        assertFalse("Greater than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F2")));
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "Greater than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F8")), "Greater than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("91")), "Greater than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("F2")), "Greater than magic operator failed");
     }
 
     @Test
-    public void testGreaterEqualByte() throws ParseException {
+    void testGreaterEqualByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte >=0x09 FOO");
-        assertTrue("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("01")));
-        assertTrue("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("09")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")), "GreaterEqual than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("01")), "GreaterEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("09")), "GreaterEqual than magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte >=0xF2 FOO");
-        assertFalse("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertTrue("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F8")));
-        assertFalse("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("91")));
-        assertTrue("GreaterEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F2")));
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "GreaterEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F8")), "GreaterEqual than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("91")), "GreaterEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")), "GreaterEqual than magic operator failed");
     }
 
     @Test
-    public void testLessThanByte() throws ParseException {
+    void testLessThanByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte <0x09 FOO");
-        assertFalse("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertTrue("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("01")));
-        assertFalse("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("09")));
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "Less than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("01")), "Less than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("09")), "Less than magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte <0xF2 FOO");
-        assertTrue("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F8")));
-        assertTrue("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("91")));
-        assertFalse("Less than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F2")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")), "Less than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("F8")), "Less than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("91")), "Less than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("F2")), "Less than magic operator failed");
     }
 
     @Test
-    public void testLessEqualByte() throws ParseException {
+    void testLessEqualByte() throws ParseException {
         MagicNumber m = MagicNumberFactory.buildMagicNumber("0 byte <=0x09 FOO");
-        assertFalse("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertTrue("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("01")));
-        assertTrue("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("09")));
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("A1")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("01")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("09")), "LessEqual than magic operator failed");
 
         m = MagicNumberFactory.buildMagicNumber("0 byte <=0xF2 FOO");
-        assertTrue("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("A1")));
-        assertFalse("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F8")));
-        assertTrue("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("91")));
-        assertTrue("LessEqual than magic operator failed", m.test(DatatypeConverter.parseHexBinary("F2")));
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("A1")), "LessEqual than magic operator failed");
+        assertFalse(m.test(DatatypeConverter.parseHexBinary("F8")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("91")), "LessEqual than magic operator failed");
+        assertTrue(m.test(DatatypeConverter.parseHexBinary("F2")), "LessEqual than magic operator failed");
     }
 
 }

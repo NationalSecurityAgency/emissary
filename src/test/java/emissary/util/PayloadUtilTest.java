@@ -1,8 +1,8 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,17 +16,17 @@ import emissary.core.Family;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
-    private static String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/";
-    private static Set<Character> validFormChars = new HashSet<>();
+    private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/";
+    private static final Set<Character> validFormChars = new HashSet<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         // Needed to ensure correct output strings on the dates
         timezone = System.getProperty("user.timezone");
@@ -37,13 +37,13 @@ public class PayloadUtilTest extends UnitTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void teardown() {
         System.setProperty("user.timezone", timezone);
     }
 
     @Test
-    public void testOneLineString() {
+    void testOneLineString() {
         // setup
         final String fn = "fname" + Family.SEP + "4";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
@@ -51,35 +51,35 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
         d.setCreationTimestamp(new Date(0));
-        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + (new Date(0)).toString();
+        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + (new Date(0));
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
 
         // verify
-        assertTrue("Must be one line string", answer.indexOf("\n") == -1);
-        assertTrue("Answer string did not equal the expected string", expected.compareTo(answer) == 0);
+        assertFalse(answer.contains("\n"), "Must be one line string");
+        assertEquals(expected, answer, "Answer string did not equal the expected string");
     }
 
     @Test
-    public void testOneLineStringOnTLD() {
+    void testOneLineStringOnTLD() {
         // setup
         final String fn = "fname";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.setCreationTimestamp(new Date(0));
         d.appendTransformHistory("BOGUSKEYELEMENT");
-        final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0)).toString();
+        final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0));
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
 
         // verify
-        assertTrue("Must be one line string", answer.indexOf("\n") == -1);
-        assertTrue("Answer string did not equal the expected string", expected.compareTo(answer) == 0);
+        assertFalse(answer.contains("\n"), "Must be one line string");
+        assertEquals(expected, answer, "Answer string did not equal the expected string");
     }
 
     @Test
-    public void testMultiLineString() {
+    void testMultiLineString() {
         // setup
         final String fn = "fname" + Family.SEP + "4";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
@@ -91,48 +91,48 @@ public class PayloadUtilTest extends UnitTest {
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
 
         // verify
-        assertTrue("Must be multi-line string", answer.indexOf("\n") > -1);
-        assertTrue("Answer did not contain the correct filename", answer.contains("filename: fname-att-4"));
-        assertTrue("Answer did not contain the creationTimestamp", answer.contains("creationTimestamp: " + (new Date(0)).toString()));
-        assertTrue("Answer did not contain the currentForms", answer.contains("currentForms: [UNKNOWN]"));
-        assertTrue("Answer did not contain the correct filetype", answer.contains("filetype: UNKNOWN"));
-        assertTrue("Answer did not contain the transform history number", answer.contains("transform history (2)"));
-        assertTrue("Answer did not contain the correct transform history entry",
-                answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"));
-        assertTrue("Answer did not contain the correct transform history entry",
-                answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"));
+        assertTrue(answer.contains("\n"), "Must be multi-line string");
+        assertTrue(answer.contains("filename: fname-att-4"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("creationTimestamp: " + new Date(0)), "Answer did not contain the creationTimestamp");
+        assertTrue(answer.contains("currentForms: [UNKNOWN]"), "Answer did not contain the currentForms");
+        assertTrue(answer.contains("filetype: UNKNOWN"), "Answer did not contain the correct filetype");
+        assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+                "Answer did not contain the correct transform history entry");
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+                "Answer did not contain the correct transform history entry");
     }
 
     @Test
-    public void testNameOfSimpleObject() {
+    void testNameOfSimpleObject() {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn", Form.UNKNOWN);
-        assertEquals("Name of simple payload is shortname", "fn", PayloadUtil.getName(d));
+        assertEquals("fn", PayloadUtil.getName(d), "Name of simple payload is shortname");
     }
 
     @Test
-    public void testNameOfCollection() {
-        final List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
+    void testNameOfCollection() {
+        final List<IBaseDataObject> list = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn" + i, Form.UNKNOWN);
             list.add(d);
         }
-        assertEquals("Name of collection payload is shortname with count", "fn0(3)", PayloadUtil.getName(list));
+        assertEquals("fn0(3)", PayloadUtil.getName(list), "Name of collection payload is shortname with count");
     }
 
     @Test
-    public void testNameOfEmptyCollection() {
-        final List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
-        assertEquals("Name of empty collection is class name", "java.util.ArrayList", PayloadUtil.getName(list));
+    void testNameOfEmptyCollection() {
+        final List<IBaseDataObject> list = new ArrayList<>();
+        assertEquals("java.util.ArrayList", PayloadUtil.getName(list), "Name of empty collection is class name");
     }
 
     @Test
-    public void testNameOfBadArgument() {
+    void testNameOfBadArgument() {
         final String s = "foo";
-        assertEquals("Name of unexpected argument is class name", s.getClass().getName(), PayloadUtil.getName(s));
+        assertEquals(s.getClass().getName(), PayloadUtil.getName(s), "Name of unexpected argument is class name");
     }
 
     @Test
-    public void testXmlSerizliaztion() throws Exception {
+    void testXmlSerizliaztion() {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "testfile", Form.UNKNOWN);
         d.addAlternateView("AV", "def".getBytes());
         d.putParameter("P", "ghi");
@@ -142,38 +142,38 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("stu");
 
         final String xml = PayloadUtil.toXmlString(d);
-        assertTrue("Xml serialization must include payload data", xml.indexOf("abc") > -1);
-        assertTrue("Xml serialization must include av data", xml.indexOf("def") > -1);
-        assertTrue("Xml serialization must include param data", xml.indexOf("ghi") > -1);
-        assertTrue("Xml serialization must include error data", xml.indexOf("jkl") > -1);
-        assertTrue("Xml serialization must include header data", xml.indexOf("mno") > -1);
-        assertTrue("Xml serialization must include footer data", xml.indexOf("pqr") > -1);
-        assertTrue("Xml serialization must include history data", xml.indexOf("stu") > -1);
+        assertTrue(xml.contains("abc"), "Xml serialization must include payload data");
+        assertTrue(xml.contains("def"), "Xml serialization must include av data");
+        assertTrue(xml.contains("ghi"), "Xml serialization must include param data");
+        assertTrue(xml.contains("jkl"), "Xml serialization must include error data");
+        assertTrue(xml.contains("mno"), "Xml serialization must include header data");
+        assertTrue(xml.contains("pqr"), "Xml serialization must include footer data");
+        assertTrue(xml.contains("stu"), "Xml serialization must include history data");
 
-        final List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
+        final List<IBaseDataObject> list = new ArrayList<>();
         list.add(d);
         final String lxml = PayloadUtil.toXmlString(list);
-        assertTrue("Xml serialization must include payload data", lxml.indexOf("abc") > -1);
-        assertTrue("Xml serialization must include av data", lxml.indexOf("def") > -1);
-        assertTrue("Xml serialization must include param data", lxml.indexOf("ghi") > -1);
-        assertTrue("Xml serialization must include error data", lxml.indexOf("jkl") > -1);
-        assertTrue("Xml serialization must include header data", lxml.indexOf("mno") > -1);
-        assertTrue("Xml serialization must include footer data", lxml.indexOf("pqr") > -1);
-        assertTrue("Xml serialization must include history data", lxml.indexOf("stu") > -1);
+        assertTrue(lxml.contains("abc"), "Xml serialization must include payload data");
+        assertTrue(lxml.contains("def"), "Xml serialization must include av data");
+        assertTrue(lxml.contains("ghi"), "Xml serialization must include param data");
+        assertTrue(lxml.contains("jkl"), "Xml serialization must include error data");
+        assertTrue(lxml.contains("mno"), "Xml serialization must include header data");
+        assertTrue(lxml.contains("pqr"), "Xml serialization must include footer data");
+        assertTrue(lxml.contains("stu"), "Xml serialization must include history data");
     }
 
     @Test
-    public void testIsValidForm() {
+    void testIsValidForm() {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
-        assertTrue("Lower case alpha characters are not considered valid", PayloadUtil.isValidForm(alphaLow));
-        assertTrue("Upper case alpha characters are not considered valid", PayloadUtil.isValidForm(alphaLow.toUpperCase()));
-        assertTrue("Numeric characters are not considered valid", PayloadUtil.isValidForm("0123456789"));
-        assertTrue("Dash and underscore aren't considered valid", PayloadUtil.isValidForm("-_"));
-        assertTrue("Parentheses aren't considered valid", PayloadUtil.isValidForm("formName-(suffixInParens)"));
-        assertTrue("Slash aren't considered valid", PayloadUtil.isValidForm("formName-(application/xml)"));
-        assertFalse("Dot isn't considered valid", PayloadUtil.isValidForm("."));
-        assertFalse("Space isn't considered valid", PayloadUtil.isValidForm(" "));
+        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are not considered valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are not considered valid");
+        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are not considered valid");
+        assertTrue(PayloadUtil.isValidForm("-_"), "Dash and underscore aren't considered valid");
+        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses aren't considered valid");
+        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "Slash aren't considered valid");
+        assertFalse(PayloadUtil.isValidForm("."), "Dot isn't considered valid");
+        assertFalse(PayloadUtil.isValidForm(" "), "Space isn't considered valid");
 
         // Cycle through all characters and see how many are valid and that we have the expected number
         int validChars = 0;
@@ -182,7 +182,7 @@ public class PayloadUtilTest extends UnitTest {
                 validChars++;
             }
         }
-        assertEquals("Unexpected number of valid characters.", validFormChars.size(), validChars);
+        assertEquals(validFormChars.size(), validChars, "Unexpected number of valid characters.");
 
         // Create a set with possible form characters for randomly generated cases
         Set<Character> formChars = new HashSet<>(validFormChars);
@@ -201,14 +201,15 @@ public class PayloadUtilTest extends UnitTest {
                 word.append(formCharArray[rand.nextInt(formChars.size())]);
             }
             String form = word.toString();
-            assertEquals("Regex and Set implementations of form check differ for form \"" + form + "\"", PayloadUtil.isValidForm(form),
-                    isValidFormSetImplementation(form));
+            assertEquals(PayloadUtil.isValidForm(form),
+                    isValidFormSetImplementation(form),
+                    "Regex and Set implementations of form check differ for form \"" + form + "\"");
         }
     }
 
     /**
      * Compares the form to a set of valid characters
-     *
+     * <p>
      * This implementation is marginally faster than the regex implementation, but is less maintainable
      *
      * @param form The form to be tested

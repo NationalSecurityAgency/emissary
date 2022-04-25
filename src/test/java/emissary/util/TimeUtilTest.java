@@ -1,8 +1,9 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -14,9 +15,9 @@ import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class TimeUtilTest extends UnitTest {
+class TimeUtilTest extends UnitTest {
 
     private static final ZoneId GMT = ZoneId.of("GMT");
     private static final ZoneId PARIS = ZoneId.of("Europe/Paris");
@@ -25,76 +26,78 @@ public class TimeUtilTest extends UnitTest {
     private static final ZonedDateTime testZoneDate = ZonedDateTime.of(testLocalDate, GMT);
 
     @Test
-    public void testGetDate() {
-        assertEquals("getDate did not match", "2016 Dec 25 15 25 30", TimeUtil.getDate(testZoneDate, "yyyy MMM dd HH ss mm", GMT));
-        assertEquals("getDate did not match", "2016-12-25T15:30:25 GMT", TimeUtil.getDate(testZoneDate, "yyyy-MM-dd'T'HH:mm:ss z", null));
-        assertEquals("getDate did not match", "2016-12-25T14:30:25 GMT",
-                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", GMT));
-        assertEquals("getDate did not match", "2016-12-25T15:30:25 CET",
-                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", PARIS));
+    void testGetDate() {
+        assertEquals("2016 Dec 25 15 25 30", TimeUtil.getDate(testZoneDate, "yyyy MMM dd HH ss mm", GMT), "getDate did not match");
+        assertEquals("2016-12-25T15:30:25 GMT", TimeUtil.getDate(testZoneDate, "yyyy-MM-dd'T'HH:mm:ss z", null), "getDate did not match");
+        assertEquals("2016-12-25T14:30:25 GMT",
+                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", GMT),
+                "getDate did not match");
+        assertEquals("2016-12-25T15:30:25 CET",
+                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", PARIS),
+                "getDate did not match");
         assertNull(TimeUtil.getDate(null, null, null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetDateExceptionBadFormat() {
-        TimeUtil.getDate(testZoneDate, null, null);
+    @Test
+    void testGetDateExceptionBadFormat() {
+        assertThrows(IllegalArgumentException.class, () -> TimeUtil.getDate(testZoneDate, null, null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetDateExceptionBadFormat2() {
-        TimeUtil.getDate(testZoneDate, "Bad", null);
+    @Test
+    void testGetDateExceptionBadFormat2() {
+        assertThrows(IllegalArgumentException.class, () -> TimeUtil.getDate(testZoneDate, "Bad", null));
     }
 
 
-    @Test(expected = ZoneRulesException.class)
-    public void testGetDateExceptionBadZone() {
-        TimeUtil.getDate("yyyy", "BAD");
+    @Test
+    void testGetDateExceptionBadZone() {
+        assertThrows(ZoneRulesException.class, () -> TimeUtil.getDate("yyyy", "BAD"));
     }
 
     @Deprecated
     @Test
-    public void testGetDateAsPath() {
-        assertEquals("GetDateAsPath", "2016-12-25/15/30", TimeUtil.getDateAsPath(testUtilDate));
+    void testGetDateAsPath() {
+        assertEquals("2016-12-25/15/30", TimeUtil.getDateAsPath(testUtilDate), "GetDateAsPath");
     }
 
     @Deprecated
     @Test
-    public void testGetDateOrdinal() {
-        assertEquals("GetDateOrdinal", "2016360", TimeUtil.getDateOrdinal(testUtilDate));
+    void testGetDateOrdinal() {
+        assertEquals("2016360", TimeUtil.getDateOrdinal(testUtilDate), "GetDateOrdinal");
     }
 
     @Deprecated
     @Test
-    public void testGetDateAsISO8601() {
-        assertEquals("GetDateAsISO8601", "2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate));
+    void testGetDateAsISO8601() {
+        assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate), "GetDateAsISO8601");
     }
 
     @Test
-    public void testGetDateAsISO8601Long() {
-        assertEquals("GetDateAsISO8601Long", "2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate.getTime()));
+    void testGetDateAsISO8601Long() {
+        assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate.getTime()), "GetDateAsISO8601Long");
     }
 
     @Deprecated
     @Test
-    public void testGetDateAsFullISO8601() {
-        assertEquals("GetDateAsFullISO8601", "2016-12-25T15:30:25Z", TimeUtil.getDateAsFullISO8601(testUtilDate));
+    void testGetDateAsFullISO8601() {
+        assertEquals("2016-12-25T15:30:25Z", TimeUtil.getDateAsFullISO8601(testUtilDate), "GetDateAsFullISO8601");
     }
 
     @Deprecated
     @Test
-    public void testGetDateFromISO8601() throws DateTimeParseException {
-        assertEquals("GetDateFromISO8601", testUtilDate.getTime(), TimeUtil.getDateFromISO8601("2016-12-25 15:30:25").getTime());
-    }
-
-    @Deprecated
-    @Test(expected = java.time.format.DateTimeParseException.class)
-    public void testGetDateFromISO8601Exception() throws DateTimeParseException {
-        TimeUtil.getDateFromISO8601("Bad Date");
+    void testGetDateFromISO8601() {
+        assertEquals(testUtilDate.getTime(), TimeUtil.getDateFromISO8601("2016-12-25 15:30:25").getTime(), "GetDateFromISO8601");
     }
 
     @Deprecated
     @Test
-    public void testGetZonedDateFromISO8601() {
+    void testGetDateFromISO8601Exception() {
+        assertThrows(DateTimeParseException.class, () -> TimeUtil.getDateFromISO8601("Bad Date"));
+    }
+
+    @Deprecated
+    @Test
+    void testGetZonedDateFromISO8601() {
         ZonedDateTime zdt = TimeUtil.getZonedDateFromISO8601("2016-12-25 15:30:25");
         assertEquals(15, zdt.getHour());
         assertEquals(30, zdt.getMinute());
@@ -108,48 +111,48 @@ public class TimeUtilTest extends UnitTest {
 
     @Deprecated
     @Test
-    public void testDatePath() {
-        assertTrue("Date with slashes must have slashes", TimeUtil.getDateAsPath(new Date()).indexOf("/") > -1);
+    void testDatePath() {
+        assertTrue(TimeUtil.getDateAsPath(new Date()).contains("/"), "Date with slashes must have slashes");
     }
 
     @Test
-    public void testOrdinal() {
-        assertTrue("Date with ordinal must be 7 long", TimeUtil.getCurrentDateOrdinal().length() == 7);
+    void testOrdinal() {
+        assertEquals(7, TimeUtil.getCurrentDateOrdinal().length(), "Date with ordinal must be 7 long");
     }
 
     @Deprecated
     @Test
-    public void testISO8601RoundTrip() throws Exception {
+    void testISO8601RoundTrip() {
         final String s = TimeUtil.getCurrentDateISO8601();
         final Date d = TimeUtil.getDateFromISO8601(s);
         final String s2 = TimeUtil.getDateAsISO8601(d.getTime());
-        assertEquals("ISO8601 utils should make round trip", s, s2);
+        assertEquals(s, s2, "ISO8601 utils should make round trip");
     }
 
     @Test
-    public void testCurrentTimeAsPath() {
+    void testCurrentTimeAsPath() {
         final String path = TimeUtil.getCurrentDate();
-        assertTrue("Path with time should have slashes", path.indexOf("/") > -1);
+        assertTrue(path.contains("/"), "Path with time should have slashes");
     }
 
     @Test
-    public void testTimeZoneAddedOnFormat() {
+    void testTimeZoneAddedOnFormat() {
         String dt = TimeUtil.getDate("yyyy-MM-dd'T'HH:mm:ss z", null);
-        assertTrue("GMT must be added by default - " + dt, dt.indexOf("GMT") > -1);
+        assertTrue(dt.contains("GMT"), "GMT must be added by default - " + dt);
 
         // timezone changes due to daylight savings
         dt = TimeUtil.getDate("yyyy-MM-dd'T'HH:mm:ss z", "Europe/Paris");
-        assertTrue("Specified tz must be added - " + dt, dt.indexOf("CET") > -1 || dt.indexOf("CEST") > -1);
+        assertTrue(dt.contains("CET") || dt.contains("CEST"), "Specified tz must be added - " + dt);
     }
 
     @Test
-    public void testDateAsFullIOS8601() {
+    void testDateAsFullIOS8601() {
         final String currentTime = TimeUtil.getCurrentDateFullISO8601();
-        assertTrue("Full ISO8601 must have a 'T'", currentTime.contains("T"));
-        assertTrue("Full ISO8601 must have a 'Z'", currentTime.contains("Z"));
+        assertTrue(currentTime.contains("T"), "Full ISO8601 must have a 'T'");
+        assertTrue(currentTime.contains("Z"), "Full ISO8601 must have a 'Z'");
 
         final String time = TimeUtil.getDateAsFullISO8601(ZonedDateTime.now());
-        assertTrue("Full ISO8601 must have a 'T'", time.contains("T"));
-        assertTrue("Full ISO8601 must have a 'Z'", time.contains("Z"));
+        assertTrue(time.contains("T"), "Full ISO8601 must have a 'T'");
+        assertTrue(time.contains("Z"), "Full ISO8601 must have a 'Z'");
     }
 }

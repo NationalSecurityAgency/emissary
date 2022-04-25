@@ -1,17 +1,17 @@
 package emissary.util.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MultiKeywordScannerTest {
+class MultiKeywordScannerTest {
 
-    private String[] defaultKeywords = {"fox", "dog"};
-    private String defaultData = "the quick brown fox jumped over the lazy dog";
+    private final String[] defaultKeywords = {"fox", "dog"};
+    private final String defaultData = "the quick brown fox jumped over the lazy dog";
 
     @Test
-    public void testFindAll() {
+    void testFindAll() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(defaultData.getBytes());
@@ -26,7 +26,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testFindAllStart() {
+    void testFindAllStart() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 28);
@@ -39,7 +39,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testFindAllStartStop() {
+    void testFindAllStartStop() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 0, 24);
@@ -52,7 +52,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testFindNext() {
+    void testFindNext() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(defaultData.getBytes());
@@ -70,7 +70,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testFindNextStart() {
+    void testFindNextStart() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 28);
@@ -83,7 +83,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testFindNextStartStop() {
+    void testFindNextStartStop() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 0, 24);
@@ -96,7 +96,7 @@ public class MultiKeywordScannerTest {
     }
 
     @Test
-    public void testMultiKeywordScannerReset() {
+    void testMultiKeywordScannerReset() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
 

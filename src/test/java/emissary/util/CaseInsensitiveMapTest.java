@@ -1,63 +1,63 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CaseInsensitiveMapTest extends UnitTest {
+class CaseInsensitiveMapTest extends UnitTest {
 
     @Test
-    public void testMapExtract() {
-        Map<String, String> m = new CaseInsensitiveMap<String, String>(10, 0.75F);
+    void testMapExtract() {
+        Map<String, String> m = new CaseInsensitiveMap<>(10, 0.75F);
         m.put("Content-Type", "The Value");
         String s = m.get("Content-type");
-        assertNotNull("Insenstive extract from map", s);
-        assertEquals("Insensitive extract value from map", "The Value", s);
+        assertNotNull(s, "Insenstive extract from map");
+        assertEquals("The Value", s, "Insensitive extract value from map");
     }
 
     @Test
-    public void testMapInsert() {
-        Map<String, String> m = new CaseInsensitiveMap<String, String>();
+    void testMapInsert() {
+        Map<String, String> m = new CaseInsensitiveMap<>();
         m.put("Content-Type", "The Value 1");
         m.put("Content-type", "The Value 2");
-        assertEquals("Insenstive insert", 1, m.size());
-        assertEquals("Insenstive last val overwrites", "The Value 2", m.get("CONTENT-TYPE"));
+        assertEquals(1, m.size(), "Insenstive insert");
+        assertEquals("The Value 2", m.get("CONTENT-TYPE"), "Insenstive last val overwrites");
     }
 
     @Test
-    public void testPutAll() {
-        Map<String, String> m = new CaseInsensitiveMap<String, String>();
-        Map<String, String> p = new HashMap<String, String>();
+    void testPutAll() {
+        Map<String, String> m = new CaseInsensitiveMap<>();
+        Map<String, String> p = new HashMap<>();
         p.put("Foo", "Bar");
         p.put("Bar", "Foo");
         m.putAll(p);
-        assertEquals("Putall adds all elements", 2, m.size());
+        assertEquals(2, m.size(), "Putall adds all elements");
     }
 
     @Test
-    public void testCopyConstructor() {
-        Map<String, String> p = new HashMap<String, String>();
+    void testCopyConstructor() {
+        Map<String, String> p = new HashMap<>();
         p.put("Foo", "Bar");
         p.put("Bar", "Foo");
-        Map<String, String> m = new CaseInsensitiveMap<String, String>(p);
-        assertEquals("Copy constructor adds all elements", 2, m.size());
+        Map<String, String> m = new CaseInsensitiveMap<>(p);
+        assertEquals(2, m.size(), "Copy constructor adds all elements");
     }
 
     @Test
-    public void testUsingNonStringKeys() {
-        Map<Object, Object> m = new CaseInsensitiveMap<Object, Object>(10);
+    void testUsingNonStringKeys() {
+        Map<Object, Object> m = new CaseInsensitiveMap<>(10);
         m.put("Foo", "Bar");
-        assertTrue("ContainsKey must work on case-insensitivity", m.containsKey("foo"));
-        assertEquals("Object map must use case-insensitivity for String keys", "Bar", m.get("foo"));
+        assertTrue(m.containsKey("foo"), "ContainsKey must work on case-insensitivity");
+        assertEquals("Bar", m.get("foo"), "Object map must use case-insensitivity for String keys");
         emissary.util.Pair pair = new emissary.util.Pair("Foo", "Bar");
         m.put(pair, "Baz");
-        assertTrue("Object map must hold non-String keys", m.containsKey(pair));
-        assertEquals("Object map must still hold non-String keys", "Baz", m.get(pair));
+        assertTrue(m.containsKey(pair), "Object map must hold non-String keys");
+        assertEquals("Baz", m.get(pair), "Object map must still hold non-String keys");
     }
 }

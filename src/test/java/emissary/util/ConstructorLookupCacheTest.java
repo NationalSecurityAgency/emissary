@@ -1,17 +1,17 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link ConstructorLookupCache}.
  */
-public class ConstructorLookupCacheTest extends UnitTest {
+class ConstructorLookupCacheTest extends UnitTest {
 
     // We need a known class and constructors to look up.
     private static final class ExampleClass {
@@ -63,26 +63,26 @@ public class ConstructorLookupCacheTest extends UnitTest {
      */
     private static void assertLookup(final Class<?> clazz, final Class<?>[] args, final Constructor<?> expectedConstructor) {
         final Constructor<?> constructor = ConstructorLookupCache.lookup(clazz, args);
-        assertEquals("lookup of " + clazz.getName() + " constructor should return a known constructor object", expectedConstructor, constructor);
+        assertEquals(expectedConstructor, constructor, "lookup of " + clazz.getName() + " constructor should return a known constructor object");
     }
 
     @Test
-    public void testThatNoArgLookupsWork() {
+    void testThatNoArgLookupsWork() {
         assertLookup(EXAMPLE_CLASS, ARGS_NONE, EXAMPLE_CONSTRUCTOR_NONE);
     }
 
     @Test
-    public void testThatSingleArgLookupsWork() {
+    void testThatSingleArgLookupsWork() {
         assertLookup(EXAMPLE_CLASS, ARGS_INT, EXAMPLE_CONSTRUCTOR_INT);
     }
 
     @Test
-    public void testThatMultiArgLookupsWork() {
+    void testThatMultiArgLookupsWork() {
         assertLookup(EXAMPLE_CLASS, ARGS_STRINGS, EXAMPLE_CONSTRUCTOR_STRINGS);
     }
 
     @Test
-    public void testThatPrimitiveArgLookupsWork() {
+    void testThatPrimitiveArgLookupsWork() {
         assertLookup(EXAMPLE_CLASS, ARGS_PRIM, EXAMPLE_CONSTRUCTOR_PRIM);
     }
 
@@ -96,12 +96,13 @@ public class ConstructorLookupCacheTest extends UnitTest {
      */
     private static void assertCaching(final Class<?> clazz, final Class<?>[] args, final Constructor<?> expectedConstructor) {
         assertLookup(clazz, args, expectedConstructor);
-        assertEquals("the recent lookup of the " + clazz.getName() + " constructor should be cached", expectedConstructor,
-                ConstructorLookupCache.get(clazz, args));
+        assertEquals(expectedConstructor,
+                ConstructorLookupCache.get(clazz, args),
+                "the recent lookup of the " + clazz.getName() + " constructor should be cached");
     }
 
     @Test
-    public void testThatRecentLookupsAreBeingCached() {
+    void testThatRecentLookupsAreBeingCached() {
         assertCaching(EXAMPLE_CLASS, ARGS_NONE, EXAMPLE_CONSTRUCTOR_NONE);
         assertCaching(EXAMPLE_CLASS, ARGS_INT, EXAMPLE_CONSTRUCTOR_INT);
         assertCaching(EXAMPLE_CLASS, ARGS_STRINGS, EXAMPLE_CONSTRUCTOR_STRINGS);

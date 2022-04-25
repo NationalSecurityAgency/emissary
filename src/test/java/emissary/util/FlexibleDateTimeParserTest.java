@@ -1,18 +1,18 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 import emissary.test.core.UnitTest;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-public class FlexibleDateTimeParserTest extends UnitTest {
+class FlexibleDateTimeParserTest extends UnitTest {
 
     private static final long EXPECTED_FULL = 1451931630; // 2016-01-04 18:20:30
     private static final long EXPECTED_NO_TIME = 1451865600; // 2016-01-04 00:00:00
@@ -21,7 +21,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     private static final long EXPECTED_ALT_TIME = 1451894523; // 2016-01-04 08:02:03
     private static final long EXPECTED_ALT_TIME_NO_SECS = 1451894520; // 2016-01-04 08:02:00
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass() {
         // "warm-up" the class, but this runs before UnitTest has
         // a chance to setup, so do that first
@@ -30,7 +30,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void testGetTimezone() {
+    void testGetTimezone() {
         assertEquals("GMT", FlexibleDateTimeParser.getTimezone().getId());
     }
 
@@ -43,7 +43,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
      */
     private void test(String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date);
-        Assert.assertEquals("Error on: " + msg, expected, unknownParse == null ? 0L : unknownParse.toEpochSecond());
+        Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
     }
 
     /**
@@ -55,13 +55,13 @@ public class FlexibleDateTimeParserTest extends UnitTest {
      */
     private void test(String date, long expected, DateTimeFormatter formatter) {
         long unknownParse = FlexibleDateTimeParser.parse(date).toEpochSecond();
-        assertEquals("Flexible parse failed for " + formatter, expected, unknownParse);
+        assertEquals(expected, unknownParse, "Flexible parse failed for " + formatter);
 
         long knownParse = FlexibleDateTimeParser.parse(date, formatter).toEpochSecond();
-        assertEquals("Manual parse failed for " + formatter, expected, knownParse);
+        assertEquals(expected, knownParse, "Manual parse failed for " + formatter);
 
         // this is as close as I can get to testing the expected date format
-        assertEquals("Parsed date/times are not the same", unknownParse, knownParse);
+        assertEquals(unknownParse, knownParse, "Parsed date/times are not the same");
     }
 
     /**
@@ -72,7 +72,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
      * See {@link java.util.TimeZone} and {@link java.time.ZoneId#SHORT_IDS}
      */
     @Test
-    public void stripThreeLetterTimeZonesWhenThereIsAnOffset() {
+    void stripThreeLetterTimeZonesWhenThereIsAnOffset() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][[(]z[)]]]");
 
         // without offset we expect the default ZoneId
@@ -91,7 +91,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_yyyyMMddTHHmmssSSSX() {
+    void parse_yyyyMMddTHHmmssSSSX() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-M-d[['T'][ ][/]H[:][/]m[:s][[.]SSS][ ][z][ ][Z][XXX]]");
         test("2016-01-04T18:20:30.000Z", EXPECTED_FULL, pattern);
         test("2016-01-04T18:20:30Z", EXPECTED_FULL, pattern);
@@ -126,7 +126,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EdMMMyyHmmssZ() {
+    void parse_EdMMMyyHmmssZ() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[,][ ]yy[ H:mm[:ss][ ][z][ ][Z]]");
         test("Mon, 4 Jan 16 18:20:30 +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 16 18:20:30+0000", EXPECTED_FULL, pattern);
@@ -149,7 +149,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
 
 
     @Test
-    public void parse_EdMMMyyyyKmmssaZ() {
+    void parse_EdMMMyyyyKmmssaZ() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d MMM yyyy K:mm:ss a[ ][z][ ][Z]");
         test("Mon, 4 Jan 2016 06:20:30 PM +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 06:20:30 PM GMT+0000", EXPECTED_FULL, pattern);
@@ -164,7 +164,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EdMMMyyyyHmmssZz() {
+    void parse_EdMMMyyyyHmmssZz() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][(z)]]");
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Europe/Dublin)", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Zulu)", EXPECTED_FULL, pattern);
@@ -205,7 +205,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EMMMdyyyyKmma() {
+    void parse_EMMMdyyyyKmma() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[,] K:mm[:ss] a");
         test("Mon, Jan 4, 2016 06:20 PM", EXPECTED_NO_SECS, pattern);
         test("Mon, Jan 4, 2016 6:20 PM", EXPECTED_NO_SECS, pattern);
@@ -216,7 +216,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EMMMdyyyyHmmssz() {
+    void parse_EMMMdyyyyHmmssz() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[[,] H:mm[:ss][ ][a][ ][z][ ][Z]]");
         test("Mon, Jan 4, 2016 18:20:30 UTC", EXPECTED_FULL, pattern);
         test("Mon, Jan 04, 2016 18:20:30 UTC", EXPECTED_FULL, pattern);
@@ -247,7 +247,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EddMMMyyyyHmmssZ() {
+    void parse_EddMMMyyyyHmmssZ() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]dd-MMM-yyyy[ H:mm:ss[ ][z][ ][Z]]");
         test("Mon 04-Jan-2016 18:20:30 +0000", EXPECTED_FULL, pattern);
         test("Mon 04-Jan-2016 18:20:30 GMT+0000", EXPECTED_FULL, pattern);
@@ -267,7 +267,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_EMMMdHHmmsszzzyyyy() {
+    void parse_EMMMdHHmmsszzzyyyy() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d H:mm[:ss][ z] yyyy");
         test("Mon Jan 04 18:20:30 GMT 2016", EXPECTED_FULL, pattern);
         test("Mon Jan 04 13:20:30 EST 2016", EXPECTED_FULL, pattern);
@@ -285,7 +285,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_MdyyKmma() {
+    void parse_MdyyKmma() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yy[ ]K:mm[:ss][ ]a");
         test("01/04/16 06:20 PM", EXPECTED_NO_SECS, pattern);
         test("1/4/16 6:20 PM", EXPECTED_NO_SECS, pattern);
@@ -298,7 +298,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_MdyyHmmssaz() {
+    void parse_MdyyHmmssaz() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yy[ ]H:mm[:ss][ ][a][ ][z][ ][Z]");
         test("01/04/16 18:20:30 GMT", EXPECTED_FULL, pattern);
         test("1/4/16 18:20:30 GMT", EXPECTED_FULL, pattern);
@@ -323,7 +323,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_HHmmddMMyyyy() {
+    void parse_HHmmddMMyyyy() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[HHmm]dd[-][.][/]MM[-][.][/]yyyy");
         test("04-01-2016", EXPECTED_NO_TIME, pattern);
         test("04.01.2016", EXPECTED_NO_TIME, pattern);
@@ -332,7 +332,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_yyyyMMddHHmmssS() {
+    void parse_yyyyMMddHHmmssS() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd[[ ]HH[:]mm[[:]ss[[.]S]][ ][z][ ][Z]]");
         test("2016/01/04 18:20:30.0", EXPECTED_FULL, pattern);
         test("2016/01/0418:20:30.0", EXPECTED_FULL, pattern);
@@ -350,7 +350,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_yyyy_MM_ddHHmmssS() {
+    void parse_yyyy_MM_ddHHmmssS() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy:MM:dd[ H:m[:ss[.S]][ ][z][ ][Z]]");
         test("2016:01:04 18:20:30.0", EXPECTED_FULL, pattern);
         test("2016:01:04 18:20:30", EXPECTED_FULL, pattern);
@@ -363,43 +363,43 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void parse_yyyyMMddHHmmss() {
+    void parse_yyyyMMddHHmmss() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
         test("20160104182030", EXPECTED_FULL, pattern);
     }
 
     @Test
-    public void parse_yyyyMMdd() {
+    void parse_yyyyMMdd() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyMMdd");
         test("20160104", EXPECTED_NO_TIME, pattern);
     }
 
     @Test
-    public void parse_yyyyDDDHHmmss() {
+    void parse_yyyyDDDHHmmss() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyDDDHHmmss");
         test("2016004182030", EXPECTED_FULL, pattern);
     }
 
     @Test
-    public void parse_yyyyDDDHHmm() {
+    void parse_yyyyDDDHHmm() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyDDDHHmm");
         test("20160041820", EXPECTED_NO_SECS, pattern);
     }
 
     @Test
-    public void parse_yyyyDDD() {
+    void parse_yyyyDDD() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyyDDD");
         test("2016004", EXPECTED_NO_TIME, pattern);
     }
 
     @Test
-    public void parse_yyyy_DDD() {
+    void parse_yyyy_DDD() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-DDD");
         test("2016-004", EXPECTED_NO_TIME, pattern);
     }
 
     @Test
-    public void testCleanDateString() {
+    void testCleanDateString() {
         test("2016-01-04 18:20<br>", EXPECTED_NO_SECS, "HTML");
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
@@ -407,7 +407,7 @@ public class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
-    public void testBad() {
+    void testBad() {
         test("", 0L, "EMPTY");
         test(null, 0L, "NULL");
         assertNull(FlexibleDateTimeParser.parse("1234", Collections.emptyList()));

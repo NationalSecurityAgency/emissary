@@ -1,9 +1,10 @@
 package emissary.util;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -13,12 +14,12 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class WindowedSeekableByteChannelTest extends UnitTest {
+class WindowedSeekableByteChannelTest extends UnitTest {
 
     // lower case 'a'
     static final byte LCA = 97;
@@ -45,29 +46,22 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
     }
 
     @Test
-    public void testConstruction() throws Exception {
-        try {
-            @SuppressWarnings({"resource", "unused"})
-            final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(null, 1);
-            // should throw
-            assertTrue("Should have thrown IllegalArgException", false);
-        } catch (IllegalArgumentException ex) {
-            // old style
-        }
+    void testConstruction() throws Exception {
+        assertThrows(IllegalArgumentException.class, () -> new WindowedSeekableByteChannel(null, 1));
         @SuppressWarnings({"resource"})
         final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(10), 30);
-        assertTrue(instance.size() == 10L);
-        assertTrue(instance.getMaxPosition() == 10L);
+        assertEquals(10L, instance.size());
+        assertEquals(10L, instance.getMaxPosition());
     }
 
     /**
      * Test of close method, of class WindowedSeekableByteChannel.
      */
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(1), 1);
         instance.close();
-        assertFalse("Instance should be closed", instance.isOpen());
+        assertFalse(instance.isOpen(), "Instance should be closed");
         boolean ex = false;
         try {
             final ByteBuffer dst = ByteBuffer.allocate(1);
@@ -75,14 +69,14 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
         } catch (ClosedChannelException c) {
             ex = true;
         }
-        assertTrue("ClosedChannelException after close", ex);
+        assertTrue(ex, "ClosedChannelException after close");
     }
 
     /**
      * Test of read method, of class WindowedSeekableByteChannel.
      */
     @Test
-    public void testRead() throws Exception {
+    void testRead() throws Exception {
         final byte[] buff = new byte[I_ALPHABET];
         final byte[] alphabet = buildArry(I_ALPHABET);
         final ByteBuffer destination = ByteBuffer.wrap(buff);
@@ -107,7 +101,7 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
      * Test using odd values for all buffer sizes.
      */
     @Test
-    public void testReadOdd() throws Exception {
+    void testReadOdd() throws Exception {
         final byte[] buff = new byte[7];
         final int ODD = 53;
         final ByteBuffer destination = ByteBuffer.wrap(buff);
@@ -121,15 +115,15 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
             read = instance.read(destination);
         }
 
-        assertEquals("Read " + ODD + " bytes", ODD, result);
-        assertEquals("Last byte was 'a'", LCA, buff[(ODD % buff.length) - 1]);
+        assertEquals(ODD, result, "Read " + ODD + " bytes");
+        assertEquals(LCA, buff[(ODD % buff.length) - 1], "Last byte was 'a'");
     }
 
     /**
      * Test of read into odd dest Buff with even window buffer size.
      */
     @Test
-    public void testReadOddEven() throws Exception {
+    void testReadOddEven() throws Exception {
 
         final byte[] buff = new byte[17];
         final ByteBuffer destination = ByteBuffer.wrap(buff);
@@ -149,15 +143,15 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
             destination.position(0);
             read = instance.read(destination);
         }
-        assertEquals("Expected to read 4KB", fourKB, result);
-        assertEquals("Last byte matches", buildArry(I_ALPHABET)[FINAL_ALPHABET_LEN - 1], buff[LAST_READ_LENGTH - 1]);
+        assertEquals(fourKB, result, "Expected to read 4KB");
+        assertEquals(buildArry(I_ALPHABET)[FINAL_ALPHABET_LEN - 1], buff[LAST_READ_LENGTH - 1], "Last byte matches");
     }
 
     /**
      * Test reading into even size dst with odd size window.
      */
     @Test
-    public void testReadEvenOdd() throws Exception {
+    void testReadEvenOdd() throws Exception {
         final byte[] buff = new byte[20];
         final ByteBuffer destination = ByteBuffer.wrap(buff);
         final int ODD = 47;
@@ -178,15 +172,15 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
             result += read;
             destination.position(0);
         }
-        assertEquals("Expected to read " + oddTimes3 + " bytes", oddTimes3, result);
-        assertEquals("Last byte matches", buildArry(I_ALPHABET)[FINAL_ALPHABET_LEN - 1], buff[LAST_READ_LENGTH - 1]);
+        assertEquals(oddTimes3, result, "Expected to read " + oddTimes3 + " bytes");
+        assertEquals(buildArry(I_ALPHABET)[FINAL_ALPHABET_LEN - 1], buff[LAST_READ_LENGTH - 1], "Last byte matches");
     }
 
     /**
      * Test of position method, of class WindowedSeekableByteChannel.
      */
     @Test
-    public void testPosition_long() throws Exception {
+    void testPosition_long() throws Exception {
 
         @SuppressWarnings("resource")
         WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(26), 20);
@@ -215,18 +209,18 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
         } catch (IllegalStateException ex) {
             threw = true;
         }
-        assertTrue("Did not throw while attempting to move before available window", threw);
+        assertTrue(threw, "Did not throw while attempting to move before available window");
     }
 
     @Test
-    public void testSizePosition() throws Exception {
+    void testSizePosition() throws Exception {
         @SuppressWarnings("resource")
         WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(26), 50);
-        assertTrue(instance.getMaxPosition() == 26);
-        assertTrue(instance.position() == 0L);
+        assertEquals(26, instance.getMaxPosition());
+        assertEquals(0L, instance.position());
 
         instance = new WindowedSeekableByteChannel(getChannel(26), 13);
-        assertTrue(instance.getMaxPosition() == 14);
+        assertEquals(14, instance.getMaxPosition());
 
         final ByteBuffer b = ByteBuffer.allocate(20);
         assertTrue(instance.read(b) == 20 && instance.position() == 20);
@@ -241,7 +235,7 @@ public class WindowedSeekableByteChannelTest extends UnitTest {
 
     /* mostly for coverage */
     @Test
-    public void testUnsupportedOps() throws Exception {
+    void testUnsupportedOps() throws Exception {
         boolean hitEx = false;
         try {
             @SuppressWarnings("resource")

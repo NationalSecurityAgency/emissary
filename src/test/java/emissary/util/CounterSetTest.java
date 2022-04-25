@@ -1,50 +1,51 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CounterSetTest extends UnitTest {
+class CounterSetTest extends UnitTest {
 
     @Test
-    public void testKeysReturned() {
+    void testKeysReturned() {
         CounterSet c = new CounterSet();
         c.addKey("FOO");
         c.addKey("BAR");
         Set<String> keys = c.getKeys();
-        assertEquals("Key size must be correct", 2, keys.size());
+        assertEquals(2, keys.size(), "Key size must be correct");
     }
 
     @Test
-    public void testIncrement() {
+    void testIncrement() {
         CounterSet c = new CounterSet();
         c.addKey("FOO");
         c.increment("FOO");
-        assertEquals("Key increment", 1, (int) c.get("FOO"));
+        assertEquals(1, (int) c.get("FOO"), "Key increment");
     }
 
     @Test
-    public void testIncrementOnNonExistingKeyWithoutFlexEntryFails() {
+    void testIncrementOnNonExistingKeyWithoutFlexEntryFails() {
         CounterSet c = new CounterSet();
         c.increment("BAR");
-        assertEquals("Key must not exist", null, c.get("BAR"));
+        assertNull(c.get("BAR"), "Key must not exist");
     }
 
     @Test
-    public void testIncrementOnNonExistingKeyWithFlexEntry() {
+    void testIncrementOnNonExistingKeyWithFlexEntry() {
         CounterSet c = new CounterSet(true);
         c.increment("BAR");
-        assertEquals("Key must exist", 1, (int) c.get("BAR"));
+        assertEquals(1, (int) c.get("BAR"), "Key must exist");
     }
 
     @Test
-    public void testAdd() {
+    void testAdd() {
         CounterSet c = new CounterSet(true);
         c.add("BAR", 10);
-        assertEquals("Key must have value", 10, (int) c.get("BAR"));
+        assertEquals(10, (int) c.get("BAR"), "Key must have value");
     }
 
 }

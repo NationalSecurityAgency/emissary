@@ -1,52 +1,52 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TypeEngineTest extends UnitTest {
-    @Before
+class TypeEngineTest extends UnitTest {
+    @BeforeEach
     public void configureTest() throws EmissaryException {
         setConfig(null, true);
 
     }
 
     @Test
-    public void testEngineNonConfiguration() {
+    void testEngineNonConfiguration() {
         final TypeEngine engine = new TypeEngine();
-        assertNull("Unconfigured engine should return null", engine.getForm("foo", "whatever"));
+        assertNull(engine.getForm("foo", "whatever"), "Unconfigured engine should return null");
     }
 
     @Test
-    public void testEngineBadConfiguration() {
+    void testEngineBadConfiguration() {
         final Configurator conf = new ServiceConfigGuide();
         conf.addEntry("TYPE_ENGINE_FILE", "foo-types.cfg");
         final TypeEngine engine = new TypeEngine(conf);
-        assertNull("Mis-configured engine should return null", engine.getForm("foo", "whatever"));
+        assertNull(engine.getForm("foo", "whatever"), "Mis-configured engine should return null");
     }
 
     @Test
-    public void testEngineConfiguration() {
+    void testEngineConfiguration() {
         final Configurator conf = new ServiceConfigGuide();
         conf.addEntry("TYPE_ENGINE_FILE", "test-types.cfg");
         final TypeEngine engine = new TypeEngine(conf);
-        assertEquals("Configured engine should load types", "XYZZY", engine.getForm("test", "WHATEVER"));
-        assertNull("Configured engine should handle unknown engine type", engine.getForm("foo", "WHATEVER"));
-        assertNull("Configured engine should handle null label", engine.getForm("foo", null));
-        assertNull("Configured engine should handle null engine", engine.getForm(null, "WHATEVER"));
+        assertEquals("XYZZY", engine.getForm("test", "WHATEVER"), "Configured engine should load types");
+        assertNull(engine.getForm("foo", "WHATEVER"), "Configured engine should handle unknown engine type");
+        assertNull(engine.getForm("foo", null), "Configured engine should handle null label");
+        assertNull(engine.getForm(null, "WHATEVER"), "Configured engine should handle null engine");
 
         // Now add an "extra" type
         engine.addType("test", "WHATEVER", "newstuff");
-        assertEquals("Extra types must override configured types", "newstuff", engine.getForm("test", "WHATEVER"));
+        assertEquals("newstuff", engine.getForm("test", "WHATEVER"), "Extra types must override configured types");
 
         // Try it by file extension
-        assertEquals("File extension chopping must still match", "newstuff", engine.getFormByExtension("test", "blah.WHATEVER"));
-        assertEquals("File extension chopping must still match", "newstuff", engine.getFormByExtension("test", "WHATEVER"));
+        assertEquals("newstuff", engine.getFormByExtension("test", "blah.WHATEVER"), "File extension chopping must still match");
+        assertEquals("newstuff", engine.getFormByExtension("test", "WHATEVER"), "File extension chopping must still match");
     }
 }
