@@ -7,39 +7,39 @@ import java.nio.file.Paths;
 
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ServerCommandIT extends UnitTest {
+class ServerCommandIT extends UnitTest {
     private static final String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
     private static final String PROJECT_BASE_SLASH = PROJECT_BASE + "/";
 
     @Test
-    public void testGetConfig() throws Exception {
+    void testGetConfig() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b", PROJECT_BASE, "-m", "standalone");
         assertEquals(Paths.get(PROJECT_BASE + "/config"), cmd.getConfig());
     }
 
     @Test
-    public void testGetConfigWithTrailingSlash() throws Exception {
+    void testGetConfigWithTrailingSlash() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone");
         assertEquals(Paths.get(PROJECT_BASE_SLASH + "/config"), cmd.getConfig());
     }
 
     @Test
-    public void testModeAddedToFlavors() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testModeAddedToFlavors() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone");
         assertEquals("STANDALONE", cmd.getFlavor());
     }
 
     @Test
-    public void testStandaloneAndClusterError() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testStandaloneAndClusterError() {
         Exception e = assertThrows(Exception.class,
                 () -> ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone", "--flavor", "NORMAL,cluster"));
         assertEquals("Can not run a server in both STANDALONE and CLUSTER", e.getMessage());
     }
 
     @Test
-    public void testDeDupeFlavors() throws Exception {
+    void testDeDupeFlavors() throws Exception {
         ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE + "/", "-m", "cluster", "--flavor", "NORMAL,cluster");
         assertEquals("CLUSTER,NORMAL", System.getProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY));
     }

@@ -1,6 +1,6 @@
 package emissary.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.List;
 import com.beust.jcommander.JCommander;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BaseCommandTest extends UnitTest {
+class BaseCommandTest extends UnitTest {
 
     @Test
-    public void testFlavor() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testFlavor() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String flavorString = "NORMAL,cluster";
         List<String> args = new ArrayList<>();
         args.add("-b");

@@ -2,6 +2,7 @@ package emissary.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -16,15 +17,11 @@ import com.beust.jcommander.JCommander;
 import com.google.common.net.HostAndPort;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PeersCommandIT extends UnitTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+class PeersCommandIT extends UnitTest {
 
     private ByteArrayOutputStream outContent;
     private ByteArrayOutputStream errContent;
@@ -33,7 +30,7 @@ public class PeersCommandIT extends UnitTest {
     private List<String> arguments;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         arguments = new ArrayList<>();
@@ -42,7 +39,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         arguments.clear();
@@ -52,7 +49,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testDefaultPeer() throws Exception {
+    void testDefaultPeer() throws Exception {
         // setup
         command = PeersCommand.parse(PeersCommand.class, arguments);
 
@@ -64,7 +61,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testIgnoreHostAndFlavor() throws Exception {
+    void testIgnoreHostAndFlavor() throws Exception {
         // setup
         // needed because it has already been initialize as a static
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTING");
@@ -80,7 +77,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testDelimiter() throws Exception {
+    void testDelimiter() throws Exception {
         // setup
         // needed because it has already been initialize as a static
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTING");
@@ -98,7 +95,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testGetPeersWithPort() throws IOException {
+    void testGetPeersWithPort() throws IOException {
         // test
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString(""), true);
 
@@ -108,7 +105,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testGetPeers() throws IOException {
+    void testGetPeers() throws IOException {
         // test
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString(""), false);
 
@@ -118,7 +115,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testGetPeersIgnoreHost() throws IOException {
+    void testGetPeersIgnoreHost() throws IOException {
         // test
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString("localhost"), false);
 
@@ -127,7 +124,7 @@ public class PeersCommandIT extends UnitTest {
     }
 
     @Test
-    public void testGetPeersIgnoreHostAndPort() throws IOException {
+    void testGetPeersIgnoreHostAndPort() throws IOException {
         // test
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString("localhost:8001"), true);
 
@@ -136,9 +133,11 @@ public class PeersCommandIT extends UnitTest {
         assertEquals(2, peers.size());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPeersBadPort() throws IOException {
-        PeersCommand.getPeers(HostAndPort.fromString("localhost:1234567890"), true);
+    @Test
+    void testGetPeersBadPort() throws IOException {
+        assertThrows(IllegalArgumentException.class, () -> {
+            PeersCommand.getPeers(HostAndPort.fromString("localhost:1234567890"), true);
+        });
     }
 
     private void captureStdOutAndStdErrAndRunCommand(PeersCommand cmd) {

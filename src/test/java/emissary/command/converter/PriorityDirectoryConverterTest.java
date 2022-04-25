@@ -1,30 +1,27 @@
 package emissary.command.converter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PriorityDirectoryConverterTest extends UnitTest {
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
+class PriorityDirectoryConverterTest extends UnitTest {
     private PriorityDirectoryConverter converter;
     private PriorityDirectory pd;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         converter = new PriorityDirectoryConverter();
         pd = null;
     }
 
     @Test
-    public void convert() throws Exception {
+    void convert() {
         // test
         pd = converter.convert("/SomePath");
 
@@ -33,15 +30,14 @@ public class PriorityDirectoryConverterTest extends UnitTest {
         assertEquals(Priority.DEFAULT, pd.getPriority());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void convertNull() {
-        // This case should never happen due to JCommander
-        // test
-        converter.convert(null);
+    @Test
+    void convertNull() {
+        // This case should never happen due to JCommander test
+        assertThrows(NullPointerException.class, () -> converter.convert(null));
     }
 
     @Test
-    public void convertEmpty() {
+    void convertEmpty() {
         // test
         pd = converter.convert("");
 
@@ -51,7 +47,7 @@ public class PriorityDirectoryConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertPrioritySyntax() {
+    void convertPrioritySyntax() {
         // test
         pd = converter.convert("/SomePath/SomeSub:10");
 
@@ -61,7 +57,7 @@ public class PriorityDirectoryConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertBadPrioritySyntax() {
+    void convertBadPrioritySyntax() {
         // TODO Investigate if we should add additional checking in the parameter converter to make an exception thrown
         // test
         pd = converter.convert("/SomePath/SomeSub:10:23");
