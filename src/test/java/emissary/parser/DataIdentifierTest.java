@@ -1,81 +1,81 @@
 package emissary.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
 
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class DataIdentifierTest extends UnitTest {
+class DataIdentifierTest extends UnitTest {
 
     byte[] DATA = new byte[1000];
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        for (int i = 0; i < DATA.length; i++) {
-            DATA[i] = 'a';
-        }
+        Arrays.fill(DATA, (byte) 'a');
     }
 
     @Test
-    public void testId() throws Exception {
+    void testId() throws Exception {
         DataIdentifier id = new DataIdentifier();
-        assertEquals("Unknown default id", DataIdentifier.UNKNOWN_TYPE, id.identify(DATA));
-        assertTrue("Test string size", id.getTestStringMaxSize() > 0);
+        assertEquals(DataIdentifier.UNKNOWN_TYPE, id.identify(DATA), "Unknown default id");
+        assertTrue(id.getTestStringMaxSize() > 0, "Test string size");
 
-        assertEquals("Unknown raf id", DataIdentifier.UNKNOWN_TYPE, id.identify(DATA));
+        assertEquals(DataIdentifier.UNKNOWN_TYPE, id.identify(DATA), "Unknown raf id");
         super.tearDown();
     }
 
     @Test
-    public void testDataShorterThanPattern() {
+    void testDataShorterThanPattern() {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
         String result = id.identify("aaa".getBytes());
-        assertEquals("Unknown id on data shorter than pattern", DataIdentifier.UNKNOWN_TYPE, result);
+        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Unknown id on data shorter than pattern");
     }
 
     @Test
-    public void testDataLongerThanPatternThatMatches() {
+    void testDataLongerThanPatternThatMatches() {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
         String result = id.identify("aaa===aaa\n\nbbb===bbb".getBytes());
-        assertEquals("Valid id on data longer than pattern", "FOO", result);
+        assertEquals("FOO", result, "Valid id on data longer than pattern");
     }
 
     @Test
-    public void testDataLongerThanPatternThatDoesntMatch() {
+    void testDataLongerThanPatternThatDoesntMatch() {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
         String result = id.identify("ccc===ccc\n\nbbb===bbb".getBytes());
-        assertEquals("Valid id on data longer than pattern", DataIdentifier.UNKNOWN_TYPE, result);
+        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Valid id on data longer than pattern");
     }
 
     @Test
-    public void testIdentificationOfEmptyByteArray() {
+    void testIdentificationOfEmptyByteArray() {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
         String result = id.identify("".getBytes());
-        assertEquals("Unknown id on empty byte array", DataIdentifier.UNKNOWN_TYPE, result);
+        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Unknown id on empty byte array");
     }
 
     @Test
-    public void testExtensibility() throws Exception {
+    void testExtensibility() {
         DataIdentifierT id = new DataIdentifierT();
-        assertEquals("String size to test", id.getTestStringMaxSize(), id.checkSize());
+        assertEquals(id.getTestStringMaxSize(), id.checkSize(), "String size to test");
 
         // Check byte array
-        assertEquals("Test string generation", id.checkSize(), id.checkString(DATA).length());
-        assertEquals("Test string generation with length", 5, id.checkString(DATA, 5).length());
-        assertEquals("Test string generation with oversize length", DATA.length, id.checkString(DATA, DATA.length + 100).length());
+        assertEquals(id.checkSize(), id.checkString(DATA).length(), "Test string generation");
+        assertEquals(5, id.checkString(DATA, 5).length(), "Test string generation with length");
+        assertEquals(DATA.length, id.checkString(DATA, DATA.length + 100).length(), "Test string generation with oversize length");
     }
 
 

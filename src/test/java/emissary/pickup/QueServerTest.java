@@ -1,22 +1,22 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class QueServerTest extends UnitTest {
+class QueServerTest extends UnitTest {
 
     InputStream tepusConfigStream = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         String cdata =
                 "PLACE_NAME = TestPickUpPlace\n" + "SERVICE_NAME = TEST_PICK_UP\n" + "SERVICE_TYPE = \"INITIAL\"\n"
@@ -26,7 +26,7 @@ public class QueServerTest extends UnitTest {
     }
 
     @Test
-    public void testQueServer() throws Exception {
+    void testQueServer() throws Exception {
         new PickupQueue(13);
         WorkBundle w1 = new WorkBundle("/output/root", "/eat/prefix");
         w1.addFileName("file1.txt");
@@ -48,8 +48,8 @@ public class QueServerTest extends UnitTest {
 
         try {
             pause(500);
-            assertEquals("Good bundle count received", 4, ps.queServer.bundlesReceived);
-            assertEquals("Good file count received", 6, ps.queServer.filesReceived);
+            assertEquals(4, ps.queServer.bundlesReceived, "Good bundle count received");
+            assertEquals(6, ps.queServer.filesReceived, "Good file count received");
         } finally {
             ps.shutDown();
         }
@@ -61,8 +61,8 @@ public class QueServerTest extends UnitTest {
             ps.openSpace("FOO.BAR.BAZ.http://example.com:1234/FooDeBar");
             pause(1000);
 
-            assertEquals("Good bundle count received", 0, ps.queServer.bundlesReceived);
-            assertEquals("Good file count received", 0, ps.queServer.filesReceived);
+            assertEquals(0, ps.queServer.bundlesReceived, "Good bundle count received");
+            assertEquals(0, ps.queServer.filesReceived, "Good file count received");
         } finally {
             ps.shutDown();
         }
@@ -96,15 +96,15 @@ public class QueServerTest extends UnitTest {
     class TestErrorPickUpSpace extends PickUpSpace {
         public TestQueueServer queServer;
         public PickupQueue queue;
-        public int expectedErrors = 0;
+        public int expectedErrors;
         public int numErrors = 0;
-        public int expectedBundles = 0;
+        public int expectedBundles;
         public int numBundles = 0;
         public int bundleCompletedCount = 0;
         public int bundleFailedCount = 0;
 
         public TestErrorPickUpSpace(int errors, int bundles) throws IOException {
-            super(tepusConfigStream, (String) null, "http://localhost:8005/TestErrorPickUpSpace");
+            super(tepusConfigStream, null, "http://localhost:8005/TestErrorPickUpSpace");
             this.expectedErrors = errors;
             this.expectedBundles = bundles;
             queue = new PickupQueue(13);
@@ -114,7 +114,7 @@ public class QueServerTest extends UnitTest {
 
         @Override
         public boolean enque(WorkBundle path) {
-            assertTrue("Bundle enqueued", queue.enque(path));
+            assertTrue(queue.enque(path), "Bundle enqueued");
             return true;
         }
 
@@ -131,7 +131,7 @@ public class QueServerTest extends UnitTest {
             numBundles++;
             WorkBundle w = new WorkBundle("/output/root", "/eat/prefix");
             w.addFileName("file1.txt");
-            assertTrue("Bundle enqueueued", enque(w));
+            assertTrue(enque(w), "Bundle enqueueued");
             return true;
         }
 

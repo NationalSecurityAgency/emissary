@@ -1,37 +1,37 @@
 package emissary.pickup;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class WorkUnitTest {
+class WorkUnitTest {
     @Test
-    public void testConstructWorkUnit() {
+    void testConstructWorkUnit() {
         WorkUnit workUnit = new WorkUnit("file1");
-        assertEquals("WorkUnit filename should match", "file1", workUnit.getFileName());
-        assertNull("Transaction ID should not be set", workUnit.getTransactionId());
-        assertFalse("WorkUnit failedToParse should be false", workUnit.failedToParse());
-        assertFalse("WorkUnit failedToParse should be false", workUnit.failedToProcess());
+        assertEquals("file1", workUnit.getFileName(), "WorkUnit filename should match");
+        assertNull(workUnit.getTransactionId(), "Transaction ID should not be set");
+        assertFalse(workUnit.failedToParse(), "WorkUnit failedToParse should be false");
+        assertFalse(workUnit.failedToProcess(), "WorkUnit failedToParse should be false");
     }
 
     @Test
-    public void testSetTransactionId() {
+    void testSetTransactionId() {
         WorkUnit workUnit = new WorkUnit("file1");
         String txid = UUID.randomUUID().toString();
         workUnit.setTransactionId(txid);
-        assertEquals("Transaction ID did not match", txid, workUnit.getTransactionId());
+        assertEquals(txid, workUnit.getTransactionId(), "Transaction ID did not match");
     }
 
     @Test
-    public void testSetFailedToParse() {
+    void testSetFailedToParse() {
         WorkUnit workUnit = new WorkUnit("file1");
         workUnit.setFailedToParse();
-        assertTrue("WorkUnit failedToParse should be true", workUnit.failedToParse());
+        assertTrue(workUnit.failedToParse(), "WorkUnit failedToParse should be true");
     }
 
 }

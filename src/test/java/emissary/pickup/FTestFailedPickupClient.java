@@ -1,8 +1,8 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,11 +13,11 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.FunctionalTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestFailedPickupClient extends FunctionalTest {
+class FTestFailedPickupClient extends FunctionalTest {
     private BreakableFilePickUpClient goodplace = null;
     private BreakableFilePickUpClient badplace = null;
     private MyWorkSpace space = null;
@@ -33,7 +33,7 @@ public class FTestFailedPickupClient extends FunctionalTest {
     private List<String> workingFilePaths = new ArrayList<String>();
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // set config to java.io.tmpdir, this config package
         setConfig(System.getProperty("java.io.tmpdir", "."), true);
@@ -97,7 +97,7 @@ public class FTestFailedPickupClient extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         logger.debug("Starting tearDown phase");
@@ -135,9 +135,9 @@ public class FTestFailedPickupClient extends FunctionalTest {
     }
 
     @Test
-    public void testAll() {
+    void testAll() {
 
-        assertTrue("WorkSpace should exist in namespace as " + space.getKey(), Namespace.exists("http://localhost:8005/WorkSpace"));
+        assertTrue(Namespace.exists("http://localhost:8005/WorkSpace"), "WorkSpace should exist in namespace as " + space.getKey());
 
         pause(100);
 
@@ -225,7 +225,7 @@ public class FTestFailedPickupClient extends FunctionalTest {
         // Assert things about where the files are located
         int counter = 0;
         for (File f : workingFiles) {
-            assertFalse("File[" + counter + "] should not exist in input area any more - " + f, f.exists());
+            assertFalse(f.exists(), "File[" + counter + "] should not exist in input area any more - " + f);
             counter++;
         }
 
@@ -233,20 +233,20 @@ public class FTestFailedPickupClient extends FunctionalTest {
         for (String fn : workingFilePaths) {
             File fp = new File(goodplace.getInProcessArea() + "/" + fn);
             File fd = new File(space.getOutputRoot() + "/" + fn);
-            assertFalse("File[" + counter + "] should not exist in in-process area any more - " + fn + " - " + fp.getPath(), fp.exists());
-            assertTrue("File[" + counter + "] should exist in the output area - " + fn + " - " + fd.getPath(), fd.exists());
+            assertFalse(fp.exists(), "File[" + counter + "] should not exist in in-process area any more - " + fn + " - " + fp.getPath());
+            assertTrue(fd.exists(), "File[" + counter + "] should exist in the output area - " + fn + " - " + fd.getPath());
             counter++;
         }
     }
 
     private void checkFileCounts(WorkSpace space, int files, int bytes, int bundles, int places, int outbound, int pending, int retried) {
-        assertEquals("files processed", files, space.getFilesProcessed());
-        assertEquals("bytes processed", bytes, space.getBytesProcessed());
-        assertEquals("bundles processed", bundles, space.getBundlesProcessed());
-        assertEquals("pickup place count", places, space.getPickUpPlaceCount());
-        assertEquals("Outbound queue count", outbound, space.getOutboundQueueSize());
-        assertEquals("Pending queue count", pending, space.getPendingQueueSize());
-        assertEquals("Retried bundle count", retried, space.getRetriedCount());
+        assertEquals(files, space.getFilesProcessed(), "files processed");
+        assertEquals(bytes, space.getBytesProcessed(), "bytes processed");
+        assertEquals(bundles, space.getBundlesProcessed(), "bundles processed");
+        assertEquals(places, space.getPickUpPlaceCount(), "pickup place count");
+        assertEquals(outbound, space.getOutboundQueueSize(), "Outbound queue count");
+        assertEquals(pending, space.getPendingQueueSize(), "Pending queue count");
+        assertEquals(retried, space.getRetriedCount(), "Retried bundle count");
     }
 
     private static final class MyWorkSpace extends WorkSpace {

@@ -1,26 +1,23 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import emissary.command.FeedCommand;
-import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class WorkSpaceTest extends UnitTest {
+class WorkSpaceTest extends UnitTest {
     MyWorkSpace mws;
 
-    String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
-
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         try {
@@ -31,7 +28,7 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         mws.shutDown();
@@ -40,7 +37,7 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     @Test
-    public void testPriorityQueueing() {
+    void testPriorityQueueing() {
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
         mws.addPickUp_(C1);
 
@@ -60,7 +57,7 @@ public class WorkSpaceTest extends UnitTest {
 
         // See that the first thing handed out is the highest priority
         WorkBundle taken = mws.take(C1);
-        assertEquals("Highest priority work must be taken first", 1, taken.getPriority());
+        assertEquals(1, taken.getPriority(), "Highest priority work must be taken first");
     }
 
     /**
@@ -68,7 +65,7 @@ public class WorkSpaceTest extends UnitTest {
      * time based ordering)
      */
     @Test
-    public void testOldestFirstQueueing() throws Exception {
+    void testOldestFirstQueueing() throws Exception {
         String[] args = {"--sort", "of", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -86,12 +83,12 @@ public class WorkSpaceTest extends UnitTest {
         }
 
         // This should be in order of 0,1,2,3,4...10
-        WorkBundle taken = null;
+        WorkBundle taken;
         long age = 0L;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Oldest work must be taken first", age, taken.getOldestFileModificationTime());
+                assertEquals(age, taken.getOldestFileModificationTime(), "Oldest work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -104,7 +101,7 @@ public class WorkSpaceTest extends UnitTest {
      * ignored/defer to the priority order
      */
     @Test
-    public void testOldestFirstPriorityOverrideQueueing() throws Exception {
+    void testOldestFirstPriorityOverrideQueueing() throws Exception {
         String[] args = {"--sort", "of", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -122,12 +119,12 @@ public class WorkSpaceTest extends UnitTest {
         }
 
         // This should be in order of 0,1,2,3,4...10 _priorities_
-        WorkBundle taken = null;
+        WorkBundle taken;
         int pri = 0;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Ignoring time, prioritized work must be taken first", pri, taken.getPriority());
+                assertEquals(pri, taken.getPriority(), "Ignoring time, prioritized work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -140,7 +137,7 @@ public class WorkSpaceTest extends UnitTest {
      * the time based ordering)
      */
     @Test
-    public void testYoungestFirstQueueing() throws Exception {
+    void testYoungestFirstQueueing() throws Exception {
         String[] args = {"--sort", "yf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -158,12 +155,12 @@ public class WorkSpaceTest extends UnitTest {
         }
 
         // This should be in order of 10,9,8,....,0
-        WorkBundle taken = null;
+        WorkBundle taken;
         long age = 10L;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Youngest work must be taken first", age, taken.getYoungestFileModificationTime());
+                assertEquals(age, taken.getYoungestFileModificationTime(), "Youngest work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -176,7 +173,7 @@ public class WorkSpaceTest extends UnitTest {
      * are ignored/defer to the priority order
      */
     @Test
-    public void testYoungestFirstPriorityOverrideQueueing() throws Exception {
+    void testYoungestFirstPriorityOverrideQueueing() throws Exception {
         String[] args = {"--sort", "yf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -193,12 +190,12 @@ public class WorkSpaceTest extends UnitTest {
 
         }
 
-        WorkBundle taken = null;
+        WorkBundle taken;
         int pri = 0;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Ignoring time, priority work must be taken first", pri, taken.getPriority());
+                assertEquals(pri, taken.getPriority(), "Ignoring time, priority work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -211,7 +208,7 @@ public class WorkSpaceTest extends UnitTest {
      * the time based ordering)
      */
     @Test
-    public void testSmallestFirstQueueing() throws Exception {
+    void testSmallestFirstQueueing() throws Exception {
         String[] args = {"--sort", "sf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -229,12 +226,12 @@ public class WorkSpaceTest extends UnitTest {
         }
 
         // This should be in order of 0,1,2,3.....10
-        WorkBundle taken = null;
+        WorkBundle taken;
         long sz = 0L;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Smallest bundle must be taken first", sz, taken.getTotalFileSize());
+                assertEquals(sz, taken.getTotalFileSize(), "Smallest bundle must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -247,7 +244,7 @@ public class WorkSpaceTest extends UnitTest {
      * are ignored/defer to the priority order
      */
     @Test
-    public void testSmallestFirstPriorityOverrideQueueing() throws Exception {
+    void testSmallestFirstPriorityOverrideQueueing() throws Exception {
         String[] args = {"--sort", "sf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -264,12 +261,12 @@ public class WorkSpaceTest extends UnitTest {
 
         }
 
-        WorkBundle taken = null;
+        WorkBundle taken;
         int pri = 0;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Ignoring size, priority work must be taken first", pri, taken.getPriority());
+                assertEquals(pri, taken.getPriority(), "Ignoring size, priority work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -282,7 +279,7 @@ public class WorkSpaceTest extends UnitTest {
      * the time based ordering)
      */
     @Test
-    public void testLargestFirstQueueing() throws Exception {
+    void testLargestFirstQueueing() throws Exception {
         String[] args = {"--sort", "lf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -300,12 +297,12 @@ public class WorkSpaceTest extends UnitTest {
         }
 
         // This should be in order of 10,9,8,....0
-        WorkBundle taken = null;
+        WorkBundle taken;
         long sz = 10L;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Largest bundle must be taken first", sz, taken.getTotalFileSize());
+                assertEquals(sz, taken.getTotalFileSize(), "Largest bundle must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -318,7 +315,7 @@ public class WorkSpaceTest extends UnitTest {
      * are ignored/defer to the priority order
      */
     @Test
-    public void testLargestFirstPriorityOverrideQueueing() throws Exception {
+    void testLargestFirstPriorityOverrideQueueing() throws Exception {
         String[] args = {"--sort", "lf", "-i", "blah"};
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
@@ -335,12 +332,12 @@ public class WorkSpaceTest extends UnitTest {
 
         }
 
-        WorkBundle taken = null;
+        WorkBundle taken;
         int pri = 0;
-        assertEquals("Outbound Queue Size", 11, mws.getOutboundQueueSize());
+        assertEquals(11, mws.getOutboundQueueSize(), "Outbound Queue Size");
         while ((taken = mws.take(C1)) != null) {
             if (taken.size() != 0) {
-                assertEquals("Ignoring size, priority work must be taken first", pri, taken.getPriority());
+                assertEquals(pri, taken.getPriority(), "Ignoring size, priority work must be taken first");
             } else {
                 break; // size = 0 means its the last
             }
@@ -349,7 +346,7 @@ public class WorkSpaceTest extends UnitTest {
     }
 
     @Test
-    public void testFailurePutsPendingBundleBackToOutboundQueue() {
+    void testFailurePutsPendingBundleBackToOutboundQueue() {
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
         String C2 = "INITIAL.INPUT.A.http://otherhost:8001/FilePickUpClient";
         String C3 = "INITIAL.INPUT.A.http://otherhost:9001/FilePickUpClient";
@@ -358,7 +355,7 @@ public class WorkSpaceTest extends UnitTest {
         mws.addPickUp_(C1);
         mws.addPickUp_(C2);
         mws.addPickUp_(C3);
-        assertEquals("Pickups added must count", 3, mws.getPickUpPlaceCount());
+        assertEquals(3, mws.getPickUpPlaceCount(), "Pickups added must count");
 
         // Set up some fake work
         WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
@@ -366,34 +363,34 @@ public class WorkSpaceTest extends UnitTest {
 
         // Give the fake work to the space
         mws.addOutboundBundle_(wb);
-        assertEquals("Adding bundle processes it", 1, mws.getBundlesProcessed());
-        assertEquals("Budnle is outbound", 1, mws.getOutboundQueueSize());
-        assertEquals("No retries yet", 0, mws.getRetriedCount());
-        assertEquals("No pending items yet", 0, mws.getPendingQueueSize());
+        assertEquals(1, mws.getBundlesProcessed(), "Adding bundle processes it");
+        assertEquals(1, mws.getOutboundQueueSize(), "Budnle is outbound");
+        assertEquals(0, mws.getRetriedCount(), "No retries yet");
+        assertEquals(0, mws.getPendingQueueSize(), "No pending items yet");
 
         // Take the fake work
         WorkBundle taken = mws.take(C2);
-        assertEquals("wb taken must be the one put in", wb.getBundleId(), taken.getBundleId());
+        assertEquals(wb.getBundleId(), taken.getBundleId(), "wb taken must be the one put in");
 
         // Check the counts after taking the work
-        assertEquals("Taking bundle doesn't change  processes count", 1, mws.getBundlesProcessed());
-        assertEquals("No bundles outbound", 0, mws.getOutboundQueueSize());
-        assertEquals("No retries yet", 0, mws.getRetriedCount());
-        assertEquals("Taken item is pending", 1, mws.getPendingQueueSize());
+        assertEquals(1, mws.getBundlesProcessed(), "Taking bundle doesn't change  processes count");
+        assertEquals(0, mws.getOutboundQueueSize(), "No bundles outbound");
+        assertEquals(0, mws.getRetriedCount(), "No retries yet");
+        assertEquals(1, mws.getPendingQueueSize(), "Taken item is pending");
 
         // Fail the fake client that took the work
         mws.removePickUp_(C2);
-        assertEquals("Pickups removed must count", 2, mws.getPickUpPlaceCount());
+        assertEquals(2, mws.getPickUpPlaceCount(), "Pickups removed must count");
 
         // Make sure the bundle went back to outbound queue
-        assertEquals("Failed bundle back to  outbound", 1, mws.getOutboundQueueSize());
-        assertEquals("Retry counter bumped on failure", 1, mws.getRetriedCount());
-        assertEquals("Failed item no longer pending", 0, mws.getPendingQueueSize());
+        assertEquals(1, mws.getOutboundQueueSize(), "Failed bundle back to  outbound");
+        assertEquals(1, mws.getRetriedCount(), "Retry counter bumped on failure");
+        assertEquals(0, mws.getPendingQueueSize(), "Failed item no longer pending");
     }
 
     @Test
-    public void testArgumentParsing() throws Exception {
-        List<String> args = new ArrayList<String>();
+    void testArgumentParsing() throws Exception {
+        List<String> args = new ArrayList<>();
         args.add("--retry");
         args.add("--loop");
         args.add("--simple");
@@ -401,15 +398,15 @@ public class WorkSpaceTest extends UnitTest {
         args.add("/tmp/foo:20,/tmp/bar,/tmp/quuz:1");
         FeedCommand command = FeedCommand.parse(FeedCommand.class, args);
         WorkSpace mws = new WorkSpace(command);
-        assertEquals("Three priority directory args must be present", 3, mws.getDirectories().size());
-        assertTrue("Highest priority directory must be first", mws.getDirectories().get(0).indexOf("quuz") > -1);
-        assertEquals("Simple argument must cause flag to be set", true, mws.getSimpleMode());
+        assertEquals(3, mws.getDirectories().size(), "Three priority directory args must be present");
+        assertTrue(mws.getDirectories().get(0).contains("quuz"), "Highest priority directory must be first");
+        assertTrue(mws.getSimpleMode(), "Simple argument must cause flag to be set");
     }
 
     private static final class MyWorkSpace extends WorkSpace {
         public MyWorkSpace() throws Exception {}
 
-        public MyWorkSpace(FeedCommand command) throws Exception {
+        public MyWorkSpace(FeedCommand command) {
             super(command);
         }
 
