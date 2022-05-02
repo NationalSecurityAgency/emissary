@@ -1,5 +1,7 @@
 package emissary.core;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,18 +9,18 @@ import com.codahale.metrics.Timer;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MetricsManagerTest extends UnitTest {
+class MetricsManagerTest extends UnitTest {
     @Test
-    public void testMetricsReporting() {
+    void testMetricsReporting() {
         Configurator conf = new ServiceConfigGuide();
         conf.addEntry("JVM_METRICS_ENABLED", "true");
         conf.addEntry("GRAPHITE_METRICS_ENABLED", "true");
         conf.addEntry("SLF4J_METRICS_ENABLED", "true");
         MetricsManager mm = new MetricsManager(conf);
-        Map<String, Timer> stats = new HashMap<String, Timer>();
-        mm.logMetrics(stats);
+        Map<String, Timer> stats = new HashMap<>();
+        assertDoesNotThrow(() -> mm.logMetrics(stats));
         // need to assert some stuff here, but what?
     }
 }

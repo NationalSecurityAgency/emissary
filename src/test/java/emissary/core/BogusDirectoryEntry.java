@@ -10,7 +10,7 @@ public class BogusDirectoryEntry extends DirectoryEntry {
 
     /**
      * Copy constructor
-     * 
+     *
      * @param that the entry to copy
      */
     public BogusDirectoryEntry(final DirectoryEntry that) {

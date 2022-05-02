@@ -6,21 +6,21 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class DataObjectFactoryTest extends UnitTest {
+class DataObjectFactoryTest extends UnitTest {
     private String defaultPayloadClass;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.defaultPayloadClass = DataObjectFactory.getImplementingClass();
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         DataObjectFactory.setImplementingClass(this.defaultPayloadClass);
@@ -30,14 +30,14 @@ public class DataObjectFactoryTest extends UnitTest {
      * Test configuration
      */
     @Test
-    public void testFactory() {
+    void testFactory() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
         assertTrue(d instanceof IBaseDataObject, "Proper class hierarchy");
     }
 
     @Test
-    public void testSetImpl() {
+    void testSetImpl() {
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         assertEquals(MyDataObject.class.getName(), DataObjectFactory.getImplementingClass(), "Impl class set");
         final IBaseDataObject d = DataObjectFactory.getInstance();
@@ -48,7 +48,7 @@ public class DataObjectFactoryTest extends UnitTest {
     }
 
     @Test
-    public void testWithArgs() {
+    void testWithArgs() {
         final Object[] args = new Object[] {"This is a test".getBytes(), "TestItem"};
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         final IBaseDataObject d = DataObjectFactory.getInstance(args);
@@ -56,7 +56,7 @@ public class DataObjectFactoryTest extends UnitTest {
     }
 
     @Test
-    public void testWtihFullSet() {
+    void testWtihFullSet() {
         byte[] testPayload = "This is a test".getBytes();
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "form", "type");
         assertEquals("filename", ibdo.getFilename());
@@ -66,7 +66,7 @@ public class DataObjectFactoryTest extends UnitTest {
     }
 
     @Test
-    public void testFormAndFileType() {
+    void testFormAndFileType() {
         byte[] testPayload = "This is a test".getBytes();
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "formAndFileType");
         assertEquals("filename", ibdo.getFilename());

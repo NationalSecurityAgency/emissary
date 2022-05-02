@@ -1,6 +1,6 @@
 package emissary.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,17 +9,17 @@ import java.util.List;
 
 import emissary.place.ServiceProviderPlace;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class HDMobileAgentTest extends UnitTest {
+class HDMobileAgentTest extends UnitTest {
 
     public HDMobileAgentTest() {}
 
     @Test
-    public void testAtPlaceHDNull() throws Exception {
+    void testAtPlaceHDNull() throws Exception {
         final SimplePlace place = new SimplePlace("emissary.core.FakePlace.cfg");
         ArrayList<IBaseDataObject> children = new ArrayList<>();
         IBaseDataObject ibdo = DataObjectFactory.getInstance(new byte[] {}, "testFile", "someFormFileType");
@@ -28,13 +28,13 @@ public class HDMobileAgentTest extends UnitTest {
         place.setReturnCollection(children);
         HDMobileAgent ma = new HDMobileAgent();
         List<IBaseDataObject> ret = ma.atPlaceHD(place, Collections.emptyList());
-        assertTrue(ret.size() == 1);
+        assertEquals(1, ret.size());
 
         children.clear();
         children.add(ibdo);
         children.add(ibdo);
         ret = ma.atPlaceHD(place, Collections.emptyList());
-        assertTrue(ret.size() == 2);
+        assertEquals(2, ret.size());
     }
 
     static final class SimplePlace extends ServiceProviderPlace {
@@ -50,7 +50,7 @@ public class HDMobileAgentTest extends UnitTest {
         }
 
         @Override
-        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) throws ResourceException {
+        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) {
             return children;
         }
 

@@ -16,7 +16,7 @@ public class BogusHDAgent extends HDMobileAgent {
 
     /**
      * Create a new reusable Agent
-     * 
+     *
      * @param threadGroup group we operate it
      * @param threadName symbolic name for this agent thread
      */
@@ -26,7 +26,7 @@ public class BogusHDAgent extends HDMobileAgent {
 
     /**
      * Get the next key from the directory with error handling Can return null if there is no place to handle the form
-     * 
+     *
      * @param place the place we will use to access the directory
      * @param payload the current payload we care about
      * @return the fake Directory Entry (local always false)

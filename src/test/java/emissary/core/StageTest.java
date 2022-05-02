@@ -1,76 +1,76 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class StageTest extends UnitTest {
+class StageTest extends UnitTest {
     Stage stages;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         stages = new Stage();
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         stages = null;
     }
 
     @Test
-    public void testIsParallelStage() {
-        assertTrue("Analyze must be a parallel stage", stages.isParallelStage("ANALYZE"));
+    void testIsParallelStage() {
+        assertTrue(stages.isParallelStage("ANALYZE"), "Analyze must be a parallel stage");
     }
 
     @Test
-    public void testIsParallelIllegalStage() {
-        assertFalse("Illegal stage is not parallel", stages.isParallelStage("FOO"));
+    void testIsParallelIllegalStage() {
+        assertFalse(stages.isParallelStage("FOO"), "Illegal stage is not parallel");
     }
 
     @Test
-    public void testIsParallelStageByInt() {
+    void testIsParallelStageByInt() {
         int i = stages.getStageIndex("ANALYZE");
-        assertTrue("Analyze must be parallel by int", stages.isParallelStage(i));
+        assertTrue(stages.isParallelStage(i), "Analyze must be parallel by int");
     }
 
     @Test
-    public void testIsParallelIllegalByInt() {
-        assertFalse("Illegal stage by int is not parallel", stages.isParallelStage(55));
+    void testIsParallelIllegalByInt() {
+        assertFalse(stages.isParallelStage(55), "Illegal stage by int is not parallel");
     }
 
     @Test
-    public void testNameMapping() {
-        assertEquals("Name to int to name mapping", "ANALYZE", stages.getStageName(stages.getStageIndex("ANALYZE")));
+    void testNameMapping() {
+        assertEquals("ANALYZE", stages.getStageName(stages.getStageIndex("ANALYZE")), "Name to int to name mapping");
     }
 
     @Test
-    public void testIllegalNameMapping() {
-        assertEquals("Illegal name mapping", "UNDEFINED", stages.getStageName(-1));
+    void testIllegalNameMapping() {
+        assertEquals("UNDEFINED", stages.getStageName(-1), "Illegal name mapping");
     }
 
     @Test
-    public void testStageProgression() {
+    void testStageProgression() {
         List<String> list = stages.getStages();
         list.add(null);
         for (int i = 0; i < list.size() - 1; i++) {
             String s = list.get(i);
-            assertEquals("Next stage progression from " + s, list.get(i + 1), stages.nextStageAfter(s));
+            assertEquals(list.get(i + 1), stages.nextStageAfter(s), "Next stage progression from " + s);
         }
     }
 
     @Test
-    public void testIllegalProgression() {
-        assertNull("No stage after illegal stage", stages.nextStageAfter("FOO"));
+    void testIllegalProgression() {
+        assertNull(stages.nextStageAfter("FOO"), "No stage after illegal stage");
     }
 }
