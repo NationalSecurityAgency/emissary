@@ -8,14 +8,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ChecksumResultsTest extends UnitTest {
+class ChecksumResultsTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
     @Test
-    public void testResultPresentSet() {
+    void testResultPresentSet() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256"});
             ChecksumResults cr = cc.digest(DATA);

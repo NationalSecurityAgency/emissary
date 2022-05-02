@@ -1,15 +1,16 @@
 package emissary.kff;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class KffFileTest extends UnitTest {
+class KffFileTest extends UnitTest {
 
     private static final String expectedShaHash = "000000206738748EDD92C4E3D2E823896700F849";
     private static final byte[] expectedSha1Bytes = {(byte) 0, (byte) 0, (byte) 0, (byte) 32, (byte) 103, (byte) 56, (byte) 116,
@@ -21,14 +22,14 @@ public class KffFileTest extends UnitTest {
             .getResource("emissary/kff/KffFileTest/tmp.bin").getPath();
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         kffFile = new KffFile(resourcePath, "testFilter", KffFilter.FilterType.Unknown);
         kffFile.setPreferredAlgorithm("SHA-1");
     }
 
     @Test
-    public void testKffFileCreation() {
+    void testKffFileCreation() {
         assertEquals("testFilter", kffFile.getName());
         kffFile.setFilterType(KffFilter.FilterType.Ignore);
         assertEquals(KffFilter.FilterType.Ignore, kffFile.getFilterType());
@@ -36,7 +37,7 @@ public class KffFileTest extends UnitTest {
     }
 
     @Test
-    public void testKffFileCheck() {
+    void testKffFileCheck() {
         ChecksumResults results = new ChecksumResults();
         results.setHash("SHA-1", expectedSha1Bytes);
         results.setHash("CRC32", expectedCrcBytes);
@@ -58,12 +59,8 @@ public class KffFileTest extends UnitTest {
     }
 
     @Test
-    public void testKffFileMain() {
+    void testKffFileMain() {
         String[] args = {resourcePath, resourcePath};
-        try {
-            KffFile.main(args);
-        } catch (Exception e) {
-            throw new AssertionError();
-        }
+        assertDoesNotThrow(() -> KffFile.main(args));
     }
 }

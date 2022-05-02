@@ -1,25 +1,25 @@
 package emissary.directory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class DirectoryEntryMapTest extends UnitTest {
+class DirectoryEntryMapTest extends UnitTest {
 
-    private static String key = "UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/ThePlace";
-    private static String key2 = "UNKNOWN.FOOPLACE.ID.http://host2.domain.com:9001/ThePlace";
-    private static String key3 = "UNKNOWN.FOOPLACE.TRANSFORM.http://host.domain.com:8001/ThePlace";
-    private static int cost = 50;
-    private static int quality = 50;
+    private static final String key = "UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/ThePlace";
+    private static final String key2 = "UNKNOWN.FOOPLACE.ID.http://host2.domain.com:9001/ThePlace";
+    private static final String key3 = "UNKNOWN.FOOPLACE.TRANSFORM.http://host.domain.com:8001/ThePlace";
+    private static final int cost = 50;
+    private static final int quality = 50;
 
     private DirectoryEntryMap dm = null;
     private DirectoryEntry d = null;
@@ -27,7 +27,7 @@ public class DirectoryEntryMapTest extends UnitTest {
     private DirectoryEntry d3 = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.d = new DirectoryEntry(key, "This is a place", cost, quality);
         this.d2 = new DirectoryEntry(key2, "Another place", cost * 2, quality);
@@ -39,7 +39,7 @@ public class DirectoryEntryMapTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         this.dm = null;
@@ -49,114 +49,113 @@ public class DirectoryEntryMapTest extends UnitTest {
     }
 
     @Test
-    public void testAllEntries() {
+    void testAllEntries() {
         final List<DirectoryEntry> all = this.dm.allEntries();
-        assertNotNull("All entries not null", all);
-        assertEquals("All entries", 3, all.size());
+        assertNotNull(all, "All entries not null");
+        assertEquals(3, all.size(), "All entries");
     }
 
     @Test
-    public void testRemoveEntry() {
+    void testRemoveEntry() {
         // remove first on list
         DirectoryEntry removed = this.dm.removeEntry(this.d.getKey());
-        assertNotNull("Removed entry", removed);
-        assertEquals("Removed entry", this.d.getKey(), removed.getKey());
-        assertEquals("No copy on remove", this.d, removed);
+        assertNotNull(removed, "Removed entry");
+        assertEquals(this.d.getKey(), removed.getKey(), "Removed entry");
+        assertEquals(this.d, removed, "No copy on remove");
 
         // Add it back and remove second on list
         this.dm.addEntry(this.d);
         removed = this.dm.removeEntry(this.d2.getKey());
-        assertNotNull("Removed entry", removed);
-        assertEquals("Remove entry", this.d2.getKey(), removed.getKey());
+        assertNotNull(removed, "Removed entry");
+        assertEquals(this.d2.getKey(), removed.getKey(), "Remove entry");
 
         // no such entry on list
         DirectoryEntry notfound = this.dm.removeEntry("FOO.BAR.BAZ.http://host:8001/FooPlace");
-        assertNull("Removed entry not found", notfound);
+        assertNull(notfound, "Removed entry not found");
 
         // no such list
         notfound = this.dm.removeEntry("BAR.FOO.BAZ.http://host:8001/FooPlace");
-        assertNull("Removed entry not found", notfound);
+        assertNull(notfound, "Removed entry not found");
     }
 
 
     @Test
-    public void testRemoveAll() {
-        assertEquals("Count of matching", 0, this.dm.countAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace"));
+    void testRemoveAll() {
+        assertEquals(0, this.dm.countAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace"), "Count of matching");
         List<DirectoryEntry> removed = this.dm.removeAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace");
-        assertNotNull("Removed no matching", removed);
-        assertEquals("Removed no matching", 0, removed.size());
+        assertNotNull(removed, "Removed no matching");
+        assertEquals(0, removed.size(), "Removed no matching");
 
-        assertEquals("Count of matching", 1, this.dm.countAllMatching(key));
+        assertEquals(1, this.dm.countAllMatching(key), "Count of matching");
         removed = this.dm.removeAllMatching(key);
-        assertNotNull("Removed one matching", removed);
-        assertEquals("Removed one matching", 1, removed.size());
+        assertNotNull(removed, "Removed one matching");
+        assertEquals(1, removed.size(), "Removed one matching");
 
-        assertEquals("Count of matching", 2, this.dm.countAllMatching("*.*.*.*"));
+        assertEquals(2, this.dm.countAllMatching("*.*.*.*"), "Count of matching");
         removed = this.dm.removeAllMatching("*.*.*.*");
-        assertNotNull("Removed all", removed);
-        assertEquals("Removed all with wildcard", 2, removed.size());
-        assertEquals("All entries should have been removed", 0, this.dm.entryCount());
-        assertEquals("Empty mappings should be removed", 0, this.dm.size());
+        assertNotNull(removed, "Removed all");
+        assertEquals(2, removed.size(), "Removed all with wildcard");
+        assertEquals(0, this.dm.entryCount(), "All entries should have been removed");
+        assertEquals(0, this.dm.size(), "Empty mappings should be removed");
     }
 
     @Test
-    public void testRemoveAllWithTime() {
-        assertEquals("Count of matching", 0, this.dm.countAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace"));
+    void testRemoveAllWithTime() {
+        assertEquals(0, this.dm.countAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace"), "Count of matching");
         // non-matchting key
         List<DirectoryEntry> removed = this.dm.removeAllMatching("FOO.BAR.BAZ.http://host:8001/FooPlace", System.currentTimeMillis());
-        assertNotNull("Removed no matching", removed);
-        assertEquals("Removed no matching", 0, removed.size());
+        assertNotNull(removed, "Removed no matching");
+        assertEquals(0, removed.size(), "Removed no matching");
 
         // matching key, prehistoric time
-        assertEquals("Count of matching", 1, this.dm.countAllMatching(key));
+        assertEquals(1, this.dm.countAllMatching(key), "Count of matching");
         removed = this.dm.removeAllMatching(key, System.currentTimeMillis() - 3600000);
-        assertNotNull("Removed one matching", removed);
-        assertEquals("Removed one matching", 0, removed.size());
+        assertNotNull(removed, "Removed one matching");
+        assertEquals(0, removed.size(), "Removed one matching");
 
         // matching key, time
-        assertEquals("Count of matching", 1, this.dm.countAllMatching(key));
+        assertEquals(1, this.dm.countAllMatching(key), "Count of matching");
         removed = this.dm.removeAllMatching(key, this.d.getAge() + 1);
-        assertNotNull("Removed one matching", removed);
-        assertEquals("Removed one matching", 1, removed.size());
+        assertNotNull(removed, "Removed one matching");
+        assertEquals(1, removed.size(), "Removed one matching");
 
 
-        assertEquals("Count of matching", 2, this.dm.countAllMatching("*.*.*.*"));
+        assertEquals(2, this.dm.countAllMatching("*.*.*.*"), "Count of matching");
         removed = this.dm.removeAllMatching("*.*.*.*");
-        assertNotNull("Removed all", removed);
-        assertEquals("Removed all with wildcard", 2, removed.size());
-        assertEquals("All entries should have been removed", 0, this.dm.entryCount());
-        assertEquals("Empty mappings should be removed", 0, this.dm.size());
+        assertNotNull(removed, "Removed all");
+        assertEquals(2, removed.size(), "Removed all with wildcard");
+        assertEquals(0, this.dm.entryCount(), "All entries should have been removed");
+        assertEquals(0, this.dm.size(), "Empty mappings should be removed");
     }
 
     @Test
-    public void testAllOnDirectory() {
+    void testAllOnDirectory() {
         final String testkey = "ZIP.CHIP.CHOP.http://host.domain.com:8001/DirectoryPlace";
-        assertEquals("Count on directory", 2, this.dm.countAllOnDirectory(testkey));
+        assertEquals(2, this.dm.countAllOnDirectory(testkey), "Count on directory");
         final List<DirectoryEntry> collected = this.dm.collectAllOnDirectory(testkey);
         final List<DirectoryEntry> removed = this.dm.removeAllOnDirectory(testkey);
-        assertNotNull("Collected on dir", collected);
-        assertNotNull("All on directory removed", removed);
-        assertEquals("Collected matches removed", removed.size(), collected.size());
-        assertEquals("All on directory removed", 2, removed.size());
+        assertNotNull(collected, "Collected on dir");
+        assertNotNull(removed, "All on directory removed");
+        assertEquals(removed.size(), collected.size(), "Collected matches removed");
+        assertEquals(2, removed.size(), "All on directory removed");
     }
 
-    @Ignore
+    @Disabled
     @Test
-    public void testCollectAllMatchingTiming() {
+    void testCollectAllMatchingTiming() {
         // Create a bunch of entries spread out onto several data identifiers
         final String[] phases = new String[] {"ID", "TRANSFORM", "ANALYZE", "IO"};
         final int phasesLength = phases.length;
         final String[] forms = new String[] {"UNKNOWN", "PETERPAN", "WENDY", "CROC", "MR_SMEE"};
         final int formsLength = forms.length;
         for (int i = 1; i < 10000; i++) {
-            final StringBuilder sb = new StringBuilder(68);
-            sb.append(forms[i % formsLength]);
-            sb.append(".FOOPLACE.");
-            sb.append(phases[i % phasesLength]);
-            sb.append(".http://host-");
-            sb.append(i);
-            sb.append(".domain.com:7001/ThePlace");
-            this.dm.addEntry(new DirectoryEntry(sb.toString(), "blah", i % 100, 50));
+            String sb = forms[i % formsLength] +
+                    ".FOOPLACE." +
+                    phases[i % phasesLength] +
+                    ".http://host-" +
+                    i +
+                    ".domain.com:7001/ThePlace";
+            this.dm.addEntry(new DirectoryEntry(sb, "blah", i % 100, 50));
             // dm.addEntry(new DirectoryEntry(String.format("%s.FOOPLACE.%s.http://host-%d.domain.com:7001/ThePlace",
             // forms[i % formsLength], phases[i
             // % phasesLength], i), "blah", i % 100, 50));
@@ -169,8 +168,8 @@ public class DirectoryEntryMapTest extends UnitTest {
             final long start = System.currentTimeMillis();
             final List<DirectoryEntry> matches = this.dm.collectAllMatching(searchPatterns[i]);
             final long end = System.currentTimeMillis();
-            assertEquals("Match must produce results using pattern " + searchPatterns[i], expectedCount[i], matches.size());
-            assertTrue("Search using pattern " + searchPatterns[i] + " must be under 1sec", (end - start) < 1000);
+            assertEquals(expectedCount[i], matches.size(), "Match must produce results using pattern " + searchPatterns[i]);
+            assertTrue((end - start) < 1000, "Search using pattern " + searchPatterns[i] + " must be under 1sec");
         }
 
         // Simulate the scale of an incoming zone transfer during node setup phase
@@ -181,25 +180,25 @@ public class DirectoryEntryMapTest extends UnitTest {
         final long end = System.currentTimeMillis();
         final long diff = (end - start);
 
-        assertTrue("Search of all patterns must take place in under 3s, was " + diff + "ms", diff < 3000);
+        assertTrue(diff < 3000, "Search of all patterns must take place in under 3s, was " + diff + "ms");
     }
 
     @Test
-    public void testAddCost() {
+    void testAddCost() {
         final List<String> changed = this.dm.addCostToMatching("*.*.TRANSFORM.*", 100);
-        assertNotNull("Cost changed", changed);
-        assertEquals("Cost changed", 1, changed.size());
+        assertNotNull(changed, "Cost changed");
+        assertEquals(1, changed.size(), "Cost changed");
         final String ckey = changed.get(0);
-        assertEquals("Cost on returned entry", DirectoryEntry.calculateExpense(100 + cost, quality), KeyManipulator.getExpense(ckey, -1));
+        assertEquals(DirectoryEntry.calculateExpense(100 + cost, quality), KeyManipulator.getExpense(ckey, -1), "Cost on returned entry");
         final DirectoryEntryList del = this.dm.get("UNKNOWN::TRANSFORM");
-        assertNotNull("Found entry list for changed entry", del);
-        assertEquals("Entry on list", 1, del.size());
+        assertNotNull(del, "Found entry list for changed entry");
+        assertEquals(1, del.size(), "Entry on list");
         final DirectoryEntry entry = del.getEntry(0);
-        assertEquals("Cost on live list entry", 100 + cost, entry.getCost());
+        assertEquals(100 + cost, entry.getCost(), "Cost on live list entry");
     }
 
     @Test
-    public void testAddFromMap() {
+    void testAddFromMap() {
         final DirectoryEntry xd = new DirectoryEntry(key + "x", "This is a place", cost, quality);
         final DirectoryEntry xd2 = new DirectoryEntry(key2 + "x", "Another place", cost * 2, quality);
         final DirectoryEntry xd3 = new DirectoryEntry(key3 + "x", "Transform place", cost, quality);
@@ -213,34 +212,34 @@ public class DirectoryEntryMapTest extends UnitTest {
 
         // Now add to our regular map
         this.dm.addEntries(xdm);
-        assertEquals("Size on addEntries", 3, this.dm.size());
-        assertEquals("All entries added", 7, this.dm.allEntries().size());
-        assertEquals("All entries added", 7, this.dm.entryCount());
+        assertEquals(3, this.dm.size(), "Size on addEntries");
+        assertEquals(7, this.dm.allEntries().size(), "All entries added");
+        assertEquals(7, this.dm.entryCount(), "All entries added");
     }
 
     @Test
-    public void testCloneConstructorShallow() {
+    void testCloneConstructorShallow() {
         // Shallow
         final DirectoryEntryMap dm2 = new DirectoryEntryMap(this.dm);
-        assertEquals("Clone size", this.dm.entryCount(), dm2.entryCount());
+        assertEquals(this.dm.entryCount(), dm2.entryCount(), "Clone size");
         for (final String dataId : this.dm.keySet()) {
             final DirectoryEntryList s1 = this.dm.get(dataId);
             final DirectoryEntryList s2 = dm2.get(dataId);
-            assertNotNull("List from second map", s2);
-            assertEquals("Size of maps is same", s1.size(), s2.size());
+            assertNotNull(s2, "List from second map");
+            assertEquals(s1.size(), s2.size(), "Size of maps is same");
         }
     }
 
     @Test
-    public void testCloneConstructorDeep() {
+    void testCloneConstructorDeep() {
         // Deep
         final DirectoryEntryMap dm3 = new DirectoryEntryMap(this.dm, DirectoryEntryMap.DEEP_COPY);
-        assertEquals("Clone size", this.dm.entryCount(), dm3.entryCount());
+        assertEquals(this.dm.entryCount(), dm3.entryCount(), "Clone size");
         for (final String dataId : this.dm.keySet()) {
             final DirectoryEntryList s1 = this.dm.get(dataId);
             final DirectoryEntryList s2 = dm3.get(dataId);
-            assertNotNull("List from second map", s2);
-            assertEquals("Size of maps is same", s1.size(), s2.size());
+            assertNotNull(s2, "List from second map");
+            assertEquals(s1.size(), s2.size(), "Size of maps is same");
         }
     }
 }

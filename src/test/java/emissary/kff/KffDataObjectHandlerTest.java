@@ -14,11 +14,11 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class KffDataObjectHandlerTest extends UnitTest {
+class KffDataObjectHandlerTest extends UnitTest {
     static final byte[] DATA = "This is a test".getBytes();
 
     // echo -n "This is a test" | openssl sha1
@@ -48,7 +48,7 @@ public class KffDataObjectHandlerTest extends UnitTest {
     private static final String resource = "emissary/kff/test.dat";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         kff = new KffDataObjectHandler();
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
@@ -62,7 +62,7 @@ public class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         kff = null;
@@ -70,19 +70,19 @@ public class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Test
-    public void testMapWithEmptyPrefix() {
+    void testMapWithEmptyPrefix() {
         Map<String, String> m = kff.hashData(DATA, "junk");
         assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Empty prefix returns normal values");
     }
 
     @Test
-    public void testMapWithNullPrefix() {
+    void testMapWithNullPrefix() {
         Map<String, String> m = kff.hashData(DATA, "junk", null);
         assertNotNull(m.get(KffDataObjectHandler.KFF_PARAM_MD5), "Null prefix returns normal values");
     }
 
     @Test
-    public void testMapWithPrefix() {
+    void testMapWithPrefix() {
         Map<String, String> m = kff.hashData(DATA, "name", "foo");
         assertNotNull(m.get("foo" + KffDataObjectHandler.KFF_PARAM_MD5), "Prefix prepends on normal key names but we got " + m.keySet());
     }

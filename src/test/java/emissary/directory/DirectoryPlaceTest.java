@@ -1,9 +1,9 @@
 package emissary.directory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.spy;
 
@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -21,21 +20,21 @@ import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class DirectoryPlaceTest extends UnitTest {
+class DirectoryPlaceTest extends UnitTest {
 
     // Both on same machine so we don't have to test
     // with jetty
-    private String masterloc = "http://localhost:8001/TestMasterDirectoryPlace";
-    private String clientloc = "http://localhost:8001/DirectoryPlace";
+    private final String masterloc = "http://localhost:8001/TestMasterDirectoryPlace";
+    private final String clientloc = "http://localhost:8001/DirectoryPlace";
     private DirectoryPlace master = null;
     private DirectoryPlace client = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // master directory
         InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
@@ -52,23 +51,23 @@ public class DirectoryPlaceTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         this.master.shutDown();
         this.master = null;
         this.client.shutDown();
         this.client = null;
-        for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-            Namespace.unbind(i.next());
+        for (String s : Namespace.keySet()) {
+            Namespace.unbind(s);
         }
 
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAddEntryInMasterUsingFullKeys() {
-        final List<String> keys = new ArrayList<String>();
+    void testAddEntryInMasterUsingFullKeys() {
+        final List<String> keys = new ArrayList<>();
         keys.add("DUMDUM.THISPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         keys.add("DUMDUM.THATPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         // TODO look for a better solution than spying (needed because of old STANDALONE configuration in emissary
@@ -77,16 +76,16 @@ public class DirectoryPlaceTest extends UnitTest {
         this.master.addPlaces(keys);
         final List<DirectoryEntry> allEntries = this.master.getEntries();
         // Two for the keys, one master and client directories shadowing
-        assertEquals("Entries made " + allEntries, 3, allEntries.size());
+        assertEquals(3, allEntries.size(), "Entries made " + allEntries);
         final DirectoryEntry de = allEntries.get(0);
-        assertNotNull("Entry produced", de);
-        assertEquals("Expense computation", 5050, de.getExpense());
+        assertNotNull(de, "Entry produced");
+        assertEquals(5050, de.getExpense(), "Expense computation");
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testAddEntryInClientUsingFullKeys() {
-        final List<String> keys = new ArrayList<String>();
+    void testAddEntryInClientUsingFullKeys() {
+        final List<String> keys = new ArrayList<>();
         keys.add("DUMDUM.THISPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         keys.add("DUMDUM.THATPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         // TODO look for a better solution than spying (needed because of old STANDALONE configuration in emissary
@@ -94,48 +93,48 @@ public class DirectoryPlaceTest extends UnitTest {
         doNothing().when(this.client).irdAddPlaces(any(List.class), any(Boolean.class));
         this.client.addPlaces(keys);
         final List<DirectoryEntry> allEntries = this.master.getEntries();
-        assertTrue("Entry made", allEntries.size() > 0);
+        assertTrue(allEntries.size() > 0, "Entry made");
         final DirectoryEntry de = allEntries.get(0);
-        assertNotNull("Entry produced", de);
-        assertEquals("Expense computation", 5050, de.getExpense());
+        assertNotNull(de, "Entry produced");
+        assertEquals(5050, de.getExpense(), "Expense computation");
     }
 
     @Test
-    public void testContactThroughDirectoryEntry() {
+    void testContactThroughDirectoryEntry() {
         final DirectoryEntry d = new DirectoryEntry(this.client.getKey());
-        assertEquals("Entry produced", this.client.getKey(), d.getKey());
-        assertTrue("Entry points to local place", d.isLocal());
+        assertEquals(this.client.getKey(), d.getKey(), "Entry produced");
+        assertTrue(d.isLocal(), "Entry points to local place");
         final emissary.place.IServiceProviderPlace p = d.getLocalPlace();
-        assertNotNull("Entry points to local place", p);
-        assertTrue("Entry is directory", p instanceof IDirectoryPlace);
+        assertNotNull(p, "Entry points to local place");
+        assertTrue(p instanceof IDirectoryPlace, "Entry is directory");
     }
 
     @Test
-    public void testEmissaryNodeImpl() throws IOException, EmissaryException {
+    void testEmissaryNodeImpl() throws IOException, EmissaryException {
         try {
             final String c2loc = "http://stupidnode.example.com:3700/DirectoryPlace";
             final InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
             final EmissaryNode myEmissaryNode = new TestEmissaryNode();
-            assertTrue("Custom emissary node should be valid", myEmissaryNode.isValid());
+            assertTrue(myEmissaryNode.isValid(), "Custom emissary node should be valid");
 
             final DirectoryPlace client3 = spy(new DirectoryPlace(configStream, c2loc, myEmissaryNode));
             // we are faking a cluster, so we really don't want to wait for the timeout to hit
             // when sending messages
             doNothing().when(client3).sendFailMessage(any(DirectoryEntry.class), any(String.class), any(Boolean.class));
             // The emissary node should cause it to pick up the stupidnode config file
-            assertNotNull("Directory created with custom EmissaryNode", client3);
+            assertNotNull(client3, "Directory created with custom EmissaryNode");
             final Set<String> peerKeys = client3.getPeerDirectories();
-            assertEquals("Should find one peer directory", 1, peerKeys.size());
+            assertEquals(1, peerKeys.size(), "Should find one peer directory");
 
             // Shut it down
             client3.shutDown();
-            assertEquals("All peer directories removed", 0, client3.getPeerDirectories().size());
+            assertEquals(0, client3.getPeerDirectories().size(), "All peer directories removed");
 
             // Try to add another peer after the shutdown
-            final Set<String> s = new HashSet<String>();
+            final Set<String> s = new HashSet<>();
             s.add("http://stupidnode.example.com:3900/StupidDirectoryPlace");
             client3.addPeerDirectories(s, true);
-            assertEquals("Should not add peer during shutdown", 0, client3.getPeerDirectories().size());
+            assertEquals(0, client3.getPeerDirectories().size(), "Should not add peer during shutdown");
         } finally {
             restoreConfig();
         }
