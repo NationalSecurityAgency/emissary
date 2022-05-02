@@ -1,7 +1,7 @@
 package emissary.output;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -18,17 +18,16 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.output.filter.IDropOffFilter;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class DropOffPlaceTest extends UnitTest {
+class DropOffPlaceTest extends UnitTest {
 
     DropOffPlace place = null;
-    DropOffUtil util = null;
     private Path tempDir;
 
-    @Before
+    @BeforeEach
     public void createPlace() throws Exception {
         setUp();
         tempDir = Files.createTempDirectory("test");
@@ -40,7 +39,7 @@ public class DropOffPlaceTest extends UnitTest {
 
     }
 
-    @After
+    @AfterEach
     public void teardown() throws Exception {
         super.tearDown();
         this.place.shutDown();
@@ -49,25 +48,25 @@ public class DropOffPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testNamedFilterSetup() {
+    void testNamedFilterSetup() {
         final IDropOffFilter f = this.place.getFilter("BLAH");
-        assertNotNull("Filter specified by name must be found", f);
-        assertEquals("Filter must have correct name", "BLAH", f.getFilterName());
-        assertEquals("Filter must have found correct spec", "%R%/xyzzy/%S%.%F%", f.getOutputSpec());
+        assertNotNull(f, "Filter specified by name must be found");
+        assertEquals("BLAH", f.getFilterName(), "Filter must have correct name");
+        assertEquals("%R%/xyzzy/%S%.%F%", f.getOutputSpec(), "Filter must have found correct spec");
     }
 
     @Test
-    public void testWithNoValidOutputTypes() throws Exception {
+    void testWithNoValidOutputTypes() throws Exception {
         final IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is the data".getBytes());
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
-        final List<IBaseDataObject> payloadList = new ArrayList<IBaseDataObject>();
+        final List<IBaseDataObject> payloadList = new ArrayList<>();
         payloadList.add(payload);
         final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
-        assertEquals("All payloads still on list", 1, payloadList.size());
-        assertEquals("Nothing returned from drop off", 0, val.size());
-        assertEquals("All current forms removed", 0, payloadList.get(0).currentFormSize());
+        assertEquals(1, payloadList.size(), "All payloads still on list");
+        assertEquals(0, val.size(), "Nothing returned from drop off");
+        assertEquals(0, payloadList.get(0).currentFormSize(), "All current forms removed");
     }
 
     public static void cleanupDirectoryRecursively(Path path) throws IOException {

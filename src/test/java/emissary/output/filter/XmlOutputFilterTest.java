@@ -1,7 +1,7 @@
 package emissary.output.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,18 +16,18 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class XmlOutputFilterTest extends UnitTest {
+class XmlOutputFilterTest extends UnitTest {
 
     private ServiceConfigGuide config;
     private IBaseDataObject payload;
     private IDropOffFilter f;
     private Path tmpDir;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         tmpDir = java.nio.file.Files.createTempDirectory(null);
 
@@ -46,34 +46,34 @@ public class XmlOutputFilterTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         Files.deleteIfExists(tmpDir);
         config = null;
     }
 
     @Test
-    public void testFilterSetup() {
+    void testFilterSetup() {
         f.initialize(config, "FOO");
-        assertEquals("Filter name should be set", "FOO", f.getFilterName());
-        assertEquals("Output spec should be build based on name", "/tmp/%S%.%F%", f.getOutputSpec());
+        assertEquals("FOO", f.getFilterName(), "Filter name should be set");
+        assertEquals("/tmp/%S%.%F%", f.getOutputSpec(), "Output spec should be build based on name");
     }
 
     @Test
-    public void testOutputFromFilter() {
+    void testOutputFromFilter() {
         f.initialize(config, "FOO", config);
         List<IBaseDataObject> payloadList = Lists.newArrayList(payload);
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
 
-        assertTrue("Payload should be outputtable", f.isOutputtable(payload, params));
-        assertTrue("Payload list should be outputtable", f.isOutputtable(payloadList, params));
+        assertTrue(f.isOutputtable(payload, params), "Payload should be outputtable");
+        assertTrue(f.isOutputtable(payloadList, params), "Payload list should be outputtable");
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         int status = f.filter(payloadList, params, output);
 
-        assertEquals("Status of filter should be success", IDropOffFilter.STATUS_SUCCESS, status);
-        assertTrue("Output must contain name field '" + output + "'", output.toString().indexOf("<name>/this/is/a/testfile</name>") > -1);
+        assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Status of filter should be success");
+        assertTrue(output.toString().contains("<name>/this/is/a/testfile</name>"), "Output must contain name field '" + output + "'");
     }
 
 }

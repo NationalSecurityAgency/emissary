@@ -1,7 +1,7 @@
 package emissary.output.roller.journal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,22 +10,21 @@ import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class JournalTest extends UnitTest {
+class JournalTest extends UnitTest {
     private Path tmpDir;
 
-
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
         this.tmpDir = Files.createTempDirectory("JournalTest");
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         UnitTestFileUtils.cleanupDirectoryRecursively(this.tmpDir);
@@ -36,7 +35,7 @@ public class JournalTest extends UnitTest {
      * Test of write method, of class Journal.
      */
     @Test
-    public void testWrite() throws Exception {
+    void testWrite() throws Exception {
         final String uuid = UUID.randomUUID().toString();
         final JournalEntry e = new JournalEntry(uuid, 100L);
         try (JournalWriter instance = new JournalWriter(this.tmpDir, uuid)) {
@@ -50,7 +49,7 @@ public class JournalTest extends UnitTest {
      * Test of loadEntries method, of class Journal.
      */
     @Test
-    public void testLoadEntries() throws Exception {
+    void testLoadEntries() throws Exception {
         final String uuid = writeRandomJournal();
         JournalReader.getJournalPaths(tmpDir);
         long oneOffset = 0;
@@ -58,7 +57,7 @@ public class JournalTest extends UnitTest {
         try (JournalReader instance = new JournalReader(this.tmpDir.resolve(uuid + Journal.EXT))) {
             Journal j = instance.getJournal();
             final Collection<JournalEntry> entries = j.getEntries();
-            assertTrue("Expected 4 entries but was " + entries.size(), entries.size() == 4);
+            assertEquals(4, entries.size(), "Expected 4 entries but was " + entries.size());
             for (final JournalEntry entry : entries) {
                 if ((uuid + "-1").equals(entry.getVal())) {
                     oneOffset = entry.getOffset();
@@ -67,8 +66,8 @@ public class JournalTest extends UnitTest {
                 }
             }
         }
-        assertTrue("Entry expecting  500", oneOffset == 500);
-        assertTrue("Entry expecting 2000 ", twoOffset == 2000);
+        assertEquals(500, oneOffset, "Entry expecting  500");
+        assertEquals(2000, twoOffset, "Entry expecting 2000 ");
     }
 
     private String writeRandomJournal() throws Exception {
@@ -89,8 +88,8 @@ public class JournalTest extends UnitTest {
     }
 
     @Test
-    public void testEmptyJournal() {
+    void testEmptyJournal() {
         Journal j = new Journal(tmpDir);
-        assertEquals("Journal Entry should be null", j.getLastEntry(), null);
+        assertNull(j.getLastEntry(), "Journal Entry should be null");
     }
 }

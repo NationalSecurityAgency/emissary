@@ -1,11 +1,11 @@
 package emissary.output;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,27 +22,26 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
 import emissary.util.TimeUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for DropOffUtil
- *
  */
-public class DropOffUtilTest extends UnitTest {
+class DropOffUtilTest extends UnitTest {
     private DropOffUtil util = null;
     private IBaseDataObject payload = null;
 
-    @Before
+    @BeforeEach
     public void createUtil() {
         final Configurator cfg = new ServiceConfigGuide();
-        final List<String> dates = new ArrayList<String>();
+        final List<String> dates = new ArrayList<>();
         dates.add("EventDate");
         dates.add("FILE_DATE");
         cfg.addEntries("DATE_PARAMETER", dates);
 
-        final List<String> ids = new ArrayList<String>();
+        final List<String> ids = new ArrayList<>();
         ids.add("MY_ID");
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
@@ -57,7 +56,7 @@ public class DropOffUtilTest extends UnitTest {
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
     }
 
-    @After
+    @AfterEach
     public void destroyUtil() throws Exception {
         super.tearDown();
         this.util = null;
@@ -65,25 +64,25 @@ public class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGeneratedFilenameUniqueness() {
-        final Set<String> names = new HashSet<String>();
+    void testGeneratedFilenameUniqueness() {
+        final Set<String> names = new HashSet<>();
         for (int i = 0; i < 10000; i++) {
             names.add(this.util.generateBuildFileName());
         }
-        assertEquals("Names must all be unique", 10000, names.size());
+        assertEquals(10000, names.size(), "Names must all be unique");
     }
 
     @Test
-    public void testGetBestId() {
+    void testGetBestId() {
         // Test auto gen //////////////////////////////
         final IBaseDataObject tld = DataObjectFactory.getInstance("This is another test".getBytes(), "/eat/prefix/anotherTestPath", "UNKNOWN");
         Configurator cfg = new ServiceConfigGuide();
-        final List<String> dates = new ArrayList<String>();
+        final List<String> dates = new ArrayList<>();
         dates.add("EventDate");
         dates.add("FILE_DATE");
         cfg.addEntries("DATE_FORMAT", dates);
 
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
@@ -94,8 +93,8 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestId(this.payload, tld);
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
         // Test auto gen without prefix //////////////////////////////
 
@@ -104,12 +103,12 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
         id = this.util.getBestId(this.payload, tld);
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
         // Test get ID from parameter //////////////////////////////
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("MY_ID");
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
@@ -120,13 +119,13 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertTrue("an auto gen id parameter should NOT have been set", this.payload.getStringParameter("AUTO_GENERATED_ID") == null);
-        assertTrue("the MY_ID parameter should have been used", "672317892139".equals(id));
+        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
+        assertEquals("672317892139", id, "the MY_ID parameter should have been used");
 
         // Test shortname //////////////////////////////
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
@@ -136,15 +135,15 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertTrue("an auto gen id parameter should NOT have been set", this.payload.getStringParameter("AUTO_GENERATED_ID") == null);
-        assertTrue("the SHORTNAME parameter should have been used", "testPath".equals(id));
+        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
+        assertEquals("testPath", id, "the SHORTNAME parameter should have been used");
 
         // Test force auto gen by specifying a blank shortname
         // //////////////////////////////
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("SHORTNAME");
         cfg.addEntries("ID", ids);
 
@@ -155,16 +154,16 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
-        assertFalse("the SHORTNAME parameter should NOT have been used", "testPath".equals(id));
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
+        assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
 
         // Test force auto gen by specifying nothing
         // //////////////////////////////
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         cfg.addEntries("ID", ids);
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
@@ -174,21 +173,21 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestId(this.payload, tld);
 
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
-        assertFalse("the SHORTNAME parameter should NOT have been used", "testPath".equals(id));
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
+        assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
     }
 
     @Test
-    public void testGetBestIdFrom() {
+    void testGetBestIdFrom() {
         // Test auto gen //////////////////////////////
         Configurator cfg = new ServiceConfigGuide();
-        final List<String> dates = new ArrayList<String>();
+        final List<String> dates = new ArrayList<>();
         dates.add("EventDate");
         dates.add("FILE_DATE");
         cfg.addEntries("DATE_FORMAT", dates);
 
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
 
@@ -199,8 +198,8 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
         String id = this.util.getBestIdFrom(this.payload);
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
         // Test auto gen without prefix //////////////////////////////
 
@@ -209,13 +208,13 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
         id = this.util.getBestIdFrom(this.payload);
-        assertFalse("auto gen id should NOT start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
+        assertFalse(id.startsWith("ABCD"), "auto gen id should NOT start with a (truncated to 4 char) prefix");
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
         // Test get ID from parameter //////////////////////////////
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("MY_ID");
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
@@ -226,13 +225,13 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertTrue("an auto gen id parameter should NOT have been set", this.payload.getStringParameter("AUTO_GENERATED_ID") == null);
-        assertTrue("the MY_ID parameter should have been used", "672317892139".equals(id));
+        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
+        assertEquals("672317892139", id, "the MY_ID parameter should have been used");
 
         // Test shortname //////////////////////////////
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
         cfg.addEntries("ID", ids);
@@ -242,15 +241,15 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertTrue("an auto gen id parameter should NOT have been set", this.payload.getStringParameter("AUTO_GENERATED_ID") == null);
-        assertTrue("the SHORTNAME parameter should have been used", "testPath".equals(id));
+        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should NOT have been set");
+        assertEquals("testPath", id, "the SHORTNAME parameter should have been used");
 
         // Test force auto gen by specifying a blank shortname
         // //////////////////////////////
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("SHORTNAME");
         cfg.addEntries("ID", ids);
 
@@ -261,16 +260,16 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
-        assertFalse("the SHORTNAME parameter should NOT have been used", "testPath".equals(id));
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
+        assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
 
         // Test force auto gen by specifying nothing
         // //////////////////////////////
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         cfg.addEntries("ID", ids);
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
@@ -280,18 +279,18 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         id = this.util.getBestIdFrom(this.payload);
 
-        assertTrue("an auto gen id parameter should have been set", "yes".equals(this.payload.getStringParameter("AUTO_GENERATED_ID")));
-        assertFalse("the SHORTNAME parameter should NOT have been used", "testPath".equals(id));
-        assertTrue("auto gen id should start with a (truncated to 4 char) prefix", id.startsWith("ABCD"));
+        assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
+        assertNotEquals("testPath", id, "the SHORTNAME parameter should NOT have been used");
+        assertTrue(id.startsWith("ABCD"), "auto gen id should start with a (truncated to 4 char) prefix");
     }
 
     @Test
-    public void testGetExistingIds() {
+    void testGetExistingIds() {
         // Test get ID from parameter //////////////////////////////
         Configurator cfg = new ServiceConfigGuide();
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
 
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         ids.add("MY_ID");
         ids.add("SHORTNAME");
         ids.add("AUTO_GENERATED_ID");
@@ -302,16 +301,16 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         String[] values = this.util.getExistingIds(this.payload);
 
-        assertTrue("an auto gen id parameter should not have been set", this.payload.getStringParameter("AUTO_GENERATED_ID") == null);
-        assertTrue("the MY_ID parameter should have been used FIRST", "672317892139".equals(values[0]));
-        assertTrue("the SHORTNAME should have been used SECOND", "testPath".equals(values[1]));
-        assertTrue("the size of the return values is incorrect", values.length == 2);
+        assertNull(this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should not have been set");
+        assertEquals("672317892139", values[0], "the MY_ID parameter should have been used FIRST");
+        assertEquals("testPath", values[1], "the SHORTNAME should have been used SECOND");
+        assertEquals(2, values.length, "the size of the return values is incorrect");
 
         // Test empty return value by specifying a blank shortname
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         ids.add("SHORTNAME");
         cfg.addEntries("ID", ids);
 
@@ -322,13 +321,13 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         values = this.util.getExistingIds(this.payload);
 
-        assertTrue("the size of the return values is incorrect", values.length == 0);
+        assertEquals(0, values.length, "the size of the return values is incorrect");
 
         // Test empty values by specifying nothing
 
         cfg = new ServiceConfigGuide();
 
-        ids = new ArrayList<String>();
+        ids = new ArrayList<>();
         cfg.addEntries("ID", ids);
 
         cfg.addEntry("AUTO_GENERATED_ID_PREFIX", "ABCDEFGH");
@@ -338,12 +337,12 @@ public class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
         values = this.util.getExistingIds(this.payload);
 
-        assertTrue("the size of the return values is incorrect", values.length == 0);
+        assertEquals(0, values.length, "the size of the return values is incorrect");
     }
 
     @Test
-    public void testMetadataPreparation() {
-        final List<IBaseDataObject> family = new ArrayList<IBaseDataObject>();
+    void testMetadataPreparation() {
+        final List<IBaseDataObject> family = new ArrayList<>();
 
         final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(), "item1", "PARENT_FORM", "PARENT_FTYPE");
         parent.putParameter("FOO", "PARENT_FOO");
@@ -362,24 +361,25 @@ public class DropOffUtilTest extends UnitTest {
 
         this.util.processMetadata(family);
 
-        assertEquals("Parent should have filext of gz", "gz", parent.getStringParameter("FILEXT"));
-        assertEquals("Child should have filext of docx", "docx", child.getStringParameter("FILEXT"));
+        assertEquals("gz", parent.getStringParameter("FILEXT"), "Parent should have filext of gz");
+        assertEquals("docx", child.getStringParameter("FILEXT"), "Child should have filext of docx");
 
-        assertNull("Parent should not have extended filetype", parent.getParameter("EXTENDED_FILETYPE"));
+        assertNull(parent.getParameter("EXTENDED_FILETYPE"), "Parent should not have extended filetype");
 
-        assertEquals("Child EXTENDED_FILETYPE should handle deduplication and collections", "CHILD_FTYPE//myFoo//myBar1//myBar2",
-                child.getStringParameter("EXTENDED_FILETYPE"));
+        assertEquals("CHILD_FTYPE//myFoo//myBar1//myBar2",
+                child.getStringParameter("EXTENDED_FILETYPE"),
+                "Child EXTENDED_FILETYPE should handle deduplication and collections");
 
 
-        assertNull("Parent should not get PARENT_* values", parent.getParameter("PARENT_FOO"));
-        assertEquals("Child should get PARENT_FOO type", "PARENT_FOO", child.getStringParameter("PARENT_FOO"));
-        assertEquals("Parent FOO should not be changed", "PARENT_FOO", parent.getStringParameter("FOO"));
-        assertEquals("Child FOO should not be changed", "CHILD_FOO", child.getStringParameter("FOO"));
+        assertNull(parent.getParameter("PARENT_FOO"), "Parent should not get PARENT_* values");
+        assertEquals("PARENT_FOO", child.getStringParameter("PARENT_FOO"), "Child should get PARENT_FOO type");
+        assertEquals("PARENT_FOO", parent.getStringParameter("FOO"), "Parent FOO should not be changed");
+        assertEquals("CHILD_FOO", child.getStringParameter("FOO"), "Child FOO should not be changed");
     }
 
     @Test
-    public void testMetadataPreparationWithConfiguredValues() {
-        final List<IBaseDataObject> family = new ArrayList<IBaseDataObject>();
+    void testMetadataPreparationWithConfiguredValues() {
+        final List<IBaseDataObject> family = new ArrayList<>();
 
         final IBaseDataObject parent = DataObjectFactory.getInstance(new byte[0], "item", "PARENT_FORM");
         parent.setFileType("PARENT_FTYPE");
@@ -388,7 +388,7 @@ public class DropOffUtilTest extends UnitTest {
         final IBaseDataObject child = DataObjectFactory.getInstance(new byte[0], "item-att-1", "CHILD_FORM");
         child.putParameter("FOO", "CHILD_FOO");
 
-        final List<IBaseDataObject> childRecords = new ArrayList<IBaseDataObject>();
+        final List<IBaseDataObject> childRecords = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             childRecords.add(DataObjectFactory.getInstance(new byte[0], "item-att-1-att-" + i, "RECORD_FORM"));
         }
@@ -398,7 +398,7 @@ public class DropOffUtilTest extends UnitTest {
         // child2 does not have a FOO param
         final IBaseDataObject grandchild = DataObjectFactory.getInstance(new byte[0], "item-att-2-att-1", "GRANDCHILD_FORM");
 
-        final List<IBaseDataObject> gchildRecords = new ArrayList<IBaseDataObject>();
+        final List<IBaseDataObject> gchildRecords = new ArrayList<>();
         for (int i = 1; i < 5; i++) {
             gchildRecords.add(DataObjectFactory.getInstance(new byte[0], "item-att-2-att-1-att-" + i, "GCHILD_RECORD_FORM"));
         }
@@ -412,20 +412,21 @@ public class DropOffUtilTest extends UnitTest {
         this.util.processMetadata(family);
 
         // Child 1 subtree has a FOO param
-        assertEquals("Propagation of configured parent type must use closest available entry on child", "FOO",
-                child.getStringParameter("PARENT_FOO"));
-        assertEquals("Propagation of configured parent type must use closest available entry on child records", "CHILD_FOO", childRecords.get(0)
-                .getStringParameter("PARENT_FOO"));
+        assertEquals("FOO",
+                child.getStringParameter("PARENT_FOO"),
+                "Propagation of configured parent type must use closest available entry on child");
+        assertEquals("CHILD_FOO", childRecords.get(0)
+                .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on child records");
 
         // Child 2 subtree only has the TLD FOO param to use
-        assertEquals("Propagation of configured parent type must fall back to TLD on child", "FOO", child2.getStringParameter("PARENT_FOO"));
-        assertEquals("Propagation of configured parent type must fall back to TLD on grandchild", "FOO", grandchild.getStringParameter("PARENT_FOO"));
-        assertEquals("Propagation of configured parent type must use closest available entry on grandchild records", "FOO", gchildRecords.get(0)
-                .getStringParameter("PARENT_FOO"));
+        assertEquals("FOO", child2.getStringParameter("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on child");
+        assertEquals("FOO", grandchild.getStringParameter("PARENT_FOO"), "Propagation of configured parent type must fall back to TLD on grandchild");
+        assertEquals("FOO", gchildRecords.get(0)
+                .getStringParameter("PARENT_FOO"), "Propagation of configured parent type must use closest available entry on grandchild records");
     }
 
     @Test
-    public void testGetEventDate() {
+    void testGetEventDate() {
         // populate the tld with all the event date options (note: year of 2016)
         IBaseDataObject tld = new BaseDataObject();
         tld.setParameter("EventDate", "2016-02-13 23:13:03");
@@ -460,7 +461,7 @@ public class DropOffUtilTest extends UnitTest {
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
-        final List<String> dates = new ArrayList<String>();
+        final List<String> dates = new ArrayList<>();
         dates.add("EventDate");
         dates.add("FILE_DATE");
         cfg.addEntries("DATE_PARAMETER", dates);
@@ -470,8 +471,9 @@ public class DropOffUtilTest extends UnitTest {
         assertNull(this.util.getEventDate(d, tld));
     }
 
+    @Deprecated
     @Test
-    public void testDeprecatedGetFileType() {
+    void testDeprecatedGetFileType() {
         Map<String, String> metadata = new HashMap<>();
         testDeprecatedFileType(metadata, "UNKNOWN", null);
 
@@ -520,7 +522,7 @@ public class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGetFileType() {
+    void testGetFileType() {
         final IBaseDataObject bdo = new BaseDataObject();
 
         testFileType(bdo, null, "UNKNOWN", null);
@@ -566,7 +568,7 @@ public class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    public void testExtractUniqueFileExtensions() {
+    void testExtractUniqueFileExtensions() {
         // these should be constants
         final String FILEXT = "FILEXT";
         final String ORIGINAL_FILENAME = "Original-Filename";
@@ -578,20 +580,20 @@ public class DropOffUtilTest extends UnitTest {
         util.extractUniqueFileExtensions(bdo);
 
         List<Object> fileExts = bdo.getParameter(FILEXT);
-        assertNull("FILEXT value should be null if no Original-Filename contains a period", fileExts);
+        assertNull(fileExts, "FILEXT value should be null if no Original-Filename contains a period");
 
         bdo.appendParameter(ORIGINAL_FILENAME, "lower.case.zip");
         bdo.appendParameter(ORIGINAL_FILENAME, "UPPER.CASE.MP3");
         bdo.appendParameter(ORIGINAL_FILENAME, "duplicated.mp3");
-        assertEquals("bdo should now have 4 Original-Filename values", 4, bdo.getParameter(ORIGINAL_FILENAME).size());
+        assertEquals(4, bdo.getParameter(ORIGINAL_FILENAME).size(), "bdo should now have 4 Original-Filename values");
 
         util.extractUniqueFileExtensions(bdo);
         fileExts = bdo.getParameter(FILEXT);
 
         // validate extracted FILEXT values
-        assertEquals("bdo should now have 2 FILEXT values ", 2, fileExts.size());
-        assertTrue("FILEXT values should contain \"zip\"", fileExts.contains("zip"));
-        assertTrue("FILEXT values should contain \"mp3\"", fileExts.contains("mp3"));
+        assertEquals(2, fileExts.size(), "bdo should now have 2 FILEXT values ");
+        assertTrue(fileExts.contains("zip"), "FILEXT values should contain \"zip\"");
+        assertTrue(fileExts.contains("mp3"), "FILEXT values should contain \"mp3\"");
     }
 
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
