@@ -1,23 +1,16 @@
 package emissary.id;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.IdentificationTest;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.params.provider.Arguments;
 
-@RunWith(Parameterized.class)
-public class UnixFilePlaceTest extends IdentificationTest {
+class UnixFilePlaceTest extends IdentificationTest {
 
-    @Parameterized.Parameters
-    public static Collection<?> data() {
+    public static Stream<? extends Arguments> data() {
         return getMyTestParameterFiles(UnixFilePlaceTest.class);
-    }
-
-    public UnixFilePlaceTest(final String resource) throws IOException {
-        super(resource);
     }
 
     @Override

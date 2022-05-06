@@ -1,14 +1,12 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
@@ -16,98 +14,35 @@ import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.rules.TemporaryFolder;
-import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.jupiter.params.provider.Arguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Base class of all the unit tests
  */
-public class UnitTest {
-    /**
-     * A test rule that overwrites the failed method in junit and prints info about the failure to System.err. Keeps you
-     * from having to go to the junit report files to see what was wrong
-     */
-    public class DumpFailures extends TestWatcher {
+@ExtendWith(UnitTest.DumpFailuresWatcher.class)
+public abstract class UnitTest {
+
+    public static class DumpFailuresWatcher implements TestWatcher {
         @Override
-        protected void failed(Throwable e, Description description) {
-            System.err.println("" + description.getDisplayName() + " failed " + e.getMessage());
-            super.failed(e, description);
-        }
-    };
-
-    // Now use it for all tests, will have to chain if using both DumpFailures and Retry
-    @Rule
-    public DumpFailures dump = new DumpFailures();
-
-    /**
-     * Test rule to retry a failed test. If this is happening, it is likely that the test is bad so try to fix that.
-     */
-    public class Retry implements TestRule {
-        private int retryCount;
-
-        public Retry(int retryCount) {
-            this.retryCount = retryCount;
-        }
-
-        @Override
-        public Statement apply(Statement base, Description description) {
-            return statement(base, description);
-        }
-
-        private Statement statement(final Statement base, final Description description) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    Throwable caughtThrowable = null;
-
-                    // implement retry logic here
-                    for (int i = 0; i < retryCount; i++) {
-                        try {
-                            base.evaluate();
-                            return;
-                        } catch (Throwable t) {
-                            caughtThrowable = t;
-                            System.err.println(description.getDisplayName() + ": run " + (i + 1) + " failed");
-                        }
-                    }
-                    System.err.println(description.getDisplayName() + ": giving up after " + retryCount + " failures");
-                    throw caughtThrowable;
-                }
-            };
+        public void testFailed(ExtensionContext context, Throwable cause) {
+            LoggerFactory.getLogger(context.getRequiredTestClass().getName())
+                    .error("{} failed {}", context.getDisplayName(), cause.getMessage());
         }
     }
 
     // Runtime typed logger
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    // Static logger
-    private static Logger slogger = LoggerFactory.getLogger(UnitTest.class.getSimpleName());
-
     protected static String TMPDIR = "/tmp";
-
-    @ClassRule
-    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
-
-    @BeforeClass
-    public static void setupTmpDirJunit4() {
-        try {
-            TMPDIR = temporaryFolder.newFolder().getAbsolutePath();
-        } catch (IOException e) {
-            slogger.error("Error creating temporary directory", e);
-        }
-    }
 
     @TempDir
     public static File temporaryDirectory;
@@ -136,19 +71,18 @@ public class UnitTest {
         configure();
     }
 
-    public synchronized void setupSystemProperties() {
+    public static synchronized void setupSystemProperties() {
         // mostly just to get the system properties set
         // synchronized since multiple threads are testing at the same time
         String projectBase = System.getenv("PROJECT_BASE");
         if (projectBase == null) {
-            fail("PROJECT_BASE is not set");
+            throw new AssertionError("PROJECT_BASE is not set");
         }
         // setup the environment stuff
         try {
             ServerCommand.parse(ServerCommand.class, "-m", "cluster").setupCommand();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-            fail("Unable to setup Emissary environment");
+            throw new AssertionError("Unable to setup Emissary environment", e);
         }
     }
 
@@ -166,10 +100,12 @@ public class UnitTest {
         setupSystemProperties();
     }
 
-    @Before
-    public void setUp() throws Exception {}
+    @BeforeEach
+    public void setUp() throws Exception {
+        // placeholder
+    }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         restoreConfig();
         assertMaxNonSystemThreadCount(1);
@@ -183,7 +119,7 @@ public class UnitTest {
             for (ThreadInfo t : ti) {
                 sb.append(t.getThreadName()).append(" ");
             }
-            assertTrue("Not expecting " + ti.length + " threads from " + this.getClass().getName() + ": " + sb, max <= ti.length);
+            assertTrue(max <= ti.length, "Not expecting " + ti.length + " threads from " + this.getClass().getName() + ": " + sb);
         }
     }
 
@@ -196,17 +132,12 @@ public class UnitTest {
     }
 
     /**
-     * Get all test resources (*.dat) for this class in a format suitable for the Junit Parameterized runner
+     * Get all test resources (*.dat) for this class in a format suitable for Junit Parameterized Tests
      */
-    public static List<Object[]> getMyTestParameterFiles(Class<?> clz) {
+    public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
         ResourceReader rr = new ResourceReader();
         List<String> rs = rr.findDataResourcesFor(clz);
-        List<Object[]> al = new ArrayList<>();
-        for (String r : rs) {
-            String[] s = {r};
-            al.add(s);
-        }
-        return al;
+        return rs.stream().map(Arguments::of);
     }
 
     /**

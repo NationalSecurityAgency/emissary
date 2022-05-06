@@ -1,8 +1,10 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -27,15 +30,14 @@ import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(Parameterized.class)
 public abstract class ExtractionTest extends UnitTest {
 
     protected static Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
@@ -46,22 +48,11 @@ public abstract class ExtractionTest extends UnitTest {
 
     private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();
 
-    @Parameterized.Parameters
-    public static Collection<?> data() {
+    public static Stream<? extends Arguments> data() {
         return getMyTestParameterFiles(ExtractionTest.class);
     }
 
-    protected String resource;
-
-    /**
-     * Called by the Parameterized Runner
-     */
-    public ExtractionTest(String resource) throws IOException {
-        super(resource);
-        this.resource = resource;
-    }
-
-    @Before
+    @BeforeEach
     public void setUpPlace() throws Exception {
         place = createPlace();
     }
@@ -71,7 +62,7 @@ public abstract class ExtractionTest extends UnitTest {
      */
     public abstract IServiceProviderPlace createPlace() throws IOException;
 
-    @After
+    @AfterEach
     public void tearDownPlace() {
         if (place != null) {
             place.shutDown();
@@ -79,14 +70,15 @@ public abstract class ExtractionTest extends UnitTest {
         }
     }
 
-    @Test
-    public void testExtractionPlace() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testExtractionPlace(String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         // Need a pair consisting of a .dat file and a .xml file (answers)
         Document controlDoc = getAnswerDocumentFor(resource);
         if (controlDoc == null) {
-            fail("No answers provided for test " + resource);
+            throw new AssertionError("No answers provided for test " + resource);
         }
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
@@ -103,7 +95,7 @@ public abstract class ExtractionTest extends UnitTest {
             checkAnswersPostHook(controlDoc, payload, attachments, resource);
         } catch (Exception ex) {
             logger.error("Error running test {}", resource, ex);
-            fail("Cannot run test " + resource + ": " + ex);
+            throw new AssertionError("Cannot run test " + resource, ex);
         }
     }
 
@@ -158,7 +150,7 @@ public abstract class ExtractionTest extends UnitTest {
 
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
         if (numAtt > -1) {
-            assertEquals("Number of attachments in " + tname, numAtt, attachments != null ? attachments.size() : 0);
+            assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
         }
 
         for (Element currentForm : el.getChildren("currentForm")) {
@@ -166,52 +158,51 @@ public abstract class ExtractionTest extends UnitTest {
             if (cf != null) {
                 Attribute index = currentForm.getAttribute("index");
                 if (index != null) {
-                    assertEquals(
+                    assertEquals(payload.currentFormAt(index.getIntValue()), cf,
                             String.format("Current form '%s' not found at position [%d] in %s, %s", cf, index.getIntValue(), tname,
-                                    payload.getAllCurrentForms()),
-                            payload.currentFormAt(index.getIntValue()), cf);
+                                    payload.getAllCurrentForms()));
                 } else {
-                    assertTrue("Current form " + cf + " not found in " + tname + ", " + payload.getAllCurrentForms(),
-                            payload.searchCurrentForm(cf) > -1);
+                    assertTrue(payload.searchCurrentForm(cf) > -1,
+                            String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
                 }
             }
         }
 
         String cf = el.getChildTextTrim("currentForm");
         if (cf != null) {
-            assertTrue(String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()),
-                    payload.searchCurrentForm(cf) > -1);
+            assertTrue(payload.searchCurrentForm(cf) > -1,
+                    String.format("Current form '%s' not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
         }
 
         String ft = el.getChildTextTrim("fileType");
         if (ft != null) {
-            assertEquals(String.format("Expected File Type '%s' in %s", ft, tname), ft, payload.getFileType());
+            assertEquals(ft, payload.getFileType(), String.format("Expected File Type '%s' in %s", ft, tname));
         }
 
         int cfsize = JDOMUtil.getChildIntValue(el, "currentFormSize");
         if (cfsize > -1) {
-            assertEquals("Current form size in " + tname, cfsize, payload.currentFormSize());
+            assertEquals(cfsize, payload.currentFormSize(), "Current form size in " + tname);
         }
 
         String classification = el.getChildTextTrim("classification");
         if (classification != null) {
-            assertEquals(String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification),
-                    classification, payload.getClassification());
+            assertEquals(classification, payload.getClassification(),
+                    String.format("Classification in '%s' is '%s', not expected '%s'", tname, payload.getClassification(), classification));
         }
 
         int dataLength = JDOMUtil.getChildIntValue(el, "dataLength");
         if (dataLength > -1) {
-            assertEquals("Data length in " + tname, dataLength, payload.dataLength());
+            assertEquals(dataLength, payload.dataLength(), "Data length in " + tname);
         }
 
         String shortName = el.getChildTextTrim("shortName");
         if (shortName != null && shortName.length() > 0) {
-            assertEquals("Shortname does not match expected in " + tname, shortName, payload.shortName());
+            assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
         }
 
         String broke = el.getChildTextTrim("broken");
         if (broke != null && broke.length() > 0) {
-            assertEquals("Broken status in " + tname, broke, payload.isBroken() ? "true" : "false");
+            assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
         }
 
         // Check specified metadata
@@ -223,10 +214,9 @@ public abstract class ExtractionTest extends UnitTest {
         // Check specified nometa
         for (Element meta : el.getChildren("nometa")) {
             String key = meta.getChildTextTrim("name");
-            assertTrue(
+            assertFalse(payload.hasParameter(key),
                     String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                            payload.getStringParameter(key)),
-                    !payload.hasParameter(key));
+                            payload.getStringParameter(key)));
         }
 
         // Check the primary view. Even though there is only one
@@ -241,11 +231,11 @@ public abstract class ExtractionTest extends UnitTest {
         for (Element view : el.getChildren("view")) {
             String viewName = view.getChildTextTrim("name");
             String lengthStr = view.getChildTextTrim("length");
-            byte viewData[] = payload.getAlternateView(viewName);
-            assertTrue(String.format("Alternate View '%s' is missing in %s", viewName, tname), viewData != null);
+            byte[] viewData = payload.getAlternateView(viewName);
+            assertNotNull(viewData, String.format("Alternate View '%s' is missing in %s", viewName, tname));
             if (lengthStr != null) {
-                assertEquals(String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname), Integer.parseInt(lengthStr),
-                        viewData.length);
+                assertEquals(Integer.parseInt(lengthStr), viewData.length,
+                        String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname));
             }
             checkStringValue(view, new String(viewData), tname);
         }
@@ -253,8 +243,8 @@ public abstract class ExtractionTest extends UnitTest {
         // Check for noview items
         for (Element view : el.getChildren("noview")) {
             String viewName = view.getChildTextTrim("name");
-            byte viewData[] = payload.getAlternateView(viewName);
-            assertTrue(String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname), viewData == null);
+            byte[] viewData = payload.getAlternateView(viewName);
+            assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
         }
 
 
@@ -266,8 +256,8 @@ public abstract class ExtractionTest extends UnitTest {
             int foundCount = extractedChildren.size();
 
             if (extractCountStr != null) {
-                assertEquals(String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount, extractCountStr),
-                        Integer.parseInt(extractCountStr), foundCount);
+                assertEquals(Integer.parseInt(extractCountStr), foundCount,
+                        String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount, extractCountStr));
             }
 
             int attNum = 1;
@@ -280,8 +270,8 @@ public abstract class ExtractionTest extends UnitTest {
             }
         } else {
             if (extractCountStr != null) {
-                assertEquals(String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr),
-                        Integer.parseInt(extractCountStr), 0);
+                assertEquals(0, Integer.parseInt(extractCountStr),
+                        String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr));
             }
         }
     }
@@ -301,32 +291,34 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         if (matchMode.equals("equals")) {
-            assertEquals(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not equal '" + value + "'",
-                    value, data);
+            assertEquals(value, data,
+                    String.format("%s element '%s' problem in %s value '%s' does not equal '%s'", meta.getName(), key, tname, data, value));
         } else if (matchMode.equals("index")) {
-            assertTrue(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not index '" + value + "'",
-                    data.indexOf(value) > -1);
+            assertTrue(data.contains(value),
+                    String.format("%s element '%s' problem in %s value '%s' does not index '%s'", meta.getName(), key, tname, data, value));
         } else if (matchMode.equals("match")) {
-            assertTrue(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not match '" + value + "'",
-                    data.matches(value));
+            assertTrue(data.matches(value),
+                    String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));
         } else if (matchMode.equals("base64")) {
             // decode value as a base64 encoded byte[] array and use the string
             // representation of the byte array for comparison to the incoming value
             value = new String(DatatypeConverter.parseBase64Binary(value));
-            assertEquals(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not match '" + value + "'",
-                    value, data);
+            assertEquals(value, data,
+                    String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));
         } else if ("collection".equalsIgnoreCase(matchMode)) {
             Attribute separatorAttribute = meta.getAttribute("collectionSeparator");
             String separator = null != separatorAttribute ? separatorAttribute.getValue() : ","; // comma is default
             // separator
             Collection<String> expectedValues = Arrays.asList(value.split(separator));
             Collection<String> actualValues = Arrays.asList(data.split(separator));
-            assertTrue(meta.getName() + " element '" + key + "' problem in " + tname + " did not have equal collection, value ' " + data
-                    + "' does not equal '" + value + "' split by separator '" + separator + "'",
-                    CollectionUtils.isEqualCollection(expectedValues, actualValues));
+            assertTrue(CollectionUtils.isEqualCollection(expectedValues, actualValues),
+                    String.format(
+                            "%s element '%s' problem in %s did not have equal collection, value '%s' does not equal '%s' split by separator '%s'",
+                            meta.getName(), key, tname, data, value, separator));
 
         } else {
-            fail("Problematic matchMode specified for test '" + matchMode + "' on " + key + " in element " + meta.getName());
+            throw new AssertionError(
+                    String.format("Problematic matchMode specified for test '%s' on %s in element %s", matchMode, key, meta.getName()));
         }
     }
 
@@ -337,7 +329,7 @@ public abstract class ExtractionTest extends UnitTest {
         boolean didSetFiletype = false;
         if (setup != null) {
             List<Element> cfChildren = setup.getChildren("initialForm");
-            if (cfChildren.size() > 0) {
+            if (!cfChildren.isEmpty()) {
                 payload.popCurrentForm(); // remove default
             }
             for (Element cf : cfChildren) {

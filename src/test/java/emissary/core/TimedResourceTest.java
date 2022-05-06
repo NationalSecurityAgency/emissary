@@ -10,11 +10,8 @@ import com.codahale.metrics.Timer;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
-import org.junit.Rule;
+import emissary.test.core.extensions.TestAttempts;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 
 class TimedResourceTest extends UnitTest {
     private IServiceProviderPlace tp;
@@ -25,14 +22,9 @@ class TimedResourceTest extends UnitTest {
         tp = new DevNullPlace();
     }
 
-    @Rule
-    public TestRule chain = RuleChain.outerRule(new DumpFailures()).around(new Retry(3));
-
-    @Test
+    @TestAttempts
     void testCheckState() {
-
         TestMobileAgent tma = new TestMobileAgent();
-
         try (TimedResource tr = new TimedResource(tma, tp, -2, new Timer())) {
             // should never time out
             assertFalse(tr.checkState(System.currentTimeMillis()));
@@ -43,8 +35,8 @@ class TimedResourceTest extends UnitTest {
         }
     }
 
-    @Test
-    void test() throws Exception {
+    @TestAttempts
+    void testInterrupted() throws Exception {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
         try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer())) {
@@ -56,24 +48,24 @@ class TimedResourceTest extends UnitTest {
         }
     }
 
-    @Test
+    @TestAttempts
     void testDontInterruptAgent() {
         TestMobileAgent tma = new TestMobileAgent();
         // little time
-        TimedResource first = new TimedResource(tma, tp, 1, new Timer());
-        first.close();
-        // long time
-        TimedResource second = new TimedResource(tma, tp, 1000000, new Timer());
-        // simulate finished processing within place
-        // should indicate complete
-        assertTrue(first.checkState(System.currentTimeMillis()));
-        // try to interrupt directly
-        first.interruptAgent();
-        // should not have been interrupted
-        assertTrue(tma.latch.getCount() > 0L);
-        tma.latch.countDown();
-        second.close();
-
+        try (TimedResource first = new TimedResource(tma, tp, 1, new Timer())) {
+            first.close();
+            // long time
+            try (TimedResource second = new TimedResource(tma, tp, 1000000, new Timer())) {
+                // simulate finished processing within place
+                // should indicate complete
+                assertTrue(first.checkState(System.currentTimeMillis()));
+                // try to interrupt directly
+                first.interruptAgent();
+                // should not have been interrupted
+                assertTrue(tma.latch.getCount() > 0L);
+                tma.latch.countDown();
+            }
+        }
     }
 
     static class TestMobileAgent extends HDMobileAgent {
@@ -101,8 +93,5 @@ class TimedResourceTest extends UnitTest {
                 latch.countDown();
             }
         }
-
     }
-
-
 }

@@ -1,46 +1,34 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(Parameterized.class)
 public abstract class IdentificationTest extends UnitTest {
     protected static Logger logger = LoggerFactory.getLogger(IdentificationTest.class);
     protected static IServiceProviderPlace place = null;
 
-    @Parameterized.Parameters
-    public static Collection<?> data() {
+    public static Stream<? extends Arguments> data() {
         return getMyTestParameterFiles(IdentificationTest.class);
     }
 
-    protected String resource;
-
-    /**
-     * Called by the Parameterized Runner
-     */
-    public IdentificationTest(String resource) throws IOException {
-        super(resource);
-        this.resource = resource;
-    }
-
-    @Before
+    @BeforeEach
     public void setUpPlace() throws Exception {
         place = createPlace();
     }
@@ -50,7 +38,7 @@ public abstract class IdentificationTest extends UnitTest {
      */
     public abstract IServiceProviderPlace createPlace() throws IOException;
 
-    @After
+    @AfterEach
     public void tearDownPlace() {
         if (place != null) {
             place.shutDown();
@@ -58,8 +46,9 @@ public abstract class IdentificationTest extends UnitTest {
         }
     }
 
-    @Test
-    public void testIdentificationPlace() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testIdentificationPlace(String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
@@ -100,9 +89,9 @@ public abstract class IdentificationTest extends UnitTest {
         for (int i = 0; i < expectedForms.length; i++) {
             String result = payload.currentFormAt(i).replaceAll("^LANG-", "");
             if (expectedForms[i].indexOf("(") > 0)
-                assertEquals("Current form is wrong in " + resource, expectedForms[i], result);
+                assertEquals(expectedForms[i], result, "Current form is wrong in " + resource);
             else
-                assertEquals("Current form is wrong in " + resource, expectedForms[i], result.replaceAll("\\(.*\\)", ""));
+                assertEquals(expectedForms[i], result.replaceAll("\\(.*\\)", ""), "Current form is wrong in " + resource);
         }
     }
 }

@@ -1,5 +1,6 @@
 package emissary.test.core;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -10,7 +11,6 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class TestExtractionTest extends UnitTest {
@@ -20,11 +20,11 @@ class TestExtractionTest extends UnitTest {
         SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);
+        assertNotNull(inputStream, "Could not locate: " + resourceName);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
         test.checkStringValue(meta, "1;2;3;4;5;6;7", "testCheckStringValueForCollection");
@@ -38,23 +38,17 @@ class TestExtractionTest extends UnitTest {
         SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);
+        assertNotNull(inputStream, "Could not locate: " + resourceName);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
-
         assertThrows(AssertionError.class, () -> test.checkStringValue(meta, "7;0;0;0;2;1", "testCheckStringValueForCollection"));
     }
 
     public static class WhyDoYouMakeMeDoThisExtractionTest extends ExtractionTest {
-
-        public WhyDoYouMakeMeDoThisExtractionTest(String crazy) throws IOException {
-            super(crazy);
-        }
-
         @Override
         public IServiceProviderPlace createPlace() throws IOException {
             return null;

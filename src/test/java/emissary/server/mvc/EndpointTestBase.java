@@ -21,7 +21,7 @@ public class EndpointTestBase extends JerseyTest {
     // Handle setting up all the Jersey Test framework components
     @Override
     protected Application configure() {
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
         // Tells Jersey to use first available port, fixes address already in use exception
         forceSet(TestProperties.CONTAINER_PORT, "0");
         final ResourceConfig application = new ResourceConfig();

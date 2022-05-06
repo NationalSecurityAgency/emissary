@@ -1,10 +1,12 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import emissary.admin.PlaceStarter;
 import emissary.command.ServerCommand;
@@ -21,7 +23,7 @@ import org.eclipse.jetty.server.Server;
 /**
  * Base class of all the functional tests
  */
-public class FunctionalTest extends UnitTest {
+public abstract class FunctionalTest extends UnitTest {
     protected EmissaryServer jserver = null;
     protected Server jetty = null;
     protected IDirectoryPlace directory = null;
@@ -48,8 +50,8 @@ public class FunctionalTest extends UnitTest {
         // MDC.put(MDCConstants.SERVICE_LOCATION, "DIR-" + port);
         try {
             // No parent
-            thePlace = PlaceStarter.createPlace(url, (InputStream) null, "emissary.directory.DirectoryPlace", null);
-            logger.debug("Started directory on port " + port + " as " + thePlace);
+            thePlace = PlaceStarter.createPlace(url, null, "emissary.directory.DirectoryPlace", null);
+            logger.debug("Started directory on port {} as {}", port, thePlace);
         } finally {
             // TODO maybe uncomment
             // MDC.remove(MDCConstants.SERVICE_LOCATION);
@@ -72,9 +74,9 @@ public class FunctionalTest extends UnitTest {
         String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
         // Set up a password file
         File realmFile = new File(PROJECT_BASE + "/config", "jetty-users.properties");
-        FileOutputStream ros = new FileOutputStream(realmFile);
-        ros.write("emissary: test123, emissary".getBytes());
-        ros.close();
+        try (FileOutputStream ros = new FileOutputStream(realmFile)) {
+            ros.write("emissary: test123, emissary".getBytes());
+        }
 
         String nodeName = "localhost";
         // System.setProperty(EmissaryNode.NODE_NAME_PROPERTY, nodeName);
@@ -88,15 +90,13 @@ public class FunctionalTest extends UnitTest {
 
             jserver = new emissary.server.EmissaryServer(cmd);
             jetty = jserver.startServer();
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
 
         // Wait for jetty to come up
         try {
             Thread.sleep(500);
-        } catch (InterruptedException ex) {
-            // empty catch block
+        } catch (InterruptedException ignored) {
         }
         referenceServices(port);
     }
@@ -130,7 +130,7 @@ public class FunctionalTest extends UnitTest {
     }
 
     protected IServiceProviderPlace addPlace(String key, String clsName, String dir) {
-        return PlaceStarter.createPlace(key, (InputStream) null, clsName, dir);
+        return PlaceStarter.createPlace(key, null, clsName, dir);
     }
 
     protected IServiceProviderPlace addPlace(String key, String clsName, InputStream configStream) {
@@ -147,7 +147,7 @@ public class FunctionalTest extends UnitTest {
             try {
                 Object obj = Namespace.lookup(key);
                 if (obj instanceof IServiceProviderPlace) {
-                    logger.debug("Stopping " + obj);
+                    logger.debug("Stopping {}", obj);
                     ((IServiceProviderPlace) obj).shutDown();
                 }
             } catch (emissary.core.NamespaceException ignore) {
@@ -163,7 +163,7 @@ public class FunctionalTest extends UnitTest {
         if (jserver != null && jserver.isServerRunning()) {
             jserver.stop();
             jetty = null;
-            assertTrue("Server did not stop and unbind", !EmissaryServer.isStarted());
+            assertFalse(EmissaryServer.isStarted(), "Server did not stop and unbind");
             jserver = null;
         }
 
@@ -178,10 +178,10 @@ public class FunctionalTest extends UnitTest {
         }
 
         File realmFile = new File(TMPDIR, "jetty-users.properties");
-        if (realmFile.exists()) {
-            if (!realmFile.delete()) {
-                logger.debug("Unable to delete temporary realmFile " + realmFile);
-            }
+        try {
+            Files.deleteIfExists(realmFile.toPath());
+        } catch (IOException e) {
+            logger.debug("Unable to delete temporary realmFile {}", realmFile, e);
         }
     }
 }

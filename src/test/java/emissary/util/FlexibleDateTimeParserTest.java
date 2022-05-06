@@ -25,7 +25,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
     public static void setupClass() {
         // "warm-up" the class, but this runs before UnitTest has
         // a chance to setup, so do that first
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
         FlexibleDateTimeParser.getTimezone();
     }
 

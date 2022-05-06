@@ -23,7 +23,7 @@ class BaseDataWithRemappingTest extends UnitTest {
     @BeforeAll
     public static void beforeClass() {
         // this runs before UnitTest has a chance to setup, so do that first
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
 
         md = new RemappingMetadataDictionary();
         Namespace.bind(md.getDictionaryName(), md);
