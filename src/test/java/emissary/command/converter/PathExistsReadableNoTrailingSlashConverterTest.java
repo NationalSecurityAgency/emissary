@@ -1,6 +1,8 @@
 package emissary.command.converter;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,32 +13,29 @@ import java.util.Set;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
+class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
+
     private PathExistsReadableConverter converter;
     private Path path;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         path = Files.createTempDirectory("config");
         converter = new PathExistsReadableConverter("path");
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         UnitTestFileUtils.cleanupDirectoryRecursively(path);
     }
 
     @Test
-    public void noTrailingSlash() {
+    void noTrailingSlash() {
         // test
         Path result = converter.convert(path.toString());
 
@@ -45,7 +44,7 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
     }
 
     @Test
-    public void removeTrailingSlash() {
+    void removeTrailingSlash() {
         // test
         Path result = converter.convert(path.toString() + "/");
 
@@ -53,24 +52,21 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
         assertFalse(result.endsWith("/"));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void unreadablePath() throws Exception {
+    @Test
+    void unreadablePath() throws Exception {
         // setup
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_WRITE);
         Files.setPosixFilePermissions(path, perms);
 
         // test
-        try {
-            converter.convert(path.toString());
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> converter.convert(path.toString()));
 
-            // verify
-            expected.expectMessage("The option 'path' was configured with path '" + path + "' which is not readable");
-        } finally {
-            // reset perms for cleanup
-            perms.add(PosixFilePermission.OWNER_READ);
-            Files.setPosixFilePermissions(path, perms);
-        }
+        // verify
+        assertTrue(thrown.getMessage().contains("The option 'path' was configured with path '" + path + "' which is not readable"));
 
+        // reset perms for cleanup
+        perms.add(PosixFilePermission.OWNER_READ);
+        Files.setPosixFilePermissions(path, perms);
     }
 }
