@@ -9,11 +9,11 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
-import org.junit.AfterClass;
+import org.junit.jupiter.api.AfterAll;
 
 public class EndpointTestBase extends JerseyTest {
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         Namespace.clear();
     }

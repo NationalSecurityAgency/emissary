@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -18,18 +18,15 @@ import javax.ws.rs.core.Response;
 import emissary.core.Namespace;
 import emissary.pickup.WorkSpace;
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(Theories.class)
-public class WorkBundleCompletedActionTest extends EndpointTestBase {
-    @DataPoints
-    public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
+class WorkBundleCompletedActionTest extends EndpointTestBase {
+
     private MultivaluedHashMap<String, String> formParams;
     private static final String CLIENT_KEY = "INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:9001/FilePickUpClient";
     private static final String WORKSPACE_BIND_KEY = "http://workBundleCompletedActionTest:7001/WorkSpace";
@@ -38,30 +35,32 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     @SuppressWarnings("unused")
     private static final String FAILURE_RESULT = "<entryList />";
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(CLIENT_NAME, Arrays.asList(CLIENT_KEY));
-        formParams.put(SPACE_NAME, Arrays.asList(WORKSPACE_NAME));
-        formParams.put(WORK_BUNDLE_ID, Arrays.asList("1"));
-        formParams.put(WORK_BUNDLE_STATUS, Arrays.asList("true"));
+        formParams.put(CLIENT_NAME, Collections.singletonList(CLIENT_KEY));
+        formParams.put(SPACE_NAME, Collections.singletonList(WORKSPACE_NAME));
+        formParams.put(WORK_BUNDLE_ID, Collections.singletonList("1"));
+        formParams.put(WORK_BUNDLE_STATUS, Collections.singletonList("true"));
         WorkSpace ws = new WorkSpace();
         Namespace.bind(WORKSPACE_BIND_KEY, ws);
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         Namespace.unbind(WORKSPACE_BIND_KEY);
     }
 
-    @Theory
-    public void emptyParams(String badValue) {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\n", "\t"})
+    void emptyParams(String badValue) {
         // setup
-        formParams.replace(CLIENT_NAME, Arrays.asList(badValue));
-        formParams.replace(SPACE_NAME, Arrays.asList(badValue));
-        formParams.replace(WORK_BUNDLE_ID, Arrays.asList(badValue));
-        formParams.replace(WORK_BUNDLE_STATUS, Arrays.asList(badValue));
+        formParams.replace(CLIENT_NAME, Collections.singletonList(badValue));
+        formParams.replace(SPACE_NAME, Collections.singletonList(badValue));
+        formParams.replace(WORK_BUNDLE_ID, Collections.singletonList(badValue));
+        formParams.replace(WORK_BUNDLE_STATUS, Collections.singletonList(badValue));
 
         // test
         final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
@@ -74,9 +73,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void badWorkSpaceKey() {
+    void badWorkSpaceKey() {
         // setup
-        formParams.replace(SPACE_NAME, Arrays.asList("ThisShouldCauseAnException"));
+        formParams.replace(SPACE_NAME, Collections.singletonList("ThisShouldCauseAnException"));
 
         // test
         final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
@@ -89,9 +88,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void missingWorkSpaceKey() {
+    void missingWorkSpaceKey() {
         // setup
-        formParams.replace(SPACE_NAME, Arrays.asList(WORKSPACE_NAME + "ThisWillMiss"));
+        formParams.replace(SPACE_NAME, Collections.singletonList(WORKSPACE_NAME + "ThisWillMiss"));
 
         // test
         final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
@@ -106,9 +105,9 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void badPickupClientKey() {
+    void badPickupClientKey() {
         // setup
-        formParams.replace(CLIENT_NAME, Arrays.asList("ThisIsBad"));
+        formParams.replace(CLIENT_NAME, Collections.singletonList("ThisIsBad"));
 
         // test
         final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
@@ -121,7 +120,7 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void itemNotPresentInPending() {
+    void itemNotPresentInPending() {
         // test
         final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
 
@@ -133,7 +132,7 @@ public class WorkBundleCompletedActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void successfulSubmission() throws Exception {
+    void successfulSubmission() throws Exception {
         // TODO Add a better test for the WorkSpace that validates the workCompleted method
         // setup
         Namespace.unbind(WORKSPACE_BIND_KEY);

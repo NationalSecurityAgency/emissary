@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,24 +24,20 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class PeersIT extends EndpointTestBase {
+class PeersIT extends EndpointTestBase {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     public static final String DIRNAME = "http://" + TestEmissaryNode.TEST_NODE_PORT + "/DirectoryPlace";
     public static final String SELF = "*.*.*.http://localhost:9999/DirectoryPlace";
     public static final String PEER1 = "*.*.*.http://remoteHost:8888/DirectoryPlace";
     public static final String PEER2 = "*.*.*.http://remoteHost2:8888/DirectoryPlace";
     public static final Set<String> PEERS = new HashSet<>(Arrays.asList(SELF, PEER1, PEER2));
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         EmissaryNode emissaryNode = new TestEmissaryNode();
         DirectoryPlace directoryPlace = new DirectoryPlace(DIRNAME, emissaryNode);
@@ -54,14 +51,14 @@ public class PeersIT extends EndpointTestBase {
         Namespace.bind("EmissaryServer", server);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         Namespace.unbind(DIRNAME);
         Namespace.unbind("EmissaryServer");
     }
 
     @Test
-    public void peers() {
+    void peers() {
         // test
         Response response = target("peers").request().get();
 
@@ -75,7 +72,7 @@ public class PeersIT extends EndpointTestBase {
     }
 
     @Test
-    public void peersNoEmissaryServer() {
+    void peersNoEmissaryServer() {
         // TODO Look at behavior here, we should probably throw the exception and not catch and return this value
         // setup
         Namespace.unbind("EmissaryServer");
@@ -92,7 +89,7 @@ public class PeersIT extends EndpointTestBase {
     }
 
     @Test
-    public void peersNoDirectoryPlace() throws NamespaceException {
+    void peersNoDirectoryPlace() throws NamespaceException {
         // TODO Look at behavior here, should we still set the host if we have it?
         // setup
         Namespace.lookup(DIRNAME);
@@ -105,16 +102,16 @@ public class PeersIT extends EndpointTestBase {
         assertEquals(200, response.getStatus());
         PeersResponseEntity entity = response.readEntity(PeersResponseEntity.class);
         assertNull(entity.getLocal());
-        assertIterableEquals(Sets.newHashSet(Arrays.asList("Not found: DirectoryPlace")), entity.getErrors());
+        assertIterableEquals(Sets.newHashSet(Collections.singletonList("Not found: DirectoryPlace")), entity.getErrors());
     }
 
-    @Ignore
     @Test
-    public void clusterPeers() throws Exception {
+    @Disabled("make this an integration test")
+    void clusterPeers() {
         // TODO Look at putting this into an integration test with two real EmissaryServers stood up
     }
 
-    class TestEmissaryNode extends EmissaryNode {
+    static class TestEmissaryNode extends EmissaryNode {
         public static final int TEST_PORT = 123456;
         public static final String TEST_NODE = "localhost";
         public static final String TEST_NODE_PORT = TEST_NODE + ":" + TEST_PORT;

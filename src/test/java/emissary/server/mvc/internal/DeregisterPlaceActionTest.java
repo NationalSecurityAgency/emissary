@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -16,18 +17,15 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(Theories.class)
-public class DeregisterPlaceActionTest extends EndpointTestBase {
-    @DataPoints
-    public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
+class DeregisterPlaceActionTest extends EndpointTestBase {
+
     private MultivaluedHashMap<String, String> formParams;
     private static final String ADD_KEY_DIR = "UPPER_CASE.TO_LOWER.TRANSFORM.http://deregisterPlaceActionTest:8001/ToUpperPlace";
     private static final String TARGET_DIR = "http://deregisterPlaceActionTest:8001/DirectoryPlace";
@@ -35,29 +33,31 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     private static final ResourceReader rr = new ResourceReader();
     private static DirectoryPlace directory;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(TARGET_DIRECTORY, Arrays.asList(TARGET_DIR));
-        formParams.put(ADD_KEY, Arrays.asList(ADD_KEY_DIR));
+        formParams.put(TARGET_DIRECTORY, Collections.singletonList(TARGET_DIR));
+        formParams.put(ADD_KEY, Collections.singletonList(ADD_KEY_DIR));
         directory = new DirectoryPlace(rr.getConfigDataAsStream(DirectoryPlace.class), TARGET_DIR, new TestEmissaryNode());
-        directory.addPlaces(Arrays.asList(ADD_KEY_DIR));
+        directory.addPlaces(Collections.singletonList(ADD_KEY_DIR));
         Namespace.bind(TARGET_DIR, directory);
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         Namespace.unbind(TARGET_DIR);
         directory.shutDown();
         directory = null;
     }
 
-    @Theory
-    public void badParams(String badParam) {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\n", "\t"})
+    void badParams(String badParam) {
         // setup
-        formParams.replace(TARGET_DIRECTORY, Arrays.asList(badParam));
-        formParams.replace(ADD_KEY, Arrays.asList(badParam));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badParam));
+        formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
@@ -70,9 +70,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void badDirectoryParam() {
+    void badDirectoryParam() {
         // setup
-        formParams.replace(TARGET_DIRECTORY, Arrays.asList("CantFindThis"));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList("CantFindThis"));
 
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
@@ -85,7 +85,7 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void removeSingleDirectory() {
+    void removeSingleDirectory() {
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
 
@@ -97,7 +97,7 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void removeWithInvalidSecondKey() {
+    void removeWithInvalidSecondKey() {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, "ThisOneWontHit"));
         // test
@@ -112,7 +112,7 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void removeWithMissingSecondKey() {
+    void removeWithMissingSecondKey() {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, ADD_KEY_DIR + "MissingMe"));
         // test
