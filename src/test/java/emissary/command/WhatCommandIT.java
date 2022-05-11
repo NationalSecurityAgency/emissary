@@ -14,7 +14,6 @@ import com.beust.jcommander.JCommander;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,6 +22,7 @@ import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.FromDataPoints;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)

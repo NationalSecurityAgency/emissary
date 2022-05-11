@@ -1,10 +1,10 @@
 package emissary.admin;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import emissary.directory.EmissaryNode;
@@ -37,8 +37,9 @@ public class StartupTest extends UnitTest {
         // PickUp stuff is pulled out separately
         List<String> pickups = startup.pickupLists.get("");
         List<String> places = startup.placeLists.get("");
-        assertThat(pickups, containsInAnyOrder(location + "/" + "FilePickUpPlace", location + "/" + "FilePickUpClient"));
-        assertThat(places, containsInAnyOrder(location + "/" + "CoordinationPlace", location + "/" + "DelayPlace", location + "/" + "DevNullPlace"));
+        assertIterableEquals(Arrays.asList(location + "/" + "FilePickUpPlace", location + "/" + "FilePickUpClient"), pickups);
+        assertIterableEquals(Arrays.asList(location + "/" + "CoordinationPlace", location + "/" + "DelayPlace", location + "/" + "DevNullPlace"),
+                places);
     }
 
 }

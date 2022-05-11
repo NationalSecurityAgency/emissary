@@ -1,7 +1,8 @@
 package emissary.command;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,13 +16,11 @@ import com.beust.jcommander.JCommander;
 import com.google.common.net.HostAndPort;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
-import org.hamcrest.collection.IsIterableContainingInOrder;
-import org.hamcrest.collection.IsIterableWithSize;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PeersCommandIT extends UnitTest {
     @Rule
@@ -61,7 +60,7 @@ public class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertThat(outContent.toString(), endsWith("localhost"));
+        assertTrue(outContent.toString().endsWith("localhost"));
     }
 
     @Test
@@ -77,7 +76,7 @@ public class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertThat(outContent.toString(), endsWith("remoteHost,remoteHost2"));
+        assertTrue(outContent.toString().endsWith("remoteHost,remoteHost2"));
     }
 
     @Test
@@ -95,7 +94,7 @@ public class PeersCommandIT extends UnitTest {
         captureStdOutAndStdErrAndRunCommand(command);
 
         // verify
-        assertThat(outContent.toString(), endsWith(expected));
+        assertTrue(outContent.toString().endsWith(expected));
     }
 
     @Test
@@ -104,8 +103,8 @@ public class PeersCommandIT extends UnitTest {
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString(""), true);
 
         // verify
-        assertThat(peers, IsIterableContainingInOrder.contains("localhost:7001", "localhost:8001", "localhost:9001"));
-        assertThat(peers, IsIterableWithSize.iterableWithSize(3));
+        assertIterableEquals(Arrays.asList("localhost:7001", "localhost:8001", "localhost:9001"), peers);
+        assertEquals(3, peers.size());
     }
 
     @Test
@@ -114,8 +113,8 @@ public class PeersCommandIT extends UnitTest {
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString(""), false);
 
         // verify
-        assertThat(peers, IsIterableContainingInOrder.contains("localhost"));
-        assertThat(peers, IsIterableWithSize.iterableWithSize(1));
+        assertTrue(peers.contains("localhost"));
+        assertEquals(1, peers.size());
     }
 
     @Test
@@ -124,7 +123,7 @@ public class PeersCommandIT extends UnitTest {
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString("localhost"), false);
 
         // verify
-        assertThat(peers, IsIterableWithSize.iterableWithSize(0));
+        assertTrue(peers.isEmpty());
     }
 
     @Test
@@ -133,8 +132,8 @@ public class PeersCommandIT extends UnitTest {
         Set<String> peers = PeersCommand.getPeers(HostAndPort.fromString("localhost:8001"), true);
 
         // verify
-        assertThat(peers, IsIterableContainingInOrder.contains("localhost:7001", "localhost:9001"));
-        assertThat(peers, IsIterableWithSize.iterableWithSize(2));
+        assertIterableEquals(Arrays.asList("localhost:7001", "localhost:9001"), peers);
+        assertEquals(2, peers.size());
     }
 
     @Test(expected = IllegalArgumentException.class)

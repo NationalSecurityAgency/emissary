@@ -1,7 +1,7 @@
 package emissary.server.api;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,7 +16,6 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
-import org.hamcrest.collection.IsIterableWithSize;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,13 +59,13 @@ public class PlacesTest extends EndpointTestBase {
         Response response = target("places").request().get();
 
         // verify
-        assertThat(response.getStatus(), equalTo(200));
+        assertEquals(200, response.getStatus());
         PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertThat(entity.getLocal().getHost(), equalTo("localhost:8001"));
-        assertThat(entity.getLocal().getPlaces(), IsIterableWithSize.iterableWithSize(3));
-        assertThat(entity.getLocal().getPlaces(), equalTo(EXPECTED_PLACES));
-        assertThat(entity.getErrors(), IsIterableWithSize.iterableWithSize(0));
-        assertThat(entity.getCluster(), equalTo(null));
+        assertEquals("localhost:8001", entity.getLocal().getHost());
+        assertEquals(3, entity.getLocal().getPlaces().size());
+        assertEquals(EXPECTED_PLACES, entity.getLocal().getPlaces());
+        assertEquals(0, entity.getErrors().size());
+        assertNull(entity.getCluster());
 
         // cleanup
         Namespace.unbind("EmissaryServer");
@@ -84,12 +83,12 @@ public class PlacesTest extends EndpointTestBase {
         Response response = target("places").request().get();
 
         // verify
-        assertThat(response.getStatus(), equalTo(200));
+        assertEquals(200, response.getStatus());
         PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertThat(entity.getLocal().getHost(), equalTo("localhost:8001"));
-        assertThat(entity.getLocal().getPlaces(), IsIterableWithSize.iterableWithSize(0));
-        assertThat(entity.getErrors(), IsIterableWithSize.iterableWithSize(0));
-        assertThat(entity.getCluster(), equalTo(null));
+        assertEquals("localhost:8001", entity.getLocal().getHost());
+        assertEquals(0, entity.getLocal().getPlaces().size());
+        assertEquals(0, entity.getErrors().size());
+        assertNull(entity.getCluster());
     }
 
     @Test
@@ -101,12 +100,12 @@ public class PlacesTest extends EndpointTestBase {
         Response response = target("places").request().get();
 
         // verify
-        assertThat(response.getStatus(), equalTo(200));
+        assertEquals(200, response.getStatus());
         PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertThat(entity.getLocal(), equalTo(null));
-        assertThat(entity.getCluster(), equalTo(null));
-        assertThat(entity.getErrors(), IsIterableWithSize.iterableWithSize(1));
-        assertThat(entity.getErrors(), equalTo(UNBOUND_SERVER_ERR));
+        assertNull(entity.getLocal());
+        assertNull(entity.getCluster());
+        assertEquals(1, entity.getErrors().size());
+        assertEquals(UNBOUND_SERVER_ERR, entity.getErrors());
 
     }
 

@@ -1,7 +1,6 @@
 package emissary.command.converter;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,11 +11,11 @@ import java.util.Set;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
     @Rule
@@ -42,7 +41,7 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
         Path result = converter.convert(path.toString());
 
         // verify
-        assertThat(result.endsWith("/"), equalTo(false));
+        assertFalse(result.endsWith("/"));
     }
 
     @Test
@@ -51,7 +50,7 @@ public class PathExistsReadableNoTrailingSlashConverterTest extends UnitTest {
         Path result = converter.convert(path.toString() + "/");
 
         // verify
-        assertThat(result.endsWith("/"), equalTo(false));
+        assertFalse(result.endsWith("/"));
     }
 
     @Test(expected = RuntimeException.class)

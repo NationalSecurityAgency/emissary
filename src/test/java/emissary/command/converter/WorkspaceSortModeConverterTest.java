@@ -1,7 +1,7 @@
 package emissary.command.converter;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
 
@@ -24,7 +24,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     @Test
     public void convertDefault() throws Exception {
         // test
-        assertThat(null, equalTo(converter.convert("")));
+        assertNull(converter.convert(""));
     }
 
     @Test
@@ -33,7 +33,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
         comparator = converter.convert(WorkspaceSortModeConverter.YOUNGEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
         comparator = converter.convert(WorkspaceSortModeConverter.OLDEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
         comparator = converter.convert(WorkspaceSortModeConverter.SMALLEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
         comparator = converter.convert(WorkspaceSortModeConverter.LARGEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator);
     }
 
 }

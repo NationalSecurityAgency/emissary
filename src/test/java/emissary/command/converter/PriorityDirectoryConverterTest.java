@@ -1,15 +1,14 @@
 package emissary.command.converter;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 import emissary.test.core.UnitTest;
-import org.hamcrest.junit.ExpectedException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PriorityDirectoryConverterTest extends UnitTest {
     @Rule
@@ -30,8 +29,8 @@ public class PriorityDirectoryConverterTest extends UnitTest {
         pd = converter.convert("/SomePath");
 
         // verify
-        assertThat(pd.getDirectoryName(), equalTo("/SomePath/"));
-        assertThat(pd.getPriority(), equalTo(Priority.DEFAULT));
+        assertEquals("/SomePath/", pd.getDirectoryName());
+        assertEquals(Priority.DEFAULT, pd.getPriority());
     }
 
     @Test(expected = NullPointerException.class)
@@ -47,8 +46,8 @@ public class PriorityDirectoryConverterTest extends UnitTest {
         pd = converter.convert("");
 
         // verify
-        assertThat(pd.getDirectoryName(), equalTo("/"));
-        assertThat(pd.getPriority(), equalTo(Priority.DEFAULT));
+        assertEquals("/", pd.getDirectoryName());
+        assertEquals(Priority.DEFAULT, pd.getPriority());
     }
 
     @Test
@@ -57,8 +56,8 @@ public class PriorityDirectoryConverterTest extends UnitTest {
         pd = converter.convert("/SomePath/SomeSub:10");
 
         // verify
-        assertThat(pd.getDirectoryName(), equalTo("/SomePath/SomeSub/"));
-        assertThat(pd.getPriority(), equalTo(10));
+        assertEquals("/SomePath/SomeSub/", pd.getDirectoryName());
+        assertEquals(10, pd.getPriority());
     }
 
     @Test
@@ -68,8 +67,8 @@ public class PriorityDirectoryConverterTest extends UnitTest {
         pd = converter.convert("/SomePath/SomeSub:10:23");
 
         // verify
-        assertThat(pd.getDirectoryName(), equalTo("/SomePath/SomeSub:10/"));
-        assertThat(pd.getPriority(), equalTo(23));
+        assertEquals("/SomePath/SomeSub:10/", pd.getDirectoryName());
+        assertEquals(23, pd.getPriority());
     }
 
 

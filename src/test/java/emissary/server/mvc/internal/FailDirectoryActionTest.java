@@ -4,8 +4,8 @@ import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
 import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
@@ -71,9 +71,9 @@ public class FailDirectoryActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
@@ -83,10 +83,10 @@ public class FailDirectoryActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Modified 0 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
-                + "$5050[1] due to failure of remote " + FAIL_DIR));
+        assertEquals("Modified 0 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
+                + "$5050[1] due to failure of remote " + FAIL_DIR, result);
     }
 
     @Test
@@ -105,11 +105,11 @@ public class FailDirectoryActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
 
-        assertThat(result, equalTo("Modified 1 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
-                + "$5050[1] due to failure of remote " + FAIL_DIR));
+        assertEquals("Modified 1 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
+                + "$5050[1] due to failure of remote " + FAIL_DIR, result);
 
 
     }
@@ -124,9 +124,9 @@ public class FailDirectoryActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("No local directory found using name WontFindThis"));
+        assertEquals("No local directory found using name WontFindThis", result);
     }
 
 

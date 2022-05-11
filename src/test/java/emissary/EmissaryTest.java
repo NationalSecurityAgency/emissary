@@ -1,11 +1,9 @@
 package emissary;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -27,7 +25,7 @@ public class EmissaryTest extends UnitTest {
 
     @Test
     public void testDefaultCommands() {
-        assertThat(Emissary.EMISSARY_COMMANDS.size(), greaterThan(0));
+        assertTrue(Emissary.EMISSARY_COMMANDS.size() > 0);
     }
 
     @Test
@@ -49,7 +47,7 @@ public class EmissaryTest extends UnitTest {
         Collections.sort(sortedNames);
         ArrayList<String> namesAsStored = new ArrayList<String>(emissary.getJCommander().getCommands().keySet());
 
-        assertThat(namesAsStored, contains(sortedNames.toArray()));
+        assertIterableEquals(namesAsStored, sortedNames);
     }
 
 
@@ -58,8 +56,8 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(new String[] {});
-        assertThat(emissary.getOut(), containsString("One command is required"));
-        assertThat(emissary.getOut(), containsString("Return Code was: 1"));
+        assertTrue(emissary.getOut().contains("One command is required"));
+        assertTrue(emissary.getOut().contains("Return Code was: 1"));
     }
 
     @Test
@@ -67,8 +65,8 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(makeArgs("notherebro"));
-        assertThat(emissary.getOut(), containsString("Undefined command: [notherebro]"));
-        assertThat(emissary.getOut(), containsString("Return Code was: 1"));
+        assertTrue(emissary.getOut().contains("Undefined command: [notherebro]"));
+        assertTrue(emissary.getOut().contains("Return Code was: 1"));
     }
 
     @Test
@@ -76,9 +74,9 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2();
 
         emissary.execute(makeArgs("help", "server"));
-        assertThat(emissary.getOut(), containsString("Detailed help for: server"));
+        assertTrue(emissary.getOut().contains("Detailed help for: server"));
         // can't assert exit 0 since it doesn't call System.exit(0)
-        assertThat(emissary.getOut(), not(containsString("Return Code was: 1")));
+        assertFalse(emissary.getOut().contains("Return Code was: 1"));
     }
 
     @Test
@@ -89,9 +87,9 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2(cmds);
 
         emissary.execute(makeArgs("junk"));
-        assertThat(emissary.getOut(), containsString("You got junk"));
+        assertTrue(emissary.getOut().contains("You got junk"));
         // can't assert exit 0 since it doesn't call System.exit(0)
-        assertThat(emissary.getOut(), not(containsString("Return Code was: 1")));
+        assertFalse(emissary.getOut().contains("Return Code was: 1"));
     }
 
     @Test
@@ -102,9 +100,9 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2(cmds);
 
         emissary.execute(makeArgs("broke"));
-        assertThat(emissary.getOut(), containsString("Command threw an exception"));
-        assertThat(emissary.getOut(), containsString("RuntimeException: Still broken here"));
-        assertThat(emissary.getOut(), containsString("Return Code was: 1"));
+        assertTrue(emissary.getOut().contains("Command threw an exception"));
+        assertTrue(emissary.getOut().contains("RuntimeException: Still broken here"));
+        assertTrue(emissary.getOut().contains("Return Code was: 1"));
     }
 
 
@@ -118,7 +116,7 @@ public class EmissaryTest extends UnitTest {
         Emissary2 emissary = new Emissary2(cmds);
 
         emissary.execute(makeArgs("another"));
-        assertThat(emissary.getOut(), containsString("JCommander] Parsing \"another\""));
+        assertTrue(emissary.getOut().contains("JCommander] Parsing \"another\""));
     }
 
     private String[] makeArgs(String... args) {
