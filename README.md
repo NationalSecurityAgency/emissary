@@ -37,7 +37,7 @@ services, their cost and quality and keep the P2P network connected.
 ## Minimum Requirements
 
 - Linux or MacOSX operating system
-- [JDK 8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html)
+- [JDK 11](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html)
 - [Apache Maven 3.6+](http://maven.apache.org)
 
 ## Getting Started

@@ -31,3 +31,6 @@ nbactions*.xml
 *.swp
 *.checkstyle
 .vscode/
+
+# Formatter cache
+.cache

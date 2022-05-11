@@ -5,7 +5,7 @@ ARG group=emissary
 ARG uid=1000
 ARG gid=1000
 ARG maven_version=3.6.3
-ARG java_version=1.8.0
+ARG java_version=11
 
 ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -XX:MaxPermSize=128M -Djava.awt.headless=true
 ENV MAVEN_HOME /opt/maven
