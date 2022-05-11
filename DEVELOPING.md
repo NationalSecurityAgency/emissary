@@ -199,12 +199,10 @@ Emissary is best developed and run in a Unix environment.
 
 Preferred operating systems are Linux or macOS.
 
-### Java 1.8
+### Java 11
 
-Java 1.6 and Java 1.7 are no longer supported in this codebase, only 
-[Java 1.8](https://docs.aws.amazon.com/corretto/latest/corretto-8-ug/downloads-list.html).  
-Emissary now supports both OpenJDK and Oracle JDK. Be sure to use a recent version of
-1.8 as there are bugs in earlier versions.
+Java 1.8 is no longer supported in this codebase, only 
+[Java 11](https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/downloads-list.html). 
 
 ### Apache Maven 3.6+
 
