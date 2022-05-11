@@ -1,11 +1,11 @@
 package emissary.server.mvc.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -39,8 +39,8 @@ public class HeartbeatActionTest extends EndpointTestBase {
     @Before
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Arrays.asList(FROM_PLACE));
-        formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Arrays.asList(TO_PLACE));
+        formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Collections.singletonList(FROM_PLACE));
+        formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Collections.singletonList(TO_PLACE));
         node = mock(EmissaryNode.class);
         when(node.isValid()).thenReturn(true);
         when(node.getPeerConfigurator()).thenReturn(ConfigUtil.getConfigInfo("peer-TESTING.cfg"));
@@ -59,8 +59,8 @@ public class HeartbeatActionTest extends EndpointTestBase {
     @Theory
     public void badParams(String badValue) {
         // setup
-        formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Arrays.asList(badValue));
-        formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Arrays.asList(badValue));
+        formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Collections.singletonList(badValue));
+        formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Collections.singletonList(badValue));
 
         // test
         final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));

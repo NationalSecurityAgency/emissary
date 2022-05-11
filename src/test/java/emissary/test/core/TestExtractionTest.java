@@ -1,5 +1,7 @@
 package emissary.test.core;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -8,17 +10,17 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-public class TestExtractionTest extends UnitTest {
+class TestExtractionTest extends UnitTest {
 
     @Test
-    public void testCheckStringValueForCollection() throws JDOMException, IOException {
+    void testCheckStringValueForCollection() throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        Assert.assertNotNull("Could not locate: " + resourceName, inputStream);
+        Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
@@ -31,20 +33,20 @@ public class TestExtractionTest extends UnitTest {
         test.checkStringValue(meta, "7;6;5;4;3;2;1", "testCheckStringValueForCollection");
     }
 
-    @Test(expected = AssertionError.class)
-    public void testCheckStringValueForCollectionFailure() throws JDOMException, IOException {
+    @Test
+    void testCheckStringValueForCollectionFailure() throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        Assert.assertNotNull("Could not locate: " + resourceName, inputStream);
+        Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
         WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
-        test.checkStringValue(meta, "7;0;0;0;2;1", "testCheckStringValueForCollection");
 
+        assertThrows(AssertionError.class, () -> test.checkStringValue(meta, "7;0;0;0;2;1", "testCheckStringValueForCollection"));
     }
 
     public static class WhyDoYouMakeMeDoThisExtractionTest extends ExtractionTest {

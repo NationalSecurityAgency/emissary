@@ -13,12 +13,12 @@ import emissary.util.Version;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EmissaryServerIT extends UnitTest {
+class EmissaryServerIT extends UnitTest {
 
     @Test
-    public void testThreadPoolStuff() throws Exception {
+    void testThreadPoolStuff() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-h", "host1", "-p", "3001");
         EmissaryServer server = new EmissaryServer(cmd);
         Server jettyServer = server.configureServer();
@@ -31,7 +31,7 @@ public class EmissaryServerIT extends UnitTest {
     }
 
     @Test
-    public void testSSLWorks() throws Exception {
+    void testSSLWorks() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-p", "3443", "--ssl");
         EmissaryServer server = new EmissaryServer(cmd);
         try {
@@ -42,9 +42,6 @@ public class EmissaryServerIT extends UnitTest {
             MapResponseEntity versionMap = client.send(new HttpGet(endpoint)).getContent(MapResponseEntity.class);
             Map<String, String> response = versionMap.getResponse();
             assertEquals(new Version().getVersion(), response.get(hostPort));
-        } catch (Exception e) {
-            System.err.println("Problem here");
-            e.printStackTrace();
         } finally {
             // throws some stopping warning, good place to start when fixing the stop
             server.stop();
