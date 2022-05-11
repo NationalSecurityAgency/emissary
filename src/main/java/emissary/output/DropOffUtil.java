@@ -133,10 +133,10 @@ public class DropOffUtil {
                     sdf.setLenient(true);
                     this.dateFormats.add(sdf);
                 } catch (Exception ex) {
-                    logger.debug("DATE_FORMAT entry '" + dfentry + "' cannot be parsed", ex);
+                    logger.debug("DATE_FORMAT entry '{}' cannot be parsed", dfentry, ex);
                 }
             }
-            logger.debug("Loaded " + this.dateFormats.size() + " DATE_FORMAT entries");
+            logger.debug("Loaded {} DATE_FORMAT entries", this.dateFormats.size());
 
             this.defaultEventDateToNow = actualConfigG.findBooleanEntry(DEFAULT_EVENT_DATE_TO_NOW, this.defaultEventDateToNow);
 
@@ -189,7 +189,6 @@ public class DropOffUtil {
      */
     public void setWindows(final boolean value) {
         osIsWindows = value;
-        logger.debug("Setting osIsWindows value to " + value);
     }
 
     /**
@@ -262,22 +261,22 @@ public class DropOffUtil {
             } while (!thePath.exists() && tryCount <= 10);
 
             if (!thePath.exists()) {
-                logger.warn("Cannot create directory for output: " + thePath + " in " + tryCount + " attempts");
+                logger.warn("Cannot create directory for output: {} in {} attempts", thePath, tryCount);
                 return false;
             }
 
             if (tryCount > 2 && logger.isDebugEnabled()) {
-                logger.debug("Output path created for " + thePath + " but it took " + tryCount + " attempts");
+                logger.debug("Output path created for {} but it took {} attempts", thePath, tryCount);
             }
         }
 
         // If the specified output directory doesn't have write
         // permission try to fix it
         if (!thePath.canWrite()) {
-            logger.warn("Dont have write permission for " + pathName + ", setting it now");
+            logger.warn("Dont have write permission for {}, setting it now", pathName);
             thePath.setWritable(true);
             if (!thePath.canWrite()) {
-                logger.warn("Cannot write to directory for output: " + thePath);
+                logger.warn("Cannot write to directory for output: {}", thePath);
                 return false;
             }
         }
@@ -480,8 +479,6 @@ public class DropOffUtil {
         }
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
-        logger.debug("Produced path " + answer + " from spec " + spec);
-
         return answer;
 
     }
@@ -557,7 +554,7 @@ public class DropOffUtil {
         }
 
         if (fileName != null && fileName.length() > 0) {
-            logger.debug("usingPathFromSpec instead of TARGETBIN: " + fileName);
+            logger.debug("usingPathFromSpec instead of TARGETBIN: {}", fileName);
             return fileName;
         } else if (tld.getStringParameter("TARGETBIN") != null) {
             logger.debug("TARGETBIN is " + tld.getParameter("TARGETBIN"));
@@ -708,7 +705,6 @@ public class DropOffUtil {
             fileType = metaData.get(FileTypeCheckParameter.FILETYPE.getFieldName());
         } else if (metaData.containsKey(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
             fileType = metaData.get(FileTypeCheckParameter.FINAL_ID.getFieldName());
-            logger.debug("FINAL_ID FileType is ({})", fileType);
             metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
         } else {
             if (forms.contains(" ")) {
@@ -771,7 +767,6 @@ public class DropOffUtil {
             fileType = bdo.getStringParameter(FileTypeCheckParameter.FILETYPE.getFieldName());
         } else if (bdo.hasParameter(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
             fileType = bdo.getStringParameter(FileTypeCheckParameter.FINAL_ID.getFieldName());
-            logger.debug("FINAL_ID FileType is ({})", fileType);
             if (metaData != null) {
                 metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
             }
@@ -978,10 +973,9 @@ public class DropOffUtil {
             if (value != null) {
                 try {
                     date = emissary.util.TimeUtil.getDateFromISO8601(value);
-                    logger.debug("Successfully parsed event date from " + paramName);
                     return date;
                 } catch (DateTimeParseException ex) {
-                    logger.debug("Cannot parse EventDate " + value);
+                    logger.debug("Cannot parse EventDate", ex);
                 }
             }
         }
