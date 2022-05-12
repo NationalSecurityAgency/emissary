@@ -56,7 +56,6 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         } catch (Exception ex) {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
         }
-        // empty catch block
 
         payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(), "myPayload", FORM});
 
