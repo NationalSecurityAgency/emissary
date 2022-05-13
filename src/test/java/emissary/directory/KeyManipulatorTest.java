@@ -120,7 +120,7 @@ class KeyManipulatorTest extends UnitTest {
         final String hc = KeyManipulator.getHostMatchKey(s);
         assertEquals("*.*.*.http://hosta.domain.com:8001/DirectoryPlace", wc, "Default directory key");
         assertEquals("*.*.*.http://hosta.domain.com:8001/*", hc, "Host match key");
-        assertTrue(KeyManipulator.gmatch(s, hc), "Defualt directory matches self");
+        assertTrue(KeyManipulator.gmatch(s, hc), "Default directory matches self");
         assertTrue(KeyManipulator.gmatch(wc, hc), "Host match matches default directory");
     }
 
