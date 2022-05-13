@@ -52,7 +52,7 @@ class DirectoryEntryMapTest extends UnitTest {
     void testAllEntries() {
         final List<DirectoryEntry> all = this.dm.allEntries();
         assertNotNull(all, "All entries not null");
-        assertEquals(3, all.size(), "All entries");
+        assertEquals(3, all.size(), "Unexpected list size");
     }
 
     @Test
