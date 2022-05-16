@@ -103,9 +103,9 @@ class ServiceProviderPlaceTest extends UnitTest {
         Set<String> proxies = place.getProxies();
         assertNotNull(proxies, "Proxies as a set");
         assertEquals(3, proxies.size(), "Size of proxies set");
-        assertTrue(proxies.contains("TEST_SERVICE_PROXY"), "Proxies contains original in set");
-        assertTrue(proxies.contains("FOO"), "Proxies contains new in set");
-        assertTrue(proxies.contains("BAR"), "Proxies contains last in set");
+        assertTrue(proxies.contains("TEST_SERVICE_PROXY"), "Proxies does not contain original in set");
+        assertTrue(proxies.contains("FOO"), "Proxies does not contains new in set");
+        assertTrue(proxies.contains("BAR"), "Proxies does not contains last in set");
     }
 
     @Test
@@ -493,10 +493,10 @@ class ServiceProviderPlaceTest extends UnitTest {
             Set<String> proxies = tp.getProxies();
             assertNotNull(proxies, "Proxies as a set");
             assertEquals(4, proxies.size(), "Size of proxies set");
-            assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
-            assertTrue(proxies.contains("TP2"), "Proxies contains original in set");
-            assertTrue(proxies.contains("TP3"), "Proxies contains original in set");
-            assertTrue(proxies.contains("TP4"), "Proxies contains original in set");
+            assertTrue(proxies.contains("TPROXY"), "Proxies does not contain original in set");
+            assertTrue(proxies.contains("TP2"), "Proxies does not contain original in set");
+            assertTrue(proxies.contains("TP3"), "Proxies does not contain original in set");
+            assertTrue(proxies.contains("TP4"), "Proxies does not contain original in set");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
         }

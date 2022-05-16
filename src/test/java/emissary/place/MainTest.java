@@ -78,9 +78,9 @@ final class MainTest extends UnitTest {
     void testParseDefaultValues() {
         Main m = new Main(className, defaultArgs);
         m.parseArguments();
-        assertTrue(m.isSilent(), "Default args sets silent");
-        assertFalse(m.isRecursive(), "Default args are not recursive");
-        assertFalse(m.isVerbose(), "Default args are not verbose");
+        assertTrue(m.isSilent(), "Default args should be silent");
+        assertFalse(m.isRecursive(), "Default args should not be recursive");
+        assertFalse(m.isVerbose(), "Default args should not be verbose");
         assertEquals(className + ".cfg", m.getConfigLocation(), "Default config location should stick");
         assertEquals(emissary.core.Form.UNKNOWN, m.getCurrentForm(), "Default current form should be there");
         assertEquals(0, m.getFileArgs().size(), "No files should be left");
@@ -91,9 +91,9 @@ final class MainTest extends UnitTest {
         String[] newArgs = {"-v", "-R"};
         Main m = new Main(className, newArgs);
         m.parseArguments();
-        assertFalse(m.isSilent(), "These args are not silent");
-        assertTrue(m.isVerbose(), "These args are verbose");
-        assertTrue(m.isRecursive(), "These args are recursive");
+        assertFalse(m.isSilent(), "These args should not be silent");
+        assertTrue(m.isVerbose(), "These args should be verbose");
+        assertTrue(m.isRecursive(), "These args should be recursive");
         assertEquals(0, m.getFileArgs().size(), "No files should be left");
     }
 
