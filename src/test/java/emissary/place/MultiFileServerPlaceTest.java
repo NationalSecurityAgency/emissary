@@ -34,7 +34,6 @@ class MultiFileServerPlaceTest extends UnitTest {
         } catch (Exception ex) {
             logger.error("Cannot create MFSPlace", ex);
         }
-        // empty catch block
         parent = DataObjectFactory.getInstance("This is the parent data".getBytes(), "/name/of/the/parent", "PARENT_FORM");
     }
 
