@@ -14,12 +14,12 @@ import emissary.place.CoordinationPlace;
 import emissary.place.sample.DelayPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class StartupTest extends UnitTest {
+class StartupTest extends UnitTest {
 
     @Test
-    public void testSortPlaces() throws IOException {
+    void testSortPlaces() throws IOException {
         List<String> somePlaces = new ArrayList<>();
         EmissaryNode node = new EmissaryNode();
         String location = "http://" + node.getNodeName() + ":" + node.getNodePort();

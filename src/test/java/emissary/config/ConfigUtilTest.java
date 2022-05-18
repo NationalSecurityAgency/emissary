@@ -1,13 +1,13 @@
 package emissary.config;
 
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -23,14 +23,14 @@ import emissary.test.core.LogbackCapture;
 import emissary.test.core.UnitTest;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class ConfigUtilTest extends UnitTest {
+class ConfigUtilTest extends UnitTest {
 
-    private static boolean isWindows = System.getProperty("os.name").contains("Window");
+    private static final boolean isWindows = System.getProperty("os.name").contains("Window");
 
     private static List<Path> testFilesAndDirectories;
 
@@ -38,14 +38,14 @@ public class ConfigUtilTest extends UnitTest {
     private Path CDIR;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
         CDIR = Paths.get(configDir);
     }
 
-    @After
+    @AfterEach
     public void cleanupFlavorSettings() throws Exception {
         super.tearDown();
         for (Path f : testFilesAndDirectories) {
@@ -64,27 +64,27 @@ public class ConfigUtilTest extends UnitTest {
 
 
     @Test
-    public void testPathGeneration() {
+    void testPathGeneration() {
         String fakeBase = "/path/to/";
         if (isWindows) {
             fakeBase = "X:/path/";
         }
-        assertEquals("Path not needed", fakeBase + "bar.cfg", ConfigUtil.getConfigFile(fakeBase + "bar.cfg"));
+        assertEquals(fakeBase + "bar.cfg", ConfigUtil.getConfigFile(fakeBase + "bar.cfg"), "Path not needed");
 
-        assertEquals("Path local should add to file", configDir + "/bar.cfg", ConfigUtil.getConfigFile("bar.cfg"));
+        assertEquals(configDir + "/bar.cfg", ConfigUtil.getConfigFile("bar.cfg"), "Path local should add to file");
 
-        assertEquals("Path not needed", fakeBase + "bar.cfg", ConfigUtil.getConfigFile("/foo", fakeBase + "bar.cfg"));
+        assertEquals(fakeBase + "bar.cfg", ConfigUtil.getConfigFile("/foo", fakeBase + "bar.cfg"), "Path not needed");
 
-        assertEquals("Path local should add to file", fakeBase + "bar.cfg", ConfigUtil.getConfigFile(fakeBase, "bar.cfg"));
+        assertEquals(fakeBase + "bar.cfg", ConfigUtil.getConfigFile(fakeBase, "bar.cfg"), "Path local should add to file");
 
         // Now without trailing slash
         fakeBase = "/path/to";
         if (isWindows) {
             fakeBase = "X:/path";
         }
-        assertEquals("Path not needed", fakeBase + "/bar.cfg", ConfigUtil.getConfigFile("/foo", fakeBase + "/bar.cfg"));
+        assertEquals(fakeBase + "/bar.cfg", ConfigUtil.getConfigFile("/foo", fakeBase + "/bar.cfg"), "Path not needed");
 
-        assertEquals("Path local should add to file", fakeBase + "/bar.cfg", ConfigUtil.getConfigFile(fakeBase, "bar.cfg"));
+        assertEquals(fakeBase + "/bar.cfg", ConfigUtil.getConfigFile(fakeBase, "bar.cfg"), "Path local should add to file");
     }
 
     private static final class Dummy {
@@ -95,13 +95,13 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testOldStyleNestedClassConfig() {
+    void testOldStyleNestedClassConfig() {
         assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(Dummy.class));
     }
 
     @Test
-    public void testBadPreferences() {
-        final List<String> prefs = new ArrayList<String>();
+    void testBadPreferences() {
+        final List<String> prefs = new ArrayList<>();
         prefs.add("foo");
         prefs.add("bar");
         prefs.add("quuz");
@@ -109,33 +109,34 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testEmptyFlavorNaming() throws EmissaryException {
+    void testEmptyFlavorNaming() throws EmissaryException {
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         emissary.config.ConfigUtil.initialize();
         final String[] r = ConfigUtil.addFlavors("emissary.blubber.Whale.cfg");
-        assertEquals("Flavor cannot be added not " + Arrays.asList(r), 0, r.length);
+        assertEquals(0, r.length, "Flavor cannot be added not " + Arrays.asList(r));
     }
 
     @Test
-    public void testSingleFlavorNaming() throws EmissaryException {
+    void testSingleFlavorNaming() throws EmissaryException {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         emissary.config.ConfigUtil.initialize();
 
-        assertEquals("Flavor should be added to resource name", "emissary.blubber.Whale-TESTFLAVOR.cfg",
-                ConfigUtil.addFlavors("emissary.blubber.Whale.cfg")[0]);
+        assertEquals("emissary.blubber.Whale-TESTFLAVOR.cfg",
+                ConfigUtil.addFlavors("emissary.blubber.Whale.cfg")[0],
+                "Flavor should be added to resource name");
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         emissary.config.ConfigUtil.initialize();
     }
 
     @Test
-    public void testDoubleFlavorNaming() throws EmissaryException {
+    void testDoubleFlavorNaming() throws EmissaryException {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "CHOCOLATE,PEANUTBUTTER");
         emissary.config.ConfigUtil.initialize();
 
         final String[] fnames = ConfigUtil.addFlavors("emissary.blubber.Whale.cfg");
-        assertEquals("All flavors must be added", 2, fnames.length);
-        assertEquals("First flavor should be added to resource name", "emissary.blubber.Whale-CHOCOLATE.cfg", fnames[0]);
-        assertEquals("Second flavor should be added to resource name", "emissary.blubber.Whale-PEANUTBUTTER.cfg", fnames[1]);
+        assertEquals(2, fnames.length, "All flavors must be added");
+        assertEquals("emissary.blubber.Whale-CHOCOLATE.cfg", fnames[0], "First flavor should be added to resource name");
+        assertEquals("emissary.blubber.Whale-PEANUTBUTTER.cfg", fnames[1], "Second flavor should be added to resource name");
 
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         emissary.config.ConfigUtil.initialize();
@@ -143,7 +144,7 @@ public class ConfigUtilTest extends UnitTest {
 
 
     @Test
-    public void testFlavorMerge() throws IOException, EmissaryException {
+    void testFlavorMerge() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         emissary.config.ConfigUtil.initialize();
@@ -159,9 +160,9 @@ public class ConfigUtilTest extends UnitTest {
         }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Whale.cfg");
-        assertNotNull("Configuration should have been found", c);
-        assertEquals("Optional config value FOO should have been merged", 2, c.findEntries("FOO").size());
-        assertEquals("Merged entry should be first", "BAR2", c.findStringEntry("FOO"));
+        assertNotNull(c, "Configuration should have been found");
+        assertEquals(2, c.findEntries("FOO").size(), "Optional config value FOO should have been merged");
+        assertEquals("BAR2", c.findStringEntry("FOO"), "Merged entry should be first");
 
 
         // Restore default flavor
@@ -174,7 +175,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testFlavorMergeWithVariableExpansion() throws IOException, EmissaryException {
+    void testFlavorMergeWithVariableExpansion() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
         emissary.config.ConfigUtil.initialize();
@@ -190,10 +191,10 @@ public class ConfigUtilTest extends UnitTest {
         }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
-        assertNotNull("Configuration should have been found", c);
-        assertEquals("Optional config value FOO should have been merged", 1, c.findEntries("FOO").size());
-        assertEquals("Optional config value QUUZ should have been merged", 1, c.findEntries("QUUZ").size());
-        assertEquals("Merged entry should be expanded", "BAR", c.findStringEntry("QUUZ"));
+        assertNotNull(c, "Configuration should have been found");
+        assertEquals(1, c.findEntries("FOO").size(), "Optional config value FOO should have been merged");
+        assertEquals(1, c.findEntries("QUUZ").size(), "Optional config value QUUZ should have been merged");
+        assertEquals("BAR", c.findStringEntry("QUUZ"), "Merged entry should be expanded");
 
 
         // Restore default flavor
@@ -206,29 +207,29 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testPropertyInfo() {
+    void testPropertyInfo() {
         try {
             // A bogus prop object
             Properties p = ConfigUtil.getPropertyInfo("foo.properties");
-            assertNotNull("Empty properties returned", p);
-            assertEquals("Empty properties returned", 0, p.size());
+            assertNotNull(p, "Empty properties returned");
+            assertEquals(0, p.size(), "Empty properties returned");
 
             // A real prop object
             p = ConfigUtil.getPropertyInfo("emissary.config.fake.properties");
-            assertNotNull("Properties returned", p);
-            assertTrue("Non-empty properties returned", p.size() > 0);
+            assertNotNull(p, "Properties returned");
+            assertTrue(p.size() > 0, "Non-empty properties returned");
         } catch (IOException iox) {
             fail("Should not throw on property info get: " + iox.getMessage());
         }
     }
 
-    @Test(expected = IOException.class)
-    public void testMissingConfigInfo() throws IOException {
-        ConfigUtil.getConfigInfo("emissary.i.am.gone.Missing-forever.cfg"); // throws IOException
+    @Test
+    void testMissingConfigInfo() {
+        assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo("emissary.i.am.gone.Missing-forever.cfg"));
     }
 
     @Test
-    public void testMultipleConfigDirs() throws IOException, EmissaryException {
+    void testMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
         final Path configDir1 = createTmpSubDir("config1");
         final String cfgName1 = "emissary.chunky.Monkey.cfg";
@@ -237,18 +238,18 @@ public class ConfigUtilTest extends UnitTest {
         final String cfgName2 = "emissary.chunky.Panda.cfg";
         createFileAndPopulate(configDir2, cfgName2, "BUZZ = \"BAH\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
         final Configurator c1 = ConfigUtil.getConfigInfo(cfgName1);
-        assertNotNull("Configuration should have been found", c1);
-        assertEquals("Entry FOO is there", "BAR", c1.findStringEntry("FOO"));
+        assertNotNull(c1, "Configuration should have been found");
+        assertEquals("BAR", c1.findStringEntry("FOO"), "Entry FOO is there");
         final Configurator c2 = ConfigUtil.getConfigInfo(cfgName2);
-        assertNotNull("Configuration should have been found", c2);
-        assertEquals("Entry BUZZ is there", "BAH", c2.findStringEntry("BUZZ"));
+        assertNotNull(c2, "Configuration should have been found");
+        assertEquals("BAH", c2.findStringEntry("BUZZ"), "Entry BUZZ is there");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -256,20 +257,20 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testMissingMultipleConfigDirs() throws IOException, EmissaryException {
+    void testMissingMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
         final Path configDir1 = createTmpSubDir("config1A");
         final String cfgName1 = "emissary.grapes.Monkey.cfg";
         createFileAndPopulate(configDir1, cfgName1, "BOO = \"HOO\"\n");
         final Path cfgName2 = Paths.get(CDIR.toString(), "configgone", "emissary.grapes.Panda.cfg");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + cfgName2.getParent());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + cfgName2.getParent());
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
-        assertEquals("Entry BOO is wrong", "HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"));
+        assertEquals("HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"), "Entry BOO is wrong");
         assertThrows(IOException.class, () -> ConfigUtil.getConfigInfo(cfgName2.getFileName().toString()));
 
         // clean up
@@ -278,7 +279,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGetConfigDirWithMultipleConfigDirs() throws IOException, EmissaryException {
+    void testGetConfigDirWithMultipleConfigDirs() throws IOException, EmissaryException {
         // setup
         final String cfgName = "emissary.phish.Food.cfg";
         final Path configDir1 = createTmpSubDir("config1B");
@@ -286,16 +287,16 @@ public class ConfigUtilTest extends UnitTest {
         final Path configDir2 = createTmpSubDir("config2B");
         createFileAndPopulate(configDir2, cfgName, "BLACK = \"RED\"\nGREEN = \"YELLOW\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
         final Configurator c = ConfigUtil.getConfigInfo(cfgName);
-        assertNotNull("Configuration should have been found", c);
-        assertEquals("Entry BLACK should be from config1B", "WHITE", c.findStringEntry("BLACK"));
-        assertEquals("File from config2B should not have been merged", null, c.findStringEntry("GREEN"));
+        assertNotNull(c, "Configuration should have been found");
+        assertEquals("WHITE", c.findStringEntry("BLACK"), "Entry BLACK should be from config1B");
+        assertNull(c.findStringEntry("GREEN"), "File from config2B should not have been merged");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -303,7 +304,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testMutlipleConfigDirsWithFlavors() throws IOException, EmissaryException {
+    void testMutlipleConfigDirsWithFlavors() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
 
@@ -312,17 +313,17 @@ public class ConfigUtilTest extends UnitTest {
         final Path configDir2 = createTmpSubDir("config2B");
         createFileAndPopulate(configDir2, "emissary.blubber.Shark-TESTFLAVOR.cfg", "QUUZ = \"@{FOO}\"\nGREEN = \"YELLOW\"\n");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
-        assertNotNull("Configuration should have been found", c);
-        assertEquals("Optional config value FOO should have been merged", 1, c.findEntries("FOO").size());
-        assertEquals("Optional config value QUUZ should have been merged", 1, c.findEntries("QUUZ").size());
-        assertEquals("Merged entry should be expanded", "BAR", c.findStringEntry("QUUZ"));
+        assertNotNull(c, "Configuration should have been found");
+        assertEquals(1, c.findEntries("FOO").size(), "Optional config value FOO should have been merged");
+        assertEquals(1, c.findEntries("QUUZ").size(), "Optional config value QUUZ should have been merged");
+        assertEquals("BAR", c.findStringEntry("QUUZ"), "Merged entry should be expanded");
 
         // Restore default flavor
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
@@ -331,18 +332,18 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testGetConfigDirWithMultiple() throws EmissaryException, IOException {
+    void testGetConfigDirWithMultiple() throws EmissaryException, IOException {
         final Path configDir1 = createTmpSubDir("config1D");
         final Path configDir2 = createTmpSubDir("config2D");
         final Path configDir3 = createTmpSubDir("config3D");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString() + "," + configDir3.toString());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2 + "," + configDir3);
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
-        assertEquals("Should be 3 config dirs", 3, ConfigUtil.getConfigDirs().size());
+        assertEquals(3, ConfigUtil.getConfigDirs().size(), "Should be 3 config dirs");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -350,19 +351,19 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testInitializeWithMultipleConfigDirs() throws EmissaryException, IOException {
+    void testInitializeWithMultipleConfigDirs() throws EmissaryException, IOException {
         final Path configDir1 = createTmpSubDir("config1D");
         final Path configDir2 = createTmpSubDir("config2D");
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
-        System.setProperty(CONFIG_DIR_PROPERTY, configDir1.toString() + "," + configDir2.toString());
+        System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
         emissary.config.ConfigUtil.initialize();
 
         // assert
-        assertEquals("Should be 2 config dirs", 2, ConfigUtil.getConfigDirs().size());
+        assertEquals(2, ConfigUtil.getConfigDirs().size(), "Should be 2 config dirs");
         emissary.config.ConfigUtil.initialize();
-        assertEquals("Should still be 2 config dirs", 2, ConfigUtil.getConfigDirs().size());
+        assertEquals(2, ConfigUtil.getConfigDirs().size(), "Should still be 2 config dirs");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -371,21 +372,18 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testMasterClassNamesOneFile() throws IOException, EmissaryException {
+    void testMasterClassNamesOneFile() throws IOException, EmissaryException {
         // read in current file
         // figure out number of entries
 
         emissary.config.ConfigUtil.initialize();
 
         final Configurator c = ConfigUtil.getMasterClassNames();
-        assertNotNull("Configurator should not be null", c);
-        // assertEquals("Should have 2 entries", 2, c.entryKeys().size());
-        // assertEquals("Should have set DevNullPlace", "emissary.place.sample.DevNullPlace",
-        // c.findStringEntry("DevNullPlace"));
+        assertNotNull(c, "Configurator should not be null");
     }
 
     @Test
-    public void testMasterClassNamesMultipleFiles() throws IOException, EmissaryException {
+    void testMasterClassNamesMultipleFiles() throws IOException, EmissaryException {
         final String contents1 = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
         createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-core.cfg", contents1);
 
@@ -399,17 +397,16 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         final Configurator c = ConfigUtil.getMasterClassNames();
-        assertNotNull("Configurator should not be null", c);
-        assertEquals("Should have 4 entries", 4, c.entryKeys().size());
-        assertEquals("Should have set DevNullPlace", "emissary.place.sample.DevNullPlace", c.findStringEntry("DevNullPlace"));
-        assertEquals("Should have set DirectoryPlace", "emissary.directory.DirectoryPlace", c.findStringEntry("DirectoryPlace"));
-        assertEquals("Should have set Dev3NullPlace", "emissary.place.iamtheone.DevNullPlace", c.findStringEntry("Dev3NullPlace"));
+        assertNotNull(c, "Configurator should not be null");
+        assertEquals(4, c.entryKeys().size(), "Should have 4 entries");
+        assertEquals("emissary.place.sample.DevNullPlace", c.findStringEntry("DevNullPlace"), "Should have set DevNullPlace");
+        assertEquals("emissary.directory.DirectoryPlace", c.findStringEntry("DirectoryPlace"), "Should have set DirectoryPlace");
+        assertEquals("emissary.place.iamtheone.DevNullPlace", c.findStringEntry("Dev3NullPlace"), "Should have set Dev3NullPlace");
     }
 
-    @Ignore
-    // causing issues TODO: fix this
+    @Disabled("causing issues, fix this")
     @Test
-    public void testOldMasterClassNameNotRead() throws IOException, EmissaryException {
+    void testOldMasterClassNameNotRead() throws IOException, EmissaryException {
         // no longer reading MasterClassNames.cfg
         final String contents = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
         createFileAndPopulate(CDIR, "MasterClassNames.cfg", contents);
@@ -422,11 +419,11 @@ public class ConfigUtilTest extends UnitTest {
         } catch (EmissaryException e) {
             // Swallow, this should happen
         }
-        assertEquals("Configurator should be null", null, c);
+        assertNull(c, "Configurator should be null");
     }
 
     @Test
-    public void testOneMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testOneMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1AB");
         final Path cfgDir2 = createTmpSubDir("cfg2AB");
@@ -442,10 +439,10 @@ public class ConfigUtilTest extends UnitTest {
         final Configurator c = ConfigUtil.getMasterClassNames();
 
         // assert
-        assertNotNull("Should have a configurator", c);
-        assertEquals("Should be 2 keys", 2, c.entryKeys().size());
-        assertEquals("DevNulPlace was not parsed", "emissary.place.donotpickme.DevNullPlace", c.findStringEntry("DevNullPlace"));
-        assertEquals("BlahBlahPlace was not parsed", "emissary.place.donotpickme.DevNullPlace", c.findStringEntry("BlahBlahPlace"));
+        assertNotNull(c, "Should have a configurator");
+        assertEquals(2, c.entryKeys().size(), "Should be 2 keys");
+        assertEquals("emissary.place.donotpickme.DevNullPlace", c.findStringEntry("DevNullPlace"), "DevNulPlace was not parsed");
+        assertEquals("emissary.place.donotpickme.DevNullPlace", c.findStringEntry("BlahBlahPlace"), "BlahBlahPlace was not parsed");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -453,7 +450,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testSameMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testSameMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABC");
         final Path cfgDir2 = createTmpSubDir("cfg2ABC");
@@ -469,10 +466,10 @@ public class ConfigUtilTest extends UnitTest {
         final Configurator c = ConfigUtil.getMasterClassNames();
 
         // assert
-        assertNotNull("Should have a configurator", c);
-        assertEquals("Should be 2 key", 2, c.entryKeys().size());
-        assertEquals("DevNullPlace was not parsed", "emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"));
-        assertEquals("Dev2NullPlace was not parsed", "emissary.place.second.DevNullPlace", c.findStringEntry("Dev2NullPlace"));
+        assertNotNull(c, "Should have a configurator");
+        assertEquals(2, c.entryKeys().size(), "Should be 2 key");
+        assertEquals("emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"), "DevNullPlace was not parsed");
+        assertEquals("emissary.place.second.DevNullPlace", c.findStringEntry("Dev2NullPlace"), "Dev2NullPlace was not parsed");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -481,7 +478,7 @@ public class ConfigUtilTest extends UnitTest {
 
 
     @Test
-    public void testMultipleMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testMultipleMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABCD");
         final Path cfgDir2 = createTmpSubDir("cfg2ABCD");
@@ -504,12 +501,12 @@ public class ConfigUtilTest extends UnitTest {
         final Configurator c = ConfigUtil.getMasterClassNames();
 
         // assert
-        assertNotNull("Should have a configurator", c);
-        assertEquals("Should be 5 key", 5, c.entryKeys().size());
+        assertNotNull(c, "Should have a configurator");
+        assertEquals(5, c.entryKeys().size(), "Should be 5 key");
         // replaces with the last one
-        assertEquals("DevNullPlace was not parsed", "emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"));
-        assertEquals("BleeBleeNullPlace was not parsed", "emissary.place.second.BleeNullPlace", c.findStringEntry("BleeBleeNullPlace"));
-        assertEquals("BleeCheesePlace was not parsed", "emissary.place.second.BleeCheesePlace", c.findStringEntry("BleeCheesePlace"));
+        assertEquals("emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"), "DevNullPlace was not parsed");
+        assertEquals("emissary.place.second.BleeNullPlace", c.findStringEntry("BleeBleeNullPlace"), "BleeBleeNullPlace was not parsed");
+        assertEquals("emissary.place.second.BleeCheesePlace", c.findStringEntry("BleeCheesePlace"), "BleeCheesePlace was not parsed");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
@@ -517,7 +514,7 @@ public class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    public void testMasterClassNamesWarnsOnFlavor() throws IOException, EmissaryException {
+    void testMasterClassNamesWarnsOnFlavor() throws IOException, EmissaryException {
         // final String contents = "DevNullPlace = \"emissary.place.sample.DevNullPlace\"\n";
         // createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames.cfg", contents);
         final String contents2 = "DevNullPlace         = \"emissary.place.second.DevNullPlace\"\n";
@@ -530,46 +527,46 @@ public class ConfigUtilTest extends UnitTest {
         ConfigUtil.getMasterClassNames();
 
         final String logOutput = LogbackCapture.stop();
-        assertEquals("Should have logged about the flavor", true, logOutput.contains("appeared to be flavored with NORM"));
+        assertTrue(logOutput.contains("appeared to be flavored with NORM"), "Should have logged about the flavor");
 
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         emissary.config.ConfigUtil.initialize();
     }
 
     @Test
-    public void testGetFlavorFromFile() {
+    void testGetFlavorFromFile() {
         final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString() + "emissary.admin.MasterClassNames-flavor1.cfg").toFile());
-        assertEquals("Flavors didn't match", "flavor1", flavor);
+        assertEquals("flavor1", flavor, "Flavors didn't match");
     }
 
     @Test
-    public void testGetMultipleFlavorFromFile() {
+    void testGetMultipleFlavorFromFile() {
         final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.junk.TrunkPlace-f1,f2,f3.cfg").toFile());
-        assertEquals("Flavors didn't match", "f1,f2,f3", flavor);
+        assertEquals("f1,f2,f3", flavor, "Flavors didn't match");
     }
 
     @Test
-    public void testGetFlavorsNotACfgFile() {
+    void testGetFlavorsNotACfgFile() {
         final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.JunkPlace-f1.config").toFile());
-        assertEquals("Should have been empty, not a cfg file", "", flavor);
+        assertEquals("", flavor, "Should have been empty, not a cfg file");
     }
 
     @Test
-    public void testGetNoFlavor() {
+    void testGetNoFlavor() {
         final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.PepperPlace.config").toFile());
-        assertEquals("Should have been empty, no flavor", "", flavor);
+        assertEquals("", flavor, "Should have been empty, no flavor");
     }
 
     @Test
-    public void testGetFlavorMultipleHyphens() {
+    void testGetFlavorMultipleHyphens() {
         final String flavor =
                 ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString(), "emissary.util.DrPibbPlace-flavor1-flavor2-flavor3.cfg").toFile());
-        assertEquals("Should have been the last flavor", "flavor3", flavor);
+        assertEquals("flavor3", flavor, "Should have been the last flavor");
 
     }
 
     @Test
-    public void testDuplicateEntryInMasterClassNamesThrowsIOException() throws IOException, EmissaryException {
+    void testDuplicateEntryInMasterClassNamesThrowsIOException() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABCDE");
         final Path cfgDir2 = createTmpSubDir("cfg2ABCDE");
@@ -590,22 +587,22 @@ public class ConfigUtilTest extends UnitTest {
         emissary.config.ConfigUtil.initialize();
 
         // assert
-        assertNotNull("Should have a configurator", c);
-        assertEquals("Should be 1 key", 1, c.entryKeys().size()); // second one is not loaded
+        assertNotNull(c, "Should have a configurator");
+        assertEquals(1, c.entryKeys().size(), "Should be 1 key"); // second one is not loaded
         // replaces with the last one
-        assertEquals("DevNullPlace was not parsed", "emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"));
-        assertEquals("BlahBlahPlace should not have been", null, c.findStringEntry("BlahBlahPlace"));
-        assertEquals("Should have a config error", true, ConfigUtil.hasConfigErrors());
+        assertEquals("emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"), "DevNullPlace was not parsed");
+        assertNull(c.findStringEntry("BlahBlahPlace"), "BlahBlahPlace should not have been");
+        assertTrue(ConfigUtil.hasConfigErrors(), "Should have a config error");
 
     }
 
     @Test
-    public void testMissingImportFileInConfig() throws IOException {
+    void testMissingImportFileInConfig() throws IOException {
         // Write the config bytes out to a temp file
         final String dir = System.getProperty("java.io.tmpdir");
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
-        final byte[] primary = new String("IMPORT_FILE = \"" + impname + "\"").getBytes();
+        final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"").getBytes();
 
         // Initialize String[] for files for getConfigInfo(final String[] preferences)
         final String[] files = new String[] {priname};
@@ -627,7 +624,7 @@ public class ConfigUtilTest extends UnitTest {
         String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
                 + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.";
 
-        assertEquals("IMPORT_FAIL Message Not What Was Expected.", result, noImportExpectedMessage);
+        assertEquals(result, noImportExpectedMessage, "IMPORT_FAIL Message Not What Was Expected.");
     }
 
     private Path createTmpSubDir(final String name) throws IOException {
@@ -642,9 +639,6 @@ public class ConfigUtilTest extends UnitTest {
         testFilesAndDirectories.add(file);
         try (OutputStream ros = Files.newOutputStream(file)) {
             ros.write(contents.getBytes());
-        } catch (FileNotFoundException ex) {
-            logger.error("Problem making {}", file, ex);
-            throw new RuntimeException(ex);
         } catch (IOException ex) {
             logger.error("Problem making {}", file, ex);
             throw new RuntimeException(ex);

@@ -9,17 +9,17 @@ import java.util.Arrays;
 
 import com.beust.jcommander.JCommander;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class RunCommandIT extends UnitTest {
+class RunCommandIT extends UnitTest {
 
     private ByteArrayOutputStream outContent;
     private ByteArrayOutputStream errContent;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
         outContent = new ByteArrayOutputStream();
@@ -27,7 +27,7 @@ public class RunCommandIT extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         outContent = null;
@@ -35,7 +35,7 @@ public class RunCommandIT extends UnitTest {
     }
 
     @Test
-    public void testClassMustExist() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testClassMustExist() {
         String clazzName = "com.junk.Who";
         Exception e = assertThrows(Exception.class, () -> {
             RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
@@ -45,7 +45,7 @@ public class RunCommandIT extends UnitTest {
     }
 
     @Test
-    public void testClassIsRunWhenFound() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testClassIsRunWhenFound() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String clazzName = "emissary.command.RunCommandIT";
         RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
 
@@ -55,7 +55,7 @@ public class RunCommandIT extends UnitTest {
     }
 
     @Test
-    public void testClassIsRunWhenFoundWithArgs() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testClassIsRunWhenFoundWithArgs() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String clazzName = "emissary.command.RunCommandIT";
         String arg1 = "asdf";
         String arg2 = "dkdke";
@@ -68,7 +68,7 @@ public class RunCommandIT extends UnitTest {
     }
 
     @Test
-    public void testFlagArgsPassedThrough() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testFlagArgsPassedThrough() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String clazzName = "emissary.command.RunCommandIT";
         String stopJcommanderProcessing = "--";
         String arg1 = "-f";

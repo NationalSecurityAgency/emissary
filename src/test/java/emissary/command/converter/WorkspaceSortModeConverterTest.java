@@ -7,14 +7,14 @@ import java.util.Comparator;
 
 import emissary.pickup.WorkBundle;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class WorkspaceSortModeConverterTest extends UnitTest {
+class WorkspaceSortModeConverterTest extends UnitTest {
     private Comparator<WorkBundle> comparator;
     private WorkspaceSortModeConverter converter;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         comparator = null;
@@ -22,13 +22,13 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertDefault() throws Exception {
+    void convertDefault() {
         // test
         assertNull(converter.convert(""));
     }
 
     @Test
-    public void convertYoungestFirst() throws Exception {
+    void convertYoungestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.YOUNGEST_FIRST);
 
@@ -37,7 +37,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertOldestFirst() throws Exception {
+    void convertOldestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.OLDEST_FIRST);
 
@@ -46,7 +46,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertSmallestFirst() throws Exception {
+    void convertSmallestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.SMALLEST_FIRST);
 
@@ -55,7 +55,7 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertLargestFirst() throws Exception {
+    void convertLargestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.LARGEST_FIRST);
 
