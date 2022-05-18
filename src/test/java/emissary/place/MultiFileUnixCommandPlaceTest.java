@@ -1,9 +1,9 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -23,25 +23,25 @@ import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.io.UnitTestFileUtils;
 import emissary.util.shell.Executrix;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultiFileUnixCommandPlaceTest extends UnitTest {
+class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;
-    private static Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
-    private static String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
+    private static final Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
+    private static final String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
     private static Path workDir;
-    private File scriptFile = new File(tmpdir, "testMultiFileUnixCommand.sh");
-    private static String W = "Президент Буш";
+    private final File scriptFile = new File(tmpdir, "testMultiFileUnixCommand.sh");
+    private static final String W = "Президент Буш";
     private IBaseDataObject payload;
-    private String FORM = "TEST";
+    private static final String FORM = "TEST";
     private static final String PAYLOAD_STRING = "abcdefg";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         workDir = Files.createTempDirectory(null);
 
@@ -49,22 +49,12 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
         // reads our default config for it
         // not something else that got configured in
         ResourceReader rr = new ResourceReader();
-        InputStream is = null;
-        try {
-            is = rr.getConfigDataAsStream(this.getClass());
+        try (InputStream is = rr.getConfigDataAsStream(this.getClass())) {
             place = new MultiFileUnixCommandPlace(is);
             place.executrix.setTmpDir(workDir.toAbsolutePath().toString());
             place.executrix.setTmpDirFile(new File(workDir.toAbsolutePath().toString()));
         } catch (Exception ex) {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (IOException ignore) {
-                // empty catch block
-            }
         }
 
         payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(), "myPayload", FORM});
@@ -74,73 +64,71 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         place = null;
         payload = null;
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
+        Files.deleteIfExists(scriptFile.toPath());
         UnitTestFileUtils.cleanupDirectoryRecursively(workDir);
         validateMockitoUsage();
     }
 
     @Test
-    public void testMultiFileUnixCommandPlaceStdout() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testMultiFileUnixCommandPlaceStdout() throws Exception {
+        assertNotNull(place, "Place must be created");
         createScript(Executrix.OUTPUT_TYPE.STD, 2);
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
-        assertEquals("Attachments should be created", 1, att.size());
-        assertEquals("Attachment current form set", "UNKNOWN", att.get(0).currentForm());
-        assertEquals("Clean UTF-8 coming from the script must in attachment", W, new String(att.get(0).data()).trim());
-        assertEquals("Payload should have configured current form", "UCP-PROCESSED", payload.currentForm());
-        assertEquals("Clean UTF-8 coming from script must be in parent", W, new String(payload.data()).trim());
-        assertEquals("Single form remaining for parent", 1, payload.currentFormSize());
-        assertEquals("Single form for child", 1, att.get(0).currentFormSize());
+        assertEquals(1, att.size(), "Attachments should be created");
+        assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
+        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must in attachment");
+        assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
+        assertEquals(W, new String(payload.data()).trim(), "Clean UTF-8 coming from script must be in parent");
+        assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
+        assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
-        assertEquals("Child should have propagating metadata value", "copy value", att.get(0).getStringParameter("COPY_THIS"));
-        assertNull("Child should not have non-propagating metadata value", att.get(0).getStringParameter("IGNORE_THIS"));
+        assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
-    public void testMultiFileUnixCommandPlaceFile() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testMultiFileUnixCommandPlaceFile() throws Exception {
+        assertNotNull(place, "Place must be created");
         place.setFileOutputCommand();
         createScript(Executrix.OUTPUT_TYPE.FILE, 2);
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
-        assertEquals("Payload should have configured current form", "UCP-PROCESSED", payload.currentForm());
-        assertEquals("Attachments should be created", 2, att.size());
-        assertEquals("Attachment current form set", "UNKNOWN", att.get(0).currentForm());
-        assertEquals("Clean UTF-8 coming from the script must be maintained", W, new String(att.get(0).data()).trim());
-        assertEquals("Single form remaining for parent", 1, payload.currentFormSize());
-        assertEquals("Single form for child", 1, att.get(0).currentFormSize());
+        assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
+        assertEquals(2, att.size(), "Attachments should be created");
+        assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
+        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
+        assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
-        assertEquals("Child should have propagating metadata value", "copy value", att.get(0).getStringParameter("COPY_THIS"));
-        assertNull("Child should not have non-propagating metadata value", att.get(0).getStringParameter("IGNORE_THIS"));
+        assertEquals("copy value", att.get(0).getStringParameter("COPY_THIS"), "Child should have propagating metadata value");
+        assertNull(att.get(0).getStringParameter("IGNORE_THIS"), "Child should not have non-propagating metadata value");
     }
 
     @Test
-    public void testMultiFileUnixCommandPlaceFileWithSingleChildHandling() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testMultiFileUnixCommandPlaceFileWithSingleChildHandling() throws Exception {
+        assertNotNull(place, "Place must be created");
         place.setFileOutputCommand();
         createScript(Executrix.OUTPUT_TYPE.FILE, 1);
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
-        assertEquals("Attachments should not be created", 0, att.size());
-        assertEquals("Current form set due to processing", "UNKNOWN", payload.currentForm());
-        assertEquals("Clean UTF-8 coming from the script must be maintained", W, new String(payload.data()).trim());
-        assertEquals("Single form remaining for parent", 1, payload.currentFormSize());
+        assertEquals(0, att.size(), "Attachments should not be created");
+        assertEquals("UNKNOWN", payload.currentForm(), "Current form set due to processing");
+        assertEquals(W, new String(payload.data()).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
 
-        assertEquals("Parent should have propagating metadata value", "copy value", payload.getStringParameter("COPY_THIS"));
-        assertEquals("Parent should still have non-propagating metadata value", "ignore value", payload.getStringParameter("IGNORE_THIS"));
+        assertEquals("copy value", payload.getStringParameter("COPY_THIS"), "Parent should have propagating metadata value");
+        assertEquals("ignore value", payload.getStringParameter("IGNORE_THIS"), "Parent should still have non-propagating metadata value");
     }
 
     @Test
-    public void testMultiFileUnixCommandPlaceFileWithSingleChildAsOutput() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testMultiFileUnixCommandPlaceFileWithSingleChildAsOutput() throws Exception {
+        assertNotNull(place, "Place must be created");
         place.setFileOutputCommand();
         createScript(Executrix.OUTPUT_TYPE.FILE, 1);
 
@@ -148,14 +136,14 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
         place.singleOutputAsChild = true;
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
-        assertEquals("One Attachment should be created", 1, att.size());
-        assertEquals("Parent data should be preserved", PAYLOAD_STRING, new String(payload.data()));
-        assertEquals("Child payload should match script output", W, new String(att.get(0).data()).trim());
+        assertEquals(1, att.size(), "One Attachment should be created");
+        assertEquals(PAYLOAD_STRING, new String(payload.data()), "Parent data should be preserved");
+        assertEquals(W, new String(att.get(0).data()).trim(), "Child payload should match script output");
     }
 
     @Test
-    public void testMultiFileUnixCommandPlaceLogging() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testMultiFileUnixCommandPlaceLogging() throws Exception {
+        assertNotNull(place, "Place must be created");
         Logger mockLogger = mock(Logger.class);
         place.setLogger(mockLogger);
         createLogScript();
@@ -182,9 +170,7 @@ public class MultiFileUnixCommandPlaceTest extends UnitTest {
     }
 
     private OutputStream startScript() throws IOException {
-        if (scriptFile.exists()) {
-            scriptFile.delete();
-        }
+        Files.deleteIfExists(scriptFile.toPath());
         OutputStream fos = Files.newOutputStream(scriptFile.toPath());
         fos.write("#!/bin/bash\n".getBytes());
         return fos;

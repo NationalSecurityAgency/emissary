@@ -1,8 +1,8 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,16 +13,16 @@ import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RehashingPlaceTest extends UnitTest {
+class RehashingPlaceTest extends UnitTest {
 
     private static final byte[] configKeyData = ("TGT_HOST = \"myhost.example.com\"\n" + "TGT_PORT = \"9999\"\n"
             + "SERVICE_KEY = \"TPROXY.TRANSFORM.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
                     .getBytes();
 
     @Test
-    public void testRehash() throws Exception {
+    void testRehash() throws Exception {
         byte[] DATA = "abcdefghijklmnopqrstuvwxyz".getBytes();
         byte[] DOUBLE_DATA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
 
@@ -31,12 +31,12 @@ public class RehashingPlaceTest extends UnitTest {
         RehashPlaceTest tp = new RehashPlaceTest(config);
         IBaseDataObject payload = new BaseDataObject(DATA, "file1", "FORM1");
         KffDataObjectHandler kff = tp.getKffHandler();
-        assertNotNull("Kff handler must be iinitialized in a place " + "that implements the RehashingPlace interface", kff);
+        assertNotNull(kff, "Kff handler must be iinitialized in a place " + "that implements the RehashingPlace interface");
 
         // Simulate previous activity that would set the length and
         // hash values to the current data
         kff.hash(payload);
-        payload.setParameter(SessionParser.ORIG_DOC_SIZE_KEY, Integer.valueOf(payload.dataLength()));
+        payload.setParameter(SessionParser.ORIG_DOC_SIZE_KEY, payload.dataLength());
 
         // Save off the previous hash values
         String oldhash = KffDataObjectHandler.getHashValue(payload);
@@ -48,12 +48,12 @@ public class RehashingPlaceTest extends UnitTest {
         tp.agentProcessCall(payload);
 
         // Check the new ORIG SIZE parameter
-        assertEquals("Original Size must be reset on rehash", "" + payload.dataLength(), payload.getStringParameter(SessionParser.ORIG_DOC_SIZE_KEY));
+        assertEquals("" + payload.dataLength(), payload.getStringParameter(SessionParser.ORIG_DOC_SIZE_KEY), "Original Size must be reset on rehash");
 
         // Check the new hash values
         String newhash = KffDataObjectHandler.getHashValue(payload);
 
-        assertTrue("Hash value must change in a rehashing place when the data changes", !oldhash.equals(newhash));
+        assertNotEquals(oldhash, newhash, "Hash value must change in a rehashing place when the data changes");
 
     }
 
