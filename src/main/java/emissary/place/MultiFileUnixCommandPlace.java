@@ -682,9 +682,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         StringBuilder outbuf = new StringBuilder();
         StringBuilder errbuf = new StringBuilder();
         int status = processCommand(cmd, outbuf, errbuf);
-        if (errbuf.length() > 0 && logger.isDebugEnabled()) {
-            logger.debug("Discarding process stderr " + errbuf.toString());
-        }
+
         return status;
     }
 
