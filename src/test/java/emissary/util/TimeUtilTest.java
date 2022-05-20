@@ -40,12 +40,6 @@ public class TimeUtilTest extends UnitTest {
         TimeUtil.getDate(testZoneDate, null, null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetDateExceptionBadFormat2() {
-        TimeUtil.getDate(testZoneDate, "Bad", null);
-    }
-
-
     @Test(expected = ZoneRulesException.class)
     public void testGetDateExceptionBadZone() {
         TimeUtil.getDate("yyyy", "BAD");

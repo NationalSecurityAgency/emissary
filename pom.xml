@@ -1460,7 +1460,7 @@
       </activation>
       <properties>
         <!-- enable compiler compliance when building in Eclipse -->
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>${maven.compiler.release}</maven.compiler.release>
       </properties>
       <build>
         <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
@@ -1576,15 +1576,6 @@
           </plugin>
         </plugins>
       </build>
-    </profile>
-    <profile>
-      <id>jdk-release-flag</id>
-      <activation>
-        <jdk>[11,)</jdk>
-      </activation>
-      <properties>
-        <maven.compiler.release>11</maven.compiler.release>
-      </properties>
     </profile>
   </profiles>
 </project>
