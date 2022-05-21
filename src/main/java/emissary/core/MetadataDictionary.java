@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  * THe regex list and the name map are not synchronized. Once the class is configured they do not change. If your
  * implementation allows them to change, then you should carefully consider synchronization issues.
  */
+@Deprecated
 public class MetadataDictionary {
     /**
      * The default name by which we register into the namespace
