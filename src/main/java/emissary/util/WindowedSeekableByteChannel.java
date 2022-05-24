@@ -55,9 +55,6 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * Creates a new instance and populates buffers with data.
      */
     public WindowedSeekableByteChannel(final ReadableByteChannel in, final int buffsize) throws IOException {
-
-        logger.debug("WindowSeekableByteChannel created with buffer size = {}", buffsize);
-
         if ((in == null) || !in.isOpen()) {
             throw new IllegalArgumentException("Channel must be open and not null:");
         }
@@ -83,11 +80,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * If necessary, will move data in the window to make room for additional data from the channel.
      */
     private void realignBuffers() throws IOException {
-        logger.debug("realignBuffers() called: buf1 = {}, buf2 = {}", buff1, buff2);
-
         final int qtr = this.buff1.capacity() / 2;
         if (this.endofchannel || (this.buff2.remaining() > qtr)) {
-            logger.debug("after early return from realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
             return;
         }
         // keep track of our position
@@ -99,24 +93,21 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         // read from the beginning of the buffer
         this.buff2.rewind();
 
-        logger.debug("realignBuffers() called prior to fillDst: buf1 = {}, buf2 = {}", buff1, buff2);
+        // realignBuffers() called prior to fillDst
 
         filldst(this.buff2, this.buff1);
         // chuck the bytes read into buff1
 
-        logger.debug("realignBuffers() called prior prior to buff2 compact: buf1 = {}, buf2 = {}", buff1, buff2);
+        // realignBuffers() called prior to buff2 compact
 
         this.buff2.compact();
 
-        logger.debug("realignBuffers() called prior to readIntoBuffer: buf1 = {}, buf2 = {}", buff1, buff2);
+        // realignBuffers() called prior to readIntoBuffer
         readIntoBuffer(this.buff2);
         // update the offset
         this.minposition += qtr;
         // reset our location
         setOffset(offset - qtr);
-
-        logger.debug("after realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
-
     }
 
     /**
@@ -142,8 +133,6 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * @return the number of bytes read into the buffer.
      */
     private int readIntoBuffer(final ByteBuffer buf) throws IOException {
-        logger.debug("readIntoBuffer() called: {}", buf);
-
         final int rem = buf.remaining();
         int read = 0;
         while ((read != -1) && (buf.remaining() > 0)) {
@@ -208,7 +197,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         final int maxWrite = dst.remaining();
 
         while (dst.hasRemaining() && bytesAvailable()) {
-            logger.debug("filling buffers");
+            // filling buffers
             realignBuffers();
             filldst(this.buff1, dst);
             filldst(this.buff2, dst);

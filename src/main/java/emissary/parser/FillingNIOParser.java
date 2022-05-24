@@ -45,15 +45,14 @@ public abstract class FillingNIOParser extends NIOSessionParser {
             b.limit(writeOffset);
             b.compact(); // does not re-allocate the byte array, only manipulates the current buffer.
 
+            // buffer has been compacted
             chunkStart += sessionStart;
             sessionStart = 0;
             writeOffset = b.position();
-            logger.debug("Compacted buffer: sessionStart/chunkStart/writeOffset = {}/{}/{}", sessionStart, chunkStart, writeOffset);
         }
 
         try {
             byte[] b = loadNextRegion(data);
-            logger.debug("Got new data at {} length {}", chunkStart, b.length);
             return b;
 
         } catch (ParserEOFException eof) {

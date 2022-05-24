@@ -2,7 +2,6 @@ package emissary.util;
 
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,15 +145,12 @@ public final class ConstructorLookupCache {
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Checking:" + clazz.getName() + ", " + clazz);
-                logger.debug("   types   :" + Arrays.toString(ctypes));
-                logger.debug("   numParms:" + ctypes.length + " =? " + argTypes.length);
             }
 
             // If the candidate constructor doesn't have the same
             // number of arguments, it definitely isn't compatible
             // with the desired argument types.
             if (ctypes.length != argTypes.length) {
-                logger.debug("    not equal:");
                 continue NEXT_CANDIDATE_CONSTRUCTOR;
             }
 

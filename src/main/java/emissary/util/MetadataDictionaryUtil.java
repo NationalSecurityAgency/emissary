@@ -120,13 +120,11 @@ public class MetadataDictionaryUtil {
             if (pos == -1) {
                 output.write(line.getBytes());
                 output.write('\n');
-                this.logger.debug("Found no key/value pair on line " + line);
             } else {
                 final String key = line.substring(0, pos);
                 final String value = line.substring(pos + 1);
                 final String nkey = this.dict.map(this.servicePrefix + key);
                 kv.put(nkey, value.trim());
-                this.logger.debug("Mapped key " + key + " to " + nkey + ": " + value);
             }
         }
         return new TreeMap<>(kv.asMap());

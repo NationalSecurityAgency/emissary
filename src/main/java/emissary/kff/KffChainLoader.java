@@ -53,7 +53,6 @@ public class KffChainLoader {
                 logger.debug("No configuration for Known File Filter. Continuing...");
             }
             theInstance = chain;
-            logger.debug("KFF Chain loaded with " + theInstance.size() + " filter using algorithms " + theInstance.getAlgorithms());
         }
         return theInstance;
     }
@@ -79,10 +78,11 @@ public class KffChainLoader {
                 KffFilter k = null;
                 String clazz = classes.get(key);
                 if (clazz == null || clazz.length() == 0) {
-                    logger.warn("no way I can construct a null class for " + key);
+                    // cannot construct a null class for key
                     continue;
                 }
 
+                // see if known KffType
                 if (kffType == FILE_TYPE) {
                     try {
                         k = (KffFilter) Factory.create(clazz, new Object[] {name, key, filterType});
@@ -90,13 +90,10 @@ public class KffChainLoader {
                         logger.warn("Cannot create KffFilter, using default", x);
                         k = new KffFile(name, key, filterType);
                     }
-                } else {
-                    logger.error("Unknown kff type " + kffType);
                 }
 
                 if (k != null) {
                     chain.addFilter(k);
-                    logger.debug("KFF Chain element " + name + " for " + key);
                     countLoaded++;
                 }
             } catch (IOException e) {

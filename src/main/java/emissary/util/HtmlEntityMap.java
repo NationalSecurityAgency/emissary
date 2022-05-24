@@ -28,7 +28,6 @@ public class HtmlEntityMap {
             Configurator configG = ConfigUtil.getConfigInfo(this.getClass());
             Map<String, String> emap = configG.findStringMatchMap("ENTITY_", true);
             entityMap.putAll(emap);
-            logger.debug("Read " + entityMap.size() + " entities from config");
         } catch (IOException ex) {
             logger.warn("Cannot read configuration", ex);
         }

@@ -126,10 +126,6 @@ public class HtmlEscape {
         if (s == null || s.length() == 0)
             return "";
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Doing unescapeHtml on length " + s.length() + ": " + s);
-        }
-
         StringBuffer sb = new StringBuffer(s.length());
         Matcher m = HESC_PATTERN.matcher(s);
 
@@ -140,7 +136,6 @@ public class HtmlEscape {
             boolean isHex = hexModifier != null && hexModifier.length() > 0;
             String encodedChar = m.group(2);
             char[] c = unescapeHtmlChar(encodedChar, isHex);
-            logger.debug("Found a string match for " + encodedChar + ", isHex " + isHex);
             if (c != null) {
                 // Append non-matching portion plus decoded char
                 m.appendReplacement(sb, "");
@@ -174,15 +169,14 @@ public class HtmlEscape {
         try {
             num = Integer.parseInt(s, isHex ? 16 : 10);
         } catch (NumberFormatException ex) {
-            logger.debug("Failed to parse char {}", s);
+            logger.debug("Failed to parse char", ex);
             return null;
         }
         // Turn the number into a Unicode codepoint
-        logger.debug("Parsed unescapeHtmlChar for {} into {}", s, num);
         try {
             return Character.toChars(num);
         } catch (Exception ex) {
-            logger.debug("Cannot toChars on {}: not a valid Unicode code point", s, ex);
+            logger.debug("Cannot toChars: not a valid Unicode code point", ex);
             return null;
         }
     }
@@ -206,10 +200,6 @@ public class HtmlEscape {
     public static String unescapeEntities(String s, CharacterCounterSet counters) {
         int slen = s.length();
         StringBuilder sb = new StringBuilder(s.length());
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Doing html entity normalization on string length " + slen + ": " + s);
-        }
 
         for (int i = 0; i < slen; i++) {
             char c = s.charAt(i);
@@ -263,9 +253,6 @@ public class HtmlEscape {
                 }
             }
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("Result is " + sb.toString());
-        }
         return sb.toString();
     }
 
@@ -273,7 +260,6 @@ public class HtmlEscape {
     private static String getValueForHTMLEntity(String entity) {
         String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
         if (s != null) {
-            logger.debug("Html Entity Map(" + entity + ") => '" + s + "'");
             return s;
         }
         return null;
@@ -294,8 +280,7 @@ public class HtmlEscape {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int slen = s.length;
 
-        logger.debug("Doing html entity normalization on bytes length " + slen);
-
+        // Doing html entity normalization
         for (int i = 0; i < slen; i++) {
             if (i + 4 < slen && s[i] == '&') {
                 int spos = i;

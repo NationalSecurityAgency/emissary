@@ -208,15 +208,12 @@ public class MagicNumber {
      * Tests dependent children
      */
     private String describeDependents(byte[] data, StringBuilder sb, int layer) {
-        log.debug("DESCRIBING DEPENDENTS at layer {}", layer);
         if (dependencies == null || layer >= dependencies.size()) {
-            log.debug("Not enough dependents for layer {}", layer);
             return sb.toString();
         }
 
         boolean shouldContinue = false;
         MagicNumber[] dependentItems = dependencies.get(layer);
-        log.debug("Found {} items at layer {}", dependentItems.length, layer);
         for (int i = 0; i < dependentItems.length; i++) {
             String s = dependentItems[i].describeSelf(data);
 
@@ -255,7 +252,7 @@ public class MagicNumber {
         byte[] subject = getElement(data, offset, dataTypeLength);
         if (subject == null)
             return false;
-        printByteSample(subject, "DATA SAMPLE: ");
+        // printByteSample(subject, "DATA SAMPLE: ");
         return testNumeric(subject);
     }
 
@@ -267,8 +264,7 @@ public class MagicNumber {
             return true;
         byte[] mValues = value;
 
-        log.debug("Unary Operator: {}", unaryOperator);
-        printByteSample(mValues, "MAGIC VALUE: ");
+        // printByteSample(mValues, "MAGIC VALUE: ");
 
         int end = mValues.length;
         switch (unaryOperator) {

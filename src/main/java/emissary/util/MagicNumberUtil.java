@@ -133,13 +133,8 @@ public final class MagicNumberUtil {
             }
 
             // load the magic numbers
-            log.info("LOAD MAGIC NUMBER LIST AT: {}", args[0]);
             util.load(new File(args[0]));
-            log.info("FINISHED LOADING MAGIC NUMBER LIST");
 
-            // perform the id process
-            log.info("PERFORMING ID PROCESS");
-            log.info(util.describe(new File(args[1])));
         } catch (Exception e) {
             log.error("Error in main", e);
         }
@@ -165,10 +160,8 @@ public final class MagicNumberUtil {
      * @see #load(byte[])
      */
     public String describe(final byte[] data) {
-        log.debug("Checking against {} magic items", this.magicNumbers.size());
         String description = null;
         for (final MagicNumber item : this.magicNumbers) {
-            log.debug("Checking magic item {}", item);
             description = item.describe(data);
             if (description != null && !description.isEmpty()) {
                 break;

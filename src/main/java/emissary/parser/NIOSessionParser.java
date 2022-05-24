@@ -86,17 +86,14 @@ public abstract class NIOSessionParser extends SessionParser {
      * @throws ParserException in cases where a new array can't be read.
      */
     protected byte[] loadNextRegion(byte[] data) throws ParserException {
-        logger.debug("loadNextRegion(): data.length = {}, maxChunkSize = {}, chunkStart = {}, writeOffset = {}",
-                data == null ? -1 : data.length, maxChunkSize, chunkStart, writeOffset);
-
         if (!channel.isOpen()) {
-            logger.debug("loadNextRegion(): channel closed");
+            // loadNextRegion(): channel closed
             throw new ParserEOFException("Channel is closed, likely completely consumed");
         }
 
         // Optionally create the array or recreate if old is too small
         if (data == null) {
-            logger.debug("allocating new byte[] of size {}", minChunkSize);
+            // allocating new byte[]
             data = new byte[minChunkSize];
         }
 
@@ -112,22 +109,21 @@ public abstract class NIOSessionParser extends SessionParser {
                 throw new ParserException("buffer size required to read session " + chunkStart + " is larger than maxChunkSize " + maxChunkSize);
             }
 
-            logger.debug("re-allocating new byte[] of size {}", newSize);
+            // re-allocating new byte[]
             byte[] newData = new byte[newSize];
             System.arraycopy(data, 0, newData, 0, data.length);
             data = newData;
         }
 
         final ByteBuffer b = ByteBuffer.wrap(data);
-        logger.debug("Wrapping byte[] in new ByteBuffer = {}, position = {}, limit = {}", b, writeOffset, data.length);
         b.position(writeOffset);
         b.limit(data.length);
 
         try {
             while (b.hasRemaining()) {
                 if (channel.read(b) == -1) {
+                    // Closing channel. End of channel reached earlier than expected
                     channel.close();
-                    logger.warn("Closing channel. End of channel reached at {} instead of expected {}", data.length - b.remaining(), data.length);
                     break;
                 }
             }
@@ -136,10 +132,8 @@ public abstract class NIOSessionParser extends SessionParser {
         }
 
         writeOffset = data.length - b.remaining();
-        logger.debug("Finishing loadNextRegion(): buffer state = {}, data length = {}, remaining = {}, writeOffset = {}", b, data.length,
-                b.remaining(), writeOffset);
         if (writeOffset < data.length) {
-            logger.debug("trimming byte[] from {} to size {}", data.length, writeOffset);
+            // trimming byte[]
             data = Arrays.copyOfRange(data, 0, writeOffset);
         }
 
