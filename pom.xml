@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.7.0-SNAPSHOT</version>
+  <version>7.7.0-tika-update-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -43,6 +43,7 @@
     <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.15</dep.httpcore.version>
+    <dep.jackess.version>4.0.1</dep.jackess.version>
     <dep.jackson.version>2.12.6</dep.jackson.version>
     <!-- jersey and tika provide; converge on latest -->
     <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
@@ -64,7 +65,7 @@
     <dep.slf4j.version>1.7.36</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
-    <dep.tika.version>1.24</dep.tika.version>
+    <dep.tika.version>2.3.0</dep.tika.version>
     <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
@@ -118,6 +119,12 @@
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-jaxb-annotations</artifactId>
         <version>${dep.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.github.spullara.mustache.java</groupId>
@@ -128,6 +135,32 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${dep.guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.healthmarketscience.jackcess</groupId>
+        <artifactId>jackcess</artifactId>
+        <version>${dep.jackess.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.healthmarketscience.jackcess</groupId>
+        <artifactId>jackcess-encrypt</artifactId>
+        <version>${dep.jackess.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
@@ -239,7 +272,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.tika</groupId>
-        <artifactId>tika-parsers</artifactId>
+        <artifactId>tika-parsers-standard-package</artifactId>
         <version>${dep.tika.version}</version>
         <exclusions>
           <exclusion>
@@ -543,7 +576,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.tika</groupId>
-      <artifactId>tika-parsers</artifactId>
+      <artifactId>tika-parsers-standard-package</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlbeans</groupId>

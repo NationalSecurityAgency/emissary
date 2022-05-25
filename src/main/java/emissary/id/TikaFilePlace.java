@@ -13,6 +13,7 @@ import emissary.core.IBaseDataObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
@@ -130,7 +131,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     private void appendFilenameMimeTypeSupport(IBaseDataObject d, Metadata metadata) {
         if (includeFilenameMimeType) {
             logger.debug("Filename support for Mime Type detection is enabled");
-            metadata.set(Metadata.RESOURCE_NAME_KEY, d.getFilename());
+            metadata.set(TikaCoreProperties.RESOURCE_NAME_KEY, d.getFilename());
         }
     }
 
