@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,25 +17,26 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class PlacesTest extends EndpointTestBase {
+class PlacesTest extends EndpointTestBase {
+
     private static final Set<String> EXPECTED_PLACES = new HashSet<>(Arrays.asList("pickupClient", "pickupPlace", "processingPlace"));
     private static final Set<String> UNBOUND_SERVER_ERR = new HashSet<>(
-            Arrays.asList("Problem finding the emissary server or places in the namespace: Not found: EmissaryServer"));
+            Collections.singletonList("Problem finding the emissary server or places in the namespace: Not found: EmissaryServer"));
 
     EmissaryServer server;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         Namespace.clear();
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws InstantiationException, IllegalAccessException, ClassNotFoundException, EmissaryException {
         EmissaryNode node = new EmissaryNode();
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-m", "cluster");
@@ -42,13 +44,13 @@ public class PlacesTest extends EndpointTestBase {
         server = new EmissaryServer(cmd, node);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         Namespace.clear();
     }
 
     @Test
-    public void places() throws Exception {
+    void places() {
         Namespace.bind("EmissaryServer", server);
         Namespace.bind("PickupPlace", "pickupPlace");
         Namespace.bind("PickupClient", "pickupClient");
@@ -76,7 +78,7 @@ public class PlacesTest extends EndpointTestBase {
     }
 
     @Test
-    public void placesNoPlacesClientsBound() throws Exception {
+    void placesNoPlacesClientsBound() {
         Namespace.bind("EmissaryServer", server);
 
         // test
@@ -92,10 +94,7 @@ public class PlacesTest extends EndpointTestBase {
     }
 
     @Test
-    public void noServerBound() throws Exception {
-        // setup
-        // Namespace.unbind("EmissaryServer");
-
+    void noServerBound() {
         // test
         Response response = target("places").request().get();
 
@@ -109,9 +108,9 @@ public class PlacesTest extends EndpointTestBase {
 
     }
 
-    @Ignore
     @Test
-    public void clusterPlaces() throws Exception {
+    @Disabled("make this an integration test")
+    void clusterPlaces() {
         // TODO look at putting this in an integration tests with two real EmissaryServers
     }
 

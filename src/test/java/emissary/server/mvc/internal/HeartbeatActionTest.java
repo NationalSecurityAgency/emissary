@@ -17,18 +17,15 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(Theories.class)
-public class HeartbeatActionTest extends EndpointTestBase {
-    @DataPoints
-    public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
+class HeartbeatActionTest extends EndpointTestBase {
+
     private MultivaluedHashMap<String, String> formParams;
     private static final String FROM_PLACE = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://remoteHost:8888/DirectoryPlace";
     private static final String TO_PLACE = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:9999/DirectoryPlace";
@@ -36,7 +33,7 @@ public class HeartbeatActionTest extends EndpointTestBase {
     private DirectoryPlace dp;
     private EmissaryNode node;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
         formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Collections.singletonList(FROM_PLACE));
@@ -50,14 +47,16 @@ public class HeartbeatActionTest extends EndpointTestBase {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         Namespace.unbind(TO_PLACE);
         Namespace.unbind(FROM_PLACE);
     }
 
-    @Theory
-    public void badParams(String badValue) {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\n", "\t"})
+    void badParams(String badValue) {
         // setup
         formParams.put(HeartbeatAdapter.FROM_PLACE_NAME, Collections.singletonList(badValue));
         formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Collections.singletonList(badValue));
@@ -73,7 +72,7 @@ public class HeartbeatActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void heartbeat() {
+    void heartbeat() {
         // test
         final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));
 
@@ -85,7 +84,7 @@ public class HeartbeatActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void directoryNotRunning() {
+    void directoryNotRunning() {
         // setup
         Namespace.unbind(TO_PLACE);
         when(dp.isRunning()).thenReturn(true);

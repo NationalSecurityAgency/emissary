@@ -19,18 +19,15 @@ import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(Theories.class)
-public class RegisterPeerActionTest extends EndpointTestBase {
-    @DataPoints
-    public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
+class RegisterPeerActionTest extends EndpointTestBase {
+
     private MultivaluedHashMap<String, String> formParams;
     private static final String PEER_KEY_GOOD = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://remoteHost:8888/DirectoryPlace";
     private static final String PEER_KEY_BAD = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://otherRemoteHost:8888/DirectoryPlace";
@@ -44,7 +41,7 @@ public class RegisterPeerActionTest extends EndpointTestBase {
             + "  </entryList>\r\n" + "</directory>\r\n";
     private EmissaryNode node;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         formParams = new MultivaluedHashMap<>();
         formParams.put(DIRECTORY_NAME, Collections.singletonList(PEER_KEY_GOOD));
@@ -59,13 +56,15 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() {
         Namespace.unbind(DIRNAME);
     }
 
-    @Theory
-    public void badParamValues(String badValue) {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\n", "\t"})
+    void badParamValues(String badValue) {
         // setup
         formParams.replace(DIRECTORY_NAME, Collections.singletonList(badValue));
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badValue));
@@ -81,7 +80,7 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void registerPeerSuccessfully() {
+    void registerPeerSuccessfully() {
         // test
 
         Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
@@ -94,7 +93,7 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void failUnknownPeerRegistration() {
+    void failUnknownPeerRegistration() {
         MultivaluedHashMap<String, String> newFormParams = new MultivaluedHashMap<>();
         newFormParams.put(DIRECTORY_NAME, Collections.singletonList(PEER_KEY_BAD));
         newFormParams.put(TARGET_DIRECTORY, Collections.singletonList(DIRNAME));
@@ -110,7 +109,7 @@ public class RegisterPeerActionTest extends EndpointTestBase {
     }
 
     @Test
-    public void missingBoundDirectoryPlace() {
+    void missingBoundDirectoryPlace() {
         // setup
         Namespace.unbind(DIRNAME);
 
