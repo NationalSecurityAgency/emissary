@@ -153,14 +153,14 @@ class FTestMovingAgent extends FunctionalTest {
         EmissaryResponse ws = h.send(get);
         String msg = ws.getContentString();
         // TODO consider moving this into the EmissaryResponse ((ws.getStatus() == HttpStatus.SC_OK)))
-        assertTrue((ws.getStatus() == HttpStatus.SC_OK), "welcome.jsp must return good status");
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "welcome.jsp must return good status");
         assertNotNull(msg, "welcome.jsp must have text");
         assertTrue(msg.contains(version.toString()), "welcome.jsp contains version");
 
         get = new HttpGet(urlBase + "Namespace.action");
         ws = h.send(get);
         msg = ws.getContentString();
-        assertTrue((ws.getStatus() == HttpStatus.SC_OK), "Namespace.action must return good status");
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "Namespace.action must return good status");
         assertNotNull(msg, "Namespace text must not be mull");
         assertTrue(msg.contains("MoveSpool"), "Namespace must contain MoveSpool");
         assertTrue(msg.contains("AgentPool"), "Namespace must contain AgentPool");
@@ -170,7 +170,7 @@ class FTestMovingAgent extends FunctionalTest {
         get = new HttpGet(urlBase + "DumpDirectory.action");
         ws = h.send(get);
         msg = ws.getContentString();
-        assertTrue((ws.getStatus() == HttpStatus.SC_OK), "DumpDirectory.action must return good status");
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "DumpDirectory.action must return good status");
         assertNotNull(msg, "DumpDirectory must have text");
         assertTrue(msg.contains("CachePlace"), "DumpDirectory must have place name");
 
