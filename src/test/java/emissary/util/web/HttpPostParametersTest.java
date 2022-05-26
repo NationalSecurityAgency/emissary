@@ -1,39 +1,33 @@
 package emissary.util.web;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class HttpPostParametersTest extends UnitTest {
+class HttpPostParametersTest extends UnitTest {
 
-    private HttpPostParameters hpp = new HttpPostParameters("A", "B");
-
-    @Before
-    public void before() {
-
-    }
+    private final HttpPostParameters hpp = new HttpPostParameters("A", "B");
 
     @Test
-    public void testSimpleToString() {
+    void testSimpleToString() {
         final String expected = "A=B";
         final String actual = this.hpp.toString();
         assertEquals(expected, actual);
     }
 
     @Test
-    public void testLength() {
+    void testLength() {
         assertEquals(3, this.hpp.length());
     }
 
     @Test
-    public void testToPostString() {
+    void testToPostString() {
         assertEquals("A=B", this.hpp.toPostString());
     }
 
     @Test
-    public void testToGetString() {
+    void testToGetString() {
         assertEquals("?A=B", this.hpp.toGetString());
     }
 
@@ -42,7 +36,7 @@ public class HttpPostParametersTest extends UnitTest {
      * encoded as %CE %BB.
      */
     @Test
-    public void testAddParameter() {
+    void testAddParameter() {
         this.hpp.add("λ", "λ");
         assertEquals(17, this.hpp.length());
         assertEquals("A=B&%CE%BB=%CE%BB", this.hpp.toPostString());
@@ -51,7 +45,7 @@ public class HttpPostParametersTest extends UnitTest {
     }
 
     @Test
-    public void testNullFirstParameter() {
+    void testNullFirstParameter() {
         final HttpPostParameters object = new HttpPostParameters(null, "B");
         final String expected = "null=B";
         final String actual = object.toString();
@@ -59,7 +53,7 @@ public class HttpPostParametersTest extends UnitTest {
     }
 
     @Test
-    public void testNullSecondParameter() {
+    void testNullSecondParameter() {
         final HttpPostParameters object = new HttpPostParameters(null, null);
         final String expected = "null=";
         final String actual = object.toString();

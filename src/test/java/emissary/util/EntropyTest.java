@@ -1,29 +1,29 @@
 package emissary.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EntropyTest extends UnitTest {
+class EntropyTest extends UnitTest {
 
     @Test
-    public void testEntropy() {
+    void testEntropy() {
         assertTrue(
-                "Text check",
                 Entropy.checkText(
                         "Now is the time for all good men to come to the aid of their countries. This is the time of greatest need and we have nothing to fear but a day which will live in Infamy."
-                                .getBytes()));
+                                .getBytes()),
+                "Text check");
     }
 
     @Test
-    public void testNonText() {
+    void testNonText() {
         byte[] b = new byte[256];
         for (int i = 0; i < b.length; i++) {
             b[i] = (byte) i;
         }
-        assertFalse("Sequence of bytes is not text", Entropy.checkText(b));
+        assertFalse(Entropy.checkText(b), "Sequence of bytes is not text");
     }
 
 }

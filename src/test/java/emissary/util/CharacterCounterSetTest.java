@@ -1,71 +1,71 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class CharacterCounterSetTest extends UnitTest {
+class CharacterCounterSetTest extends UnitTest {
 
     @Test
-    public void testLettersAndDigits() {
+    void testLettersAndDigits() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("ABC123");
-        assertEquals("Count of letters", 3, c.getLetterCount());
-        assertEquals("Count of digits", 3, c.getDigitCount());
+        assertEquals(3, c.getLetterCount(), "Count of letters");
+        assertEquals(3, c.getDigitCount(), "Count of digits");
     }
 
     @Test
-    public void testUTF8Letters() {
+    void testUTF8Letters() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("Президент Буш");
-        assertEquals("Count of letters", 12, c.getLetterCount());
-        assertEquals("Count of digits", 0, c.getDigitCount());
-        assertEquals("Count of whitespace", 1, c.getWhitespaceCount());
+        assertEquals(12, c.getLetterCount(), "Count of letters");
+        assertEquals(0, c.getDigitCount(), "Count of digits");
+        assertEquals(1, c.getWhitespaceCount(), "Count of whitespace");
     }
 
     @Test
-    public void testPunctuation() {
+    void testPunctuation() {
         CharacterCounterSet c = new CharacterCounterSet();
         String s = "{}[]\\|.?;:!@#$%^&*()-_=+,";
         c.count(s);
-        assertEquals("Count of punctuation", s.length(), c.getPunctuationCount());
+        assertEquals(s.length(), c.getPunctuationCount(), "Count of punctuation");
     }
 
     @Test
-    public void testUnicodePunctuationFromGeneralPunctuationBlock() {
+    void testUnicodePunctuationFromGeneralPunctuationBlock() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("\u2033");
-        assertEquals("Count of punctuation", 1, c.getPunctuationCount());
+        assertEquals(1, c.getPunctuationCount(), "Count of punctuation");
     }
 
     @Test
-    public void testUnicodePunctuationFromIsoLatinExtendedBlock() {
+    void testUnicodePunctuationFromIsoLatinExtendedBlock() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("¿");
-        assertEquals("Count of punctuation", 1, c.getPunctuationCount());
+        assertEquals(1, c.getPunctuationCount(), "Count of punctuation");
     }
 
     @Test
-    public void testArabicDigits() {
+    void testArabicDigits() {
         CharacterCounterSet c = new CharacterCounterSet();
         String s = "\u0660\u06F0";
         c.count(s);
-        assertEquals("Count of arabic digits", 2, c.getDigitCount());
+        assertEquals(2, c.getDigitCount(), "Count of arabic digits");
     }
 
     @Test
-    public void testFullWidthDigits() {
+    void testFullWidthDigits() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("\uff10");
-        assertEquals("Count of full width digit", 1, c.getDigitCount());
+        assertEquals(1, c.getDigitCount(), "Count of full width digit");
     }
 
     @Test
-    public void testFullWidthPunctuation() {
+    void testFullWidthPunctuation() {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count("\uff01");
-        assertEquals("Count of full width exclamation", 1, c.getPunctuationCount());
+        assertEquals(1, c.getPunctuationCount(), "Count of full width exclamation");
     }
 
 }
