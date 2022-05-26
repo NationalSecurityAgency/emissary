@@ -140,7 +140,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         for (String name : configG.findEntries("CUSTOM_FILE_TYPES")) {
             String tmp = configG.findStringEntry(name + "_EXT", null);
             if (tmp == null) {
-                logger.warn("Type missing for " + name);
+                logger.warn("Type missing for {}", name);
                 continue;
             }
             fileTypesByExtension.put(tmp, name);
@@ -223,7 +223,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected void getFileList(File tmpDir, String inputFileName, List<File> outFiles) {
         // Recursive call to walk the subtree of output files/dirs
         for (int d = 0; d < outDirs.size(); d++) {
-            logger.debug("outDirs[" + d + "]=" + outDirs.get(d));
+            logger.debug("outDirs[{}]={}", d, outDirs.get(d));
             File dir = null;
             if (outDirs.get(d).equals(".")) {
                 dir = tmpDir;
@@ -231,50 +231,50 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                 dir = new File(tmpDir, outDirs.get(d));
             }
             if (!dir.exists()) {
-                logger.warn("Output directory does not exist:" + outDirs.get(d));
+                logger.warn("Output directory does not exist:{}", outDirs.get(d));
                 continue;
             }
             File[] files = dir.listFiles();
             for (int f = 0; f < files.length; f++) {
                 if (!(files[f].exists() && files[f].canRead())) {
-                    logger.warn("cannot access child[" + outFiles.size() + "]:" + files[f].getAbsolutePath());
+                    logger.warn("cannot access child[{}]:{}", outFiles.size(), files[f].getAbsolutePath());
                     continue;
                 }
                 if (files[f].isDirectory()) {
                     if (recurseSubDirs) {
                         getFileList(files[f], inputFileName, outFiles);
                     } else {
-                        logger.debug("skipping directory: " + files[f].getPath());
+                        logger.debug("skipping directory: {}", files[f].getPath());
                     }
                     continue;
                 }
                 String fname = files[f].getName();
                 if (binFiles.contains(fname)) {
-                    logger.debug("Ignoring file '" + fname + "' because it is in BIN_FILES");
+                    logger.debug("Ignoring file '{}' because it is in BIN_FILES", fname);
                     continue;
                 }
                 if (fname.equals(getLogFileName())) {
-                    logger.debug("Using file " + fname + " as log message source");
+                    logger.debug("Using file {} as log message source", fname);
                     logMessages(tmpDir.getPath());
                     continue;
                 }
                 if (fname.indexOf(".") > -1 && binFileExt.contains(fname.substring(fname.lastIndexOf(".") + 1))) {
-                    logger.debug("Ignoring file '" + fname + "' because it is in BIN_EXTENSIONS.");
+                    logger.debug("Ignoring file '{}' because it is in BIN_EXTENSIONS.", fname);
                     continue;
                 }
                 if (contentFile != null && contentFile.equals(fname)) {
-                    logger.debug("Ignoring file '" + fname + "' because it is to be the new parent data.");
+                    logger.debug("Ignoring file '{}' because it is to be the new parent data.", fname);
                     continue;
                 }
                 if (inputFileName.endsWith(fname)) {
-                    logger.debug("Ignoring file '" + fname + "' because it is the input file.");
+                    logger.debug("Ignoring file '{}' because it is the input file.", fname);
                     continue;
                 }
                 if (files[f].length() == 0) {
-                    logger.debug("Ignoring file '" + fname + "' because it is empty.");
+                    logger.debug("Ignoring file '{}' because it is empty.", fname);
                     continue;
                 }
-                logger.debug("Adding output file '" + fname + "' for processing");
+                logger.debug("Adding output file '{}' for processing", fname);
                 outFiles.add(files[f]);
             }
         }
@@ -326,16 +326,16 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             for (int j = 0; j < fileCount; j++) {
                 File f = files.get(j);
 
-                logger.debug("Handling data file " + f.getName());
+                logger.debug("Handling data file {}", f.getName());
 
                 if (!f.canRead() || !f.isFile()) {
-                    logger.debug("Cannot read from " + f.getAbsolutePath());
+                    logger.debug("Cannot read from {}", f.getAbsolutePath());
                     continue;
                 }
 
                 byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
                 if (theData == null) {
-                    logger.debug("Cannot read data from " + f.getAbsolutePath());
+                    logger.debug("Cannot read data from {}", f.getAbsolutePath());
                     continue;
                 }
 
@@ -407,13 +407,13 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param dirName name of process execution area
      */
     protected void initSprout(IBaseDataObject parent, List<File> files, StringBuilder newData, String dirName) {
-        logger.debug("initSprout hook contentFile=" + contentFile);
+        logger.debug("initSprout hook contentFile={}", contentFile);
         if (contentFile != null) {
             byte[] fileData = Executrix.readDataFromFile(dirName + File.separator + contentFile);
             if (fileData != null) {
                 newData.append(new String(fileData));
             } else {
-                logger.debug("Can't find new content file:" + dirName + File.separator + contentFile);
+                logger.debug("Can't find new content file:{}", (dirName + File.separator + contentFile));
             }
         }
     }
@@ -443,7 +443,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @return true to continue, false to skip this attachment
      */
     protected boolean preSprout(byte[] data, IBaseDataObject parent, File f, int birthOrder, int numSubParts, StringBuilder newParentData) {
-        logger.debug("preSprout hook on " + f.getName() + " order=" + birthOrder);
+        logger.debug("preSprout hook on {} order={}", f.getName(), birthOrder);
         return true;
     }
 
@@ -461,7 +461,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      */
     protected void postSprout(byte[] data, IBaseDataObject parent, File f, int birthOrder, int numSubParts, int actualFileCount,
             StringBuilder newParentData, IBaseDataObject theSprout) {
-        logger.debug("postSprout hook on " + f.getName() + " order=" + birthOrder);
+        logger.debug("postSprout hook on {} order={}", f.getName(), birthOrder);
     }
 
 
@@ -537,7 +537,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
 
         if (entries == null || entries.size() == 0) {
-            logger.debug("no messages found in " + tData.getFilename());
+            logger.debug("no messages found in file.");
             return Collections.emptyList();
         }
 
@@ -560,7 +560,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // Set the parent form after the addParentInformation call
         if (newParentForm != null) {
-            logger.debug("Pushing new parent form " + newParentForm);
+            logger.debug("Pushing new parent form {}", newParentForm);
             tData.pushCurrentForm(newParentForm);
         }
 
@@ -599,7 +599,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // Validate data
         if (tData.data() == null) {
-            logger.debug("Received null data: " + tData);
+            logger.debug("Received null data: {}", tData);
             tData.addProcessingError("NULL data in " + placeName + ".process");
             tData.pushCurrentForm(newErrorForm);
             return sprouts;
@@ -607,7 +607,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // Validate start and len
         if (start < 0 || len <= 0 || (start + len) > tData.dataLength()) {
-            logger.debug("Invalid start/len for data " + start + "/" + len);
+            logger.debug("Invalid start/len for data {}/{}", start, len);
             tData.addProcessingError("Invalid data " + start + "/" + len);
             tData.pushCurrentForm(newErrorForm);
             return sprouts;
@@ -620,13 +620,13 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         try {
             names = executrix.writeDataToNewTempDir(tData.data(), start, len);
             f = new File(names[Executrix.INPATH]);
-            logger.debug("Wrote file out to " + f.getPath());
+            logger.debug("Wrote file out to {}", f.getPath());
 
             // Create the command string and run it
             String[] cmd = executrix.getCommand(names);
             StringBuilder parentData = new StringBuilder();
 
-            logger.debug("Generated command " + Arrays.asList(cmd));
+            logger.debug("Generated command {}", Arrays.asList(cmd));
 
             if (executrix.getOutput().equals("FILE")) {
                 result = processCommand(cmd);
@@ -636,9 +636,6 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                 if (errbuf.length() > 0) {
                     tData.addProcessingError(errbuf.toString());
                 }
-                if (logger.isDebugEnabled()) {
-                    logger.debug("STD process => " + parentData.toString() + " ERR process => " + errbuf.toString());
-                }
             }
 
             // Clean out any proxies that would cause an infinite loop.
@@ -646,7 +643,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             if (nukeMyProxies) {
                 nukeMyProxies(tData);
             }
-            logger.debug("Parent forms " + tData.getAllCurrentForms() + ", nuke=" + nukeMyProxies);
+            logger.debug("Parent forms {}, nuke={}", tData.getAllCurrentForms(), nukeMyProxies);
 
             // Generate the list of resulting files in the directory(s)
             List<File> files = getFileList(f.getParentFile(), f.getName());
@@ -668,7 +665,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // If there was not result, then report it in 2 places.
         if (sprouts.size() == 0) {
-            logger.debug("Command failed. nothing to sprout for file " + tData.getFilename() + "(result=" + result + ")");
+            logger.debug("Command failed. nothing to sprout for file: result={}", result);
             tData.addProcessingError("ERROR in " + placeName + ". Exec returned errno " + result);
             tData.pushCurrentForm(newErrorForm);
         }
@@ -685,12 +682,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         StringBuilder outbuf = new StringBuilder();
         StringBuilder errbuf = new StringBuilder();
         int status = processCommand(cmd, outbuf, errbuf);
-        if (outbuf.length() > 0 && logger.isDebugEnabled()) {
-            logger.debug("Discarding process stdout " + outbuf.toString());
-        }
-        if (errbuf.length() > 0 && logger.isDebugEnabled()) {
-            logger.debug("Discarding process stderr " + errbuf.toString());
-        }
+
         return status;
     }
 
@@ -726,7 +718,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected void cleanupDirectory(File dir) {
         boolean status = Executrix.cleanupDirectory(dir);
         if (!status) {
-            logger.debug("Could not remove temp directory " + dir);
+            logger.debug("Could not remove temp directory {}", dir);
         }
     }
 
