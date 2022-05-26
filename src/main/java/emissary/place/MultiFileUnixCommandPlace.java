@@ -537,7 +537,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
 
         if (entries == null || entries.size() == 0) {
-            logger.debug("no messages found in {}", tData.getFilename());
+            logger.debug("no messages found in file.");
             return Collections.emptyList();
         }
 
