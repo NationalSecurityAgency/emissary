@@ -1,68 +1,86 @@
 package emissary.command;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import com.beust.jcommander.JCommander;
+import com.google.common.collect.Lists;
 import emissary.config.ConfigUtil;
 import emissary.test.core.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.FromDataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
-@RunWith(Theories.class)
-public class WhatCommandIT extends UnitTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-    @DataPoints("ProjectBase Options")
+class WhatCommandIT extends UnitTest {
+
     public static final String[] PROJECT_BASE_ARGS = {"-b", "--projectBase"};
-    @DataPoints("Input Options")
     public static final String[] INPUT_ARGS = {"-i", "--input"};
-    @DataPoints("Boolean Options Without Value")
     public static final String[] BOOLEAN_ARGS_WITHOUT_VALUE = {"-r", "--recursive"};
-    @DataPoints("Boolean Options With Value")
     public static final String[] BOOLEAN_ARGS_WITH_VALUE = {"-h", "--header"};
-    @DataPoints("String Options")
     public static final String[] STRING_ARGS = {"--logbackConfig"};
+
     private WhatCommand command;
     private Path baseDir;
     private Path inputDir;
     private final List<String> arguments = new ArrayList<>();
 
-    @Before
+    @TempDir
+    public Path tmpDir;
+
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         command = null;
         baseDir = Paths.get(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
-        inputDir = Files.createTempDirectory("input");
+        inputDir = Files.createDirectory(Paths.get(tmpDir.toString(), "input"));
         arguments.clear();
     }
 
-    @After
+    @AfterEach
     @Override
-    public void tearDown() throws IOException {
+    public void tearDown() throws Exception {
         UnitTestFileUtils.cleanupDirectoryRecursively(inputDir);
     }
 
-    @Theory
-    public void verifyExpectedOptions(@FromDataPoints("ProjectBase Options") String baseDirArg, @FromDataPoints("Input Options") String inputDirArg,
-            @FromDataPoints("String Options") String stringArg, @FromDataPoints("Boolean Options Without Value") String booleanArgWithoutValue,
-            @FromDataPoints("Boolean Options With Value") String booleanArgWithValue) throws Exception {
+    static class CartesianArgumentsProvider implements ArgumentsProvider {
+        List<List<String>> cartesian = Lists.cartesianProduct(
+                Arrays.asList(PROJECT_BASE_ARGS),
+                Arrays.asList(INPUT_ARGS),
+                Arrays.asList(STRING_ARGS),
+                Arrays.asList(BOOLEAN_ARGS_WITHOUT_VALUE),
+                Arrays.asList(BOOLEAN_ARGS_WITH_VALUE));
+
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return cartesian.stream().map(list -> Arguments.of((Object[]) list.toArray(new String[0])));
+        }
+    }
+
+    @ParameterizedTest
+    @ArgumentsSource(CartesianArgumentsProvider.class)
+    void verifyExpectedOptions(String baseDirArg,
+            String inputDirArg,
+            String stringArg,
+            String booleanArgWithoutValue,
+            String booleanArgWithValue) {
         // setup
         arguments.add(baseDirArg);
         arguments.add(baseDir.toString());
@@ -75,11 +93,11 @@ public class WhatCommandIT extends UnitTest {
         arguments.add(Boolean.FALSE.toString());
 
         // test (no exceptions thrown)
-        WhatCommand.parse(WhatCommand.class, arguments);
+        assertDoesNotThrow(() -> WhatCommand.parse(WhatCommand.class, arguments));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void missingInputDirectory() throws Exception {
+    @Test
+    void missingInputDirectory() {
         // setup
         arguments.add(PROJECT_BASE_ARGS[0]);
         arguments.add(baseDir.toString());
@@ -87,14 +105,14 @@ public class WhatCommandIT extends UnitTest {
         arguments.add("missingInputDirectory");
 
         // test
-        WhatCommand.parse(WhatCommand.class, arguments);
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> WhatCommand.parse(WhatCommand.class, arguments));
 
         // verify
-        exception.expectMessage("The option '-i' was configured with path 'missingInputDirectory' which does not exist");
+        assertTrue(thrown.getMessage().contains("The option '-i' was configured with path 'missingInputDirectory' which does not exist"));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void missingConfigDirectory() throws Exception {
+    @Test
+    void missingConfigDirectory() {
         // setup
         arguments.add(PROJECT_BASE_ARGS[0]);
         arguments.add("missingConfigDirectory");
@@ -102,14 +120,14 @@ public class WhatCommandIT extends UnitTest {
         arguments.add(inputDir.toAbsolutePath().toString());
 
         // test
-        WhatCommand.parse(WhatCommand.class, arguments);
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> WhatCommand.parse(WhatCommand.class, arguments));
 
         // verify
-        exception.expectMessage("The option '-b' was configured with path 'missingInputDirectory' which does not exist");
+        assertTrue(thrown.getMessage().contains("The option '-b' was configured with path 'missingConfigDirectory' which does not exist"));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void unreadableInput() throws Exception {
+    @Test
+    void unreadableInput() throws Exception {
         // setup
         arguments.add(PROJECT_BASE_ARGS[0]);
         arguments.add(baseDir.toString());
@@ -119,19 +137,15 @@ public class WhatCommandIT extends UnitTest {
         Files.setPosixFilePermissions(inputDir, perms);
         arguments.add(inputDir.toAbsolutePath().toString());
 
-        try {
-            command = WhatCommand.parse(WhatCommand.class, arguments);
-        } finally {
-            // Reset perms for cleanup
-            perms.add(PosixFilePermission.OWNER_READ);
-            Files.setPosixFilePermissions(inputDir, perms);
-        }
-
         // test
-        command.run(new JCommander());
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> WhatCommand.parse(WhatCommand.class, arguments));
+
+        // Reset perms for cleanup
+        perms.add(PosixFilePermission.OWNER_READ);
+        Files.setPosixFilePermissions(inputDir, perms);
 
         // verify
-        exception.expectMessage("The option '-i' was configured with path '" + inputDir + "' which is not readable");
+        assertTrue(thrown.getMessage().contains("The option '-i' was configured with path '" + inputDir + "' which is not readable"));
     }
 
 }
