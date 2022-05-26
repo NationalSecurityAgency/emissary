@@ -1,10 +1,10 @@
 package emissary.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,27 +12,27 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SimpleNioParserTest extends UnitTest {
+class SimpleNioParserTest extends UnitTest {
 
     private Path testDataFile;
     private FileChannel channel;
     private static final int DATALEN = 1000;
     RandomAccessFile raf = null;
 
-
     @Test
-    public void testInterface() {
+    void testInterface() {
         // Compile should test this but in case anyone changes it
         // They will have to look here :-)
         try {
             SimpleNioParser sp = new SimpleNioParser(channel);
-            assertTrue("SimpleParser interface definition", sp instanceof SessionParser);
+            assertTrue(sp instanceof SessionParser, "SimpleParser interface definition");
         } catch (ParserException ex) {
             fail(ex.getMessage());
         }
@@ -40,28 +40,26 @@ public class SimpleNioParserTest extends UnitTest {
 
 
     @Test
-    public void testDataSlicing() throws ParserException, ParserEOFException {
+    void testDataSlicing() throws ParserException {
         SimpleNioParser sp = new SimpleNioParser(channel);
         DecomposedSession sd = sp.getNextSession();
-        assertNotNull("Session object created", sd);
-        assertTrue("Session decomposed", sd.isValid());
-        assertEquals("Data size", DATALEN, sd.getData().length);
+        assertNotNull(sd, "Session object created");
+        assertTrue(sd.isValid(), "Session decomposed");
+        assertEquals(DATALEN, sd.getData().length, "Data size");
     }
 
     @Test
-    public void testNonExistingSession() throws ParserException, ParserEOFException {
+    void testNonExistingSession() throws ParserException {
         SimpleNioParser sp = new SimpleNioParser(channel);
         DecomposedSession sd = sp.getNextSession();
-        assertTrue("Session decomposed", sd.isValid());
-        assertThrows(ParserEOFException.class, () -> sp.getNextSession());
+        assertTrue(sd.isValid(), "Session decomposed");
+        assertThrows(ParserEOFException.class, sp::getNextSession);
     }
 
-    @Before
+    @BeforeEach
     public void initTestDataFile() throws IOException {
         byte[] DATA = new byte[DATALEN];
-        for (int i = 0; i < DATA.length; i++) {
-            DATA[i] = 'a';
-        }
+        Arrays.fill(DATA, (byte) 'a');
 
         // Make test file
         testDataFile = Files.createTempFile("SimpleNioParserTest", ".dat");
@@ -75,7 +73,7 @@ public class SimpleNioParserTest extends UnitTest {
         channel = raf.getChannel();
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws Exception {
         super.tearDown();
         if (channel != null) {
