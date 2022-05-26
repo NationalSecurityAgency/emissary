@@ -1163,8 +1163,8 @@
             <id>run-integration-tests</id>
             <goals>
               <goal>integration-test</goal>
-              <goal>verify</goal>
             </goals>
+            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
