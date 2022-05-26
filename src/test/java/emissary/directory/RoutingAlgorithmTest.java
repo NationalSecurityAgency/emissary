@@ -1,8 +1,8 @@
 package emissary.directory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,11 +14,11 @@ import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class RoutingAlgorithmTest extends UnitTest {
+class RoutingAlgorithmTest extends UnitTest {
     private MyDirectoryPlace dir;
     private IBaseDataObject payload;
     private MyMobileAgent agent;
@@ -26,12 +26,12 @@ public class RoutingAlgorithmTest extends UnitTest {
     private final List<DirectoryEntry> transforms = createTransformEntries();
     private final List<DirectoryEntry> analyzers = createAnalyzeEntries();
 
-    String unknownDataId = "UNKNOWN::ID";
-    String transformDataId = "XFORM::TRANSFORM";
-    String analyzeDataId = "ANALYZE::ANALYZE";
+    // String unknownDataId = "UNKNOWN::ID";
+    // String transformDataId = "XFORM::TRANSFORM";
+    // String analyzeDataId = "ANALYZE::ANALYZE";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -42,7 +42,7 @@ public class RoutingAlgorithmTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         this.dir.clearAllEntries();
@@ -51,7 +51,7 @@ public class RoutingAlgorithmTest extends UnitTest {
     }
 
     private static List<DirectoryEntry> createUnknownEntries() {
-        final List<DirectoryEntry> unknowns = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> unknowns = new ArrayList<>();
         unknowns.add(new DirectoryEntry("UNKNOWN.s1.ID.http://example.com:8001/U$5050"));
         unknowns.add(new DirectoryEntry("UNKNOWN.s2.ID.http://example.com:8001/U$5060"));
         unknowns.add(new DirectoryEntry("UNKNOWN.s3.ID.http://example.com:8001/U$6050"));
@@ -60,7 +60,7 @@ public class RoutingAlgorithmTest extends UnitTest {
     }
 
     private static List<DirectoryEntry> createTransformEntries() {
-        final List<DirectoryEntry> transforms = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> transforms = new ArrayList<>();
         transforms.add(new DirectoryEntry("XFORM.s1.TRANSFORM.http://example.com:8001/T$5050"));
         transforms.add(new DirectoryEntry("XFORM.s2.TRANSFORM.http://example.com:8001/T$5060"));
         transforms.add(new DirectoryEntry("XFORM.s3.TRANSFORM.http://example.com:8001/T$6050"));
@@ -69,7 +69,7 @@ public class RoutingAlgorithmTest extends UnitTest {
     }
 
     private static List<DirectoryEntry> createAnalyzeEntries() {
-        final List<DirectoryEntry> analyzers = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> analyzers = new ArrayList<>();
         analyzers.add(new DirectoryEntry("ANALYZE.s1.ANALYZE.http://example.com:8001/A$5050"));
         analyzers.add(new DirectoryEntry("ANALYZE.s2.ANALYZE.http://example.com:8001/A$5060"));
         analyzers.add(new DirectoryEntry("ANALYZE.s3.ANALYZE.http://example.com:8001/A$6050"));
@@ -84,65 +84,65 @@ public class RoutingAlgorithmTest extends UnitTest {
     }
 
     @Test
-    public void testFindsBuriedCurrentFormAndPullsToTop() {
+    void testFindsBuriedCurrentFormAndPullsToTop() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.pushCurrentForm("FOO");
         this.payload.pushCurrentForm("BAR");
         final int oldSize = this.payload.currentFormSize();
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Next keys returns lowest cost", this.unknowns.get(0).getKey(), result.getKey());
-        assertEquals("Form stack must have same size", oldSize, this.payload.currentFormSize());
-        assertEquals("Payload form used pulled to top", "UNKNOWN", this.payload.currentForm());
+        assertEquals(this.unknowns.get(0).getKey(), result.getKey(), "Next keys returns lowest cost");
+        assertEquals(oldSize, this.payload.currentFormSize(), "Form stack must have same size");
+        assertEquals("UNKNOWN", this.payload.currentForm(), "Payload form used pulled to top");
     }
 
     @Test
-    public void testIdsInOrderWithNullLastPlace() {
+    void testIdsInOrderWithNullLastPlace() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Next keys returns lowest cost", this.unknowns.get(0).getKey(), result.getKey());
+        assertEquals(this.unknowns.get(0).getKey(), result.getKey(), "Next keys returns lowest cost");
     }
 
     @Test
-    public void testIdsInOrderWithCheaperLastPlace() {
+    void testIdsInOrderWithCheaperLastPlace() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Next keys should return next in cost/quality order", this.unknowns.get(1).getKey(), result.getKey());
+        assertEquals(this.unknowns.get(1).getKey(), result.getKey(), "Next keys should return next in cost/quality order");
     }
 
     @Test
-    public void testIdsInOrderGettingLastPlaceOnList() {
+    void testIdsInOrderGettingLastPlaceOnList() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory(this.unknowns.get(this.unknowns.size() - 2).getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Next keys returns next cost", this.unknowns.get(this.unknowns.size() - 1).getKey(), result.getKey());
+        assertEquals(this.unknowns.get(this.unknowns.size() - 1).getKey(), result.getKey(), "Next keys returns next cost");
     }
 
     @Test
-    public void testIdsInOrderGettingNoResultAtEndOfList() {
+    void testIdsInOrderGettingNoResultAtEndOfList() {
         this.dir.addTestEntries(this.unknowns);
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory(this.unknowns.get(this.unknowns.size() - 1).getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Result must be null with all unknown entries loaded not " + result, result);
+        assertNull(result, "Result must be null with all unknown entries loaded not " + result);
     }
 
     @Test
-    public void testHighestIdWithAllEntriesLoaded() {
+    void testHighestIdWithAllEntriesLoaded() {
         loadAllTestEntries();
         this.unknowns.get(this.unknowns.size() - 1);
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory(this.unknowns.get(this.unknowns.size() - 1).getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Result must be null with all entries loaded not " + result, result);
+        assertNull(result, "Result must be null with all entries loaded not " + result);
     }
 
     @Test
-    public void testBackToIdPhaseAfterTransform() {
+    void testBackToIdPhaseAfterTransform() {
         final DirectoryEntry lastPlace = new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/T$7050");
         this.dir.addTestEntry(new DirectoryEntry("FOO.s1.ID.http://example.com:8001/I$7050"));
         this.dir.addTestEntry(lastPlace);
@@ -151,11 +151,11 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("FOO");
         this.payload.appendTransformHistory(lastPlace.getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Should go to ID place after transform", "ID", result.getServiceType());
+        assertEquals("ID", result.getServiceType(), "Should go to ID place after transform");
     }
 
     @Test
-    public void testNotBackToIdPhaseAfterAnalyze() {
+    void testNotBackToIdPhaseAfterAnalyze() {
         final DirectoryEntry lastPlace = new DirectoryEntry("FOO.s3.ANALYZE.http://example.com:8001/T$7050");
         this.dir.addTestEntry(new DirectoryEntry("FOO.s1.ID.http://example.com:8001/I$7050"));
         this.dir.addTestEntry(new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/A$7050"));
@@ -164,11 +164,11 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("FOO");
         this.payload.appendTransformHistory(lastPlace.getFullKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Should not return to ID place after analyze", result);
+        assertNull(result, "Should not return to ID place after analyze");
     }
 
     @Test
-    public void testCheckTransformProxyWithTwoFormsDoesNotRepeat() {
+    void testCheckTransformProxyWithTwoFormsDoesNotRepeat() {
         loadAllTestEntries();
 
         // Same place, two service proxy values
@@ -183,23 +183,23 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("No place remains without looping error but we got " + result + " on " + this.payload.getAllCurrentForms() + " lastPlace="
-                + this.payload.getLastPlaceVisited(), result);
+        assertNull(result, "No place remains without looping error but we got " + result + " on " + this.payload.getAllCurrentForms() + " lastPlace="
+                + this.payload.getLastPlaceVisited());
     }
 
     @Test
-    public void testCannotProceedPastMaxItinerarySteps() {
+    void testCannotProceedPastMaxItinerarySteps() {
         loadAllTestEntries();
         this.payload.pushCurrentForm("UNKNOWN");
         for (int i = 0; i <= this.agent.getMaxItinerarySteps(); i++) {
             this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
         }
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Must not proceed past MAX steps but we got " + result, result);
+        assertNull(result, "Must not proceed past MAX steps but we got " + result);
     }
 
     @Test
-    public void testCannotProceedPastMaxItineraryStepsWithSetValue() {
+    void testCannotProceedPastMaxItineraryStepsWithSetValue() {
         loadAllTestEntries();
         this.payload.pushCurrentForm("UNKNOWN");
         this.agent.setMaxItinerarySteps(10);
@@ -207,42 +207,42 @@ public class RoutingAlgorithmTest extends UnitTest {
             this.payload.appendTransformHistory(this.unknowns.get(0).getFullKey());
         }
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Must not proceed past MAX steps but we got " + result, result);
+        assertNull(result, "Must not proceed past MAX steps but we got " + result);
     }
 
     @Test
-    public void testContractWithNextKeysPlace() {
+    void testContractWithNextKeysPlace() {
         loadAllTestEntries();
         this.payload.pushCurrentForm("UNKNOWN");
         final DirectoryEntry result = this.agent.getNextKeyAccess(null, this.payload);
-        assertNull("Must not return result with null place", result);
+        assertNull(result, "Must not return result with null place");
     }
 
     @Test
-    public void testContractWithNextKeysPayload() {
+    void testContractWithNextKeysPayload() {
         loadAllTestEntries();
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, null);
-        assertNull("Must not return result with null payload", result);
+        assertNull(result, "Must not return result with null payload");
     }
 
     @Test
-    public void testPayloadWithNoCurrentForm() {
+    void testPayloadWithNoCurrentForm() {
         loadAllTestEntries();
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Must not return result when payload has no current form", result);
+        assertNull(result, "Must not return result when payload has no current form");
     }
 
     @Test
-    public void testPayloadWithDoneForm() {
+    void testPayloadWithDoneForm() {
         loadAllTestEntries();
         this.dir.addTestEntry(new DirectoryEntry("DONE.d1.IO.http://example.com:8001/D$5050"));
         this.payload.pushCurrentForm(emissary.core.Form.DONE);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Must not return result when payload has DONE form", result);
+        assertNull(result, "Must not return result when payload has DONE form");
     }
 
     @Test
-    public void testErrorHandlingPopsCurrentForms() {
+    void testErrorHandlingPopsCurrentForms() {
         loadAllTestEntries();
         final DirectoryEntry eplace = new DirectoryEntry("ERROR.e1.IO.http://example.com:8001/E$5050");
         this.dir.addTestEntry(eplace);
@@ -251,12 +251,12 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("BAZ");
         this.payload.pushCurrentForm(emissary.core.Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Routing to error handling place should occur", eplace.getKey(), result.getKey());
-        assertEquals("Routing to error handling place removes other forms", 1, this.payload.currentFormSize());
+        assertEquals(eplace.getKey(), result.getKey(), "Routing to error handling place should occur");
+        assertEquals(1, this.payload.currentFormSize(), "Routing to error handling place removes other forms");
     }
 
     @Test
-    public void testErrorHandlingErrorPopsAllCurrentForms() {
+    void testErrorHandlingErrorPopsAllCurrentForms() {
         loadAllTestEntries();
         final DirectoryEntry eplace = new DirectoryEntry("ERROR.e1.IO.http://example.com:8001/E$5050");
         this.dir.addTestEntry(eplace);
@@ -264,12 +264,12 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm(emissary.core.Form.ERROR);
         this.payload.pushCurrentForm(emissary.core.Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Error in error handling place removes all forms", 0, this.payload.currentFormSize());
-        assertNull("Error in Error handling must not re-route to error handler but we got " + result, result);
+        assertEquals(0, this.payload.currentFormSize(), "Error in error handling place removes all forms");
+        assertNull(result, "Error in Error handling must not re-route to error handler but we got " + result);
     }
 
     @Test
-    public void testNoRepeatWhenTransformAddsFormButDoesNotRemoveOwnProxyAndIsntEvenOnTop() {
+    void testNoRepeatWhenTransformAddsFormButDoesNotRemoveOwnProxyAndIsntEvenOnTop() {
         loadAllTestEntries();
         final DirectoryEntry foo = new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/T$7050");
         final DirectoryEntry bar = new DirectoryEntry("BAR.s2.ANALYZE.http://example.com:8001/A$1050");
@@ -282,12 +282,12 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNotNull("Must move along to analyze with current form of xform still on stack", result);
-        assertEquals("Must move along to analyze even with current form of xform place still on stack", bar.getKey(), result.getKey());
+        assertNotNull(result, "Must move along to analyze with current form of xform still on stack");
+        assertEquals(bar.getKey(), result.getKey(), "Must move along to analyze even with current form of xform place still on stack");
     }
 
     @Test
-    public void testVisitedPlaceNoRepeatListForAnalyzeStage() {
+    void testVisitedPlaceNoRepeatListForAnalyzeStage() {
         loadAllTestEntries();
         final DirectoryEntry foo = new DirectoryEntry("FOO.s2.ANALYZE.http://example.com:8001/A$7050");
         final DirectoryEntry bar = new DirectoryEntry("BAR.s2.ANALYZE.http://example.com:8001/A$1050");
@@ -300,11 +300,11 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNull("Must not repeat analyze place even with two forms but we got " + result, result);
+        assertNull(result, "Must not repeat analyze place even with two forms but we got " + result);
     }
 
     @Test
-    public void testNoRepeatWhenTransformAddsFormButDoesNotRemoveOwnProxy() {
+    void testNoRepeatWhenTransformAddsFormButDoesNotRemoveOwnProxy() {
         loadAllTestEntries();
         final DirectoryEntry foo = new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/T$7050");
         final DirectoryEntry bar = new DirectoryEntry("BAR.s2.ANALYZE.http://example.com:8001/A$1050");
@@ -317,31 +317,31 @@ public class RoutingAlgorithmTest extends UnitTest {
         this.payload.appendTransformHistory(foo.getFullKey());
 
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertNotNull("Must move along to analyze with current form of xform still on stack", result);
-        assertEquals("Must move along to analyze even with current form of xform place still on stack", bar.getKey(), result.getKey());
+        assertNotNull(result, "Must move along to analyze with current form of xform still on stack");
+        assertEquals(bar.getKey(), result.getKey(), "Must move along to analyze even with current form of xform place still on stack");
     }
 
     @Test
-    public void testNextKeyFromQueue() {
+    void testNextKeyFromQueue() {
         loadAllTestEntries();
         final DirectoryEntry foo = new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/T$7050");
         this.agent.addEntryToQueue(foo);
         final int sz = this.agent.queueSize();
         this.payload.pushCurrentForm("BAR");
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Next key must be from queue when queue non-empty", foo.getKey(), result.getKey());
-        assertEquals("Queue should drain by one", sz - 1, this.agent.queueSize());
+        assertEquals(foo.getKey(), result.getKey(), "Next key must be from queue when queue non-empty");
+        assertEquals(sz - 1, this.agent.queueSize(), "Queue should drain by one");
     }
 
     @Test
-    public void testCompleteKeyRouting() {
+    void testCompleteKeyRouting() {
         loadAllTestEntries();
         final DirectoryEntry foo1 = new DirectoryEntry("FOO.s2.TRANSFORM.http://example.com:8001/T$7050");
         final DirectoryEntry foo2 = new DirectoryEntry("FOO.s3.TRANSFORM.http://example.com:9999/T$7050");
         this.dir.addTestEntry(foo1);
         this.payload.pushCurrentForm(foo2.getKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
-        assertEquals("Routing must take place to fully qualified key", foo2.getKey(), result.getKey());
+        assertEquals(foo2.getKey(), result.getKey(), "Routing must take place to fully qualified key");
     }
 
     /**

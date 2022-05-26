@@ -1,10 +1,10 @@
 package emissary.directory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 
@@ -12,12 +12,14 @@ import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.FunctionalTest;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FTestPeerDirectoryPlace extends FunctionalTest {
+class FTestPeerDirectoryPlace extends FunctionalTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FTestPeerDirectoryPlace.class);
 
@@ -25,9 +27,9 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
     private IDirectoryPlace peer2 = null;
     private IDirectoryPlace peer3 = null;
 
-    private DOHitCounter hcpeer1 = new DOHitCounter();
-    private DOHitCounter hcpeer2 = new DOHitCounter();
-    private DOHitCounter hcpeer3 = new DOHitCounter();
+    private final DOHitCounter hcpeer1 = new DOHitCounter();
+    private final DOHitCounter hcpeer2 = new DOHitCounter();
+    private final DOHitCounter hcpeer3 = new DOHitCounter();
 
     private long SPEED_FACTOR = 1L; // slow down all the pauses if needed
 
@@ -39,7 +41,7 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
     private boolean allTestsCompleted = false;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         setConfig(System.getProperty("java.io.tmpdir", "."), true);
 
@@ -51,7 +53,7 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         if (logger.isDebugEnabled() && !this.allTestsCompleted) {
@@ -80,23 +82,24 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
 
     }
 
-    @org.junit.Test
-    public void testDirectories() throws Exception {
+    @Disabled("UnsupportedOperationException: We no longer use a tmp directory, fix this")
+    @Test
+    void testDirectories() throws Exception {
         // Check things about peer1 on 8005, a statically configured peer
         logger.debug("STARTING PEER1 on 8005");
-        assertNotNull("Peer1 directory found", this.peer1);
-        assertTrue("Peer1 key has port", this.peer1.getKey().indexOf("8005") > -1);
+        assertNotNull(this.peer1, "Peer1 directory found");
+        assertTrue(this.peer1.getKey().contains("8005"), "Peer1 key has port");
         Set<String> peers = this.peer1.getPeerDirectories();
-        assertNotNull("Peer1 has peers", peers);
-        assertTrue("Peer1 has peers", peers.size() > 0);
+        assertNotNull(peers, "Peer1 has peers");
+        assertTrue(peers.size() > 0, "Peer1 has peers");
         boolean foundother = false;
         for (final String other : peers) {
-            if (other.indexOf("localhost:9005") > -1) {
+            if (other.contains("localhost:9005")) {
                 foundother = true;
                 break;
             }
         }
-        assertTrue("Peer1 knows about peer2", foundother);
+        assertTrue(foundother, "Peer1 knows about peer2");
 
         // Start peer2 on 9005, a second statically configured peer
         logger.debug("STARTING PEER2 on 9005");
@@ -105,46 +108,46 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         this.peer2.heartbeatRemoteDirectory(this.peer1.getKey());
         this.peer1.heartbeatRemoteDirectory(this.peer2.getKey());
         pause(this.SPEED_FACTOR * 250);
-        assertNotNull("Peer2 directory found", this.peer2);
-        assertNotSame("Peer1 and peer2 are distinct", this.peer1, this.peer2);
-        assertTrue("Peer2 key has port", this.peer2.getKey().indexOf("9005") > -1);
+        assertNotNull(this.peer2, "Peer2 directory found");
+        assertNotSame(this.peer1, this.peer2, "Peer1 and peer2 are distinct");
+        assertTrue(this.peer2.getKey().contains("9005"), "Peer2 key has port");
 
         // See the the directories have peered with each other
         logger.debug("Checking peering between peer1 and peer2");
         peers = this.peer2.getPeerDirectories();
         foundother = false;
-        assertNotNull("Peer2 has peers", peers);
-        assertTrue("Peer2 has peers", peers.size() > 0);
+        assertNotNull(peers, "Peer2 has peers");
+        assertTrue(peers.size() > 0, "Peer2 has peers");
         for (final String other : peers) {
-            if (other.indexOf("localhost:8005") > -1) {
+            if (other.contains("localhost:8005")) {
                 foundother = true;
                 break;
             }
         }
-        assertTrue("Peer2 knows about peer2", foundother);
+        assertTrue(foundother, "Peer2 knows about peer2");
 
         // See the the directories have correct costs for each other
         String dataId = KeyManipulator.getDataID(this.peer1.getKey());
         DirectoryEntryList dl1 = this.peer1.getEntryList(dataId);
         final DirectoryEntryList dl2 = this.peer2.getEntryList(dataId);
-        assertNotNull("Directory entries in peer1", dl1);
-        assertNotNull("Directory entries in peer2", dl2);
-        assertEquals("Have entries for both peers", 2, dl1.size());
-        assertEquals("Have entries for both peers", 2, dl2.size());
+        assertNotNull(dl1, "Directory entries in peer1");
+        assertNotNull(dl2, "Directory entries in peer2");
+        assertEquals(2, dl1.size(), "Have entries for both peers");
+        assertEquals(2, dl2.size(), "Have entries for both peers");
 
         DirectoryEntry dl1d0 = dl1.getEntry(0);
         DirectoryEntry dl1d1 = dl1.getEntry(1);
-        assertEquals("Cost of local in peer1", 50, dl1d0.getCost());
-        assertEquals("Cost of remote in peer1", 50 + IDirectoryPlace.REMOTE_COST_OVERHEAD, dl1d1.getCost());
+        assertEquals(50, dl1d0.getCost(), "Cost of local in peer1");
+        assertEquals(50 + IDirectoryPlace.REMOTE_COST_OVERHEAD, dl1d1.getCost(), "Cost of remote in peer1");
 
         final DirectoryEntry dl2d0 = dl2.getEntry(0);
         final DirectoryEntry dl2d1 = dl2.getEntry(1);
-        assertEquals("Cost of local in peer2", 50, dl2d0.getCost());
-        assertEquals("Cost of remote in peer2", 50 + IDirectoryPlace.REMOTE_COST_OVERHEAD, dl2d1.getCost());
+        assertEquals(50, dl2d0.getCost(), "Cost of local in peer2");
+        assertEquals(50 + IDirectoryPlace.REMOTE_COST_OVERHEAD, dl2d1.getCost(), "Cost of remote in peer2");
 
         // Test path weight
         final int pathWeight = dl1d1.getPathWeight();
-        assertTrue("Path weight is filled in in peer entry", pathWeight > 0);
+        assertTrue(pathWeight > 0, "Path weight is filled in in peer entry");
 
         // Try to issue a transient failure to affect the path weight
         logger.debug("Forcing a failure of peer2 as seen by peer1");
@@ -159,7 +162,7 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
 
         // It should go down due to the failure, but the increment is not
         // part of the public api, so just check that it is lower
-        assertTrue("Path weight should decrease on failure, had " + pathWeight + " and now " + newPathWeight, newPathWeight < pathWeight);
+        assertTrue(newPathWeight < pathWeight, "Path weight should decrease on failure, had " + pathWeight + " and now " + newPathWeight);
 
         // Start peer3 on 7005 a non-statically configured peer
         logger.debug("STARTING PEER3 on 7005");
@@ -170,67 +173,67 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         this.peer1.heartbeatRemoteDirectory(this.peer3.getKey());
         this.peer2.heartbeatRemoteDirectory(this.peer3.getKey());
         pause(this.SPEED_FACTOR * 250);
-        assertNotNull("Peer3 directory found", this.peer3);
-        assertNotSame("Peer1 and peer3 are distinct", this.peer1, this.peer3);
-        assertNotSame("Peer2 and peer3 are distinct", this.peer2, this.peer3);
-        assertTrue("Peer3 key has port", this.peer3.getKey().indexOf("7005") > -1);
-        assertEquals("Peer3 has 2 peers", 2, this.peer3.getPeerDirectories().size());
-        assertEquals("Peer2 has 2 peers", 2, this.peer2.getPeerDirectories().size());
-        assertEquals("Peer1 has 2 peers", 2, this.peer1.getPeerDirectories().size());
-        assertEquals("Peer observer called", 1, this.hcpeer2.peerUpdate);
-        assertEquals("Peer observer set size", 2, this.hcpeer2.lastPeerSetSize);
+        assertNotNull(this.peer3, "Peer3 directory found");
+        assertNotSame(this.peer1, this.peer3, "Peer1 and peer3 are distinct");
+        assertNotSame(this.peer2, this.peer3, "Peer2 and peer3 are distinct");
+        assertTrue(this.peer3.getKey().contains("7005"), "Peer3 key has port");
+        assertEquals(2, this.peer3.getPeerDirectories().size(), "Peer3 has 2 peers");
+        assertEquals(2, this.peer2.getPeerDirectories().size(), "Peer2 has 2 peers");
+        assertEquals(2, this.peer1.getPeerDirectories().size(), "Peer1 has 2 peers");
+        assertEquals(1, this.hcpeer2.peerUpdate, "Peer observer called");
+        assertEquals(2, this.hcpeer2.lastPeerSetSize, "Peer observer set size");
 
-        assertEquals("Peer observer no change", 1, this.hcpeer2.peerUpdate);
-        assertEquals("Peer observer set size no change", 2, this.hcpeer2.lastPeerSetSize);
+        assertEquals(1, this.hcpeer2.peerUpdate, "Peer observer no change");
+        assertEquals(2, this.hcpeer2.lastPeerSetSize, "Peer observer set size no change");
 
         // Add a place to a peer, check costs
         logger.debug("Starring ToLower place on peer2/9005");
         final IServiceProviderPlace toLower =
                 addPlace("http://localhost:9005/ToLowerPlace", "emissary.place.sample.ToLowerPlace", this.peer2.getKey());
 
-        assertNotNull("ToLower created on peer2", toLower);
+        assertNotNull(toLower, "ToLower created on peer2");
         DirectoryEntry dehome = toLower.getDirectoryEntry();
-        assertNotNull("ToLower directory entry", dehome);
+        assertNotNull(dehome, "ToLower directory entry");
 
         dataId = KeyManipulator.getDataID(toLower.getKey());
         logger.debug("ToLower data id is " + dataId);
         DirectoryEntryList dlpeer1 = this.peer1.getEntryList(dataId);
-        assertNotNull("Tolower dataid list from peer1", dlpeer1);
-        assertEquals("Size of dataid list from peer1", 1, dlpeer1.size());
-        assertEquals("Peer1 cost one hop", dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer1.getEntry(0).getExpense());
+        assertNotNull(dlpeer1, "Tolower dataid list from peer1");
+        assertEquals(1, dlpeer1.size(), "Size of dataid list from peer1");
+        assertEquals(dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer1.getEntry(0).getExpense(), "Peer1 cost one hop");
         DirectoryEntryList dlpeer2 = this.peer2.getEntryList(dataId);
-        assertNotNull("Tolower dataid list from peer2", dlpeer2);
-        assertEquals("Size of dataid list from peer2", 1, dlpeer2.size());
-        assertEquals("Home cost no change in peer2", dehome.getExpense(), dlpeer2.getEntry(0).getExpense());
+        assertNotNull(dlpeer2, "Tolower dataid list from peer2");
+        assertEquals(1, dlpeer2.size(), "Size of dataid list from peer2");
+        assertEquals(dehome.getExpense(), dlpeer2.getEntry(0).getExpense(), "Home cost no change in peer2");
         DirectoryEntryList dlpeer3 = this.peer3.getEntryList(dataId);
-        assertNotNull("Tolower dataid list from peer3", dlpeer3);
-        assertEquals("Size of dataid list from peer3", 1, dlpeer3.size());
-        assertEquals("Peer3 cost one hop", dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer3.getEntry(0).getExpense());
+        assertNotNull(dlpeer3, "Tolower dataid list from peer3");
+        assertEquals(1, dlpeer3.size(), "Size of dataid list from peer3");
+        assertEquals(dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer3.getEntry(0).getExpense(), "Peer3 cost one hop");
 
         final IServiceProviderPlace toUpper =
                 addPlace("http://localhost:8006/ToUpperPlace", "emissary.place.sample.ToUpperPlace", this.peer3.getKey());
 
-        assertNotNull("ToUpper created on peer3", toUpper);
+        assertNotNull(toUpper, "ToUpper created on peer3");
         dehome = toUpper.getDirectoryEntry();
-        assertNotNull("ToUpper directory entry", dehome);
+        assertNotNull(dehome, "ToUpper directory entry");
 
         dataId = KeyManipulator.getDataID(toUpper.getKey());
         logger.debug("ToUpper data id is " + dataId);
         dlpeer1 = this.peer1.getEntryList(dataId);
         logger.debug("From peer1 we have " + dlpeer1);
-        assertNotNull("ToUpper dataid list from peer1", dlpeer1);
-        assertEquals("Size of dataid list from peer1", 1, dlpeer1.size());
-        assertEquals("Peer1 cost one hop", dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer1.getEntry(0).getExpense());
+        assertNotNull(dlpeer1, "ToUpper dataid list from peer1");
+        assertEquals(1, dlpeer1.size(), "Size of dataid list from peer1");
+        assertEquals(dehome.getExpense() + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD, dlpeer1.getEntry(0).getExpense(), "Peer1 cost one hop");
         dlpeer2 = this.peer2.getEntryList(dataId);
         logger.debug("From peer2 we have " + dlpeer2);
-        assertNotNull("Toupper dataid list from peer2", dlpeer2);
-        assertEquals("Size of dataid list from peer2", 1, dlpeer2.size());
-        assertEquals("Peer2 cost two hops", dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 2), dlpeer2.getEntry(0).getExpense());
+        assertNotNull(dlpeer2, "Toupper dataid list from peer2");
+        assertEquals(1, dlpeer2.size(), "Size of dataid list from peer2");
+        assertEquals(dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 2), dlpeer2.getEntry(0).getExpense(), "Peer2 cost two hops");
         dlpeer3 = this.peer3.getEntryList(dataId);
         logger.debug("From peer3 we have " + dlpeer3);
-        assertNotNull("ToUpper dataid list from peer3", dlpeer3);
-        assertEquals("Size of dataid list from peer3", 1, dlpeer3.size());
-        assertEquals("Peer3 cost two hops", dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 2), dlpeer3.getEntry(0).getExpense());
+        assertNotNull(dlpeer3, "ToUpper dataid list from peer3");
+        assertEquals(1, dlpeer3.size(), "Size of dataid list from peer3");
+        assertEquals(dehome.getExpense() + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 2), dlpeer3.getEntry(0).getExpense(), "Peer3 cost two hops");
 
         // Add a proxy to a place
         logger.debug("Adding the FOOBAR proxy to the ToUpper on child1/8006");
@@ -238,25 +241,25 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         final int obsDeregCountBeforeFoobar = this.hcpeer2.placeDeregistered;
         toUpper.addServiceProxy("FOOBAR");
         pause(this.SPEED_FACTOR * 100);
-        assertEquals("New proxy type propagated", obsRegCountBeforeFoobar + 1, this.hcpeer2.placeRegistered);
-        assertEquals("Nothing deregistered", obsDeregCountBeforeFoobar, this.hcpeer2.placeDeregistered);
+        assertEquals(obsRegCountBeforeFoobar + 1, this.hcpeer2.placeRegistered, "New proxy type propagated");
+        assertEquals(obsDeregCountBeforeFoobar, this.hcpeer2.placeDeregistered, "Nothing deregistered");
         DirectoryEntryList foodl = this.peer3.getEntryList("FOOBAR::TRANSFORM");
-        assertNotNull("Data entry list for new proxy", foodl);
-        assertEquals("Entry made in list", 1, foodl.size());
+        assertNotNull(foodl, "Data entry list for new proxy");
+        assertEquals(1, foodl.size(), "Entry made in list");
 
         // Remove the proxy from the place
         logger.debug("Removing the FOOBAR proxy from ToUpper on child1/8006");
         toUpper.removeServiceProxy("FOOBAR");
         pause(this.SPEED_FACTOR * 100);
-        assertEquals("Nothing new registered", obsRegCountBeforeFoobar + 1, this.hcpeer2.placeRegistered);
-        assertEquals("Proxy deregistered notification", obsDeregCountBeforeFoobar + 1, this.hcpeer2.placeDeregistered);
+        assertEquals(obsRegCountBeforeFoobar + 1, this.hcpeer2.placeRegistered, "Nothing new registered");
+        assertEquals(obsDeregCountBeforeFoobar + 1, this.hcpeer2.placeDeregistered, "Proxy deregistered notification");
         foodl = this.peer3.getEntryList("FOOBAR::TRANSFORM");
-        assertNotNull("Data entry list for new proxy", foodl);
-        assertEquals("Entry should be removed from list", 0, foodl.size());
+        assertNotNull(foodl, "Data entry list for new proxy");
+        assertEquals(0, foodl.size(), "Entry should be removed from list");
         dataId = KeyManipulator.getDataID(toUpper.getKey());
         foodl = this.peer2.getEntryList(dataId);
-        assertNotNull("Primary proxy for ToUpper should still work", foodl);
-        assertEquals("Entry still in list", 1, foodl.size());
+        assertNotNull(foodl, "Primary proxy for ToUpper should still work");
+        assertEquals(1, foodl.size(), "Entry still in list");
 
         // Build a payload and verify proper keys selected on peer1
         logger.debug("STARTING PAYLOAD RELAY FROM PEER TO CHILD");
@@ -264,37 +267,37 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         payload.appendTransformHistory("UNKNOWN.UNIXFILE.ID.http://localhost:9005/UnixFilePlace");
         payload.appendTransformHistory("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8005/DirectoryPlace");
         this.peer1.process(payload);
-        assertEquals("Child key selected for payload", "LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8006/ToUpperPlace", payload.currentForm());
+        assertEquals("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8006/ToUpperPlace", payload.currentForm(), "Child key selected for payload");
 
         logger.debug("STARTING PAYLOAD RELAY FROM CHILD TO PEER");
         payload = new BaseDataObject("test data".getBytes(), "test object", "UPPER_CASE");
         payload.appendTransformHistory("UNKNOWN.UNIXFILE.ID.http://localhost:8006/UnixFilePlace");
         payload.appendTransformHistory("UPPER_CASE.TO_LOWER.TRANSFORM.http://localhost:8005/DirectoryPlace");
         this.peer1.process(payload);
-        assertEquals("Peer key selected for payload", "UPPER_CASE.TO_LOWER.TRANSFORM.http://localhost:9005/ToLowerPlace", payload.currentForm());
+        assertEquals("UPPER_CASE.TO_LOWER.TRANSFORM.http://localhost:9005/ToLowerPlace", payload.currentForm(), "Peer key selected for payload");
 
-        assertFalse("Peer2 should not be in sync with bogus remote",
-                this.peer2.isRemoteDirectoryAvailable("DIRECTORY.EMISSARY_DIRECTORY_SERVICES.STUDY.http://foo.example.com:12345/DirectoryPlace"));
+        assertFalse(this.peer2.isRemoteDirectoryAvailable("DIRECTORY.EMISSARY_DIRECTORY_SERVICES.STUDY.http://foo.example.com:12345/DirectoryPlace"),
+                "Peer2 should not be in sync with bogus remote");
 
         pause(this.SPEED_FACTOR * 250);
 
         // Add a place to a grandchild2
         final IServiceProviderPlace devnull =
                 addPlace("http://localhost:9007/DevNullPlace", "emissary.place.sample.DevNullPlace", this.peer2.getKey());
-        assertNotNull("DevNull created on grandchild2", devnull);
+        assertNotNull(devnull, "DevNull created on grandchild2");
         final DirectoryEntry dnde = devnull.getDirectoryEntry();
-        assertNotNull("DevNull directory entry", dnde);
+        assertNotNull(dnde, "DevNull directory entry");
 
         assertEquals(
-                "DevNull place advertised on peer2(grandparent)",
                 1,
                 this.peer2.getMatchingEntries(
-                        dnde.getDataType() + ".*." + dnde.getServiceType() + "." + KeyManipulator.getServiceLocation(this.peer2.getKey())).size());
+                        dnde.getDataType() + ".*." + dnde.getServiceType() + "." + KeyManipulator.getServiceLocation(this.peer2.getKey())).size(),
+                "DevNull place advertised on peer2(grandparent)");
         assertEquals(
-                "DevNull place advertised on peer1(peer of grandparent)",
                 1,
                 this.peer1.getMatchingEntries(
-                        dnde.getDataType() + ".*." + dnde.getServiceType() + "." + KeyManipulator.getServiceLocation(this.peer2.getKey())).size());
+                        dnde.getDataType() + ".*." + dnde.getServiceType() + "." + KeyManipulator.getServiceLocation(this.peer2.getKey())).size(),
+                "DevNull place advertised on peer1(peer of grandparent)");
 
         // Verify the routing from DevNull to ToUpper
         // Should go from grandchild2 > child2 > peer2 > peer1 > child1
@@ -303,8 +306,9 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         payload.appendTransformHistory(devnull.getKey());
 
         // Should be proxy key on peer2
-        assertEquals("Grand parent key should have been selected for payload", "LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:9005/DirectoryPlace",
-                payload.currentForm());
+        assertEquals("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:9005/DirectoryPlace",
+                payload.currentForm(),
+                "Grand parent key should have been selected for payload");
         // Simulate Move to peer2
         payload.appendTransformHistory(KeyManipulator.addExpense(payload.currentForm(), upperde.getExpense()
                 + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 3)));
@@ -314,8 +318,9 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         this.peer2.process(payload);
 
         // Should be proxy key on peer1
-        assertEquals("Peer1 proxy key should have been selected for payload", "LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8005/DirectoryPlace",
-                payload.currentForm());
+        assertEquals("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8005/DirectoryPlace",
+                payload.currentForm(),
+                "Peer1 proxy key should have been selected for payload");
         // Simulate Move to peer1
         payload.appendTransformHistory(KeyManipulator.addExpense(payload.currentForm(), upperde.getExpense()
                 + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 2)));
@@ -325,30 +330,30 @@ public class FTestPeerDirectoryPlace extends FunctionalTest {
         this.peer1.process(payload);
 
         // Should be actual key on child1
-        assertEquals("Child1 key should have been selected for payload", toUpper.getKey(), payload.currentForm());
+        assertEquals(toUpper.getKey(), payload.currentForm(), "Child1 key should have been selected for payload");
 
         // Simulate Move to child1
         payload.appendTransformHistory(KeyManipulator.addExpense(payload.currentForm(), upperde.getExpense()
-                + (IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD * 1)));
+                + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD));
 
         // ======================== SHUTTING DOWN ==============================
 
         // Remove the observer
         final boolean obsDeleted = this.peer2.deleteObserver(this.hcpeer2);
-        assertTrue("Observer was deleted", obsDeleted);
+        assertTrue(obsDeleted, "Observer was deleted");
 
         this.allTestsCompleted = true;
     }
 
     public void verifyObserver(final DOHitCounter h, final String msg) {
-        assertEquals("Obs reg count " + msg, h.exp_placeRegistered, h.placeRegistered);
-        assertEquals("Obs dereg count " + msg, h.exp_placeDeregistered, h.placeDeregistered);
-        assertEquals("Obs chadd count " + msg, h.exp_childAdded, h.childAdded);
-        assertEquals("Obs chrm count " + msg, h.exp_childRemoved, h.childRemoved);
-        assertEquals("Obs cce count " + msg, h.exp_placeCostChanged, h.placeCostChanged);
+        assertEquals(h.exp_placeRegistered, h.placeRegistered, "Obs reg count " + msg);
+        assertEquals(h.exp_placeDeregistered, h.placeDeregistered, "Obs dereg count " + msg);
+        assertEquals(h.exp_childAdded, h.childAdded, "Obs chadd count " + msg);
+        assertEquals(h.exp_childRemoved, h.childRemoved, "Obs chrm count " + msg);
+        assertEquals(h.exp_placeCostChanged, h.placeCostChanged, "Obs cce count " + msg);
 
-        assertEquals("Obs peer count " + msg, h.exp_peerUpdate, h.peerUpdate);
-        assertEquals("Obs peer size " + msg, h.exp_lastPeerSetSize, h.lastPeerSetSize);
+        assertEquals(h.exp_peerUpdate, h.peerUpdate, "Obs peer count " + msg);
+        assertEquals(h.exp_lastPeerSetSize, h.lastPeerSetSize, "Obs peer size " + msg);
     }
 
     /**

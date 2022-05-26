@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class KffChainTest extends UnitTest {
+class KffChainTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
     @Test
-    public void testAlgorithmsUsedWithAddAlgorithm() {
+    void testAlgorithmsUsedWithAddAlgorithm() {
         KffChain chain = new KffChain();
         chain.addAlgorithm("MD5");
         chain.addAlgorithm("SHA-1");
@@ -40,9 +40,9 @@ public class KffChainTest extends UnitTest {
     }
 
     @Test
-    public void testAlgorithmsUsedWithSetAlgorithm() {
+    void testAlgorithmsUsedWithSetAlgorithm() {
         KffChain chain = new KffChain();
-        List<String> myAlgs = new ArrayList<String>();
+        List<String> myAlgs = new ArrayList<>();
         myAlgs.add("MD5");
         myAlgs.add("SHA-1");
         myAlgs.add("SHA-256");
@@ -63,9 +63,9 @@ public class KffChainTest extends UnitTest {
     }
 
     @Test
-    public void testComputationsOnEmptyFilterChain() {
+    void testComputationsOnEmptyFilterChain() {
         KffChain chain = new KffChain();
-        List<String> myAlgs = new ArrayList<String>();
+        List<String> myAlgs = new ArrayList<>();
         myAlgs.add("MD5");
         myAlgs.add("SHA-1");
         myAlgs.add("SHA-256");

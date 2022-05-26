@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ChecksumCalculatorTest extends UnitTest {
+class ChecksumCalculatorTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
@@ -27,7 +27,7 @@ public class ChecksumCalculatorTest extends UnitTest {
     static final String DATA_SSDEEP = "3:hMCEpn:hup";
 
     @Test
-    public void testNoArgCtor() {
+    void testNoArgCtor() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator();
             ChecksumResults cr = cc.digest(DATA);
@@ -44,7 +44,7 @@ public class ChecksumCalculatorTest extends UnitTest {
     }
 
     @Test
-    public void testSpecifiedArgWithCrc() {
+    void testSpecifiedArgWithCrc() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator("SHA-1", true);
             ChecksumResults cr = cc.digest(DATA);
@@ -63,7 +63,7 @@ public class ChecksumCalculatorTest extends UnitTest {
     }
 
     @Test
-    public void testSpecifiedArgWitouthCrc() {
+    void testSpecifiedArgWitouthCrc() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator("SHA-1", false);
             ChecksumResults cr = cc.digest(DATA);
@@ -81,7 +81,7 @@ public class ChecksumCalculatorTest extends UnitTest {
     }
 
     @Test
-    public void testSpecifiedArgWithCrcAsList() {
+    void testSpecifiedArgWithCrcAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "CRC32"});
             ChecksumResults cr = cc.digest(DATA);
@@ -100,7 +100,7 @@ public class ChecksumCalculatorTest extends UnitTest {
     }
 
     @Test
-    public void testSpecifiedArgWithoutCrcAsList() {
+    void testSpecifiedArgWithoutCrcAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1"});
             ChecksumResults cr = cc.digest(DATA);
@@ -120,7 +120,7 @@ public class ChecksumCalculatorTest extends UnitTest {
 
 
     @Test
-    public void testMultipleShaVariantsSpecifiedAsList() {
+    void testMultipleShaVariantsSpecifiedAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256", "SSDEEP"});
             cc.setUseSsdeep(true);

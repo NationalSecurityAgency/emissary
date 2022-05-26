@@ -1,6 +1,6 @@
 package emissary.id;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
@@ -8,20 +8,20 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class IdPlaceTest extends UnitTest {
+class IdPlaceTest extends UnitTest {
 
     MyIdPlace place;
 
-    @Before
+    @BeforeEach
     public void setupPlace() throws Exception {
         place = new MyIdPlace();
     }
 
-    @After
+    @AfterEach
     public void teardownPlace() throws Exception {
         super.tearDown();
         place.shutDown();
@@ -29,53 +29,53 @@ public class IdPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testFormRenaming() {
-        assertEquals("Rename form when specified in config", "IN_WITH_THE_NEW", place.checkRenamedForm("OUT_WITH_THE_OLD"));
-        assertEquals("Do not change form when not specified as a rename", "XYZZY", place.checkRenamedForm("XYZZY"));
+    void testFormRenaming() {
+        assertEquals("IN_WITH_THE_NEW", place.checkRenamedForm("OUT_WITH_THE_OLD"), "Rename form when specified in config");
+        assertEquals("XYZZY", place.checkRenamedForm("XYZZY"), "Do not change form when not specified as a rename");
     }
 
     @Test
-    public void testUnknownFormProcessing() throws Exception {
+    void testUnknownFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         place.process(payload);
-        assertEquals("Form is unknown when it is not know or remapped or ignored", "UNKNOWN", payload.currentForm());
-        assertEquals("Form is only unknown when it is not known or remapped or ignored", 1, payload.currentFormSize());
+        assertEquals("UNKNOWN", payload.currentForm(), "Form is unknown when it is not know or remapped or ignored");
+        assertEquals(1, payload.currentFormSize(), "Form is only unknown when it is not known or remapped or ignored");
     }
 
     @Test
-    public void testIgnoredFormProcessing() throws Exception {
+    void testIgnoredFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "SHOVEL");
         place.process(payload);
-        assertEquals("Form is unchanged when ignored", "UNKNOWN", payload.currentForm());
-        assertEquals("Form is only unchanged when it is ignored", 1, payload.currentFormSize());
+        assertEquals("UNKNOWN", payload.currentForm(), "Form is unchanged when ignored");
+        assertEquals(1, payload.currentFormSize(), "Form is only unchanged when it is ignored");
     }
 
     @Test
-    public void testRemappedFinalFormProcessing() throws Exception {
+    void testRemappedFinalFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "OUT_WITH_THE_OLD");
         place.process(payload);
-        assertEquals("Form is remapped when known and final", "IN_WITH_THE_NEW", payload.currentForm());
-        assertEquals("Form is remapped only when known and final", 1, payload.currentFormSize());
+        assertEquals("IN_WITH_THE_NEW", payload.currentForm(), "Form is remapped when known and final");
+        assertEquals(1, payload.currentFormSize(), "Form is remapped only when known and final");
     }
 
     @Test
-    public void testRemappedNonFinalFormProcessing() throws Exception {
+    void testRemappedNonFinalFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "SOMETHING_BORROWED");
         place.process(payload);
-        assertEquals("Form is has unknown on top when known and non-final", "UNKNOWN", payload.currentForm());
-        assertEquals("Form is remapped and topped when known and non-final", 2, payload.currentFormSize());
-        assertEquals("Form is remapped when known and non-final", "SOMETHING_BLUE", payload.currentFormAt(1));
+        assertEquals("UNKNOWN", payload.currentForm(), "Form is has unknown on top when known and non-final");
+        assertEquals(2, payload.currentFormSize(), "Form is remapped and topped when known and non-final");
+        assertEquals("SOMETHING_BLUE", payload.currentFormAt(1), "Form is remapped when known and non-final");
     }
 
 

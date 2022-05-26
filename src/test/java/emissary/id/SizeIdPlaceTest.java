@@ -1,56 +1,56 @@
 package emissary.id;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class SizeIdPlaceTest extends UnitTest {
+class SizeIdPlaceTest extends UnitTest {
 
     SizeIdPlace place;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
 
         place = new SizeIdPlace();
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         place.shutDown();
     }
 
     @Test
-    public void testSizes() {
-        assertEquals("Size label chosen from size", "SIZE_SMALL", place.fileTypeBySize(2500));
+    void testSizes() {
+        assertEquals("SIZE_SMALL", place.fileTypeBySize(2500), "Size label chosen from size");
     }
 
     @Test
-    public void testZero() {
-        assertEquals("Size zero chosen", "SIZE_ZERO", place.fileTypeBySize(0));
+    void testZero() {
+        assertEquals("SIZE_ZERO", place.fileTypeBySize(0), "Size zero chosen");
     }
 
     @Test
-    public void testUpperBound() {
-        assertEquals("Size on upper bound", "SIZE_ASTRONOMICAL", place.fileTypeBySize(Integer.MAX_VALUE));
+    void testUpperBound() {
+        assertEquals("SIZE_ASTRONOMICAL", place.fileTypeBySize(Integer.MAX_VALUE), "Size on upper bound");
     }
 
     @Test
-    public void testPayload() throws Exception {
+    void testPayload() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
         payload.setData("This is a test".getBytes());
         payload.setCurrentForm("UNKNOWN");
         place.process(payload);
-        assertEquals("Current form set from size", "SIZE_TINY", payload.currentForm());
-        assertEquals("FileType set from size", "SIZE_TINY", payload.getFileType());
+        assertEquals("SIZE_TINY", payload.currentForm(), "Current form set from size");
+        assertEquals("SIZE_TINY", payload.getFileType(), "FileType set from size");
     }
 }
