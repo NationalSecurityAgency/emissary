@@ -665,7 +665,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
         // If there was not result, then report it in 2 places.
         if (sprouts.size() == 0) {
-            logger.debug("Command failed. nothing to sprout for file {}(result={})", tData.getFilename(), result);
+            logger.debug("Command failed. nothing to sprout for file: result={}", result);
             tData.addProcessingError("ERROR in " + placeName + ". Exec returned errno " + result);
             tData.pushCurrentForm(newErrorForm);
         }
