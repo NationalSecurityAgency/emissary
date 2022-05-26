@@ -705,6 +705,7 @@ public class DropOffUtil {
             fileType = metaData.get(FileTypeCheckParameter.FILETYPE.getFieldName());
         } else if (metaData.containsKey(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
             fileType = metaData.get(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            logger.debug("FINAL_ID FileType is ({})", fileType);
             metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
         } else {
             if (forms.contains(" ")) {
@@ -767,6 +768,7 @@ public class DropOffUtil {
             fileType = bdo.getStringParameter(FileTypeCheckParameter.FILETYPE.getFieldName());
         } else if (bdo.hasParameter(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
             fileType = bdo.getStringParameter(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            logger.debug("FINAL_ID FileType is ({})", fileType);
             if (metaData != null) {
                 metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
             }
