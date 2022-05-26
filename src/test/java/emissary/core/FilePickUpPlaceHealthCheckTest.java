@@ -1,30 +1,30 @@
 package emissary.core;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.pickup.file.FilePickUpPlace;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FilePickUpPlaceHealthCheckTest extends UnitTest {
+class FilePickUpPlaceHealthCheckTest extends UnitTest {
 
-    @Before
+    @BeforeEach
     public void configureTestLoggers() {
 
     }
 
     @Test
-    public void testWhenThereIsNoPickUpPlace() throws Exception {
+    void testWhenThereIsNoPickUpPlace() {
         FilePickUpPlaceHealthCheck f = new FilePickUpPlaceHealthCheck(10, 1000);
-        assertTrue("Health check should pass when no Client", f.execute().isHealthy());
+        assertTrue(f.execute().isHealthy(), "Health check should pass when no Client");
     }
 
     @Test
-    public void testWhenThereIsAPickUpPlace() throws Exception {
+    void testWhenThereIsAPickUpPlace() throws Exception {
         FilePickUpPlace fpc = new FilePickUpPlace();
         FilePickUpPlaceHealthCheck f = new FilePickUpPlaceHealthCheck(10, 1000);
-        assertTrue("Health check should pass when client is fresh", f.execute().isHealthy());
+        assertTrue(f.execute().isHealthy(), "Health check should pass when client is fresh");
         fpc.shutDown();
     }
 }

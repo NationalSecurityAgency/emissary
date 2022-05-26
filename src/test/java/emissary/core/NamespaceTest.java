@@ -1,49 +1,47 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.Iterator;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
-public class NamespaceTest extends UnitTest {
+class NamespaceTest extends UnitTest {
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-            Namespace.unbind(i.next());
+        for (String s : Namespace.keySet()) {
+            Namespace.unbind(s);
         }
     }
 
     @Test
-    public void testEmpty() {
+    void testEmpty() {
         assertThrows(NamespaceException.class,
                 () -> Namespace.lookup("myObject"),
                 "Found object in empty namespace ");
     }
 
     @Test
-    public void testSingie() {
+    void testSingie() {
         final Object one = new Object();
         Namespace.bind("myObject1", one);
         try {
             final Object o = Namespace.lookup("myObject1");
-            assertEquals("Namespace retrieval", one, o);
+            assertEquals(one, o, "Namespace retrieval");
         } catch (NamespaceException e) {
-            fail("Object not found: " + e.toString());
+            fail("Object not found: " + e);
         }
     }
 
     @Test
-    public void testUnbind() {
+    void testUnbind() {
         Namespace.bind("myObject2", new Object());
         Namespace.unbind("myObject2");
         assertThrows(NamespaceException.class,
@@ -52,12 +50,12 @@ public class NamespaceTest extends UnitTest {
     }
 
     @Test
-    public void testTailMatchLookup() {
+    void testTailMatchLookup() {
         final Object thePlace = new Object();
         Namespace.bind("http://machine:8001/StuffPlace", thePlace);
         try {
             final Object o = Namespace.lookup("StuffPlace");
-            assertEquals("Tail match on Namespace lookup", thePlace, o);
+            assertEquals(thePlace, o, "Tail match on Namespace lookup");
         } catch (NamespaceException e) {
             fail("Lookup failed: " + e.getMessage());
         }
@@ -65,17 +63,17 @@ public class NamespaceTest extends UnitTest {
     }
 
     @Test
-    public void testExists() {
+    void testExists() {
         final Object thePlace = new Object();
         Namespace.bind("http://machine:8001/StuffPlace", thePlace);
-        assertTrue("Full key lookup", Namespace.exists("http://machine:8001/StuffPlace"));
-        assertTrue("Tail lookup", Namespace.exists("StuffPlace"));
-        assertFalse("Bad full key lookup", Namespace.exists("http://machine:8001/BadStuffPlace"));
-        assertFalse("Bad ail lookup", Namespace.exists("BadStuffPlace"));
+        assertTrue(Namespace.exists("http://machine:8001/StuffPlace"), "Full key lookup");
+        assertTrue(Namespace.exists("StuffPlace"), "Tail lookup");
+        assertFalse(Namespace.exists("http://machine:8001/BadStuffPlace"), "Bad full key lookup");
+        assertFalse(Namespace.exists("BadStuffPlace"), "Bad ail lookup");
     }
 
     @Test
-    public void testNameOverlap() {
+    void testNameOverlap() {
         final Object[] a = {new Object(), new Object(), new Object(), new Object(), new Object()};
         final String[] name = {"a", "aa", "xxa", "xxaxx", "axx"};
 
@@ -87,9 +85,9 @@ public class NamespaceTest extends UnitTest {
         // Find the one that shoud work
         try {
             final Object o = Namespace.lookup("a");
-            assertEquals("Found by name", a[0], o);
+            assertEquals(a[0], o, "Found by name");
         } catch (NamespaceException e) {
-            fail("Could not find object a " + e.toString());
+            fail("Could not find object a " + e);
         }
     }
 }

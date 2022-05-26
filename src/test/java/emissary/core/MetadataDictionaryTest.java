@@ -1,13 +1,13 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MetadataDictionaryTest extends UnitTest {
     private static final String TEST_NAMESPACE = "test_namespace";
@@ -16,7 +16,7 @@ public class MetadataDictionaryTest extends UnitTest {
         MetadataDictionary m = null;
         try {
             Configurator conf = ConfigUtil.getConfigInfo(this.getClass());
-            assertNotNull("Could not find config for MetadataDictionaryTest", conf);
+            assertNotNull(conf, "Could not find config for MetadataDictionaryTest");
             if (bind) {
                 m = MetadataDictionary.initialize(TEST_NAMESPACE, conf);
             } else {
@@ -25,7 +25,7 @@ public class MetadataDictionaryTest extends UnitTest {
         } catch (Exception ex) {
             fail("Exception configuring dictionary: " + ex.getMessage());
         }
-        assertNotNull("Metadata Dictionary must be created", m);
+        assertNotNull(m, "Metadata Dictionary must be created");
         return m;
     }
 
@@ -38,54 +38,54 @@ public class MetadataDictionaryTest extends UnitTest {
     }
 
     @Test
-    public void testRename() {
+    void testRename() {
         MetadataDictionary d = getDict();
-        assertEquals("Renaming for found value", "bar", d.rename("foo"));
+        assertEquals("bar", d.rename("foo"), "Renaming for found value");
     }
 
     @Test
-    public void testNonRename() {
+    void testNonRename() {
         MetadataDictionary d = getDict();
-        assertEquals("Original name for not-found value", "baz", d.rename("baz"));
+        assertEquals("baz", d.rename("baz"), "Original name for not-found value");
     }
 
     @Test
-    public void testRegexRename() {
+    void testRegexRename() {
         MetadataDictionary d = getDict();
-        assertEquals("Rename by regex match", "^bar^", d.regex("abc_bar_def"));
+        assertEquals("^bar^", d.regex("abc_bar_def"), "Rename by regex match");
     }
 
     @Test
-    public void testRegexNonRename() {
+    void testRegexNonRename() {
         MetadataDictionary d = getDict();
-        assertEquals("Original name when no regex match", "shazam", d.regex("shazam"));
+        assertEquals("shazam", d.regex("shazam"), "Original name when no regex match");
     }
 
     @Test
-    public void testFullMapRename() {
+    void testFullMapRename() {
         MetadataDictionary d = getDict();
-        assertEquals("Rename on exact match via map", "NothingHappens", d.map("xyzzy"));
+        assertEquals("NothingHappens", d.map("xyzzy"), "Rename on exact match via map");
     }
 
     @Test
-    public void testFullMapRegex() {
+    void testFullMapRegex() {
         MetadataDictionary d = getDict();
-        assertEquals("Rename on regex match via map", "NothingHappensCaseInsensitively", d.map("xyZZy"));
+        assertEquals("NothingHappensCaseInsensitively", d.map("xyZZy"), "Rename on regex match via map");
     }
 
     @Test
-    public void testFullMapNoMatch() {
+    void testFullMapNoMatch() {
         MetadataDictionary d = getDict();
-        assertEquals("NO match via map gives original name", "Hello", d.map("Hello"));
+        assertEquals("Hello", d.map("Hello"), "NO match via map gives original name");
     }
 
 
     @Test
-    public void testNamespace() {
+    void testNamespace() {
         try {
             MetadataDictionary d1 = getDict(true);
             MetadataDictionary d2 = MetadataDictionary.lookup(TEST_NAMESPACE);
-            assertEquals("INitialize must bind by default lookup name", d1, d2);
+            assertEquals(d1, d2, "INitialize must bind by default lookup name");
         } catch (Exception ex) {
             fail("Exception doing namespace lookup: " + ex.getMessage());
         } finally {

@@ -1,21 +1,21 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class EmissaryExceptionTest extends UnitTest {
+class EmissaryExceptionTest extends UnitTest {
     @Test
-    public void testConstructors() {
+    void testConstructors() {
         EmissaryException r = new EmissaryException("Blah");
-        assertEquals("Message should be used from constructor", "Blah", r.getMessage());
+        assertEquals("Blah", r.getMessage(), "Message should be used from constructor");
 
         r = new EmissaryException(new Throwable("Blah"));
-        assertEquals("Message from throwable should be used", "Exception: Blah", r.getMessage());
+        assertEquals("Exception: Blah", r.getMessage(), "Message from throwable should be used");
 
         r = new EmissaryException("Blah", new Throwable("Blah"));
-        assertEquals("Message from contstructo should be used", "Blah", r.getMessage());
+        assertEquals("Blah", r.getMessage(), "Message from contstructo should be used");
 
     }
 }

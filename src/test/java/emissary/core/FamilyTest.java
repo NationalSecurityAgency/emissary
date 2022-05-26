@@ -1,46 +1,46 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 // Family doesn't do much now, but it might later
-public class FamilyTest extends UnitTest {
+class FamilyTest extends UnitTest {
 
     @Test
-    public void testSepValue() {
-        assertEquals("Separator birthorder appended", Family.SEP + "5", Family.sep(5));
+    void testSepValue() {
+        assertEquals(Family.SEP + "5", Family.sep(5), "Separator birthorder appended");
     }
 
     @Test
-    public void testSepAsMethod() {
-        assertEquals("Separator birthorder appended", Family.SEP, Family.sep());
+    void testSepAsMethod() {
+        assertEquals(Family.SEP, Family.sep(), "Separator birthorder appended");
     }
 
     @Test
-    public void testInitial() {
-        assertEquals("Attachments start at one", Family.SEP + "1", Family.initial());
+    void testInitial() {
+        assertEquals(Family.SEP + "1", Family.initial(), "Attachments start at one");
     }
 
     @Test
-    public void testNext() {
+    void testNext() {
         Family f = new Family("foo");
-        assertEquals("next builds first attachment number", "foo" + Family.SEP + "1", f.next());
-        assertEquals("next increments and builds", "foo" + Family.SEP + "2", f.next());
+        assertEquals("foo" + Family.SEP + "1", f.next(), "next builds first attachment number");
+        assertEquals("foo" + Family.SEP + "2", f.next(), "next increments and builds");
     }
 
     @Test
-    public void testNextWithStartingNum() {
+    void testNextWithStartingNum() {
         Family f = new Family("foo", 3);
-        assertEquals("next builds specified number", "foo" + Family.SEP + "3", f.next());
-        assertEquals("next increments and builds", "foo" + Family.SEP + "4", f.next());
+        assertEquals("foo" + Family.SEP + "3", f.next(), "next builds specified number");
+        assertEquals("foo" + Family.SEP + "4", f.next(), "next increments and builds");
     }
 
     @Test
-    public void testNestingFamily() {
+    void testNestingFamily() {
         Family f = new Family("foo");
         Family g = f.child();
-        assertEquals("nested family builds one level deeper", "foo" + Family.SEP + "1" + Family.SEP + "1", g.next());
+        assertEquals("foo" + Family.SEP + "1" + Family.SEP + "1", g.next(), "nested family builds one level deeper");
     }
 }

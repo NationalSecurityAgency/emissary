@@ -1,8 +1,8 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -18,10 +18,11 @@ import emissary.test.core.FunctionalTest;
 import emissary.util.Version;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestMovingAgent extends FunctionalTest {
+class FTestMovingAgent extends FunctionalTest {
     private IDirectoryPlace dir1 = null;
     private IDirectoryPlace dir2 = null;
     private IServiceProviderPlace toUpper = null;
@@ -29,7 +30,7 @@ public class FTestMovingAgent extends FunctionalTest {
     private CachePlace cache = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         setConfig(System.getProperty("java.io.tmpdir", "."), true);
 
@@ -59,7 +60,7 @@ public class FTestMovingAgent extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         logger.debug("Starting tearDown phase");
 
@@ -74,8 +75,8 @@ public class FTestMovingAgent extends FunctionalTest {
 
     }
 
-    @org.junit.Test
-    public void testMobility() {
+    @Test
+    void testMobility() {
         // This will run as local calls with no moves
         runTest(HDMobileAgent.class.getName());
         runTest(MobileAgent.class.getName());
@@ -89,11 +90,11 @@ public class FTestMovingAgent extends FunctionalTest {
     }
 
     private void runTest(final String agentClass) {
-        assertNotNull("Directory1 should have been set up", this.dir1);
-        assertNotNull("Directory2 should have been set up", this.dir2);
-        assertNotNull("toLower place should have been set up", this.toLower);
-        assertNotNull("toUpper place should have been set up", this.toUpper);
-        assertNotNull("cache place should have been set up", this.cache);
+        assertNotNull(this.dir1, "Directory1 should have been set up");
+        assertNotNull(this.dir2, "Directory2 should have been set up");
+        assertNotNull(this.toLower, "toLower place should have been set up");
+        assertNotNull(this.toUpper, "toUpper place should have been set up");
+        assertNotNull(this.cache, "cache place should have been set up");
 
         if (agentClass != null && !pool.getClassName().equals(agentClass)) {
             logger.debug("Resetting factory from " + pool.getClassName() + " to " + agentClass);
@@ -127,14 +128,14 @@ public class FTestMovingAgent extends FunctionalTest {
         }
 
         // Check agent arrived at cache
-        assertTrue("Payload should arrive at cache using " + agentClass, this.cache.getCacheSize() > 0);
+        assertTrue(this.cache.getCacheSize() > 0, "Payload should arrive at cache using " + agentClass);
 
         payload = this.cache.pop();
-        assertNotNull("Payload coming from cache", payload);
+        assertNotNull(payload, "Payload coming from cache");
 
-        assertEquals("Current form on payload", "FINI", payload.currentForm());
+        assertEquals("FINI", payload.currentForm(), "Current form on payload");
         final List<String> th = payload.transformHistory();
-        assertTrue("Transform history", th.size() > 5);
+        assertTrue(th.size() > 5, "Transform history");
 
 
         // Purge the cache for the next test
@@ -152,26 +153,26 @@ public class FTestMovingAgent extends FunctionalTest {
         EmissaryResponse ws = h.send(get);
         String msg = ws.getContentString();
         // TODO consider moving this into the EmissaryResponse ((ws.getStatus() == HttpStatus.SC_OK)))
-        assertTrue("welcome.jsp must return good status", (ws.getStatus() == HttpStatus.SC_OK));
-        assertNotNull("welcome.jsp must have text", msg);
-        assertTrue("welcome.jsp contains version", msg.indexOf(version.toString()) > -1);
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "welcome.jsp must return good status");
+        assertNotNull(msg, "welcome.jsp must have text");
+        assertTrue(msg.contains(version.toString()), "welcome.jsp contains version");
 
         get = new HttpGet(urlBase + "Namespace.action");
         ws = h.send(get);
         msg = ws.getContentString();
-        assertTrue("Namespace.action must return good status", (ws.getStatus() == HttpStatus.SC_OK));
-        assertNotNull("Namespace text must not be mull", msg);
-        assertTrue("Namespace must contain MoveSpool", msg.indexOf("MoveSpool") > -1);
-        assertTrue("Namespace must contain AgentPool", msg.indexOf("AgentPool") > -1);
-        assertTrue("Namespace must contain directory", msg.indexOf("Directory") > -1);
-        assertTrue("Namespace must have place name", msg.indexOf("CachePlace") > -1);
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "Namespace.action must return good status");
+        assertNotNull(msg, "Namespace text must not be mull");
+        assertTrue(msg.contains("MoveSpool"), "Namespace must contain MoveSpool");
+        assertTrue(msg.contains("AgentPool"), "Namespace must contain AgentPool");
+        assertTrue(msg.contains("Directory"), "Namespace must contain directory");
+        assertTrue(msg.contains("CachePlace"), "Namespace must have place name");
 
         get = new HttpGet(urlBase + "DumpDirectory.action");
         ws = h.send(get);
         msg = ws.getContentString();
-        assertTrue("DumpDirectory.action must return good status", (ws.getStatus() == HttpStatus.SC_OK));
-        assertNotNull("DumpDirectory must have text", msg);
-        assertTrue("DumpDirectory must have place name", msg.indexOf("CachePlace") > -1);
+        assertEquals(HttpStatus.SC_OK, ws.getStatus(), "DumpDirectory.action must return good status");
+        assertNotNull(msg, "DumpDirectory must have text");
+        assertTrue(msg.contains("CachePlace"), "DumpDirectory must have place name");
 
     }
 }

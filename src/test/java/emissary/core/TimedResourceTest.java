@@ -1,7 +1,7 @@
 package emissary.core;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -10,16 +10,16 @@ import com.codahale.metrics.Timer;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 
-public class TimedResourceTest extends UnitTest {
+class TimedResourceTest extends UnitTest {
     private IServiceProviderPlace tp;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         tp = new DevNullPlace();
@@ -29,7 +29,7 @@ public class TimedResourceTest extends UnitTest {
     public TestRule chain = RuleChain.outerRule(new DumpFailures()).around(new Retry(3));
 
     @Test
-    public void testCheckState() throws Exception {
+    void testCheckState() {
 
         TestMobileAgent tma = new TestMobileAgent();
 
@@ -44,7 +44,7 @@ public class TimedResourceTest extends UnitTest {
     }
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
         try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer())) {
@@ -57,7 +57,7 @@ public class TimedResourceTest extends UnitTest {
     }
 
     @Test
-    public void testDontInterruptAgent() throws Exception {
+    void testDontInterruptAgent() {
         TestMobileAgent tma = new TestMobileAgent();
         // little time
         TimedResource first = new TimedResource(tma, tp, 1, new Timer());

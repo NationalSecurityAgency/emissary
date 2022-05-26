@@ -1,8 +1,8 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
@@ -14,27 +14,27 @@ import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ResourceWatcherTest extends UnitTest {
+class ResourceWatcherTest extends UnitTest {
 
     public ResourceWatcher resourceWatcher = null;
     public IServiceProviderPlace place = null;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {}
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
     @Test
-    public void testResourceWatcherWithMultipleThreads() throws Exception {
+    void testResourceWatcherWithMultipleThreads() throws Exception {
         this.resourceWatcher = new ResourceWatcher();
         this.place = new DevNullPlace();
         int threadCount = 10;
@@ -58,17 +58,17 @@ public class ResourceWatcherTest extends UnitTest {
 
         // Add them up
         final Map<String, com.codahale.metrics.Timer> stats = this.resourceWatcher.getStats();
-        assertTrue("Stats were not collected", stats.size() > 0);
+        assertTrue(stats.size() > 0, "Stats were not collected");
 
         final com.codahale.metrics.Timer s = stats.get("DevNullPlace");
-        assertNotNull("Events must be measured", s);
+        assertNotNull(s, "Events must be measured");
 
-        assertEquals("Events must not be lost", (long) (threadCount * iterations), s.getCount());
+        assertEquals(threadCount * iterations, s.getCount(), "Events must not be lost");
 
         this.resourceWatcher.resetStats();
-        assertTrue("Namespaces were not preserved", resourceWatcher.getStats().size() > 0);
+        assertTrue(resourceWatcher.getStats().size() > 0, "Namespaces were not preserved");
         for (Timer timer : this.resourceWatcher.getStats().values()) {
-            assertEquals("Stats must be cleared", 0, timer.getCount());
+            assertEquals(0, timer.getCount(), "Stats must be cleared");
         }
 
         this.resourceWatcher.quit();
@@ -122,7 +122,7 @@ public class ResourceWatcherTest extends UnitTest {
         }
 
         @Override
-        public void arrive(Object payload, IServiceProviderPlace arrivalPlace, int mec, List<DirectoryEntry> iq) throws Exception {
+        public void arrive(Object payload, IServiceProviderPlace arrivalPlace, int mec, List<DirectoryEntry> iq) {
 
         }
 
