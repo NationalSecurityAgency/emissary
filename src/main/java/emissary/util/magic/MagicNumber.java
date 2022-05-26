@@ -5,13 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class MagicNumber {
-
-    private static final Logger log = LoggerFactory.getLogger(MagicNumber.class);
-
     /** The default charset used when loading the config file and when sampling data */
     public static final String DEFAULT_CHARSET = "ISO-8859-1";
     /** Byte data type */
@@ -234,16 +228,16 @@ public class MagicNumber {
     /**
      * Debugging method
      */
-    private static void printByteSample(byte[] data, String prefix) {
-        if (log.isDebugEnabled()) {
-            String debug = prefix;
-            for (int i = 0; i < data.length; i++) {
-                debug += '\t';
-                debug += Byte.toString(data[i]);
-            }
-            log.debug(debug);
-        }
-    }
+    // private static void printByteSample(byte[] data, String prefix) {
+    // if (log.isDebugEnabled()) {
+    // String debug = prefix;
+    // for (int i = 0; i < data.length; i++) {
+    // debug += '\t';
+    // debug += Byte.toString(data[i]);
+    // }
+    // log.debug(debug);
+    // }
+    // }
 
     /**
      * Tests this magic number against the given data
@@ -341,7 +335,6 @@ public class MagicNumber {
             return null;
         if (data.length < (offset + length))
             return null;
-        // log.info ("SAMPLE STATS - offset: {}, length: {}", offset, length);
         byte[] subject = new byte[length];
         for (int i = 0; i < subject.length; i++)
             subject[i] = data[i + offset];

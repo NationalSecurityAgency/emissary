@@ -7,9 +7,6 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The
  * underlying window size is configured on instantiation. If you intend to move the positions for stateful processing,
@@ -21,8 +18,6 @@ import org.slf4j.LoggerFactory;
  * wary of using Integer.MAX_VALUE as that can cause and OOME.
  */
 public class WindowedSeekableByteChannel implements SeekableByteChannel {
-    private static final Logger logger = LoggerFactory.getLogger(WindowedSeekableByteChannel.class);
-
     /**
      * The input source
      */
@@ -264,8 +259,6 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * attempts to set position to specified offset in underlying buffers
      */
     private boolean setOffset(final long tgtOffset) {
-        logger.debug("setOffset() called tgtOffset = {}, buff1 = {}, buff2 = {}", tgtOffset, buff1, buff2);
-
         if (tgtOffset <= this.buff1.limit()) {
             this.buff1.position((int) tgtOffset);
             this.buff2.position(0);

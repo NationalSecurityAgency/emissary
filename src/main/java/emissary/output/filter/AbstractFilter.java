@@ -23,9 +23,6 @@ import org.slf4j.LoggerFactory;
  * Provides the base mechanism for a drop off filter
  */
 public abstract class AbstractFilter implements IDropOffFilter {
-    /** A static convenience logger */
-    protected static Logger slogger = LoggerFactory.getLogger(AbstractFilter.class);
-
     /** get a logger configured on the impl's classname */
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 

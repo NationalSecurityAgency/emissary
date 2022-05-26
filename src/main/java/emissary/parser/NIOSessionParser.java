@@ -6,9 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Provide a basic NIO-based session parser that reads data in chunks from the underlying channel. A chunk might have
  * zero or more complete sessions within it. The chunk buffer will begin at minChunkSize, but grow as large as
@@ -16,9 +13,6 @@ import org.slf4j.LoggerFactory;
  * ParserExceptions
  */
 public abstract class NIOSessionParser extends SessionParser {
-    // Logger
-    private final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
-
     protected static final int MIN_CHUNK_SIZE_DEFAULT = 2 * 1024 * 1024; // 2Mb
     protected static final int MAX_CHUNK_SIZE_DEFAULT = 40 * 1024 * 1024; // 40Mb
 
