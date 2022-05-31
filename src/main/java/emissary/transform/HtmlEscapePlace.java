@@ -66,7 +66,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         String incomingForm = d.currentForm();
         CharacterCounterSet counters = new CharacterCounterSet();
 
-        // logger.debug("HtmlEscapePlace just got a " + incomingForm);
+        logger.debug("Just got a payload with form {}", incomingForm);
 
         byte[] newData = HtmlEscape.unescapeHtml(d.data(), counters);
 

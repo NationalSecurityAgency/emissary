@@ -6,6 +6,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Provide a basic NIO-based session parser that reads data in chunks from the underlying channel. A chunk might have
  * zero or more complete sessions within it. The chunk buffer will begin at minChunkSize, but grow as large as
@@ -13,6 +16,8 @@ import java.util.Arrays;
  * ParserExceptions
  */
 public abstract class NIOSessionParser extends SessionParser {
+    // Logger
+    private final static Logger logger = LoggerFactory.getLogger(NIOSessionParser.class);
     protected static final int MIN_CHUNK_SIZE_DEFAULT = 2 * 1024 * 1024; // 2Mb
     protected static final int MAX_CHUNK_SIZE_DEFAULT = 40 * 1024 * 1024; // 40Mb
 
@@ -80,14 +85,15 @@ public abstract class NIOSessionParser extends SessionParser {
      * @throws ParserException in cases where a new array can't be read.
      */
     protected byte[] loadNextRegion(byte[] data) throws ParserException {
+        logger.debug("loadNextRegion(): data.length = {}, maxChunkSize = {}, chunkStart = {}, writeOffset = {}",
+                data == null ? -1 : data.length, maxChunkSize, chunkStart, writeOffset);
+
         if (!channel.isOpen()) {
-            // loadNextRegion(): channel closed
             throw new ParserEOFException("Channel is closed, likely completely consumed");
         }
 
         // Optionally create the array or recreate if old is too small
         if (data == null) {
-            // allocating new byte[]
             data = new byte[minChunkSize];
         }
 
@@ -103,7 +109,6 @@ public abstract class NIOSessionParser extends SessionParser {
                 throw new ParserException("buffer size required to read session " + chunkStart + " is larger than maxChunkSize " + maxChunkSize);
             }
 
-            // re-allocating new byte[]
             byte[] newData = new byte[newSize];
             System.arraycopy(data, 0, newData, 0, data.length);
             data = newData;
@@ -116,8 +121,8 @@ public abstract class NIOSessionParser extends SessionParser {
         try {
             while (b.hasRemaining()) {
                 if (channel.read(b) == -1) {
-                    // Closing channel. End of channel reached earlier than expected
                     channel.close();
+                    logger.warn("Closing channel. End of channel reached at {} instead of expected {}", data.length - b.remaining(), data.length);
                     break;
                 }
             }
@@ -127,7 +132,7 @@ public abstract class NIOSessionParser extends SessionParser {
 
         writeOffset = data.length - b.remaining();
         if (writeOffset < data.length) {
-            // trimming byte[]
+            logger.debug("trimming byte[] from {} to size {}", data.length, writeOffset);
             data = Arrays.copyOfRange(data, 0, writeOffset);
         }
 

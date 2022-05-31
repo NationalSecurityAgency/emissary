@@ -160,8 +160,10 @@ public final class MagicNumberUtil {
      * @see #load(byte[])
      */
     public String describe(final byte[] data) {
+        log.debug("Checking against {} magic items", this.magicNumbers.size());
         String description = null;
         for (final MagicNumber item : this.magicNumbers) {
+            log.debug("Checking magic item {}", item);
             description = item.describe(data);
             if (description != null && !description.isEmpty()) {
                 break;

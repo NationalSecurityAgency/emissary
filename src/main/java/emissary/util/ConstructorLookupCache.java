@@ -135,7 +135,7 @@ public final class ConstructorLookupCache {
         try {
             return clazz.getConstructor(argTypes);
         } catch (NoSuchMethodException e) {
-            logger.debug("No constructor for [" + clazz.getName() + "] in Factory.create())");
+            logger.debug("No constructor for [{}] in Factory.create())", clazz.getName());
         }
 
         // There was no exact match, so look through the existing
@@ -143,9 +143,7 @@ public final class ConstructorLookupCache {
         NEXT_CANDIDATE_CONSTRUCTOR: for (final Constructor<?> candidate : clazz.getConstructors()) {
             final Class<?>[] ctypes = candidate.getParameterTypes();
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("Checking:" + clazz.getName() + ", " + clazz);
-            }
+            logger.debug("Checking:{}, {}", clazz.getName(), clazz);
 
             // If the candidate constructor doesn't have the same
             // number of arguments, it definitely isn't compatible
@@ -164,19 +162,13 @@ public final class ConstructorLookupCache {
 
                 if ((a != null) && (b != null)) {
                     if (a.isAssignableFrom(b)) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("   param=" + a + "  assignable " + b);
-                        }
+                        logger.debug("   param={}  assignable {}", a, b);
                     } else {
                         final Class<?> bPrim = getPrim(b);
                         if (a.isAssignableFrom(bPrim)) {
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("   param:" + a + "  assignable " + b);
-                            }
+                            logger.debug("   param={}  assignable {}", a, b);
                         } else {
-                            if (logger.isDebugEnabled()) {
-                                logger.debug("   param:" + a + " !assignable " + b);
-                            }
+                            logger.debug("   param={}  !assignable {}", a, b);
                             continue NEXT_CANDIDATE_CONSTRUCTOR;
                         }
                     }

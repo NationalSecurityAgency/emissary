@@ -280,7 +280,6 @@ public class HtmlEscape {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int slen = s.length;
 
-        // Doing html entity normalization
         for (int i = 0; i < slen; i++) {
             if (i + 4 < slen && s[i] == '&') {
                 int spos = i;

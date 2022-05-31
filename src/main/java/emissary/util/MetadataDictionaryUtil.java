@@ -10,6 +10,8 @@ import java.util.TreeMap;
 import com.google.common.collect.TreeMultimap;
 import emissary.core.MetadataDictionary;
 import emissary.core.NamespaceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the
@@ -21,6 +23,9 @@ public class MetadataDictionaryUtil {
 
     // Service prefix to apply to all keys
     String servicePrefix = null;
+
+    // Our friendly logger
+    private Logger logger = LoggerFactory.getLogger(MetadataDictionaryUtil.class);
 
     // The charset of the data
     private String charset = "UTF-8";
@@ -115,6 +120,7 @@ public class MetadataDictionaryUtil {
             if (pos == -1) {
                 output.write(line.getBytes());
                 output.write('\n');
+                this.logger.debug("Found no key/value pair on line " + line);
             } else {
                 final String key = line.substring(0, pos);
                 final String value = line.substring(pos + 1);

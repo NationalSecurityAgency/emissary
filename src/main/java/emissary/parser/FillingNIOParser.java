@@ -4,11 +4,17 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Encapsulate the behavior necessary to slide a window through a channel and parse sessions from it. nextChunkOrDie
  * will load the next region.
  */
 public abstract class FillingNIOParser extends NIOSessionParser {
+
+    private final static Logger logger = LoggerFactory.getLogger(FillingNIOParser.class);
+
     /** position of the session start relative to the start of the current chunk */
     protected int sessionStart = 0;
 
@@ -39,10 +45,10 @@ public abstract class FillingNIOParser extends NIOSessionParser {
             b.limit(writeOffset);
             b.compact(); // does not re-allocate the byte array, only manipulates the current buffer.
 
-            // buffer has been compacted
             chunkStart += sessionStart;
             sessionStart = 0;
             writeOffset = b.position();
+            logger.debug("Compacted buffer: sessionStart/chunkStart/writeOffset = {}/{}/{}", sessionStart, chunkStart, writeOffset);
         }
 
         try {

@@ -160,7 +160,9 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected void initializeOutputTypes(final Configurator config) {
         if (config != null) {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
+            this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.blacklist = config.findEntriesAsSet("BLACKLIST");
+            this.logger.debug("Loaded {} blacklist types for filter {}", this.blacklist.size(), this.blacklist);
         } else {
             this.logger.debug("InitializeCustom has null filter config");
         }
@@ -211,6 +213,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         configPreferences.add(this.getClass().getName() + ConfigUtil.CONFIG_FILE_ENDING);
 
+        this.logger.debug("Looking for filter configuration preferences {}", configPreferences);
         try {
             this.filterConfig = emissary.config.ConfigUtil.getConfigInfo(configPreferences);
         } catch (IOException iox) {
@@ -329,6 +332,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected void loadOutputSpec(final emissary.config.Configurator theConfigG) {
         this.outputSpec = theConfigG.findStringEntry("OUTPUT_SPEC_" + getFilterName(), null);
         this.errorSpec = theConfigG.findStringEntry("ERROR_SPEC_" + getFilterName(), null);
+        this.logger.debug("Output spec for {} is {}", getFilterName(), this.outputSpec);
     }
 
     /**
@@ -421,13 +425,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
         if (canOutput) {
-            // Outputtable due to non-disjoint sets
             final Set<String> outputFor = new HashSet<String>();
             for (final String s : this.outputTypes) {
                 if (types.contains(s)) {
                     outputFor.add(s);
                 }
             }
+            this.logger.debug("Outputtable due to non-disjoint sets: {}", outputFor);
         }
         return canOutput;
     }
@@ -478,6 +482,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 checkTypes.add(lang + "." + currentForm + "." + viewName);
             }
         }
+        this.logger.debug("Types to be checked for named view {}: {}", viewName, checkTypes);
         return checkTypes;
     }
 

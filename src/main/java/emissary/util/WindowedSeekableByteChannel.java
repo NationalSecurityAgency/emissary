@@ -7,17 +7,22 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The
  * underlying window size is configured on instantiation. If you intend to move the positions for stateful processing,
  * you should provide a buffer size, <code>buffsize</code>, greater than the maximum amount you wish to operate against
  * at any one time.
- * 
+ *
  * <p>
  * This implementation should be able to hold a maximum window of ~4GB. This implementation uses on heap buffers so be
  * wary of using Integer.MAX_VALUE as that can cause and OOME.
  */
 public class WindowedSeekableByteChannel implements SeekableByteChannel {
+    private static final Logger logger = LoggerFactory.getLogger(WindowedSeekableByteChannel.class);
+
     /**
      * The input source
      */
@@ -50,6 +55,9 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * Creates a new instance and populates buffers with data.
      */
     public WindowedSeekableByteChannel(final ReadableByteChannel in, final int buffsize) throws IOException {
+
+        logger.debug("WindowSeekableByteChannel created with buffer size = {}", buffsize);
+
         if ((in == null) || !in.isOpen()) {
             throw new IllegalArgumentException("Channel must be open and not null:");
         }
@@ -75,8 +83,11 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * If necessary, will move data in the window to make room for additional data from the channel.
      */
     private void realignBuffers() throws IOException {
+        logger.debug("realignBuffers() called: buf1 = {}, buf2 = {}", buff1, buff2);
+
         final int qtr = this.buff1.capacity() / 2;
         if (this.endofchannel || (this.buff2.remaining() > qtr)) {
+            logger.debug("after early return from realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
             return;
         }
         // keep track of our position
@@ -88,26 +99,29 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         // read from the beginning of the buffer
         this.buff2.rewind();
 
-        // realignBuffers() called prior to fillDst
+        logger.debug("realignBuffers() called prior to fillDst: buf1 = {}, buf2 = {}", buff1, buff2);
 
         filldst(this.buff2, this.buff1);
         // chuck the bytes read into buff1
 
-        // realignBuffers() called prior to buff2 compact
+        logger.debug("realignBuffers() called prior prior to buff2 compact: buf1 = {}, buf2 = {}", buff1, buff2);
 
         this.buff2.compact();
 
-        // realignBuffers() called prior to readIntoBuffer
+        logger.debug("realignBuffers() called prior to readIntoBuffer: buf1 = {}, buf2 = {}", buff1, buff2);
         readIntoBuffer(this.buff2);
         // update the offset
         this.minposition += qtr;
         // reset our location
         setOffset(offset - qtr);
+
+        logger.debug("after realignBuffers(): buf1 = {}, buf2 = {}", buff1, buff2);
+
     }
 
     /**
      * Determine if there are bytes available to be read.
-     * 
+     *
      * @return true if either buffer has data remaining or we have not reached the end of channel.
      */
     private boolean bytesAvailable() {
@@ -128,6 +142,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * @return the number of bytes read into the buffer.
      */
     private int readIntoBuffer(final ByteBuffer buf) throws IOException {
+        logger.debug("readIntoBuffer() called: {}", buf);
+
         final int rem = buf.remaining();
         int read = 0;
         while ((read != -1) && (buf.remaining() > 0)) {
@@ -153,7 +169,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Closes underlying Channel and releases buffers. Further calls to this instance will result in unspecified behavior.
-     * 
+     *
      * @see java.nio.channels.Channel#close()
      */
     @Override
@@ -259,6 +275,8 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * attempts to set position to specified offset in underlying buffers
      */
     private boolean setOffset(final long tgtOffset) {
+        logger.debug("setOffset() called tgtOffset = {}, buff1 = {}, buff2 = {}", tgtOffset, buff1, buff2);
+
         if (tgtOffset <= this.buff1.limit()) {
             this.buff1.position((int) tgtOffset);
             this.buff2.position(0);
@@ -276,7 +294,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Returns the minimum position we can go to in the backing Channel. This is based on the current window mapped into the
      * backing store.
-     * 
+     *
      * @return the minimum allowed position in the channel
      */
     public long getMinPosition() {
@@ -286,7 +304,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Returns the maximum position we can go to in the backing Channel. This is based on the current window mapped into the
      * backing store.
-     * 
+     *
      * @return the maximum allowed position in the channel
      */
     public long getMaxPosition() {
@@ -296,7 +314,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * A potential size for the underlying Channel. This value can change as we read additional data into the buffer.
      * Eventually, this number should reflect the true size assuming no underlying exceptions.
-     * 
+     *
      * @return an estimated length of the underlying channel
      */
     @Override
@@ -306,7 +324,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * This is a read only implementation.
-     * 
+     *
      * @param size The truncation size.
      * @return throws ex
      * @throws IOException If there is some I/O problem.
@@ -320,7 +338,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Unsupported in this implementation. This could be modified in the future to allow in memory writes.
-     * 
+     *
      * @param source The bytes to write.
      * @return throws ex
      * @throws IOException If there is some I/O problem.
