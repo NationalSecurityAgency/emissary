@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import emissary.core.IBaseDataObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;

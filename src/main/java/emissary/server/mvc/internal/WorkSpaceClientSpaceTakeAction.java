@@ -13,7 +13,7 @@ import emissary.core.Namespace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 import emissary.util.web.HtmlEscaper;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
