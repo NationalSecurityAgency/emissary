@@ -34,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ConfigUtilTest extends UnitTest {
 
-    private static final boolean isWindows = System.getProperty("os.name").contains("Window");
-
     private static List<Path> testFilesAndDirectories;
 
     private ListAppender<ILoggingEvent> appender = new ListAppender<>();
@@ -78,9 +76,7 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testPathGeneration() {
         String fakeBase = "/path/to/";
-        if (isWindows) {
-            fakeBase = "X:/path/";
-        }
+
         assertEquals(fakeBase + "bar.cfg", ConfigUtil.getConfigFile(fakeBase + "bar.cfg"), "Path not needed");
 
         assertEquals(configDir + "/bar.cfg", ConfigUtil.getConfigFile("bar.cfg"), "Path local should add to file");
@@ -91,9 +87,7 @@ class ConfigUtilTest extends UnitTest {
 
         // Now without trailing slash
         fakeBase = "/path/to";
-        if (isWindows) {
-            fakeBase = "X:/path";
-        }
+
         assertEquals(fakeBase + "/bar.cfg", ConfigUtil.getConfigFile("/foo", fakeBase + "/bar.cfg"), "Path not needed");
 
         assertEquals(fakeBase + "/bar.cfg", ConfigUtil.getConfigFile(fakeBase, "bar.cfg"), "Path local should add to file");

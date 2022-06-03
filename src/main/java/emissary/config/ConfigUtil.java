@@ -91,9 +91,6 @@ public class ConfigUtil {
     /** The bin dir */
     private static String binDir = null;
 
-    /** True if we are running on Windows */
-    private static boolean isWindows = false;
-
     /**
      * The configuration flavor, allows multiple layers of config stuff to be stored together in one package or directory,
      * sort of like a mini single inheritance model. It is a comma separated, ordered list of subtypes to try to merge into
@@ -132,8 +129,6 @@ public class ConfigUtil {
      * system properties and re-call this method when they need to.
      */
     public static void initialize() throws EmissaryException {
-        isWindows = System.getProperty("os.name").contains("Window");
-
         // throws NPE if not defined
         projectRoot = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
 
@@ -219,7 +214,7 @@ public class ConfigUtil {
      */
     public static String getConfigFile(final String file) {
 
-        if ((!isWindows && file.startsWith("/")) || (isWindows && file.charAt(1) == ':')) {
+        if (file.startsWith("/")) {
             return file;
         }
 
@@ -253,7 +248,7 @@ public class ConfigUtil {
      * @param file the file to get,
      */
     public static String getConfigFile(final String path, final String file) {
-        if (file.startsWith("/") || (isWindows && file.charAt(1) == ':')) {
+        if (file.startsWith("/")) {
             return file;
         }
 
@@ -531,7 +526,7 @@ public class ConfigUtil {
         logger.debug("Request for config data from {}", f);
 
         // Add config.dir part if not already absolute
-        final String filename = (f.startsWith("/") || (isWindows && f.charAt(1) == ':')) ? f : getConfigFile(f);
+        final String filename = f.startsWith("/") ? f : getConfigFile(f);
 
         return Files.newInputStream(Paths.get(filename));
     }
