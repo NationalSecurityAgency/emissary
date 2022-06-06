@@ -16,7 +16,7 @@ public class ServerModeValidator implements IParameterValidator {
             case "standalone":
                 break;
             default:
-                LOG.error("Unknown mode: {}", value);
+                // LOG.error("Unknown mode: {}", value);
                 throw new IllegalArgumentException("Unknown mode: " + value);
         }
     }

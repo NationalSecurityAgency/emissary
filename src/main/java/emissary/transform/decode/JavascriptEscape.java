@@ -27,7 +27,7 @@ public class JavascriptEscape {
                     char[] c = HtmlEscape.unescapeHtmlChar(s, true);
                     if (c != null && c.length > 0) {
                         out.write(new String(c).getBytes());
-                        logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");
+                        // logger.debug("Unicode '{}' ==> '{}'", s, new String(c));
                         i += 5;
                     } else {
                         out.write(data[i]);

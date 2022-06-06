@@ -27,7 +27,7 @@ public class JsonEscape {
                     char[] c = HtmlEscape.unescapeHtmlChar(s, true);
                     if (c != null && c.length > 0) {
                         out.write(new String(c).getBytes());
-                        logger.debug("Unicode '" + s + "' ==> '" + new String(c) + "'");
+                        // logger.debug("Unicode '{}' ==> '{}'", s, new String(c));
                         i += 5;
                     } else {
                         out.write(data[i]);
@@ -47,7 +47,7 @@ public class JsonEscape {
                     int num = Integer.parseInt(s, 8);
                     char[] ch = Character.toChars(num);
                     out.write(new String(ch).getBytes());
-                    logger.debug("Octal '" + s + "' ==> '" + new String(ch) + "'");
+                    // logger.debug("Octal '{}' ==> '{}'", s, new String(ch));
                     i += s.length();
                 } catch (Exception ex) {
                     out.write(data[i]);

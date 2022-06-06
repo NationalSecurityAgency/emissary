@@ -109,26 +109,26 @@ public class EmissaryClient {
         try {
             String userPropertiesFile = System.getProperty(JETTY_USER_FILE_PROPERTY_NAME);
             if (null == userPropertiesFile) {
-                LOGGER.debug("System property '" + JETTY_USER_FILE_PROPERTY_NAME + "' not set, using default jetty-users.properties");
+                LOGGER.debug("System property '{}' not set, using default jetty-users.properties", JETTY_USER_FILE_PROPERTY_NAME);
                 userPropertiesFile = "jetty-users.properties";
             }
-            LOGGER.debug("Reading password from " + userPropertiesFile);
+            LOGGER.debug("Reading password from {}", userPropertiesFile);
             final Properties props = ConfigUtil.getPropertyInfo(userPropertiesFile);
             String pass = DEFAULT_PASSWORD;
             final String value = props.getProperty(USERNAME, pass);
             if (value != null && value.indexOf(",") != -1) {
                 pass = value.substring(0, value.indexOf(",")).trim();
             } else if (value == pass) {
-                LOGGER.error("Error reading password from " + userPropertiesFile);
+                LOGGER.error("Error reading password from {}", userPropertiesFile);
             }
             // Supply default credentials for anyone we want to connect to
             final String decodedPassword = pass != null && pass.startsWith("OBF:") ? Password.deobfuscate(pass) : pass;
             final Credentials cred = new UsernamePasswordCredentials(USERNAME, decodedPassword);
             CRED_PROV.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, REALM), cred);
-            LOGGER.debug("Setting EmissaryClient credentials credentials: {}, username: {}", cred, USERNAME);
-            LOGGER.trace("                                       password: {}", decodedPassword);
+            // LOGGER.debug("Setting EmissaryClient credentials credentials: {}, username: {}", cred, USERNAME);
+            // LOGGER.trace(" password: {}", decodedPassword);
         } catch (IOException iox) {
-            LOGGER.error("Cannot read " + System.getProperty("emissary.jetty.users.file") + " in EmissaryClient, defaulting credentials");
+            LOGGER.error("Cannot read {} in EmissaryClient, defaulting credentials", System.getProperty("emissary.jetty.users.file"));
             final Credentials cred = new UsernamePasswordCredentials(USERNAME, DEFAULT_PASSWORD);
             final AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, REALM);
             CRED_PROV.setCredentials(authScope, cred);

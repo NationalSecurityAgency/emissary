@@ -72,7 +72,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
             try {
                 this.minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ex) {
-                logger.info("Must be numeric MIN_SIZE_" + entry.getKey() + " = " + entry.getValue());
+                // logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
+                logger.info("MIN_SIZE_*KEY* must be numeric", ex);
             }
         }
     }
@@ -119,8 +120,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
                 if (this.minSizeMap.containsKey(currentForm) && (bytes.length < this.minSizeMap.get(currentForm))) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Type " + currentForm + " does not meet min size requirement " + this.minSizeMap.get(currentForm) + " < "
-                                + bytes.length);
+                        logger.debug("Type {} does not meet min size requirement {} < {}", currentForm, this.minSizeMap.get(currentForm),
+                                bytes.length);
                     }
                 } else {
                     d.setCurrentForm(currentForm);

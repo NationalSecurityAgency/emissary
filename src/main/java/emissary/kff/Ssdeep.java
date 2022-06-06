@@ -464,10 +464,10 @@ public final class Ssdeep {
         for (int s1Pos = 0; s1Pos <= lastS1Pos; s1Pos++) {
             final int s2Pos = indexOfSubSequence(s2, s1, s1Pos, length);
             if (s2Pos != -1) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("found common sequence " + new String(s1, s1Pos, length) + " in " + new String(s1) + " at " + s1Pos + " and "
-                            + new String(s2) + " at " + s2Pos);
-                }
+                // if (logger.isDebugEnabled()) {
+                // logger.debug("found common sequence {} in {} at {} and {} at {}", new String(s1, s1Pos, length), new String(s1),
+                // s1Pos, new String(s2), s2Pos);
+                // }
                 return true;
             }
         }
@@ -552,9 +552,9 @@ public final class Ssdeep {
         // The two strings must have a common substring of length
         // ROLLING_WINDOW_SIZE to be candidates.
         if (!hasCommonSequence(s1, s2, ROLLING_WINDOW_SIZE)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no common substring for '" + new String(s1) + "' and '" + new String(s2) + "'");
-            }
+            // if (logger.isDebugEnabled()) {
+            // logger.debug("no common substring for '{}' and '{}'", new String(s1), new String(s2));
+            // }
             return 0;
         }
 
@@ -563,7 +563,7 @@ public final class Ssdeep {
         // the two strings are.
         long score = EditDistance.edit_distn(s1, len1, s2, len2);
         if (logger.isDebugEnabled()) {
-            logger.debug("edit_dist: " + score);
+            logger.debug("edit_dist: {}", score);
         }
 
         // Scale the edit distance by the lengths of the two
@@ -619,7 +619,7 @@ public final class Ssdeep {
         // be compared.
         if ((blockSize1 != blockSize2) && (blockSize1 != (blockSize2 * 2)) && (blockSize2 != (blockSize1 * 2))) {
             if (logger.isDebugEnabled()) {
-                logger.debug("block sizes too different: " + blockSize1 + " " + blockSize2);
+                logger.debug("block sizes too different: {} {}", blockSize1, blockSize2);
             }
             return 0;
         }

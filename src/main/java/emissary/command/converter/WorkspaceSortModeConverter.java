@@ -37,7 +37,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
                 LOG.info("Using largest first feeder queue");
                 break;
             default:
-                LOG.warn("Unknown sort order: {}. Using priority-based sort (if priorities are specified in the directory names)", value);
+                LOG.warn("Unknown sort order. Using priority-based sort (if priorities are specified in the directory names)");
                 break;
         }
         return outbound;

@@ -148,7 +148,7 @@ public class KffMemcached implements KffFilter {
 
         logger.debug("The following memcached servers are configured:");
         for (InetSocketAddress server : servers) {
-            logger.debug("Server configured: " + server);
+            logger.debug("Server configured: {}", server);
         }
 
         // Default to 24 hours timeout
@@ -214,7 +214,7 @@ public class KffMemcached implements KffFilter {
             client = testClient;
         }
 
-        logger.debug(client.toString());
+        // logger.debug(client.toString());
     }
 
     /**
@@ -264,14 +264,14 @@ public class KffMemcached implements KffFilter {
                     // As long as the id is not the same as what was already stored, then
                     // store it on its own
                     client.set(id, ageoff, key);
-                    logger.debug("Storing duplicate Id: " + id + " with value (hash) " + key);
+                    // logger.debug("Storing duplicate Id: {} with value (hash) {}", id, key);
                 }
             }
-            logger.debug("Found key: " + key + " with value " + (String) result);
+            // logger.debug("Found key: {} with value {}", key, (String) result);
             // Found the key
             return true;
         }
-        logger.debug("Did not find key: " + key);
+        // logger.debug("Did not find key: {}", key);
         // Did not find the key...store it and move on
         client.set(key, ageoff, id);
         return false;
