@@ -18,8 +18,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import emissary.core.EmissaryException;
-import emissary.test.core.LogbackCapture;
 import emissary.test.core.UnitTest;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
@@ -27,12 +29,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 
 class ConfigUtilTest extends UnitTest {
 
     private static final boolean isWindows = System.getProperty("os.name").contains("Window");
 
     private static List<Path> testFilesAndDirectories;
+
+    private ListAppender<ILoggingEvent> appender = new ListAppender<>();
+    private final Logger configLogger = (Logger) LoggerFactory.getLogger(emissary.config.ConfigUtil.class);
 
     private static String configDir;
     private Path CDIR;
@@ -43,11 +49,16 @@ class ConfigUtilTest extends UnitTest {
         configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY, ".");
         testFilesAndDirectories = new ArrayList<>();
         CDIR = Paths.get(configDir);
+
+        appender = new ListAppender<>();
+        appender.start();
+        configLogger.addAppender(appender);
     }
 
     @AfterEach
     public void cleanupFlavorSettings() throws Exception {
         super.tearDown();
+        configLogger.detachAppender(appender);
         for (Path f : testFilesAndDirectories) {
             if (Files.exists(f)) {
                 if (Files.isDirectory(f)) {
@@ -515,19 +526,18 @@ class ConfigUtilTest extends UnitTest {
 
     @Test
     void testMasterClassNamesWarnsOnFlavor() throws IOException, EmissaryException {
-        // final String contents = "DevNullPlace = \"emissary.place.sample.DevNullPlace\"\n";
-        // createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames.cfg", contents);
         final String contents2 = "DevNullPlace         = \"emissary.place.second.DevNullPlace\"\n";
         createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-NORM.cfg", contents2);
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "NORM");
-        emissary.config.ConfigUtil.initialize();
 
-        LogbackCapture.start(emissary.config.ConfigUtil.class);
         emissary.config.ConfigUtil.initialize();
         ConfigUtil.getMasterClassNames();
 
-        final String logOutput = LogbackCapture.stop();
-        assertTrue(logOutput.contains("appeared to be flavored with NORM"), "Should have logged about the flavor");
+        // Confirm logs contain flavor message
+        assertTrue(
+                appender.list.stream()
+                        .anyMatch(i -> i.getFormattedMessage()
+                                .contains("appeared to be flavored with NORM")));
 
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         emissary.config.ConfigUtil.initialize();
