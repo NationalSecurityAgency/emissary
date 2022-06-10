@@ -15,6 +15,11 @@ jobs:
       fail-fast: false
       matrix:
         java: ['8', '11']
+        experimental: [false]
+        include:
+          - java: '17'
+            experimental: true
+    continue-on-error: ${{ matrix.experimental }}
 
     steps:
     - name: Checkout repo

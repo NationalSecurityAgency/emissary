@@ -45,7 +45,7 @@ class TimeUtilTest extends UnitTest {
 
     @Test
     void testGetDateExceptionBadFormat2() {
-        assertThrows(IllegalArgumentException.class, () -> TimeUtil.getDate(testZoneDate, "Bad", null));
+        assertThrows(IllegalArgumentException.class, () -> TimeUtil.getDate(testZoneDate, "ThisReallyShouldntWork", null));
     }
 
 
