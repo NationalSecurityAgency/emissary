@@ -17,6 +17,10 @@ jobs:
         java: ['8', '11']
         experimental: [false]
         include:
+          - java: '15'
+            experimental: true
+          - java: '16'
+            experimental: true
           - java: '17'
             experimental: true
     continue-on-error: ${{ matrix.experimental }}
