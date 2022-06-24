@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.pickup.WorkSpace;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

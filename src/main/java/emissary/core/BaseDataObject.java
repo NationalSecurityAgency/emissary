@@ -24,7 +24,7 @@ import emissary.pickup.Priority;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
