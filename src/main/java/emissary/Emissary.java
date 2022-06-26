@@ -80,7 +80,7 @@ public class Emissary {
     protected Emissary(Map<String, EmissaryCommand> cmds) {
         commands = Collections.unmodifiableMap(cmds);
         // sort by command name and then add to jCommander
-        for (String key : new TreeSet<String>(commands.keySet())) {
+        for (String key : new TreeSet<>(commands.keySet())) {
             jc.addCommand(key, commands.get(key));
         }
     }
