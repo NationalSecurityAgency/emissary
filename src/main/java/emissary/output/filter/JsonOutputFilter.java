@@ -44,11 +44,11 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
  */
 public class JsonOutputFilter extends AbstractRollableFilter {
 
-    protected Set<String> blacklistFields = new TreeSet<>();
-    protected Set<String> blacklistPrefixes = new TreeSet<>();
-    protected Set<String> whitelistFields = new TreeSet<>();
-    protected Set<String> whitelistPrefixes = new TreeSet<>();
-    protected Map<String, Set<String>> blacklistValues;
+    protected Set<String> ignorelistFields = new TreeSet<>();
+    protected Set<String> ignorelistPrefixes = new TreeSet<>();
+    protected Set<String> safelistFields = new TreeSet<>();
+    protected Set<String> safelistPrefixes = new TreeSet<>();
+    protected Map<String, Set<String>> ignorelistValues;
     protected Set<String> stripPrefixes;
 
     protected boolean emitPayload = true;
@@ -61,11 +61,11 @@ public class JsonOutputFilter extends AbstractRollableFilter {
             setFilterName("JSON");
         }
         super.initialize(theConfigG, filterName, theFilterConfig);
-        this.whitelistFields.addAll(this.filterConfig.findEntries("EXTRA_PARAM"));
-        this.whitelistPrefixes.addAll(this.filterConfig.findEntries("EXTRA_PREFIX"));
-        this.blacklistFields.addAll(this.filterConfig.findEntries("BLACKLIST_FIELD"));
-        this.blacklistPrefixes.addAll(this.filterConfig.findEntries("BLACKLIST_PREFIX"));
-        this.blacklistValues = this.filterConfig.findStringMatchMultiMap("BLACKLIST_VALUE_");
+        this.safelistFields.addAll(this.filterConfig.findEntries("EXTRA_PARAM"));
+        this.safelistPrefixes.addAll(this.filterConfig.findEntries("EXTRA_PREFIX"));
+        this.ignorelistFields.addAll(this.filterConfig.findEntries("IGNORELIST_FIELD"));
+        this.ignorelistPrefixes.addAll(this.filterConfig.findEntries("IGNORELIST_PREFIX"));
+        this.ignorelistValues = this.filterConfig.findStringMatchMultiMap("IGNORELIST_VALUE_");
         this.stripPrefixes = this.filterConfig.findEntriesAsSet("STRIP_PARAM_PREFIX");
         this.emitPayload = this.filterConfig.findBooleanEntry("EMIT_PAYLOAD", true);
         initJsonMapper();
@@ -92,19 +92,19 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         private static final long serialVersionUID = 1L;
 
         protected final boolean outputAll;
-        protected final boolean emptyBlacklist;
-        protected final boolean blacklistStar;
-        protected final boolean emptyWhitelist;
-        protected final boolean whitelistStar;
+        protected final boolean emptyIgnorelist;
+        protected final boolean ignorelistStar;
+        protected final boolean emptySafelist;
+        protected final boolean safelistStar;
         private char keyReplacement = '_';
 
         public IbdoParameterFilter() {
             // if all collections are empty, then output everything
-            this.whitelistStar = (whitelistFields.contains("*") || whitelistFields.contains("ALL"));
-            this.blacklistStar = (blacklistFields.contains("*") || blacklistFields.contains("ALL"));
-            this.emptyBlacklist = CollectionUtils.isEmpty(blacklistFields) && CollectionUtils.isEmpty(blacklistPrefixes);
-            this.emptyWhitelist = CollectionUtils.isEmpty(whitelistFields) && CollectionUtils.isEmpty(whitelistPrefixes);
-            this.outputAll = emptyBlacklist && (whitelistStar || emptyWhitelist);
+            this.safelistStar = (safelistFields.contains("*") || safelistFields.contains("ALL"));
+            this.ignorelistStar = (ignorelistFields.contains("*") || ignorelistFields.contains("ALL"));
+            this.emptyIgnorelist = CollectionUtils.isEmpty(ignorelistFields) && CollectionUtils.isEmpty(ignorelistPrefixes);
+            this.emptySafelist = CollectionUtils.isEmpty(safelistFields) && CollectionUtils.isEmpty(safelistPrefixes);
+            this.outputAll = emptyIgnorelist && (safelistStar || emptySafelist);
         }
 
         @Override
@@ -132,42 +132,42 @@ public class JsonOutputFilter extends AbstractRollableFilter {
                 return true;
             }
 
-            // check the white/black list first
-            if (blacklistFields.contains(key)) {
+            // check the safe/ignore list first
+            if (ignorelistFields.contains(key)) {
                 return false;
-            } else if (whitelistFields.contains(key)) {
+            } else if (safelistFields.contains(key)) {
                 return true;
             }
 
-            // see if there is a hit on the blacklist prefix
-            for (final String prefix : blacklistPrefixes) {
+            // see if there is a hit on the ignorelist prefix
+            for (final String prefix : ignorelistPrefixes) {
                 if (key.startsWith(prefix)) {
                     return false;
                 }
             }
 
             // omit/emit all parameters if '*' or 'ALL'
-            if (blacklistStar) {
+            if (ignorelistStar) {
                 return false;
-            } else if (whitelistStar) {
+            } else if (safelistStar) {
                 return true;
             }
 
-            // there is a hit on the whitelist prefix, but it is on the blacklist
-            for (final String prefix : whitelistPrefixes) {
+            // there is a hit on the safe-list prefix, but it is on the ignore-list
+            for (final String prefix : safelistPrefixes) {
                 if (key.startsWith(prefix)) {
                     return true;
                 }
             }
 
-            // if we were only given a blacklist, output all keys
-            return emptyWhitelist;
+            // if we were only given an ignore-list, output all keys
+            return emptySafelist;
         }
 
         protected Collection<Object> filter(String key, Collection<Object> values) {
             Collection<Object> keep = new TreeSet<>();
             for (final Object value : values) {
-                if (!(blacklistValues.containsKey(key) && blacklistValues.get(key).contains(value.toString()))) {
+                if (!(ignorelistValues.containsKey(key) && ignorelistValues.get(key).contains(value.toString()))) {
                     keep.add(value);
                 }
             }
