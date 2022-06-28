@@ -51,7 +51,7 @@ class PathExistsConverterTest extends UnitTest {
 
     @Test
     void convertFailed() {
-        assertThrows(RuntimeException.class, () -> converter.convert("hello"));
+        assertThrows(IllegalArgumentException.class, () -> converter.convert("hello"));
     }
 
 }
