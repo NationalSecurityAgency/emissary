@@ -2,7 +2,6 @@ package emissary.server.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -24,6 +23,7 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -66,7 +66,7 @@ class PeersIT extends EndpointTestBase {
         assertEquals(200, response.getStatus());
         PeersResponseEntity entity = response.readEntity(PeersResponseEntity.class);
         assertEquals(0, entity.getErrors().size());
-        assertNull(entity.getCluster());
+        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
         assertEquals(TestEmissaryNode.TEST_NODE_PORT, entity.getLocal().getHost());
         assertTrue(entity.getLocal().getPeers().containsAll(PEERS));
     }
@@ -101,14 +101,8 @@ class PeersIT extends EndpointTestBase {
         // verify
         assertEquals(200, response.getStatus());
         PeersResponseEntity entity = response.readEntity(PeersResponseEntity.class);
-        assertNull(entity.getLocal());
+        assertTrue(CollectionUtils.isEmpty(entity.getLocal().getPeers()));
         assertIterableEquals(Sets.newHashSet(Collections.singletonList("Not found: DirectoryPlace")), entity.getErrors());
-    }
-
-    @Test
-    @Disabled("make this an integration test")
-    void clusterPeers() {
-        // TODO Look at putting this into an integration test with two real EmissaryServers stood up
     }
 
     static class TestEmissaryNode extends EmissaryNode {

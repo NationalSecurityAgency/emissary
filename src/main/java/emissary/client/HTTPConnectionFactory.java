@@ -1,10 +1,11 @@
 package emissary.client;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -64,8 +65,6 @@ public class HTTPConnectionFactory {
     static final String CFG_HTTP_MAXCONNS = "http.maxConnections";
     static final String CFG_HTTP_AGENT = "http.agent";
     static final String CFG_NOOP_VERIFIER = "https.useNoopHostnameVerifier";
-    static final String CFG_CONNECTION_TIMEOUT = "http.connectionTimeout";
-    static final String CFG_SOCKET_TIMEOUT = "http.socketTimeout";
     static final String CFG_SSLCONTEXT_TYPE = "emissary.sslcontext.type";
     static final String DEFAULT_HTTP_AGENT = "emissary";
     static final int DFLT_MAXCONNS = 200;
@@ -163,7 +162,7 @@ public class HTTPConnectionFactory {
         if (pazz == null) {
             return null;
         }
-        String realPW = null;
+        String realPW;
         if (pazz.startsWith(FILE_PRE)) {
             final String pth = pazz.substring(FILE_PRE.length());
             log.debug("Loading key password from file " + pth);
@@ -185,7 +184,7 @@ public class HTTPConnectionFactory {
             return null;
         }
         final KeyStore keyStore = KeyStore.getInstance(type);
-        try (final InputStream is = new FileInputStream(path)) {
+        try (final InputStream is = Files.newInputStream(Paths.get(path))) {
             keyStore.load(is, pazz);
         }
         return keyStore;

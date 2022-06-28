@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class Places {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String PLACES_ENDPOINT = "api/agents";
+    public static final String PLACES_ENDPOINT = "api/places";
 
 
     @GET

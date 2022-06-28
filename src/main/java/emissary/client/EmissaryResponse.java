@@ -2,6 +2,7 @@ package emissary.client;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import javax.ws.rs.core.MediaType;
 
@@ -33,14 +34,12 @@ public class EmissaryResponse {
         Header[] contentHeaders = response.getHeaders(HttpHeaders.CONTENT_TYPE);
         if (contentHeaders.length > 0) {
             contentType = contentHeaders[0].getValue();
-        } else if (contentHeaders.length > 1) {
-            logger.warn("Too many content headers: {}", contentHeaders.length);
-            if (logger.isDebugEnabled()) {
-                for (int i = 0; i < contentHeaders.length; i++) {
-                    logger.debug("Header -> {}", contentHeaders[i]);
+            if (contentHeaders.length > 1) {
+                logger.warn("Too many content headers: {}", contentHeaders.length);
+                if (logger.isDebugEnabled()) {
+                    Arrays.stream(contentHeaders).sequential().forEach(ch -> logger.debug("Header -> {}", ch));
                 }
             }
-            contentType = contentHeaders[0].getValue();
         } else {
             logger.debug("No content type header, setting to plain text");
             contentType = MediaType.TEXT_PLAIN;
@@ -56,7 +55,7 @@ public class EmissaryResponse {
         } catch (UnsupportedOperationException | IOException e) {
             tempContent = e.getMessage();
             tempStatus = 500;
-            e.printStackTrace();
+            logger.error("There was an issue generating the response", e);
         }
         logger.debug("response was: {} with content: {}", tempStatus, tempContent);
         status = tempStatus;
@@ -79,7 +78,7 @@ public class EmissaryResponse {
             if (status == HttpStatus.OK_200) {
                 return content.toString();
             } else {
-                return "Bad request -> status: " + status + " message: " + content.toString();
+                return "Bad request -> status: " + status + " message: " + content;
             }
         } catch (Exception e) {
             logger.error("Error getting string content", e);
@@ -112,7 +111,9 @@ public class EmissaryResponse {
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             logger.error("Problem creating new {}", mapper.getName(), e);
         }
-        r.addError(msg);
+        if (r != null) {
+            r.addError(msg);
+        }
         return r;
     }
 
