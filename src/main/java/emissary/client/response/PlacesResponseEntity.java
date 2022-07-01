@@ -8,16 +8,21 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "peers")
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@XmlRootElement(name = "places")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PlacesResponseEntity extends BaseResponseEntity {
     private static final long serialVersionUID = 5686691885767273319L;
 
+    private static final Logger logger = LoggerFactory.getLogger(PlacesResponseEntity.class);
+
     @XmlElement(name = "local")
-    private PlaceList local;
+    private PlaceList local = new PlaceList();
 
     @XmlElement(name = "cluster")
-    private Set<PlaceList> cluster;
+    private Set<PlaceList> cluster = new HashSet<>();
 
     public PlacesResponseEntity() {}
 
@@ -62,6 +67,6 @@ public class PlacesResponseEntity extends BaseResponseEntity {
         for (PlaceList placeList : getCluster()) {
             placeList.dumpToConsole();
         }
-        System.out.println();
+        logger.info("");
     }
 }

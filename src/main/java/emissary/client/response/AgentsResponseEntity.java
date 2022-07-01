@@ -24,6 +24,10 @@ public class AgentsResponseEntity extends BaseResponseEntity {
 
     public AgentsResponseEntity() {}
 
+    public AgentsResponseEntity(AgentList local) {
+        this.local = local;
+    }
+
     public void addClusterAgents(AgentList pl) {
         if (pl != null) {
             this.cluster.add(pl);
@@ -55,7 +59,7 @@ public class AgentsResponseEntity extends BaseResponseEntity {
     public void dumpToConsole() {
         Stream.concat(cluster.stream(), Stream.of(local)).filter(agentList -> agentList.getHost() != null).collect(Collectors.toSet()).stream()
                 .sorted(Comparator.comparing(AgentList::getHost)).forEach(agentList -> {
-                    if (agentList.getAgents().size() > 0) {
+                    if (!agentList.getAgents().isEmpty()) {
                         agentList.dumpToConsole();
                     }
                 });

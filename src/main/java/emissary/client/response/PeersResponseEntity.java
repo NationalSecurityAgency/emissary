@@ -8,17 +8,22 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @XmlRootElement(name = "peers")
 @XmlAccessorType(XmlAccessType.NONE)
 public class PeersResponseEntity extends BaseResponseEntity {
 
     private static final long serialVersionUID = 5686691885767273319L;
 
+    private static final Logger logger = LoggerFactory.getLogger(PeersResponseEntity.class);
+
     @XmlElement(name = "local")
-    private PeerList local;
+    private PeerList local = new PeerList();
 
     @XmlElement(name = "cluster")
-    private Set<PeerList> cluster;
+    private Set<PeerList> cluster = new HashSet<>();
 
     public PeersResponseEntity() {}
 
@@ -28,7 +33,7 @@ public class PeersResponseEntity extends BaseResponseEntity {
 
     public void addClusterPeers(PeerList pl) {
         if (cluster == null) {
-            cluster = new HashSet<PeerList>();
+            cluster = new HashSet<>();
         }
         this.cluster.add(pl);
     }
@@ -63,12 +68,12 @@ public class PeersResponseEntity extends BaseResponseEntity {
             }
         }
         Set<String> errors = getErrors();
-        if (errors.size() > 0) {
-            System.out.print("\nErrors");
+        if (!errors.isEmpty()) {
+            StringBuilder sb = new StringBuilder("\nErrors");
             for (String error : errors) {
-                System.out.print(error);
+                sb.append(error);
             }
+            logger.error("{}", sb);
         }
-        System.out.println();
     }
 }

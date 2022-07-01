@@ -1,7 +1,7 @@
 package emissary.server.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,6 +17,7 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,7 @@ class PlacesTest extends EndpointTestBase {
         assertEquals(3, entity.getLocal().getPlaces().size());
         assertEquals(EXPECTED_PLACES, entity.getLocal().getPlaces());
         assertEquals(0, entity.getErrors().size());
-        assertNull(entity.getCluster());
+        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
 
         // cleanup
         Namespace.unbind("EmissaryServer");
@@ -90,7 +91,7 @@ class PlacesTest extends EndpointTestBase {
         assertEquals("localhost:8001", entity.getLocal().getHost());
         assertEquals(0, entity.getLocal().getPlaces().size());
         assertEquals(0, entity.getErrors().size());
-        assertNull(entity.getCluster());
+        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
     }
 
     @Test
@@ -101,17 +102,11 @@ class PlacesTest extends EndpointTestBase {
         // verify
         assertEquals(200, response.getStatus());
         PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertNull(entity.getLocal());
-        assertNull(entity.getCluster());
+        assertTrue(CollectionUtils.isEmpty(entity.getLocal().getPlaces()));
+        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
         assertEquals(1, entity.getErrors().size());
         assertEquals(UNBOUND_SERVER_ERR, entity.getErrors());
 
-    }
-
-    @Test
-    @Disabled("make this an integration test")
-    void clusterPlaces() {
-        // TODO look at putting this in an integration tests with two real EmissaryServers
     }
 
 }
