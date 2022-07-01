@@ -22,7 +22,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * @param dir string key of the controlling directory place
      * @param placeLoc location of this place
      */
-    public Analyzer(final String configInfo, final String dir, final String placeLoc) throws IOException {
+    protected Analyzer(final String configInfo, final String dir, final String placeLoc) throws IOException {
         super(configInfo, dir, placeLoc);
         configureAnalyzer();
     }
@@ -33,19 +33,19 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * @param configInfo the config file or resource
      * @param placeLoc location of this place
      */
-    public Analyzer(final String configInfo, final String placeLoc) throws IOException {
+    protected Analyzer(final String configInfo, final String placeLoc) throws IOException {
         // the second arg is arbitrary, but needs to look like this,
         // place.machine.port
         super(configInfo, placeLoc);
         configureAnalyzer();
     }
 
-    public Analyzer(final InputStream configInfo) throws IOException {
+    protected Analyzer(final InputStream configInfo) throws IOException {
         super(configInfo);
         configureAnalyzer();
     }
 
-    public Analyzer() throws IOException {
+    protected Analyzer() throws IOException {
         super();
         configureAnalyzer();
     }
