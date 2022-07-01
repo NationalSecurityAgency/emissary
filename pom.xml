@@ -654,65 +654,9 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.2.0</version>
-        </plugin>
-        <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
           <version>2.15.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
-          <executions>
-            <execution>
-              <id>check-maven-version</id>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <configuration>
-                <rules>
-                  <requireMavenVersion>
-                    <version>[${maven.min-version},)</version>
-                  </requireMavenVersion>
-                  <requireJavaVersion>
-                    <version>[1.8,)</version>
-                  </requireJavaVersion>
-                  <dependencyConvergence />
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.2.0</version>
-          <configuration>
-            <delimiters>
-              <delimiter>${*}</delimiter>
-              <!-- to keep the default behavior -->
-              <delimiter>@</delimiter>
-              <!-- to add Ant-like tokens style -->
-            </delimiters>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.0</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-              <phase>verify</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -720,22 +664,82 @@
           <version>1.5.3</version>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${dep.maven-surefire-plugin.version}</version>
+          <groupId>com.spotify</groupId>
+          <artifactId>dockerfile-maven-plugin</artifactId>
+          <version>1.4.13</version>
+          <configuration>
+            <skipPush>true</skipPush>
+          </configuration>
+          <executions>
+            <execution>
+              <id>tag-version</id>
+              <goals>
+                <goal>build</goal>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>${project.version}</tag>
+              </configuration>
+            </execution>
+            <execution>
+              <id>tag-latest</id>
+              <goals>
+                <goal>tag</goal>
+              </goals>
+              <configuration>
+                <tag>latest</tag>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>net.revelc.code</groupId>
+          <artifactId>impsort-maven-plugin</artifactId>
+          <version>1.6.2</version>
+          <configuration>
+            <groups>java.,javax.,*</groups>
+            <removeUnused>true</removeUnused>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sort-imports</id>
+              <goals>
+                <goal>sort</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <version>2.11.0</version>
+          <configuration>
+            <compilerCompliance>${maven.compiler.source}</compilerCompliance>
+            <compilerSource>${maven.compiler.source}</compilerSource>
+            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
+            <configFile>${eclipseFormatterStyle}</configFile>
+            <lineEnding>LF</lineEnding>
+            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+            <skipCssFormatting>true</skipCssFormatting>
+            <skipHtmlFormatting>true</skipHtmlFormatting>
+            <skipJsFormatting>true</skipJsFormatting>
+            <skipJsonFormatting>true</skipJsonFormatting>
+            <skipXmlFormatting>true</skipXmlFormatting>
+          </configuration>
+          <executions>
+            <execution>
+              <id>format-java-sources</id>
+              <goals>
+                <goal>format</goal>
+              </goals>
+              <phase>process-sources</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.11.0</version>
-          <configuration>
-            <attach>true</attach>
-            <relativizeDecorationLinks>false</relativizeDecorationLinks>
-            <locales>en</locales>
-            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-            <port>9000</port>
-          </configuration>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -766,6 +770,73 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+          <configuration>
+            <showWarnings>${maven.compiler.showWarnings}</showWarnings>
+            <compilerArgs>
+              <arg>-Xlint:-path,unchecked</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+          <executions>
+            <execution>
+              <id>check-maven-version</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireMavenVersion>
+                    <version>[${maven.min-version},)</version>
+                  </requireMavenVersion>
+                  <requireJavaVersion>
+                    <version>[1.8,)</version>
+                  </requireJavaVersion>
+                  <dependencyConvergence />
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${dep.maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>3.4.0</version>
           <configuration>
@@ -785,6 +856,35 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>3.16.0</version>
+          <configuration>
+            <excludes />
+            <failOnViolation>false</failOnViolation>
+            <failurePriority>1</failurePriority>
+            <format>xml</format>
+            <includeTests>true</includeTests>
+            <minimumTokens>100</minimumTokens>
+            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+            <targetJdk>${maven.compiler.target}</targetJdk>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <version>2.5.3</version>
           <configuration>
@@ -797,36 +897,43 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.2.2</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>test-jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.3.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>2.10.0</version>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <delimiters>
+              <delimiter>${*}</delimiter>
+              <!-- to keep the default behavior -->
+              <delimiter>@</delimiter>
+              <!-- to add Ant-like tokens style -->
+            </delimiters>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.11.0</version>
           <configuration>
-            <showWarnings>${maven.compiler.showWarnings}</showWarnings>
-            <compilerArgs>
-              <arg>-Xlint:-path,unchecked</arg>
-            </compilerArgs>
+            <attach>true</attach>
+            <relativizeDecorationLinks>false</relativizeDecorationLinks>
+            <locales>en</locales>
+            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
+            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+            <port>9000</port>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.2.0</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -838,52 +945,22 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
+          <artifactId>maven-surefire-report-plugin</artifactId>
+          <version>${dep.maven-surefire-plugin.version}</version>
+          <configuration>
+            <showSuccess>true</showSuccess>
+            <linkXRef>true</linkXRef>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.3.0</version>
         </plugin>
         <plugin>
-          <groupId>net.revelc.code.formatter</groupId>
-          <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
-          <configuration>
-            <compilerCompliance>${maven.compiler.source}</compilerCompliance>
-            <compilerSource>${maven.compiler.source}</compilerSource>
-            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
-            <configFile>${eclipseFormatterStyle}</configFile>
-            <lineEnding>LF</lineEnding>
-            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-            <skipCssFormatting>true</skipCssFormatting>
-            <skipHtmlFormatting>true</skipHtmlFormatting>
-            <skipJsFormatting>true</skipJsFormatting>
-            <skipJsonFormatting>true</skipJsonFormatting>
-            <skipXmlFormatting>true</skipXmlFormatting>
-          </configuration>
-          <executions>
-            <execution>
-              <id>format-java-sources</id>
-              <goals>
-                <goal>format</goal>
-              </goals>
-              <phase>process-sources</phase>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>net.revelc.code</groupId>
-          <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.6.2</version>
-          <configuration>
-            <groups>java.,javax.,*</groups>
-            <removeUnused>true</removeUnused>
-          </configuration>
-          <executions>
-            <execution>
-              <id>sort-imports</id>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-            </execution>
-          </executions>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.10.0</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -928,86 +1005,9 @@
           </executions>
         </plugin>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.16.0</version>
-          <configuration>
-            <excludes />
-            <failOnViolation>false</failOnViolation>
-            <failurePriority>1</failurePriority>
-            <format>xml</format>
-            <includeTests>true</includeTests>
-            <minimumTokens>100</minimumTokens>
-            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-            <targetJdk>${maven.compiler.target}</targetJdk>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jxr-plugin</artifactId>
-          <version>3.2.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.3.0</version>
-          <configuration>
-            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>${dep.maven-surefire-plugin.version}</version>
-          <configuration>
-            <showSuccess>true</showSuccess>
-            <linkXRef>true</linkXRef>
-          </configuration>
-        </plugin>
-        <plugin>
           <groupId>org.sonarsource.scanner.maven</groupId>
           <artifactId>sonar-maven-plugin</artifactId>
           <version>3.7.0.1746</version>
-        </plugin>
-        <plugin>
-          <groupId>com.spotify</groupId>
-          <artifactId>dockerfile-maven-plugin</artifactId>
-          <version>1.4.13</version>
-          <configuration>
-            <skipPush>true</skipPush>
-          </configuration>
-          <executions>
-            <execution>
-              <id>tag-version</id>
-              <goals>
-                <goal>build</goal>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>${project.version}</tag>
-              </configuration>
-            </execution>
-            <execution>
-              <id>tag-latest</id>
-              <goals>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>latest</tag>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>3.0.0-M1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0-M1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1023,6 +1023,8 @@
           <expandEmptyElements>false</expandEmptyElements>
           <nrOfIndentSpace>2</nrOfIndentSpace>
           <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortDependencyExclusions>scope,groupId,artifactId</sortDependencyExclusions>
+          <sortPlugins>groupId,artifactId</sortPlugins>
           <sortProperties>true</sortProperties>
         </configuration>
         <executions>
@@ -1043,74 +1045,21 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <version>4.9.9</version>
         <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <runOrder>random</runOrder>
-          <reuseForks>true</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <index>true</index>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
-              <mainClass>emissary.Emissary</mainClass>
-            </manifest>
-            <manifestEntries>
-              <Built-By>${user.name} on ${maven.build.timestamp}</Built-By>
-            </manifestEntries>
-            <manifestSection>
-              <name>emissary</name>
-              <manifestEntries>
-                <Sealed>true</Sealed>
-                <Implementation-Title>emissary</Implementation-Title>
-              </manifestEntries>
-            </manifestSection>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <reuseForks>false</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
+          <generateGitPropertiesFile>true</generateGitPropertiesFile>
+          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+          <commitIdGenerationMode>full</commitIdGenerationMode>
         </configuration>
         <executions>
           <execution>
-            <id>run-integration-tests</id>
+            <id>git-properties</id>
             <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
+              <goal>revision</goal>
             </goals>
+            <phase>initialize</phase>
           </execution>
         </executions>
       </plugin>
@@ -1172,23 +1121,76 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>io.github.git-commit-id</groupId>
-        <artifactId>git-commit-id-maven-plugin</artifactId>
-        <version>4.9.9</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-          <generateGitPropertiesFile>true</generateGitPropertiesFile>
-          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-          <commitIdGenerationMode>full</commitIdGenerationMode>
+          <argLine>${surefire.argline}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <environmentVariables>
+            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+          </environmentVariables>
+          <reuseForks>false</reuseForks>
+          <forkCount>${surefire.forkCount}</forkCount>
         </configuration>
         <executions>
           <execution>
-            <id>git-properties</id>
+            <id>run-integration-tests</id>
             <goals>
-              <goal>revision</goal>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
             </goals>
-            <phase>initialize</phase>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+              <mainClass>emissary.Emissary</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Built-By>${user.name} on ${maven.build.timestamp}</Built-By>
+            </manifestEntries>
+            <manifestSection>
+              <name>emissary</name>
+              <manifestEntries>
+                <Sealed>true</Sealed>
+                <Implementation-Title>emissary</Implementation-Title>
+              </manifestEntries>
+            </manifestSection>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${surefire.argline}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <environmentVariables>
+            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+          </environmentVariables>
+          <runOrder>random</runOrder>
+          <reuseForks>true</reuseForks>
+          <forkCount>${surefire.forkCount}</forkCount>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -1348,12 +1350,12 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>net.revelc.code.formatter</groupId>
-            <artifactId>formatter-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>net.revelc.code.formatter</groupId>
+            <artifactId>formatter-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
