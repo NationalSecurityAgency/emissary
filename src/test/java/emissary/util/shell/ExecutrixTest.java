@@ -24,37 +24,20 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import emissary.test.core.UnitTest;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ExecutrixTest extends UnitTest {
     private Executrix e;
-    private final boolean isWindows = System.getProperty("os.name").contains("Window");
+    private final boolean isWindows = SystemUtils.OS_NAME.contains("Windows");
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         this.e = new Executrix();
-
-        final String tmp = System.getProperty("java.io.tmpdir");
-        if (tmp == null || (tmp.contains("~") && this.isWindows)) {
-            if (this.isWindows) {
-                File f = new File("c:/tmp");
-                if (f.exists() && f.isDirectory()) {
-                    this.e.setTmpDir(f.getPath());
-                } else {
-                    f = new File("c:/temp");
-                    if (f.exists() && f.isDirectory()) {
-                        this.e.setTmpDir(f.getPath());
-                    } else {
-                        this.e.setTmpDir("/tmp");
-                    }
-                }
-            } else {
-                this.e.setTmpDir("/tmp");
-            }
-        }
+        this.e.setTmpDir(TMPDIR);
     }
 
     @Override
@@ -272,11 +255,6 @@ class ExecutrixTest extends UnitTest {
     @Test
     void testExecute() throws IOException {
 
-        // if (isWindows)
-        // {
-        // logger.debug("This test needs to be made to work on windoze");
-        // return;
-        // }
         final String[] names = this.e.makeTempFilenames();
         logger.debug("Names for testExecute is " + Arrays.asList(names));
 
