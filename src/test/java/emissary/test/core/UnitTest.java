@@ -3,6 +3,7 @@ package emissary.test.core;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import org.jdom2.input.SAXBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -82,6 +84,19 @@ public class UnitTest {
         }
     }
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    protected String TMPDIR = "/tmp";
+
+    @Before
+    public void setupTmpDir() {
+        try {
+            TMPDIR = temporaryFolder.newFolder().getAbsolutePath();
+        } catch (IOException e) {
+            logger.error("Error creating temporary directory", e);
+        }
+    }
+
     protected Package utPackage = UnitTest.class.getPackage();
     protected Package thisPackage = null;
 
@@ -90,9 +105,6 @@ public class UnitTest {
 
     // Config pointers
     protected String origConfigPkg = null;
-
-    // TODO: remove this and see what breaks
-    protected String TMPDIR = System.getProperty("java.io.tmpdir", ".");
 
     /**
      * Create a UnitTest
@@ -128,9 +140,9 @@ public class UnitTest {
      * Configure the test stuff
      * <p>
      * Beware though, if you use @BeforeClass this will not have had a change to run. So you can do something like
-     * 
+     *
      * new UnitTest().setupSystemProperties();
-     * 
+     *
      * in the @BeforeClass. See FlexibleDateTimeParserTest for an example
      */
     protected void configure() {
@@ -138,10 +150,7 @@ public class UnitTest {
         setupSystemProperties();
     }
 
-    @Before
-    public void setUp() throws Exception {
-
-    }
+    public void setUp() throws Exception {}
 
     @After
     public void tearDown() throws Exception {
