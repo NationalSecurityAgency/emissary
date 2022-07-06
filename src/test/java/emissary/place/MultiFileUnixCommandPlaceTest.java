@@ -32,9 +32,8 @@ import org.slf4j.LoggerFactory;
 class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
-    private static final String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
     private static Path workDir;
-    private final File scriptFile = new File(tmpdir, "testMultiFileUnixCommand.sh");
+    private final File scriptFile = new File(TMPDIR, "testMultiFileUnixCommand.sh");
     private static final String W = "Президент Буш";
     private IBaseDataObject payload;
     private static final String FORM = "TEST";
@@ -53,6 +52,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
             place = new MultiFileUnixCommandPlace(is);
             place.executrix.setTmpDir(workDir.toAbsolutePath().toString());
             place.executrix.setTmpDirFile(new File(workDir.toAbsolutePath().toString()));
+            place.executrix.setCommand(TMPDIR + "/testMultiFileUnixCommand.sh <INPUT_NAME>");
         } catch (Exception ex) {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
         }

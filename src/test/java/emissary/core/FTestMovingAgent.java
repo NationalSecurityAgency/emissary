@@ -32,8 +32,6 @@ class FTestMovingAgent extends FunctionalTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         logger.debug("Starting Mobility tests");
 
         // start jetty

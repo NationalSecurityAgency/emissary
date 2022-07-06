@@ -43,8 +43,6 @@ class FTestPeerDirectoryPlace extends FunctionalTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         startJetty(8005, "jettypeer");
 
         this.peer1 = directory; // from super class

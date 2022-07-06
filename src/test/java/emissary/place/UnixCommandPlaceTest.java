@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
-    private static final String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
-    private final Path scriptFile = Paths.get(tmpdir, "testUnixCommand.sh");
+    private final Path scriptFile = Paths.get(TMPDIR, "testUnixCommand.sh");
     private static final String W = "Президент Буш";
     private IBaseDataObject payload;
     private final String FORM = "TEST";
@@ -48,6 +47,8 @@ class UnixCommandPlaceTest extends UnitTest {
         // read our default config for this place, not something else that got configured in
         try (InputStream is = new ResourceReader().getConfigDataAsStream(this.getClass())) {
             place = new UnixCommandPlace(is);
+            place.executrix.setTmpDir(TMPDIR);
+            place.executrix.setCommand(TMPDIR + "/testUnixCommand.sh <INPUT_NAME> <OUTPUT_NAME>");
         } catch (Exception ex) {
             logger.error("Cannot create UnixCommandPlace", ex);
         }
@@ -114,7 +115,7 @@ class UnixCommandPlaceTest extends UnitTest {
 
         // fake an output file and load it with some data
         String DATA = "test-test";
-        Path outputFile = Paths.get(tmpdir, "output.out");
+        Path outputFile = Paths.get(TMPDIR, "output.out");
 
         try {
             IOUtils.write(DATA, Files.newOutputStream(outputFile), StandardCharsets.UTF_8);

@@ -42,10 +42,6 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-
-        // set config to java.io.tmpdir, this config package
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         logger.debug("Starting WorkSpace tests");
 
         // Set up a directory struction with two files to be processed

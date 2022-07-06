@@ -3,6 +3,7 @@ package emissary.test.core;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
@@ -17,7 +18,11 @@ import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
@@ -84,24 +89,35 @@ public class UnitTest {
         }
     }
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
-    protected String TMPDIR = "/tmp";
+    // Runtime typed logger
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Before
-    public void setupTmpDir() {
+    // Static logger
+    private static Logger slogger = LoggerFactory.getLogger(UnitTest.class.getSimpleName());
+
+    protected static String TMPDIR = "/tmp";
+
+    @ClassRule
+    public static TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @BeforeClass
+    public static void setupTmpDirJunit4() {
         try {
             TMPDIR = temporaryFolder.newFolder().getAbsolutePath();
         } catch (IOException e) {
-            logger.error("Error creating temporary directory", e);
+            slogger.error("Error creating temporary directory", e);
         }
     }
 
-    protected Package utPackage = UnitTest.class.getPackage();
-    protected Package thisPackage = null;
+    @TempDir
+    public static File temporaryDirectory;
 
-    // Runtime typed logger
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    @BeforeAll
+    public static void setupTmpDirJunit5() {
+        TMPDIR = temporaryDirectory.getAbsolutePath();
+    }
+
+    protected Package thisPackage = null;
 
     // Config pointers
     protected String origConfigPkg = null;
@@ -150,6 +166,7 @@ public class UnitTest {
         setupSystemProperties();
     }
 
+    @Before
     public void setUp() throws Exception {}
 
     @After
@@ -184,7 +201,7 @@ public class UnitTest {
     public static List<Object[]> getMyTestParameterFiles(Class<?> clz) {
         ResourceReader rr = new ResourceReader();
         List<String> rs = rr.findDataResourcesFor(clz);
-        List<Object[]> al = new ArrayList<Object[]>();
+        List<Object[]> al = new ArrayList<>();
         for (String r : rs) {
             String[] s = {r};
             al.add(s);
@@ -237,14 +254,9 @@ public class UnitTest {
     }
 
     /**
-     * Restore config dir and pkg to original values
+     * Restore config pkg to original values
      */
     protected void restoreConfig() throws EmissaryException {
-        // Restore config paths
-        // if (origConfigDir != null) {
-        // System.setProperty(ConfigUtil.CONFIG_DIR_PROPERTY, origConfigDir);
-        // origConfigDir = null;
-        // }
         if (origConfigPkg != null) {
             System.setProperty(ConfigUtil.CONFIG_PKG_PROPERTY, origConfigPkg);
             origConfigPkg = null;
@@ -274,6 +286,4 @@ public class UnitTest {
         }
         return answerDoc;
     }
-
-
 }
