@@ -50,7 +50,7 @@
     <dep.jcommander.version>1.58</dep.jcommander.version>
     <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
     <dep.jersey.version>2.35</dep.jersey.version>
-    <dep.jetty.version>9.4.46.v20220331</dep.jetty.version>
+    <dep.jetty.version>10.0.10</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
     <dep.junit.version>4.13.2</dep.junit.version>
