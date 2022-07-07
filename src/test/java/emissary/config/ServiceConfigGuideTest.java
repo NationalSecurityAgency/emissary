@@ -406,8 +406,7 @@ class ServiceConfigGuideTest extends UnitTest {
 
     @Test
     void testCreateDirAndFile() throws IOException {
-        final String tmp = System.getProperty("java.io.tmpdir");
-        final Path tdir = Paths.get(tmp, "foo-dir");
+        final Path tdir = Files.createTempDirectory(null);
         final Path tfile = Paths.get(tdir.toString(), "foo-file.txt");
         final Path t2file = Paths.get(tdir.toString(), "subdir", "blubdir", "bar-file.txt");
         String s =
@@ -453,7 +452,6 @@ class ServiceConfigGuideTest extends UnitTest {
         assertTrue(sc.debug(), "Debug enable on config file failed");
     }
 
-
     @Test
     void testConstructors() throws IOException {
         this.cis.reset();
@@ -475,7 +473,6 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals(pn, sc3.findStringEntry("INITIAL_FORM"), "Read file from disk");
         final ServiceConfigGuide sc4 = new ServiceConfigGuide(scfile.getParent(), scfile.getName());
         assertEquals(pn, sc4.findStringEntry("INITIAL_FORM"), "Read dir and file from disk");
-
     }
 
     @Test
@@ -513,7 +510,7 @@ class ServiceConfigGuideTest extends UnitTest {
     @Test
     void testImportFileWhenFileExists() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
 
@@ -528,15 +525,14 @@ class ServiceConfigGuideTest extends UnitTest {
             // should not be reached due to IMPORT_FILE existing
             throw new AssertionError("IMPORT_FILE not found.", iox);
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
-            Files.deleteIfExists(Paths.get(impname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
     }
 
     @Test
     void testImportFileWhenFileDoesNotExist() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
 
@@ -552,8 +548,7 @@ class ServiceConfigGuideTest extends UnitTest {
             // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
             result = iox.getMessage();
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
-            Files.deleteIfExists(Paths.get(impname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
 
         String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname
@@ -565,7 +560,7 @@ class ServiceConfigGuideTest extends UnitTest {
     @Test
     void testOptImportWhenOptionalFileExists() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final String optname = dir + "/optional.cfg";
 
@@ -578,10 +573,8 @@ class ServiceConfigGuideTest extends UnitTest {
             assertTrue(Executrix.writeDataToFile(optional, optname));
             c = new ServiceConfigGuide(priname);
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
-            Files.deleteIfExists(Paths.get(optname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
-
 
         assertEquals(2, c.findEntries("FOO").size(), "Optional value present");
         assertEquals("BAR2", c.findEntries("FOO").get(1), "Optional value present after primary");
@@ -590,7 +583,7 @@ class ServiceConfigGuideTest extends UnitTest {
     @Test
     void testOptImportWhenOptionalFileDoesNotExist() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final byte[] primary = ("FOO = \"BAR\"\nOPT_IMPORT_FILE = \"/tmp/bogus.cfg\"\n").getBytes();
 
@@ -599,16 +592,15 @@ class ServiceConfigGuideTest extends UnitTest {
             assertTrue(Executrix.writeDataToFile(primary, priname));
             c = new ServiceConfigGuide(priname);
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
         assertEquals(1, c.findEntries("FOO").size(), "Optional value not present");
     }
 
-
     @Test
     void testOptImportWhenOptionalFileExistsButHasBadSyntax() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final String optname = dir + "/optional.cfg";
 
@@ -622,10 +614,8 @@ class ServiceConfigGuideTest extends UnitTest {
         } catch (IOException iox) {
             // expected
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
-            Files.deleteIfExists(Paths.get(optname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
-
     }
 
     @Test

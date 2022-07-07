@@ -609,7 +609,7 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testMissingImportFileInConfig() throws IOException {
         // Write the config bytes out to a temp file
-        final String dir = System.getProperty("java.io.tmpdir");
+        final Path dir = Files.createTempDirectory(null);
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
         final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"").getBytes();
@@ -627,8 +627,7 @@ class ConfigUtilTest extends UnitTest {
             // will catch as IMPORT_FILE is not created/found, String result will be thrown IO Exception Message
             result = iox.getMessage();
         } finally {
-            Files.deleteIfExists(Paths.get(priname));
-            Files.deleteIfExists(Paths.get(impname));
+            FileUtils.deleteDirectory(dir.toFile());
         }
 
         String noImportExpectedMessage = "In " + priname + ", cannot find IMPORT_FILE: " + impname

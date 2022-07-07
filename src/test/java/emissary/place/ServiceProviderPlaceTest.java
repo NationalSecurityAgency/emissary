@@ -212,9 +212,6 @@ class ServiceProviderPlaceTest extends UnitTest {
         Path cfg = null;
         OutputStream fos = null;
         try {
-            // set config to java.io.tmpdir, no package resources
-            // setConfig(System.getProperty("java.io.tmpdir", "."), false);
-
             // Write out the config data to the temp config dir
             if (usePackage) {
                 cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
