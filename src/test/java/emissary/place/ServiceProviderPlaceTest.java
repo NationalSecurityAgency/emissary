@@ -194,7 +194,7 @@ class ServiceProviderPlaceTest extends UnitTest {
 
             mtp.shutDown();
         } catch (IOException iox) {
-            fail("Could not initialize MyStreamConfigedTestPlace with one arg constructor: " + iox);
+            fail("Could not initialize MyStreamConfigedTestPlace with one arg constructor", iox);
         }
     }
 
@@ -241,7 +241,7 @@ class ServiceProviderPlaceTest extends UnitTest {
 
             mtp.shutDown();
         } catch (IOException iox) {
-            fail("Could not initialize MyFileConfigedTestPlace with one arg constructor: " + iox);
+            fail("Could not initialize MyFileConfigedTestPlace with one arg constructor", iox);
         } finally {
             // Clean up the tmp config settings
             restoreConfig();
@@ -354,7 +354,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertEquals(1, proxies.size(), "Size of proxies set");
             assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
@@ -387,7 +387,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
             assertTrue(proxies.contains("TPROXY2"), "Proxies contains original in set");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY: ", iox);
         }
     }
 
@@ -404,7 +404,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertEquals(1, keys.size(), "Size of Keys");
 
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
@@ -415,7 +415,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             PlaceTest tp = new PlaceTest(config, null, "PlaceTest");
             assertEquals("TPlaceName", tp.getPlaceName(), "Configured place name");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
@@ -443,7 +443,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             PlaceTest tp = new PlaceTest();
             assertEquals("TestFooPlace", tp.getPlaceName(), "Configured place name");
         } catch (IOException iox) {
-            fail("Place should have configured with no arg ctor: " + iox.getMessage());
+            fail("Place should have configured with no arg ctor", iox);
         } finally {
             restoreConfig();
         }
@@ -482,7 +482,7 @@ class ServiceProviderPlaceTest extends UnitTest {
                     assertNotNull(place, "Place must be found by service location");
                     assertSame(place, tp, "Place bound by service location must be correct object");
                 } catch (Exception ex) {
-                    throw new AssertionError("Should have found " + sl + " in namespace", ex);
+                    fail("Should have found " + sl + " in namespace", ex);
                 }
             }
 
@@ -495,7 +495,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertTrue(proxies.contains("TP3"), "Proxies does not contain original in set");
             assertTrue(proxies.contains("TP4"), "Proxies does not contain original in set");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
@@ -511,7 +511,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertEquals(0, tp.getKeys().size(), "Key size after removal must be 0");
             assertEquals(0, tp.getProxies().size(), "Proxy size after removal must be 0");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
@@ -526,7 +526,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertEquals("TPROXY", tp.getPrimaryProxy(), "Primary proxy present after bogus key removal");
             assertEquals(1, tp.getKeys().size(), "Key size after bogus removal must be 1");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: " + iox.getMessage());
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 

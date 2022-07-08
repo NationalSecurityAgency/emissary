@@ -216,7 +216,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
 
             assertEquals(0, space.getPendingQueueSize(), "File no lnger marked pending");
         } catch (IOException ex) {
-            fail("Cannot create extra test file " + ex.getMessage());
+            fail("Cannot create extra test file", ex);
         }
 
         // restart the client with the space already online

@@ -23,7 +23,7 @@ class WorkSpaceTest extends UnitTest {
         try {
             mws = new MyWorkSpace();
         } catch (Exception ex) {
-            fail("Cannot start workspace: " + ex.getMessage());
+            fail("Cannot start workspace", ex);
         }
     }
 

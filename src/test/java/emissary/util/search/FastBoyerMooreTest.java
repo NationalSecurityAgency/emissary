@@ -31,7 +31,7 @@ class FastBoyerMooreTest extends UnitTest {
             assertEquals(0, result.get(0)[1], "First result check id");
             assertEquals(3, result.get(0)[2], "First result check length");
         } catch (Exception ex) {
-            fail("Creation of scanner failure: " + ex);
+            fail("Creation of scanner failure", ex);
         }
     }
 

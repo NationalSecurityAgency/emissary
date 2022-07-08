@@ -3,6 +3,7 @@ package emissary.kff;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +36,7 @@ class KffChainTest extends UnitTest {
             assertEquals("SHA-1", i.next(), "SHA-1 alg present");
             assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (Exception ex) {
-            throw new AssertionError("Could not compute results: " + ex.getMessage());
+            fail("Could not compute results", ex);
         }
     }
 
@@ -58,7 +59,7 @@ class KffChainTest extends UnitTest {
             assertEquals("SHA-1", i.next(), "SHA-1 alg present");
             assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (Exception ex) {
-            throw new AssertionError("Could not compute results: " + ex.getMessage());
+            fail("Could not compute results", ex);
         }
     }
 
@@ -96,7 +97,7 @@ class KffChainTest extends UnitTest {
 
             assertFalse(kr.isHit(), "Cannot have a hit on zero length chain");
         } catch (Exception ex) {
-            throw new AssertionError("Could not compute results: " + ex.getMessage());
+            fail("Could not compute results", ex);
         }
     }
 

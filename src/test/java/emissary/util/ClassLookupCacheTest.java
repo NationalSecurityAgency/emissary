@@ -27,7 +27,7 @@ class ClassLookupCacheTest extends UnitTest {
             final Class<?> clazz = ClassLookupCache.lookup(className);
             assertEquals(expectedClazz, clazz, "lookup of " + className + " should return known class object");
         } catch (ClassNotFoundException e) {
-            fail("could not find the class " + className + ": " + e);
+            fail("could not find the class " + className, e);
         }
     }
 

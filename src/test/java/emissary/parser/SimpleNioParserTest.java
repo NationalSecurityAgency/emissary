@@ -34,7 +34,7 @@ class SimpleNioParserTest extends UnitTest {
             SimpleNioParser sp = new SimpleNioParser(channel);
             assertTrue(sp instanceof SessionParser, "SimpleParser interface definition");
         } catch (ParserException ex) {
-            fail(ex.getMessage());
+            fail("SimpleNioParser is not a SessionParser", ex);
         }
     }
 

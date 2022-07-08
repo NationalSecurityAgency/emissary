@@ -2,6 +2,7 @@ package emissary.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,7 +45,7 @@ class MetadataDictionaryUtilTest extends UnitTest {
             assertEquals(1, map.get("key").size());
             assertTrue(map.get("key").contains("val1"));
         } catch (IOException e) {
-            throw new AssertionError("Exception occurred while converting lines to map", e);
+            fail("Exception occurred while converting lines to map", e);
         }
     }
 
