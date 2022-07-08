@@ -12,10 +12,9 @@ import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import emissary.util.io.FileNameGenerator;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests Rollable Output Stream.
@@ -28,17 +27,9 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
     String lastFile;
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path tmpDir) throws Exception {
         super.setUp();
-        tmpDir = Files.createTempDirectory("emissary_rfost_test");
-    }
-
-    @AfterEach
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        FileUtils.deleteDirectory(tmpDir.toFile());
+        this.tmpDir = tmpDir;
     }
 
     /**

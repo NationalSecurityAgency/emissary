@@ -16,6 +16,7 @@ import emissary.util.shell.Executrix;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class ListOpenFilesTest extends UnitTest {
 
@@ -24,11 +25,10 @@ class ListOpenFilesTest extends UnitTest {
     private Path file;
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path tmpDir) throws Exception {
         super.setUp();
         this.instance = new ListOpenFiles();
-        this.tmpDir = Files.createTempDirectory("ListOpenFilesTest");
+        this.tmpDir = tmpDir;
         this.file = Paths.get(tmpDir.toString(), "open");
         Files.write(file, "test".getBytes(UTF_8));
     }

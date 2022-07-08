@@ -3,32 +3,22 @@ package emissary.output.roller.journal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 
 import emissary.test.core.UnitTest;
-import emissary.util.io.UnitTestFileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JournalTest extends UnitTest {
     private Path tmpDir;
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path tmpDir) throws Exception {
         super.setUp();
-        this.tmpDir = Files.createTempDirectory("JournalTest");
-    }
-
-    @AfterEach
-    @Override
-    public void tearDown() throws Exception {
-        UnitTestFileUtils.cleanupDirectoryRecursively(this.tmpDir);
-        super.tearDown();
+        this.tmpDir = tmpDir;
     }
 
     /**

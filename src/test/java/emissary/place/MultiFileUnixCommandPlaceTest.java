@@ -26,23 +26,26 @@ import emissary.util.shell.Executrix;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
-    private static Path workDir;
-    private final File scriptFile = new File(TMPDIR, "testMultiFileUnixCommand.sh");
+    private Path workDir;
+    private File scriptFile;
     private static final String W = "Президент Буш";
     private IBaseDataObject payload;
     private static final String FORM = "TEST";
     private static final String PAYLOAD_STRING = "abcdefg";
 
-    @Override
     @BeforeEach
-    public void setUp() throws Exception {
-        workDir = Files.createTempDirectory(null);
+    public void setUp(@TempDir Path workDir) throws Exception {
+
+        this.scriptFile = new File(TMPDIR, "testMultiFileUnixCommand.sh");
+
+        this.workDir = workDir;
 
         // We do this to make sure the place
         // reads our default config for it

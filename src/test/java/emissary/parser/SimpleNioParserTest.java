@@ -62,7 +62,7 @@ class SimpleNioParserTest extends UnitTest {
         Arrays.fill(DATA, (byte) 'a');
 
         // Make test file
-        testDataFile = Files.createTempFile("SimpleNioParserTest", ".dat");
+        testDataFile = Files.createTempFile(temporaryDirectory.toPath(), "SimpleNioParserTest", ".dat");
 
         // Write the test data to the file
         try (OutputStream os = Files.newOutputStream(testDataFile)) {

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JsonOutputFilterTest extends UnitTest {
 
@@ -32,8 +33,8 @@ class JsonOutputFilterTest extends UnitTest {
     private Path tmpDir;
 
     @BeforeEach
-    public void setup() throws IOException {
-        tmpDir = Files.createTempDirectory(null);
+    public void setup(@TempDir final Path tmpDir) throws IOException {
+        this.tmpDir = tmpDir;
 
         config = new ServiceConfigGuide();
         config.removeAllEntries("OUTPUT_PATH");

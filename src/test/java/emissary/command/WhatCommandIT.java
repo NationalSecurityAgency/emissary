@@ -50,7 +50,7 @@ class WhatCommandIT extends UnitTest {
     public void setUp() throws Exception {
         command = null;
         baseDir = Paths.get(System.getenv(ConfigUtil.PROJECT_BASE_ENV));
-        inputDir = Files.createDirectory(Paths.get(tmpDir.toString(), "input"));
+        inputDir = Files.createTempDirectory(tmpDir, "input");
         arguments.clear();
     }
 

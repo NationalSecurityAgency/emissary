@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
 
 class ConfigUtilTest extends UnitTest {
@@ -607,9 +608,7 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testMissingImportFileInConfig() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testMissingImportFileInConfig(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
         final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"").getBytes();
