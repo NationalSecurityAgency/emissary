@@ -24,12 +24,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class wraps up things related to execing of external processes and reading and writing disk files.
+ * This class wraps up things related to exec-ing of external processes and reading and writing disk files.
  */
 public class Executrix {
     private static final Logger logger = LoggerFactory.getLogger(Executrix.class);
 
-    public static enum OUTPUT_TYPE {
+    private static final int DEFAULT_VM_SIZE_LIMIT = 200000;
+    private static final int DEFAULT_CPU_TIME_LIMIT = 300;
+    private static final long DEFAULT_PROCESS_MAX_MILLIS = 300 * 1000L; // 5 min
+
+    public enum OUTPUT_TYPE {
         STD, FILE
     }
 
@@ -44,9 +48,9 @@ public class Executrix {
     protected int minimumDataSize;
     protected int maximumDataSize;
     protected String placeName;
-    protected int VM_SIZE_LIMIT = 200000;
-    protected int CPU_TIME_LIMIT = 300;
-    protected long PROCESS_MAX_MILLIS = 300 * 1000L; // 5 min
+    protected int vmSizeLimit;
+    protected int cpuTimeLimit;
+    protected long processMaxMillis;
 
     // Pieces and parts of file and path names
     public static final int DIR = 0;
@@ -89,7 +93,7 @@ public class Executrix {
      * <li>MINIMUM_DATA_SIZE: default is 0</li>
      * <li>MAXIMUM_DATA_SIZE: default is 64*1024</li>
      * <li>PLACE_NAME: also required by places in general</li>
-     * <li>VM_SIZE_LIMIG: default is 200000 for ulimit argument</li>
+     * <li>VM_SIZE_LIMIT: default is 200000 for ulimit argument</li>
      * <li>CPU_TIME_LIMIT: default is 300 seconds for ulimit argument</li>
      * <li>PROCESS_MAX_MILLIS: default is 300000 (5 Min) for process Watchdog. Set to 0 to disable watchdog use</li>
      * </ul>
@@ -115,10 +119,10 @@ public class Executrix {
             this.placeName = key == null ? "UNKNOWN" : KeyManipulator.getServiceName(key);
         }
         this.placeName = this.placeName.replace(' ', '_');
-        this.VM_SIZE_LIMIT = configG.findIntEntry("VM_SIZE_LIMIT", 200000);
-        this.CPU_TIME_LIMIT = configG.findIntEntry("CPU_TIME_LIMIT", 300);
+        this.vmSizeLimit = configG.findIntEntry("VM_SIZE_LIMIT", DEFAULT_VM_SIZE_LIMIT);
+        this.cpuTimeLimit = configG.findIntEntry("CPU_TIME_LIMIT", DEFAULT_CPU_TIME_LIMIT);
         // Set to 0 to disable watchdog monitoring
-        this.PROCESS_MAX_MILLIS = configG.findLongEntry("PROCESS_MAX_MILLIS", this.PROCESS_MAX_MILLIS);
+        this.processMaxMillis = configG.findLongEntry("PROCESS_MAX_MILLIS", DEFAULT_PROCESS_MAX_MILLIS);
     }
 
     /**
@@ -157,10 +161,9 @@ public class Executrix {
      * @throws IOException on error
      */
     public static byte[] readFile(final String theFileName, final int length) throws IOException {
-        InputStream theStream = null;
-        byte[] theContent = null;
-        try {
-            theStream = new FileInputStream(theFileName);
+        byte[] theContent;
+
+        try (InputStream theStream = new FileInputStream(theFileName)) {
             final int avail = theStream.available();
             if ((length == -1) || (length >= avail)) {
                 theContent = new byte[avail];
@@ -168,11 +171,8 @@ public class Executrix {
                 theContent = new byte[length];
             }
             theStream.read(theContent);
-        } finally {
-            if (theStream != null) {
-                theStream.close();
-            }
         }
+
         return theContent;
     }
 
@@ -195,24 +195,24 @@ public class Executrix {
         if (dir != null && (!dir.exists())) {
             final boolean status = dir.mkdirs();
             if (!status) {
-                logger.warn("Unable to create directory path to fie " + filename);
+                logger.warn("Unable to create directory path to file {}", filename);
                 return false;
             }
         }
 
         if (filename.isEmpty()) {
-            logger.warn("Empty file name in writeFile:" + filename);
+            logger.warn("Empty file name in writeFile:{}", filename);
             return false;
         }
         if (theContent == null) {
-            logger.warn("Null content in writeFile:" + filename);
+            logger.warn("Null content in writeFile:{}", filename);
             return false;
         }
         try {
             writeFile(theContent, pos, len, filename, append);
             return true;
         } catch (IOException e) {
-            logger.error("writeDataToFile(" + filename + ") exception", e);
+            logger.error("writeDataToFile({}) exception", filename, e);
         }
         return false;
     }
@@ -226,7 +226,7 @@ public class Executrix {
      */
     public static boolean writeDataToFile(final byte[] theContent, final String theFileName) {
         if (theContent == null) {
-            logger.warn("Null content in writeDataToFile(" + theFileName + ")");
+            logger.warn("Null content in writeDataToFile({})", theFileName);
             return false;
         }
         return writeDataToFile(theContent, 0, theContent.length, theFileName, false);
@@ -242,7 +242,7 @@ public class Executrix {
      */
     public static boolean writeDataToFile(final byte[] theContent, final String theFileName, final boolean append) {
         if (theContent == null) {
-            logger.warn("Null content in writeDataToFile(" + theFileName + ")");
+            logger.warn("Null content in writeDataToFile({})", theFileName);
             return false;
         }
         return writeDataToFile(theContent, 0, theContent.length, theFileName, append);
@@ -259,11 +259,10 @@ public class Executrix {
      */
     public static void writeFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append)
             throws IOException {
-        final FileOutputStream theOutput = new FileOutputStream(filename, append);
-        final BufferedOutputStream theStream = new BufferedOutputStream(theOutput);
-        theStream.write(theContent, pos, len);
-        theStream.close();
-        theOutput.close();
+        try (final FileOutputStream theOutput = new FileOutputStream(filename, append);
+                final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
+            theStream.write(theContent, pos, len);
+        }
     }
 
     /**
@@ -313,7 +312,7 @@ public class Executrix {
             return readFile(theFileName, -1);
         } catch (IOException e) {
             if (!quiet) {
-                logger.warn("readDataFromFile(" + theFileName + ") Exception: ", e);
+                logger.warn("readDataFromFile({}) Exception: ", theFileName, e);
             }
             return null;
         }
@@ -342,7 +341,7 @@ public class Executrix {
         try {
             raf.seek(offset);
         } catch (IOException ex) {
-            logger.warn("Seek to " + offset + " on file failed", ex);
+            logger.warn("Seek to {} on file failed", offset, ex);
             return null;
         }
 
@@ -368,7 +367,7 @@ public class Executrix {
         try {
             raf.readFully(data);
         } catch (EOFException ex) {
-            logger.warn("RandomAccessFile underflow trying for " + data.length, ex);
+            logger.warn("RandomAccessFile underflow trying for {}", data.length, ex);
         } catch (IOException ex) {
             logger.warn("Unable to read from random access file", ex);
         }
@@ -445,7 +444,7 @@ public class Executrix {
                 totRead += read;
             }
         } catch (BufferUnderflowException ex) {
-            logger.warn("Buffer underflow trying for " + data.length, ex);
+            logger.warn("Buffer underflow trying for {}", data.length, ex);
         } catch (IOException iox) {
             logger.warn("Unable to read from channel", iox);
         }
@@ -680,7 +679,7 @@ public class Executrix {
         OutputStream os = null;
         ExecuteWatchdog dog = null;
         try {
-            logger.debug("Executing command: " + Arrays.asList(cmd));
+            logger.debug("Executing command: {}", Arrays.asList(cmd));
             final ProcessBuilder pb = new ProcessBuilder(cmd);
             if (env != null) {
                 final Map<String, String> pbenv = pb.environment();
@@ -718,8 +717,8 @@ public class Executrix {
 
             // kill process if it's not done after 5 minutes - would prefer to
             // pass in a timeout value
-            if (this.PROCESS_MAX_MILLIS >= 1) {
-                dog = new ExecuteWatchdog(this.PROCESS_MAX_MILLIS);
+            if (this.processMaxMillis >= 1) {
+                dog = new ExecuteWatchdog(this.processMaxMillis);
                 dog.start(p);
             }
             p.waitFor();
@@ -728,10 +727,8 @@ public class Executrix {
             stdOutThread.finish();
             stdErrThread.finish();
             exitValue = p.exitValue();
-        } catch (InterruptedException ex) {
-            logger.warn("Exec exception, args=" + Arrays.asList(cmd), ex);
-        } catch (IOException e) {
-            logger.warn("Exec exception, args=" + Arrays.asList(cmd), e);
+        } catch (InterruptedException | IOException e) {
+            logger.warn("Exec exception, args={}", Arrays.asList(cmd), e);
         } finally {
             if (os != null) {
                 try {
@@ -782,7 +779,7 @@ public class Executrix {
     public File writeDataToNewTempDir(final String dirn, final byte[] data) {
         final File dir = new File(dirn);
         if (!dir.mkdirs()) {
-            logger.warn("Unable to create directory path for fie " + dirn);
+            logger.warn("Unable to create directory path for file {}", dirn);
             return null;
         }
 
@@ -813,7 +810,7 @@ public class Executrix {
      * @return the value of command
      */
     public String[] getCommand(final String[] tmpNames) {
-        return getCommand(getCommand(), tmpNames, this.CPU_TIME_LIMIT, this.VM_SIZE_LIMIT);
+        return getCommand(getCommand(), tmpNames, this.cpuTimeLimit, this.vmSizeLimit);
     }
 
     /**
@@ -825,7 +822,7 @@ public class Executrix {
      * @return the value of command
      */
     public String[] getCommand(final String commandArg, final String[] tmpNames) {
-        return getCommand(commandArg, tmpNames, this.CPU_TIME_LIMIT, this.VM_SIZE_LIMIT);
+        return getCommand(commandArg, tmpNames, this.cpuTimeLimit, this.vmSizeLimit);
     }
 
     /**
@@ -859,15 +856,11 @@ public class Executrix {
             } else {
                 // Cygwin shell with cygwin java ? is there even such a thing?
                 cmd = new String[] {"cmd", "/c", "cd " + tmpNames[DIR] + " && timeout " + +cpuLimit + " " + commandArg};
-                logger.info("Running windows command without CYGHOME: " + Arrays.asList(cmd));
+                logger.info("Running windows command without CYGHOME: {}", Arrays.asList(cmd));
             }
         } else {
-            /*
-             * Run the command in short limiting the core file size to 0, the cpu time to 5 minutes and virtual memory to 100
-             * Megabytes.
-             */
-            final String[] tmp = {"/bin/sh", "-c", "ulimit -c 0; ulimit -v " + vmSzLimit + "; " + "cd " + tmpNames[DIR] + "; " + c};
-            cmd = tmp;
+            // Run the command in shell limiting the core file size to 0 and the specified vm size
+            cmd = new String[] {"/bin/sh", "-c", "ulimit -c 0; ulimit -v " + vmSzLimit + "; " + "cd " + tmpNames[DIR] + "; " + c};
         }
         return cmd;
     }
@@ -1088,7 +1081,7 @@ public class Executrix {
                 deleted = dir.delete();
             }
             if (!deleted && dir.exists()) {
-                logger.warn("Cannot delete " + dir.getAbsolutePath());
+                logger.warn("Cannot delete {}", dir.getAbsolutePath());
                 return false;
             }
             return true;
@@ -1099,22 +1092,21 @@ public class Executrix {
                 // getting here an IOException happened.
                 return false;
             }
-            for (int i = 0; i < files.length; i++) {
-                final File f = files[i];
+            for (final File f : files) {
                 if (f.isDirectory()) {
                     cleanupDirectory(f);
                 } else {
-                    logger.debug("Deleting " + f.getAbsolutePath());
+                    logger.debug("Deleting {}", f.getAbsolutePath());
                     boolean deleted = f.delete();
                     if (!deleted && f.exists()) {
                         deleted = f.delete();
                     }
                     if (!deleted && f.exists()) {
-                        logger.warn("Cannot delete " + f.getAbsolutePath());
+                        logger.warn("Cannot delete {}", f.getAbsolutePath());
                     }
                 }
             }
-            logger.debug("Deleting " + dir.getAbsolutePath());
+            logger.debug("Deleting {}", dir.getAbsolutePath());
 
             try {
 
@@ -1141,7 +1133,7 @@ public class Executrix {
                         // empty catch block
                     }
                     if (dir.exists()) {
-                        logger.debug("Temporary directory is still there. doing rm-rf " + dir.getAbsolutePath());
+                        logger.debug("Temporary directory is still there. doing rm-rf {}", dir.getAbsolutePath());
                         new Executrix().execute(new String[] {"rm", "-rf", dir.getAbsolutePath()});
                     }
                 }
@@ -1154,10 +1146,10 @@ public class Executrix {
     }
 
     public void setProcessMaxMillis(final long millis) {
-        this.PROCESS_MAX_MILLIS = millis;
+        this.processMaxMillis = millis;
     }
 
     public long getProcessMaxMillis() {
-        return this.PROCESS_MAX_MILLIS;
+        return this.processMaxMillis;
     }
 }
