@@ -33,6 +33,7 @@ import emissary.util.shell.Executrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
 public class WhatCommand extends BaseCommand {
 

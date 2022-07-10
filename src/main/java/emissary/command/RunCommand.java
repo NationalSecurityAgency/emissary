@@ -12,6 +12,7 @@ import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 @Parameters(commandDescription = "Run arbitrary class with optional args")
 public class RunCommand extends BaseCommand {
 

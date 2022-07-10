@@ -49,6 +49,7 @@ import org.slf4j.MDC;
  * the scripts/run.sh script passing in the name of the class to run followed by options, followed by a file or set of
  * files to process through that place.
  */
+@Deprecated
 public class Main {
     /** Name of the ServiceProviderPlace class to run */
     protected String placeClass;
