@@ -2,6 +2,8 @@ package emissary.output.roller.journal;
 
 import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -16,13 +18,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class JournaledChannelTest extends UnitTest {
 
     private static Path TEMP_DIR;
-    private Path p;
     private JournaledChannel channel;
     private String onekstring = "";
 
@@ -35,8 +35,7 @@ class JournaledChannelTest extends UnitTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        this.p = TEMP_DIR.resolve(UUID.randomUUID().toString());
-        this.channel = new JournaledChannel(this.p, "unittest", 0);
+        this.channel = new JournaledChannel(TEMP_DIR.resolve(UUID.randomUUID().toString()), "unittest", 0);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
             sb.append(i % 10);
@@ -105,35 +104,31 @@ class JournaledChannelTest extends UnitTest {
         assertEquals(this.channel.position(), buff.capacity(), "6k written " + this.channel.position() + " " + buff.capacity());
     }
 
-    @Disabled("not implemented")
     @Test
-    void testPosition_0args() {}
+    void testSize() throws IOException {
+        assertEquals(0, channel.size());
+        channel.write(1);
+        assertEquals(1, channel.size());
+    }
 
-    @Disabled("not implemented")
     @Test
-    void testSize() {}
+    void testIsOpen() {
+        assertTrue(channel.isOpen());
+    }
 
-    @Disabled("not implemented")
     @Test
-    void testIsOpen() {}
+    void testPosition_long() {
+        assertThrows(UnsupportedOperationException.class, () -> channel.position(1));
+    }
 
-    @Disabled("not implemented")
     @Test
-    void testCommit() {}
+    void testRead() {
+        ByteBuffer buff = ByteBuffer.allocateDirect(1);
+        assertThrows(UnsupportedOperationException.class, () -> channel.read(buff));
+    }
 
-    @Disabled("not implemented")
     @Test
-    void testClose() {}
-
-    @Disabled("not implemented")
-    @Test
-    void testPosition_long() {}
-
-    @Disabled("not implemented")
-    @Test
-    void testRead() {}
-
-    @Disabled("not implemented")
-    @Test
-    void testTruncate() {}
+    void testTruncate() {
+        assertThrows(UnsupportedOperationException.class, () -> channel.truncate(1));
+    }
 }
