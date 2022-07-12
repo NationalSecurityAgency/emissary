@@ -664,35 +664,6 @@
           <version>1.5.3</version>
         </plugin>
         <plugin>
-          <groupId>com.spotify</groupId>
-          <artifactId>dockerfile-maven-plugin</artifactId>
-          <version>1.4.13</version>
-          <configuration>
-            <skipPush>true</skipPush>
-          </configuration>
-          <executions>
-            <execution>
-              <id>tag-version</id>
-              <goals>
-                <goal>build</goal>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>${project.version}</tag>
-              </configuration>
-            </execution>
-            <execution>
-              <id>tag-latest</id>
-              <goals>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>latest</tag>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
           <version>1.6.2</version>
@@ -1526,12 +1497,32 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <configuration>
-              <repository>emissary</repository>
-              <dockerfile>contrib/docker/Dockerfile</dockerfile>
-            </configuration>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>docker-build</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <executable>docker</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <arguments>
+                    <argument>build</argument>
+                    <argument>-f</argument>
+                    <argument>contrib/docker/Dockerfile</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:${project.version}</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:latest</argument>
+                    <argument>.</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
