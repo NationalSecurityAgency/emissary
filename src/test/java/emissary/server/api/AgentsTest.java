@@ -21,7 +21,6 @@ import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class AgentsTest extends EndpointTestBase {
@@ -46,27 +45,19 @@ class AgentsTest extends EndpointTestBase {
     @AfterEach
     public void cleanup() {
         Namespace.unbind("EmissaryServer");
+        Namespace.unbind("MobileAgent-07");
         Namespace.unbind("AgentPool");
     }
 
-
-    @Disabled("stop mocking and run a server since we made it so easy")
     @Test
     void agents() {
-        // test
-        Response response = target("agents").request().get();
-
-        // verify
-        assertEquals(200, response.getStatus());
-        AgentsResponseEntity entity = response.readEntity(AgentsResponseEntity.class);
-        assertTrue(entity.getErrors().isEmpty());
-        assertTrue(entity.getCluster().isEmpty());
-        assertEquals("localhost:8001", entity.getLocal().getHost());
-        assertIterableEquals(Arrays.asList(EXPECTED_AGENTS), entity.getLocal().getAgents());
+        try (Response response = target("agents").request().get()) {
+            assertEquals(200, response.getStatus());
+            AgentsResponseEntity entity = response.readEntity(AgentsResponseEntity.class);
+            assertTrue(entity.getErrors().isEmpty());
+            assertTrue(entity.getCluster().isEmpty());
+            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertIterableEquals(Arrays.asList(EXPECTED_AGENTS), entity.getLocal().getAgents());
+        }
     }
-
-    @Disabled("Look at putting this into an integration test with two real EmissaryServers stood up")
-    @Test
-    void clusterAgents() {}
-
 }

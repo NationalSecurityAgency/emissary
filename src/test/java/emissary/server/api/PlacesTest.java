@@ -57,40 +57,46 @@ class PlacesTest extends EndpointTestBase {
         Namespace.bind("ThisWontBeAdded", "miss");
         Namespace.bind("ProcessingPlace", "processingPlace");
 
-        // test
-        Response response = target("places").request().get();
+        try {
+            // test
+            Response response = target("places").request().get();
 
-        // verify
-        assertEquals(200, response.getStatus());
-        PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertEquals("localhost:8001", entity.getLocal().getHost());
-        assertEquals(3, entity.getLocal().getPlaces().size());
-        assertEquals(EXPECTED_PLACES, entity.getLocal().getPlaces());
-        assertEquals(0, entity.getErrors().size());
-        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
-
-        // cleanup
-        Namespace.unbind("EmissaryServer");
-        Namespace.unbind("PickupPlace");
-        Namespace.unbind("PickupClient");
-        Namespace.unbind("ThisWontBeAdded");
-        Namespace.unbind("ProcessingPlace");
+            // verify
+            assertEquals(200, response.getStatus());
+            PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
+            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertEquals(3, entity.getLocal().getPlaces().size());
+            assertEquals(EXPECTED_PLACES, entity.getLocal().getPlaces());
+            assertEquals(0, entity.getErrors().size());
+            assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
+        } finally {
+            // cleanup
+            Namespace.unbind("EmissaryServer");
+            Namespace.unbind("PickupPlace");
+            Namespace.unbind("PickupClient");
+            Namespace.unbind("ThisWontBeAdded");
+            Namespace.unbind("ProcessingPlace");
+        }
     }
 
     @Test
     void placesNoPlacesClientsBound() {
         Namespace.bind("EmissaryServer", server);
 
-        // test
-        Response response = target("places").request().get();
+        try {
+            // test
+            Response response = target("places").request().get();
 
-        // verify
-        assertEquals(200, response.getStatus());
-        PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-        assertEquals("localhost:8001", entity.getLocal().getHost());
-        assertEquals(0, entity.getLocal().getPlaces().size());
-        assertEquals(0, entity.getErrors().size());
-        assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
+            // verify
+            assertEquals(200, response.getStatus());
+            PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
+            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertEquals(0, entity.getLocal().getPlaces().size());
+            assertEquals(0, entity.getErrors().size());
+            assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
+        } finally {
+            Namespace.unbind("EmissaryServer");
+        }
     }
 
     @Test
