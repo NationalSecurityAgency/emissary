@@ -154,8 +154,6 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
         String s = output.toString();
 
-        System.out.println(s);
-
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"BAR\":[\"foo\"]"), "Filter output should contain field BAR");
         assertFalse(s.contains("\"FOO\":"), "Filter output should not contain field FOO");
@@ -245,8 +243,6 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
         String s = output.toString();
 
-        System.out.println(s);
-
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"parameters\":{}"), "Filter output should have no parameters");
     }
@@ -317,8 +313,6 @@ class JsonOutputFilterTest extends UnitTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         f.filter(payloadList, new HashMap<>(), output);
         String s = output.toString();
-
-        System.out.println(s);
 
         // assert
         assertTrue(s.contains("\"BAR\":[\"bar\"]"), "Filter output should field BAR with value bar");
