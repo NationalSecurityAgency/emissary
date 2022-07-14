@@ -656,6 +656,9 @@
           <include>env.sh</include>
         </includes>
       </testResource>
+      <testResource>
+        <directory>${project.basedir}/src/main/resources/templates</directory>
+      </testResource>
     </testResources>
     <pluginManagement>
       <plugins>

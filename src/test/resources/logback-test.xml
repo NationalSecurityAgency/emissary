@@ -27,6 +27,6 @@
   <logger name="org.eclipse.jetty" level="WARN"/>
   <logger name="org.apache.pdfbox" level="ERROR"/>
   <logger name="org.apache.commons.httpclient" level="WARN"/>
-  
+  <logger name="org.glassfish.jersey.internal" level="ERROR"/>
   
 </configuration>
