@@ -19,6 +19,31 @@
       <pattern>%d ${emissary.node.name}-${emissary.node.port} %5p %c - %X{shortName} %X{serviceLocation} - %m%n</pattern>
     </encoder>
   </appender>
+
+  <appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <customFields>{"node":"${emissary.node.name}","port":"${emissary.node.port}","application":"server"}</customFields>
+      <includeMdc>false</includeMdc>
+      <fieldNames>
+        <version>[ignore]</version>
+        <logValue>[ignore]</logValue>
+        <logger>[ignore]</logger>
+        <thread>[ignore]</thread>
+        <levelValue>[ignore]</levelValue>
+        <level>[ignore]</level>
+        <message>[ignore]</message>
+      </fieldNames>
+    </encoder>
+    <file>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
+    </rollingPolicy>
+  </appender>
+
+  <logger name="objectMetrics" level="INFO" additivity="false">
+    <appender-ref ref="OBJECT-METRICS" />
+  </logger>
+
   <root level="INFO">
     <!-- stop logging to a file in development man, redirect or tee to a file
     <appender-ref ref="TOFILE"/>
@@ -36,7 +61,7 @@
   <logger name="emissary.directory.HeartbeatManager" level="INFO"/>
   <logger name="emissary.server.mvc.internal" level="INFO"/>
   <logger name="emissary.util.magic.MagicNumberFactory" level="INFO"/>
-  
+
   <logger name="org.qos.logback.core" level="WARN"/>
   <logger name="org.eclipse.jetty.util.log" level="WARN"/>
   <logger name="org.eclipse.jetty" level="WARN"/>

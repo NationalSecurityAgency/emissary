@@ -2,6 +2,7 @@ package emissary.output;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -9,9 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
@@ -35,8 +42,10 @@ class DropOffPlaceTest extends UnitTest {
         cfg.addEntry("UNIX_ROOT", tempDir.toString());
         cfg.addEntry("OUTPUT_FILTER", "BLAH:emissary.output.filter.DataFilter");
         cfg.addEntry("OUTPUT_SPEC_BLAH", "%R%/xyzzy/%S%.%F%");
+        cfg.addEntry("OUTPUT_TLD_METRICS", "true");
+        cfg.addEntry("OUTPUT_TLD_METRICS_LATENCY", "UPSTREAM-DROPOFF");
+        cfg.addEntry("OUTPUT_TLD_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         this.place = new DropOffPlace(cfg);
-
     }
 
     @AfterEach
@@ -67,6 +76,33 @@ class DropOffPlaceTest extends UnitTest {
         assertEquals(1, payloadList.size(), "All payloads still on list");
         assertEquals(0, val.size(), "Nothing returned from drop off");
         assertEquals(0, payloadList.get(0).currentFormSize(), "All current forms removed");
+    }
+
+    @Test
+    void testOutputObjectMetric() throws ParseException, JsonProcessingException {
+        // Setup
+        final IBaseDataObject tld = DataObjectFactory.getInstance();
+        tld.setId("TEST-UUID-VALUE");
+        tld.setFileType("test-type");
+        tld.setParameter("FLOW", "test-flow");
+        Date currentData = new Date();
+        Date upstreamDropOff = new Date(currentData.getTime() - (30 * 60000));
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        tld.setParameter("UPSTREAM-DROPOFF", df.format(upstreamDropOff));
+        List<String> tldMetricsFields = new ArrayList<>();
+        tldMetricsFields.add("FILETYPE");
+        tldMetricsFields.add("FLOW");
+
+        // Run
+        Map<String, String> outputMap = place.outputObjectMetrics(tld, tldMetricsFields);
+
+        // Verify
+        assertTrue(outputMap.containsKey("FILETYPE"));
+        assertEquals("test-type", outputMap.get("FILETYPE"));
+        assertTrue(outputMap.containsKey("FLOW"));
+        assertEquals("test-flow", outputMap.get("FLOW"));
+        assertTrue(outputMap.containsKey("ProcessingLatency"));
+        assertTrue(outputMap.containsKey("InternalId"));
     }
 
     public static void cleanupDirectoryRecursively(Path path) throws IOException {
