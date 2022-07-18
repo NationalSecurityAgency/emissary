@@ -3,6 +3,8 @@ package emissary.server.api;
 import static emissary.server.api.ApiUtils.lookupPeers;
 import static emissary.server.api.ApiUtils.stripPeerString;
 
+import java.util.StringJoiner;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,7 +12,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import emissary.client.EmissaryClient;
+import emissary.client.response.Agent;
 import emissary.client.response.AgentList;
+import emissary.client.response.AgentsFormatter;
 import emissary.client.response.AgentsResponseEntity;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
@@ -35,8 +39,21 @@ public class Agents {
     public static final String AGENTS_CLUSTER_ENDPOINT = "api/cluster/agents";
 
     @GET
+    @Path("/agents/log")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsLog() {
+        AgentsResponseEntity entity = lookupAgents();
+        AgentsFormatter formatter = AgentsFormatter.builder().withHost(entity.getLocal().getHost()).build();
+        StringJoiner joiner = new StringJoiner("\n", "", "\n");
+        entity.getLocal().getAgents().forEach(agent -> joiner.add("{\"agent\":" + formatter.json(agent) + "}"));
+        entity.getErrors().forEach(err -> joiner.add("{\"agent\":" + formatter.json("error", err) + "}"));
+        return Response.ok().entity(joiner.toString()).build();
+    }
+
+    @GET
     @Path("/agents")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public Response agents() {
         return Response.ok().entity(lookupAgents()).build();
     }
@@ -44,6 +61,7 @@ public class Agents {
     @GET
     @Path("/cluster/agents")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public Response clusterAgents() {
         try {
             // Get our local information first
@@ -74,7 +92,7 @@ public class Agents {
             agents.setHost(localName);
             Namespace.keySet().stream().filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().forEach(agentKey -> {
                 try {
-                    agents.addAgent(agentKey + ": " + Namespace.lookup(agentKey).toString());
+                    agents.addAgent(new Agent(agentKey, Namespace.lookup(agentKey).toString()));
                 } catch (NamespaceException e) {
                     logger.error("Missing an agent in the Namespace: {}", agentKey);
                     entity.addError("ERROR - Agent " + agentKey + " not found in Namespace");

@@ -29,7 +29,7 @@
             }).then(function(data) {
                 var trHTML = '';
                 $.each(data.local.agents, function (i, item) {
-                    trHTML += '<tr><td>' + item + '</td></tr>';
+                    trHTML += '<tr><td>' + item.name + ': ' + item.status + '</td></tr>';
                 });
                 $('#agents').append(trHTML);
             });

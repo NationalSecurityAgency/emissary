@@ -22,15 +22,15 @@ public class AgentList implements Serializable {
     private String host;
 
     @XmlElement(name = "agents")
-    private SortedSet<String> agents;
+    private SortedSet<Agent> agents;
 
     public AgentList() {
         agents = new TreeSet<>();
     }
 
-    public AgentList(String host, SortedSet<String> peers) {
+    public AgentList(String host, SortedSet<Agent> agents) {
         this.host = host;
-        this.agents = peers;
+        this.agents = agents;
     }
 
     public String getHost() {
@@ -41,23 +41,23 @@ public class AgentList implements Serializable {
         this.host = host;
     }
 
-    public Set<String> getAgents() {
+    public Set<Agent> getAgents() {
         return agents;
     }
 
-    public void setAgents(SortedSet<String> agents) {
+    public void setAgents(SortedSet<Agent> agents) {
         this.agents = agents;
     }
 
-    public void addAgent(String agent) {
+    public void addAgent(Agent agent) {
         this.agents.add(agent);
     }
 
     public void dumpToConsole() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n").append(getHost()).append(" :");
-        for (String peer : getAgents()) {
-            sb.append("\n         ").append(peer);
+        for (Agent agent : getAgents()) {
+            sb.append("\n         ").append(agent);
         }
         logger.info("{}", sb);
     }
