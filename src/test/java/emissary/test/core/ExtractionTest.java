@@ -221,7 +221,7 @@ public abstract class ExtractionTest extends UnitTest {
 
         // Check for Filter to validate against and see if it exists
         Element filters = el.getChild("filters");
-        if (filters != null && filters.getChildren().size() > 0) {
+        if (filters != null && !filters.getChildren().isEmpty()) {
             int filtersCount = filters.getChildren().size();
             for (int i = 1; i <= filtersCount; i++) {
                 String filterPath = filters.getChildText("filter" + i);
@@ -305,18 +305,18 @@ public abstract class ExtractionTest extends UnitTest {
         String key = meta.getChildTextTrim("name");
         String value = meta.getChildText("value");
         String matchMode = "equals";
-        String validateField = "false";
+        boolean validateField = false;
         Attribute mm = meta.getAttribute("matchMode");
         Attribute vf = meta.getAttribute("validateField");
 
         if (vf != null) {
-            validateField = vf.getValue();
+            validateField = Boolean.parseBoolean(vf.getValue());
         }
 
         // meta validateField must be set to true to validate against LogFilter
         // this is currently set to false unless explicitly set to true in .xml
         // see method validateFieldInLogFilter() below for more info
-        if (validateField.equals("true")) {
+        if (validateField) {
             validateFieldInFilter(key, tname);
         }
 
@@ -446,9 +446,9 @@ public abstract class ExtractionTest extends UnitTest {
                 isr.close();
                 is.close();
             } catch (Exception e) {
-                // if NullPointerException is thrown, it is bc end of file is reached
+                // if NullPointerException is thrown, it is b/c end of file is reached
                 // this should result in nothing happening.
-                // however, if another error occured, it should be output to the log
+                // however, if another error occurred, it should be output to the log
                 if (!e.toString().contains("NullPointerException")) {
                     if ((i + 1) < filterList.size()) {
                         logger.warn("Error while validating {}", key, e);
@@ -459,7 +459,7 @@ public abstract class ExtractionTest extends UnitTest {
             }
         }
         // if loops through all files and cannot find matching field/param for key, then validation fails
-        if (filterList.size() == 0) {
+        if (filterList.isEmpty()) {
             fail("No filters were passed to validate against from " + tname);
         } else {
             fail(tname + " - Field \"" + key + "\" not found in Filter: " + filterList);
@@ -469,23 +469,18 @@ public abstract class ExtractionTest extends UnitTest {
 
     /**
      * Find filter by seeing if resource for class can be found. If filter cannot be found, error will be thrown from
-     * checkAnswers. If filter is found, add to filterList as InputStream
+     * checkAnswers. If filter is found, add filterPath to filterList
      *
      * @param filterPath - filter path passed from xml
-     * @return result - boolean for if filter is found
+     * @return boolean for if filter is found
      */
     protected boolean findFilter(String filterPath) {
-        boolean result = false;
-
-        try {
-            Class.forName(filterPath).getResourceAsStream(filterPath + ".cfg");
-            result = true;
+        try (InputStream ignored = Class.forName(filterPath).getResourceAsStream(filterPath + ".cfg")) {
             filterList.add(filterPath);
-        } catch (ClassNotFoundException e) {
-            // result = false;
+            return true;
+        } catch (ClassNotFoundException | IOException e) {
+            return false;
         }
-
-        return result;
     }
 
     protected void setupPayload(IBaseDataObject payload, Document doc) {
