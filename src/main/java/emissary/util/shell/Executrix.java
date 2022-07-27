@@ -861,6 +861,7 @@ public class Executrix {
         try (OutputStream os = new BufferedOutputStream(new DataOutputStream(p.getOutputStream()))) {
             if (ArrayUtils.isNotEmpty(data)) {
                 os.write(data);
+                os.flush();
             }
         }
     }

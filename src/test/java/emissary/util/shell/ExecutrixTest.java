@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -340,7 +341,8 @@ class ExecutrixTest extends UnitTest {
     @Test
     void testExecuteStream() {
 
-        final byte[] data = "bbb".getBytes();
+        String expected = "bbb";
+        final byte[] data = expected.getBytes();
 
         final String cmd = "/bin/cat";
 
@@ -351,39 +353,50 @@ class ExecutrixTest extends UnitTest {
         pstat = this.e.execute(cmd, data);
         assertTrue(pstat >= 0, "Process return value");
 
+        pstat = this.e.execute(cmd, "".getBytes(StandardCharsets.UTF_8), sout);
+        assertTrue(pstat >= 0, "Process return value");
+        assertEquals("", sout.toString());
+        sout.setLength(0);
+
         pstat = this.e.execute(cmd, data, sout);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals(expected, sout.toString().trim());
+        sout.setLength(0);
 
         pstat = this.e.execute(cmd, data, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
         assertTrue(sout.toString().startsWith("bbb"));
-        assertEquals("", serr.toString());
+        assertEquals(expected, sout.toString().trim());
+        sout.setLength(0);
 
         pstat = this.e.execute(cmd, data, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         assertTrue(sout.toString().startsWith("bbb"));
-        assertEquals("", serr.toString());
+        assertEquals(expected, sout.toString().trim());
+        sout.setLength(0);
 
         final Map<String, String> env = new HashMap<>();
         env.put("FOO", "BAR");
 
         pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
+        sout.setLength(0);
 
         this.e.setProcessMaxMillis(0); // wait forever
         pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
         assertEquals("", serr.toString());
+        assertEquals(expected, sout.toString().trim());
+        sout.setLength(0);
     }
 
     @Test
     void testExecuteNoStream() {
 
-        final String[] cmd = {"/bin/echo", "bbb"};
+        String expected = "ccc";
+        final String[] cmd = {"/bin/echo", expected};
 
         int pstat;
         final StringBuilder sout = new StringBuilder();
@@ -394,17 +407,20 @@ class ExecutrixTest extends UnitTest {
 
         pstat = this.e.execute(cmd, sout);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals(expected, sout.toString().trim());
+        sout.setLength(0);
 
         pstat = this.e.execute(cmd, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
+        sout.setLength(0);
 
         pstat = this.e.execute(cmd, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
+        sout.setLength(0);
     }
 
     private void readAndNuke(final String name) throws IOException {
