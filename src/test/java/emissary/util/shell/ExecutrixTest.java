@@ -337,6 +337,76 @@ class ExecutrixTest extends UnitTest {
         assertFalse(tdir.exists(), "Temp area should be gone");
     }
 
+    @Test
+    void testExecuteStream() {
+
+        final byte[] data = "bbb".getBytes();
+
+        final String cmd = "/bin/cat";
+
+        int pstat;
+        final StringBuilder sout = new StringBuilder();
+        final StringBuilder serr = new StringBuilder();
+
+        pstat = this.e.execute(cmd, data);
+        assertTrue(pstat >= 0, "Process return value");
+
+        pstat = this.e.execute(cmd, data, sout);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+
+        pstat = this.e.execute(cmd, data, sout, serr);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+
+        pstat = this.e.execute(cmd, data, sout, serr, "UTF-8");
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+
+        final Map<String, String> env = new HashMap<>();
+        env.put("FOO", "BAR");
+
+        pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+
+        this.e.setProcessMaxMillis(0); // wait forever
+        pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+    }
+
+    @Test
+    void testExecuteNoStream() {
+
+        final String[] cmd = {"/bin/echo", "bbb"};
+
+        int pstat;
+        final StringBuilder sout = new StringBuilder();
+        final StringBuilder serr = new StringBuilder();
+
+        pstat = this.e.execute(cmd);
+        assertTrue(pstat >= 0, "Process return value");
+
+        pstat = this.e.execute(cmd, sout);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+
+        pstat = this.e.execute(cmd, sout, serr);
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+
+        pstat = this.e.execute(cmd, sout, serr, "UTF-8");
+        assertTrue(pstat >= 0, "Process return value");
+        assertTrue(sout.toString().startsWith("bbb"));
+        assertEquals("", serr.toString());
+    }
+
     private void readAndNuke(final String name) throws IOException {
         final File f = new File(name);
         assertTrue(f.exists(), "File " + name + " must exist");

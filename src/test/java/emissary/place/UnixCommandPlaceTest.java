@@ -107,9 +107,9 @@ class UnixCommandPlaceTest extends UnitTest {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method
-        when(e.execute(eq(new String[] {"negative"}), isNull(), isA(StringBuilder.class))).thenReturn(-1);
-        when(e.execute(eq(new String[] {"zero"}), isNull(), isA(StringBuilder.class))).thenReturn(0);
-        when(e.execute(eq(new String[] {"positive"}), isNull(), isA(StringBuilder.class))).thenReturn(1);
+        when(e.execute(eq(new String[] {"negative"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(-1);
+        when(e.execute(eq(new String[] {"zero"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(0);
+        when(e.execute(eq(new String[] {"positive"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(1);
 
         place.setExecutrix(e);
 

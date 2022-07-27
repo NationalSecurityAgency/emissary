@@ -171,7 +171,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     public byte[] fileProcess(String[] cmd, String outputFile) {
         logger.debug("fileProcess({})", Arrays.asList(cmd));
         StringBuilder errbuf = new StringBuilder();
-        int result = executrix.execute(cmd, null, errbuf);
+        int result = executrix.execute(cmd, (StringBuilder) null, errbuf);
         if (result != 0) {
             logger.warn("exec error in fileProcess: {} produced STDERR {}", Arrays.asList(cmd), errbuf.toString());
             return null;

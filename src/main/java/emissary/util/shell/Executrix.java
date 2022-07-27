@@ -1,6 +1,7 @@
 package emissary.util.shell;
 
 import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,6 +21,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.directory.KeyManipulator;
 import emissary.util.io.FileManipulator;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -564,6 +566,56 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data) {
+        return execute(new String[] {cmd}, data, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out) {
+        return execute(new String[] {cmd}, data, out, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out, final StringBuilder err) {
+        return execute(new String[] {cmd}, data, out, err, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the string command to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset) {
+        return execute(new String[] {cmd}, data, out, err, charset, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
      * @return process exit status
@@ -676,8 +728,73 @@ public class Executrix {
      * @return process exit status
      */
     public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err, final String charset, final Map<String, String> env) {
+        return execute(cmd, null, out, err, charset, env);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data) {
+        return execute(cmd, data, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out) {
+        return execute(cmd, data, out, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err) {
+        return execute(cmd, data, out, err, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset) {
+        return execute(cmd, data, out, err, charset, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @param env environment variables for the new process supplied in name=value format.
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset,
+            final Map<String, String> env) {
         int exitValue = -1;
-        OutputStream os = null;
         ExecuteWatchdog dog = null;
         try {
             logger.debug("Executing command: " + Arrays.asList(cmd));
@@ -713,8 +830,7 @@ public class Executrix {
             }
             stdOutThread.start();
             stdErrThread.start();
-            // Nothing to provide, but still needed?
-            os = new BufferedOutputStream(p.getOutputStream());
+            streamData(p, data);
 
             // kill process if it's not done after 5 minutes - would prefer to
             // pass in a timeout value
@@ -733,19 +849,20 @@ public class Executrix {
         } catch (IOException e) {
             logger.warn("Exec exception, args=" + Arrays.asList(cmd), e);
         } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException ioe) {
-                    logger.warn("Cannot close stream", ioe);
-                }
-            }
             if (dog != null) {
                 dog.stop();
                 dog = null;
             }
         }
         return exitValue;
+    }
+
+    private void streamData(Process p, byte[] data) throws IOException {
+        try (OutputStream os = new BufferedOutputStream(new DataOutputStream(p.getOutputStream()))) {
+            if (ArrayUtils.isNotEmpty(data)) {
+                os.write(data);
+            }
+        }
     }
 
     /**
