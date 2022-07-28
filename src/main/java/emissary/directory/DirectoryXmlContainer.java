@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import emissary.util.xml.JDOMUtil;
+import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -138,7 +139,7 @@ public class DirectoryXmlContainer {
      * Build a DirectoryEntryList map from string xml
      */
     public static DirectoryEntryMap buildEntryListMap(final String xml) throws JDOMException {
-        final Document jdom = JDOMUtil.createDocument(xml, false);
+        final Document jdom = SaferJDOMUtil.createDocument(xml);
         return buildEntryListMap(jdom);
     }
 

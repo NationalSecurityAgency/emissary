@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import emissary.util.xml.JDOMUtil;
+import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -601,7 +602,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
     public static WorkBundle buildWorkBundle(String xml) {
         Document jdoc;
         try {
-            jdoc = JDOMUtil.createDocument(xml, false);
+            jdoc = SaferJDOMUtil.createDocument(xml);
             return buildWorkBundle(jdoc);
         } catch (Exception ex) {
             logger.error("Cannot make WorkBundle from " + xml, ex);

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
@@ -29,8 +29,10 @@ public class JDOMUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(JDOMUtil.class);
 
-    private static SAXBuilder createSAXBuilder(final boolean validate) {
-        SAXBuilder builder = null;
+    public static final String ERR_MSG = "Could not parse document: ";
+
+    static SAXBuilder createSAXBuilder(final boolean validate) {
+        SAXBuilder builder;
         if (validate) {
             builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.DTDVALIDATING);
         } else {
@@ -39,6 +41,13 @@ public class JDOMUtil {
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         }
+
+        // If you can't completely disable DTDs, then at least do the following:
+        builder.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        builder.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        builder.setFeature("http://apache.org/xml/features/xinclude", false);
+        builder.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+        builder.setExpandEntities(false);
         return builder;
     }
 
@@ -51,7 +60,10 @@ public class JDOMUtil {
      * @return the JDOM representation of that XML document
      */
     public static Document createDocument(final String xml, final XMLFilter filter, final boolean validate) throws JDOMException {
-        final SAXBuilder builder = createSAXBuilder(validate);
+        return createDocument(createSAXBuilder(validate), xml, filter);
+    }
+
+    static Document createDocument(final SAXBuilder builder, final String xml, final XMLFilter filter) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }
@@ -59,7 +71,7 @@ public class JDOMUtil {
         try {
             return builder.build(new StringReader(xml));
         } catch (IOException iox) {
-            throw new JDOMException("Could not parse document: " + iox.getMessage(), iox);
+            throw new JDOMException(ERR_MSG + iox.getMessage(), iox);
         }
     }
 
@@ -97,12 +109,16 @@ public class JDOMUtil {
      */
     public static Document createDocument(final byte[] xml, final XMLFilter filter, final boolean validate, final String charset)
             throws JDOMException {
-        final SAXBuilder builder = createSAXBuilder(validate);
+        return createDocument(createSAXBuilder(validate), xml, filter, charset);
+    }
+
+    static Document createDocument(final SAXBuilder builder, final byte[] xml, final XMLFilter filter, final String charset)
+            throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }
         final ByteArrayInputStream bais = new ByteArrayInputStream(xml);
-        InputStreamReader isr = null;
+        InputStreamReader isr;
 
         if (charset != null) {
             try {
@@ -117,7 +133,7 @@ public class JDOMUtil {
         try {
             return builder.build(isr);
         } catch (IOException iox) {
-            throw new JDOMException("Could not parse document: " + iox.getMessage(), iox);
+            throw new JDOMException(ERR_MSG + iox.getMessage(), iox);
         }
     }
 
@@ -130,7 +146,10 @@ public class JDOMUtil {
      * @return the JDOM representation of that XML document
      */
     public static Document createDocument(final InputSource is, final XMLFilter filter, final boolean validate) throws JDOMException {
-        final SAXBuilder builder = createSAXBuilder(validate);
+        return createDocument(createSAXBuilder(validate), is, filter);
+    }
+
+    static Document createDocument(final SAXBuilder builder, final InputSource is, final XMLFilter filter) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }
@@ -138,7 +157,7 @@ public class JDOMUtil {
         try {
             return builder.build(is);
         } catch (IOException iox) {
-            throw new JDOMException("Could not parse document: " + iox.getMessage(), iox);
+            throw new JDOMException(ERR_MSG + iox.getMessage(), iox);
         }
     }
 
@@ -161,22 +180,12 @@ public class JDOMUtil {
      */
     public static String toString(final Document jdom) {
         final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        // outputter.setOmitDeclaration(false);
-        // outputter.setEncoding("utf-8");
-        // outputter.setOmitEncoding(false);
-        final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
+        try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             outputter.output(jdom, os);
             return os.toString();
         } catch (IOException iox) {
             logger.error("ByteArrayOutputStream exception", iox);
             return null;
-        } finally {
-            try {
-                os.close();
-            } catch (IOException ignore) {
-                // empty exception block
-            }
         }
     }
 
@@ -229,7 +238,7 @@ public class JDOMUtil {
      * Create a JDOM element, protectign the data with encoding if needed
      */
     public static Element protectedElement(final String name, final byte[] data) {
-        return protectedElement(name, new String(data, Charset.forName("ISO_8859_1")));
+        return protectedElement(name, new String(data, StandardCharsets.ISO_8859_1));
     }
 
     /**
