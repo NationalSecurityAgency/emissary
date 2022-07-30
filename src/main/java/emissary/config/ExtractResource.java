@@ -2,9 +2,10 @@ package emissary.config;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import emissary.util.io.ResourceReader;
 import org.slf4j.Logger;
@@ -41,23 +42,14 @@ public class ExtractResource {
         }
         logger.debug("Reading " + resource);
         final String result;
-        final InputStream is = ConfigUtil.getConfigStream(resource);
-        try {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (final InputStream is = ConfigUtil.getConfigStream(resource);
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             final byte[] buf = new byte[4096];
             int thisReadOp = 0;
             while ((thisReadOp = is.read(buf)) > -1) {
                 baos.write(buf, 0, thisReadOp);
             }
             result = baos.toString();
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            } catch (Exception ignore) {
-                // empty catch block
-            }
         }
         return result;
     }
@@ -70,15 +62,8 @@ public class ExtractResource {
         final String rezdata = getResource(resource);
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
-        final BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(outputPath));
-        try {
+        try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
             os.write(rezdata.getBytes());
-        } finally {
-            try {
-                os.close();
-            } catch (IOException ignore) {
-                // empty catch block
-            }
         }
     }
 

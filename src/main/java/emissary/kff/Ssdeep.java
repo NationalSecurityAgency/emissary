@@ -379,8 +379,7 @@ public final class Ssdeep {
      * @throws IOException If there is some I/O problem accessing the file.
      */
     public String fuzzy_hash_file(final File file) throws IOException {
-        final RandomAccessFile stream = new RandomAccessFile(file, "r");
-        try {
+        try (final RandomAccessFile stream = new RandomAccessFile(file, "r")) {
             final SsContext ctx = new SsContext(file);
             while (true) {
                 stream.seek(0);
@@ -394,8 +393,6 @@ public final class Ssdeep {
                     return signature.toString();
                 }
             }
-        } finally {
-            stream.close();
         }
     }
 

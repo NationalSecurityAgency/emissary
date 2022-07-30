@@ -19,12 +19,9 @@ public class HtmlEscaper {
      * @return a copy of the input byte array with specific characters encoded.
      */
     public static byte[] escapeHtml(final byte[] theData) {
-        ByteArrayOutputStream output = null;
         byte[] escaped = null;
 
-        try {
-            output = new ByteArrayOutputStream(theData.length);
-
+        try (ByteArrayOutputStream output = new ByteArrayOutputStream(theData.length)) {
             for (int i = 0; i < theData.length; i++) {
                 if (theData[i] == '<') {
                     output.write(LT_BYTES);
@@ -40,12 +37,6 @@ public class HtmlEscaper {
 
         } catch (IOException iox) {
             /* dont care */
-        } finally {
-            try {
-                output.close();
-            } catch (IOException e) {
-                /* dont care */
-            }
         }
 
         return escaped;
