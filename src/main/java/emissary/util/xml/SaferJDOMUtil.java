@@ -9,13 +9,23 @@ import org.xml.sax.XMLFilter;
 /**
  * Utilities for dealing with JDOM documents
  */
-public class SaferJDOMUtil {
+public class SaferJDOMUtil extends AbstractJDOMUtil {
 
     protected static SAXBuilder createSAXBuilder() {
-        SAXBuilder builder = JDOMUtil.createSAXBuilder(false);
+        SAXBuilder builder = createSAXBuilder(false);
         // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
         builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         return builder;
+    }
+
+    /**
+     * creates a JDOM document from the input XML string.
+     *
+     * @param xml an XML document in a String
+     * @return the JDOM representation of that XML document
+     */
+    public static Document createDocument(final String xml) throws JDOMException {
+        return createDocument(xml, null);
     }
 
     /**
@@ -26,16 +36,16 @@ public class SaferJDOMUtil {
      * @return the JDOM representation of that XML document
      */
     public static Document createDocument(final String xml, final XMLFilter filter) throws JDOMException {
-        return JDOMUtil.createDocument(createSAXBuilder(), xml, filter);
+        return createDocument(xml, filter, createSAXBuilder());
     }
 
     /**
-     * creates a JDOM document from the input XML string.
+     * creates a JDOM document from the input XML bytes. interpreting them in the platform default charset
      *
-     * @param xml an XML document in a String
+     * @param xml an XML document in a byte array
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final String xml) throws JDOMException {
+    public static Document createDocument(final byte[] xml) throws JDOMException {
         return createDocument(xml, null);
     }
 
@@ -60,7 +70,7 @@ public class SaferJDOMUtil {
      */
     public static Document createDocument(final byte[] xml, final XMLFilter filter, final String charset)
             throws JDOMException {
-        return JDOMUtil.createDocument(createSAXBuilder(), xml, filter, charset);
+        return createDocument(xml, filter, charset, createSAXBuilder());
     }
 
     /**
@@ -71,7 +81,7 @@ public class SaferJDOMUtil {
      * @return the JDOM representation of that XML document
      */
     public static Document createDocument(final InputSource is, final XMLFilter filter) throws JDOMException {
-        return JDOMUtil.createDocument(createSAXBuilder(), is, filter);
+        return createDocument(is, filter, createSAXBuilder());
     }
 
     /** This class is not meant to be instantiated. */

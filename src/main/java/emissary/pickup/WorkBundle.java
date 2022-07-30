@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import emissary.util.xml.JDOMUtil;
 import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -565,32 +564,32 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     public String toXml() {
         Element root = new Element("workBundle");
-        root.addContent(JDOMUtil.simpleElement("bundleId", getBundleId()));
-        root.addContent(JDOMUtil.simpleElement("outputRoot", getOutputRoot()));
-        root.addContent(JDOMUtil.simpleElement("eatPrefix", getEatPrefix()));
-        root.addContent(JDOMUtil.simpleElement("caseId", getCaseId()));
-        root.addContent(JDOMUtil.simpleElement("sentTo", getSentTo()));
-        root.addContent(JDOMUtil.simpleElement("errorCount", getErrorCount()));
-        root.addContent(JDOMUtil.simpleElement("priority", getPriority()));
-        root.addContent(JDOMUtil.simpleElement("simpleMode", getSimpleMode()));
-        root.addContent(JDOMUtil.simpleElement("oldestFileModificationTime", getOldestFileModificationTime()));
-        root.addContent(JDOMUtil.simpleElement("youngestFileModificationTime", getYoungestFileModificationTime()));
-        root.addContent(JDOMUtil.simpleElement("totalFileSize", getTotalFileSize()));
+        root.addContent(SaferJDOMUtil.simpleElement("bundleId", getBundleId()));
+        root.addContent(SaferJDOMUtil.simpleElement("outputRoot", getOutputRoot()));
+        root.addContent(SaferJDOMUtil.simpleElement("eatPrefix", getEatPrefix()));
+        root.addContent(SaferJDOMUtil.simpleElement("caseId", getCaseId()));
+        root.addContent(SaferJDOMUtil.simpleElement("sentTo", getSentTo()));
+        root.addContent(SaferJDOMUtil.simpleElement("errorCount", getErrorCount()));
+        root.addContent(SaferJDOMUtil.simpleElement("priority", getPriority()));
+        root.addContent(SaferJDOMUtil.simpleElement("simpleMode", getSimpleMode()));
+        root.addContent(SaferJDOMUtil.simpleElement("oldestFileModificationTime", getOldestFileModificationTime()));
+        root.addContent(SaferJDOMUtil.simpleElement("youngestFileModificationTime", getYoungestFileModificationTime()));
+        root.addContent(SaferJDOMUtil.simpleElement("totalFileSize", getTotalFileSize()));
 
         for (WorkUnit wu : workUnitList) {
             Element workunit = new Element("workUnit");
-            workunit.addContent(JDOMUtil.simpleElement("workFileName", wu.getFileName()));
+            workunit.addContent(SaferJDOMUtil.simpleElement("workFileName", wu.getFileName()));
             if (wu.getTransactionId() != null) {
-                workunit.addContent(JDOMUtil.simpleElement("transactionId", wu.getTransactionId()));
+                workunit.addContent(SaferJDOMUtil.simpleElement("transactionId", wu.getTransactionId()));
             }
-            workunit.addContent(JDOMUtil.simpleElement("failedToParse", wu.failedToParse()));
-            workunit.addContent(JDOMUtil.simpleElement("failedToProcess", wu.failedToProcess()));
+            workunit.addContent(SaferJDOMUtil.simpleElement("failedToParse", wu.failedToParse()));
+            workunit.addContent(SaferJDOMUtil.simpleElement("failedToProcess", wu.failedToProcess()));
 
             root.addContent(workunit);
         }
 
         Document jdom = new Document(root);
-        return JDOMUtil.toString(jdom);
+        return SaferJDOMUtil.toString(jdom);
     }
 
     /**
@@ -653,11 +652,11 @@ public final class WorkBundle implements Comparable<WorkBundle> {
             wb.setSentTo(null);
         }
 
-        wb.setPriority(JDOMUtil.getChildIntValue(root, "priority"));
-        wb.setSimpleMode(JDOMUtil.getChildBooleanValue(root, "simpleMode"));
-        wb.setOldestFileModificationTime(JDOMUtil.getChildLongValue(root, "oldestFileModificationTime"));
-        wb.setYoungestFileModificationTime(JDOMUtil.getChildLongValue(root, "youngestFileModificationTime"));
-        wb.setTotalFileSize(JDOMUtil.getChildLongValue(root, "totalFileSize"));
+        wb.setPriority(SaferJDOMUtil.getChildIntValue(root, "priority"));
+        wb.setSimpleMode(SaferJDOMUtil.getChildBooleanValue(root, "simpleMode"));
+        wb.setOldestFileModificationTime(SaferJDOMUtil.getChildLongValue(root, "oldestFileModificationTime"));
+        wb.setYoungestFileModificationTime(SaferJDOMUtil.getChildLongValue(root, "youngestFileModificationTime"));
+        wb.setTotalFileSize(SaferJDOMUtil.getChildLongValue(root, "totalFileSize"));
         String serr = root.getChildTextTrim("errorCount");
         if (serr != null && serr.length() > 0) {
             wb.setErrorCount(Integer.parseInt(serr));

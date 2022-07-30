@@ -3,7 +3,6 @@ package emissary.directory;
 import java.util.List;
 import java.util.Map;
 
-import emissary.util.xml.JDOMUtil;
 import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -110,7 +109,7 @@ public class DirectoryXmlContainer {
      */
     public static String toXmlString(final IDirectoryPlace dir) {
         final Document jdom = buildDocument(dir);
-        final String xml = JDOMUtil.toString(jdom);
+        final String xml = SaferJDOMUtil.toString(jdom);
         return xml;
     }
 
@@ -130,7 +129,7 @@ public class DirectoryXmlContainer {
             xml = toXmlString(dir);
         } else {
             final Document jdom = buildProxyDocument((IRemoteDirectory) dir, requester);
-            xml = JDOMUtil.toString(jdom);
+            xml = SaferJDOMUtil.toString(jdom);
         }
         return xml;
     }
