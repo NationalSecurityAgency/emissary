@@ -6,12 +6,12 @@ import emissary.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * RollManager handles all incremental rolls for configured objects within the framework
  */
-public class RollManager implements Observer {
+public class RollManager implements PropertyChangeListener {
     static final Logger log = LoggerFactory.getLogger(RollManager.class);
     public static final String CFG_ROLL_MANAGER_THREADS = "ROLL_MANAGER_THREADS";
     int executorThreadCount = 10;
@@ -82,7 +82,7 @@ public class RollManager implements Observer {
             exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
         }
         if (progress) {
-            r.addObserver(this);
+            r.addPropertyChangeListener(this);
         }
         if (time || progress) {
             rollers.add(r);
@@ -93,12 +93,12 @@ public class RollManager implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
-        if (rollers.contains(o)) {
-            Roller r = (Roller) o;
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (rollers.contains((Roller) evt.getNewValue())) {
+            Roller r = (Roller) evt.getNewValue();
             // only schedule one time when we're notified
             if (r.setProgressScheduled()) {
-                exec.execute((Roller) o);
+                exec.execute((Roller) evt.getNewValue());
             }
 
         }

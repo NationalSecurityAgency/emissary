@@ -15,7 +15,7 @@ class RollerTest extends UnitTest {
     void testRoller() {
         final RollableTest tr = new RollableTest();
         final Roller r = new Roller(1, TimeUnit.DAYS, 1, tr);
-        r.addObserver(tr);
+        r.addPropertyChangeListener(tr);
         r.incrementProgress();
 
         r.run();
@@ -28,7 +28,7 @@ class RollerTest extends UnitTest {
     void testShouldRoll() {
         RollableTest tr = new RollableTest();
         Roller r = new Roller(1, TimeUnit.MILLISECONDS, 1, tr);
-        r.addObserver(tr);
+        r.addPropertyChangeListener(tr);
         r.incrementProgress();
 
         r.run();
