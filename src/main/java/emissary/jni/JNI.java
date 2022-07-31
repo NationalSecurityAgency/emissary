@@ -325,12 +325,9 @@ public class JNI implements Serializable {
         }
 
         // Save the contents into the disk file
-        try {
-            final FileOutputStream fos = new FileOutputStream(fullPathName);
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
+        try (final FileOutputStream fos = new FileOutputStream(fullPathName);
+                final BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(libContents, 0, libContents.length);
-            bos.close();
-            fos.close();
         } catch (IOException ioe) {
             errmsg[0] = "Cannot write retrieved JNI library to " + fullPathName + ": " + ioe;
             return false;
