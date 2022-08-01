@@ -113,16 +113,16 @@ public class KffChainLoader {
         KffChain kff = getChainInstance();
 
         for (int i = 0; i < args.length; i++) {
-            FileInputStream is = new FileInputStream(args[i]);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+            try (FileInputStream is = new FileInputStream(args[i])) {
+                byte[] buffer = new byte[is.available()];
+                is.read(buffer);
 
-            KffResult r = kff.check(args[i], buffer);
-            System.out.println(args[i] + ": known=" + r.isKnown());
-            System.out.println("   CRC32: " + r.getCrc32());
-            for (String s : r.getResultNames()) {
-                System.out.println("   " + s + ": " + r.getResultString(s));
+                KffResult r = kff.check(args[i], buffer);
+                System.out.println(args[i] + ": known=" + r.isKnown());
+                System.out.println("   CRC32: " + r.getCrc32());
+                for (String s : r.getResultNames()) {
+                    System.out.println("   " + s + ": " + r.getResultString(s));
+                }
             }
         }
     }

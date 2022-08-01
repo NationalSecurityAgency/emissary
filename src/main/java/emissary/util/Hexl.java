@@ -120,14 +120,10 @@ public class Hexl {
 
         for (int i = 0; i < argv.length; i++) {
 
-            try {
-                FileInputStream theFile = new FileInputStream(argv[i]);
-                DataInputStream theStream = new DataInputStream(theFile);
-
+            try (FileInputStream theFile = new FileInputStream(argv[i]);
+                    DataInputStream theStream = new DataInputStream(theFile)) {
                 theContent = new byte[theStream.available()];
                 theStream.readFully(theContent);
-                theStream.close();
-                theFile.close();
             } catch (IOException e) {
                 System.err.println("Error reading from " + argv[i]);
                 continue;

@@ -656,12 +656,12 @@ public final class Ssdeep {
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {
-            final FileInputStream is = new FileInputStream(f);
-            final byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
-            // output format matches the original ssdeep program
-            System.out.println(ss.fuzzy_hash(buffer) + ",\"" + f + "\"");
+            try (final FileInputStream is = new FileInputStream(f)) {
+                final byte[] buffer = new byte[is.available()];
+                is.read(buffer);
+                // output format matches the original ssdeep program
+                System.out.println(ss.fuzzy_hash(buffer) + ",\"" + f + "\"");
+            }
         }
     }
 }
