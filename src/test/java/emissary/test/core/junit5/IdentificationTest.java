@@ -66,7 +66,7 @@ public abstract class IdentificationTest extends UnitTest {
             checkAnswersPostHook(payload, resource, expectedAnswer);
         } catch (Exception ex) {
             logger.error("Error running test {}", resource, ex);
-            fail("Cannot run test " + resource,  ex);
+            fail("Cannot run test " + resource, ex);
         }
     }
 
