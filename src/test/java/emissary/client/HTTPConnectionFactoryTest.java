@@ -16,6 +16,7 @@ import javax.net.ssl.SSLContext;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -72,6 +73,20 @@ class HTTPConnectionFactoryTest extends UnitTest {
         final SSLContext fromConfig = instance.build(this.cfg);
 
         assertNotSame(SSLContext.getDefault(), fromConfig);
+    }
+
+    /**
+     * Read a known environment variable configured during setup {@link UnitTest#setupSystemProperties()}
+     *
+     * @throws Exception thrown when an error occurs
+     */
+    @Test
+    void loadPWFromEnv() throws Exception {
+        char[] pw = HTTPConnectionFactory.loadPW("${PROJECT_BASE}");
+        if (pw == null) {
+            Assertions.fail("Failed to read environment variable");
+        }
+        Assertions.assertEquals(projectBase, String.valueOf(pw));
     }
 
     private static void addKeystoreProps(final Configurator cfg) {
