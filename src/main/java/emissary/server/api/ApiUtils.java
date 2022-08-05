@@ -35,4 +35,6 @@ public class ApiUtils {
             return "Namespace lookup error, host unknown";
         }
     }
+
+    private ApiUtils() {}
 }

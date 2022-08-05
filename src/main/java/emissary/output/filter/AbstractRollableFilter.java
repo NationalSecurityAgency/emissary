@@ -106,7 +106,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             try {
                 Files.createDirectories(this.outputPath);
             } catch (IOException e) {
-                logger.error("Unable to create directory for () output, exiting immediately. ", getFilterName(), e);
+                logger.error("Unable to create directory for {} output, exiting immediately.", getFilterName(), e);
                 System.exit(1);
             }
         }
@@ -188,7 +188,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
         // Important to process them in order if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator());
+            list.sort(new emissary.util.ShortNameComparator());
             params.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
         }
 

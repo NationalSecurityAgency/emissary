@@ -37,7 +37,7 @@ public class CachePlace extends ServiceProviderPlace {
     private void configurePlace() {
         // Set configuration items from ToLowerPlace.cfg
         cacheSize = configG.findIntEntry("CACHE_SIZE", cacheSize);
-        cache = new ArrayList<IBaseDataObject>(cacheSize);
+        cache = new ArrayList<>(cacheSize);
     }
 
     /**
@@ -46,7 +46,7 @@ public class CachePlace extends ServiceProviderPlace {
     @Override
     public synchronized void process(IBaseDataObject d) {
         cache.add(d);
-        logger.debug("added payload, size now " + cache.size());
+        logger.debug("added payload, size now {}", cache.size());
 
         // Remove oldest if over size limit
         if (cache.size() > cacheSize) {
@@ -56,7 +56,7 @@ public class CachePlace extends ServiceProviderPlace {
     }
 
     protected void evictedPayload(IBaseDataObject d) {
-        logger.debug("Evicted payload " + d);
+        logger.debug("Evicted payload {}", d);
     }
 
     public int getCacheLimit() {
@@ -76,7 +76,7 @@ public class CachePlace extends ServiceProviderPlace {
 
     @Override
     public void shutDown() {
-        logger.debug("Removing " + cache.size() + " items in shutdown");
+        logger.debug("Removing {} items in shutdown", cache.size());
         while (cache.size() > 0) {
             cache.remove(0);
         }

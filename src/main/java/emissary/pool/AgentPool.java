@@ -1,5 +1,7 @@
 package emissary.pool;
 
+import java.time.Duration;
+
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -35,7 +37,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      */
     protected String namespaceName;
 
-    final private int initialPoolSize;
+    private final int initialPoolSize;
 
     /**
      * Compute the default size for the pool
@@ -46,9 +48,9 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
     protected static int computePoolSize(final long maxMemoryInBytes, final Integer poolSizeOverride) {
 
         // Override based on property
-        if (poolSizeOverride != null && poolSizeOverride.intValue() > 0) {
-            logger.debug("Default pool size from properties " + poolSizeOverride);
-            return poolSizeOverride.intValue();
+        if (poolSizeOverride != null && poolSizeOverride > 0) {
+            logger.debug("Default pool size from properties {}", poolSizeOverride);
+            return poolSizeOverride;
         }
         // Check that maxMemoryInBytes is a valid argument
         if (maxMemoryInBytes <= 0) {
@@ -59,7 +61,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         // 20 for first Gb, +5 for each additional Gb, no more then 50 when calculated
         int size = (((int) (maxMemoryInBytes / BYTES_IN_GIGABYTES) - 1) * 5) + 20;
         size = Math.min(size, MAX_CALCULATED_AGENT_COUNT);
-        logger.debug("Computed default pool size of " + size);
+        logger.debug("Computed default pool size of {}", size);
 
         return size;
     }
@@ -119,9 +121,9 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         setBlockWhenExhausted(true);
 
         // Set maximum wait time when blocking on exhausted pool
-        setMaxWaitMillis(1000 * 60 * 50); // 50 min
+        setMaxWait(Duration.ofMinutes(50));
 
-        logger.debug("Configuring AgentPool to use " + initialPoolSize + " agents");
+        logger.debug("Configuring AgentPool to use {} agents", initialPoolSize);
 
         setMaxTotal(initialPoolSize);
         setMinIdle(initialPoolSize);
@@ -189,9 +191,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
             logger.trace("POOL borrow active={}", getNumActive());
             return a;
         } catch (Exception e) {
-
-            logger.info("AgentPool.borrowAgent did not work, stats=" + this.toString());
-
+            logger.info("AgentPool.borrowAgent did not work, stats={}", this);
             throw e;
         }
     }
