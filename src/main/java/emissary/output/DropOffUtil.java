@@ -4,6 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +52,12 @@ public class DropOffUtil {
     protected List<String> dateTokens = new ArrayList<>();
 
     /** Date formats we can use to parse event date strings */
-    @Deprecated
-    protected final List<SimpleDateFormat> dateFormats = new ArrayList<>();
+    protected final List<DateTimeFormatter> dateTimeZoneFormats = new ArrayList<>();
+    protected final List<DateTimeFormatter> dateTimeOffsetFormats = new ArrayList<>();
+    protected final List<DateTimeFormatter> dateTimeFormats = new ArrayList<>();
+    protected final List<DateTimeFormatter> dateFormats = new ArrayList<>();
+
+    private static final ZoneId GMT = ZoneId.of("GMT");
 
     /** params to get from parent and save as PARENT_param */
     protected List<String> parentParams = new ArrayList<>();
@@ -94,7 +105,12 @@ public class DropOffUtil {
      * <li>ID_PARAMETER : multiple parameter values, ordered list of how to build a EMISSARY_ID</li>
      * <li>ID : backwards compatibility for ID_PARAMETER only used if ID_PARAMETER does not exist</li>
      * <li>DATE_PARAMETER : multiple parameter values, ordered list of how to build a date path</li>
-     * <li>DATE_FORMAT: string to use for SimpleDateFormat, ordered list</li>
+     * <li>DATE_TIME_ZONE_FORMAT: date time formats with a specified timezone to use for DateTimeFormatter, ordered
+     * list</li>
+     * <li>DATE_TIME_OFFSET_FORMAT: date time formats with a specified offset to use for DateTimeFormatter, ordered
+     * list</li>
+     * <li>DATE_TIME_FORMAT: date time formats to use for DateTimeFormatter, ordered list</li>
+     * <li>DATE_FORMAT: date formats to use for DateTimeFormatter, ordered list</li>
      * <li>OUTPUT_FILE_PREFIX: string to use when generating random filenames, dflt: TXT</li>
      * <li>UUID_IN_OUTPUT_FILENAMES: boolean [true]</li>
      * <li>AUTO_GENERATED_ID_PREFIX: prefix to use for an auto-generated id</li>
@@ -127,10 +143,40 @@ public class DropOffUtil {
             this.dateTokens = actualConfigG.findEntries("DATE_PARAMETER");
             this.parentParams = actualConfigG.findEntries("PARENT_PARAM");
 
+            for (final String dfentry : actualConfigG.findEntries("DATE_TIME_ZONE_FORMAT")) {
+                try {
+                    final DateTimeFormatter sdf =
+                            new DateTimeFormatterBuilder().parseLenient().parseCaseInsensitive().appendPattern(dfentry).toFormatter().withZone(GMT);
+                    this.dateTimeZoneFormats.add(sdf);
+                } catch (Exception ex) {
+                    logger.debug("DATE_TIME_ZONE_FORMAT entry '{}' cannot be parsed", dfentry, ex);
+                }
+            }
+            logger.debug("Loaded {} DATE_TIME_ZONE_FORMAT entries", this.dateTimeZoneFormats.size());
+            for (final String dfentry : actualConfigG.findEntries("DATE_TIME_OFFSET_FORMAT")) {
+                try {
+                    final DateTimeFormatter sdf =
+                            new DateTimeFormatterBuilder().parseLenient().parseCaseInsensitive().appendPattern(dfentry).toFormatter();
+                    this.dateTimeOffsetFormats.add(sdf);
+                } catch (Exception ex) {
+                    logger.debug("DATE_TIME_OFFSET_FORMAT entry '{}' cannot be parsed", dfentry, ex);
+                }
+            }
+            logger.debug("Loaded {} DATE_TIME_OFFSET_FORMAT entries", this.dateFormats.size());
+            for (final String dfentry : actualConfigG.findEntries("DATE_TIME_FORMAT")) {
+                try {
+                    final DateTimeFormatter sdf =
+                            new DateTimeFormatterBuilder().parseLenient().parseCaseInsensitive().appendPattern(dfentry).toFormatter();
+                    this.dateTimeFormats.add(sdf);
+                } catch (Exception ex) {
+                    logger.debug("DATE_TIME_FORMAT entry '{}' cannot be parsed", dfentry, ex);
+                }
+            }
+            logger.debug("Loaded {} DATE_TIME_FORMAT entries", this.dateTimeFormats.size());
             for (final String dfentry : actualConfigG.findEntries("DATE_FORMAT")) {
                 try {
-                    final SimpleDateFormat sdf = new SimpleDateFormat(dfentry);
-                    sdf.setLenient(true);
+                    final DateTimeFormatter sdf =
+                            new DateTimeFormatterBuilder().parseLenient().parseCaseInsensitive().appendPattern(dfentry).toFormatter();
                     this.dateFormats.add(sdf);
                 } catch (Exception ex) {
                     logger.debug("DATE_FORMAT entry '{}' cannot be parsed", dfentry, ex);
@@ -994,9 +1040,8 @@ public class DropOffUtil {
      * @param supplyDefaultOnBad when true use current date if sentDate is unparseable
      * @return the GMT time of the event or NOW if unparseable, or null if supplyDefaultOnBad is false
      */
-    @Deprecated
-    public Date parseEventDate(final String dateString, final boolean supplyDefaultOnBad) {
-        Date date = null;
+    public LocalDateTime parseEventDate(final String dateString, final boolean supplyDefaultOnBad) {
+        LocalDateTime date = null;
 
         if (dateString != null && dateString.length() > 0) {
             // Take it apart and stick it back together to get
@@ -1005,27 +1050,106 @@ public class DropOffUtil {
             instr = instr.replaceAll("[ ]+", " "); // multiple spaces
             instr = instr.replaceAll("=0D$", ""); // common qp'ified ending
 
-            // try each date format in turn until one works
-            synchronized (this.dateFormats) {
-                for (final SimpleDateFormat sdf : this.dateFormats) {
-                    try {
-                        date = sdf.parse(instr);
-                        break;
-                    } catch (Exception e) {
-                        // Ignore.
-                        logger.debug("Error parsing date", e);
-                    }
+            date = tryParseWithDateTimeZoneFormats(instr);
+            if (date == null) {
+                date = tryParseWithDateTimeOffsetFormats(instr);
+            }
+            if (date == null) {
+                date = tryParseWithDateTimeFormats(instr);
+            }
+            if (date == null) {
+                date = tryParseWithDateFormats(instr);
+            }
+            if (date == null) {
+                try {
+                    date = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(instr)).atZone(GMT).toLocalDateTime();
+                } catch (DateTimeParseException e) {
+                    // ignore
                 }
             }
         }
 
         // Use the default if required
         if (date == null && supplyDefaultOnBad) {
-            date = new Date();
+            date = LocalDateTime.now();
         }
 
         // Let them have it.
         return date;
+    }
+
+    /**
+     * Attempt to parse the string instr with one of the ZonedDateTime patterns
+     * 
+     * @param instr the string to attempt to format
+     * @return the LocalDateTime object if a formatter worked, or null otherwise
+     */
+    private LocalDateTime tryParseWithDateTimeZoneFormats(final String instr) {
+        // formats with a time zone
+        for (final DateTimeFormatter dtf : this.dateTimeZoneFormats) {
+            try {
+                ZonedDateTime zdt = ZonedDateTime.parse(instr, dtf);
+                return ZonedDateTime.ofInstant(zdt.toInstant(), GMT).toLocalDateTime();
+            } catch (DateTimeParseException e) {
+                // ignore
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attempt to parse the string instr with one of the LocalDateTime patterns
+     * 
+     * @param instr the string to attempt to format
+     * @return the LocalDateTime object if a formatter worked, or null otherwise
+     */
+    private LocalDateTime tryParseWithDateTimeFormats(final String instr) {
+        // formats with a date and time and no zone/offset
+        for (final DateTimeFormatter dtf : this.dateTimeFormats) {
+            try {
+                return LocalDateTime.parse(instr, dtf);
+            } catch (DateTimeParseException e) {
+                // ignore
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attempt to parse the string instr with one of the OffsetDateTime patterns
+     * 
+     * @param instr the string to attempt to format
+     * @return the LocalDateTime object if a formatter worked, or null otherwise
+     */
+    private LocalDateTime tryParseWithDateTimeOffsetFormats(final String instr) {
+        // formats with a time zone offset
+        for (final DateTimeFormatter dtf : this.dateTimeOffsetFormats) {
+            try {
+                OffsetDateTime odt = OffsetDateTime.parse(instr, dtf);
+                return OffsetDateTime.ofInstant(odt.toInstant(), GMT).toLocalDateTime();
+            } catch (DateTimeParseException e) {
+                // ignore
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Attempt to parse the string instr with one of the LocalDate patterns
+     * 
+     * @param instr the string to attempt to format
+     * @return the LocalDateTime object if a formatter worked, or null otherwise
+     */
+    private LocalDateTime tryParseWithDateFormats(final String instr) {
+        // formats with a date but no time
+        for (final DateTimeFormatter dtf : this.dateFormats) {
+            try {
+                return LocalDate.parse(instr, dtf).atStartOfDay();
+            } catch (DateTimeParseException e) {
+                // ignore
+            }
+        }
+        return null;
     }
 
     /**
