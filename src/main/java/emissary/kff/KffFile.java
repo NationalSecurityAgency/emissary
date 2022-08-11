@@ -254,13 +254,13 @@ public class KffFile implements KffFilter {
         kff.addAlgorithm("SHA-256");
 
         for (int i = 1; i < args.length; i++) {
-            FileInputStream is = new FileInputStream(args[i]);
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
-            is.close();
+            try (FileInputStream is = new FileInputStream(args[i])) {
+                byte[] buffer = new byte[is.available()];
+                is.read(buffer);
 
-            KffResult r = kff.check(args[i], buffer);
-            System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());
+                KffResult r = kff.check(args[i], buffer);
+                System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());
+            }
         }
     }
 }
