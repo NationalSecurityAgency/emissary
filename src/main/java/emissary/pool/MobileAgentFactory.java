@@ -58,7 +58,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
     public MobileAgentFactory() {
         super();
         configure();
-        logger.debug("Factory will create " + classString + " agents");
+        logger.debug("Factory will create {} agents", classString);
     }
 
     /**
@@ -70,7 +70,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
         super();
         configure();
         setClassString(clazz);
-        logger.debug("Factory will create " + classString + " agents");
+        logger.debug("Factory will create {} agents", classString);
     }
 
     /**
@@ -89,8 +89,8 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
      */
     @Override
     public PooledObject<IMobileAgent> makeObject() {
-        logger.debug("Calling MobileAgentFactory.makeObject for " + getClassString());
-        IMobileAgent agent = null;
+        logger.debug("Calling MobileAgentFactory.makeObject for {}", getClassString());
+        IMobileAgent agent;
         String aname = AGENT_NAME + "-" + (objectsCreated < 10 ? "0" : "") + objectsCreated;
         try {
             if (useNamespace) {
