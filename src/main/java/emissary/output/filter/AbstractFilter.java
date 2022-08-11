@@ -15,7 +15,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +23,9 @@ import org.slf4j.LoggerFactory;
  * Provides the base mechanism for a drop off filter
  */
 public abstract class AbstractFilter implements IDropOffFilter {
+    /** A static convenience logger */
+    protected static Logger slogger = LoggerFactory.getLogger(AbstractFilter.class);
+
     /** get a logger configured on the impl's classname */
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
@@ -419,12 +422,12 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     protected boolean isOutputtable(final Collection<String> types) {
         if (this.outputTypes.contains("*")) {
-            // Outputtable due to wildcard in output types
+            this.logger.debug("Outputtable due to wildcard in output types");
             return true;
         }
 
         final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
-        if (canOutput) {
+        if (canOutput && this.logger.isDebugEnabled()) {
             final Set<String> outputFor = new HashSet<String>();
             for (final String s : this.outputTypes) {
                 if (types.contains(s)) {

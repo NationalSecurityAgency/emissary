@@ -60,10 +60,10 @@ public class TypeEngine {
             try {
                 Configurator c = ConfigUtil.getConfigInfo(name);
                 String engineName = c.findStringEntry("ENGINE_TYPE", name);
-                // logger.debug("TypeEngine loaded {} as {}", name, engineName);
+                logger.debug("TypeEngine loaded {} as {}", name, engineName);
                 contextMapping.put(engineName, c);
             } catch (IOException e) {
-                logger.error("TypeEngine unable to read " + name, e);
+                logger.error("TypeEngine unable to read {}", name, e);
             }
         }
     }
@@ -81,7 +81,7 @@ public class TypeEngine {
 
         // check params
         if (engine == null || label == null) {
-            // logger.debug("Cannot process null arg engine={}, label={}", engine ,label);
+            logger.debug("Cannot process null arg engine={}, label={}", engine, label);
             return ret;
         }
 
@@ -96,9 +96,9 @@ public class TypeEngine {
             Configurator c = contextMapping.get(engine);
             if (c != null) {
                 ret = c.findStringEntry(label.toUpperCase(), null);
-                // if (logger.isDebugEnabled() && ret != null) {
-                // logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase());
-                // }
+                if (logger.isDebugEnabled() && ret != null) {
+                    logger.debug("Found {} while looking up type for {}", ret, label.toUpperCase());
+                }
             }
         }
 

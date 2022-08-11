@@ -195,10 +195,10 @@ public class HDMobileAgent extends MobileAgent {
             final String primaryCurrentForm = mypayload.currentForm();
             final DirectoryEntry primaryLastEntry = mypayload.getLastPlaceVisited();
 
-            // if (logger.isDebugEnabled()) {
-            // logger.debug("Starting control loop for {}, currentPlace={}, newEntry= {}, loopCount={}", mypayload.shortName(),
-            // currentPlace.getKey(), newEntry.getFullKey(), loopCount);
-            // }
+            if (logger.isDebugEnabled()) {
+                logger.debug("Starting control loop for {}, currentPlace={}, newEntry= {}, loopCount={}", mypayload.shortName(),
+                        currentPlace.getKey(), newEntry.getFullKey(), loopCount);
+            }
 
             // First time in, we just have the pickup place where we started
             // our mission. We dont process there, just use it to call through
@@ -234,11 +234,11 @@ public class HDMobileAgent extends MobileAgent {
 
                             toBeProcessed.add(slug);
 
-                            // if (logger.isDebugEnabled()) {
-                            // logger.debug("Adding slug {} with key {} to ride with {} having key {} current form {}", slug.shortName(),
-                            // (slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey()), mypayload.shortName(), (primaryLastEntry
-                            // == null ? "null" : primaryLastEntry.getKey()), primaryCurrentForm);
-                            // }
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("Adding slug {} with key {} to ride with {} having key {} current form {}", slug.shortName(),
+                                        (slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey()), mypayload.shortName(),
+                                        (primaryLastEntry == null ? "null" : primaryLastEntry.getKey()), primaryCurrentForm);
+                            }
                         }
                     }
 

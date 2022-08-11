@@ -2,6 +2,7 @@ package emissary.util;
 
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,7 +144,11 @@ public final class ConstructorLookupCache {
         NEXT_CANDIDATE_CONSTRUCTOR: for (final Constructor<?> candidate : clazz.getConstructors()) {
             final Class<?>[] ctypes = candidate.getParameterTypes();
 
-            logger.debug("Checking:{}, {}", clazz.getName(), clazz);
+            if (logger.isDebugEnabled()) {
+                logger.debug("Checking:{}, {}", clazz.getName(), clazz);
+                logger.debug("   types   :{}", Arrays.toString(ctypes));
+                logger.debug("   numParms:{} =? {}", ctypes.length, argTypes.length);
+            }
 
             // If the candidate constructor doesn't have the same
             // number of arguments, it definitely isn't compatible

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -310,7 +310,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (fileFlavors != null && fileFlavors.length > 0) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
-            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}", fileFlavorList);
+            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = _+{}", fileFlavorList);
 
             // loop through the files and attempt to read/merger the configurations.
             for (int i = 0; i < fileFlavorList.size(); i++) {
@@ -476,7 +476,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
             lastPos = thisPos;
         }
-        // logger.debug("Found {} env vars to subst --> {}", count, currentStr);
+        logger.debug("Found {} env vars to subst --> {}", count, currentStr);
         return currentStr;
     }
 
@@ -575,7 +575,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             entry = handleNewEntry(key, value, "=", "<user>", 1, false);
         } catch (IOException ex) {
-            logger.error("Could not add entry", ex);
+            logger.error("Could not add entry for {}", key, ex);
         }
         return entry;
     }
@@ -597,7 +597,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 list.add(entry);
             }
         } catch (IOException ex) {
-            logger.error("Error adding entries", ex);
+            logger.error("Error adding entries for {}", key, ex);
         }
         return list;
     }
@@ -629,7 +629,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if ((anEntry.getKey().equals(curEntry.getKey()))
                     && ((anEntry.getValue() == null && curEntry.getValue() == null) || (anEntry.getValue() != null && anEntry.getValue().equals(
                             curEntry.getValue())))) {
-                // logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
+                logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
                 i.remove();
             }
         }
@@ -679,7 +679,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         for (final Iterator<ConfigEntry> i = this.p_service_parameters.iterator(); i.hasNext();) {
             final ConfigEntry curEntry = i.next();
             if (theParameter.equals(curEntry.getKey())) {
-                // logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
+                logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
                 i.remove();
             }
         }
@@ -983,7 +983,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return new File(fn).getCanonicalPath();
             } catch (IOException ex) {
-                logger.error("Cannot compute canonical path", ex);
+                logger.error("Cannot compute canonical path on {}", fn, ex);
             }
         }
         return fn;
@@ -1004,7 +1004,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Integer.parseInt(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
-                logger.warn("The parameter is non-numeric returning default value: {}", dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1025,7 +1025,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Long.parseLong(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
-                logger.warn("The parameter is non-numeric returning default value: {}", dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1046,7 +1046,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Double.valueOf(matchingEntries.get(0)).doubleValue());
             } catch (NumberFormatException e) {
-                logger.warn("The parameter is non-numeric returning default value: {}", dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1099,7 +1099,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 i = Integer.parseInt(val);
             } catch (NumberFormatException ex) {
-                logger.warn("Parameter is non-numeric:", ex);
+                logger.warn("{} is non-numeric: {}", name, val);
             }
         }
         return i;

@@ -79,7 +79,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             try {
                 minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ex) {
-                // logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
+                logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
                 logger.info("MIN_SIZE_*KEY* must be numeric", ex);
 
             }
@@ -119,7 +119,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
         InputStream input = TikaInputStream.get(d.data(), metadata);
         appendFilenameMimeTypeSupport(d, metadata);
         MediaType mediaType = mimeTypes.detect(input, metadata);
-        // logger.debug("Tika type: {}", mediaType.toString());
+        logger.debug("Tika type: {}", mediaType.toString());
         return mediaType;
     }
 

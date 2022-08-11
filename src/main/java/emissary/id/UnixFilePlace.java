@@ -60,7 +60,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         this.swallowIgnorableExceptions = configG.findBooleanEntry("SWALLOW_IGNORABLE_EXCEPTIONS", this.swallowIgnorableExceptions);
         this.unixFileUtil = new UnixFile(magicPaths, this.swallowIgnorableExceptions);
         logger.debug(
-                "Created unixFile with " + magicPaths.size() + " magic files containing " + this.unixFileUtil.magicEntryCount() + " magic rules");
+                "Created unixFile with {} magic files containing {} magic rules", magicPaths.size(), this.unixFileUtil.magicEntryCount());
 
         this.chop = configG.findBooleanEntry("CHOP", this.chop);
         this.chopAtTwo = configG.findEntriesAsSet("CHOP_AT_TWO");
@@ -72,7 +72,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
             try {
                 this.minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ex) {
-                // logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
+                logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
                 logger.info("MIN_SIZE_*KEY* must be numeric", ex);
             }
         }
