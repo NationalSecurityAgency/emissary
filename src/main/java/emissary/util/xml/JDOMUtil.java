@@ -2,17 +2,24 @@ package emissary.util.xml;
 
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 /**
- * Utilities for dealing with JDOM documents
+ * Utilities for dealing with JDOM documents. If DTD validation is not needed, consider using {@link SaferJDOMUtil}.
  */
 public class JDOMUtil extends AbstractJDOMUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(JDOMUtil.class);
+    /**
+     * creates a JDOM document from the input XML string.
+     *
+     * @param xml an XML document in a String
+     * @param validate if true, XML should be validated
+     * @return the JDOM representation of that XML document
+     */
+    public static Document createDocument(final String xml, final boolean validate) throws JDOMException {
+        return createDocument(xml, null, validate);
+    }
 
     /**
      * creates a JDOM document from the input XML string.
@@ -27,13 +34,13 @@ public class JDOMUtil extends AbstractJDOMUtil {
     }
 
     /**
-     * creates a JDOM document from the input XML string.
+     * creates a JDOM document from the input XML bytes.
      *
-     * @param xml an XML document in a String
+     * @param xml an XML document in a byte array
      * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final String xml, final boolean validate) throws JDOMException {
+    public static Document createDocument(final byte[] xml, final boolean validate) throws JDOMException {
         return createDocument(xml, null, validate);
     }
 
@@ -73,33 +80,6 @@ public class JDOMUtil extends AbstractJDOMUtil {
      */
     public static Document createDocument(final InputSource is, final XMLFilter filter, final boolean validate) throws JDOMException {
         return createDocument(is, filter, createSAXBuilder(validate));
-    }
-
-    /**
-     * creates a JDOM document from the input XML bytes.
-     *
-     * @param xml an XML document in a byte array
-     * @param validate if true, XML should be validated
-     * @return the JDOM representation of that XML document
-     */
-    public static Document createDocument(final byte[] xml, final boolean validate) throws JDOMException {
-        return createDocument(xml, null, validate);
-    }
-
-    public static void main(final String[] args) {
-        for (int i = 0; args != null && i < args.length; i++) {
-            try {
-                final byte[] content = emissary.util.shell.Executrix.readDataFromFile(args[i]);
-                if (content == null) {
-                    logger.warn("Cannot read {}", args[i]);
-                    continue;
-                }
-                createDocument(content, false);
-                logger.info("{} is valid xml", args[i]);
-            } catch (Exception e) {
-                logger.error("{} is broken", args[i], e);
-            }
-        }
     }
 
     /** This class is not meant to be instantiated. */

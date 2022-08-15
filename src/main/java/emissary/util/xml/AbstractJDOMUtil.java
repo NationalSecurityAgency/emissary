@@ -163,7 +163,7 @@ public abstract class AbstractJDOMUtil {
     }
 
     /**
-     * Create a JDOM element, protectign the data with encoding if needed
+     * Create a JDOM element, protecting the data with encoding if needed
      */
     public static Element protectedElement(final String name, final byte[] data) {
         return protectedElement(name, new String(data, StandardCharsets.ISO_8859_1));

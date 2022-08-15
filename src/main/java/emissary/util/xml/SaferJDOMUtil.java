@@ -7,7 +7,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 /**
- * Utilities for dealing with JDOM documents
+ * Utilities for dealing with JDOM documents. Doctypes are disallowed for DTDs for the prevention of XML entity attacks
+ * making this a safer alternative to {@link JDOMUtil} .
  */
 public class SaferJDOMUtil extends AbstractJDOMUtil {
 
