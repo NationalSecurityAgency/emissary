@@ -20,16 +20,12 @@ jobs:
       - name: Build with Maven
         run: mvn -B --no-transfer-progress verify -Dcode-quality --file pom.xml
 
-      - name: Add coverage to PR
-        id: jacoco
-        uses: madrapps/jacoco-report@v1.2
+      - name: Publish test coverage results
+        uses: PavanMudigonda/jacoco-reporter@v4.5
         with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 50
-          min-coverage-changed-files: 80
-
-      - name: Get the Coverage info
-        run: |
-          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
-          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+          coverage_results_path: 'target/site/jacoco/jacoco.xml'
+          coverage_report_title: 'Test coverage results'
+          coverage_report_name: 'Test coverage results'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          minimum_coverage: 50
+          fail_below_threshold: true
