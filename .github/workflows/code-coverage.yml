@@ -25,7 +25,7 @@ jobs:
         uses: madrapps/jacoco-report@v1.2
         with:
           paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.EMISSARY_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 50
           min-coverage-changed-files: 80
 
