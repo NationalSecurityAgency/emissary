@@ -310,7 +310,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (fileFlavors != null && fileFlavors.length > 0) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
-            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = _+{}", fileFlavorList);
+            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}", fileFlavorList);
 
             // loop through the files and attempt to read/merger the configurations.
             for (int i = 0; i < fileFlavorList.size(); i++) {
