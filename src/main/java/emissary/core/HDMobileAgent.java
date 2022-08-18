@@ -42,7 +42,7 @@ public class HDMobileAgent extends MobileAgent {
      */
     public HDMobileAgent(final ThreadGroup threadGroup, final String threadName) {
         super(threadGroup, threadName);
-        logger.debug("Constructed HD agent " + threadName);
+        logger.debug("Constructed HD agent {}", threadName);
     }
 
     /**
@@ -134,7 +134,7 @@ public class HDMobileAgent extends MobileAgent {
     public synchronized void arrive(final Object payload, final IServiceProviderPlace arrivalPlace, final int moveErrorCount,
             final List<DirectoryEntry> queuedItineraryItems) throws Exception {
 
-        logger.debug("Arrived at " + arrivalPlace.toString());
+        logger.debug("Arrived at {}", arrivalPlace.toString());
 
         clear();
         moveErrorsOccurred = moveErrorCount;
@@ -161,7 +161,7 @@ public class HDMobileAgent extends MobileAgent {
             setAgentID(getPayload().shortName());
             go(null, arrivalPlace, false);
         } else {
-            logger.error("Illegal payload sent to HDMobileAgent, cannot handle " + payload.getClass().getName());
+            logger.error("Illegal payload sent to HDMobileAgent, cannot handle {}", payload.getClass().getName());
         }
     }
 
@@ -175,7 +175,7 @@ public class HDMobileAgent extends MobileAgent {
     @Override
     protected void agentControl(final IServiceProviderPlace currentPlaceArg) {
         DirectoryEntry newEntry = currentPlaceArg.getDirectoryEntry();
-        logger.debug("In agentControlHD " + currentPlaceArg + " for " + agentID);
+        logger.debug("In agentControlHD {} for {}", currentPlaceArg, agentID);
 
         // Set into the super classes payload member...
         IBaseDataObject mypayload = getPayload();
@@ -196,8 +196,8 @@ public class HDMobileAgent extends MobileAgent {
             final DirectoryEntry primaryLastEntry = mypayload.getLastPlaceVisited();
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Starting control loop for " + mypayload.shortName() + ", currentPlace=" + currentPlace.getKey() + ", newEntry= "
-                        + newEntry.getFullKey() + ", loopCount=" + loopCount);
+                logger.debug("Starting control loop for {}, currentPlace={}, newEntry= {}, loopCount={}", mypayload.shortName(),
+                        currentPlace.getKey(), newEntry.getFullKey(), loopCount);
             }
 
             // First time in, we just have the pickup place where we started
@@ -235,10 +235,9 @@ public class HDMobileAgent extends MobileAgent {
                             toBeProcessed.add(slug);
 
                             if (logger.isDebugEnabled()) {
-                                logger.debug("Adding slug " + slug.shortName() + " with key "
-                                        + (slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey()) + " to ride with "
-                                        + mypayload.shortName() + " having key " + (primaryLastEntry == null ? "null" : primaryLastEntry.getKey())
-                                        + " current form " + primaryCurrentForm);
+                                logger.debug("Adding slug {} with key {} to ride with {} having key {} current form {}", slug.shortName(),
+                                        (slugLastPlaceVisited == null ? "null" : slugLastPlaceVisited.getKey()), mypayload.shortName(),
+                                        (primaryLastEntry == null ? "null" : primaryLastEntry.getKey()), primaryCurrentForm);
                             }
                         }
                     }
@@ -273,11 +272,11 @@ public class HDMobileAgent extends MobileAgent {
             // and we aren't already in the io phase
             if ((newEntry != null) && (payloadCount() > 1) && "IO".equals(newEntry.getServiceType())
                     && !"IO".equals(currentPlace.getDirectoryEntry().getServiceType())) {
-                logger.debug("Deferring IO Phase place for " + newEntry);
+                logger.debug("Deferring IO Phase place for {}", newEntry);
                 newEntry = null;
             } else {
                 if (newEntry != null) {
-                    logger.debug("Continuing with place " + newEntry);
+                    logger.debug("Continuing with place {}", newEntry);
                 }
             }
 
@@ -287,7 +286,7 @@ public class HDMobileAgent extends MobileAgent {
             DirectoryEntry dropOffEntry = null;
             int haveDropOffFor = -1;
             if (newEntry == null) {
-                logger.debug("Got null newEntry for " + mypayload.shortName() + " looking for a better payload...");
+                logger.debug("Got null newEntry for {} looking for a better payload...", mypayload.shortName());
                 for (int i = 0; i < payloadCount(); i++) {
                     final IBaseDataObject p = getPayload(i);
                     if (p == mypayload) {
@@ -298,7 +297,7 @@ public class HDMobileAgent extends MobileAgent {
                     if (newEntry != null) {
                         // Defer IO Phase until sure we are all done
                         if ("IO".equals(newEntry.getServiceType())) {
-                            logger.debug("Found IO service for part " + i + ", " + p.shortName() + "deferring that and continuing to look");
+                            logger.debug("Found IO service for part {}, {} deferring that and continuing to look", i, p.shortName());
                             if (haveDropOffFor == -1) {
                                 haveDropOffFor = i;
                                 dropOffEntry = newEntry;
@@ -308,8 +307,7 @@ public class HDMobileAgent extends MobileAgent {
                         }
 
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Found good key " + newEntry + " for new payload " + p.shortName() + ", serviceName="
-                                    + newEntry.getServiceName());
+                            logger.debug("Found good key {} for new payload {}, serviceName={}", newEntry, p.shortName(), newEntry.getServiceName());
                         }
 
                         // Found a new top dog to process
@@ -331,7 +329,7 @@ public class HDMobileAgent extends MobileAgent {
                     switchPrimaryPayload(haveDropOffFor);
                     mypayload = getPayload(0);
                     setParallelTrackingInfoFor(mypayload);
-                    logger.debug("Pulling payload " + haveDropOffFor + " to top before IO reinstatement");
+                    logger.debug("Pulling payload {} to top before IO reinstatement", haveDropOffFor);
                 }
 
                 // Set newEntry and go to drop off, deferred as long as possible
@@ -347,14 +345,14 @@ public class HDMobileAgent extends MobileAgent {
 
             // Local processing, go around the loop and process there
             if (newEntry.isLocal()) {
-                logger.debug("Choosing local place " + newEntry.getFullKey());
+                logger.debug("Choosing local place {}", newEntry.getFullKey());
                 currentPlace = newEntry.getLocalPlace();
                 continue;
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Recording history one move case loopCount=" + loopCount + " getProcessFirstPlace=" + getProcessFirstPlace()
-                        + " currentPlace=" + currentPlace + " newEntry=" + newEntry.getFullKey());
+                logger.debug("Recording history one move case loopCount={} getProcessFirstPlace={} currentPlace={} newEntry={}", loopCount,
+                        getProcessFirstPlace(), currentPlace, newEntry.getFullKey());
             }
 
             // Time to move, entry is remote, record the history and go
@@ -478,7 +476,7 @@ public class HDMobileAgent extends MobileAgent {
      * Record history for a bunch of payload objects (IBaseDataObject)
      */
     protected void recordHistory(final IServiceProviderPlace place, final List<IBaseDataObject> payloadListArg) {
-        logger.debug("In recordHistory with " + payloadListArg.size() + " payloads");
+        logger.debug("In recordHistory with {} payloads", payloadListArg.size());
         final DirectoryEntry placeEntry = place.getDirectoryEntry();
         for (final IBaseDataObject d : payloadListArg) {
             recordHistory(placeEntry, d);
@@ -489,7 +487,7 @@ public class HDMobileAgent extends MobileAgent {
      * Record history for a bunch of payload objects (IBaseDataObject)
      */
     protected void recordHistory(final DirectoryEntry placeEntry, final List<IBaseDataObject> payloadListArg) {
-        logger.debug("In recordHistory with " + payloadListArg.size() + " payloads");
+        logger.debug("In recordHistory with {} payloads", payloadListArg.size());
         for (final IBaseDataObject d : payloadListArg) {
             recordHistory(placeEntry, d);
         }

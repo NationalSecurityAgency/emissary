@@ -127,7 +127,6 @@ public class MetadataDictionaryUtil {
                 final String value = line.substring(pos + 1);
                 final String nkey = this.dict.map(this.servicePrefix + key);
                 kv.put(nkey, value.trim());
-                this.logger.debug("Mapped key " + key + " to " + nkey + ": " + value);
             }
         }
         return new TreeMap<>(kv.asMap());

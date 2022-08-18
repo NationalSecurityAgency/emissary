@@ -140,7 +140,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             readConfigData(is, name);
         } catch (ConfigSyntaxException ex) {
-            logger.error("Caught ConfigSytaxException " + ex.getMessage());
+            logger.error("Caught ConfigSytaxException {}", ex.getMessage());
             throw new IOException("Cannot parse configuration file " + ex.getMessage(), ex);
         }
     }
@@ -192,7 +192,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
-        logger.debug("Reading config file " + filename);
+        logger.debug("Reading config file {}", filename);
         final InputStream is = ConfigUtil.getConfigData(filename);
         readConfigData(is, filename);
     }
@@ -310,7 +310,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (fileFlavors != null && fileFlavors.length > 0) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
-            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = " + fileFlavorList);
+            logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}", fileFlavorList);
 
             // loop through the files and attempt to read/merger the configurations.
             for (int i = 0; i < fileFlavorList.size(); i++) {
@@ -334,11 +334,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             return anEntry;
         } else if ("CREATE_DIRECTORY".equals(parmName)) {
             if (!createDirectory(sval)) {
-                logger.warn(filename + ": Cannot create directory " + sval);
+                logger.warn("{}: Cannot create directory {}", filename, sval);
             }
         } else if ("CREATE_FILE".equals(parmName)) {
             if (!createFile(sval)) {
-                logger.warn(filename + ": Cannot create file " + sval);
+                logger.warn("{}: Cannot create file {}", filename, sval);
             }
         }
 
@@ -364,7 +364,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 throw new IOException("Problem parsing line " + lineno + " " + sval);
             }
             final String tok = sval.substring(ndx + this.VSTART.length(), edx);
-            logger.debug("Replacement token is " + tok);
+            logger.debug("Replacement token is {}", tok);
             final String mapval = this.VALUES.get(tok);
             if (mapval != null) {
                 sval = sval.substring(0, ndx) + mapval + sval.substring(edx + this.VEND.length());
@@ -387,7 +387,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         // This is obsolete
         if (sval != null && sval.equals(this.NULL_VALUE)) {
             sval = null;
-            logger.debug("Using " + this.NULL_VALUE + " is deprecated, please just use " + this.VSTART + "NULL" + this.VEND);
+            logger.debug("Using {} is deprecated, please just use {}NULL{}", this.NULL_VALUE, this.VSTART, this.VEND);
         }
         return sval;
     }
@@ -447,7 +447,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         int thisPos = 0;
         int count = 0;
 
-        logger.debug(ENVSTART + ENVSTOP + " style substitution is deprecated. Please just use " + this.VSTART + "yourvalue" + this.VEND);
+        logger.debug("{}{} style substitution is deprecated. Please just use {}yourvalue{}", ENVSTART, ENVSTOP, this.VSTART, this.VEND);
 
         String currentStr = str;
         while ((thisPos = currentStr.indexOf(ENVSTART, thisPos)) > lastPos) {
@@ -466,9 +466,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                     currentStr = currentStr.substring(0, thisPos) + // before
                             envVal + // replacement value
                             currentStr.substring(stop + ENVSTOP.length()); // tail
-                    logger.debug("Replaced " + envName + " with " + envVal + " at " + filename + ": " + lnum);
+                    logger.debug("Replaced {} with {} at {}: {}", envName, envVal, filename, lnum);
                 } else {
-                    logger.debug("No env value for " + envName + " at " + filename + ": " + lnum);
+                    logger.debug("No env value for {} at {}: {}", envName, filename, lnum);
                 }
             } else {
                 throw new IOException("Runaway string on line ->" + currentStr + "<- at " + filename + ": " + lnum);
@@ -476,7 +476,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
             lastPos = thisPos;
         }
-        logger.debug("Found " + count + " env vars to subst --> " + currentStr);
+        logger.debug("Found {} env vars to subst --> {}", count, currentStr);
         return currentStr;
     }
 
@@ -485,11 +485,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     protected boolean createDirectory(final String sval) {
         final String fixedSval = sval.replace('\\', '/');
-        logger.debug("Trying to create dir " + fixedSval);
+        logger.debug("Trying to create dir {}", fixedSval);
         final File d = new File(fixedSval);
         if (!d.exists()) {
             if (!d.mkdirs()) {
-                logger.debug("Failed to create directory " + fixedSval);
+                logger.debug("Failed to create directory {}", fixedSval);
                 return false;
             }
         }
@@ -575,7 +575,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         try {
             entry = handleNewEntry(key, value, "=", "<user>", 1, false);
         } catch (IOException ex) {
-            logger.error("Could not add entry for " + key, ex);
+            logger.error("Could not add entry for {}", key, ex);
         }
         return entry;
     }
@@ -597,7 +597,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 list.add(entry);
             }
         } catch (IOException ex) {
-            logger.error("Error adding entries for " + key, ex);
+            logger.error("Error adding entries for {}", key, ex);
         }
         return list;
     }
@@ -629,7 +629,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if ((anEntry.getKey().equals(curEntry.getKey()))
                     && ((anEntry.getValue() == null && curEntry.getValue() == null) || (anEntry.getValue() != null && anEntry.getValue().equals(
                             curEntry.getValue())))) {
-                logger.debug("Removing " + curEntry.getKey() + " = " + curEntry.getValue());
+                logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
                 i.remove();
             }
         }
@@ -679,7 +679,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         for (final Iterator<ConfigEntry> i = this.p_service_parameters.iterator(); i.hasNext();) {
             final ConfigEntry curEntry = i.next();
             if (theParameter.equals(curEntry.getKey())) {
-                logger.debug("Removing " + curEntry.getKey() + " = " + curEntry.getValue());
+                logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
                 i.remove();
             }
         }
@@ -983,7 +983,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return new File(fn).getCanonicalPath();
             } catch (IOException ex) {
-                logger.error("Cannot compute canonical path on " + fn, ex);
+                logger.error("Cannot compute canonical path on {}", fn, ex);
             }
         }
         return fn;
@@ -1004,7 +1004,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Integer.parseInt(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
-                logger.warn(theParameter + " is non-numeric returning default value: " + dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1025,7 +1025,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Long.parseLong(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
-                logger.warn(theParameter + " is non-numeric returning default value: " + dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1046,7 +1046,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 return (Double.valueOf(matchingEntries.get(0)).doubleValue());
             } catch (NumberFormatException e) {
-                logger.warn(theParameter + " is non-numeric returning default value: " + dflt);
+                logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
         }
         return dflt;
@@ -1099,7 +1099,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 i = Integer.parseInt(val);
             } catch (NumberFormatException ex) {
-                logger.warn(name + " is non-numeric: " + val);
+                logger.warn("{} is non-numeric: {}", name, val);
             }
         }
         return i;

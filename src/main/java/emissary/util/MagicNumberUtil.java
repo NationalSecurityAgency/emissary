@@ -133,13 +133,8 @@ public final class MagicNumberUtil {
             }
 
             // load the magic numbers
-            log.info("LOAD MAGIC NUMBER LIST AT: {}", args[0]);
             util.load(new File(args[0]));
-            log.info("FINISHED LOADING MAGIC NUMBER LIST");
 
-            // perform the id process
-            log.info("PERFORMING ID PROCESS");
-            log.info(util.describe(new File(args[1])));
         } catch (Exception e) {
             log.error("Error in main", e);
         }

@@ -53,7 +53,6 @@ public abstract class FillingNIOParser extends NIOSessionParser {
 
         try {
             byte[] b = loadNextRegion(data);
-            logger.debug("Got new data at {} length {}", chunkStart, b.length);
             return b;
 
         } catch (ParserEOFException eof) {

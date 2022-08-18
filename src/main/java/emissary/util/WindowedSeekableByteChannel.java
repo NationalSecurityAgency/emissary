@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
  * underlying window size is configured on instantiation. If you intend to move the positions for stateful processing,
  * you should provide a buffer size, <code>buffsize</code>, greater than the maximum amount you wish to operate against
  * at any one time.
- * 
+ *
  * <p>
  * This implementation should be able to hold a maximum window of ~4GB. This implementation uses on heap buffers so be
  * wary of using Integer.MAX_VALUE as that can cause and OOME.
@@ -121,7 +121,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Determine if there are bytes available to be read.
-     * 
+     *
      * @return true if either buffer has data remaining or we have not reached the end of channel.
      */
     private boolean bytesAvailable() {
@@ -169,7 +169,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Closes underlying Channel and releases buffers. Further calls to this instance will result in unspecified behavior.
-     * 
+     *
      * @see java.nio.channels.Channel#close()
      */
     @Override
@@ -208,7 +208,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
         final int maxWrite = dst.remaining();
 
         while (dst.hasRemaining() && bytesAvailable()) {
-            logger.debug("filling buffers");
+            // filling buffers
             realignBuffers();
             filldst(this.buff1, dst);
             filldst(this.buff2, dst);
@@ -294,7 +294,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Returns the minimum position we can go to in the backing Channel. This is based on the current window mapped into the
      * backing store.
-     * 
+     *
      * @return the minimum allowed position in the channel
      */
     public long getMinPosition() {
@@ -304,7 +304,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Returns the maximum position we can go to in the backing Channel. This is based on the current window mapped into the
      * backing store.
-     * 
+     *
      * @return the maximum allowed position in the channel
      */
     public long getMaxPosition() {
@@ -314,7 +314,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * A potential size for the underlying Channel. This value can change as we read additional data into the buffer.
      * Eventually, this number should reflect the true size assuming no underlying exceptions.
-     * 
+     *
      * @return an estimated length of the underlying channel
      */
     @Override
@@ -324,7 +324,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * This is a read only implementation.
-     * 
+     *
      * @param size The truncation size.
      * @return throws ex
      * @throws IOException If there is some I/O problem.
@@ -338,7 +338,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
 
     /**
      * Unsupported in this implementation. This could be modified in the future to allow in memory writes.
-     * 
+     *
      * @param source The bytes to write.
      * @return throws ex
      * @throws IOException If there is some I/O problem.

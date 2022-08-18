@@ -46,7 +46,7 @@ public class ReadOutputLogger extends ProcessReader {
             do {
                 aLine = this.bufferedReader.readLine();
                 if ((aLine != null) && !aLine.isEmpty()) {
-                    logger.info(this.name + ":" + aLine.replace('\n', '~'));
+                    // logger.info("{}:{}", this.name, aLine.replace('\n', '~'));
                 }
             } while (aLine != null && !this.finished);
         } catch (IOException iox) {

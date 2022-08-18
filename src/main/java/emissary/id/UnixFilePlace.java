@@ -60,7 +60,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         this.swallowIgnorableExceptions = configG.findBooleanEntry("SWALLOW_IGNORABLE_EXCEPTIONS", this.swallowIgnorableExceptions);
         this.unixFileUtil = new UnixFile(magicPaths, this.swallowIgnorableExceptions);
         logger.debug(
-                "Created unixFile with " + magicPaths.size() + " magic files containing " + this.unixFileUtil.magicEntryCount() + " magic rules");
+                "Created unixFile with {} magic files containing {} magic rules", magicPaths.size(), this.unixFileUtil.magicEntryCount());
 
         this.chop = configG.findBooleanEntry("CHOP", this.chop);
         this.chopAtTwo = configG.findEntriesAsSet("CHOP_AT_TWO");
@@ -72,7 +72,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
             try {
                 this.minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ex) {
-                logger.info("Must be numeric MIN_SIZE_" + entry.getKey() + " = " + entry.getValue());
+                logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
+                logger.info("MIN_SIZE_*KEY* must be numeric", ex);
             }
         }
     }
@@ -119,8 +120,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
                 if (this.minSizeMap.containsKey(currentForm) && (bytes.length < this.minSizeMap.get(currentForm))) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Type " + currentForm + " does not meet min size requirement " + this.minSizeMap.get(currentForm) + " < "
-                                + bytes.length);
+                        logger.debug("Type {} does not meet min size requirement {} < {}", currentForm, this.minSizeMap.get(currentForm),
+                                bytes.length);
                     }
                 } else {
                     d.setCurrentForm(currentForm);

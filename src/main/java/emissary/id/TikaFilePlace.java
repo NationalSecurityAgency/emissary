@@ -71,7 +71,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             InputStream[] tikaSignatures = getTikaSignatures();
             mimeTypes = MimeTypesFactory.create(tikaSignatures);
         } catch (MimeTypeException e) {
-            logger.error("Error loading tika configuration: " + tikaSignaturePaths.toString(), e);
+            logger.error("Error loading tika configuration: {}", tikaSignaturePaths.toString(), e);
             throw new IOException("Error loading tika configuration" + tikaSignaturePaths.toString());
         }
 
@@ -79,7 +79,9 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             try {
                 minSizeMap.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ex) {
-                logger.info("Must be numeric MIN_SIZE_" + entry.getKey() + " = " + entry.getValue());
+                logger.info("Must be numeric MIN_SIZE_{} = {}", entry.getKey(), entry.getValue());
+                logger.info("MIN_SIZE_*KEY* must be numeric", ex);
+
             }
         }
     }
@@ -99,7 +101,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
                 throw new IOException("Missing or unreadable TIKA_SIGNATURE_FILE " + tikaSignaturePath);
             }
 
-            logger.debug("Tika Signature File:  " + tikaSignaturePath);
+            logger.debug("Tika Signature File: {}", tikaSignaturePath);
             tikaSignatures.add(new FileInputStream(tikaSignaturePath));
         }
 
@@ -117,7 +119,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
         InputStream input = TikaInputStream.get(d.data(), metadata);
         appendFilenameMimeTypeSupport(d, metadata);
         MediaType mediaType = mimeTypes.detect(input, metadata);
-        logger.debug("Tika type: " + mediaType.toString());
+        logger.debug("Tika type: {}", mediaType.toString());
         return mediaType;
     }
 
@@ -170,7 +172,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
                 return;
             }
 
-            logger.debug("Setting current form to " + currentForm);
+            logger.debug("Setting current form to {}", currentForm);
             d.setCurrentForm(renamedForm(newForm));
             d.setFileTypeIfEmpty(newForm);
         } catch (Exception e) {

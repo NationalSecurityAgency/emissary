@@ -66,7 +66,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         String incomingForm = d.currentForm();
         CharacterCounterSet counters = new CharacterCounterSet();
 
-        logger.debug("HtmlEscapePlace just got a " + incomingForm);
+        logger.debug("Just got a payload with form {}", incomingForm);
 
         byte[] newData = HtmlEscape.unescapeHtml(d.data(), counters);
 
@@ -111,7 +111,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         // Unescape the Summary if present
         String summary = d.getStringParameter("Summary");
         if (summary != null && summary.indexOf("&#") != -1) {
-            logger.debug("Working on summary " + summary);
+            // logger.debug("Working on summary " + summary);
             String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes()));
             if (s != null && s.length() > 0) {
                 s = HtmlEscape.unescapeEntities(s);
@@ -123,7 +123,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         // Unescape the Document Title
         String title = d.getStringParameter("DocumentTitle");
         if (title != null && title.indexOf("&#") != -1) {
-            logger.debug("Working on title " + title);
+            // logger.debug("Working on title " + title);
             String s = makeString(HtmlEscape.unescapeHtml(title.getBytes()));
             if (s != null && s.length() > 0) {
                 d.deleteParameter("DocumentTitle");
@@ -131,7 +131,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
                 d.putParameter("DocumentTitle", s);
             }
         }
-        logger.debug("New retrieved title is " + d.getParameter("DocumentTitle"));
+        // logger.debug("New retrieved title is " + d.getParameter("DocumentTitle"));
 
         // If the encoding or the LANG- form has -HTMLESC from hotspot remove it
         String enc = d.getFontEncoding();

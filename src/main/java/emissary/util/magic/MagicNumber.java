@@ -111,7 +111,7 @@ public class MagicNumber {
     /**
      * Recreates the string entry for this magic number plus its child continuations under new lines preceded by a '&gt;'
      * character at the appropriate depth.
-     * 
+     *
      * @return String
      */
     public String toStringAll() {
@@ -255,7 +255,7 @@ public class MagicNumber {
         byte[] subject = getElement(data, offset, dataTypeLength);
         if (subject == null)
             return false;
-        printByteSample(subject, "DATA SAMPLE: ");
+        // printByteSample(subject, "DATA SAMPLE: ");
         return testNumeric(subject);
     }
 
@@ -268,7 +268,7 @@ public class MagicNumber {
         byte[] mValues = value;
 
         log.debug("Unary Operator: {}", unaryOperator);
-        printByteSample(mValues, "MAGIC VALUE: ");
+        // printByteSample(mValues, "MAGIC VALUE: ");
 
         int end = mValues.length;
         switch (unaryOperator) {
@@ -363,7 +363,7 @@ public class MagicNumber {
 
     /**
      * Re-creates the string magic number entry for this number only
-     * 
+     *
      * @return a String represention of the entry
      */
     @Override
