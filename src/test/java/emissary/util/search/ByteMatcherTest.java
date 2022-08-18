@@ -1,63 +1,63 @@
 package emissary.util.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.UnsupportedCharsetException;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ByteMatcherTest extends UnitTest {
+class ByteMatcherTest extends UnitTest {
 
     private final String data = "The quick brown fox jumped over the lazy dog";
     private ByteMatcher b;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.b = new ByteMatcher(this.data.getBytes());
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         this.b = null;
     }
 
     @Test
-    public void testEmptyConstructor() {
+    void testEmptyConstructor() {
         ByteMatcher byteMatcher = new ByteMatcher();
-        Assert.assertEquals(-1, byteMatcher.indexOf("a token, hadoken"));
+        assertEquals(-1, byteMatcher.indexOf("a token, hadoken"));
     }
 
     @Test
-    public void testResetByteMatcher() {
+    void testResetByteMatcher() {
         String localDataOne = "The quick brown fox jumped over the lazy dog";
         String localDataTwo = "But the faster dog ate the slower fox.";
         String firstToken = "fox";
         String secondToken = "dog";
         ByteMatcher byteMatcher = new ByteMatcher(localDataOne);
 
-        Assert.assertEquals(16, byteMatcher.indexOf(firstToken));
-        Assert.assertEquals(41, byteMatcher.indexOf(secondToken));
+        assertEquals(16, byteMatcher.indexOf(firstToken));
+        assertEquals(41, byteMatcher.indexOf(secondToken));
 
         // Reuse the same ByteMatcher
         byteMatcher.resetData(localDataTwo);
 
-        Assert.assertEquals(34, byteMatcher.indexOf(firstToken));
-        Assert.assertEquals(15, byteMatcher.indexOf(secondToken));
+        assertEquals(34, byteMatcher.indexOf(firstToken));
+        assertEquals(15, byteMatcher.indexOf(secondToken));
     }
 
-    @Test(expected = UnsupportedCharsetException.class)
-    public void testByteMatcherWithCharset() {
+    @Test
+    void testByteMatcherWithCharset() {
         String localDataOne = "The quick brown fox jumped over the lazy dog";
         String localDataTwo = "But the faster dog ate the slower fox.";
         String firstToken = "fox";
@@ -67,180 +67,176 @@ public class ByteMatcherTest extends UnitTest {
         // Back to the first data, but with a different charset
         byteMatcher.resetData(localDataOne, "ISO-8859-1");
 
-        Assert.assertEquals(16, byteMatcher.indexOf(firstToken));
-        Assert.assertEquals(41, byteMatcher.indexOf(secondToken));
+        assertEquals(16, byteMatcher.indexOf(firstToken));
+        assertEquals(41, byteMatcher.indexOf(secondToken));
 
         // Back to the second data, with a charset that doesn't exist.
-        byteMatcher.resetData(localDataTwo, "NoSuchCharset");
+        assertThrows(UnsupportedCharsetException.class, () -> byteMatcher.resetData(localDataTwo, "NoSuchCharset"));
     }
 
     @Test
-    public void testSimpleScan() {
-        assertEquals("Match pos same as string", this.data.indexOf("fox"), this.b.indexOf("fox"));
+    void testSimpleScan() {
+        assertEquals(this.data.indexOf("fox"), this.b.indexOf("fox"), "Match pos same as string");
     }
 
     @Test
-    public void testIndexOfBytes() {
-        assertEquals("Match pos same as string", this.data.indexOf("fox"), this.b.indexOf("fox".getBytes()));
+    void testIndexOfBytes() {
+        assertEquals(this.data.indexOf("fox"), this.b.indexOf("fox".getBytes()), "Match pos same as string");
     }
 
     @Test
-    public void testOffsetScan() {
-        assertEquals("Match pos same as string using offset", this.data.indexOf("fox", 9), this.b.indexOf("fox", 9));
+    void testOffsetScan() {
+        assertEquals(this.data.indexOf("fox", 9), this.b.indexOf("fox", 9), "Match pos same as string using offset");
     }
 
     @Test
-    public void testNotFound() {
-        assertEquals("Match pos same as string when not found", this.data.indexOf("llama"), this.b.indexOf("llama"));
+    void testNotFound() {
+        assertEquals(this.data.indexOf("llama"), this.b.indexOf("llama"), "Match pos same as string when not found");
     }
 
     @Test
-    public void testLength() {
-        assertEquals("Length same as string", this.data.length(), this.b.length());
+    void testLength() {
+        assertEquals(this.data.length(), this.b.length(), "Length same as string");
     }
 
     @Test
-    public void testStrcmp() {
+    void testStrcmp() {
         final int pos = this.b.indexOf("fox");
-        assertTrue("Match pos work with strcmp", this.b.strcmp(pos, "fox"));
+        assertTrue(this.b.strcmp(pos, "fox"), "Match pos work with strcmp");
     }
 
     @Test
-    public void testStrcmpNotFound() {
-        assertFalse("Strcmp fails when at wrong pos", this.b.strcmp(5, "lazy"));
+    void testStrcmpNotFound() {
+        assertFalse(this.b.strcmp(5, "lazy"), "Strcmp fails when at wrong pos");
     }
 
     @Test
-    public void testSlice() {
+    void testSlice() {
         final int pos = this.b.indexOf("fox");
-        assertEquals("Slice extraction", "fox", new String(this.b.slice(pos, pos + 3)));
+        assertEquals("fox", new String(this.b.slice(pos, pos + 3)), "Slice extraction");
     }
 
     @Test
-    public void testSliceAtEndOfRange() {
+    void testSliceAtEndOfRange() {
         final int pos = this.b.indexOf("dog");
-        assertEquals("Slice extraction at end of range", "dog", new String(this.b.slice(pos, pos + 3)));
+        assertEquals("dog", new String(this.b.slice(pos, pos + 3)), "Slice extraction at end of range");
     }
 
     @Test
-    public void testBadSlice() {
+    void testBadSlice() {
         final byte[] res = this.b.slice(0, this.data.length() + 10);
-        assertNotNull("Bad slice must not return null", res);
-        assertEquals("Length of bad slice must be 0", 0, res.length);
+        assertNotNull(res, "Bad slice must not return null");
+        assertEquals(0, res.length, "Length of bad slice must be 0");
     }
 
     @Test
-    public void testByteAt() {
-        assertEquals("ByteAt matches string charAt", this.data.charAt(11), (char) this.b.byteAt(11));
+    void testByteAt() {
+        assertEquals(this.data.charAt(11), (char) this.b.byteAt(11), "ByteAt matches string charAt");
     }
 
     @Test
-    public void testGetValueDefaultDelim() {
+    void testGetValueDefaultDelim() {
         this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", "value", this.b.getValue("key"));
+        assertEquals("value", this.b.getValue("key"), "Value extraction");
     }
 
     @Test
-    public void testGetSValue() {
+    void testGetSValue() {
         this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("SValue extraction", "value", new String(this.b.getSValue("key")).trim());
+        assertEquals("value", new String(this.b.getSValue("key")).trim(), "SValue extraction");
     }
 
     @Test
-    public void testGetSValueNotFound() {
+    void testGetSValueNotFound() {
         this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("SValue extraction", null, this.b.getSValue("foo"));
+        assertNull(this.b.getSValue("foo"), "SValue extraction");
     }
 
     @Test
-    public void testGetSValueWithOfs() {
+    void testGetSValueWithOfs() {
         this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("SValue extraction", "value", new String(this.b.getSValue("key", 4, this.data.length())).trim());
+        assertEquals("value", new String(this.b.getSValue("key", 4, this.data.length())).trim(), "SValue extraction");
     }
 
     @Test
-    public void testGetValueDefaultDelimWithOfs() {
+    void testGetValueDefaultDelimWithOfs() {
         this.b = new ByteMatcher("Abc\nkey=value\r\nanother=key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", "value", this.b.getValue("key", 0));
+        assertEquals("value", this.b.getValue("key", 0), "Value extraction");
     }
 
     @Test
-    public void testGetValue() {
+    void testGetValue() {
         this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", " value", this.b.getValue("key", 0, ":"));
+        assertEquals(" value", this.b.getValue("key", 0, ":"), "Value extraction");
     }
 
     @Test
-    public void testGetValueMultiCharDelim() {
+    void testGetValueMultiCharDelim() {
         this.b = new ByteMatcher("Abc\nkey : value\r\nanother : key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", "value", this.b.getValue("key", 0, " : "));
+        assertEquals("value", this.b.getValue("key", 0, " : "), "Value extraction");
     }
 
     @Test
-    public void testGetValueNoKey() {
+    void testGetValueNoKey() {
         this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", null, this.b.getValue("foo", 0, ":"));
+        assertNull(this.b.getValue("foo", 0, ":"), "Value extraction");
     }
 
     @Test
-    public void testGetValueNoDelimiter() {
+    void testGetValueNoDelimiter() {
         this.b = new ByteMatcher("Abc\nkey: value\r\nanother: key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", null, this.b.getValue("key", 0, "="));
+        assertNull(this.b.getValue("key", 0, "="), "Value extraction");
     }
 
     @Test
-    public void testGetValueNoValue() {
+    void testGetValueNoValue() {
         this.b = new ByteMatcher("Abc\nkey:\r\nanother: key and value\n\r\n".getBytes());
-        assertEquals("Value extraction", "", this.b.getValue("key", 0, ":"));
+        assertEquals("", this.b.getValue("key", 0, ":"), "Value extraction");
     }
 
     @Test
-    public void testIgnoreCaseScan() {
-        assertEquals("Pos in case insensitive search", this.data.indexOf("fox"), this.b.indexIgnoreCase("foX"));
+    void testIgnoreCaseScan() {
+        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX"), "Pos in case insensitive search");
     }
 
     @Test
-    public void testIgnoreCaseByteScan() {
-        assertEquals("Pos in case insensitive search", this.data.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes()));
+    void testIgnoreCaseByteScan() {
+        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes()), "Pos in case insensitive search");
     }
 
     @Test
-    public void testIgnoreCaseScanWithOffset() {
-        assertEquals("Pos in case insensitive search", this.data.indexOf("fox"), this.b.indexIgnoreCase("foX", 0));
+    void testIgnoreCaseScanWithOffset() {
+        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX", 0), "Pos in case insensitive search");
     }
 
     @Test
-    public void testBadConditionsOnIndexOf() {
-        assertEquals("Bad startOfs gives not found", -1, this.b.indexOf("lazy", this.data.length() + 5));
+    void testBadConditionsOnIndexOf() {
+        assertEquals(-1, this.b.indexOf("lazy", this.data.length() + 5), "Bad startOfs gives not found");
     }
 
     @Test
-    public void testBadConditionsOnStrcmp() {
-        assertFalse("Null pattern gives false", this.b.strcmp(0, null));
+    void testBadConditionsOnStrcmp() {
+        assertFalse(this.b.strcmp(0, null), "Null pattern gives false");
     }
 
     @Test
-    public void testBadConditionOnByteAt() {
-        try {
-            this.b.byteAt(this.data.length() + 5);
-            fail("Should have thrown exception on byteAt out of bounds");
-        } catch (ArrayIndexOutOfBoundsException ex) {
-            // expected
-        }
+    void testBadConditionOnByteAt() {
+        int byteAt = this.data.length() + 5;
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> this.b.byteAt(byteAt));
     }
 
     @Test
-    public void testStartsWith() {
-        assertTrue("Starts with must work", this.b.startsWith("The quick"));
+    void testStartsWith() {
+        assertTrue(this.b.startsWith("The quick"), "Starts with must work");
     }
 
     @Test
-    public void testNotStartsWith() {
-        assertFalse("Starts with must not lie", this.b.startsWith("Fred"));
+    void testNotStartsWith() {
+        assertFalse(this.b.startsWith("Fred"), "Starts with must not lie");
     }
 
     @Test
-    public void testBadConditionOnIndexIgnoreCase() {
-        assertEquals("IndexIgnore cannot find pattern with bad ofs", -1, this.b.indexIgnoreCase("lazy".getBytes(), this.data.length() + 5));
+    void testBadConditionOnIndexIgnoreCase() {
+        assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(), this.data.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
     }
 }

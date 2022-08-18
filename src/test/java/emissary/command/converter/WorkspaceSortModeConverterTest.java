@@ -1,20 +1,20 @@
 package emissary.command.converter;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
 
 import emissary.pickup.WorkBundle;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class WorkspaceSortModeConverterTest extends UnitTest {
+class WorkspaceSortModeConverterTest extends UnitTest {
     private Comparator<WorkBundle> comparator;
     private WorkspaceSortModeConverter converter;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         comparator = null;
@@ -22,45 +22,45 @@ public class WorkspaceSortModeConverterTest extends UnitTest {
     }
 
     @Test
-    public void convertDefault() throws Exception {
+    void convertDefault() {
         // test
-        assertThat(null, equalTo(converter.convert("")));
+        assertNull(converter.convert(""));
     }
 
     @Test
-    public void convertYoungestFirst() throws Exception {
+    void convertYoungestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.YOUNGEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator);
     }
 
     @Test
-    public void convertOldestFirst() throws Exception {
+    void convertOldestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.OLDEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator);
     }
 
     @Test
-    public void convertSmallestFirst() throws Exception {
+    void convertSmallestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.SMALLEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator);
     }
 
     @Test
-    public void convertLargestFirst() throws Exception {
+    void convertLargestFirst() {
         // test
         comparator = converter.convert(WorkspaceSortModeConverter.LARGEST_FIRST);
 
         // verify
-        assertThat(true, equalTo(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator));
+        assertTrue(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator);
     }
 
 }

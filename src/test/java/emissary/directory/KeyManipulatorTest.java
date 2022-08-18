@@ -1,103 +1,104 @@
 package emissary.directory;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class KeyManipulatorTest extends UnitTest {
+class KeyManipulatorTest extends UnitTest {
 
     @Test
-    public void testParsing() {
+    void testParsing() {
         final String t = "UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace$5050";
 
-        assertEquals("Data type", emissary.core.Form.UNKNOWN, KeyManipulator.getDataType(t));
-        assertEquals("Service name", "FOOPLACE", KeyManipulator.getServiceName(t));
-        assertEquals("Service type", "ID", KeyManipulator.getServiceType(t));
-        assertEquals("Service host", "host.domain.com:8001", KeyManipulator.getServiceHost(t));
-        assertEquals("Service location", "http://host.domain.com:8001/thePlace", KeyManipulator.getServiceLocation(t));
-        assertEquals("Expense", 5050, KeyManipulator.getExpense(t));
-        assertEquals("Classname", "thePlace", KeyManipulator.getServiceClassname(t));
-        assertEquals("Data ID", "UNKNOWN::ID", KeyManipulator.getDataID(t));
-        assertTrue("Key is complete", KeyManipulator.isKeyComplete(t));
+        assertEquals(emissary.core.Form.UNKNOWN, KeyManipulator.getDataType(t), "Data type");
+        assertEquals("FOOPLACE", KeyManipulator.getServiceName(t), "Service name");
+        assertEquals("ID", KeyManipulator.getServiceType(t), "Service type");
+        assertEquals("host.domain.com:8001", KeyManipulator.getServiceHost(t), "Service host");
+        assertEquals("http://host.domain.com:8001/thePlace", KeyManipulator.getServiceLocation(t), "Service location");
+        assertEquals(5050, KeyManipulator.getExpense(t), "Expense");
+        assertEquals("thePlace", KeyManipulator.getServiceClassname(t), "Classname");
+        assertEquals("UNKNOWN::ID", KeyManipulator.getDataID(t), "Data ID");
+        assertTrue(KeyManipulator.isKeyComplete(t), "Key is complete");
     }
 
     @Test
-    public void testCost() {
+    void testCost() {
         final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
         final String t = "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050";
 
-        assertEquals("Expense", 5050, KeyManipulator.getExpense(t, -99));
-        assertEquals("Default expense", -99, KeyManipulator.getExpense(s, -99));
+        assertEquals(5050, KeyManipulator.getExpense(t, -99), "Expense");
+        assertEquals(-99, KeyManipulator.getExpense(s, -99), "Default expense");
 
-        assertEquals("Expense addition", 5150, KeyManipulator.getExpense(KeyManipulator.addExpense(t, 5150)));
-        assertEquals("Expense no change during addition", 5050, KeyManipulator.getExpense(KeyManipulator.addExpense(t, 5050)));
-        assertEquals("Expense addition to default", 100, KeyManipulator.getExpense(KeyManipulator.addExpense(s, 100)));
+        assertEquals(5150, KeyManipulator.getExpense(KeyManipulator.addExpense(t, 5150)), "Expense addition");
+        assertEquals(5050, KeyManipulator.getExpense(KeyManipulator.addExpense(t, 5050)), "Expense no change during addition");
+        assertEquals(100, KeyManipulator.getExpense(KeyManipulator.addExpense(s, 100)), "Expense addition to default");
 
 
-        assertEquals("Remote expense addition", 5050 + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD,
-                KeyManipulator.getExpense(KeyManipulator.addRemoteCostIfMoved(s, t)));
-        assertEquals("Remote expense no addition", 5050, KeyManipulator.getExpense(KeyManipulator.addRemoteCostIfMoved(t, t)));
+        assertEquals(5050 + IDirectoryPlace.REMOTE_EXPENSE_OVERHEAD,
+                KeyManipulator.getExpense(KeyManipulator.addRemoteCostIfMoved(s, t)),
+                "Remote expense addition");
+        assertEquals(5050, KeyManipulator.getExpense(KeyManipulator.addRemoteCostIfMoved(t, t)), "Remote expense no addition");
     }
 
     @Test
-    public void testRemoveExpense() {
+    void testRemoveExpense() {
         final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
         final String t = "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050";
         final String sx = KeyManipulator.removeExpense(s);
         final String tx = KeyManipulator.removeExpense(t);
-        assertEquals("No change on remove expense", s, sx);
-        assertEquals("Removed expense", "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace", tx);
+        assertEquals(s, sx, "No change on remove expense");
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace", tx, "Removed expense");
     }
 
     @Test
-    public void testBogusKeys() {
-        assertEquals("Bogus data id", "::", KeyManipulator.getDataID("THISISATEST"));
-        assertFalse("Incomplete key", KeyManipulator.isKeyComplete("THISISATEST"));
-        assertFalse("Incomplete key", KeyManipulator.isKeyComplete("THISIS.ATEST"));
-        assertFalse("Incomplete key", KeyManipulator.isKeyComplete("THIS.IS.ATEST"));
-        assertFalse("Incomplete key", KeyManipulator.isKeyComplete("THIS.IS.ATEST.http://"));
-        assertFalse("Incomplete key", KeyManipulator.isKeyComplete("THIS.IS.ATEST.http://"));
+    void testBogusKeys() {
+        assertEquals("::", KeyManipulator.getDataID("THISISATEST"), "Bogus data id");
+        assertFalse(KeyManipulator.isKeyComplete("THISISATEST"), "Incomplete key");
+        assertFalse(KeyManipulator.isKeyComplete("THISIS.ATEST"), "Incomplete key");
+        assertFalse(KeyManipulator.isKeyComplete("THIS.IS.ATEST"), "Incomplete key");
+        assertFalse(KeyManipulator.isKeyComplete("THIS.IS.ATEST.http://"), "Incomplete key");
+        assertFalse(KeyManipulator.isKeyComplete("THIS.IS.ATEST.http://"), "Incomplete key");
     }
 
 
     @Test
-    public void testSproutKey() {
-        assertTrue("Creating sprout key", KeyManipulator.makeSproutKey("http://thehost.domain.dom:888/thePlace").indexOf("<SPROUT>") > -1);
+    void testSproutKey() {
+        assertTrue(KeyManipulator.makeSproutKey("http://thehost.domain.dom:888/thePlace").contains("<SPROUT>"), "Creating sprout key");
     }
 
     @Test
-    public void testMatch() {
+    void testMatch() {
         final String t = "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050";
-        assertTrue("Gmatch on data type", KeyManipulator.gmatch(t, "UNKNOWN.*"));
-        assertTrue("Gmatch on serivce type", KeyManipulator.gmatch(t, "*.FOOPLACE.*"));
-        assertTrue("Gmatch on data type", KeyManipulator.gmatch(t, "*.ID.*"));
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.*"), "Gmatch on data type");
+        assertTrue(KeyManipulator.gmatch(t, "*.FOOPLACE.*"), "Gmatch on serivce type");
+        assertTrue(KeyManipulator.gmatch(t, "*.ID.*"), "Gmatch on data type");
 
-        assertTrue("Gmatch on four wilds", KeyManipulator.gmatch(t, "*.*.*.*"));
-        assertTrue("Gmatch on three wilds", KeyManipulator.gmatch(t, "UNKNOWN.*.*.*"));
-        assertTrue("Gmatch on two wilds", KeyManipulator.gmatch(t, "UNKNOWN.FOOPLACE.*.*"));
-        assertTrue("Gmatch on one wild", KeyManipulator.gmatch(t, "UNKNOWN.FOOPLACE.ID.*"));
+        assertTrue(KeyManipulator.gmatch(t, "*.*.*.*"), "Gmatch on four wilds");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.*.*.*"), "Gmatch on three wilds");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.FOOPLACE.*.*"), "Gmatch on two wilds");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.FOOPLACE.ID.*"), "Gmatch on one wild");
 
-        assertFalse("Gmatch on four wilds", KeyManipulator.gmatch(t, "*.*.*.*x"));
-        assertFalse("Gmatch on wilds wrong first", KeyManipulator.gmatch(t, "A.*.*.*"));
-        assertFalse("Gmatch on wilds wrong second", KeyManipulator.gmatch(t, "*.B.*.*"));
-        assertFalse("Gmatch on wilds wrong third", KeyManipulator.gmatch(t, "*.*.DORK.*"));
-        assertFalse("Gmatch on wilds wrong fourth", KeyManipulator.gmatch(t, "*.*.*.tcp://hostb.domain.com:8001/thePlace$5050"));
+        assertFalse(KeyManipulator.gmatch(t, "*.*.*.*x"), "Gmatch on four wilds");
+        assertFalse(KeyManipulator.gmatch(t, "A.*.*.*"), "Gmatch on wilds wrong first");
+        assertFalse(KeyManipulator.gmatch(t, "*.B.*.*"), "Gmatch on wilds wrong second");
+        assertFalse(KeyManipulator.gmatch(t, "*.*.DORK.*"), "Gmatch on wilds wrong third");
+        assertFalse(KeyManipulator.gmatch(t, "*.*.*.tcp://hostb.domain.com:8001/thePlace$5050"), "Gmatch on wilds wrong fourth");
 
-        assertTrue("Gmatch on single pos wildcard", KeyManipulator.gmatch(t, "UNKNOWN.?OOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050"));
-        assertTrue("Gmatch on triple pos wildcard", KeyManipulator.gmatch(t, "UNKNOWN.???PLACE.ID.http://hostb.domain.com:8001/thePlace$5050"));
-        assertTrue("Gmatch on disjoint ? wildcard", KeyManipulator.gmatch(t, "UNKNOWN.?OOPLACE.?D.http://hostb.domain.com:?001/thePlace$5050"));
-        assertFalse("No Gmatch on wrong single pos wildcard",
-                KeyManipulator.gmatch(t, "UNKNOWN.?FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050"));
-        assertFalse("No Gmatch on wrong data type", KeyManipulator.gmatch(t, "BLUBBER.*"));
-        assertTrue("Gmatch on data id", KeyManipulator.gmatch(t, "UNKNOWN.*.ID.*"));
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.?OOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050"), "Gmatch on single pos wildcard");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.???PLACE.ID.http://hostb.domain.com:8001/thePlace$5050"), "Gmatch on triple pos wildcard");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.?OOPLACE.?D.http://hostb.domain.com:?001/thePlace$5050"), "Gmatch on disjoint ? wildcard");
+        assertFalse(KeyManipulator.gmatch(t, "UNKNOWN.?FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050"),
+                "No Gmatch on wrong single pos wildcard");
+        assertFalse(KeyManipulator.gmatch(t, "BLUBBER.*"), "No Gmatch on wrong data type");
+        assertTrue(KeyManipulator.gmatch(t, "UNKNOWN.*.ID.*"), "Gmatch on data id");
 
     }
 
     @Test
-    public void testIsLocalTo() {
+    void testIsLocalTo() {
         final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
         final String f1 = "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:8001/thePlace$5050";
         final String f2 = "UNKNOWN.FOOPLACE.ID.http://hostb.domain.com:9999/thePlace$5050";
@@ -105,50 +106,69 @@ public class KeyManipulatorTest extends UnitTest {
         final String t1 = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/theOtherPlace$5050";
         final String t2 = "BAR.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace$5050";
 
-        assertFalse("Differing hosts", KeyManipulator.isLocalTo(s, f1));
-        assertFalse("Differing ports", KeyManipulator.isLocalTo(s, f2));
-        assertFalse("Differing protocols", KeyManipulator.isLocalTo(s, f3));
-        assertTrue("Differing classes", KeyManipulator.isLocalTo(s, t1));
-        assertTrue("Different proxies", KeyManipulator.isLocalTo(s, t2));
+        assertFalse(KeyManipulator.isLocalTo(s, f1), "Differing hosts");
+        assertFalse(KeyManipulator.isLocalTo(s, f2), "Differing ports");
+        assertFalse(KeyManipulator.isLocalTo(s, f3), "Differing protocols");
+        assertTrue(KeyManipulator.isLocalTo(s, t1), "Differing classes");
+        assertTrue(KeyManipulator.isLocalTo(s, t2), "Different proxies");
     }
 
     @Test
-    public void testHostKey() {
+    void testHostKey() {
         final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
         final String wc = KeyManipulator.getDefaultDirectoryKey(s);
         final String hc = KeyManipulator.getHostMatchKey(s);
-        assertEquals("Default directory key", "*.*.*.http://hosta.domain.com:8001/DirectoryPlace", wc);
-        assertEquals("Host match key", "*.*.*.http://hosta.domain.com:8001/*", hc);
-        assertTrue("Defualt directory matches self", KeyManipulator.gmatch(s, hc));
-        assertTrue("Host match matches default directory", KeyManipulator.gmatch(wc, hc));
+        assertEquals("*.*.*.http://hosta.domain.com:8001/DirectoryPlace", wc, "Default directory key");
+        assertEquals("*.*.*.http://hosta.domain.com:8001/*", hc, "Host match key");
+        assertTrue(KeyManipulator.gmatch(s, hc), "Default directory matches self");
+        assertTrue(KeyManipulator.gmatch(wc, hc), "Host match matches default directory");
+    }
+
+    /**
+     * Validates that getDefaultDirectoryKey ignores arbitrary characters before the first separator
+     */
+    @Test
+    void testGetDefaultDirectoryKeyIgnoresNonSeparatorPrefix() {
+
+        final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
+        final String prefix = "#";
+
+        String expected = KeyManipulator.getDefaultDirectoryKey(s);
+        String actual = KeyManipulator.getDefaultDirectoryKey(prefix + s);
+        assertEquals(expected, actual, "Non-separator prefix should be ignored");
     }
 
     @Test
-    public void testServiceTypeExtraction() {
+    void testServiceTypeExtraction() {
         final String dataId = "FOO::BAR";
-        assertEquals("Service type from dataID", "BAR", KeyManipulator.getServiceTypeFromDataID(dataId));
-        assertEquals("Service type from bogus dataID", "", KeyManipulator.getServiceTypeFromDataID("FOOBAR"));
+        assertEquals("BAR", KeyManipulator.getServiceTypeFromDataID(dataId), "Service type from dataID");
+        assertEquals("", KeyManipulator.getServiceTypeFromDataID("FOOBAR"), "Service type from bogus dataID");
     }
 
     @Test
-    public void testProxyKeyGen() {
+    void testProxyKeyGen() {
         final String s = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace$9090";
         final String proxyHost = "*.*.*.http://hostb.otherdomain.com:9001/OtherPlace";
-        assertEquals("Proxy key construction", "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
-                KeyManipulator.makeProxyKey(s, proxyHost, 9090));
-        assertEquals("Proxy key construction", "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
-                KeyManipulator.makeProxyKey(s, proxyHost, 8080));
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
+                KeyManipulator.makeProxyKey(s, proxyHost, 9090),
+                "Proxy key construction");
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
+                KeyManipulator.makeProxyKey(s, proxyHost, 8080),
+                "Proxy key construction");
 
         final String t = "UNKNOWN.FOOPLACE.ID.http://hosta.domain.com:8001/thePlace";
-        assertEquals("Proxy key construction", "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
-                KeyManipulator.makeProxyKey(t, proxyHost, 9090));
-        assertEquals("Proxy key construction", "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$8080",
-                KeyManipulator.makeProxyKey(t, proxyHost, 8080));
-        assertEquals("Proxy key dflt exp construction", "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace",
-                KeyManipulator.makeProxyKey(t, proxyHost, -1));
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$9090",
+                KeyManipulator.makeProxyKey(t, proxyHost, 9090),
+                "Proxy key construction");
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace$8080",
+                KeyManipulator.makeProxyKey(t, proxyHost, 8080),
+                "Proxy key construction");
+        assertEquals("UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace",
+                KeyManipulator.makeProxyKey(t, proxyHost, -1),
+                "Proxy key dflt exp construction");
 
         final String u = "UNKNOWN.FOOPLACE.ID.http://hostb.otherdomain.com:9001/OtherPlace";
-        assertEquals("Proxy key is local already", u, KeyManipulator.makeProxyKey(u, proxyHost, -1));
-        assertEquals("Proxy key is local already but needs cost", u + "$9090", KeyManipulator.makeProxyKey(u, proxyHost, 9090));
+        assertEquals(u, KeyManipulator.makeProxyKey(u, proxyHost, -1), "Proxy key is local already");
+        assertEquals(u + "$9090", KeyManipulator.makeProxyKey(u, proxyHost, 9090), "Proxy key is local already but needs cost");
     }
 }

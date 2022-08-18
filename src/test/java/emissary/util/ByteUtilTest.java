@@ -1,210 +1,210 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ByteUtilTest extends UnitTest {
+class ByteUtilTest extends UnitTest {
 
     @Test
-    public void testGlue() {
-        assertEquals("Glue two whole arrays", "abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes())));
+    void testGlue() {
+        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes())), "Glue two whole arrays");
     }
 
     @Test
-    public void testGlueThree() {
-        assertEquals("Glue three whole arrays", "abcdefghi", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), "ghi".getBytes())));
+    void testGlueThree() {
+        assertEquals("abcdefghi", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), "ghi".getBytes())), "Glue three whole arrays");
     }
 
 
     @Test
-    public void testGlueNull() {
-        assertEquals("Glue with first as null", "def", new String(ByteUtil.glue(null, "def".getBytes())));
-        assertEquals("Glue with second as null", "abc", new String(ByteUtil.glue("abc".getBytes(), null)));
+    void testGlueNull() {
+        assertEquals("def", new String(ByteUtil.glue(null, "def".getBytes())), "Glue with first as null");
+        assertEquals("abc", new String(ByteUtil.glue("abc".getBytes(), null)), "Glue with second as null");
     }
 
     @Test
-    public void testGlueNullThree() {
-        assertEquals("Glue with first as null", "defghi", new String(ByteUtil.glue(null, "def".getBytes(), "ghi".getBytes())));
+    void testGlueNullThree() {
+        assertEquals("defghi", new String(ByteUtil.glue(null, "def".getBytes(), "ghi".getBytes())), "Glue with first as null");
 
-        assertEquals("Glue with second as null", "abcghi", new String(ByteUtil.glue("abc".getBytes(), null, "ghi".getBytes())));
+        assertEquals("abcghi", new String(ByteUtil.glue("abc".getBytes(), null, "ghi".getBytes())), "Glue with second as null");
 
-        assertEquals("Glue with third as null", "abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), null)));
+        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), null)), "Glue with third as null");
     }
 
     @Test
-    public void testGlueSections() {
-        assertEquals("Glue sections", "bcfg", new String(ByteUtil.glue("abcd".getBytes(), 1, 2, "efgh".getBytes(), 1, 2)));
+    void testGlueSections() {
+        assertEquals("bcfg", new String(ByteUtil.glue("abcd".getBytes(), 1, 2, "efgh".getBytes(), 1, 2)), "Glue sections");
     }
 
     @Test
-    public void testGlueSectionsThree() {
+    void testGlueSectionsThree() {
         byte[] res = ByteUtil.glue("abcd".getBytes(), 1, 2, "efgh".getBytes(), 1, 2, "ijklm".getBytes(), 0, 2);
 
-        assertEquals("Glue sections", "bcfgijk", new String(res));
+        assertEquals("bcfgijk", new String(res), "Glue sections");
     }
 
     @Test
-    public void testSplit() {
+    void testSplit() {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, 5);
-        assertEquals("Two parts after split", 2, parts.size());
-        assertEquals("Length of part 1 after split", 5, parts.get(0).length);
-        assertEquals("Length of part 2 after split", 21, parts.get(1).length);
-        assertEquals("Data in part 1 after split", "abcde", new String(parts.get(0)));
-        assertEquals("Data in part 2 after split", 'f', parts.get(1)[0]);
+        assertEquals(2, parts.size(), "Two parts after split");
+        assertEquals(5, parts.get(0).length, "Length of part 1 after split");
+        assertEquals(21, parts.get(1).length, "Length of part 2 after split");
+        assertEquals("abcde", new String(parts.get(0)), "Data in part 1 after split");
+        assertEquals('f', parts.get(1)[0], "Data in part 2 after split");
     }
 
     @Test
-    public void testSplitNull() {
+    void testSplitNull() {
         List<byte[]> parts = ByteUtil.split(null, 5);
-        assertEquals("Two parts after split", 1, parts.size());
-        assertNull("Null array on list", parts.get(0));
+        assertEquals(1, parts.size(), "Two parts after split");
+        assertNull(parts.get(0), "Null array on list");
     }
 
     @Test
-    public void testSplitNegativePos() {
+    void testSplitNegativePos() {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, -1);
-        assertEquals("Two parts after split", 1, parts.size());
-        assertEquals("Whole array on list", input.length, parts.get(0).length);
+        assertEquals(1, parts.size(), "Two parts after split");
+        assertEquals(input.length, parts.get(0).length, "Whole array on list");
     }
 
     @Test
-    public void testSplitOutOfBoundsPos() {
+    void testSplitOutOfBoundsPos() {
         byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
         List<byte[]> parts = ByteUtil.split(input, 55);
-        assertEquals("Two parts after split", 1, parts.size());
-        assertEquals("Whole array on list", input.length, parts.get(0).length);
+        assertEquals(1, parts.size(), "Two parts after split");
+        assertEquals(input.length, parts.get(0).length, "Whole array on list");
     }
 
     @Test
-    public void testIsDigit() {
-        assertTrue("Should be a digit", ByteUtil.isDigit((byte) '0'));
-        assertTrue("Should be a digit", ByteUtil.isDigit((byte) '1'));
-        assertTrue("Should be a digit", ByteUtil.isDigit((byte) '9'));
+    void testIsDigit() {
+        assertTrue(ByteUtil.isDigit((byte) '0'), "Should be a digit");
+        assertTrue(ByteUtil.isDigit((byte) '1'), "Should be a digit");
+        assertTrue(ByteUtil.isDigit((byte) '9'), "Should be a digit");
     }
 
     @Test
-    public void testIsntDigit() {
-        assertFalse("Should not be a digit", ByteUtil.isDigit((byte) 'a'));
-        assertFalse("Should not be a digit", ByteUtil.isDigit((byte) ' '));
-        assertFalse("Should not be a digit", ByteUtil.isDigit((byte) 12));
+    void testIsntDigit() {
+        assertFalse(ByteUtil.isDigit((byte) 'a'), "Should not be a digit");
+        assertFalse(ByteUtil.isDigit((byte) ' '), "Should not be a digit");
+        assertFalse(ByteUtil.isDigit((byte) 12), "Should not be a digit");
     }
 
     @Test
-    public void testIsDigitByteArray() {
-        assertTrue("Should be a digit", ByteUtil.isDigit("01234".getBytes()));
-        assertFalse("Should not be a digit", ByteUtil.isDigit("01234a".getBytes()));
-        assertFalse("Should not be a digit", ByteUtil.isDigit("a01234".getBytes()));
+    void testIsDigitByteArray() {
+        assertTrue(ByteUtil.isDigit("01234".getBytes()), "Should be a digit");
+        assertFalse(ByteUtil.isDigit("01234a".getBytes()), "Should not be a digit");
+        assertFalse(ByteUtil.isDigit("a01234".getBytes()), "Should not be a digit");
     }
 
     @Test
-    public void testIsHexadecimal() {
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) 'a'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) 'f'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) 'A'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) 'F'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) '0'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal((byte) '9'));
+    void testIsHexadecimal() {
+        assertTrue(ByteUtil.isHexadecimal((byte) 'a'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal((byte) 'f'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal((byte) 'A'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal((byte) 'F'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal((byte) '0'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal((byte) '9'), "Should be hex");
 
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('a'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('b'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('f'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('A'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('B'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('F'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('0'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('1'));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal('9'));
+        assertTrue(ByteUtil.isHexadecimal('a'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('b'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('f'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('A'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('B'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('F'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('0'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('1'), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal('9'), "Should be hex");
     }
 
     @Test
-    public void testIsntHexadecimal() {
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) ' '));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) 'G'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) '\t'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) '-'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) (0xff & 254)));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((byte) 'g'));
+    void testIsntHexadecimal() {
+        assertFalse(ByteUtil.isHexadecimal((byte) ' '), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((byte) 'G'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((byte) '\t'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((byte) '-'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((byte) (0xff & 254)), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((byte) 'g'), "Should not be a hex");
 
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal(' '));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal('G'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal('\t'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal('-'));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal((char) (0xff & 254)));
-        assertFalse("Should not be a hex", ByteUtil.isHexadecimal('g'));
+        assertFalse(ByteUtil.isHexadecimal(' '), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal('G'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal('\t'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal('-'), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal((char) (0xff & 254)), "Should not be a hex");
+        assertFalse(ByteUtil.isHexadecimal('g'), "Should not be a hex");
     }
 
     @Test
-    public void testIsHexadecimalArray() {
-        assertTrue("Should be hex", ByteUtil.isHexadecimal("cafebabe".getBytes()));
-        assertTrue("Should be hex", ByteUtil.isHexadecimal("CAFEBABE".getBytes()));
-        assertFalse("Should not be hex", ByteUtil.isHexadecimal("MR. GOODBAR".getBytes()));
-        assertFalse("Should not be hex", ByteUtil.isHexadecimal("Mr. Goodbar".getBytes()));
-        assertFalse("Should not be hex", ByteUtil.isHexadecimal("deadbeef0123ggg".getBytes()));
+    void testIsHexadecimalArray() {
+        assertTrue(ByteUtil.isHexadecimal("cafebabe".getBytes()), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal("CAFEBABE".getBytes()), "Should be hex");
+        assertFalse(ByteUtil.isHexadecimal("MR. GOODBAR".getBytes()), "Should not be hex");
+        assertFalse(ByteUtil.isHexadecimal("Mr. Goodbar".getBytes()), "Should not be hex");
+        assertFalse(ByteUtil.isHexadecimal("deadbeef0123ggg".getBytes()), "Should not be hex");
     }
 
     @Test
-    public void testIsAlpha() {
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'a'));
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'g'));
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'z'));
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'A'));
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'G'));
-        assertTrue("Should be alpha", ByteUtil.isAlpha((byte) 'Z'));
+    void testIsAlpha() {
+        assertTrue(ByteUtil.isAlpha((byte) 'a'), "Should be alpha");
+        assertTrue(ByteUtil.isAlpha((byte) 'g'), "Should be alpha");
+        assertTrue(ByteUtil.isAlpha((byte) 'z'), "Should be alpha");
+        assertTrue(ByteUtil.isAlpha((byte) 'A'), "Should be alpha");
+        assertTrue(ByteUtil.isAlpha((byte) 'G'), "Should be alpha");
+        assertTrue(ByteUtil.isAlpha((byte) 'Z'), "Should be alpha");
     }
 
     @Test
-    public void testIsntAlpha() {
-        assertFalse("Should not be an alpha", ByteUtil.isAlpha((byte) ' '));
-        assertFalse("Should not be an alpha", ByteUtil.isAlpha((byte) (0xff & 254)));
-        assertFalse("Should not be an alpha", ByteUtil.isAlpha((byte) '-'));
+    void testIsntAlpha() {
+        assertFalse(ByteUtil.isAlpha((byte) ' '), "Should not be an alpha");
+        assertFalse(ByteUtil.isAlpha((byte) (0xff & 254)), "Should not be an alpha");
+        assertFalse(ByteUtil.isAlpha((byte) '-'), "Should not be an alpha");
     }
 
     @Test
-    public void testIsAlphaArray() {
-        assertTrue("Should be alpha", ByteUtil.isAlpha("abcABC".getBytes()));
-        assertFalse("Should not be alpha", ByteUtil.isAlpha("abcABC1".getBytes()));
-        assertFalse("Should not be alpha", ByteUtil.isAlpha("1abcABC".getBytes()));
-        assertFalse("Should not be alpha", ByteUtil.isAlpha(" abcABC".getBytes()));
+    void testIsAlphaArray() {
+        assertTrue(ByteUtil.isAlpha("abcABC".getBytes()), "Should be alpha");
+        assertFalse(ByteUtil.isAlpha("abcABC1".getBytes()), "Should not be alpha");
+        assertFalse(ByteUtil.isAlpha("1abcABC".getBytes()), "Should not be alpha");
+        assertFalse(ByteUtil.isAlpha(" abcABC".getBytes()), "Should not be alpha");
     }
 
     @Test
-    public void testIsAlNum() {
-        assertTrue("Should be alnum", ByteUtil.isAlNum((byte) 'M'));
-        assertTrue("Should be alnum", ByteUtil.isAlNum((byte) '0'));
+    void testIsAlNum() {
+        assertTrue(ByteUtil.isAlNum((byte) 'M'), "Should be alnum");
+        assertTrue(ByteUtil.isAlNum((byte) '0'), "Should be alnum");
     }
 
     @Test
-    public void testIsntAlNum() {
-        assertFalse("Should not be alnum", ByteUtil.isAlNum((byte) '.'));
+    void testIsntAlNum() {
+        assertFalse(ByteUtil.isAlNum((byte) '.'), "Should not be alnum");
     }
 
     @Test
-    public void testIsControlOrWhitespace() {
+    void testIsControlOrWhitespace() {
         byte[] no = new byte[] {'a', 'A', 'z', 'Z', '0', '9', '~'};
         byte[] yes = new byte[] {' ', '\t', '\n', '\r', (byte) 12, (byte) (0xff & 254)};
         for (int pos = 0; pos < yes.length; pos++) {
-            assertTrue("Should be control at pos " + pos, ByteUtil.isControlOrWhiteSpace(yes, pos));
+            assertTrue(ByteUtil.isControlOrWhiteSpace(yes, pos), "Should be control at pos " + pos);
         }
         for (int pos = 0; pos < no.length; pos++) {
-            assertFalse("Should not be control at pos " + pos, ByteUtil.isControlOrWhiteSpace(no, pos));
+            assertFalse(ByteUtil.isControlOrWhiteSpace(no, pos), "Should not be control at pos " + pos);
         }
     }
 
     @Test
-    public void testGrabLine() {
+    void testGrabLine() {
         byte[] data = "This is line one\r\nThis is line two\nThis is line three".getBytes();
-        assertEquals("First line extraction", "This is line one\r\n", ByteUtil.grabLine(data, 0));
-        assertEquals("Middle line extraction", "This is line two\n", ByteUtil.grabLine(data, 18));
-        assertEquals("Last line extraction", "This is line three", ByteUtil.grabLine(data, 35));
+        assertEquals("This is line one\r\n", ByteUtil.grabLine(data, 0), "First line extraction");
+        assertEquals("This is line two\n", ByteUtil.grabLine(data, 18), "Middle line extraction");
+        assertEquals("This is line three", ByteUtil.grabLine(data, 35), "Last line extraction");
     }
 
 }

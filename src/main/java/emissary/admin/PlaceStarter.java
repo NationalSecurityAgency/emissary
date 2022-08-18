@@ -16,6 +16,7 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +83,7 @@ public class PlaceStarter {
      * @return the place that was found or created, or null if it can't be done
      */
     public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, final String theClassStr) {
-        logger.debug("Ready to createPlace " + theLocation + " as " + theClassStr);
+        logger.debug("Ready to createPlace {} as {}", theLocation, theClassStr);
 
         final long t1 = System.currentTimeMillis();
 
@@ -97,7 +98,7 @@ public class PlaceStarter {
 
         // error, must have the class string known...
         if (theClassStr == null) {
-            logger.warn("classStr check failed for " + theLocation);
+            logger.warn("classStr check failed for {}", theLocation);
             return null;
         }
 
@@ -107,48 +108,52 @@ public class PlaceStarter {
             thePlace = (IServiceProviderPlace) Factory.create(theClassStr, constructorArgs, bindKey);
         } catch (Throwable te) {
             // error creating place
-            logger.error("cannot create " + theLocation, te);
+            logger.error("cannot create {}", theLocation, te);
             shutdownFailedPlace(bindKey, null);
             return null; // couldn't start the place.
         }
 
         final long t2 = System.currentTimeMillis();
 
-        logger.debug("Started " + theLocation + " in " + (t2 - t1) / 1000.0 + "s");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Started {} in {}s", theLocation, (t2 - t1) / 1000.0);
+        }
         return thePlace;
     }
 
     public static void shutdownFailedPlace(final String loc, final IServiceProviderPlace place) {
-
         try {
-            logger.warn("shutting down the failed place: " + loc);
+            logger.warn("shutting down the failed place: {}", loc);
             if (place != null) {
                 place.shutDown();
             } else {
                 // Force keys to be deregistered if we can
-                try {
-                    final IDirectoryPlace localDir = DirectoryPlace.lookup();
-                    final List<DirectoryEntry> entries = localDir.getMatchingEntries("*." + loc);
-                    if (entries != null && entries.size() > 0) {
-                        final List<String> keys = new ArrayList<String>();
-                        for (final DirectoryEntry entry : entries) {
-                            keys.add(entry.getKey());
-                        }
-                        logger.info("Forcing removal of " + keys.size() + " keys due to failed " + loc);
-                        localDir.removePlaces(keys);
-                    } else {
-                        logger.debug("Failed " + loc + " did not have any directory keys registered");
-                    }
-                } catch (EmissaryException ee) {
-                    logger.debug("NO local directory, cannot force key dereg for " + loc);
-                }
+                deregisterPlace(loc);
             }
             Namespace.unbind(loc);
         } catch (Throwable tt) {
-            logger.error("whoa there pardner... " + loc, tt);
+            logger.error("whoa there pardner... {}", loc, tt);
         }
     }
 
+    public static void deregisterPlace(final String loc) {
+        try {
+            final IDirectoryPlace localDir = DirectoryPlace.lookup();
+            final List<DirectoryEntry> entries = localDir.getMatchingEntries("*." + loc);
+            if (entries != null && !entries.isEmpty()) {
+                final List<String> keys = new ArrayList<>();
+                for (final DirectoryEntry entry : entries) {
+                    keys.add(entry.getKey());
+                }
+                logger.info("Forcing removal of {} keys due to failed {}", keys.size(), loc);
+                localDir.removePlaces(keys);
+            } else {
+                logger.debug("Failed {} did not have any directory keys registered", loc);
+            }
+        } catch (EmissaryException ee) {
+            logger.debug("NO local directory, cannot force key dereg for {}", loc);
+        }
+    }
 
     // ////////////////////////////////////////////////////////////
     /**
@@ -161,7 +166,7 @@ public class PlaceStarter {
         final String luStr = theLocation.substring(theLocation.indexOf("//"));
         try {
             final IServiceProviderPlace thePlace = (IServiceProviderPlace) Namespace.lookup(luStr);
-            logger.debug(theLocation + " already running on " + thePlaceHost);
+            logger.debug("{} already running on {}", theLocation, thePlaceHost);
             return thePlace;
         } catch (NamespaceException nse) {
             // expected when the place doesn't exist
@@ -173,17 +178,16 @@ public class PlaceStarter {
 
     public static String getClassString(final String theLocation) {
         final String thePlaceName = Startup.placeName(theLocation);
-        if (thePlaceName == null || thePlaceName.length() == 0) {
-            logger.error("Illegal location specified " + theLocation + ", has no place name");
+        if (StringUtils.isBlank(thePlaceName)) {
+            logger.error("Illegal location specified {}, has no place name", theLocation);
         }
         final List<String> classStringList = classConf.findEntries(thePlaceName);
-        if (classStringList.size() < 1) {
-            logger.error("Need a CLASS config entry for " + thePlaceName + " check entry in emissary.admin.MasterClassNames.cfg, using default "
-                    + defaultClassName + " which is probably not what you want.");
+        if (classStringList.isEmpty()) {
+            logger.error("Need a CLASS config entry for {} check entry in emissary.admin.MasterClassNames.cfg, using default "
+                    + "{} which is probably not what you want.", thePlaceName, defaultClassName);
             return defaultClassName;
         }
-        final String out = classStringList.get(0);
-        return out;
+        return classStringList.get(0);
     }
 
     /** This class is not meant to be instantiated. */

@@ -12,7 +12,8 @@ import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
-import org.apache.commons.lang.StringUtils;
+import emissary.util.web.HtmlEscaper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +42,15 @@ public class WorkSpaceClientSpaceTakeAction {
     @Produces(MediaType.APPLICATION_XML)
     public Response clientSpaceTake(@FormParam(CLIENT_NAME) String placeName, @FormParam(SPACE_NAME) String spaceName) {
         if (StringUtils.isBlank(placeName) || StringUtils.isBlank(spaceName)) {
-            return Response.serverError().entity("Bad params: " + CLIENT_NAME + " - " + placeName + ", or " + SPACE_NAME + " - " + spaceName).build();
+            return Response.serverError().entity(HtmlEscaper.escapeHtml(
+                    "Bad params: " + CLIENT_NAME + " - " + placeName + ", or " + SPACE_NAME + " - " + spaceName)).build();
         }
 
         try {
             return doClientSpaceTake(placeName, spaceName);
         } catch (EmissaryException | IllegalArgumentException e) {
             logger.warn("There was an exception in the WorkSpaceClientSpaceTake", e);
-            return Response.serverError().entity(e.getMessage()).build();
+            return Response.serverError().entity("There was an exception in the WorkSpaceClientSpaceTake").build();
         }
     }
 

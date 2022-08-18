@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
  * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the
  * MetadataDictionary
  */
+@Deprecated
 public class MetadataDictionaryUtil {
     // The metadata dictionary to use
     MetadataDictionary dict = null;

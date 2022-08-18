@@ -1,9 +1,8 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -11,19 +10,17 @@ import java.util.Random;
 
 import emissary.test.core.UnitTest;
 import emissary.util.Hexl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-/** Unit tests for {@link Ssdeep}. */
-public final class SsdeepTest extends UnitTest {
+/**
+ * Unit tests for {@link Ssdeep}.
+ */
+final class SsdeepTest extends UnitTest {
 
     private final Ssdeep ss = new Ssdeep();
 
     private static byte[] getStringAsUtf8(final String s) {
-        try {
-            return s.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("no UTF-8 encoding found", e);
-        }
+        return s.getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -36,17 +33,17 @@ public final class SsdeepTest extends UnitTest {
         final byte[] input = getStringAsUtf8(text);
         final String hash = ss.fuzzy_hash(input);
         if (!expectedHash.equals(hash)) {
-            fail("input \"" + text + "\" hashed to " + hash + " instead of the expected " + expectedHash);
+            throw new AssertionError("input \"" + text + "\" hashed to " + hash + " instead of the expected " + expectedHash);
         }
     }
 
     @Test
-    public void testHashEmptyInput() {
+    void testHashEmptyInput() {
         assertHash("", "3::");
     }
 
     @Test
-    public void testHashZeros() {
+    void testHashZeros() {
         assertHash("\0", "3::");
         assertHash("\0\0", "3::");
         assertHash("\0\0\0", "3::");
@@ -65,7 +62,7 @@ public final class SsdeepTest extends UnitTest {
             "6:f4kPvtHMCMubyFtcwzIY7Xc4mqQM+9RrUPNAF8JlRnLpK7HjMFFXV7dFoaEDbFHP:AkPvt4u+b7kCMmQtg28RgkjF14bO8i2";
 
     @Test
-    public void testHashLoremIpsum() {
+    void testHashLoremIpsum() {
         assertHash(LOREM_IPSUM, LOREM_IPSUM_HASH);
     }
 
@@ -76,14 +73,14 @@ public final class SsdeepTest extends UnitTest {
     private static final String BIG_RANDOM_EXPECTED_HASH = "24576:6ZZbQq41uSGNiTzW3YSFXyLs4VipO02IB12xkVa7qVu:6F6utiO3rF9HNvB12xIa7H";
 
     @Test
-    public void testHashBigRandomArray() {
+    void testHashBigRandomArray() {
         final byte[] input = new byte[BIG_RANDOM_ARRAY_LENGTH];
         // NOTE: Java guarantees that Random is deterministic for a
         // given seed and consistent across all implementations.
         new Random(BIG_RANDOM_ARRAY_SEED).nextBytes(input);
         final String hash = ss.fuzzy_hash(input);
         if (!BIG_RANDOM_EXPECTED_HASH.equals(hash)) {
-            fail("random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ") hashed to \"" + hash
+            throw new AssertionError("random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ") hashed to \"" + hash
                     + "\" instead of the expected \"" + BIG_RANDOM_EXPECTED_HASH + "\"");
         }
     }
@@ -100,7 +97,7 @@ public final class SsdeepTest extends UnitTest {
     private static final String MANY_RANDOM_EXPECTED_HEX_DIGEST = "049f48a823c7441e4f679a5d1d08bc3615349690";
 
     @Test
-    public void testHashManyRandomArrays() {
+    void testHashManyRandomArrays() {
         // This is going to generate a big pile of random byte arrays
         // of various lengths, concatenate all of their hashes
         // together, and generate a digest of the concatenated results
@@ -134,24 +131,25 @@ public final class SsdeepTest extends UnitTest {
 
         if ((totalInputBytes != MANY_RANDOM_EXPECTED_INPUT_BYTES) || (totalHashChars != MANY_RANDOM_EXPECTED_HASH_CHARS)
                 || !digestHex.equals(MANY_RANDOM_EXPECTED_HEX_DIGEST)) {
-            fail("mismatch in random arrays: expected " + MANY_RANDOM_EXPECTED_INPUT_BYTES + " bytes, " + MANY_RANDOM_EXPECTED_HASH_CHARS
+            throw new AssertionError("mismatch in random arrays: expected " + MANY_RANDOM_EXPECTED_INPUT_BYTES + " bytes, "
+                    + MANY_RANDOM_EXPECTED_HASH_CHARS
                     + " hash characters, digest \"" + MANY_RANDOM_EXPECTED_HEX_DIGEST + "\" but got " + totalInputBytes + ", " + totalHashChars
                     + ", \"" + digestHex + "\"");
         }
     }
 
     @Test
-    public void testCompareEqualHashes() {
+    void testCompareEqualHashes() {
         final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
         final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-        assertEquals("signatures from identical strings should produce a perfect score", 100, ss.Compare(hash1, hash2));
+        assertEquals(100, ss.Compare(hash1, hash2), "signatures from identical strings should produce a perfect score");
     }
 
     @Test
-    public void testCompareCommutative() {
+    void testCompareCommutative() {
         final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
         final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM + "x")));
-        assertEquals("signature comparisons should not depend on the order", ss.Compare(hash1, hash2), ss.Compare(hash2, hash1));
+        assertEquals(ss.Compare(hash1, hash2), ss.Compare(hash2, hash1), "signature comparisons should not depend on the order");
     }
 
     // Changing the parameters will require a corresponding update in the expected scores.
@@ -163,7 +161,7 @@ public final class SsdeepTest extends UnitTest {
             80, 88, 79, 75, 91, 79, 93, 96, 80, 83, 72, 99, 93, 66, 100, 91, 72, 80, 68,};
 
     @Test
-    public void testCompareRandomHashes() {
+    void testCompareRandomHashes() {
         // We generate a sequence of random byte arrays and hash them,
         // then compare the adjacent hashes to generate a sequence of
         // scores. We generate the same number of scores as in the
@@ -196,7 +194,7 @@ public final class SsdeepTest extends UnitTest {
                     b.append(String.format(" (%d: got %d expected %d)", i, scores[i], RANDOM_COMPARE_EXPECTED_SCORES[i]));
                 }
             }
-            fail(b.toString());
+            throw new AssertionError(b.toString());
         }
     }
 }

@@ -1,15 +1,15 @@
 package emissary.util.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class UrlDataTest extends UnitTest {
+class UrlDataTest extends UnitTest {
 
     @Test
-    public void testDefaultAttributeValues() {
+    void testDefaultAttributeValues() {
         final UrlData urlData = new UrlData();
         assertNull(urlData.getPassword());
         assertEquals(0, urlData.getNumberOfProperties());
@@ -23,7 +23,7 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testSetters() {
+    void testSetters() {
         final UrlData urlData = new UrlData();
         urlData.setPassword("password");
         assertEquals("password", urlData.getPassword());
@@ -57,7 +57,7 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testConstructorWithJustURL() {
+    void testConstructorWithJustURL() {
         final UrlData urlData = new UrlData("http://www.example.com");
         assertNull(urlData.getPassword());
         assertEquals(0, urlData.getNumberOfProperties());
@@ -71,7 +71,7 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         final byte[] theContent = new byte[0];
         final int responseCode = 0;
         final UrlRequestProperty[] properties = new UrlRequestProperty[0];
@@ -88,7 +88,7 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testConstructorCopiesRequestProperties() {
+    void testConstructorCopiesRequestProperties() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
         UrlRequestProperty[] properties = new UrlRequestProperty[1];
         properties[0] = property;
@@ -101,35 +101,35 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testAddNullProperty() {
+    void testAddNullProperty() {
         final UrlData urlData = new UrlData();
         urlData.addProp(null);
         assertEquals(0, urlData.getNumberOfProperties());
     }
 
     @Test
-    public void testAddProperty() {
+    void testAddProperty() {
         final UrlData urlData = new UrlData();
         urlData.addProp(new UrlRequestProperty("KEY", "VALUE"));
         assertEquals(1, urlData.getNumberOfProperties());
     }
 
     @Test
-    public void testAddNullPropertyList() {
+    void testAddNullPropertyList() {
         final UrlData urlData = new UrlData();
         urlData.addProps(null);
         assertEquals(0, urlData.getNumberOfProperties());
     }
 
     @Test
-    public void testAddZeroLengthPropertyList() {
+    void testAddZeroLengthPropertyList() {
         final UrlData urlData = new UrlData();
         urlData.addProps(new UrlRequestProperty[0]);
         assertEquals(0, urlData.getNumberOfProperties());
     }
 
     @Test
-    public void testAddPropertyListToEmptyList() {
+    void testAddPropertyListToEmptyList() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
         final UrlRequestProperty[] properties = new UrlRequestProperty[2];
         properties[0] = property;
@@ -140,7 +140,7 @@ public class UrlDataTest extends UnitTest {
     }
 
     @Test
-    public void testAddPropertyList() {
+    void testAddPropertyList() {
         final UrlRequestProperty property = new UrlRequestProperty("KEY", "VALUE");
         final UrlRequestProperty[] properties = new UrlRequestProperty[2];
         properties[0] = property;

@@ -1,16 +1,17 @@
 package emissary.util.search;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class BackwardsTreeScannerTest {
+class BackwardsTreeScannerTest {
 
-    private String[] defaultKeywords = {"fox", "dog"};
-    private String defaultData = "the quick brown fox jumped over the lazy dog";
+    private final String[] defaultKeywords = {"fox", "dog"};
+    private final String defaultData = "the quick brown fox jumped over the lazy dog";
 
     @Test
-    public void testBothConstructors() throws Exception {
+    void testBothConstructors() throws Exception {
         HitList hits = new HitList();
         BackwardsTreeScanner first = new BackwardsTreeScanner();
         first.resetKeywords(defaultKeywords);
@@ -23,10 +24,10 @@ public class BackwardsTreeScannerTest {
         assertEquals(39, result);
     }
 
-    @Test(expected = Exception.class)
-    public void testExpectedException() throws Exception {
+    @Test
+    void testExpectedException() throws Exception {
         HitList hits = new HitList();
         BackwardsTreeScanner second = new BackwardsTreeScanner(defaultKeywords);
-        second.scan(null, defaultData.length() - 1, hits);
+        assertThrows(Exception.class, () -> second.scan(null, defaultData.length() - 1, hits));
     }
 }

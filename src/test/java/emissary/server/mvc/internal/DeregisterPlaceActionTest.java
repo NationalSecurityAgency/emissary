@@ -2,10 +2,11 @@ package emissary.server.mvc.internal;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -16,18 +17,15 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
-import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-@RunWith(Theories.class)
-public class DeregisterPlaceActionTest extends EndpointTestBase {
-    @DataPoints
-    public static String[] EMPTY_REQUEST_PARAMS = new String[] {"", null, " ", "\n", "\t"};
+class DeregisterPlaceActionTest extends EndpointTestBase {
+
     private MultivaluedHashMap<String, String> formParams;
     private static final String ADD_KEY_DIR = "UPPER_CASE.TO_LOWER.TRANSFORM.http://deregisterPlaceActionTest:8001/ToUpperPlace";
     private static final String TARGET_DIR = "http://deregisterPlaceActionTest:8001/DirectoryPlace";
@@ -35,68 +33,71 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
     private static final ResourceReader rr = new ResourceReader();
     private static DirectoryPlace directory;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         formParams = new MultivaluedHashMap<>();
-        formParams.put(TARGET_DIRECTORY, Arrays.asList(TARGET_DIR));
-        formParams.put(ADD_KEY, Arrays.asList(ADD_KEY_DIR));
+        formParams.put(TARGET_DIRECTORY, Collections.singletonList(TARGET_DIR));
+        formParams.put(ADD_KEY, Collections.singletonList(ADD_KEY_DIR));
         directory = new DirectoryPlace(rr.getConfigDataAsStream(DirectoryPlace.class), TARGET_DIR, new TestEmissaryNode());
-        directory.addPlaces(Arrays.asList(ADD_KEY_DIR));
+        directory.addPlaces(Collections.singletonList(ADD_KEY_DIR));
         Namespace.bind(TARGET_DIR, directory);
     }
 
-    @After
+    @Override
+    @AfterEach
     public void tearDown() {
         Namespace.unbind(TARGET_DIR);
         directory.shutDown();
         directory = null;
     }
 
-    @Theory
-    public void badParams(String badParam) {
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "\n", "\t"})
+    void badParams(String badParam) {
         // setup
-        formParams.replace(TARGET_DIRECTORY, Arrays.asList(badParam));
-        formParams.replace(ADD_KEY, Arrays.asList(badParam));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badParam));
+        formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result.startsWith("Bad params:"), equalTo(true));
+        assertTrue(result.startsWith("Bad params:"));
     }
 
     @Test
-    public void badDirectoryParam() {
+    void badDirectoryParam() {
         // setup
-        formParams.replace(TARGET_DIRECTORY, Arrays.asList("CantFindThis"));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList("CantFindThis"));
 
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(500));
+        assertEquals(500, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("No directory found using name CantFindThis"));
+        assertEquals("No directory found using name CantFindThis", result);
     }
 
     @Test
-    public void removeSingleDirectory() {
+    void removeSingleDirectory() {
         // test
         final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]"));
+        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]", result);
     }
 
     @Test
-    public void removeWithInvalidSecondKey() {
+    void removeWithInvalidSecondKey() {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, "ThisOneWontHit"));
         // test
@@ -104,14 +105,14 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
         // Notice that ALL keys must be well formed or none of them get processed
-        assertThat(result, equalTo("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]"));
+        assertEquals("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]", result);
     }
 
     @Test
-    public void removeWithMissingSecondKey() {
+    void removeWithMissingSecondKey() {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, ADD_KEY_DIR + "MissingMe"));
         // test
@@ -119,9 +120,9 @@ public class DeregisterPlaceActionTest extends EndpointTestBase {
 
         // verify
         final int status = response.getStatus();
-        assertThat(status, equalTo(200));
+        assertEquals(200, status);
         final String result = response.readEntity(String.class);
-        assertThat(result, equalTo("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]"));
+        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]", result);
     }
 
     // TODO can we clean this up and just use an EmissaryNode?

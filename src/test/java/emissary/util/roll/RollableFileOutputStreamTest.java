@@ -1,8 +1,8 @@
 package emissary.util.roll;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,28 +13,28 @@ import java.util.UUID;
 import emissary.test.core.UnitTest;
 import emissary.util.io.FileNameGenerator;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests Rollable Output Stream.
  */
-public class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator {
+class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator {
     private static final String data = "some junk bytes";
     private static final int INT = 1;
     Path tmpDir;
     String currentFile;
     String lastFile;
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
         tmpDir = Files.createTempDirectory("emissary_rfost_test");
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -45,7 +45,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test handling of orphaned files
      */
     @Test
-    public void testHandleOrphanedFiles() throws Exception {
+    void testHandleOrphanedFiles() throws Exception {
         // setup
         String file1name = this.nextFileName();
         String file2name = this.nextFileName();
@@ -70,7 +70,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test of roll method, of class RollableFileOutputStream.
      */
     @Test
-    public void testRoll() throws Exception {
+    void testRoll() throws Exception {
 
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(data.getBytes());
@@ -86,7 +86,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test of close method, of class RollableFileOutputStream.
      */
     @Test
-    public void testClose() throws Exception {
+    void testClose() throws Exception {
         RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile());
         instance.close();
         assertTrue(instance.fileOutputStream == null && instance.currentFile == null);
@@ -96,7 +96,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test of write method, of class RollableFileOutputStream.
      */
     @Test
-    public void testWrite_int() throws Exception {
+    void testWrite_int() throws Exception {
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(INT);
         }
@@ -111,7 +111,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test of write method, of class RollableFileOutputStream.
      */
     @Test
-    public void testWriteBytes() throws Exception {
+    void testWriteBytes() throws Exception {
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             instance.write(data.getBytes(), 0, data.length());
         }
@@ -121,7 +121,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
             for (; i < data.length(); i++) {
                 is.read();
             }
-            assertTrue(is.read() == -1);
+            assertEquals(-1, is.read());
         }
     }
 
@@ -129,7 +129,7 @@ public class RollableFileOutputStreamTest extends UnitTest implements FileNameGe
      * Test of write method, of class RollableFileOutputStream.
      */
     @Test
-    public void testWriteZeroBytes() throws Exception {
+    void testWriteZeroBytes() throws Exception {
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
             // set to true by default...
             instance.setDeleteZeroByteFiles(true);

@@ -327,7 +327,14 @@ public class ConfigUtil {
                 c = getConfigInfo(s);
                 return c;
             } catch (IOException ex) {
-                logger.debug("Preference {} not found", s);
+                String exception = ex.getMessage();
+                if (exception.contains("IMPORT_FILE")) {
+                    exception = exception.replace("<none>", s);
+                    logger.debug("IMPORT_FILE not found in {}", s);
+                    throw new IOException(exception);
+                } else {
+                    logger.debug("Preference {} not found", s);
+                }
             }
         }
         throw new IOException("None of the " + preferences.size() + " preferences could be found: " + preferences);

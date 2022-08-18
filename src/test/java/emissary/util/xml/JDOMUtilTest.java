@@ -1,16 +1,15 @@
 package emissary.util.xml;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import emissary.test.core.UnitTest;
 import org.jdom2.Document;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class JDOMUtilTest extends UnitTest {
+class JDOMUtilTest extends UnitTest {
 
     @Test
-    public void testNonValidatingDTDRetrievalSuppression() {
+    void testNonValidatingDTDRetrievalSuppression() {
         final String plist_xml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                         + "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
@@ -23,10 +22,9 @@ public class JDOMUtilTest extends UnitTest {
 
         try {
             final Document doc = JDOMUtil.createDocument(plist_xml, null, false);
-            assertNotNull("Document should be created", doc);
+            assertNotNull(doc, "Document should be created");
         } catch (Throwable t) {
-            t.printStackTrace();
-            fail("An exception should not be thrown here, perhaps the DTD validation is not fully disabled " + t);
+            throw new AssertionError("An exception should not be thrown here, perhaps the DTD validation is not fully disabled.", t);
         }
     }
 }

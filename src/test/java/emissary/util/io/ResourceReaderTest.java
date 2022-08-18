@@ -1,14 +1,14 @@
 package emissary.util.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This is a little complicated to test. If these tests fail it might be because your build system doesn't copy *.dat or
@@ -16,30 +16,29 @@ import org.junit.Test;
  * classpath. This might be, in the case of the jar file, just because this is test stuff and doesn't belong in a
  * production jar file.
  */
-public class ResourceReaderTest extends UnitTest {
+class ResourceReaderTest extends UnitTest {
 
     @Test
-    public void testResourceLocationAsTest() {
+    void testResourceLocationAsTest() {
         // This tests ResourceReader via extension of UnitTest
         List<String> resources = getMyTestResources();
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All test resources not found", 4, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(4, resources.size(), "All test resources not found");
     }
 
-
     @Test
-    public void testResourceLocation() {
+    void testResourceLocation() {
         ResourceReader rr = new ResourceReader();
         List<String> resources = rr.findDataResourcesFor(this.getClass());
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All data resources not found", 4, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(4, resources.size(), "All data resources not found");
 
         // Make sure we built the resource names correctly
         // by opening each one as a stream
         for (String rez : resources) {
-            InputStream is = null;
+            InputStream is;
             is = rr.getResourceAsStream(rez);
-            assertNotNull("Failed to open " + rez, is);
+            assertNotNull(is, "Failed to open " + rez);
             try {
                 is.close();
             } catch (IOException ignore) {
@@ -48,30 +47,30 @@ public class ResourceReaderTest extends UnitTest {
 
 
         resources = rr.findConfigResourcesFor(this.getClass());
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All config resources not found", 0, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(0, resources.size(), "All config resources not found");
 
         resources = rr.findXmlResourcesFor(this.getClass());
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All config resources not found", 0, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(0, resources.size(), "All config resources not found");
 
         resources = rr.findPropertyResourcesFor(this.getClass());
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All config resources not found", 0, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(0, resources.size(), "All config resources not found");
 
         resources = rr.findConfigResourcesFor(emissary.util.Version.class);
-        assertNotNull("Resources must not be null", resources);
-        assertEquals("All config resources not found", 1, resources.size());
+        assertNotNull(resources, "Resources must not be null");
+        assertEquals(1, resources.size(), "All config resources not found");
     }
 
     @Test
-    public void testNaming() {
+    void testNaming() {
         ResourceReader rr = new ResourceReader();
-        assertEquals("Resource naming", "emissary/util/Version", rr.getResourceName(emissary.util.Version.class));
-        assertEquals("Resource xml naming", "emissary/util/Version.xml", rr.getXmlName(emissary.util.Version.class));
-        assertEquals("Resource config naming", "emissary/util/Version.cfg", rr.getConfigDataName(emissary.util.Version.class));
-        assertEquals("Resource package naming", "emissary/util/io/foo", rr.getResourceName(this.getClass().getPackage(), "foo"));
-        assertEquals("Resource package naming", "emissary/util/io/foo.xml", rr.getXmlName(this.getClass().getPackage(), "foo"));
+        assertEquals("emissary/util/Version", rr.getResourceName(emissary.util.Version.class), "Resource naming");
+        assertEquals("emissary/util/Version.xml", rr.getXmlName(emissary.util.Version.class), "Resource xml naming");
+        assertEquals("emissary/util/Version.cfg", rr.getConfigDataName(emissary.util.Version.class), "Resource config naming");
+        assertEquals("emissary/util/io/foo", rr.getResourceName(this.getClass().getPackage(), "foo"), "Resource package naming");
+        assertEquals("emissary/util/io/foo.xml", rr.getXmlName(this.getClass().getPackage(), "foo"), "Resource package naming");
     }
 
 }

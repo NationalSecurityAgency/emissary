@@ -1,12 +1,12 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.validateMockitoUsage;
@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,27 +27,28 @@ import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UnixCommandPlaceTest extends UnitTest {
+class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;
-    private static Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
-    private static String tmpdir = System.getProperty("java.io.tmpdir", ".").replace('\\', '/');
-    private Path scriptFile = Paths.get(tmpdir, "testUnixCommand.sh");
-    private static String W = "Президент Буш";
+    private static final Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
+    private final Path scriptFile = Paths.get(TMPDIR, "testUnixCommand.sh");
+    private static final String W = "Президент Буш";
     private IBaseDataObject payload;
-    private String FORM = "TEST";
+    private final String FORM = "TEST";
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // read our default config for this place, not something else that got configured in
         try (InputStream is = new ResourceReader().getConfigDataAsStream(this.getClass())) {
             place = new UnixCommandPlace(is);
+            place.executrix.setTmpDir(TMPDIR);
+            place.executrix.setCommand(TMPDIR + "/testUnixCommand.sh <INPUT_NAME> <OUTPUT_NAME>");
         } catch (Exception ex) {
             logger.error("Cannot create UnixCommandPlace", ex);
         }
@@ -55,7 +57,7 @@ public class UnixCommandPlaceTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         place.shutDown();
@@ -66,33 +68,33 @@ public class UnixCommandPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testUnixCommandPlaceStdout() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testUnixCommandPlaceStdout() throws Exception {
+        assertNotNull(place, "Place must be created");
         createScript(Executrix.OUTPUT_TYPE.STD);
 
         place.process(payload);
         byte[] altView = payload.getAlternateView("TEST_VIEW");
-        assertNotNull("Alt view should have been created", altView);
-        assertEquals("Payload should have same current form", FORM, payload.currentForm());
-        assertEquals("Clean UTF-8 coming from the script must be maintained", W, new String(altView).trim());
+        assertNotNull(altView, "Alt view should have been created");
+        assertEquals(FORM, payload.currentForm(), "Payload should have same current form");
+        assertEquals(W, new String(altView).trim(), "Clean UTF-8 coming from the script must be maintained");
     }
 
     @Test
-    public void testUnixCommandPlaceFile() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testUnixCommandPlaceFile() throws Exception {
+        assertNotNull(place, "Place must be created");
         place.setFileOutputCommand();
         createScript(Executrix.OUTPUT_TYPE.FILE);
 
         place.process(payload);
         byte[] altView = payload.getAlternateView("TEST_VIEW");
-        assertNotNull("Alt view should have been created", altView);
-        assertEquals("Payload should have same current form", FORM, payload.currentForm());
-        assertEquals("Clean UTF-8 coming from the script must be maintained", W, new String(altView).trim());
+        assertNotNull(altView, "Alt view should have been created");
+        assertEquals(FORM, payload.currentForm(), "Payload should have same current form");
+        assertEquals(W, new String(altView).trim(), "Clean UTF-8 coming from the script must be maintained");
     }
 
     @Test
-    public void testUnixCommandPlaceLogging() throws Exception {
-        assertNotNull("Place must be created", place);
+    void testUnixCommandPlaceLogging() throws Exception {
+        assertNotNull(place, "Place must be created");
         Logger mockLogger = mock(Logger.class);
         place.setLogger(mockLogger);
         createLogScript();
@@ -101,22 +103,22 @@ public class UnixCommandPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testFileProcess() throws Exception {
+    void testFileProcess() throws Exception {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method
-        when(e.execute(eq(new String[] {"negative"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(-1);
-        when(e.execute(eq(new String[] {"zero"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(0);
-        when(e.execute(eq(new String[] {"positive"}), isNull(StringBuilder.class), isA(StringBuilder.class))).thenReturn(1);
+        when(e.execute(eq(new String[] {"negative"}), isNull(), isA(StringBuilder.class))).thenReturn(-1);
+        when(e.execute(eq(new String[] {"zero"}), isNull(), isA(StringBuilder.class))).thenReturn(0);
+        when(e.execute(eq(new String[] {"positive"}), isNull(), isA(StringBuilder.class))).thenReturn(1);
 
         place.setExecutrix(e);
 
         // fake an output file and load it with some data
-        String DATA = new String("test-test");
-        Path outputFile = Paths.get(tmpdir, "output.out");
+        String DATA = "test-test";
+        Path outputFile = Paths.get(TMPDIR, "output.out");
 
         try {
-            IOUtils.write(DATA, Files.newOutputStream(outputFile));
+            IOUtils.write(DATA, Files.newOutputStream(outputFile), StandardCharsets.UTF_8);
 
             // null is returned in situations with a non-zero return code
             assertNull(place.fileProcess(new String[] {"negative"}, outputFile.toAbsolutePath().toString()));
@@ -130,7 +132,7 @@ public class UnixCommandPlaceTest extends UnitTest {
     }
 
     @Test
-    public void testStdOutProcess() {
+    void testStdOutProcess() {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method

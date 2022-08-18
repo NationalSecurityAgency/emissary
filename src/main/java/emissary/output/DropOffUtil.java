@@ -10,9 +10,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 
@@ -131,10 +133,10 @@ public class DropOffUtil {
                     sdf.setLenient(true);
                     this.dateFormats.add(sdf);
                 } catch (Exception ex) {
-                    logger.debug("DATE_FORMAT entry '" + dfentry + "' cannot be parsed", ex);
+                    logger.debug("DATE_FORMAT entry '{}' cannot be parsed", dfentry, ex);
                 }
             }
-            logger.debug("Loaded " + this.dateFormats.size() + " DATE_FORMAT entries");
+            logger.debug("Loaded {} DATE_FORMAT entries", this.dateFormats.size());
 
             this.defaultEventDateToNow = actualConfigG.findBooleanEntry(DEFAULT_EVENT_DATE_TO_NOW, this.defaultEventDateToNow);
 
@@ -187,7 +189,6 @@ public class DropOffUtil {
      */
     public void setWindows(final boolean value) {
         osIsWindows = value;
-        logger.debug("Setting osIsWindows value to " + value);
     }
 
     /**
@@ -260,22 +261,22 @@ public class DropOffUtil {
             } while (!thePath.exists() && tryCount <= 10);
 
             if (!thePath.exists()) {
-                logger.warn("Cannot create directory for output: " + thePath + " in " + tryCount + " attempts");
+                logger.warn("Cannot create directory for output: {} in {} attempts", thePath, tryCount);
                 return false;
             }
 
             if (tryCount > 2 && logger.isDebugEnabled()) {
-                logger.debug("Output path created for " + thePath + " but it took " + tryCount + " attempts");
+                logger.debug("Output path created for {} but it took {} attempts", thePath, tryCount);
             }
         }
 
         // If the specified output directory doesn't have write
         // permission try to fix it
         if (!thePath.canWrite()) {
-            logger.warn("Dont have write permission for " + pathName + ", setting it now");
+            logger.warn("Dont have write permission for {}, setting it now", pathName);
             thePath.setWritable(true);
             if (!thePath.canWrite()) {
-                logger.warn("Cannot write to directory for output: " + thePath);
+                logger.warn("Cannot write to directory for output: {}", thePath);
                 return false;
             }
         }
@@ -285,42 +286,6 @@ public class DropOffUtil {
 
     public String getOutputDirectory() {
         return this.placeOutputData;
-    }
-
-    public String getOutputDirectory(final IBaseDataObject DO) {
-        String dir = DO.getStringParameter("ABSOLUTETARGETBIN");
-        logger.debug("ABSOLUTETARGETBIN is " + DO.getParameter("ABSOLUTETARGETBIN"));
-        if (dir == null) {
-            dir = getOutputDirectory();
-        }
-
-        // ugly mess for moving between Windows and Unix paths
-        if (osIsWindows) {
-            // was it picked up on Unix?
-            if (dir.indexOf(this.unixRoot) >= 0) {
-                dir = dir.replaceFirst("\\A.*" + this.unixRoot, this.winRoot);
-            }
-        } else {
-            // dropping off on Unix
-
-            // was it picked up on Windows?
-            if (dir.indexOf(this.winRoot) >= 0) {
-                dir = dir.replaceFirst(this.winRoot, this.unixRoot);
-                dir = dir.replace('\\', '/');
-            }
-        }
-
-        File f = this.outputDirectories.get(dir);
-        if (f == null) {
-            f = new File(dir);
-            if (!f.exists()) {
-                f.mkdirs();
-            }
-            if (this.outputDirectories.size() < 100) {
-                this.outputDirectories.put(dir, f);
-            }
-        }
-        return dir;
     }
 
     /**
@@ -514,8 +479,6 @@ public class DropOffUtil {
         }
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
-        logger.debug("Produced path " + answer + " from spec " + spec);
-
         return answer;
 
     }
@@ -591,7 +554,7 @@ public class DropOffUtil {
         }
 
         if (fileName != null && fileName.length() > 0) {
-            logger.debug("usingPathFromSpec instead of TARGETBIN: " + fileName);
+            logger.debug("usingPathFromSpec instead of TARGETBIN: {}", fileName);
             return fileName;
         } else if (tld.getStringParameter("TARGETBIN") != null) {
             logger.debug("TARGETBIN is " + tld.getParameter("TARGETBIN"));
@@ -715,6 +678,7 @@ public class DropOffUtil {
      * @param metaData map of payload metadata
      * @return the file type (also added to metaData if not present)
      */
+    @Deprecated
     public String getFileType(final Map<String, String> metaData) {
         return getFileType(metaData, null);
     }
@@ -726,6 +690,7 @@ public class DropOffUtil {
      * @param formsArg space separated string of current forms
      * @return the file type (also added to metaData if not present)
      */
+    @Deprecated
     public String getFileType(final Map<String, String> metaData, final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
@@ -772,7 +737,76 @@ public class DropOffUtil {
     }
 
     /**
-     * Parameters that are used to determine filetype in {@link #getFileType(Map, String)}
+     * Get the file type from the metadata or the form string passed in
+     *
+     * @param bdo IBaseDataObject
+     * @return the file type
+     */
+    public static String getFileType(final IBaseDataObject bdo) {
+        return getAndPutFileType(bdo, null, null);
+    }
+
+    /**
+     * Get the file type from the IBaseDataObject or the form string passed in
+     *
+     * @param bdo IBaseDataObject
+     * @param metaData Optional map of metadata that might be modified.
+     * @param formsArg Optional space separated string of current forms
+     * @return the file type
+     */
+    public static String getAndPutFileType(final IBaseDataObject bdo, final Map<String, String> metaData, final String formsArg) {
+        String forms = formsArg;
+        if (forms == null) {
+            forms = bdo.getStringParameter(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
+            if (forms == null) {
+                forms = "";
+            }
+        }
+
+        String fileType;
+        if (bdo.hasParameter(FileTypeCheckParameter.FILETYPE.getFieldName())) {
+            fileType = bdo.getStringParameter(FileTypeCheckParameter.FILETYPE.getFieldName());
+        } else if (bdo.hasParameter(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
+            fileType = bdo.getStringParameter(FileTypeCheckParameter.FINAL_ID.getFieldName());
+            logger.debug("FINAL_ID FileType is ({})", fileType);
+            if (metaData != null) {
+                metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
+            }
+        } else {
+            if (forms.contains(" ")) {
+                fileType = forms.substring(0, forms.indexOf(" ")).trim();
+                if (metaData != null) {
+                    metaData.put(FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName(), forms);
+                }
+            } else {
+                fileType = forms;
+            }
+            if (StringUtils.isEmpty(fileType)) {
+                if (bdo.hasParameter(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
+                    fileType = "TEXT";
+                } else {
+                    fileType = "UNKNOWN";
+                }
+            }
+
+            if (metaData != null) {
+                metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
+            }
+        }
+
+        if ("UNKNOWN".equals(fileType) && forms.contains("MSWORD")) {
+            fileType = "MSWORD_FRAGMENT";
+        }
+
+        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith("LANG-") || fileType.startsWith("ENCODING(")) {
+            fileType = "TEXT";
+        }
+
+        return fileType;
+    }
+
+    /**
+     * Parameters that are used to determine filetype in {@link #getAndPutFileType(IBaseDataObject, Map, String)}
      */
     public enum FileTypeCheckParameter {
         COMPLETE_FILETYPE("COMPLETE_FILETYPE"), FILETYPE("FILETYPE"), FINAL_ID("FINAL_ID"), FONT_ENCODING("FontEncoding"), POPPED_FORMS(
@@ -941,10 +975,9 @@ public class DropOffUtil {
             if (value != null) {
                 try {
                     date = emissary.util.TimeUtil.getDateFromISO8601(value);
-                    logger.debug("Successfully parsed event date from " + paramName);
                     return date;
                 } catch (DateTimeParseException ex) {
-                    logger.debug("Cannot parse EventDate " + value);
+                    logger.debug("Cannot parse EventDate", ex);
                 }
             }
         }
@@ -996,6 +1029,35 @@ public class DropOffUtil {
     }
 
     /**
+     * Extracts from the provided {@link IBaseDataObject} the last file extension from each value in the "Original-Filename"
+     * parameter, if that value contains "." before its last character. If one or more file extensions are extracted, the
+     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
+     *
+     * @param p IBaseDataObject to process
+     *
+     */
+    void extractUniqueFileExtensions(IBaseDataObject p) {
+        if (p.hasParameter("Original-Filename")) {
+            final Set<String> extensions = new HashSet<>();
+            for (Object filename : p.getParameter("Original-Filename")) {
+                final String fn = (String) filename;
+                if (StringUtils.isNotEmpty(fn) && fn.lastIndexOf('.') > -1) {
+                    final int pos = fn.lastIndexOf('.') + 1;
+                    if (pos < fn.length()) {
+                        final String fext = fn.substring(pos).toLowerCase();
+                        if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                            extensions.add(fext);
+                        }
+                    }
+                }
+            }
+            if (!extensions.isEmpty()) {
+                p.setParameter("FILEXT", extensions);
+            }
+        }
+    }
+
+    /**
      * Process metadata before doing any output
      *
      * @param payloadList list of items being dropped off that may need initial metadata computations
@@ -1006,8 +1068,10 @@ public class DropOffUtil {
         // relies on the attachments being sorted
         final Map<String, String> parentTypes = new HashMap<String, String>();
         final IBaseDataObject tld = payloadList.get(0);
+        final List<String> extended_filetypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());
-        for (final String param : this.parentParams) {
+        for (int i = 0; i < parentParams.size(); i++) {
+            final String param = parentParams.get(i);
             if (tld.hasParameter(param)) {
                 parentTypes.put("1" + param, tld.getStringParameter(param));
             }
@@ -1018,21 +1082,12 @@ public class DropOffUtil {
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
-            final String fn = p.getStringParameter("Original-Filename");
-            if (fn != null && fn.indexOf(".") > -1) {
-                final int pos = fn.lastIndexOf(".") + 1;
-                if (pos < fn.length()) {
-                    final String fext = fn.substring(pos);
-                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                        p.setParameter("FILEXT", fext.toLowerCase());
-                    }
-                }
-            }
+            extractUniqueFileExtensions(p);
 
             if (p.getStringParameter("EXTENDED_FILETYPE") == null) {
-                final List<String> extended_filetypes = new ArrayList<String>();
+                extended_filetypes.clear();
                 for (final Map.Entry<String, Collection<Object>> entry : p.getParameters().entrySet()) {
-                    final String key = entry.getKey().toString();
+                    final String key = entry.getKey();
                     if (key != null && key.endsWith("_FILETYPE")) {
                         for (final Object value : entry.getValue()) {
                             final String vs = value.toString();
@@ -1042,16 +1097,18 @@ public class DropOffUtil {
                         }
                     }
                 }
-                if (extended_filetypes.size() > 0) {
-                    final StringBuilder extft = new StringBuilder(getFileType(p.getCookedParameters()));
-                    for (final String s : extended_filetypes) {
+                if (!extended_filetypes.isEmpty()) {
+                    final StringBuilder extft = new StringBuilder(getFileType(p));
+                    for (int j = 0; j < extended_filetypes.size(); j++) {
+                        final String s = extended_filetypes.get(j);
                         extft.append("//").append(s);
                     }
                     p.setParameter("EXTENDED_FILETYPE", extft.toString());
                 }
             }
 
-            for (final String param : this.parentParams) {
+            for (int j = 0; j < parentParams.size(); j++) {
+                final String param = parentParams.get(j);
                 if (p.hasParameter(param)) {
                     parentTypes.put("" + level + param, p.getStringParameter(param));
                 } else {
@@ -1071,7 +1128,8 @@ public class DropOffUtil {
                 } else {
                     p.setParameter("PARENT_FILETYPE", parentTypes.get("1"));
                 }
-                for (final String param : this.parentParams) {
+                for (int j = 0; j < parentParams.size(); j++) {
+                    final String param = parentParams.get(j);
                     int plvl = parentLevel;
                     while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
                         plvl--;
@@ -1091,7 +1149,8 @@ public class DropOffUtil {
                     if (parentFileType != null) {
                         child.setParameter("PARENT_FILETYPE", parentFileType);
                     }
-                    for (final String param : this.parentParams) {
+                    for (int k = 0; k < parentParams.size(); k++) {
+                        final String param = parentParams.get(k);
                         int plvl = parentLevel;
                         while (plvl > 1 && !parentTypes.containsKey("" + plvl + param)) {
                             plvl--;

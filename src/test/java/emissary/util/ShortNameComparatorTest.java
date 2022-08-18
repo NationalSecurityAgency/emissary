@@ -1,10 +1,9 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import emissary.core.BaseDataObject;
@@ -12,70 +11,69 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ShortNameComparatorTest extends UnitTest {
-    private byte[] nobytes = new byte[0];
-    private String b = "foo";
-    private String ba = this.b + Family.SEP;
+class ShortNameComparatorTest extends UnitTest {
+    private final byte[] nobytes = new byte[0];
+    private final String b = "foo";
+    private final String ba = this.b + Family.SEP;
 
     @Test
-    public void testOrdering() {
-        final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
+    void testOrdering() {
+        final List<IBaseDataObject> l = new ArrayList<>();
 
         fillList(l);
-        Collections.sort(l, new ShortNameComparator());
+        l.sort(new ShortNameComparator());
         checkList(l);
     }
 
     @Test
-    public void testNonsenseNames() {
-        final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
-        l.add(DataObjectFactory.getInstance(new Object[] {null, "foo-att-def"}));
-        l.add(DataObjectFactory.getInstance(new Object[] {null, "foo-att-abc"}));
-        Collections.sort(l, new ShortNameComparator());
-        assertEquals("Bad components sort in alpha order", "foo-att-abc", l.get(0).shortName());
+    void testNonsenseNames() {
+        final List<IBaseDataObject> l = new ArrayList<>();
+        l.add(DataObjectFactory.getInstance(null, "foo-att-def"));
+        l.add(DataObjectFactory.getInstance(null, "foo-att-abc"));
+        l.sort(new ShortNameComparator());
+        assertEquals("foo-att-abc", l.get(0).shortName(), "Bad components sort in alpha order");
     }
 
     private void fillList(final List<IBaseDataObject> l) {
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "1"}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3"}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.b}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(2)}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(1)}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "2"}));
-        l.add(DataObjectFactory.getInstance(new Object[] {this.nobytes, this.ba + "3" + Family.sep(1) + Family.sep(1)}));
-
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "1"));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3"));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.b));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(2)));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(1)));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "2"));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(1) + Family.sep(1)));
     }
 
     private void checkList(final List<IBaseDataObject> l) {
-        assertEquals("Ordering of sort", this.b, l.get(0).shortName());
-        assertEquals("Ordering of sort", this.ba + "1", l.get(1).shortName());
-        assertEquals("Ordering of sort", this.ba + "2", l.get(2).shortName());
-        assertEquals("Ordering of sort", this.ba + "3", l.get(3).shortName());
-        assertEquals("Ordering of sort", this.ba + "3" + Family.sep(1), l.get(4).shortName());
-        assertEquals("Ordering of sort", this.ba + "3" + Family.sep(1) + Family.sep(1), l.get(5).shortName());
-        assertEquals("Ordering of sort", this.ba + "3" + Family.sep(2), l.get(6).shortName());
+        assertEquals(this.b, l.get(0).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "1", l.get(1).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "2", l.get(2).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3", l.get(3).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.sep(1), l.get(4).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.sep(1) + Family.sep(1), l.get(5).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.sep(2), l.get(6).shortName(), "Ordering of sort");
     }
 
     @Test
-    public void testImplComparator() {
-        final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
+    void testImplComparator() {
+        final List<IBaseDataObject> l = new ArrayList<>();
 
         fillList(l);
-        Collections.sort(l, new ShortNameComparator());
+        l.sort(new ShortNameComparator());
         checkList(l);
     }
 
     @Test
-    public void testSubclassedComparator() {
+    void testSubclassedComparator() {
         final String defaultPayloadClass = DataObjectFactory.getImplementingClass();
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         try {
-            final List<IBaseDataObject> l = new ArrayList<IBaseDataObject>();
+            final List<IBaseDataObject> l = new ArrayList<>();
 
             fillList(l);
-            Collections.sort(l, new ShortNameComparator());
+            l.sort(new ShortNameComparator());
             checkList(l);
         } catch (Exception ex) {
             fail("Cannot operate Comparator in subclass: " + ex.getMessage());
@@ -88,10 +86,6 @@ public class ShortNameComparatorTest extends UnitTest {
     // lower bounded generics on the comparator
     public static class MyDataObject extends BaseDataObject {
         static final long serialVersionUID = 7872122417333007868L;
-
-        public MyDataObject() {
-            super();
-        }
 
         public MyDataObject(final byte[] data, final String name) {
             super(data, name);

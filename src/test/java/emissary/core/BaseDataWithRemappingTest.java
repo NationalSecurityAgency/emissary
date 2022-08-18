@@ -1,26 +1,26 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class BaseDataWithRemappingTest extends UnitTest {
+class BaseDataWithRemappingTest extends UnitTest {
     private BaseDataObject b = null;
     private static MetadataDictionary md = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         // this runs before UnitTest has a chance to setup, so do that first
         new UnitTest().setupSystemProperties();
@@ -29,13 +29,13 @@ public class BaseDataWithRemappingTest extends UnitTest {
         Namespace.bind(md.getDictionaryName(), md);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         Namespace.unbind(md.getDictionaryName());
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
         b.pushCurrentForm("ONE");
@@ -44,81 +44,81 @@ public class BaseDataWithRemappingTest extends UnitTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         b = null;
     }
 
     @Test
-    public void testAltViews() {
+    void testAltViews() {
         b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
 
         b.addAlternateView("TESTVIEW2", null);
-        assertNull("Null view after removal", b.getAlternateView("TESTVIEW2"));
-        assertNull("Empty byte buffer after removal", b.getAlternateViewBuffer("TESTVIEW2"));
+        assertNull(b.getAlternateView("TESTVIEW2"), "Null view after removal");
+        assertNull(b.getAlternateViewBuffer("TESTVIEW2"), "Empty byte buffer after removal");
 
         // Also null with remapped name
-        assertNull("Null view by mapped name after removal", b.getAlternateView("testview2"));
-        assertNull("Empty byte buffer by mapped name after removal", b.getAlternateViewBuffer("testview2"));
+        assertNull(b.getAlternateView("testview2"), "Null view by mapped name after removal");
+        assertNull(b.getAlternateViewBuffer("testview2"), "Empty byte buffer by mapped name after removal");
     }
 
     @Test
-    public void testSetOfAltViewNames() {
+    void testSetOfAltViewNames() {
         b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
         Set<String> vnames = b.getAlternateViewNames();
-        assertEquals("Count of view names", 3, vnames.size());
-        assertTrue("Altview names should have been remapped", vnames.contains("testview1"));
-        assertTrue("Altview names should have been remapped", vnames.contains("testview2"));
-        assertTrue("Altview names should have been remapped", vnames.contains("testview3"));
+        assertEquals(3, vnames.size(), "Count of view names");
+        assertTrue(vnames.contains("testview1"), "Altview names should have been remapped");
+        assertTrue(vnames.contains("testview2"), "Altview names should have been remapped");
+        assertTrue(vnames.contains("testview3"), "Altview names should have been remapped");
     }
 
     @Test
-    public void testMapOfAltViews() {
+    void testMapOfAltViews() {
         b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
         b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
         Map<String, byte[]> v = b.getAlternateViews();
-        assertEquals("Count of views", 3, v.size());
+        assertEquals(3, v.size(), "Count of views");
         Set<String> vnames = v.keySet();
-        assertTrue("Altview names should have been remapped", vnames.contains("testview1"));
-        assertTrue("Altview names should have been remapped", vnames.contains("testview2"));
-        assertTrue("Altview names should have been remapped", vnames.contains("testview3"));
+        assertTrue(vnames.contains("testview1"), "Altview names should have been remapped");
+        assertTrue(vnames.contains("testview2"), "Altview names should have been remapped");
+        assertTrue(vnames.contains("testview3"), "Altview names should have been remapped");
     }
 
     @Test
-    public void testParameters() {
+    void testParameters() {
         b.putParameter("ME", "YOU");
-        assertEquals("Gotten parameter", "YOU", b.getStringParameter("ME"));
-        Map<String, Object> map = new HashMap<String, Object>();
+        assertEquals("YOU", b.getStringParameter("ME"), "Gotten parameter");
+        Map<String, Object> map = new HashMap<>();
         map.put("ONE", "uno");
         map.put("TWO", "dos");
         map.put("THREE", "tres");
         b.putParameters(map);
-        assertEquals("Map put parameter gotten", "uno", b.getStringParameter("ONE"));
-        assertEquals("Map put parameter gotten", "dos", b.getStringParameter("TWO"));
-        assertEquals("Map put parameter gotten", "tres", b.getStringParameter("THREE"));
-        assertEquals("Gotten parameter", "YOU", b.getStringParameter("ME"));
+        assertEquals("uno", b.getStringParameter("ONE"), "Map put parameter gotten");
+        assertEquals("dos", b.getStringParameter("TWO"), "Map put parameter gotten");
+        assertEquals("tres", b.getStringParameter("THREE"), "Map put parameter gotten");
+        assertEquals("YOU", b.getStringParameter("ME"), "Gotten parameter");
 
         // Deletes
         b.deleteParameter("THREE");
-        assertNull("Deleted param is gone", b.getParameter("THREE"));
+        assertNull(b.getParameter("THREE"), "Deleted param is gone");
 
         // Overwrite
         b.putParameter("ME", "THEM");
-        assertEquals("Gotten parameter", "THEM", b.getStringParameter("ME"));
+        assertEquals("THEM", b.getStringParameter("ME"), "Gotten parameter");
 
         // Clear
         b.clearParameters();
-        assertNull("Deleted param is gone", b.getParameter("THREE"));
-        assertNull("Deleted param is gone", b.getParameter("ME"));
+        assertNull(b.getParameter("THREE"), "Deleted param is gone");
+        assertNull(b.getParameter("ME"), "Deleted param is gone");
         Map<?, ?> m = b.getParameters();
-        assertNotNull("Clear paramters leave empty map", m);
-        assertEquals("Clear parameters leaves empty map", 0, m.size());
+        assertNotNull(m, "Clear paramters leave empty map");
+        assertEquals(0, m.size(), "Clear parameters leaves empty map");
     }
 
 }

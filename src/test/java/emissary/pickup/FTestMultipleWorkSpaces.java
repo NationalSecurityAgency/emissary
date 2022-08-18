@@ -1,8 +1,8 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,11 +15,11 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.test.core.FunctionalTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestMultipleWorkSpaces extends FunctionalTest {
+class FTestMultipleWorkSpaces extends FunctionalTest {
     private FilePickUpClient place = null;
     private WorkSpace space1 = null;
     private WorkSpace space2 = null;
@@ -40,12 +40,8 @@ public class FTestMultipleWorkSpaces extends FunctionalTest {
     private List<String> workingFilePaths = new ArrayList<String>();
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-
-        // set config to java.io.tmpdir, this config package
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         logger.debug("Starting WorkSpace tests");
 
         // Set up a directory struction with two files to be processed
@@ -146,7 +142,7 @@ public class FTestMultipleWorkSpaces extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         logger.debug("Starting tearDown phase");
@@ -189,11 +185,11 @@ public class FTestMultipleWorkSpaces extends FunctionalTest {
     }
 
     @Test
-    public void testAll() {
+    void testAll() {
 
-        assertTrue("First WorkSpace should exist in namespace", Namespace.exists("http://localhost:8005/WorkSpace1"));
+        assertTrue(Namespace.exists("http://localhost:8005/WorkSpace1"), "First WorkSpace should exist in namespace");
 
-        assertTrue("Second WorkSpace should exist in namespace", Namespace.exists("http://localhost:8005/WorkSpace2"));
+        assertTrue(Namespace.exists("http://localhost:8005/WorkSpace2"), "Second WorkSpace should exist in namespace");
 
         pause(100);
 
@@ -245,7 +241,7 @@ public class FTestMultipleWorkSpaces extends FunctionalTest {
         // Assert things about where the files are located
         int counter = 0;
         for (File f : workingFiles) {
-            assertFalse("File[" + counter + "] should not exist in input area any more - " + f, f.exists());
+            assertFalse(f.exists(), "File[" + counter + "] should not exist in input area any more - " + f);
             counter++;
         }
 
@@ -254,21 +250,21 @@ public class FTestMultipleWorkSpaces extends FunctionalTest {
             File fp = new File(place.getInProcessArea() + "/" + fn);
             File fd1 = new File(space1.getOutputRoot() + "/" + fn);
             File fd2 = new File(space2.getOutputRoot() + "/" + fn);
-            assertFalse("File[" + counter + "] should not exist in in-process area any more - " + fn + " - " + fp.getPath(), fp.exists());
+            assertFalse(fp.exists(), "File[" + counter + "] should not exist in in-process area any more - " + fn + " - " + fp.getPath());
             assertTrue(
-                    "File[" + counter + "] should exist in one of the two output root areas - " + fn + " - " + fd1.getPath() + ", " + fd2.getPath(),
-                    fd1.exists() || fd2.exists());
+                    fd1.exists() || fd2.exists(),
+                    "File[" + counter + "] should exist in one of the two output root areas - " + fn + " - " + fd1.getPath() + ", " + fd2.getPath());
             counter++;
         }
     }
 
     private void checkFileCounts(WorkSpace space, int files, int bytes, int bundles, int places, int outbound, int pending, int retried) {
-        assertEquals("files processed on " + space.getKey(), files, space.getFilesProcessed());
-        assertEquals("bytes processed on " + space.getKey(), bytes, space.getBytesProcessed());
-        assertEquals("bundles processed on " + space.getKey(), bundles, space.getBundlesProcessed());
-        assertEquals("pickup place count in " + space.getKey(), places, space.getPickUpPlaceCount());
-        assertEquals("Outbound queue count in " + space.getKey(), outbound, space.getOutboundQueueSize());
-        assertEquals("Pending queue count in " + space.getKey(), pending, space.getPendingQueueSize());
-        assertEquals("Retried bundle count in " + space.getKey(), retried, space.getRetriedCount());
+        assertEquals(files, space.getFilesProcessed(), "files processed on " + space.getKey());
+        assertEquals(bytes, space.getBytesProcessed(), "bytes processed on " + space.getKey());
+        assertEquals(bundles, space.getBundlesProcessed(), "bundles processed on " + space.getKey());
+        assertEquals(places, space.getPickUpPlaceCount(), "pickup place count in " + space.getKey());
+        assertEquals(outbound, space.getOutboundQueueSize(), "Outbound queue count in " + space.getKey());
+        assertEquals(pending, space.getPendingQueueSize(), "Pending queue count in " + space.getKey());
+        assertEquals(retried, space.getRetriedCount(), "Retried bundle count in " + space.getKey());
     }
 }

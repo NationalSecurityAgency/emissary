@@ -1,22 +1,23 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class PickupQueueTest extends UnitTest {
+class PickupQueueTest extends UnitTest {
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
     }
 
     @Test
-    public void testQueueing() {
+    void testQueueing() {
         PickupQueue p = new PickupQueue(3);
         WorkBundle w1 = new WorkBundle("/output/root", "/eat/prefix");
         w1.addFileName("file1.txt");
@@ -29,41 +30,41 @@ public class PickupQueueTest extends UnitTest {
         w4.addFileName("file5.txt");
         w4.addFileName("file6.txt");
 
-        assertTrue("Can hold 1", p.canHold(1));
-        assertTrue("Can hold 2", p.canHold(2));
-        assertTrue("Can hold 3", p.canHold(3));
-        assertTrue("Can hold 4", !p.canHold(4));
-        assertNull("Dequeue on empty queue", p.deque());
-        assertTrue("Enqueue item", p.enque(w1));
-        assertEquals("Size of queue", 1, p.size());
-        assertTrue("Enqueue item", p.enque(w2));
-        assertEquals("Size of queue", 2, p.size());
-        assertTrue("Enqueue item", p.enque(w3));
-        assertEquals("Size of queue", 3, p.size());
-        assertTrue("Enqueue item", p.enque(w4));
-        assertEquals("Size of queue", 4, p.size());
+        assertTrue(p.canHold(1), "Can hold 1");
+        assertTrue(p.canHold(2), "Can hold 2");
+        assertTrue(p.canHold(3), "Can hold 3");
+        assertFalse(p.canHold(4), "Can hold 4");
+        assertNull(p.deque(), "Dequeue on empty queue");
+        assertTrue(p.enque(w1), "Enqueue item");
+        assertEquals(1, p.size(), "Size of queue");
+        assertTrue(p.enque(w2), "Enqueue item");
+        assertEquals(2, p.size(), "Size of queue");
+        assertTrue(p.enque(w3), "Enqueue item");
+        assertEquals(3, p.size(), "Size of queue");
+        assertTrue(p.enque(w4), "Enqueue item");
+        assertEquals(4, p.size(), "Size of queue");
         WorkBundle dq1 = p.deque();
-        assertEquals("Dequeue item", dq1.getBundleId(), w1.getBundleId());
-        assertEquals("Size of queue", 3, p.size());
+        assertEquals(dq1.getBundleId(), w1.getBundleId(), "Dequeue item");
+        assertEquals(3, p.size(), "Size of queue");
 
-        assertTrue("Enqueue null item", p.enque(null));
-        assertEquals("Size of queue after null item", 3, p.size());
+        assertTrue(p.enque(null), "Enqueue null item");
+        assertEquals(3, p.size(), "Size of queue after null item");
 
         WorkBundle wb5 = new WorkBundle("/output/root", "/eat/prefix");
-        assertTrue("Enqueu of item with no files", p.enque(wb5));
-        assertEquals("Size of queue after no file item", 3, p.size());
-        assertTrue("Can hold when full", !p.canHold(1));
+        assertTrue(p.enque(wb5), "Enqueu of item with no files");
+        assertEquals(3, p.size(), "Size of queue after no file item");
+        assertFalse(p.canHold(1), "Can hold when full");
     }
 
     @Test
-    public void testDefaultSize() {
+    void testDefaultSize() {
         PickupQueue p = new PickupQueue();
-        assertTrue("Can hold default", p.canHold(1));
-        assertTrue("Can hold default", p.canHold(19));
+        assertTrue(p.canHold(1), "Can hold default");
+        assertTrue(p.canHold(19), "Can hold default");
     }
 
     @Test
-    public void testNotify() {
+    void testNotify() {
         PickupQueue p = new PickupQueue(3);
         PQTester pqt = new PQTester(p);
         Thread t = new Thread(pqt, "PickupQueue tester");
@@ -71,17 +72,17 @@ public class PickupQueueTest extends UnitTest {
         t.start();
         try {
             Thread.sleep(100);
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException ignored) {
         }
         WorkBundle wb = new WorkBundle("/output/root", "/eat/prefix");
         wb.addFileName("file1.txt");
         p.enque(wb);
         try {
             Thread.sleep(100);
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException ignored) {
         }
         int hitCount = pqt.getHitCount();
-        assertTrue("Waiter was notified " + hitCount + " times", hitCount > 0);
+        assertTrue(hitCount > 0, "Waiter was notified " + hitCount + " times");
         pqt.timeToQuit = true;
     }
 
@@ -106,7 +107,7 @@ public class PickupQueueTest extends UnitTest {
                     try {
                         pq.wait(0);
                         hitcount++;
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException ignored) {
                     }
                 }
             }

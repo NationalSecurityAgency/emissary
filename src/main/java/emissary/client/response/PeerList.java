@@ -1,13 +1,20 @@
 package emissary.client.response;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @XmlAccessorType(XmlAccessType.NONE)
-public class PeerList {
+public class PeerList implements Serializable {
+    private static final long serialVersionUID = -5236361363769379766L;
+
+    private static final Logger logger = LoggerFactory.getLogger(PeerList.class);
 
     @XmlElement(name = "host")
     private String host;
@@ -41,11 +48,11 @@ public class PeerList {
 
     public void dumpToConsole() {
         StringBuilder sb = new StringBuilder();
-        sb.append("\n" + getHost() + " :");
+        sb.append("\n").append(getHost()).append(" :");
         for (String peer : getPeers()) {
-            sb.append("\n         " + peer);
+            sb.append("\n         ").append(peer);
         }
-        System.out.print(sb.toString());
+        logger.info("{}", sb);
     }
 
 

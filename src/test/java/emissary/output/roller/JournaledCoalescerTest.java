@@ -1,11 +1,12 @@
 package emissary.output.roller;
 
 import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.collection.IsIterableContainingInRelativeOrder.containsInRelativeOrder;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import emissary.output.io.SimpleFileNameGenerator;
@@ -34,16 +36,11 @@ import emissary.output.roller.journal.KeyedOutput;
 import emissary.test.core.UnitTest;
 import emissary.util.io.FileNameGenerator;
 import emissary.util.io.UnitTestFileUtils;
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class JournaledCoalescerTest extends UnitTest {
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+class JournaledCoalescerTest extends UnitTest {
 
     private FileNameGenerator fileNameGenerator;
     private JournaledCoalescer journaledCoalescer;
@@ -56,7 +53,7 @@ public class JournaledCoalescerTest extends UnitTest {
     private final List<String> BUD1_LINES = Arrays.asList("Line1", "Line2");
     private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         fileNameGenerator = new SimpleFileNameGenerator();
@@ -71,67 +68,57 @@ public class JournaledCoalescerTest extends UnitTest {
         Files.write(tempBUD2, BUD2_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() throws IOException {
         journaledCoalescer.close();
         UnitTestFileUtils.cleanupDirectoryRecursively(targetBUDPath);
     }
 
     @SuppressWarnings("resource")
-    @Test(expected = FileNotFoundException.class)
-    public void testNonExistentDirectory() throws Exception {
+    @Test
+    void testNonExistentDirectory() {
         // test
-        new JournaledCoalescer(Paths.get("/asdasd/asdasd/asdasd"), fileNameGenerator);
+        assertThrows(FileNotFoundException.class, () -> new JournaledCoalescer(Paths.get("/asdasd/asdasd/asdasd"), fileNameGenerator));
     }
 
     @SuppressWarnings("resource")
-    @Test(expected = IllegalArgumentException.class)
-    public void testNonDirectoryArgument() throws Exception {
+    @Test
+    void testNonDirectoryArgument() throws Exception {
         // test
         Path tmpFile = Files.createTempFile(".", "temp-name");
-        try {
-            new JournaledCoalescer(tmpFile, fileNameGenerator);
-        } finally {
-            Files.deleteIfExists(tmpFile);
-        }
+        assertThrows(IllegalArgumentException.class, () -> new JournaledCoalescer(tmpFile, fileNameGenerator));
+        Files.deleteIfExists(tmpFile);
     }
 
     @SuppressWarnings("resource")
-    @Test(expected = IllegalAccessError.class)
-    public void testNonReadable() throws Exception {
+    @Test
+    void testNonReadable() throws Exception {
         // setup
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_WRITE);
-
         // test
         Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
-        try {
-            new JournaledCoalescer(tmpdir, fileNameGenerator);
-        } finally {
-            perms.add(PosixFilePermission.OWNER_READ);
-            Files.setPosixFilePermissions(tmpdir, perms);
-            UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
-        }
+        assertThrows(IllegalAccessError.class, () -> new JournaledCoalescer(tmpdir, fileNameGenerator));
+        perms.add(PosixFilePermission.OWNER_READ);
+        Files.setPosixFilePermissions(tmpdir, perms);
+        UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
     }
 
     @SuppressWarnings("resource")
-    @Test(expected = IllegalAccessError.class)
-    public void testNonWritable() throws Exception {
+    @Test
+    void testNonWritable() throws Exception {
         // setup
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
 
         // test
         Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
-        try {
-            new JournaledCoalescer(tmpdir, fileNameGenerator);
-        } finally {
-            UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
-        }
+        assertThrows(IllegalAccessError.class, () -> new JournaledCoalescer(tmpdir, fileNameGenerator));
+        UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
     }
 
     @Test
-    public void testRollOrphanedFiles() throws Exception {
+    void testRollOrphanedFiles() throws Exception {
         // setup
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
@@ -147,18 +134,17 @@ public class JournaledCoalescerTest extends UnitTest {
 
         // verify
         Path bud1destination = targetBUDPath.resolve(BUD1_NAME);
-        assertThat(Files.exists(bud1destination), equalTo(true));
+        assertTrue(Files.exists(bud1destination));
         List<String> fileResults = Files.readAllLines(bud1destination, Charset.defaultCharset());
-        assertThat("Expected 4 lines in " + bud1destination, fileResults.size(), equalTo(4));
-        assertThat(fileResults, containsInRelativeOrder(BUD1_LINES.get(0), BUD1_LINES.get(1)));
-        assertThat(fileResults, containsInRelativeOrder(BUD2_LINES.get(0), BUD2_LINES.get(1)));
+        assertEquals(4, fileResults.size());
+        assertTrue(fileResults.containsAll(Arrays.asList(BUD1_LINES.get(0), BUD1_LINES.get(1), BUD2_LINES.get(0), BUD2_LINES.get(1))));
     }
 
     @Test
-    public void testAddFilesBeforeRoll() throws Exception {
+    void testAddFilesBeforeRoll() throws Exception {
         // test
-        Path bud1destination = null;
-        Path bud2destination = null;
+        Path bud1destination;
+        Path bud2destination;
         try (KeyedOutput one = journaledCoalescer.getOutput(); KeyedOutput two = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD1, one);
             bud1destination = one.getFinalDestination();
@@ -169,22 +155,22 @@ public class JournaledCoalescerTest extends UnitTest {
         }
         // verify
         // no roll happened
-        assertThat(bud1destination, notNullValue());
-        assertThat(bud1destination, equalTo(bud2destination));
-        assertThat(Files.exists(bud1destination), equalTo(false));
+        assertNotNull(bud1destination);
+        assertEquals(bud1destination, bud2destination);
+        assertFalse(Files.exists(bud1destination));
 
         // verify
         journaledCoalescer.roll();
-        assertThat(Files.exists(bud1destination), equalTo(true));
+        assertTrue(Files.exists(bud1destination));
         long totalSize = Files.size(tempBUD1) + Files.size(tempBUD2);
-        assertThat(Files.size(bud1destination), equalTo(totalSize));
+        assertEquals(totalSize, Files.size(bud1destination));
 
     }
 
     @Test
-    public void testAddFilesWithRoll() throws Exception {
+    void testAddFilesWithRoll() throws Exception {
         // setup
-        String expectedPrefix1 = null;
+        String expectedPrefix1;
 
         // test
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
@@ -195,7 +181,7 @@ public class JournaledCoalescerTest extends UnitTest {
 
         journaledCoalescer.roll();
 
-        String expectedPrefix2 = null;
+        String expectedPrefix2;
 
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD2, one);
@@ -204,13 +190,13 @@ public class JournaledCoalescerTest extends UnitTest {
         }
         // verify
         Path bud1Destination = targetBUDPath.resolve(expectedPrefix1);
-        assertThat("Expected target to exist " + bud1Destination.toString(), Files.exists(bud1Destination), equalTo(true));
-        assertThat(bud1Destination.getFileName().toString(), not(equalTo(expectedPrefix2)));
-        assertThat(bud1Destination.getParent(), equalTo(targetBUDPath));
-        assertThat(bud1Destination.getFileName().toString(), equalTo(expectedPrefix1));
-        assertThat(Files.readAllLines(bud1Destination, Charset.defaultCharset()), equalTo(BUD1_LINES));
+        assertTrue(Files.exists(bud1Destination), "Expected target to exist " + bud1Destination);
+        assertNotEquals(expectedPrefix2, bud1Destination.getFileName().toString());
+        assertEquals(targetBUDPath, bud1Destination.getParent());
+        assertEquals(expectedPrefix1, bud1Destination.getFileName().toString());
+        assertEquals(BUD1_LINES, Files.readAllLines(bud1Destination, Charset.defaultCharset()));
 
-        assertThat(expectedPrefix1, not(equalTo(expectedPrefix2)));
+        assertNotEquals(expectedPrefix1, expectedPrefix2);
     }
 
     /**
@@ -218,9 +204,9 @@ public class JournaledCoalescerTest extends UnitTest {
      * run, which should be deleted and normal operations carried out from there.
      */
     @Test
-    public void testCrashWhileRolling() throws Exception {
+    void testCrashWhileRolling() throws Exception {
         // setup
-        Path finalBudOutput = null;
+        Path finalBudOutput;
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
             Files.copy(tempBUD1, one);
             finalBudOutput = one.getFinalDestination();
@@ -236,16 +222,16 @@ public class JournaledCoalescerTest extends UnitTest {
         }
 
         // verify
-        assertThat(Files.exists(oldRolling), equalTo(false));
-        assertThat(Files.exists(finalBudOutput), equalTo(true));
-        assertThat(Files.readAllLines(finalBudOutput, Charset.defaultCharset()), equalTo(BUD1_LINES));
+        assertFalse(Files.exists(oldRolling));
+        assertTrue(Files.exists(finalBudOutput));
+        assertEquals(BUD1_LINES, Files.readAllLines(finalBudOutput, Charset.defaultCharset()));
     }
 
     /**
      * Test to see the rolled and part files are cleaned up without rolling again.
      */
     @Test
-    public void testCrashAfterRolled() throws Exception {
+    void testCrashAfterRolled() throws Exception {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
@@ -260,13 +246,13 @@ public class JournaledCoalescerTest extends UnitTest {
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
 
         try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
-            assertThat(Files.exists(oldRolled), equalTo(true));
-            assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+            assertTrue(Files.exists(oldRolled));
+            assertFalse(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
             jrnl.roll();
         }
 
-        assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(true));
+        assertFalse(Files.exists(oldRolled));
+        assertTrue(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
     }
 
     /**
@@ -274,7 +260,7 @@ public class JournaledCoalescerTest extends UnitTest {
      * are deleted, but the rolled file is not renamed.
      */
     @Test
-    public void testCrashAfterRolledNoPartFiles() throws Exception {
+    void testCrashAfterRolledNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
@@ -282,12 +268,12 @@ public class JournaledCoalescerTest extends UnitTest {
         new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
         // verify orphaned rolled file is cleaned up
-        assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(true));
+        assertFalse(Files.exists(oldRolled));
+        assertTrue(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
     }
 
     @Test
-    public void testCrashAfterRolledEmpty() throws Exception {
+    void testCrashAfterRolledEmpty() throws Exception {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBUDPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
@@ -298,32 +284,32 @@ public class JournaledCoalescerTest extends UnitTest {
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
 
         try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
-            assertThat(Files.exists(oldRolled), equalTo(true));
-            assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+            assertTrue(Files.exists(oldRolled));
+            assertFalse(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
             jrnl.roll();
         }
 
-        assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertFalse(Files.exists(oldRolled));
+        assertFalse(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
     }
 
     @Test
-    public void testCrashAfterRolledEmptyNoPartFiles() throws Exception {
+    void testCrashAfterRolledEmptyNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
 
         new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
         // verify orphaned rolled file is cleaned up
-        assertThat(Files.exists(oldRolled), equalTo(false));
-        assertThat(Files.exists(targetBUDPath.resolve(BUD1_NAME)), equalTo(false));
+        assertFalse(Files.exists(oldRolled));
+        assertFalse(Files.exists(targetBUDPath.resolve(BUD1_NAME)));
     }
 
     @Test
-    public void testRollEmptyFiles() throws Exception {
+    void testRollEmptyFiles() throws Exception {
         // setup
         Files.write(tempBUD1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
-        Path finalBudOutput = null;
+        Path finalBudOutput;
         try (KeyedOutput os = journaledCoalescer.getOutput()) {
             // make sure we create an empty file
             finalBudOutput = os.getFinalDestination();
@@ -332,11 +318,11 @@ public class JournaledCoalescerTest extends UnitTest {
         journaledCoalescer.roll();
 
         // verify
-        assertThat(Files.exists(finalBudOutput), equalTo(false));
+        assertFalse(Files.exists(finalBudOutput));
     }
 
     @Test
-    public void testRollBadFiles() throws Exception {
+    void testRollBadFiles() throws Exception {
         // setup
         Path target = Files.createTempFile(targetBUDPath, "badfile", "");
         String key = target.toString();
@@ -366,8 +352,8 @@ public class JournaledCoalescerTest extends UnitTest {
         long rolledSize = Files.size(rolled);
 
         // verify
-        assertThat(rolledSize, equalTo(partSize));
-        assertThat(j.getLastEntry().getOffset(), Matchers.greaterThan(partSize));
+        assertEquals(partSize, rolledSize);
+        assertTrue(Objects.requireNonNull(j.getLastEntry()).getOffset() > partSize);
     }
 
 }

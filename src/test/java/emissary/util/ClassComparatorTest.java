@@ -1,36 +1,36 @@
 package emissary.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Serializable;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ClassComparatorTest extends UnitTest {
+class ClassComparatorTest extends UnitTest {
     @Test
-    public void testSameClass() {
-        assertTrue("Same class name is same", ClassComparator.isa("java.lang.String", String.class.getName()));
+    void testSameClass() {
+        assertTrue(ClassComparator.isa("java.lang.String", String.class.getName()), "Same class name is same");
     }
 
     @Test
-    public void testBogusClass() {
-        assertFalse("Bogus class is not the same as real class", ClassComparator.isa(ClassComparator.class.getName(), "foo.de.Bar"));
+    void testBogusClass() {
+        assertFalse(ClassComparator.isa(ClassComparator.class.getName(), "foo.de.Bar"), "Bogus class is not the same as real class");
     }
 
     @Test
-    public void testSuperSub() {
-        assertTrue("Super/sub should pass", ClassComparator.isa("emissary.place.ServiceProviderPlace", "emissary.place.sample.DevNullPlace"));
+    void testSuperSub() {
+        assertTrue(ClassComparator.isa("emissary.place.ServiceProviderPlace", "emissary.place.sample.DevNullPlace"), "Super/sub should pass");
     }
 
     @Test
-    public void testIsaImplementationTrue() {
+    void testIsaImplementationTrue() {
         assertTrue(ClassComparator.isaImplementation(String.class, Serializable.class));
     }
 
     @Test
-    public void testIsaImplementationFalse() {
-        assertTrue(!ClassComparator.isaImplementation(String.class, Iterable.class));
+    void testIsaImplementationFalse() {
+        assertFalse(ClassComparator.isaImplementation(String.class, Iterable.class));
     }
 }

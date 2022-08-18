@@ -1,100 +1,68 @@
 package emissary.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import emissary.test.core.UnitTest;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class InputSessionTest extends UnitTest {
 
     @Test
-    public void testRecordCounting() throws ParserException {
+    void testRecordCounting() throws ParserException {
         InputSession i = new InputSession(O, H, F, D);
 
-        assertEquals("Data record count", 1, i.getDataCount());
-        assertEquals("Footer record count", 1, i.getFooterCount());
-        assertEquals("Header record count", 1, i.getHeaderCount());
+        assertEquals(1, i.getDataCount(), "Data record count");
+        assertEquals(1, i.getFooterCount(), "Footer record count");
+        assertEquals(1, i.getHeaderCount(), "Header record count");
 
-        assertEquals("Data record count", 1, i.getData().size());
-        assertEquals("Footer record count", 1, i.getFooter().size());
-        assertEquals("Header record count", 1, i.getHeader().size());
+        assertEquals(1, i.getData().size(), "Data record count");
+        assertEquals(1, i.getFooter().size(), "Footer record count");
+        assertEquals(1, i.getHeader().size(), "Header record count");
     }
 
 
     @Test
-    public void testDataRanging() throws ParserException {
+    void testDataRanging() throws ParserException {
         InputSession i = new InputSession(O, H, F, D);
-        assertEquals("Starting position", 0, i.getStart());
-        assertEquals("Length of data", 100, i.getLength());
+        assertEquals(0, i.getStart(), "Starting position");
+        assertEquals(100, i.getLength(), "Length of data");
     }
 
     @Test
-    public void testBadRangeWithOverallFirst() {
+    void testBadRangeWithOverallFirst() {
         InputSession i = new InputSession(O);
-        try {
-            i.addHeaderRec(1, 100);
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
-        try {
-            i.addDataRec(1, 100);
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
-        try {
-            i.addFooterRec(1, 100);
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
-        try {
-            i.addHeaderRec(new PositionRecord(1, 100));
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
-        try {
-            i.addDataRec(new PositionRecord(1, 100));
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
-        try {
-            i.addFooterRec(new PositionRecord(1, 100));
-            fail("Allowed header to be set out of bounds");
-        } catch (ParserException ex) {
-        }
+        assertThrows(ParserException.class, () -> i.addHeaderRec(1, 100));
+        assertThrows(ParserException.class, () -> i.addDataRec(1, 100));
+        assertThrows(ParserException.class, () -> i.addFooterRec(1, 100));
+        assertThrows(ParserException.class, () -> i.addHeaderRec(new PositionRecord(1, 100)));
+        assertThrows(ParserException.class, () -> i.addDataRec(new PositionRecord(1, 100)));
+        assertThrows(ParserException.class, () -> i.addFooterRec(new PositionRecord(1, 100)));
     }
 
     @Test
-    public void testBadRangeWithOverallLast() throws ParserException {
+    void testBadRangeWithOverallLast() throws ParserException {
         InputSession i = new InputSession();
         i.addHeaderRec(new PositionRecord(1, 100));
-        try {
-            i.setOverall(O);
-            fail("Allowed data to be set out of bounds");
-        } catch (ParserException ex) {
-        }
+        assertThrows(ParserException.class, () -> i.setOverall(O));
     }
 
     @Test
-    public void testBadMetadataRange() {
+    void testBadMetadataRange() {
         InputSession i = new InputSession(O);
-        try {
-            i.addMetaDataRec("FOO", new PositionRecord(1, 100));
-            fail("Allowed metadata element to be set out of bounds");
-        } catch (ParserException ex) {
-        }
+        assertThrows(ParserException.class, () -> i.addMetaDataRec("FOO", new PositionRecord(1, 100)));
     }
 
-    private static PositionRecord O = new PositionRecord(0, 100);
-    private static List<PositionRecord> H = new ArrayList<PositionRecord>();
-    private static List<PositionRecord> F = new ArrayList<PositionRecord>();
-    private static List<PositionRecord> D = new ArrayList<PositionRecord>();
+    private static final PositionRecord O = new PositionRecord(0, 100);
+    private static final List<PositionRecord> H = new ArrayList<>();
+    private static final List<PositionRecord> F = new ArrayList<>();
+    private static final List<PositionRecord> D = new ArrayList<>();
 
-    @BeforeClass
+    @BeforeAll
     public static void loadPositionRecords() {
         H.add(new PositionRecord(0, 10));
         D.add(new PositionRecord(10, 80));

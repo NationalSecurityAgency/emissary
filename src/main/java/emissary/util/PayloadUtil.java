@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import emissary.core.IBaseDataObject;
 import emissary.util.xml.JDOMUtil;
@@ -20,6 +21,7 @@ public class PayloadUtil {
     public static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class);
 
     private static final String LS = System.getProperty("line.separator");
+    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
 
     /**
      * Try really hard to get a meaningful name for a payload object
@@ -203,6 +205,18 @@ public class PayloadUtil {
             out.append(entry.getKey()).append(SEP).append(entry.getValue()).append(LS);
         }
         return out.toString();
+    }
+
+    /**
+     * Checks whether the form complies with form rules established by a regex
+     *
+     * Approved forms can contain alpha-numerics, '-', or '_'
+     *
+     * @param form The form to be tested
+     * @return Whether the form is Emissary compliant
+     */
+    public static boolean isValidForm(String form) {
+        return validFormRegex.matcher(form).find();
     }
 
     /** This class is not meant to be instantiated. */

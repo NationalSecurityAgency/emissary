@@ -1,13 +1,13 @@
 package emissary.server.api;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,26 +17,22 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.test.core.UnitTest;
-import org.hamcrest.junit.ExpectedException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ApiUtilsTest extends UnitTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+class ApiUtilsTest extends UnitTest {
     public static final String PEER = "*.*.*.http://somehost:8001/DirectoryPlace";
-    public static final Set<String> PEERS = new HashSet<>(Arrays.asList(PEER));
+    public static final Set<String> PEERS = new HashSet<>(Collections.singletonList(PEER));
     private DirectoryPlace mockDirectory;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         Namespace.clear();
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         mockDirectory = mock(DirectoryPlace.class);
@@ -51,56 +47,52 @@ public class ApiUtilsTest extends UnitTest {
         Namespace.bind("EmissaryServer", mockServer);
     }
 
-    @After
+    @Override
+    @AfterEach
     public void tearDown() {
         Namespace.clear();
     }
 
-    @Test(expected = EmissaryException.class)
-    public void lookupPeersNoDirectoryPlaceBound() throws Exception {
-        // setup
+    @Test
+    void lookupPeersNoDirectoryPlaceBound() {
         Namespace.unbind("DirectoryPlace");
-
-        // test
-        ApiUtils.lookupPeers();
+        assertThrows(EmissaryException.class, ApiUtils::lookupPeers);
     }
 
     @Test
-    public void lookupPeers() throws Exception {
+    void lookupPeers() throws Exception {
         // test
         Set<String> result = ApiUtils.lookupPeers();
 
         // verify
-        assertThat(result, equalTo(PEERS));
+        assertEquals(PEERS, result);
     }
 
     @Test
-    public void stripPeerString() throws Exception {
+    void stripPeerString() {
         // test
         String result = ApiUtils.stripPeerString(PEER);
 
         // verify
-        assertThat(result, equalTo("http://somehost:8001/"));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void stripPeerStringBadPeer() throws Exception {
-        // test
-        ApiUtils.stripPeerString("*.*.http://throwsException:8001");
-
+        assertEquals("http://somehost:8001/", result);
     }
 
     @Test
-    public void getHostAndPort() throws Exception {
+    void stripPeerStringBadPeer() {
+        assertThrows(IndexOutOfBoundsException.class, () -> ApiUtils.stripPeerString("*.*.http://throwsException:8001"));
+    }
+
+    @Test
+    void getHostAndPort() {
         // test
         String hostAndPort = ApiUtils.getHostAndPort();
 
         // verify
-        assertThat(hostAndPort, equalTo("localhost:8001"));
+        assertEquals("localhost:8001", hostAndPort);
     }
 
     @Test
-    public void getHostAndPortNoEmissaryServer() {
+    void getHostAndPortNoEmissaryServer() {
         // setup
         Namespace.unbind("EmissaryServer");
 
@@ -108,7 +100,7 @@ public class ApiUtilsTest extends UnitTest {
         String result = ApiUtils.getHostAndPort();
 
         // verify
-        assertThat(result, equalTo("Namespace lookup error, host unknown"));
+        assertEquals("Namespace lookup error, host unknown", result);
     }
 
 }

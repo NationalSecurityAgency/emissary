@@ -1,20 +1,20 @@
 package emissary.core;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.FunctionalTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FTestMobileAgent extends FunctionalTest {
+class FTestMobileAgent extends FunctionalTest {
 
-    @Before
+    @BeforeEach
     public void testSetUp() throws Exception {
         @SuppressWarnings("unused")
         final Logger[] testLoggers =
@@ -23,41 +23,42 @@ public class FTestMobileAgent extends FunctionalTest {
 
     }
 
-    @After
-    public void testTearDown() throws Exception {
+    @AfterEach
+    public void testTearDown() {
         demolishServer();
     }
 
     @Test
-    public void testEmptyFormHandlingWhenAllowed() throws Exception {
+    void testEmptyFormHandlingWhenAllowed() {
         final MyAgent m = new MyAgent();
         final IServiceProviderPlace place = addPlace("http://localhost:8213/FakeEmptyPlace", "emissary.core.FTestMobileAgent$FakeEmptyPlace");
 
         final IBaseDataObject d = DataObjectFactory.getInstance();
         d.setCurrentForm("PETERPAN");
         m.callAtPlace(place, d);
-        assertEquals("Place is allowed to consume the form stack " + "if it implements EmptyFormPlace - " + d.getAllCurrentForms(), 0,
-                d.currentFormSize());
+        assertEquals(0,
+                d.currentFormSize(),
+                "Place is allowed to consume the form stack " + "if it implements EmptyFormPlace - " + d.getAllCurrentForms());
         place.shutDown();
         m.killAgent();
     }
 
     @Test
-    public void testEmptyFormHandlingWhenNotAllowed() throws Exception {
+    void testEmptyFormHandlingWhenNotAllowed() {
         final MyAgent m = new MyAgent();
 
         final IServiceProviderPlace place = addPlace("http://localhost:8213/FakePlace", "emissary.core.FTestMobileAgent$FakePlace");
         final IBaseDataObject d = DataObjectFactory.getInstance();
         d.setCurrentForm("XYZZY");
         m.callAtPlace(place, d);
-        assertEquals("Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace", 1, d.currentFormSize());
-        assertEquals("Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace", Form.ERROR, d.currentForm());
+        assertEquals(1, d.currentFormSize(), "Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace");
+        assertEquals(Form.ERROR, d.currentForm(), "Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace");
         place.shutDown();
         m.killAgent();
     }
 
     @Test
-    public void testEmptyFormHandlingWhenNotAllowedAndExceptionIsThrown() throws Exception {
+    void testEmptyFormHandlingWhenNotAllowedAndExceptionIsThrown() {
         final MyAgent m = new MyAgent();
 
         final IServiceProviderPlace place = addPlace("http://localhost:8213/FakePlace", "emissary.core.FTestMobileAgent$FakePlace");
@@ -65,8 +66,8 @@ public class FTestMobileAgent extends FunctionalTest {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         d.setCurrentForm("XYZZY");
         m.callAtPlace(place, d);
-        assertEquals("Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace", 1, d.currentFormSize());
-        assertEquals("Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace", Form.ERROR, d.currentForm());
+        assertEquals(1, d.currentFormSize(), "Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace");
+        assertEquals(Form.ERROR, d.currentForm(), "Place is not allowed to consume the form stack " + "if it does not implment EmptyFormPlace");
         place.shutDown();
         m.killAgent();
     }

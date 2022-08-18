@@ -1,9 +1,9 @@
 package emissary.pickup.file;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,11 +19,11 @@ import emissary.pickup.WorkSpace;
 import emissary.test.core.FunctionalTest;
 import emissary.util.io.ResourceReader;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestSpacePlaceInteraction extends FunctionalTest {
+class FTestSpacePlaceInteraction extends FunctionalTest {
     private FilePickUpClient place = null;
     private WorkSpace space = null;
     private InputStream configStream = null;
@@ -33,12 +33,8 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
     private File outarea;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-
-        // set config to java.io.tmpdir, this config package
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         logger.debug("Starting WorkSpace tests");
 
         // Set up a directory struction with two files to be processed
@@ -69,7 +65,7 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
 
         logger.debug("Starting tearDown phase");
@@ -115,12 +111,12 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
         space.setFileTimestampUsage(useFileTimestamps);
         space.setSimpleMode(useSimple);
 
-        assertTrue("WorkSpace should exist in namespace", Namespace.exists("http://localhost:8005/WorkSpace"));
+        assertTrue(Namespace.exists("http://localhost:8005/WorkSpace"), "WorkSpace should exist in namespace");
 
-        assertEquals("No files proessed", 0, space.getFilesProcessed());
-        assertEquals("No bytes proessed", 0, space.getBytesProcessed());
-        assertEquals("No bundles proessed", 0, space.getBundlesProcessed());
-        assertEquals("Found pickup place", 1, space.getPickUpPlaceCount());
+        assertEquals(0, space.getFilesProcessed(), "No files proessed");
+        assertEquals(0, space.getBytesProcessed(), "No bytes proessed");
+        assertEquals(0, space.getBundlesProcessed(), "No bundles proessed");
+        assertEquals(1, space.getPickUpPlaceCount(), "Found pickup place");
 
     }
 
@@ -134,7 +130,7 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
     }
 
     @Test
-    public void testUsingFileSeenList() throws Exception {
+    void testUsingFileSeenList() throws Exception {
         // Start a client
         configStream = new ResourceReader().getConfigDataAsStream(this);
         place = (FilePickUpClient) addPlace("http://localhost:8005/FilePickUpClient", "emissary.pickup.file.FilePickUpClient", configStream);
@@ -144,7 +140,7 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
     }
 
     @Test
-    public void testUsingFileTimeStamps() throws Exception {
+    void testUsingFileTimeStamps() throws Exception {
         // Start a client
         configStream = new ResourceReader().getConfigDataAsStream(this);
         place = (FilePickUpClient) addPlace("http://localhost:8005/FilePickUpClient", "emissary.pickup.file.FilePickUpClient", configStream);
@@ -154,7 +150,7 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
     }
 
     @Test
-    public void testUsingSimpleMode() throws Exception {
+    void testUsingSimpleMode() throws Exception {
         // Start a client
         configStream = new ResourceReader().getConfigDataAsStream(this);
         MyFilePickUpClient myplace =
@@ -164,28 +160,29 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
         createWorkspace(true, true);
         detachWorkspace("WorkSpaceTestSPI-testUsingSimpleMode");
         runTest(800L, 1500L, 200L, 100L, true);
-        assertEquals("PickupPlace should have created payload objects that mirror WorkSpace simple setting with no mismatches", 0,
-                myplace.expectationsNotMetCount);
+        assertEquals(0,
+                myplace.expectationsNotMetCount,
+                "PickupPlace should have created payload objects that mirror WorkSpace simple setting with no mismatches");
     }
 
     private void runTest(long t1, long t2, long t3, long t4, boolean simple) {
         pause(t1);
 
-        assertEquals("File has been processed", 2, space.getFilesProcessed());
-        assertEquals("Bundle was created", 1, space.getBundlesProcessed());
-        assertEquals("Byte count matches file", "This is a test".length() * 2, space.getBytesProcessed());
+        assertEquals(2, space.getFilesProcessed(), "File has been processed");
+        assertEquals(1, space.getBundlesProcessed(), "Bundle was created");
+        assertEquals("This is a test".length() * 2, space.getBytesProcessed(), "Byte count matches file");
 
         pause(t2);
 
-        assertEquals("Outbound queue should empty", 0, space.getOutboundQueueSize());
-        assertEquals("Pending queue should empty", 0, space.getPendingQueueSize());
+        assertEquals(0, space.getOutboundQueueSize(), "Outbound queue should empty");
+        assertEquals(0, space.getPendingQueueSize(), "Pending queue should empty");
         logger.debug("Shutting down file pick up client");
         place.shutDown();
         place = null;
-        assertTrue("WorkSpace should exist in namespace", Namespace.exists("http://localhost:8005/WorkSpace"));
+        assertTrue(Namespace.exists("http://localhost:8005/WorkSpace"), "WorkSpace should exist in namespace");
 
         pause(t3);
-        assertEquals("PickupPlace count adjusted", 0, space.getPickUpPlaceCount());
+        assertEquals(0, space.getPickUpPlaceCount(), "PickupPlace count adjusted");
 
         // Stuff another file into the workspace input area
         // while there are no active places to work on it
@@ -201,23 +198,23 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
             pause(t4);
 
             // The extra file should be noticed by the collector
-            assertEquals("Files proessed notices new file", 3, space.getFilesProcessed());
+            assertEquals(3, space.getFilesProcessed(), "Files proessed notices new file");
 
             // Clean it all up by requesting the bundle containing this
             // file and marking it completed.
             WorkBundle bundle = space.take(fakeKey);
             pause(t4);
 
-            assertNotNull("Bundle should be retreived with direct call", bundle);
-            assertEquals("File marked pending", 1, space.getPendingQueueSize());
+            assertNotNull(bundle, "Bundle should be retreived with direct call");
+            assertEquals(1, space.getPendingQueueSize(), "File marked pending");
 
-            assertEquals("Bundle should contain the one extra file", 1, bundle.size());
-            assertEquals("Bundle should match extra file name", extrafile.getPath(), bundle.getFileNameList().get(0));
-            assertEquals("Bundle should mirror work space simple mode", simple, bundle.getSimpleMode());
+            assertEquals(1, bundle.size(), "Bundle should contain the one extra file");
+            assertEquals(extrafile.getPath(), bundle.getFileNameList().get(0), "Bundle should match extra file name");
+            assertEquals(simple, bundle.getSimpleMode(), "Bundle should mirror work space simple mode");
             space.workCompleted(fakeKey, bundle.getBundleId(), true);
             pause(t4);
 
-            assertEquals("File no lnger marked pending", 0, space.getPendingQueueSize());
+            assertEquals(0, space.getPendingQueueSize(), "File no lnger marked pending");
         } catch (IOException ex) {
             fail("Cannot create extra test file " + ex.getMessage());
         }
@@ -227,10 +224,10 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
         place = (FilePickUpClient) addPlace("http://localhost:8005/FilePickUpClient", "emissary.pickup.file.FilePickUpClient", configStream);
 
         pause(t4);
-        assertEquals("Refound pickup place", 1, space.getPickUpPlaceCount());
+        assertEquals(1, space.getPickUpPlaceCount(), "Refound pickup place");
 
         // Clean up any mess
-        WorkBundle b = null;
+        WorkBundle b;
         do {
             b = space.take(fakeKey);
             if (b == null || b.size() == 0) {
@@ -265,7 +262,7 @@ public class FTestSpacePlaceInteraction extends FunctionalTest {
             } else {
                 expectationsNotMetCount++;
             }
-            assertEquals("Payloads should mirror forensic expectations", expectSimple, foundSimple);
+            assertEquals(expectSimple, foundSimple, "Payloads should mirror forensic expectations");
         }
     }
 }

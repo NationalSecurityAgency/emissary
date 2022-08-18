@@ -1,5 +1,7 @@
 package emissary.pool;
 
+import java.time.Duration;
+
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -11,6 +13,10 @@ import org.slf4j.LoggerFactory;
  * Extends the GenericObjectPool to hold MobileAgents, each on it's own thread.
  */
 public class AgentPool extends GenericObjectPool<IMobileAgent> {
+
+    private static final int MAX_CALCULATED_AGENT_COUNT = 50;
+    private static final int BYTES_IN_GIGABYTES = 1073741824;
+
     /**
      * The default name by which we register into the namespace
      */
@@ -31,37 +37,42 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      */
     protected String namespaceName;
 
-    final private int initialPoolSize;
+    private final int initialPoolSize;
+
+    /**
+     * Compute the default size for the pool
+     * 
+     * @param maxMemoryInBytes System max memory used in calculating pool size
+     * @param poolSizeOverride User set property for pool size
+     */
+    protected static int computePoolSize(final long maxMemoryInBytes, final Integer poolSizeOverride) {
+
+        // Override based on property
+        if (poolSizeOverride != null && poolSizeOverride > 0) {
+            logger.debug("Default pool size from properties {}", poolSizeOverride);
+            return poolSizeOverride;
+        }
+        // Check that maxMemoryInBytes is a valid argument
+        if (maxMemoryInBytes <= 0) {
+            throw new IllegalArgumentException("Must be greater then zero.");
+        }
+
+        // 15 if less than 1 Gb
+        // 20 for first Gb, +5 for each additional Gb, no more then 50 when calculated
+        int size = (((int) (maxMemoryInBytes / BYTES_IN_GIGABYTES) - 1) * 5) + 20;
+        size = Math.min(size, MAX_CALCULATED_AGENT_COUNT);
+        logger.debug("Computed default pool size of {}", size);
+
+        return size;
+    }
 
     /**
      * Compute the default size for the pool
      */
     public static int computePoolSize() {
-        // UNUSED - Investigate this block, sizePerAgent var was never used
-        // int sizePerAgent = 1024 * 1024; // default
-        // try {
-        // emissary.config.Configurator conf = emissary.config.ConfigUtil.getConfigInfo(AgentPool.class);
-        // // Size should be in kb so multiply by 1024
-        // sizePerAgent = conf.findIntEntry("agent.average_size_kb", 1024) * 1024;
-        // }
-        // catch (IOException ex) {
-        // logger.info("Cannot read config file " + ex.getMessage() + ", using default agent size");
-        // }
-
-        long maxMem = Runtime.getRuntime().maxMemory();
-        // UNUSED
-        // float headRoom = 0.40f; // space for places
-
-        // 15 if less than 1 Gb
-        // 20 for first Gb, +5 for each additional Gb
-        int size = (((int) (maxMem / (1024 * 1024 * 1024)) - 1) * 5) + 20;
-
-        // Allow override based on property
-        size = Integer.getInteger("agent.poolsize", size).intValue();
-
-        logger.debug("Computed default pool size of " + size);
-
-        return size;
+        final Integer poolSizeProperty = Integer.getInteger("agent.poolsize", null);
+        final long maxMemoryInBytes = Runtime.getRuntime().maxMemory();
+        return computePoolSize(maxMemoryInBytes, poolSizeProperty);
     }
 
     /**
@@ -110,9 +121,9 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         setBlockWhenExhausted(true);
 
         // Set maximum wait time when blocking on exhausted pool
-        setMaxWaitMillis(1000 * 60 * 50); // 50 min
+        setMaxWait(Duration.ofMinutes(50));
 
-        logger.debug("Configuring AgentPool to use " + initialPoolSize + " agents");
+        logger.debug("Configuring AgentPool to use {} agents", initialPoolSize);
 
         setMaxTotal(initialPoolSize);
         setMinIdle(initialPoolSize);
@@ -180,9 +191,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
             logger.trace("POOL borrow active={}", getNumActive());
             return a;
         } catch (Exception e) {
-
-            logger.info("AgentPool.borrowAgent did not work, stats=" + this.toString());
-
+            logger.info("AgentPool.borrowAgent did not work, stats={}", this);
             throw e;
         }
     }

@@ -10,11 +10,14 @@ import javax.ws.rs.core.Response;
 
 import emissary.core.NamespaceException;
 import emissary.server.EmissaryServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is api
 public class Pause {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Pause.class);
     public static final String PAUSE = "pause";
     public static final String UNPAUSE = "unpause";
 
@@ -36,8 +39,8 @@ public class Pause {
         try {
             return Response.ok(pause ? pause() : unpause()).build();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Response.serverError().entity(e.getMessage()).build();
+            LOG.warn("Exception trying to initiate {}", (pause ? "pause" : "unpause"), e);
+            return Response.serverError().entity("error trying to " + (pause ? "pause" : "unpause")).build();
         }
     }
 

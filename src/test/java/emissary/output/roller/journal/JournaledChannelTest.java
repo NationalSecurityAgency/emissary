@@ -1,7 +1,7 @@
 package emissary.output.roller.journal;
 
 import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,37 +12,39 @@ import java.util.UUID;
 
 import emissary.test.core.UnitTest;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class JournaledChannelTest extends UnitTest {
+class JournaledChannelTest extends UnitTest {
 
     private static Path TEMP_DIR;
     private Path p;
     private JournaledChannel channel;
     private String onekstring = "";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         TEMP_DIR = Files.createTempDirectory("journaledChannelTest");
     }
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
         this.p = TEMP_DIR.resolve(UUID.randomUUID().toString());
         this.channel = new JournaledChannel(this.p, "unittest", 0);
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
-            this.onekstring += "" + (i % 10);
+            sb.append(i % 10);
         }
+        this.onekstring = sb.toString();
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -51,33 +53,33 @@ public class JournaledChannelTest extends UnitTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() throws IOException {
         cleanupDirectoryRecursively(TEMP_DIR);
     }
 
     @Test
-    public void testWrite_int() throws Exception {
+    void testWrite_int() throws Exception {
         this.channel.write(1);
         final Path outfile = this.channel.path;
         this.channel.close();
-        assertTrue("Wrote one byte", Files.size(outfile) == 1);
+        assertEquals(1, Files.size(outfile), "Wrote one byte");
     }
 
     @Test
-    public void testWrite_3args() throws Exception {
+    void testWrite_3args() throws Exception {
         final byte[] onekbuff = this.onekstring.getBytes();
         this.channel.write(onekbuff, 0, onekbuff.length);
         this.channel.commit();
-        assertTrue("Position is 1k " + this.channel.position(), this.channel.position() == onekbuff.length);
-        String fiveKStr = "";
+        assertEquals(this.channel.position(), onekbuff.length, "Position is 1k " + this.channel.position());
+        StringBuilder fiveKStr = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            fiveKStr += this.onekstring;
+            fiveKStr.append(this.onekstring);
         }
-        final byte[] fiveK = fiveKStr.getBytes();
+        final byte[] fiveK = fiveKStr.toString().getBytes();
         this.channel.write(fiveK, 0, fiveK.length);
         this.channel.commit();
-        assertTrue("Position is 6k " + this.channel.position(), this.channel.position() == (onekbuff.length + fiveK.length));
+        assertEquals(this.channel.position(), (onekbuff.length + fiveK.length), "Position is 6k " + this.channel.position());
         final Path channelPath = this.channel.path;
         this.channel.close();
         try (SeekableByteChannel sbc = Files.newByteChannel(channelPath)) {
@@ -87,51 +89,51 @@ public class JournaledChannelTest extends UnitTest {
                 sbc.read(buff);
                 buff.flip();
                 final String read = new String(buff.array());
-                assertTrue("Read one k back\n" + read + "\n" + this.onekstring, read.equals(this.onekstring));
+                assertEquals(read, this.onekstring, "Read one k back\n" + read + "\n" + this.onekstring);
             }
         }
     }
 
     @Test
-    public void testWrite_ByteBuffer() throws Exception {
+    void testWrite_ByteBuffer() throws Exception {
         final ByteBuffer buff = ByteBuffer.allocateDirect(6 * 1024);
         for (int i = 0; i < 6; i++) {
             buff.put(this.onekstring.getBytes());
         }
         buff.flip();
         this.channel.write(buff);
-        assertTrue("6k written " + this.channel.position() + " " + buff.capacity(), this.channel.position() == buff.capacity());
+        assertEquals(this.channel.position(), buff.capacity(), "6k written " + this.channel.position() + " " + buff.capacity());
     }
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testPosition_0args() throws Exception {}
+    void testPosition_0args() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testSize() throws Exception {}
+    void testSize() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testIsOpen() {}
+    void testIsOpen() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testCommit() throws Exception {}
+    void testCommit() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testClose() throws Exception {}
+    void testClose() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testPosition_long() throws Exception {}
+    void testPosition_long() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testRead() throws Exception {}
+    void testRead() {}
 
-    @Ignore
+    @Disabled("not implemented")
     @Test
-    public void testTruncate() throws Exception {}
+    void testTruncate() {}
 }

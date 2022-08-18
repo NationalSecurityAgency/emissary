@@ -1,7 +1,7 @@
 package emissary.pickup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,11 +14,11 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.FunctionalTest;
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
+class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private MyWorkSpace space = null;
     private IDirectoryPlace peer = null;
 
@@ -32,11 +32,8 @@ public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private List<String> workingFilePaths = new ArrayList<String>();
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        // set config to java.io.tmpdir, this config package
-        setConfig(System.getProperty("java.io.tmpdir", "."), true);
-
         logger.debug("Starting WorkSpace tests");
 
         // Set up a directory struction with two files to be processed
@@ -90,7 +87,7 @@ public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         if (space != null) {
             space.stop();
@@ -121,12 +118,12 @@ public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
         space.setFPM(maxCount);
         space.setBPM(maxBytes);
 
-        assertTrue("WorkSpace should exist in namespace", Namespace.exists("http://localhost:8005/" + namespace));
+        assertTrue(Namespace.exists("http://localhost:8005/" + namespace), "WorkSpace should exist in namespace");
 
-        assertEquals("No files proessed", 0, space.getFilesProcessed());
-        assertEquals("No bytes proessed", 0, space.getBytesProcessed());
-        assertEquals("No bundles proessed", 0, space.getBundlesProcessed());
-        assertEquals("Outbound queue count in " + space.getKey(), 0, space.getOutboundQueueSize());
+        assertEquals(0, space.getFilesProcessed(), "No files proessed");
+        assertEquals(0, space.getBytesProcessed(), "No bytes proessed");
+        assertEquals(0, space.getBundlesProcessed(), "No bundles proessed");
+        assertEquals(0, space.getOutboundQueueSize(), "Outbound queue count in " + space.getKey());
 
     }
 
@@ -141,42 +138,42 @@ public class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
 
 
     @Test
-    public void testMaxFiles() throws Exception {
+    void testMaxFiles() throws Exception {
         createWorkspace("testMaxFiles", 2, -1);
         detachWorkspace("testMaxFiles");
 
         pause(500);
 
-        assertEquals("files processed on " + space.getKey(), 3, space.getFilesProcessed());
-        assertEquals("bytes processed on " + space.getKey(), 66, space.getBytesProcessed());
-        assertEquals("bundles processed on " + space.getKey(), 2, space.getBundlesProcessed());
-        assertEquals("Outbound queue count in " + space.getKey(), 2, space.getOutboundQueueSize());
+        assertEquals(3, space.getFilesProcessed(), "files processed on " + space.getKey());
+        assertEquals(66, space.getBytesProcessed(), "bytes processed on " + space.getKey());
+        assertEquals(2, space.getBundlesProcessed(), "bundles processed on " + space.getKey());
+        assertEquals(2, space.getOutboundQueueSize(), "Outbound queue count in " + space.getKey());
     }
 
     @Test
-    public void testMaxBytes() throws Exception {
+    void testMaxBytes() throws Exception {
         createWorkspace("testMaxBytes", -1, 10);
         detachWorkspace("testMaxBytes");
 
         pause(500);
 
-        assertEquals("files processed on " + space.getKey(), 3, space.getFilesProcessed());
-        assertEquals("bytes processed on " + space.getKey(), 66, space.getBytesProcessed());
-        assertEquals("bundles processed on " + space.getKey(), 3, space.getBundlesProcessed());
-        assertEquals("Outbound queue count in " + space.getKey(), 3, space.getOutboundQueueSize());
+        assertEquals(3, space.getFilesProcessed(), "files processed on " + space.getKey());
+        assertEquals(66, space.getBytesProcessed(), "bytes processed on " + space.getKey());
+        assertEquals(3, space.getBundlesProcessed(), "bundles processed on " + space.getKey());
+        assertEquals(3, space.getOutboundQueueSize(), "Outbound queue count in " + space.getKey());
     }
 
     @Test
-    public void testMaxBoth() throws Exception {
+    void testMaxBoth() throws Exception {
         createWorkspace("testMaxBoth", 3, 20);
         detachWorkspace("testMaxBoth");
 
         pause(1000);
 
-        assertEquals("files processed on " + space.getKey(), 3, space.getFilesProcessed());
-        assertEquals("bytes processed on " + space.getKey(), 66, space.getBytesProcessed());
-        assertEquals("bundles processed on " + space.getKey(), 2, space.getBundlesProcessed());
-        assertEquals("Outbound queue count in " + space.getKey(), 2, space.getOutboundQueueSize());
+        assertEquals(3, space.getFilesProcessed(), "files processed on " + space.getKey());
+        assertEquals(66, space.getBytesProcessed(), "bytes processed on " + space.getKey());
+        assertEquals(2, space.getBundlesProcessed(), "bundles processed on " + space.getKey());
+        assertEquals(2, space.getOutboundQueueSize(), "Outbound queue count in " + space.getKey());
     }
 
 

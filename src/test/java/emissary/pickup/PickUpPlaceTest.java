@@ -1,40 +1,40 @@
 package emissary.pickup;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import emissary.core.IMobileAgent;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.pickup.file.FilePickUpPlace;
 import emissary.server.EmissaryServer;
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class PickUpPlaceTest extends UnitTest {
+class PickUpPlaceTest extends UnitTest {
 
     @Test
-    public void testIsPickUpTrue() {
-        assertThat(PickUpPlace.implementsPickUpPlace(FilePickUpPlace.class), is(true));
+    void testIsPickUpTrue() {
+        assertTrue(PickUpPlace.implementsPickUpPlace(FilePickUpPlace.class));
     }
 
     @Test
-    public void testIsPickupFalse() {
-        assertThat(PickUpPlace.implementsPickUpPlace(EmissaryServer.class), is(false));
+    void testIsPickupFalse() {
+        assertFalse(PickUpPlace.implementsPickUpPlace(EmissaryServer.class));
     }
 
     @Test
-    public void testIsPickupFalseForInterface() {
-        assertThat(PickUpPlace.implementsPickUpPlace(IMobileAgent.class), is(false));
+    void testIsPickupFalseForInterface() {
+        assertFalse(PickUpPlace.implementsPickUpPlace(IMobileAgent.class));
     }
 
     @Test
-    public void testIsPickupTrueForClient() {
-        assertThat(PickUpPlace.implementsPickUpPlace(FilePickUpClient.class), is(true));
+    void testIsPickupTrueForClient() {
+        assertTrue(PickUpPlace.implementsPickUpPlace(FilePickUpClient.class));
     }
 
     @Test
-    public void testIdPickupTrueForPickupSpace() {
-        assertThat(PickUpPlace.implementsPickUpPlace(PickUpSpace.class), is(true));
+    void testIdPickupTrueForPickupSpace() {
+        assertTrue(PickUpPlace.implementsPickUpPlace(PickUpSpace.class));
     }
 
 }

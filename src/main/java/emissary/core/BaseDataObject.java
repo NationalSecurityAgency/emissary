@@ -24,12 +24,15 @@ import emissary.pickup.Priority;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to hold byte array of data, header, footer, and attributes
  */
 public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDataObject {
+    protected static final Logger logger = LoggerFactory.getLogger(BaseDataObject.class);
 
     /* Including this here make serialization of this object faster. */
     private static final long serialVersionUID = 7362181964652092657L;
@@ -448,6 +451,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public int pushCurrentForm(final String newForm) {
         if (newForm == null) {
             throw new IllegalArgumentException("caller attempted to push a null form value");
+        } else if (!PayloadUtil.isValidForm(newForm)) {
+            // If there is a key separator in the form, then throw an error log as this will cause issues in routing
+            logger.error("INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/'. Given form: {}", newForm);
         }
 
         return addCurrentFormAt(0, newForm);

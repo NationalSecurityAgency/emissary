@@ -15,7 +15,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -439,7 +439,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected Set<String> getTypesToCheckForNamedView(final IBaseDataObject d, final String viewName) {
         final Set<String> checkTypes = new HashSet<String>();
         final String lang = this.dropOffUtil.getLanguage(d);
-        final String fileType = this.dropOffUtil.getFileType(d.getCookedParameters());
+        final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
 
         // skip over blacklisted alt views

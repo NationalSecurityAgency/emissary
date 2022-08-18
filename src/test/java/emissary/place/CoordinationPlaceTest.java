@@ -1,7 +1,7 @@
 package emissary.place;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -18,17 +18,18 @@ import emissary.core.ResourceWatcher;
 import emissary.test.core.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class CoordinationPlaceTest extends UnitTest {
+class CoordinationPlaceTest extends UnitTest {
 
     CoordinationPlace place;
     IServiceProviderPlace mockCoordPlace;
 
-    @Before
+    @Override
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
 
@@ -42,7 +43,8 @@ public class CoordinationPlaceTest extends UnitTest {
         Namespace.bind(Thread.currentThread().getName(), mock(MobileAgent.class));
     }
 
-    @After
+    @Override
+    @AfterEach
     public void tearDown() throws Exception {
         Namespace.unbind("ResourceWatcher");
         Namespace.unbind(Thread.currentThread().getName());
@@ -50,26 +52,26 @@ public class CoordinationPlaceTest extends UnitTest {
     }
 
     @Test
-    public void shouldContinue() throws Exception {
+    void shouldContinue() {
         // test the default behavior
         assertTrue(place.shouldContinue(Mockito.mock(IBaseDataObject.class), Mockito.mock(IServiceProviderPlace.class)));
     }
 
     @Test
-    public void shouldSkip() throws Exception {
+    void shouldSkip() {
         // test the default behavior
         assertFalse(place.shouldSkip(Mockito.mock(IBaseDataObject.class), Mockito.mock(IServiceProviderPlace.class)));
     }
 
     @Test
-    public void process() throws Exception {
+    void process() throws Exception {
         IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(), "test_file", "text");
         place.process(ibdo);
         assertTrue(ibdo.getAllCurrentForms().contains("TESTCOORDINATE"));
     }
 
     @Test
-    public void processHeavyDuty() throws Exception {
+    void processHeavyDuty() throws Exception {
         when(mockCoordPlace.agentProcessHeavyDuty(any(IBaseDataObject.class))).thenReturn(
                 Collections.singletonList(DataObjectFactory.getInstance("child testing this".getBytes(), "test_file", "text")));
 

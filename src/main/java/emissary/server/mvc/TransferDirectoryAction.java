@@ -12,6 +12,7 @@ import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IDirectoryPlace;
+import emissary.util.web.HtmlEscaper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +41,11 @@ public class TransferDirectoryAction {
                 String msg = DirectoryXmlContainer.toXmlString(value);
                 return Response.ok().entity(msg).build();
             } else {
-                return Response.status(404).entity("Nothing found for " + dirname).build();
+                return Response.status(404).entity("Nothing found for " + HtmlEscaper.escapeHtml(dirname)).build();
             }
         } catch (EmissaryException e) {
             LOG.error("Problem looking up", e);
-            return Response.status(500).entity(e.getMessage()).build();
+            return Response.status(500).entity("Directory lookup failed").build();
 
         }
     }

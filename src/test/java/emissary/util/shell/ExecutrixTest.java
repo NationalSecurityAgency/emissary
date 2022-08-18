@@ -1,19 +1,20 @@
 package emissary.util.shell;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,41 +24,24 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import emissary.test.core.UnitTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.commons.lang3.SystemUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class ExecutrixTest extends UnitTest {
+class ExecutrixTest extends UnitTest {
     private Executrix e;
-    private boolean isWindows = System.getProperty("os.name").indexOf("Window") != -1;
+    private final boolean isWindows = SystemUtils.OS_NAME.contains("Windows");
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         this.e = new Executrix();
-
-        final String tmp = System.getProperty("java.io.tmpdir");
-        if (tmp == null || (tmp.indexOf("~") > -1 && this.isWindows)) {
-            if (this.isWindows) {
-                File f = new File("c:/tmp");
-                if (f.exists() && f.isDirectory()) {
-                    this.e.setTmpDir(f.getPath());
-                } else {
-                    f = new File("c:/temp");
-                    if (f.exists() && f.isDirectory()) {
-                        this.e.setTmpDir(f.getPath());
-                    } else {
-                        this.e.setTmpDir("/tmp");
-                    }
-                }
-            } else {
-                this.e.setTmpDir("/tmp");
-            }
-        }
+        this.e.setTmpDir(TMPDIR);
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
         this.e = null;
@@ -65,27 +49,27 @@ public class ExecutrixTest extends UnitTest {
     }
 
     @Test
-    public void testExecutrixParams() {
+    void testExecutrixParams() {
         this.e.setInFileEnding(".in");
         this.e.setOutFileEnding(".out");
         this.e.setOrder("NORMAL");
 
         final String[] names = this.e.makeTempFilenames();
-        assertNotNull("names array produced null", names);
-        assertTrue("names has not enough elements", names.length >= Executrix.OUTPATH);
-        assertNotNull("names array has null DIR", names[Executrix.DIR]);
-        assertNotNull("names array has null BASE", names[Executrix.BASE]);
-        assertNotNull("names array has null BASE_PATH", names[Executrix.BASE_PATH]);
-        assertNotNull("names array has null IN", names[Executrix.IN]);
-        assertNotNull("names array has null OUT", names[Executrix.OUT]);
-        assertNotNull("names array has null INPATH", names[Executrix.INPATH]);
-        assertNotNull("names array has null OUTPATH", names[Executrix.OUTPATH]);
-        assertTrue("names must use out file ending", names[Executrix.OUT].endsWith(".out"));
-        assertTrue("names must use in file ending", names[Executrix.IN].endsWith(".in"));
+        assertNotNull(names, "names array produced null");
+        assertTrue(names.length >= Executrix.OUTPATH, "names has not enough elements");
+        assertNotNull(names[Executrix.DIR], "names array has null DIR");
+        assertNotNull(names[Executrix.BASE], "names array has null BASE");
+        assertNotNull(names[Executrix.BASE_PATH], "names array has null BASE_PATH");
+        assertNotNull(names[Executrix.IN], "names array has null IN");
+        assertNotNull(names[Executrix.OUT], "names array has null OUT");
+        assertNotNull(names[Executrix.INPATH], "names array has null INPATH");
+        assertNotNull(names[Executrix.OUTPATH], "names array has null OUTPATH");
+        assertTrue(names[Executrix.OUT].endsWith(".out"), "names must use out file ending");
+        assertTrue(names[Executrix.IN].endsWith(".in"), "names must use in file ending");
     }
 
     @Test
-    public void testExecutrixUniqueBase() {
+    void testExecutrixUniqueBase() {
         this.e.setInFileEnding(".in");
         this.e.setOutFileEnding(".out");
         this.e.setOrder("NORMAL");
@@ -96,154 +80,154 @@ public class ExecutrixTest extends UnitTest {
         // Generate COUNT sets of names
         IntStream.range(0, COUNT).parallel().forEach(number -> {
             final String[] name = this.e.makeTempFilenames();
-            assertNotNull("name null DIR", name[Executrix.DIR]);
-            assertNotNull("name null BASE", name[Executrix.BASE]);
-            assertNotNull("name null BASE_PATH", name[Executrix.BASE_PATH]);
+            assertNotNull(name[Executrix.DIR], "name null DIR");
+            assertNotNull(name[Executrix.BASE], "name null BASE");
+            assertNotNull(name[Executrix.BASE_PATH], "name null BASE_PATH");
             basePathSet.add(name[Executrix.BASE_PATH]);
         });
-        assertEquals("Some BASE_PATH entries mismatch", COUNT, basePathSet.size());
+        assertEquals(COUNT, basePathSet.size(), "Some BASE_PATH entries mismatch");
     }
 
     @Test
-    public void testReadWrite() throws Exception {
+    void testReadWrite() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
-        assertTrue("File written", Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false));
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
         byte[] data = Executrix.readFile(TMPDIR + "/foo.dat");
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must all be read", data.length == 3);
+        assertNotNull(data, "Data must be read");
+        assertEquals(3, data.length, "Data must all be read");
 
         // append
-        assertTrue("File written", Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", true));
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", true), "File written");
         data = Executrix.readFile(TMPDIR + "/foo.dat");
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must all be read", data.length == 6);
+        assertNotNull(data, "Data must be read");
+        assertEquals(6, data.length, "Data must all be read");
 
         data = Executrix.readFile(TMPDIR + "/foo.dat", 3);
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must be read up to limit", data.length == 3);
+        assertNotNull(data, "Data must be read");
+        assertEquals(3, data.length, "Data must be read up to limit");
 
         data = Executrix.readFile(TMPDIR + "/foo.dat", 3000);
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must be read up to actual size", data.length == 6);
+        assertNotNull(data, "Data must be read");
+        assertEquals(6, data.length, "Data must be read up to actual size");
 
-        assertFalse("Should not write null data", Executrix.writeDataToFile((byte[]) null, TMPDIR + "/foo.dat"));
-        assertFalse("Should not write null data", Executrix.writeDataToFile((byte[]) null, TMPDIR + "/foo.dat", false));
-        assertFalse("Should not write null data", Executrix.writeDataToFile((byte[]) null, 0, 3, TMPDIR + "/foo.dat", false));
+        assertFalse(Executrix.writeDataToFile(null, TMPDIR + "/foo.dat"), "Should not write null data");
+        assertFalse(Executrix.writeDataToFile(null, TMPDIR + "/foo.dat", false), "Should not write null data");
+        assertFalse(Executrix.writeDataToFile(null, 0, 3, TMPDIR + "/foo.dat", false), "Should not write null data");
 
-        assertTrue("Overwrite longer file should truncate previous data", Executrix.writeDataToFile("aaa".getBytes(), TMPDIR + "/foo.dat", false));
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), TMPDIR + "/foo.dat", false), "Overwrite longer file should truncate previous data");
         data = Executrix.readFile(TMPDIR + "/foo.dat");
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must be read up to actual size", data.length == 3);
+        assertNotNull(data, "Data must be read");
+        assertEquals(3, data.length, "Data must be read up to actual size");
 
         data = Executrix.readDataFromFile(TMPDIR + "/foo.dat");
-        assertNotNull("Data must be read", data);
-        assertTrue("Data must be read up to actual size", data.length == 3);
+        assertNotNull(data, "Data must be read");
+        assertEquals(3, data.length, "Data must be read up to actual size");
 
         data = Executrix.readDataFromFile(TMPDIR + "/filedoesnotexist.dat");
-        assertNull("Read non existent does not throw", data);
+        assertNull(data, "Read non existent does not throw");
 
-        assertFalse("Write to null path", Executrix.writeDataToFile("aaa".getBytes(), null));
-        assertFalse("Write to null path", Executrix.writeDataToFile("aaa".getBytes(), null, false));
-        assertFalse("Write to null path", Executrix.writeDataToFile("aaa".getBytes(), 0, 3, null, false));
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), null), "Write to null path");
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), null, false), "Write to null path");
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, null, false), "Write to null path");
 
         RandomAccessFile raf = new RandomAccessFile(TMPDIR + "/foo.dat", "rw");
         data = Executrix.readDataFromFile(raf);
-        assertNotNull("Data must be read from raf", data);
-        assertTrue("Data must all be read from raf", data.length == 3);
+        assertNotNull(data, "Data must be read from raf");
+        assertEquals(3, data.length, "Data must all be read from raf");
         raf.close();
 
         raf = new RandomAccessFile(TMPDIR + "/foo.dat", "rw");
         data = Executrix.readDataFromFile(raf, 2, 1);
-        assertNotNull("Data must be read from raf", data);
-        assertTrue("Data must all be read from raf", data.length == 1);
+        assertNotNull(data, "Data must be read from raf");
+        assertEquals(1, data.length, "Data must all be read from raf");
 
         raf.seek(0);
         data = Executrix.readDataFromFile(raf, 100, 200);
-        assertNull("Data requested out of bounds", data);
+        assertNull(data, "Data requested out of bounds");
 
         raf.seek(0);
         data = Executrix.readDataFromFile(raf, 0, 100);
-        assertNotNull("Available data read from raf", data);
-        assertTrue("All available data read from raf", data.length == 3);
+        assertNotNull(data, "Available data read from raf");
+        assertEquals(3, data.length, "All available data read from raf");
 
         raf.seek(0);
         final FileChannel channel = raf.getChannel();
         data = Executrix.readDataFromChannel(channel);
-        assertNotNull("Available data read from channel", data);
-        assertTrue("All available data read from channel", data.length == 3);
+        assertNotNull(data, "Available data read from channel");
+        assertEquals(3, data.length, "All available data read from channel");
 
         data = Executrix.readDataFromChannel(channel, 0, 3);
-        assertNotNull("Available data read from channel", data);
-        assertTrue("All available data read from channel", data.length == 3);
+        assertNotNull(data, "Available data read from channel");
+        assertEquals(3, data.length, "All available data read from channel");
 
         data = Executrix.readDataFromChannel(channel, 0, 1);
-        assertNotNull("Available data read from channel", data);
-        assertTrue("All limit data read from channel", data.length == 1);
+        assertNotNull(data, "Available data read from channel");
+        assertEquals(1, data.length, "All limit data read from channel");
 
         data = Executrix.readDataFromChannel(channel, 0, 100);
-        assertNotNull("Available data read from channel", data);
-        assertTrue("All limit data read from channel", data.length == 3);
+        assertNotNull(data, "Available data read from channel");
+        assertEquals(3, data.length, "All limit data read from channel");
 
         data = Executrix.readDataFromChannel(channel, 50, 100);
-        assertNull("Out of bounds data on channel returned non-null", data);
+        assertNull(data, "Out of bounds data on channel returned non-null");
 
         channel.close();
         raf.close();
 
         final File f = new File(TMPDIR + "/foo.dat");
-        f.delete();
+        Files.deleteIfExists(f.toPath());
     }
 
     @Test
-    public void testReadWriteTempDir() {
+    void testReadWriteTempDir() throws IOException {
         String[] names = this.e.writeDataToNewTempDir("aaa".getBytes());
-        assertNotNull("names on temp dir write", names);
+        assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
 
         names = this.e.writeDataToNewTempDir("aaa".getBytes(), 0, 1);
-        assertNotNull("names on temp dir write", names);
+        assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
     }
 
     @Test
-    public void testCopyFile() throws Exception {
+    void testCopyFile() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
-        assertTrue("File written", Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false));
-        Executrix.copyFile(TMPDIR + "/foo.dat", TMPDIR + "/bar.dat");
-        final byte[] data = Executrix.readFile(TMPDIR + "/bar.dat");
-        assertNotNull("Data read from copy", data);
-        assertTrue("All data read from copy", data.length == 3);
-
-        File f = new File(TMPDIR + "/foo.dat");
-        f.delete();
-        f = new File(TMPDIR + "/bar.dat");
-        f.delete();
+        try {
+            assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
+            Executrix.copyFile(TMPDIR + "/foo.dat", TMPDIR + "/bar.dat");
+            final byte[] data = Executrix.readFile(TMPDIR + "/bar.dat");
+            assertNotNull(data, "Data read from copy");
+            assertEquals(3, data.length, "All data read from copy");
+        } finally {
+            Files.deleteIfExists(Paths.get(TMPDIR, "foo.dat"));
+            Files.deleteIfExists(Paths.get(TMPDIR, "bar.dat"));
+        }
     }
 
     @Test
-    public void testCleanupNonExistentDir() throws Exception {
+    void testCleanupNonExistentDir() {
         final File dirToDelete = mock(File.class);
         when(dirToDelete.exists()).thenReturn(false);
 
         final boolean result = Executrix.cleanupDirectory(dirToDelete);
-        assertThat(result, is(true));
+        assertTrue(result);
     }
 
     @Test
-    public void testCleanupNonDir() throws Exception {
+    void testCleanupNonDir() {
         final File dirToDelete = mock(File.class);
         when(dirToDelete.exists()).thenReturn(true).thenReturn(true).thenReturn(false);
         when(dirToDelete.isFile()).thenReturn(true);
         when(dirToDelete.delete()).thenReturn(false).thenReturn(true);
 
         final boolean result = Executrix.cleanupDirectory(dirToDelete);
-        assertThat(result, is(true));
+        assertTrue(result);
     }
 
     @Test
-    public void testCleanupIOProblemDir() throws Exception {
+    void testCleanupIOProblemDir() {
         final File dirToDelete = mock(File.class);
         when(dirToDelete.exists()).thenReturn(true).thenReturn(true).thenReturn(false);
         when(dirToDelete.isFile()).thenReturn(false);
@@ -251,118 +235,113 @@ public class ExecutrixTest extends UnitTest {
         when(dirToDelete.listFiles()).thenReturn(null);
 
         final boolean result = Executrix.cleanupDirectory(dirToDelete);
-        assertThat(result, is(false));
+        assertFalse(result);
     }
 
     @Test
-    public void testWriteWithCleanup() throws Exception {
+    void testWriteWithCleanup() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
-        assertTrue("File Written in subdir", Executrix.writeDataToFile("abc".getBytes(), TMPDIR + "/foo/bar/baz.dat"));
+        assertTrue(Executrix.writeDataToFile("abc".getBytes(), TMPDIR + "/foo/bar/baz.dat"), "File Written in subdir");
         byte[] data = Executrix.readFile(TMPDIR + "/foo/bar/baz.dat");
-        assertNotNull("Data read from subdir", data);
-        assertTrue("All data read from subdir", data.length == 3);
+        assertNotNull(data, "Data read from subdir");
+        assertEquals(3, data.length, "All data read from subdir");
 
-        assertTrue("Cleanup removes all", Executrix.cleanupDirectory(TMPDIR + "/foo"));
+        assertTrue(Executrix.cleanupDirectory(TMPDIR + "/foo"), "Cleanup removes all");
 
         data = Executrix.readDataFromFile(TMPDIR + "/foo/bar/baz.dat");
-        assertNull("Data read from non-existent subdir", data);
+        assertNull(data, "Data read from non-existent subdir");
     }
 
     @Test
-    public void testExecute() {
+    void testExecute() throws IOException {
 
-        // if (isWindows)
-        // {
-        // logger.debug("This test needs to be made to work on windoze");
-        // return;
-        // }
         final String[] names = this.e.makeTempFilenames();
         logger.debug("Names for testExecute is " + Arrays.asList(names));
 
         final File tdir = new File(names[Executrix.DIR]);
-        tdir.mkdirs();
-        assertTrue("Temp dir exists", tdir.exists() && tdir.isDirectory());
+        Files.createDirectories(tdir.toPath());
+        assertTrue(tdir.exists() && tdir.isDirectory(), "Temp dir exists");
 
-        assertTrue("File written", Executrix.writeDataToFile("aaa".getBytes(), names[Executrix.INPATH]));
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), names[Executrix.INPATH]), "File written");
         final byte[] data = Executrix.readDataFromFile(names[Executrix.INPATH]);
-        assertNotNull("Data must be read from " + names[Executrix.INPATH], data);
+        assertNotNull(data, "Data must be read from " + names[Executrix.INPATH]);
 
         final String cyg = System.getProperty("CYGHOME");
-        final boolean cyghome = cyg != null && cyg.indexOf(":") > -1;
+        final boolean cyghome = cyg != null && cyg.contains(":");
         final String cmd = (this.isWindows ? (cyghome ? "/bin/cp" : "copy") : "cp") + " <INPUT_NAME> <OUTPUT_NAME>";
         String[] c = this.e.getCommand(cmd, names);
-        assertNotNull("Command returned", c);
-        assertEquals("Command runner", (this.isWindows ? "cmd" : "/bin/sh"), c[0]);
+        assertNotNull(c, "Command returned");
+        assertEquals((this.isWindows ? "cmd" : "/bin/sh"), c[0], "Command runner");
 
         this.e.setCommand(cmd);
         c = this.e.getCommand(names);
-        assertNotNull("Command returned", c);
-        assertEquals("Command runner", (this.isWindows ? "cmd" : "/bin/sh"), c[0]);
+        assertNotNull(c, "Command returned");
+        assertEquals((this.isWindows ? "cmd" : "/bin/sh"), c[0], "Command runner");
 
         logger.debug("Command to exec is " + Arrays.asList(c));
 
-        int pstat = -1;
+        int pstat;
         final StringBuffer out = new StringBuffer();
         final StringBuffer err = new StringBuffer();
 
         pstat = this.e.execute(c, out, err);
-        logger.debug("Stdout: " + out.toString());
-        logger.debug("Stderr: " + err.toString());
-        assertTrue("Process return value", pstat >= 0);
+        logger.debug("Stdout: " + out);
+        logger.debug("Stderr: " + err);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c, out);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c, out, "UTF-8");
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c, out, err, "UTF-8");
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         final StringBuilder sout = new StringBuilder();
         final StringBuilder serr = new StringBuilder();
 
         pstat = this.e.execute(c, sout);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c, sout, serr);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c, sout, serr, "UTF-8");
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        final Map<String, String> env = new HashMap<String, String>();
+        final Map<String, String> env = new HashMap<>();
         env.put("FOO", "BAR");
 
         pstat = this.e.execute(c, sout, serr, "UTF-8", env);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         pstat = this.e.execute(c);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         this.e.setProcessMaxMillis(0); // wait forever
         pstat = this.e.execute(c, sout, serr, "UTF-8", env);
-        assertTrue("Process return value", pstat >= 0);
+        assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        assertTrue("Temp area clean up removes all", Executrix.cleanupDirectory(tdir));
-        assertFalse("Temp area should be gone", tdir.exists());
+        assertTrue(Executrix.cleanupDirectory(tdir), "Temp area clean up removes all");
+        assertFalse(tdir.exists(), "Temp area should be gone");
     }
 
-    private void readAndNuke(final String name) {
+    private void readAndNuke(final String name) throws IOException {
         final File f = new File(name);
-        assertTrue("File " + name + " must exist", f.exists());
+        assertTrue(f.exists(), "File " + name + " must exist");
         final byte[] data = Executrix.readDataFromFile(name);
-        assertNotNull("Data read from " + name + " was null", data);
-        f.delete();
+        assertNotNull(data, "Data read from " + name + " was null");
+        Files.deleteIfExists(f.toPath());
     }
 }

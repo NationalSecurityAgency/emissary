@@ -7,26 +7,25 @@ import static emissary.client.HTTPConnectionFactory.CFG_TRUST_STORE;
 import static emissary.client.HTTPConnectionFactory.CFG_TRUST_STORE_PW;
 import static emissary.client.HTTPConnectionFactory.CFG_TRUST_STORE_TYPE;
 import static emissary.client.HTTPConnectionFactory.DFLT_STORE_TYPE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import javax.net.ssl.SSLContext;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-/**
- *
- */
-public class HTTPConnectionFactoryTest extends UnitTest {
+class HTTPConnectionFactoryTest extends UnitTest {
 
     private Configurator cfg;
-    private static String projectBase = System.getenv("PROJECT_BASE"); // set in surefire config
+    private static final String projectBase = System.getenv("PROJECT_BASE"); // set in surefire config
 
-    @Before
+    @BeforeEach
     @Override
     public void setUp() {
         this.cfg = Mockito.spy(new ServiceConfigGuide());
@@ -36,7 +35,7 @@ public class HTTPConnectionFactoryTest extends UnitTest {
      * Test of build method, of class HTTPConnectionFactory.
      */
     @Test
-    public void testBuild() throws Exception {
+    void testBuild() throws Exception {
         addKeystoreProps(this.cfg);
         addTrustStoreProps(this.cfg);
         final HTTPConnectionFactory instance = new HTTPConnectionFactory(this.cfg);
@@ -48,17 +47,17 @@ public class HTTPConnectionFactoryTest extends UnitTest {
         Mockito.verify(this.cfg, Mockito.times(1)).findStringEntry(CFG_TRUST_STORE_PW);
         Mockito.verify(this.cfg, Mockito.times(1)).findStringEntry(CFG_TRUST_STORE_TYPE, DFLT_STORE_TYPE);
 
-        Assert.assertTrue(instance.maxConns == 200L);
+        assertEquals(200L, instance.maxConns);
 
         this.cfg = new ServiceConfigGuide();
 
         final SSLContext dflt = instance.build(this.cfg);
 
-        Assert.assertTrue(SSLContext.getDefault() == dflt);
+        assertSame(SSLContext.getDefault(), dflt);
     }
 
     @Test
-    public void loadPWFromFile() throws Exception {
+    void loadPWFromFile() throws Exception {
         addKeystoreProps(this.cfg);
         addTrustStoreProps(this.cfg);
 
@@ -72,7 +71,7 @@ public class HTTPConnectionFactoryTest extends UnitTest {
 
         final SSLContext fromConfig = instance.build(this.cfg);
 
-        Assert.assertTrue(SSLContext.getDefault() != fromConfig);
+        assertNotSame(SSLContext.getDefault(), fromConfig);
     }
 
     private static void addKeystoreProps(final Configurator cfg) {

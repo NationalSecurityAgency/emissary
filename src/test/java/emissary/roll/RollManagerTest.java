@@ -1,55 +1,58 @@
 package emissary.roll;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import emissary.test.core.UnitTest;
-import emissary.util.EmissaryIsolatedClassloaderRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import emissary.util.EmissaryIsolatedClassLoaderExtension;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(EmissaryIsolatedClassloaderRunner.class)
-public class RollManagerTest extends UnitTest {
+class RollManagerTest extends UnitTest {
 
     @Test
-    public void testAddRoller() {
+    void testAddRoller() {
         RollManager rm = new RollManager();
         Roller r = new Roller(TimeUnit.SECONDS, 1, new RollableTest());
         rm.addRoller(r);
-        Assert.assertTrue("Roller successfully registered", rm.rollers.contains(r));
+        assertTrue(rm.rollers.contains(r), "Roller successfully registered");
         rm.exec.shutdown();
     }
 
     @Test
-    public void testObserve() {
+    void testObserve() {
         RollManager rm = new RollManager();
         Roller r = new Roller(1, TimeUnit.DAYS, 1, new RollableTest());
         RollTestObserver o = new RollTestObserver();
         r.addObserver(o);
         rm.addRoller(r);
         r.incrementProgress();
-        Assert.assertNotNull("Roller notified", o.o);
+        Assertions.assertNotNull(o.o, "Roller notified");
         rm.exec.shutdown();
     }
 
     @Test
-    public void testAutoConfig() {
+    @ExtendWith(EmissaryIsolatedClassLoaderExtension.class)
+    void testAutoConfig() {
         RollManager rm = RollManager.getManager();
-        Assert.assertEquals("One test Roller configured", 1, rm.rollers.size());
+        assertEquals(1, rm.rollers.size(), "One test Roller configured");
         Roller r = rm.rollers.iterator().next();
-        Assert.assertEquals(TimeUnit.MINUTES, r.getTimeUnit());
-        Assert.assertEquals(10L, r.getPeriod());
-        Assert.assertEquals(100L, r.getMax());
-        Assert.assertEquals(RollableTest.class, r.getRollable().getClass());
+        assertEquals(TimeUnit.MINUTES, r.getTimeUnit());
+        assertEquals(10L, r.getPeriod());
+        assertEquals(100L, r.getMax());
+        assertEquals(RollableTest.class, r.getRollable().getClass());
         RollManager.shutdown();
     }
 
     @Test
-    public void testFailedoller() throws Exception {
+    void testFailedRoller() throws Exception {
         RollManager rm = new RollManager();
         CountDownLatch latch = new CountDownLatch(1);
         Roller r = new Roller(TimeUnit.MILLISECONDS, 250, new Rollable() {
@@ -69,18 +72,17 @@ public class RollManagerTest extends UnitTest {
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
                 // noop
             }
         });
         rm.addRoller(r);
         latch.await();
         // should have been unscheduled
-        Assert.assertFalse(rm.exec.getQueue().contains(r));
+        assertFalse(rm.exec.getQueue().contains(r));
     }
 
-
-    class RollTestObserver implements Observer {
+    static class RollTestObserver implements Observer {
         Observable o;
         Object arg;
 

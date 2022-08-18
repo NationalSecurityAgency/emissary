@@ -1,7 +1,9 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
@@ -25,31 +27,30 @@ import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;
 import net.spy.memcached.ops.Operation;
 import net.spy.memcached.ops.OperationStatus;
-import org.apache.commons.lang.NotImplementedException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
+import org.apache.commons.lang3.NotImplementedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.stubbing.Answer;
 
-public class KffMemcachedTest extends UnitTest {
+class KffMemcachedTest extends UnitTest {
 
-    private String testIdWithSpaces = "TEST ID";
-    private String testPayload = "TEST DATA";
-    private String testUnformattedIdHash = "01e44cd59b2c0e8acbb99647d579f74f91bde66e4a243dc212a3c8e8739c9957";
+    private final String testIdWithSpaces = "TEST ID";
+    private final String testPayload = "TEST DATA";
+    private final String testUnformattedIdHash = "01e44cd59b2c0e8acbb99647d579f74f91bde66e4a243dc212a3c8e8739c9957";
     private String expectedKey = "";
     private MemcachedClient mockMemcachedClient = null;
     private boolean isBinaryConnection = false;
     private String cacheResult = null;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockMemcachedClient = createMockMemcachedClient();
 
     }
 
-    @After
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -57,41 +58,51 @@ public class KffMemcachedTest extends UnitTest {
         validateMockitoUsage();
     }
 
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testThrowsWithNonAsciiAndDups() throws Exception {
+    @Test
+    public void testKffMemcachedCreation() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
-        mcdFilter.check(testIdWithSpaces, createSums(mcdFilter));
+        mcdFilter.setPreferredAlgorithm("SHA-256");
+        assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
+        assertEquals("KFF", mcdFilter.getName());
+        assertEquals(FilterType.Duplicate, mcdFilter.getFilterType());
+    }
+
+    @Test
+    void testThrowsWithNonAsciiAndDups() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
+            mcdFilter.check(testIdWithSpaces, createSums(mcdFilter));
+        });
     }
 
 
     @Test
-    public void testNoHitNoStoreIdDupe() throws Exception {
+    void testNoHitNoStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.FALSE, testUnformattedIdHash);
-        assertFalse("Filter should not hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertFalse(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
-    public void testHitNoStoreIdDupe() throws Exception {
+    void testHitNoStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.FALSE, Boolean.TRUE, null);
-        assertTrue("Filter should hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertTrue(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should hit");
     }
 
     @Test
-    public void testNoHitWithStoreIdDupe() throws Exception {
+    void testNoHitWithStoreIdDupe() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.FALSE, testUnformattedIdHash);
-        assertFalse("Filter should not hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertFalse(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should not hit");
     }
 
     @Test
-    public void testHitWithStoreIdDupe() throws Exception {
+    void testHitWithStoreIdDupe() throws Exception {
         isBinaryConnection = true;
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
-        assertTrue("Filter should hit", mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)));
+        assertTrue(mcdFilter.check(testIdWithSpaces, createSums(mcdFilter)), "Filter should hit");
     }
 
     private ChecksumResults createSums(KffMemcached mcd) throws NoSuchAlgorithmException {
-        List<String> kffalgs = new ArrayList<String>();
+        List<String> kffalgs = new ArrayList<>();
         kffalgs.add(mcd.getPreferredAlgorithm());
         return new ChecksumCalculator(kffalgs).digest(testPayload.getBytes());
     }
@@ -101,7 +112,7 @@ public class KffMemcachedTest extends UnitTest {
             IllegalAccessException {
         KffMemcached filter = new KffMemcached(testIdWithSpaces, "KFF", FilterType.Duplicate, mockMemcachedClient);
         setPrivateMembersForTesting(filter, storeIdDupe);
-        if (simulateHit.booleanValue()) {
+        if (simulateHit) {
             cacheResult = "FAKE FIND";
         } else {
             cacheResult = null;
@@ -133,32 +144,26 @@ public class KffMemcachedTest extends UnitTest {
 
         MemcachedClient localMockMemcachedClient = mock(MemcachedClient.class);
 
-        when(localMockMemcachedClient.asyncGet(Matchers.anyString())).thenAnswer(new Answer<TestGetFuture<Object>>() {
-            @Override
-            public TestGetFuture<Object> answer(InvocationOnMock invocation) throws Throwable {
-
-                Object[] args = invocation.getArguments();
-                return new TestGetFuture<Object>(new CountDownLatch(1), 500, (String) args[0]);
-            }
+        when(localMockMemcachedClient.asyncGet(ArgumentMatchers.anyString())).thenAnswer((Answer<TestGetFuture<Object>>) invocation -> {
+            Object[] args = invocation.getArguments();
+            return new TestGetFuture<>(new CountDownLatch(1), 500, (String) args[0]);
         });
 
-        when(localMockMemcachedClient.set(Matchers.anyString(), Matchers.anyInt(), Matchers.anyObject())).thenAnswer(new Answer<Future<Boolean>>() {
-            @Override
-            public Future<Boolean> answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                String key = (String) args[0];
+        when(localMockMemcachedClient.set(ArgumentMatchers.anyString(), ArgumentMatchers.anyInt(), ArgumentMatchers.any()))
+                .thenAnswer((Answer<Future<Boolean>>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    String key = (String) args[0];
 
-                if (!key.equals(expectedKey)) {
-                    throw new Exception("Key :" + key + " not equal to expected key: " + expectedKey);
-                }
+                    if (!key.equals(expectedKey)) {
+                        throw new Exception("Key :" + key + " not equal to expected key: " + expectedKey);
+                    }
 
-                if (!isBinaryConnection) {
-                    checkForValidAscii(key);
-                }
+                    if (!isBinaryConnection) {
+                        checkForValidAscii(key);
+                    }
 
-                return new OperationFuture<Boolean>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
-            }
-        });
+                    return new OperationFuture<>(key, new CountDownLatch(1), 500, Executors.newFixedThreadPool(1));
+                });
 
         return localMockMemcachedClient;
     }

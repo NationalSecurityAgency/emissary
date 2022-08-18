@@ -1,8 +1,7 @@
 package emissary.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,16 +14,16 @@ import emissary.config.Configurator;
 import emissary.core.MetadataDictionary;
 import emissary.core.MetadataDictionaryTest;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class MetadataDictionaryUtilTest extends UnitTest {
+class MetadataDictionaryUtilTest extends UnitTest {
 
     MetadataDictionary dict;
     private String lines;
     private MetadataDictionaryUtil md;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         final Configurator conf = ConfigUtil.getConfigInfo(MetadataDictionaryTest.class);
         this.dict = new MetadataDictionary("test", conf);
@@ -33,7 +32,7 @@ public class MetadataDictionaryUtilTest extends UnitTest {
     }
 
     @Test
-    public void keysCanMapToMultipleVals() {
+    void keysCanMapToMultipleVals() {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
             final Map<String, Collection<String>> map = this.md.convertLinesToMap(this.lines.getBytes(), output);
 
@@ -45,12 +44,12 @@ public class MetadataDictionaryUtilTest extends UnitTest {
             assertEquals(1, map.get("key").size());
             assertTrue(map.get("key").contains("val1"));
         } catch (IOException e) {
-            fail("Exception occurred while converting lines to map");
+            throw new AssertionError("Exception occurred while converting lines to map", e);
         }
     }
 
     @Test
-    public void mapConvertsToByteArray() throws IOException {
+    void mapConvertsToByteArray() throws IOException {
         final TreeMultimap<String, String> kv = TreeMultimap.create();
         kv.put("abc", "val1");
         kv.put("zzz", "val2");

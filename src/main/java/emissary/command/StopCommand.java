@@ -17,12 +17,14 @@ public class StopCommand extends HttpCommand {
 
     public static String COMMAND_NAME = "stop";
 
+    @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
     public static int DEFAULT_PORT = 8001;
 
+    @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }

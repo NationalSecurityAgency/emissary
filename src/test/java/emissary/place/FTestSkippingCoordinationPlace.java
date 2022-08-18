@@ -1,8 +1,9 @@
 package emissary.place;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,16 +18,16 @@ import emissary.core.ResourceWatcher;
 import emissary.place.sample.ToLowerPlace;
 import emissary.test.core.FunctionalTest;
 import emissary.util.io.ResourceReader;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class FTestSkippingCoordinationPlace extends FunctionalTest {
+class FTestSkippingCoordinationPlace extends FunctionalTest {
     private CoordinationPlace place;
     private Configurator config;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
 
@@ -36,36 +37,36 @@ public class FTestSkippingCoordinationPlace extends FunctionalTest {
     }
 
     @Override
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         demolishServer();
     }
 
     @Test
-    public void testRequiredPlaceCreation() throws Exception {
+    void testRequiredPlaceCreation() throws Exception {
         for (String key : config.findEntries("SERVICE_COORDINATION")) {
-            Namespace.lookup(key); // will throw exception if not present
+            assertNotNull(Namespace.lookup(key)); // will throw exception if not present
         }
     }
 
     @Test
-    public void testProcessing() throws Exception {
+    void testProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
         place.processHeavyDuty(payload);
-        assertEquals("Current form must be set by coordinate place", config.findStringEntry("OUTPUT_FORM"), payload.currentForm());
+        assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
     }
 
     @Test
-    public void testProcessingWithResourceTracking() throws Exception {
+    void testProcessingWithResourceTracking() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
-        assertEquals("Current form must be set by coordinate place", config.findStringEntry("OUTPUT_FORM"), payload.currentForm());
+        assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
         Map<String, com.codahale.metrics.Timer> resourcesUsed = rw.getStats();
         rw.quit();
-        assertFalse("Resource must not be tracked for coordinated place which should be skipped", resourcesUsed.containsKey("ToLowerPlace"));
-        assertTrue("Resource must be tracked for coordinated place", resourcesUsed.containsKey("ToUpperPlace"));
-        assertFalse("Resource must not be tracked for container place", resourcesUsed.containsKey("CoordinationPlace"));
+        assertFalse(resourcesUsed.containsKey("ToLowerPlace"), "Resource must not be tracked for coordinated place which should be skipped");
+        assertTrue(resourcesUsed.containsKey("ToUpperPlace"), "Resource must be tracked for coordinated place");
+        assertFalse(resourcesUsed.containsKey("CoordinationPlace"), "Resource must not be tracked for container place");
     }
 
     // extending base coordination class to test the overridden methods in FTest
@@ -79,13 +80,10 @@ public class FTestSkippingCoordinationPlace extends FunctionalTest {
             // this would have to be test in state to allow specific places to skipped
 
             // skipping ToLowerPlace
-            if (p instanceof ToLowerPlace) {
-                // apply any condition for the ToLowerPlace case, but always return false for testing purpose
-                return true;
-            }
+            // apply any condition for the ToLowerPlace case, but always return false for testing purpose
+            return p instanceof ToLowerPlace;
 
             // all the other places should return false
-            return false;
         }
     }
 }

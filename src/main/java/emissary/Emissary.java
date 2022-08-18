@@ -80,7 +80,7 @@ public class Emissary {
     protected Emissary(Map<String, EmissaryCommand> cmds) {
         commands = Collections.unmodifiableMap(cmds);
         // sort by command name and then add to jCommander
-        for (String key : new TreeSet<String>(commands.keySet())) {
+        for (String key : new TreeSet<>(commands.keySet())) {
             jc.addCommand(key, commands.get(key));
         }
     }
@@ -190,6 +190,7 @@ public class Emissary {
         // output to stdout/stderr Last none logback message
         LOG.trace("Redefining stdout so logback and capture the output");
         System.setOut(new PrintStream(System.out) {
+            @Override
             public void print(String s) {
                 LOG.info(s);
             }
@@ -198,6 +199,7 @@ public class Emissary {
         LOG.trace("Redefining stderr so logback and capture the output");
         System.setErr(new PrintStream(System.err) {
 
+            @Override
             public void print(String s) {
                 LOG.error(s);
             }

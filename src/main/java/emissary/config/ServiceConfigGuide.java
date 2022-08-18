@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.io.StreamTokenizer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -323,7 +324,10 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 } catch (IOException e) {
                     // Throw exception if it is an IMPORT_FILE and the base file is not found
                     if ("IMPORT_FILE".equals(parmName) && i == 0) {
-                        throw new IOException("IMPORT_FILE = " + sval + " : Directive failed. Called from " + filename, e);
+                        String importFileName = Paths.get(svalArg).getFileName().toString();
+                        throw new IOException("In " + filename + ", cannot find IMPORT_FILE: " + sval
+                                + " on the specified path. Make sure IMPORT_FILE (" + importFileName + ") exists, and the file path is correct.",
+                                e);
                     }
                 }
             }
@@ -794,6 +798,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param preserveOrder if true key ordering is preserved
      * @return map where key is remainder after match and value is the config value, or an empty map if none found
      */
+    @Override
     public Map<String, String> findStringMatchMap(final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
         if (theParameter == null) {
             return Collections.emptyMap();

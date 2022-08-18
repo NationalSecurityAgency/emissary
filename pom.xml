@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.1.0-SNAPSHOT</version>
+  <version>7.8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -28,51 +28,48 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.commons-cli.version>1.4</dep.commons-cli.version>
+    <dep.commons-cli.version>1.5.0</dep.commons-cli.version>
     <dep.commons-codec.version>1.15</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-exec.version>1.3</dep.commons-exec.version>
     <dep.commons-fileupload.version>1.4</dep.commons-fileupload.version>
-    <dep.commons-io.version>2.8.0</dep.commons-io.version>
-    <dep.commons-lang.version>2.6</dep.commons-lang.version>
-    <dep.commons-logging.version>1.2</dep.commons-logging.version>
-    <dep.commons-pool2.version>2.9.0</dep.commons-pool2.version>
-    <dep.dropwizard.metrics.version>3.1.0</dep.dropwizard.metrics.version>
+    <dep.commons-io.version>2.11.0</dep.commons-io.version>
+    <dep.commons-lang.version>3.12.0</dep.commons-lang.version>
+    <dep.commons-pool2.version>2.11.1</dep.commons-pool2.version>
+    <dep.dropwizard.metrics.version>4.2.4</dep.dropwizard.metrics.version>
+    <dep.errorprone.javac.version>9+181-r4173-1</dep.errorprone.javac.version>
+    <dep.errorprone.version>2.10.0</dep.errorprone.version>
     <dep.guava.version>30.1.1-jre</dep.guava.version>
-    <dep.hamcrest-junit.version>2.0.0.0</dep.hamcrest-junit.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
-    <dep.httpcore.version>4.4.14</dep.httpcore.version>
-    <dep.jackson.version>2.12.3</dep.jackson.version>
-    <!-- jersey brings in 2.3.3; tika brings in 2.3.2; converge on latest -->
+    <dep.httpcore.version>4.4.15</dep.httpcore.version>
+    <dep.jackson.version>2.12.6</dep.jackson.version>
+    <!-- jersey and tika provide; converge on latest -->
     <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
-    <!-- jersey brings in 1.2; tika-parsers brings in 1.3.2; converge on latest -->
+    <!-- jersey and tika-parsers provide; converge on latest -->
     <dep.javax.annotation-api.version>1.3.2</dep.javax.annotation-api.version>
     <dep.jcommander.version>1.58</dep.jcommander.version>
-    <dep.jdom.version>2.0.2</dep.jdom.version>
-    <dep.jersey.version>2.34</dep.jersey.version>
-    <dep.jetty.version>9.4.42.v20210604</dep.jetty.version>
-    <dep.junit-jupiter.version>5.5.2</dep.junit-jupiter.version>
-    <dep.junit-platform.version>1.5.2</dep.junit-platform.version>
-    <!-- junit-vintage, hamcrest and jersey disagree, but 4.12 works for everyone -->
-    <dep.junit.version>4.12</dep.junit.version>
-    <dep.logback.version>1.2.3</dep.logback.version>
+    <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
+    <dep.jersey.version>2.35</dep.jersey.version>
+    <dep.jetty.version>9.4.48.v20220622</dep.jetty.version>
+    <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
+    <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
+    <dep.junit.version>4.13.2</dep.junit.version>
+    <dep.logback.version>1.2.11</dep.logback.version>
+    <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.0.0-M3</dep.maven-surefire-plugin.version>
-    <dep.mockito-all.version>1.10.19</dep.mockito-all.version>
-    <dep.oro.version>2.0.8</dep.oro.version>
-    <dep.rhino.version>1.7.13</dep.rhino.version>
-    <dep.slf4j.version>1.7.30</dep.slf4j.version>
-    <dep.spullara.mustache.compiler.version>0.9.7</dep.spullara.mustache.compiler.version>
+    <dep.mockito-junit.version>4.5.1</dep.mockito-junit.version>
+    <dep.slf4j.version>1.7.36</dep.slf4j.version>
+    <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
     <dep.tika.version>1.24</dep.tika.version>
-    <dep.webjars.bootstrap.version>5.0.0</dep.webjars.bootstrap.version>
+    <dep.webjars.bootstrap.version>5.1.3</dep.webjars.bootstrap.version>
     <dep.webjars.jquery.version>3.6.0</dep.webjars.jquery.version>
-    <dep.webjars.popper.version>2.9.2</dep.webjars.popper.version>
-    <dep.xmlbeans.version>5.0.0</dep.xmlbeans.version>
+    <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
+    <dep.xmlbeans.version>5.0.3</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.javacErrorproneVersion>2.8.1</maven.javacErrorproneVersion>
     <maven.min-version>3.3.9</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -112,7 +109,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}</version>
+        <version>${dep.jackson.version}.1</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
@@ -150,21 +147,6 @@
         <version>${dep.commons-io.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>${dep.commons-lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${dep.commons-logging.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-ganglia</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-graphite</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
@@ -172,6 +154,11 @@
       <dependency>
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-healthchecks</artifactId>
+        <version>${dep.dropwizard.metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
@@ -195,12 +182,6 @@
         <version>${dep.javax.annotation-api.version}</version>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${dep.junit.version}</version>
-        <!-- can't be test scope due to package locations -->
-      </dependency>
-      <dependency>
         <groupId>net.spy</groupId>
         <artifactId>spymemcached</artifactId>
         <version>${dep.spymemcached.version}</version>
@@ -214,6 +195,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
         <version>${dep.commons-exec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${dep.commons-lang.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -258,6 +244,12 @@
         <groupId>org.apache.xmlbeans</groupId>
         <artifactId>xmlbeans</artifactId>
         <version>${dep.xmlbeans.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -353,45 +345,8 @@
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
-        <artifactId>jdom</artifactId>
-        <version>${dep.jdom.version}</version>
-      </dependency>
-      <dependency>
-        <!-- UnitTest, FunctionalTest and FTestServiceConfigGuide are in the emissary src/main vs src/test
-           junit must be a compile time dependency.  Needs to be refactored -->
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-params</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-commons</artifactId>
-        <version>${dep.junit-platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-launcher</artifactId>
-        <version>${dep.junit-platform.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.mozilla</groupId>
-        <artifactId>rhino</artifactId>
-        <version>${dep.rhino.version}</version>
+        <artifactId>jdom2</artifactId>
+        <version>${dep.jdom2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -429,6 +384,12 @@
         <version>${dep.webjars.popper.version}</version>
       </dependency>
       <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${dep.junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>org.glassfish.jersey.test-framework.providers</groupId>
         <artifactId>jersey-test-framework-provider-jetty</artifactId>
         <version>${dep.jersey.version}</version>
@@ -441,21 +402,21 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest-junit</artifactId>
-        <version>${dep.hamcrest-junit.version}</version>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <version>${dep.junit-jupiter.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${dep.mockito-all.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>oro</groupId>
-        <artifactId>oro</artifactId>
-        <version>${dep.oro.version}</version>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <version>${dep.mockito-junit.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -498,20 +459,16 @@
       <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-ganglia</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-graphite</artifactId>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-healthchecks</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
@@ -532,6 +489,10 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-exec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -614,34 +575,6 @@
       <artifactId>jersey-media-multipart</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>log4j-over-slf4j</artifactId>
     </dependency>
@@ -655,18 +588,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>oro</groupId>
-      <artifactId>oro</artifactId>
+      <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -721,316 +654,14 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <plugin>
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
-          <version>2.10.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-enforcer-plugin</artifactId>
-          <version>3.0.0-M2</version>
-          <executions>
-            <execution>
-              <id>check-maven-version</id>
-              <goals>
-                <goal>enforce</goal>
-              </goals>
-              <configuration>
-                <rules>
-                  <requireMavenVersion>
-                    <version>[${maven.min-version},)</version>
-                  </requireMavenVersion>
-                  <requireJavaVersion>
-                    <version>[1.8,)</version>
-                  </requireJavaVersion>
-                  <dependencyConvergence />
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.1.0</version>
-          <configuration>
-            <delimiters>
-              <delimiter>${*}</delimiter>
-              <!-- to keep the default behavior -->
-              <delimiter>@</delimiter>
-              <!-- to add Ant-like tokens style -->
-            </delimiters>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>3.2.0</version>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-              <phase>verify</phase>
-            </execution>
-          </executions>
+          <version>2.15.0</version>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
           <artifactId>replacer</artifactId>
           <version>1.5.3</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${dep.maven-surefire-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.8.2</version>
-          <configuration>
-            <attach>true</attach>
-            <relativizeDecorationLinks>false</relativizeDecorationLinks>
-            <locales>en</locales>
-            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
-            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
-            <port>9000</port>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.1</version>
-          <configuration>
-            <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
-            <violationSeverity>warn</violationSeverity>
-            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-            <excludes />
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>com.puppycrawl.tools</groupId>
-              <artifactId>checkstyle</artifactId>
-              <version>8.42</version>
-            </dependency>
-          </dependencies>
-          <executions>
-            <execution>
-              <id>check-style</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.1.1</version>
-          <configuration>
-            <quiet>true</quiet>
-            <footer>Generated ${maven.build.timestamp}</footer>
-            <doclint>all,-missing</doclint>
-          </configuration>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-              <phase>verify</phase>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <version>2.5.3</version>
-          <configuration>
-            <autoVersionSubmodules>true</autoVersionSubmodules>
-            <pushChanges>true</pushChanges>
-            <goals>deploy</goals>
-            <localCheckout>true</localCheckout>
-            <releaseProfiles>basis,hotspot,dev</releaseProfiles>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.1.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>versions-maven-plugin</artifactId>
-          <version>2.7</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
-          <configuration>
-            <showWarnings>${maven.compiler.showWarnings}</showWarnings>
-            <compilerArgs>
-              <arg>-Xlint:-path,unchecked</arg>
-            </compilerArgs>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${dep.maven-surefire-plugin.version}</version>
-          <configuration>
-            <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>3.1.1</version>
-        </plugin>
-        <plugin>
-          <groupId>net.revelc.code.formatter</groupId>
-          <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
-          <configuration>
-            <compilerCompliance>${maven.compiler.source}</compilerCompliance>
-            <compilerSource>${maven.compiler.source}</compilerSource>
-            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
-            <configFile>${eclipseFormatterStyle}</configFile>
-            <lineEnding>LF</lineEnding>
-            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-            <skipCssFormatting>true</skipCssFormatting>
-            <skipHtmlFormatting>true</skipHtmlFormatting>
-            <skipJsFormatting>true</skipJsFormatting>
-            <skipJsonFormatting>true</skipJsonFormatting>
-            <skipXmlFormatting>true</skipXmlFormatting>
-          </configuration>
-          <executions>
-            <execution>
-              <id>format-java-sources</id>
-              <goals>
-                <goal>format</goal>
-              </goals>
-              <phase>process-sources</phase>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>net.revelc.code</groupId>
-          <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.3.2</version>
-          <configuration>
-            <groups>java.,javax.,*</groups>
-            <removeUnused>true</removeUnused>
-          </configuration>
-          <executions>
-            <execution>
-              <id>sort-imports</id>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.4</version>
-          <executions>
-            <execution>
-              <id>default-prepare-agent</id>
-              <goals>
-                <goal>prepare-agent</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>default-report</id>
-              <goals>
-                <goal>report</goal>
-              </goals>
-              <phase>prepare-package</phase>
-            </execution>
-            <execution>
-              <id>default-check</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <rules>
-                  <!-- implementation is needed only for Maven 2 -->
-                  <rule implementation="org.jacoco.maven.RuleConfiguration">
-                    <element>BUNDLE</element>
-                    <limits>
-                      <!-- implementation is needed only for Maven 2 -->
-                      <limit implementation="org.jacoco.report.check.Limit">
-                        <counter>COMPLEXITY</counter>
-                        <value>COVEREDRATIO</value>
-                        <!--
-                        <minimum>0.37</minimum>
-                        -->
-                      </limit>
-                    </limits>
-                  </rule>
-                </rules>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-pmd-plugin</artifactId>
-          <version>3.12.0</version>
-          <configuration>
-            <excludes />
-            <failOnViolation>false</failOnViolation>
-            <failurePriority>1</failurePriority>
-            <format>xml</format>
-            <includeTests>true</includeTests>
-            <minimumTokens>100</minimumTokens>
-            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-            <targetJdk>${maven.compiler.target}</targetJdk>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jxr-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-          <configuration>
-            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-report-plugin</artifactId>
-          <version>${dep.maven-surefire-plugin.version}</version>
-          <configuration>
-            <showSuccess>true</showSuccess>
-            <linkXRef>true</linkXRef>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.sonarsource.scanner.maven</groupId>
-          <artifactId>sonar-maven-plugin</artifactId>
-          <version>3.7.0.1746</version>
         </plugin>
         <plugin>
           <groupId>com.spotify</groupId>
@@ -1062,14 +693,326 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>net.revelc.code</groupId>
+          <artifactId>impsort-maven-plugin</artifactId>
+          <version>1.6.2</version>
+          <configuration>
+            <groups>java.,javax.,*</groups>
+            <removeUnused>true</removeUnused>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sort-imports</id>
+              <goals>
+                <goal>sort</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>net.revelc.code.formatter</groupId>
+          <artifactId>formatter-maven-plugin</artifactId>
+          <version>2.11.0</version>
+          <configuration>
+            <compilerCompliance>${maven.compiler.source}</compilerCompliance>
+            <compilerSource>${maven.compiler.source}</compilerSource>
+            <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
+            <configFile>${eclipseFormatterStyle}</configFile>
+            <lineEnding>LF</lineEnding>
+            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+            <skipCssFormatting>true</skipCssFormatting>
+            <skipHtmlFormatting>true</skipHtmlFormatting>
+            <skipJsFormatting>true</skipJsFormatting>
+            <skipJsonFormatting>true</skipJsonFormatting>
+            <skipXmlFormatting>true</skipXmlFormatting>
+          </configuration>
+          <executions>
+            <execution>
+              <id>format-java-sources</id>
+              <goals>
+                <goal>format</goal>
+              </goals>
+              <phase>process-sources</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>3.1.1</version>
+          <configuration>
+            <configLocation>${checkstyleFormatter}</configLocation>
+            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
+            <violationSeverity>warn</violationSeverity>
+            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+            <excludes />
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>8.42</version>
+            </dependency>
+          </dependencies>
+          <executions>
+            <execution>
+              <id>check-style</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.1</version>
+          <configuration>
+            <showWarnings>${maven.compiler.showWarnings}</showWarnings>
+            <compilerArgs>
+              <arg>-Xlint:-path,unchecked</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.0.0-M2</version>
+          <executions>
+            <execution>
+              <id>check-maven-version</id>
+              <goals>
+                <goal>enforce</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <requireMavenVersion>
+                    <version>[${maven.min-version},)</version>
+                  </requireMavenVersion>
+                  <requireJavaVersion>
+                    <version>[1.8,)</version>
+                  </requireJavaVersion>
+                  <dependencyConvergence />
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>${dep.maven-surefire-plugin.version}</version>
+        </plugin>
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
           <version>3.0.0-M1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0-M1</version>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+              <configuration>
+                <excludes>
+                  <exclude>**/logback-test.xml</exclude>
+                </excludes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.4.0</version>
+          <configuration>
+            <quiet>true</quiet>
+            <footer>Generated ${maven.build.timestamp}</footer>
+            <doclint>all,-missing</doclint>
+          </configuration>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <version>3.16.0</version>
+          <configuration>
+            <excludes />
+            <failOnViolation>false</failOnViolation>
+            <failurePriority>1</failurePriority>
+            <format>xml</format>
+            <includeTests>true</includeTests>
+            <minimumTokens>100</minimumTokens>
+            <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+            <targetJdk>${maven.compiler.target}</targetJdk>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>3.3.0</version>
+          <configuration>
+            <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5.3</version>
+          <configuration>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <pushChanges>true</pushChanges>
+            <goals>deploy</goals>
+            <localCheckout>true</localCheckout>
+            <releaseProfiles>basis,hotspot,dev</releaseProfiles>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <delimiters>
+              <delimiter>${*}</delimiter>
+              <!-- to keep the default behavior -->
+              <delimiter>@</delimiter>
+              <!-- to add Ant-like tokens style -->
+            </delimiters>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.11.0</version>
+          <configuration>
+            <attach>true</attach>
+            <relativizeDecorationLinks>false</relativizeDecorationLinks>
+            <locales>en</locales>
+            <inputEncoding>${project.build.sourceEncoding}</inputEncoding>
+            <outputEncoding>${project.reporting.outputEncoding}</outputEncoding>
+            <port>9000</port>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.2.0</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${dep.maven-surefire-plugin.version}</version>
+          <configuration>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-report-plugin</artifactId>
+          <version>${dep.maven-surefire-plugin.version}</version>
+          <configuration>
+            <showSuccess>true</showSuccess>
+            <linkXRef>true</linkXRef>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>3.3.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.10.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.8</version>
+          <executions>
+            <execution>
+              <id>default-prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <goals>
+                <goal>report</goal>
+              </goals>
+              <phase>prepare-package</phase>
+            </execution>
+            <execution>
+              <id>default-check</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <rules>
+                  <rule>
+                    <element>BUNDLE</element>
+                    <limits>
+                      <limit>
+                        <counter>COMPLEXITY</counter>
+                        <value>COVEREDRATIO</value>
+                        <!--
+                        <minimum>0.37</minimum>
+                        -->
+                      </limit>
+                    </limits>
+                  </rule>
+                </rules>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>3.7.0.1746</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -1085,6 +1028,8 @@
           <expandEmptyElements>false</expandEmptyElements>
           <nrOfIndentSpace>2</nrOfIndentSpace>
           <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortDependencyExclusions>scope,groupId,artifactId</sortDependencyExclusions>
+          <sortPlugins>groupId,artifactId</sortPlugins>
           <sortProperties>true</sortProperties>
         </configuration>
         <executions>
@@ -1105,81 +1050,28 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <version>4.9.9</version>
         <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <runOrder>random</runOrder>
-          <reuseForks>true</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <index>true</index>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
-              <mainClass>emissary.Emissary</mainClass>
-            </manifest>
-            <manifestEntries>
-              <Built-By>${user.name} on ${maven.build.timestamp}</Built-By>
-            </manifestEntries>
-            <manifestSection>
-              <name>emissary</name>
-              <manifestEntries>
-                <Sealed>true</Sealed>
-                <Implementation-Title>emissary</Implementation-Title>
-              </manifestEntries>
-            </manifestSection>
-          </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <reuseForks>false</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
+          <generateGitPropertiesFile>true</generateGitPropertiesFile>
+          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+          <commitIdGenerationMode>full</commitIdGenerationMode>
         </configuration>
         <executions>
           <execution>
-            <id>run-integration-tests</id>
+            <id>git-properties</id>
             <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
+              <goal>revision</goal>
             </goals>
+            <phase>initialize</phase>
           </execution>
         </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.1.2</version>
+        <version>3.3.0</version>
         <executions>
           <execution>
             <goals>
@@ -1232,6 +1124,78 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>${surefire.argline}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <environmentVariables>
+            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+          </environmentVariables>
+          <reuseForks>false</reuseForks>
+          <forkCount>${surefire.forkCount}</forkCount>
+        </configuration>
+        <executions>
+          <execution>
+            <id>run-integration-tests</id>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>true</index>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>false</addDefaultImplementationEntries>
+              <mainClass>emissary.Emissary</mainClass>
+            </manifest>
+            <manifestEntries>
+              <Built-By>${user.name} on ${maven.build.timestamp}</Built-By>
+            </manifestEntries>
+            <manifestSection>
+              <name>emissary</name>
+              <manifestEntries>
+                <Sealed>true</Sealed>
+                <Implementation-Title>emissary</Implementation-Title>
+              </manifestEntries>
+            </manifestSection>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${surefire.argline}</argLine>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <environmentVariables>
+            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+          </environmentVariables>
+          <runOrder>random</runOrder>
+          <reuseForks>true</reuseForks>
+          <forkCount>${surefire.forkCount}</forkCount>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -1391,27 +1355,20 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>net.revelc.code.formatter</groupId>
-            <artifactId>formatter-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>net.revelc.code.formatter</groupId>
+            <artifactId>formatter-maven-plugin</artifactId>
           </plugin>
         </plugins>
       </build>
     </profile>
     <profile>
-      <!-- Turn on the error-prone static analyzer during compilation.
-           NOTE this requires the use of a Java 8 compiler.  For
-           example:
-
-               $ JAVA_HOME=/path/to/jdk1.8.0 mvn -PerrorProne clean test-compile
-
-           will analyze the main and test code, with the analyzer's
-           report given as compiler error/warning/note messages. -->
       <id>errorProne</id>
       <activation>
+        <jdk>1.8</jdk>
         <property>
           <name>errorProne</name>
         </property>
@@ -1422,70 +1379,30 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
-              <compilerId>javac-with-errorprone</compilerId>
-              <!--<forceJavaCCompilerUse>true</forceJavaCCompilerUse>-->
+              <source>1.8</source>
+              <target>1.8</target>
+              <encoding>UTF-8</encoding>
               <fork>true</fork>
-              <compilerArgs>
-                <!-- The compiler normally stops at 100 warnings, and
-                     error-prone's static analysis warnings count
-                     against that total. -->
-                <arg>-Xmaxwarns</arg>
-                <arg>5000</arg>
-                <arg>-XepDisableWarningsInGeneratedCode</arg>
-                <!-- Enable experimental checks. -->
-                <arg>-XepAllDisabledChecksAsWarnings</arg>
-                <!-- Removed because it was not adding useful help -->
-                <arg>-Xep:ArgumentParameterMismatch:OFF</arg>
-                <!-- This one is buggy and crashes the compiler. -->
-                <arg>-Xep:ArgumentParameterSwap:OFF</arg>
-                <!-- This one is super noisy, because it wants all
-                     modifiable variables marked with @Var and
-                     complains about the use of final everywhere else.
-                     I'd be okay with adding the annotations, but
-                     removing the finals is only safe if you can
-                     guarantee you never use the compiler *without*
-                     this add-on. -->
-                <arg>-Xep:Var:OFF</arg>
-                <!-- By default this is considered a "suggestion" that
-                     doesn't get counted as a warning.  Change it to a
-                     counted warning to make it easier to see how many
-                     there are. -->
-                <arg>-Xep:ConstantField:WARN</arg>
-                <arg>-Xep:RemoveUnusedImports:WARN</arg>
-                <arg>-Xep:WildcardImport:WARN</arg>
-                <!-- By default these are set to errors.  Change them
-                     to warnings so that it doesn't stop the build
-                     from continuing its analysis. -->
-                <arg>-Xep:ArrayToString:WARN</arg>
-                <arg>-Xep:ComparisonOutOfRange:WARN</arg>
-                <arg>-Xep:DeadException:WARN</arg>
-                <arg>-Xep:DefaultCharset:OFF</arg>
-                <arg>-Xep:DepAnn:WARN</arg>
-                <arg>-Xep:FormatString:WARN</arg>
-                <arg>-Xep:LongLiteralLowerCaseSuffix:WARN</arg>
-                <arg>-Xep:MethodCanBeStatic:WARN</arg>
-                <arg>-Xep:MixedArrayDimensions:WARN</arg>
-                <arg>-Xep:MultiVariableDeclaration:WARN</arg>
-                <arg>-Xep:MultipleTopLevelClasses:WARN</arg>
-                <arg>-Xep:NumericEquality:WARN</arg>
-                <arg>-Xep:ParameterPackage:WARN</arg>
-                <arg>-Xep:PrivateConstructorForUtilityClass:WARN</arg>
-                <arg>-Xep:ThrowsUncheckedException:WARN</arg>
-                <arg>-Xep:TryFailThrowable:WARN</arg>
+              <compilerArgs combine.children="append">
+                <!-- TODO: remove bootclasspath when JDK is upgraded to 9+ -->
+                <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${dep.errorprone.javac.version}/javac-${dep.errorprone.javac.version}.jar</arg>
+                <arg>-XDcompilePolicy=simple</arg>
+                <arg>-Xplugin:ErrorProne -Xmaxwarns 5000 -XepDisableWarningsInGeneratedCode -XepAllDisabledChecksAsWarnings -Xep:Var:OFF -Xep:ConstantField:WARN -Xep:RemoveUnusedImports:WARN -Xep:WildcardImport:WARN -Xep:ArrayToString:WARN -Xep:ComparisonOutOfRange:WARN -Xep:DeadException:WARN -Xep:DefaultCharset:OFF -Xep:DepAnn:WARN -Xep:FormatString:WARN -Xep:LongLiteralLowerCaseSuffix:WARN -Xep:MethodCanBeStatic:WARN -Xep:MixedArrayDimensions:WARN -Xep:MultiVariableDeclaration:WARN -Xep:MultipleTopLevelClasses:WARN -Xep:NumericEquality:WARN -Xep:PrivateConstructorForUtilityClass:WARN -Xep:ThrowsUncheckedException:WARN -Xep:TryFailThrowable:WARN -Xep:Java7ApiChecker:OFF -Xep:AndroidJdkLibsChecker:OFF -Xep:InlineMeSuggester:OFF</arg>
               </compilerArgs>
+              <annotationProcessorPaths>
+                <path>
+                  <groupId>com.google.errorprone</groupId>
+                  <artifactId>error_prone_core</artifactId>
+                  <version>${dep.errorprone.version}</version>
+                </path>
+              </annotationProcessorPaths>
             </configuration>
             <dependencies>
-              <!-- override plexus-compiler-javac-errorprone's dependency on
-                   Error Prone with the latest version -->
               <dependency>
+                <!-- TODO: remove javac dependency when JDK is upgraded to 9+ -->
                 <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_core</artifactId>
-                <version>2.3.1</version>
-              </dependency>
-              <dependency>
-                <groupId>org.codehaus.plexus</groupId>
-                <artifactId>plexus-compiler-javac-errorprone</artifactId>
-                <version>2.8.3</version>
+                <artifactId>javac</artifactId>
+                <version>${dep.errorprone.javac.version}</version>
               </dependency>
             </dependencies>
           </plugin>

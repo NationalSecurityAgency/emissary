@@ -30,3 +30,4 @@ nbactions*.xml
 .settings/
 *.swp
 *.checkstyle
+.vscode/

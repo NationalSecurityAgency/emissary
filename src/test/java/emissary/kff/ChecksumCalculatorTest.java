@@ -1,19 +1,19 @@
 package emissary.kff;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Set;
 
 import emissary.test.core.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class ChecksumCalculatorTest extends UnitTest {
+class ChecksumCalculatorTest extends UnitTest {
 
     static final byte[] DATA = "This is a test".getBytes();
 
@@ -27,118 +27,120 @@ public class ChecksumCalculatorTest extends UnitTest {
     static final String DATA_SSDEEP = "3:hMCEpn:hup";
 
     @Test
-    public void testNoArgCtor() {
+    void testNoArgCtor() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator();
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("Two alg used for default ctor", 2, algs.size());
-            assertTrue("SHA-1 alg used for default ctor", algs.contains("SHA-1"));
-            assertTrue("CRC-32 alg used for default ctor", algs.contains("CRC32"));
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(2, algs.size(), "Two alg used for default ctor");
+            assertTrue(algs.contains("SHA-1"), "SHA-1 alg used for default ctor");
+            assertTrue(algs.contains("CRC32"), "CRC-32 alg used for default ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
     @Test
-    public void testSpecifiedArgWithCrc() {
+    void testSpecifiedArgWithCrc() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator("SHA-1", true);
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("Two alg used for (string,boolean) ctor", 2, algs.size());
-            assertTrue("SHA-1 alg used for (string,boolean) ctor", algs.contains("SHA-1"));
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
-            assertTrue("Using CRC", cc.getUseCRC());
-            assertTrue("Using CRC and in alg set", algs.contains("CRC32"));
-            assertTrue("CRC computed", cr.getCrc() != -1L);
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(2, algs.size(), "Two alg used for (string,boolean) ctor");
+            assertTrue(algs.contains("SHA-1"), "SHA-1 alg used for (string,boolean) ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
+            assertTrue(cc.getUseCRC(), "Using CRC");
+            assertTrue(algs.contains("CRC32"), "Using CRC and in alg set");
+            assertNotEquals(-1L, cr.getCrc(), "CRC computed");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
     @Test
-    public void testSpecifiedArgWitouthCrc() {
+    void testSpecifiedArgWitouthCrc() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator("SHA-1", false);
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("One alg used for (string,boolean) ctor", 1, algs.size());
-            assertTrue("SHA-1 alg used for (string,boolean) ctor", algs.contains("SHA-1"));
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
-            assertFalse("Not using CRC", cc.getUseCRC());
-            assertTrue("CRC not computed", cr.getCrc() == -1L);
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(1, algs.size(), "One alg used for (string,boolean) ctor");
+            assertTrue(algs.contains("SHA-1"), "SHA-1 alg used for (string,boolean) ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
+            assertFalse(cc.getUseCRC(), "Not using CRC");
+            assertEquals(-1L, cr.getCrc(), "CRC not computed");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
     @Test
-    public void testSpecifiedArgWithCrcAsList() {
+    void testSpecifiedArgWithCrcAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "CRC32"});
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("Two alg used for string[] ctor", 2, algs.size());
-            assertTrue("SHA-1 alg used for string[] ctor", algs.contains("SHA-1"));
-            assertTrue("CRC32 alg used for string[] ctor", algs.contains("CRC32"));
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
-            assertTrue("Using CRC", cc.getUseCRC());
-            assertTrue("CRC computed", cr.getCrc() != -1L);
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(2, algs.size(), "Two alg used for string[] ctor");
+            assertTrue(algs.contains("SHA-1"), "SHA-1 alg used for string[] ctor");
+            assertTrue(algs.contains("CRC32"), "CRC32 alg used for string[] ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
+            assertTrue(cc.getUseCRC(), "Using CRC");
+            assertNotEquals(-1L, cr.getCrc(), "CRC computed");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
     @Test
-    public void testSpecifiedArgWithoutCrcAsList() {
+    void testSpecifiedArgWithoutCrcAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1"});
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("One alg used for string[] ctor", 1, algs.size());
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(1, algs.size(), "One alg used for string[] ctor");
             Iterator<String> i = algs.iterator();
-            assertEquals("SHA-1 alg used for string[] ctor", "SHA-1", i.next());
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
-            assertFalse("Not using CRC", cc.getUseCRC());
-            assertTrue("CRC not computed", cr.getCrc() == -1L);
+            assertEquals("SHA-1", i.next(), "SHA-1 alg used for string[] ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
+            assertFalse(cc.getUseCRC(), "Not using CRC");
+            assertEquals(-1L, cr.getCrc(), "CRC not computed");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 algorithm");
+            throw new AssertionError("Unable to get SHA-1 algorithm", ex);
         }
     }
 
 
     @Test
-    public void testMultipleShaVariantsSpecifiedAsList() {
+    void testMultipleShaVariantsSpecifiedAsList() {
         try {
             ChecksumCalculator cc = new ChecksumCalculator(new String[] {"SHA-1", "SHA-256", "SSDEEP"});
+            cc.setUseSsdeep(true);
+            assertTrue(cc.getUseSsdeep(), "SSDEEP being used");
             ChecksumResults cr = cc.digest(DATA);
-            assertNotNull("Results created", cr);
+            assertNotNull(cr, "Results created");
             Set<String> algs = cr.getResultsPresent();
-            assertNotNull("Algorithms present", algs);
-            assertEquals("Three algs used for string[] ctor", 3, algs.size());
+            assertNotNull(algs, "Algorithms present");
+            assertEquals(3, algs.size(), "Three algs used for string[] ctor");
             Iterator<String> i = algs.iterator();
-            assertEquals("SHA-1 alg used for string[] ctor", "SHA-1", i.next());
-            assertEquals("SHA-256 alg used for string[] ctor", "SHA-256", i.next());
-            assertEquals("SSDEEP alg used for string[] ctor", "SSDEEP", i.next());
-            assertEquals("SHA-1 computation", DATA_SHA1, cr.getHashString("SHA-1"));
-            assertEquals("SHA-256 computation", DATA_SHA256, cr.getHashString("SHA-256"));
-            assertEquals("SSDEEP computation", DATA_SSDEEP, cr.getHashString("SSDEEP"));
-            assertFalse("Not using CRC", cc.getUseCRC());
-            assertTrue("CRC not computed", cr.getCrc() == -1L);
+            assertEquals("SHA-1", i.next(), "SHA-1 alg used for string[] ctor");
+            assertEquals("SHA-256", i.next(), "SHA-256 alg used for string[] ctor");
+            assertEquals("SSDEEP", i.next(), "SSDEEP alg used for string[] ctor");
+            assertEquals(DATA_SHA1, cr.getHashString("SHA-1"), "SHA-1 computation");
+            assertEquals(DATA_SHA256, cr.getHashString("SHA-256"), "SHA-256 computation");
+            assertEquals(DATA_SSDEEP, cr.getHashString("SSDEEP"), "SSDEEP computation");
+            assertFalse(cc.getUseCRC(), "Not using CRC");
+            assertEquals(-1L, cr.getCrc(), "CRC not computed");
         } catch (NoSuchAlgorithmException ex) {
-            fail("Unable to get SHA-1 or SHA-256 algorithm");
+            throw new AssertionError("Unable to get SHA-1 or SHA-256 algorithm", ex);
         }
     }
 }

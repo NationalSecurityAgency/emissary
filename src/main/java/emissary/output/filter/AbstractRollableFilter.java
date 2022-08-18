@@ -23,7 +23,7 @@ import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
 import emissary.util.io.FileNameGenerator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
 
@@ -106,7 +106,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             try {
                 Files.createDirectories(this.outputPath);
             } catch (IOException e) {
-                logger.error("Unable to create directory for () output, exiting immediately. ", getFilterName(), e);
+                logger.error("Unable to create directory for {} output, exiting immediately.", getFilterName(), e);
                 System.exit(1);
             }
         }

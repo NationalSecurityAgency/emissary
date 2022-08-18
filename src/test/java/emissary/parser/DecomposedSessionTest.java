@@ -1,12 +1,12 @@
 package emissary.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,187 +16,185 @@ import java.util.Map;
 
 import com.google.common.collect.Multimap;
 import emissary.test.core.UnitTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class DecomposedSessionTest extends UnitTest {
+class DecomposedSessionTest extends UnitTest {
 
     byte[] DATA = new byte[1000];
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
-        for (int i = 0; i < DATA.length; i++) {
-            DATA[i] = 'a';
-        }
+        Arrays.fill(DATA, (byte) 'a');
     }
 
     @Test
-    public void testDataNoCopy() {
+    void testDataNoCopy() {
         DecomposedSession d = new DecomposedSession();
         d.setData(DATA);
-        assertSame("Data array must not be copied", DATA, d.getData());
+        assertSame(DATA, d.getData(), "Data array must not be copied");
     }
 
     @Test
-    public void testSettingNullData() {
+    void testSettingNullData() {
         DecomposedSession d = new DecomposedSession();
         d.setData(null);
-        assertNull("Null data array must not be copied", d.getData());
-        assertFalse("Null data must be reflected as not present", d.hasData());
+        assertNull(d.getData(), "Null data array must not be copied");
+        assertFalse(d.hasData(), "Null data must be reflected as not present");
     }
 
     @Test
-    public void testDataWithCopy() {
+    void testDataWithCopy() {
         DecomposedSession d = new DecomposedSession();
         d.setData(DATA, true);
-        assertNotSame("Data must be a copy", DATA, d.getData());
+        assertNotSame(DATA, d.getData(), "Data must be a copy");
     }
 
     @Test
-    public void testDataPortion() {
+    void testDataPortion() {
         DecomposedSession d = new DecomposedSession();
         d.setData(DATA, 10, 100);
-        assertEquals("Data must be the specified portion", 90, d.getData().length);
+        assertEquals(90, d.getData().length, "Data must be the specified portion");
     }
 
     @Test
-    public void testClassification() {
+    void testClassification() {
         DecomposedSession d = new DecomposedSession();
         d.setClassification("FOO");
-        assertEquals("Classification get/set must match", "FOO", d.getClassification());
+        assertEquals("FOO", d.getClassification(), "Classification get/set must match");
     }
 
     @Test
-    public void testHeader() {
+    void testHeader() {
         DecomposedSession d = new DecomposedSession();
         d.setHeader(DATA);
-        assertSame("Header must not make a copy", DATA, d.getHeader());
+        assertSame(DATA, d.getHeader(), "Header must not make a copy");
     }
 
     @Test
-    public void testFooter() {
+    void testFooter() {
         DecomposedSession d = new DecomposedSession();
         d.setFooter(DATA);
-        assertSame("Footer must not make a copy", DATA, d.getFooter());
+        assertSame(DATA, d.getFooter(), "Footer must not make a copy");
     }
 
     @Test
-    public void testHasHeader() {
+    void testHasHeader() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate absence of header", d.hasHeader());
+        assertFalse(d.hasHeader(), "Must indicate absence of header");
         d.setHeader(DATA);
-        assertTrue("Must indicate presence of header", d.hasHeader());
+        assertTrue(d.hasHeader(), "Must indicate presence of header");
     }
 
     @Test
-    public void testHasFooter() {
+    void testHasFooter() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate absence of footer", d.hasFooter());
+        assertFalse(d.hasFooter(), "Must indicate absence of footer");
         d.setFooter(DATA);
-        assertTrue("Must indicate presence of footer", d.hasFooter());
+        assertTrue(d.hasFooter(), "Must indicate presence of footer");
     }
 
     @Test
-    public void testHasClassification() {
+    void testHasClassification() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate absence of classification", d.hasClassification());
+        assertFalse(d.hasClassification(), "Must indicate absence of classification");
         d.setClassification("FOO");
-        assertTrue("Must indicate presence of classification", d.hasClassification());
+        assertTrue(d.hasClassification(), "Must indicate presence of classification");
     }
 
     @Test
-    public void testHasData() {
+    void testHasData() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate absence of data", d.hasData());
+        assertFalse(d.hasData(), "Must indicate absence of data");
         d.setData(DATA);
-        assertTrue("Must indicate presence of data", d.hasData());
+        assertTrue(d.hasData(), "Must indicate presence of data");
     }
 
     @Test
-    public void testHasMetaData() {
+    void testHasMetaData() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate absence of meta", d.hasMetaData());
+        assertFalse(d.hasMetaData(), "Must indicate absence of meta");
         d.addMetaData("foo", "bar");
-        assertTrue("Must indicate presence of meta", d.hasMetaData());
+        assertTrue(d.hasMetaData(), "Must indicate presence of meta");
     }
 
     @Test
-    public void testStringMetadata() {
+    void testStringMetadata() {
         DecomposedSession d = new DecomposedSession();
-        assertNull("Must indicate absence of meta item", d.getStringMetadataItem("foo"));
+        assertNull(d.getStringMetadataItem("foo"), "Must indicate absence of meta item");
         d.addMetaData("foo", "bar");
-        assertEquals("Must indicate value of meta item", "bar", d.getStringMetadataItem("foo"));
-        assertEquals("Must indicate value of meta item and separator must not be used on one item", "bar", d.getStringMetadataItem("foo", "-"));
+        assertEquals("bar", d.getStringMetadataItem("foo"), "Must indicate value of meta item");
+        assertEquals("bar", d.getStringMetadataItem("foo", "-"), "Must indicate value of meta item and separator must not be used on one item");
         d.addMetaData("foo", "bar2");
-        assertEquals("Must indicate value of meta item with default separator", "bar;bar2", d.getStringMetadataItem("foo"));
-        assertEquals("Must indicate value of meta item with custom separator", "bar-bar2", d.getStringMetadataItem("foo", "-"));
+        assertEquals("bar;bar2", d.getStringMetadataItem("foo"), "Must indicate value of meta item with default separator");
+        assertEquals("bar-bar2", d.getStringMetadataItem("foo", "-"), "Must indicate value of meta item with custom separator");
     }
 
     @Test
-    public void testMetadataProcessing() {
+    void testMetadataProcessing() {
         DecomposedSession d = new DecomposedSession();
         d.addMetaData("foo", null);
-        assertFalse("Null valued metadata must not be added", d.hasMetaData());
+        assertFalse(d.hasMetaData(), "Null valued metadata must not be added");
         d.addMetaData(null, "bar");
-        assertFalse("Null keyed metadata must not be added", d.hasMetaData());
+        assertFalse(d.hasMetaData(), "Null keyed metadata must not be added");
 
-        Map<String, List<Object>> m = new HashMap<String, List<Object>>();
+        Map<String, List<Object>> m = new HashMap<>();
         m.put("foo", Arrays.asList(new Object[] {"bar1", "bar2"}));
         d.addMetaData(m);
-        assertTrue("Mapped metadata must be present", d.hasMetaData());
-        assertEquals("Mapped metadata values must be present", 2, d.getMetaDataItem("foo").size());
+        assertTrue(d.hasMetaData(), "Mapped metadata must be present");
+        assertEquals(2, d.getMetaDataItem("foo").size(), "Mapped metadata values must be present");
 
         Multimap<String, Object> mm = d.getMultimap();
         mm.remove("foo", "bar2");
-        assertEquals("Returned multimap must be live object", 1, d.getMetaDataItem("foo").size());
+        assertEquals(1, d.getMetaDataItem("foo").size(), "Returned multimap must be live object");
     }
 
     @Test
-    public void testInitialForms() {
+    void testInitialForms() {
         DecomposedSession d = new DecomposedSession();
-        assertTrue("No initial forms set", d.getInitialForms() == null || d.getInitialForms().size() == 0);
+        assertTrue(d.getInitialForms() == null || d.getInitialForms().size() == 0, "No initial forms set");
 
         d.setInitialForms(null);
-        assertEquals("No initial forms are added from a null list", 0, d.getInitialForms().size());
+        assertEquals(0, d.getInitialForms().size(), "No initial forms are added from a null list");
 
         d.addInitialForm(null);
         d.addInitialForm("foo");
-        assertNotNull("Initial forms set", d.getInitialForms());
-        assertEquals("Proper number of initial forms", 1, d.getInitialForms().size());
-        assertEquals("Proper initial form set", "foo", d.getInitialForms().get(0));
-        List<String> newForms = new ArrayList<String>();
+        assertNotNull(d.getInitialForms(), "Initial forms set");
+        assertEquals(1, d.getInitialForms().size(), "Proper number of initial forms");
+        assertEquals("foo", d.getInitialForms().get(0), "Proper initial form set");
+        List<String> newForms = new ArrayList<>();
         newForms.add("bar");
         newForms.add("baz");
         d.setInitialForms(newForms);
-        assertEquals("Proper number of initial forms in list", 2, d.getInitialForms().size());
-        assertEquals("Propert initial form set", "bar", d.getInitialForms().get(0));
+        assertEquals(2, d.getInitialForms().size(), "Proper number of initial forms in list");
+        assertEquals("bar", d.getInitialForms().get(0), "Propert initial form set");
 
         d.addInitialForm(null);
-        assertEquals("Null form does not get added to list", 2, d.getInitialForms().size());
+        assertEquals(2, d.getInitialForms().size(), "Null form does not get added to list");
     }
 
     @Test
-    public void testValidWithData() {
+    void testValidWithData() {
         DecomposedSession d = new DecomposedSession();
-        assertFalse("Must indicate invalid", d.isValid());
+        assertFalse(d.isValid(), "Must indicate invalid");
         d.setData(DATA);
-        assertTrue("Must indicate valid", d.isValid());
+        assertTrue(d.isValid(), "Must indicate valid");
     }
 
     @Test
-    public void testValidWithHeader() {
+    void testValidWithHeader() {
         DecomposedSession d = new DecomposedSession();
         d.setHeader(DATA);
-        assertTrue("Must indicate valid", d.isValid());
+        assertTrue(d.isValid(), "Must indicate valid");
     }
 
     @Test
-    public void testValidWithFooter() {
+    void testValidWithFooter() {
         DecomposedSession d = new DecomposedSession();
         d.setFooter(DATA);
-        assertTrue("Must indicate valid", d.isValid());
+        assertTrue(d.isValid(), "Must indicate valid");
     }
 
 }
