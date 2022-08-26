@@ -2,23 +2,31 @@ package emissary.util.xml;
 
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 /**
- * Utilities for dealing with JDOM documents. If DTD validation is not needed, consider using {@link SaferJDOMUtil}.
+ * Utilities for dealing with JDOM documents. Doctypes are disallowed for DTDs for the prevention of XML entity attacks
+ * making this a safer alternative to {@link JDOMUtil} .
  */
-public class JDOMUtil extends AbstractJDOMUtil {
+public class SaferJDOMUtil extends AbstractJDOMUtil {
+
+    protected static SAXBuilder createSAXBuilder() {
+        SAXBuilder builder = createSAXBuilder(false);
+        // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
+        builder.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        return builder;
+    }
 
     /**
      * creates a JDOM document from the input XML string.
      *
      * @param xml an XML document in a String
-     * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final String xml, final boolean validate) throws JDOMException {
-        return createDocument(xml, null, validate);
+    public static Document createDocument(final String xml) throws JDOMException {
+        return createDocument(xml, null);
     }
 
     /**
@@ -26,22 +34,20 @@ public class JDOMUtil extends AbstractJDOMUtil {
      *
      * @param xml an XML document in a String
      * @param filter an XMLFilter to receive callbacks during processing
-     * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final String xml, final XMLFilter filter, final boolean validate) throws JDOMException {
-        return createDocument(xml, filter, createSAXBuilder(validate));
+    public static Document createDocument(final String xml, final XMLFilter filter) throws JDOMException {
+        return createDocument(xml, filter, createSAXBuilder());
     }
 
     /**
-     * creates a JDOM document from the input XML bytes.
+     * creates a JDOM document from the input XML bytes. interpreting them in the platform default charset
      *
      * @param xml an XML document in a byte array
-     * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final byte[] xml, final boolean validate) throws JDOMException {
-        return createDocument(xml, null, validate);
+    public static Document createDocument(final byte[] xml) throws JDOMException {
+        return createDocument(xml, null);
     }
 
     /**
@@ -49,11 +55,10 @@ public class JDOMUtil extends AbstractJDOMUtil {
      *
      * @param xml an XML document in a byte array
      * @param filter an XMLFilter to receive callbacks during processing
-     * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final byte[] xml, final XMLFilter filter, final boolean validate) throws JDOMException {
-        return createDocument(xml, filter, validate, null);
+    public static Document createDocument(final byte[] xml, final XMLFilter filter) throws JDOMException {
+        return createDocument(xml, filter, null);
     }
 
     /**
@@ -61,13 +66,12 @@ public class JDOMUtil extends AbstractJDOMUtil {
      *
      * @param xml an XML document in a byte array
      * @param filter an XMLFilter to receive callbacks during processing
-     * @param validate if true, XML should be validated
      * @param charset the charset to interpret the bytes in
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final byte[] xml, final XMLFilter filter, final boolean validate, final String charset)
+    public static Document createDocument(final byte[] xml, final XMLFilter filter, final String charset)
             throws JDOMException {
-        return createDocument(xml, filter, charset, createSAXBuilder(validate));
+        return createDocument(xml, filter, charset, createSAXBuilder());
     }
 
     /**
@@ -75,13 +79,12 @@ public class JDOMUtil extends AbstractJDOMUtil {
      *
      * @param is an XML document in an InputSource
      * @param filter an XMLFilter to receive callbacks during processing
-     * @param validate if true, XML should be validated
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final InputSource is, final XMLFilter filter, final boolean validate) throws JDOMException {
-        return createDocument(is, filter, createSAXBuilder(validate));
+    public static Document createDocument(final InputSource is, final XMLFilter filter) throws JDOMException {
+        return createDocument(is, filter, createSAXBuilder());
     }
 
     /** This class is not meant to be instantiated. */
-    private JDOMUtil() {}
+    private SaferJDOMUtil() {}
 }
