@@ -1,5 +1,6 @@
 package emissary.command.converter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,44 +24,92 @@ class WorkspaceSortModeConverterTest extends UnitTest {
 
     @Test
     void convertDefault() {
-        // test
         assertNull(converter.convert(""));
     }
 
     @Test
     void convertYoungestFirst() {
-        // test
         comparator = converter.convert(WorkspaceSortModeConverter.YOUNGEST_FIRST);
-
-        // verify
         assertTrue(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator);
+        testComparePriority(comparator);
+
+        WorkBundle one = new WorkBundle();
+        WorkBundle two = new WorkBundle();
+
+        one.setYoungestFileModificationTime(1);
+        two.setYoungestFileModificationTime(2);
+        assertEquals(1, comparator.compare(one, two));
+        assertEquals(-1, comparator.compare(two, one));
+
+        two.setYoungestFileModificationTime(1);
+        assertEquals(0, comparator.compare(one, two));
     }
 
     @Test
     void convertOldestFirst() {
-        // test
         comparator = converter.convert(WorkspaceSortModeConverter.OLDEST_FIRST);
-
-        // verify
         assertTrue(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator);
+        testComparePriority(comparator);
+
+        WorkBundle one = new WorkBundle();
+        WorkBundle two = new WorkBundle();
+
+        one.setOldestFileModificationTime(1);
+        two.setOldestFileModificationTime(2);
+        assertEquals(-1, comparator.compare(one, two));
+        assertEquals(1, comparator.compare(two, one));
+
+        two.setOldestFileModificationTime(1);
+        assertEquals(0, comparator.compare(one, two));
     }
 
     @Test
     void convertSmallestFirst() {
-        // test
         comparator = converter.convert(WorkspaceSortModeConverter.SMALLEST_FIRST);
-
-        // verify
         assertTrue(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator);
+        testComparePriority(comparator);
+
+        WorkBundle one = new WorkBundle();
+        WorkBundle two = new WorkBundle();
+
+        one.setTotalFileSize(1);
+        two.setTotalFileSize(2);
+        assertEquals(-1, comparator.compare(one, two));
+        assertEquals(1, comparator.compare(two, one));
+
+        two.setTotalFileSize(1);
+        assertEquals(0, comparator.compare(one, two));
     }
 
     @Test
     void convertLargestFirst() {
-        // test
         comparator = converter.convert(WorkspaceSortModeConverter.LARGEST_FIRST);
-
-        // verify
         assertTrue(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator);
+        testComparePriority(comparator);
+
+        WorkBundle one = new WorkBundle();
+        WorkBundle two = new WorkBundle();
+
+        one.setTotalFileSize(1);
+        two.setTotalFileSize(2);
+        assertEquals(1, comparator.compare(one, two));
+        assertEquals(-1, comparator.compare(two, one));
+
+        two.setTotalFileSize(1);
+        assertEquals(0, comparator.compare(one, two));
+    }
+
+    private void testComparePriority(Comparator<WorkBundle> comparator) {
+        WorkBundle one = new WorkBundle();
+        WorkBundle two = new WorkBundle();
+
+        one.setPriority(1);
+        two.setPriority(2);
+        assertEquals(-1, comparator.compare(one, two));
+        assertEquals(1, comparator.compare(two, one));
+
+        two.setPriority(1);
+        assertEquals(0, comparator.compare(one, two));
     }
 
 }
