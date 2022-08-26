@@ -387,7 +387,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             assertTrue(proxies.contains("TPROXY"), "Proxies contains original in set");
             assertTrue(proxies.contains("TPROXY2"), "Proxies contains original in set");
         } catch (IOException iox) {
-            fail("Place should have configured with SERVICE_KEY: ", iox);
+            fail("Place should have configured with SERVICE_KEY", iox);
         }
     }
 
