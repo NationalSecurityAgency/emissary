@@ -2,6 +2,7 @@ package emissary.kff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ class ChecksumResultsTest extends UnitTest {
             assertEquals("SHA-1", i.next(), "SHA-1 alg present");
             assertEquals("SHA-256", i.next(), "SHA-256 alg present");
         } catch (NoSuchAlgorithmException ex) {
-            throw new AssertionError("Unable to get SHA-1 or SHA-256 algorithm", ex);
+            fail("Unable to get SHA-1 or SHA-256 algorithm", ex);
         }
     }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +58,7 @@ class KffDataObjectHandlerTest extends UnitTest {
             String defaultCurrentForm = "test";
             payload = DataObjectFactory.getInstance(data, resource, defaultCurrentForm);
         } catch (IOException e) {
-            throw new AssertionError("Error getting resource file");
+            fail("Error getting resource file");
         }
     }
 

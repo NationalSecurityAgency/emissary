@@ -45,7 +45,7 @@ final class MainTest extends UnitTest {
         try (OutputStream ros = Files.newOutputStream(dataFile)) {
             ros.write("abcdefghijklmnopqrstuvwxyz".getBytes());
         } catch (IOException ex) {
-            fail("Unable to create test file: " + ex.getMessage());
+            fail("Unable to create test file", ex);
         }
     }
 
@@ -190,7 +190,7 @@ final class MainTest extends UnitTest {
         try {
             m.run();
         } catch (Throwable t) {
-            fail("Main runner allowed exception to escape: " + t);
+            fail("Main runner allowed exception to escape", t);
         }
     }
 
@@ -220,7 +220,7 @@ final class MainTest extends UnitTest {
         try {
             m.run();
         } catch (Throwable t) {
-            fail("Main runner allowed exception to escape: " + t);
+            fail("Main runner allowed exception to escape", t);
         }
         IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
         List<IBaseDataObject> atts = new ArrayList<>();

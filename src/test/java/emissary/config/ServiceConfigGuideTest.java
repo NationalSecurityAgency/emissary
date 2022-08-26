@@ -523,7 +523,7 @@ class ServiceConfigGuideTest extends UnitTest {
             new ServiceConfigGuide(priname);
         } catch (IOException iox) {
             // should not be reached due to IMPORT_FILE existing
-            throw new AssertionError("IMPORT_FILE not found.", iox);
+            fail("IMPORT_FILE not found.", iox);
         } finally {
             FileUtils.deleteDirectory(dir.toFile());
         }

@@ -230,7 +230,7 @@ class ConfigUtilTest extends UnitTest {
             assertNotNull(p, "Properties returned");
             assertTrue(p.size() > 0, "Non-empty properties returned");
         } catch (IOException iox) {
-            fail("Should not throw on property info get: " + iox.getMessage());
+            fail("Should not throw on property info get", iox);
         }
     }
 
