@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.rules.TemporaryFolder;
@@ -170,6 +171,7 @@ public class UnitTest {
     public void setUp() throws Exception {}
 
     @After
+    @AfterEach
     public void tearDown() throws Exception {
         restoreConfig();
         assertMaxNonSystemThreadCount(1);
