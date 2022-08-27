@@ -75,6 +75,21 @@ class HTTPConnectionFactoryTest extends UnitTest {
         assertNotSame(SSLContext.getDefault(), fromConfig);
     }
 
+    @Test
+    void loadPemCertFile() throws Exception {
+        addKeystoreProps(this.cfg);
+        addTrustStoreProps(this.cfg);
+
+        this.cfg.removeEntry(CFG_TRUST_STORE, "*");
+        this.cfg.addEntry(CFG_TRUST_STORE, projectBase + "/test-classes/certs/testcert.pem");
+
+        final HTTPConnectionFactory instance = new HTTPConnectionFactory(this.cfg);
+
+        final SSLContext fromConfig = instance.build(this.cfg);
+
+        assertNotSame(SSLContext.getDefault(), fromConfig);
+    }
+
     /**
      * Read a known environment variable configured during setup {@link UnitTest#setupSystemProperties()}
      *
