@@ -1,36 +1,28 @@
 package emissary.config;
 
 import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 import emissary.core.EmissaryException;
-import emissary.test.core.FunctionalTest;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import emissary.test.core.junit5.FunctionalTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@RunWith(Parameterized.class)
 public class FTestServiceConfigGuide extends FunctionalTest {
 
     private static final Logger logger = LoggerFactory.getLogger(FTestServiceConfigGuide.class);
 
-    protected String resource;
-
-    public FTestServiceConfigGuide(String resource) throws IOException {
-        super(resource);
-        this.resource = resource;
-    }
-
-    @Parameterized.Parameters
-    public static Collection<?> data() throws IOException, EmissaryException {
+    public static Stream<? extends Arguments> data() throws IOException, EmissaryException {
         ConfigUtil.initialize();
 
         // look in config dir
@@ -44,26 +36,17 @@ public class FTestServiceConfigGuide extends FunctionalTest {
         Path root = Paths.get(ConfigUtil.projectRootDirectory()).getParent();
         configFiles.addAll(findFilesByExtension(Paths.get(root.toString(), "src"), ".cfg"));
 
-        Collection<String[]> fileNames = new ArrayList<>();
-        for (Path f : configFiles) {
-            fileNames.add(new String[] {f.toString()});
-        }
-
-        return fileNames;
+        return configFiles.stream().map(p -> Arguments.of(p.toString()));
     }
 
     /**
      * Validates all config files in the "config" directory or down the src tree parse properly.
      */
-    @Test
-    public void testAllConfFiles() {
+    @ParameterizedTest
+    @MethodSource("data")
+    void testAllConfFiles(String resource) {
         Path underTest = Paths.get(resource).toAbsolutePath().normalize();
         logger.debug("Parsing config file:" + underTest);
-
-        try {
-            ConfigUtil.getConfigInfo(underTest.toString());
-        } catch (IOException e) {
-            fail("Caught error in file" + underTest + ": " + e.getMessage());
-        }
+        assertDoesNotThrow(() -> ConfigUtil.getConfigInfo(underTest.toString()));
     }
 }
