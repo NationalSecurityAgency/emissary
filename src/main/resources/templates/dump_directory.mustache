@@ -26,14 +26,14 @@
        </thead>
        <tbody>
        {{#entrykeys}}
-         <tr class="sep"><td colspan="6">{{dataId}}</td></tr>
+         {{#dataId}}<tr class="sep"><td colspan="6">{{.}}</td></tr>{{/dataId}}
          {{#entrylist}}
          <tr class='{{stripe}}'>
             <td>{{key}}</td>
             <td class="num">{{cost}}</td>
             <td class="num">{{quality}}</td>
             <td class="num">{{expense}}</td>
-            <td class="num">{{path-weight}}</td>
+            <td class="num">{{pathWeight}}</td>
             <td class="num">{{age}}</td>
           </tr>
          {{/entrylist}}

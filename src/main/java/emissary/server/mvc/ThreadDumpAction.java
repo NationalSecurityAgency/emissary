@@ -26,11 +26,11 @@ public class ThreadDumpAction {
     public Map<String, Object> getThreaddumps() {
         ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         model.put("emissary.version", new emissary.util.Version());
         model.put("java.version", System.getProperty("java.vm.version"));
         model.put("java.name", System.getProperty("java.vm.name"));
-        Map<String, Object> threadcount = new HashMap<String, Object>();
+        Map<String, Object> threadcount = new HashMap<>();
         threadcount.put("current", tmbean.getThreadCount());
         threadcount.put("max", tmbean.getPeakThreadCount());
         threadcount.put("daemon", tmbean.getDaemonThreadCount());
@@ -62,10 +62,10 @@ public class ThreadDumpAction {
             if (ti == null) {
                 sb.append("A null thread?");
             } else {
-                sb.append("\"" + ti.getThreadName() + "\" tid=" + ti.getThreadId() + "\n");
-                sb.append("   thread state " + ti.getThreadState()); // no new line
+                sb.append("\"").append(ti.getThreadName()).append("\" tid=").append(ti.getThreadId()).append("\n");
+                sb.append("   thread state ").append(ti.getThreadState()); // no new line
                 if (ti.getLockName() != null) {
-                    sb.append(" (on " + ti.getLockName() + " owned by " + ti.getLockOwnerId() + ")\n");
+                    sb.append(" (on ").append(ti.getLockName()).append(" owned by ").append(ti.getLockOwnerId()).append(")\n");
                 }
                 if (ti.isSuspended()) {
                     sb.append("   SUSPENDED\n");
@@ -74,7 +74,7 @@ public class ThreadDumpAction {
                     sb.append("   IN NATIVE CODE\n");
                 }
                 for (StackTraceElement ste : ti.getStackTrace()) {
-                    sb.append("      " + ste.toString() + "\n");
+                    sb.append("      ").append(ste.toString()).append("\n");
                 }
             }
             stack = sb.toString();

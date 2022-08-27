@@ -60,7 +60,7 @@ public class DumpDirectoryAction {
             }
         }
         if (dir != null) {
-            LOG.debug("Lookup returned " + dir);
+            LOG.debug("Lookup returned {}", dir);
             map.put("directory-label", dir.toString());
         }
 
@@ -68,33 +68,37 @@ public class DumpDirectoryAction {
         List<DirectoryInfo> entryKeys = new LinkedList<>();
         long now = System.currentTimeMillis();
 
-        for (String dataId : dir.getEntryKeys()) {
-            LOG.trace("dataId key is {}", dataId);
-            List<DirectoryEntryInfo> list = new LinkedList<>();
-            for (DirectoryEntry entry : dir.getEntryList(dataId)) {
-                LOG.trace("Found entry {}", entry);
-                list.add(new DirectoryEntryInfo(rowCount++ % 2 == 0 ? "even" : "odd", entry, now));
+        if (dir != null) {
+            for (String dataId : dir.getEntryKeys()) {
+                LOG.trace("dataId key is {}", dataId);
+                List<DirectoryEntryInfo> list = new LinkedList<>();
+                for (DirectoryEntry entry : dir.getEntryList(dataId)) {
+                    LOG.trace("Found entry {}", entry);
+                    list.add(new DirectoryEntryInfo(rowCount++ % 2 == 0 ? "even" : "odd", entry, now));
+                }
+                entryKeys.add(new DirectoryInfo(dataId, list));
             }
-            entryKeys.add(new DirectoryInfo(dataId, list));
         }
 
-        if (entryKeys.size() > 0) {
+        if (!entryKeys.isEmpty()) {
             map.put("entrykeys", entryKeys);
         } else {
             LOG.debug("Found no entry keys");
         }
 
         List<PeerInfo> peers = new LinkedList<>();
-        for (String peerkey : dir.getPeerDirectories()) {
-            peers.add(new PeerInfo(peerkey, dir.isRemoteDirectoryAvailable(peerkey)));
+        if (dir != null) {
+            for (String peerkey : dir.getPeerDirectories()) {
+                peers.add(new PeerInfo(peerkey, dir.isRemoteDirectoryAvailable(peerkey)));
+            }
         }
 
-        if (peers.size() > 0) {
+        if (!peers.isEmpty()) {
             map.put("peers", peers);
         }
 
 
-        if (errors.size() > 0) {
+        if (!errors.isEmpty()) {
             map.put("error", true);
             map.put("errors", errors);
         }
