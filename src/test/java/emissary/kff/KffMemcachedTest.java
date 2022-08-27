@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import emissary.kff.KffFilter.FilterType;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;

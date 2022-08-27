@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class DataByteArraySlicerTest extends UnitTest {

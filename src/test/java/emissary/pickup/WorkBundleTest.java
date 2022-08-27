@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class WorkBundleTest extends UnitTest {

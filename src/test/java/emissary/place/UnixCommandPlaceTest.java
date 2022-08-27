@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;

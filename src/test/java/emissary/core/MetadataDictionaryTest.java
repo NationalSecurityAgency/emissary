@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 public class MetadataDictionaryTest extends UnitTest {

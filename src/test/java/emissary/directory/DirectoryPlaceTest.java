@@ -18,7 +18,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

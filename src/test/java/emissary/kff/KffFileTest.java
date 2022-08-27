@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

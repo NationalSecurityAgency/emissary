@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.shell.Executrix;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

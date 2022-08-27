@@ -3,7 +3,7 @@ package emissary.util.web;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class UrlDataTest extends UnitTest {

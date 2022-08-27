@@ -13,7 +13,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class DataUtilTest extends UnitTest {

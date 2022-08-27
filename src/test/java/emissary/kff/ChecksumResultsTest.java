@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Set;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class ChecksumResultsTest extends UnitTest {

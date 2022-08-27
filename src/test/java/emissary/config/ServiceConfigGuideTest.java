@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;

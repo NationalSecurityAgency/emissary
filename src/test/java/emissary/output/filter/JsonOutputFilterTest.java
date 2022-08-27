@@ -18,7 +18,7 @@ import java.util.Map;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

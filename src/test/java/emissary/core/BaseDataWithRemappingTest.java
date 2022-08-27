@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +23,7 @@ class BaseDataWithRemappingTest extends UnitTest {
     @BeforeAll
     public static void beforeClass() {
         // this runs before UnitTest has a chance to setup, so do that first
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
 
         md = new RemappingMetadataDictionary();
         Namespace.bind(md.getDictionaryName(), md);

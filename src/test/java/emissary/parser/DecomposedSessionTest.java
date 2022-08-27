@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Multimap;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

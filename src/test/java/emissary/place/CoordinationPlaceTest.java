@@ -15,7 +15,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;

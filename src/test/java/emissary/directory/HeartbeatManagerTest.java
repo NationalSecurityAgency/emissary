@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

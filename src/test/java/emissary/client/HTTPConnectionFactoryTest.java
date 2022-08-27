@@ -15,7 +15,7 @@ import javax.net.ssl.SSLContext;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

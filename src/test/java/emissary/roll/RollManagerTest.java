@@ -9,7 +9,7 @@ import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.EmissaryIsolatedClassLoaderExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
