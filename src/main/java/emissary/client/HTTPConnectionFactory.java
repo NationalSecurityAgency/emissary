@@ -77,7 +77,7 @@ public class HTTPConnectionFactory {
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
     private static final String FILE_PRE = "file://";
-    private final static Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
+    private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
