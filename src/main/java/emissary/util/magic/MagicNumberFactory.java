@@ -60,13 +60,10 @@ public class MagicNumberFactory {
             Map<String, List<String>> continuationErrorMap, boolean swallowParseException) {
 
         List<MagicNumber> magicNumberList = new ArrayList<MagicNumber>();
-        BufferedReader reader = null;
         MagicNumber finger = null;
         int currentDepth = -1;
         List<MagicNumber> extensions = new ArrayList<MagicNumber>();
-        try {
-            byte[] magicFileData = configData;
-            reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(magicFileData), MagicNumber.DEFAULT_CHARSET));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(configData), MagicNumber.DEFAULT_CHARSET))) {
             String s;
             int counter = 0;
             while ((s = reader.readLine()) != null) {
@@ -150,14 +147,6 @@ public class MagicNumberFactory {
             log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): {}", ioe.getMessage(), ioe);
             /** Doing all of this in memory - yes, one could erroneously use one of the IO objects but ... */
             throw new RuntimeException(ioe);
-        } finally {
-            try {
-                if (reader != null) {
-                    reader.close();
-                    reader = null;
-                }
-            } catch (Exception e) {
-            }
         }
         return magicNumberList;
     }

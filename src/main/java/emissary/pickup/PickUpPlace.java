@@ -558,10 +558,8 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
         // We are going to prefer a RAF parser if one
         // is available so start by getting the file opened
         logger.debug("PickUpPlace: Starting on {}", theFile.getName());
-        RandomAccessFile raf = null;
         int sessionNum = 0;
-        try {
-            raf = new RandomAccessFile(theFile, "r");
+        try (RandomAccessFile raf = new RandomAccessFile(theFile, "r")) {
 
             // Get the right type of session parser
             SessionParser sp = parserFactory.makeSessionParser(raf.getChannel());
@@ -598,14 +596,6 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
                 }
 
             } // end while(true)
-        } finally {
-            if (raf != null) {
-                try {
-                    raf.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
         }
 
         logger.debug("Done processing {} sessions from {}", sessionNum, theFile.getName());

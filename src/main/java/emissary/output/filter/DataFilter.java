@@ -161,22 +161,11 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Write it out
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(fileName);
+        try (FileOutputStream fos = new FileOutputStream(fileName)) {
             fos.write(data, 0, data.length);
-            fos.close();
         } catch (IOException ex) {
             logger.error("Cannot write output to " + fileName, ex);
             return false;
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ignore) {
-                    logger.debug("Error closing stream", ignore);
-                }
-            }
         }
 
         return true;
