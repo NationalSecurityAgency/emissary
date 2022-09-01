@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FastBoyerMoore {
+    private static Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);
     public byte[][] keywords;
     int minKeywordLength;
     int[] lookup = new int[259];
@@ -197,11 +201,10 @@ public class FastBoyerMoore {
             scanner.scan(0, dataBytes.length, result);
             for (int i = 0; i < result.size(); i++) {
                 final int[] tmp = result.get(i);
-                System.out.println("Hit At:" + tmp[0] + " id: " + tmp[1] + " l: " + tmp[2]);
+                logger.info("Hit At: {} id: {} l: {}", tmp[0], tmp[1], tmp[2]);
             }
         } catch (Exception e) {
-            System.out.println("Exception in test:" + e);
-            e.printStackTrace();
+            logger.error("Exception in test", e);
         }
     }
 
@@ -253,13 +256,12 @@ public class FastBoyerMoore {
                     scanner.scan(dataBytes, pos, hits);
                     for (int i = 0; i < hits.size(); i++) {
                         final int[] tmp = hits.get(i);
-                        System.out.println("Hit At:" + tmp[0] + " id: " + tmp[1] + " l: " + tmp[2]);
+                        logger.info("Hit At: {} id: {} l: {}", tmp[0], tmp[1], tmp[2]);
                     }
                     hits.clear();
                 }
             } catch (Exception e) {
-                System.out.println("Exception in test:" + e);
-                e.printStackTrace();
+                logger.error("Exception in test", e);
             }
         }
 
@@ -289,13 +291,12 @@ public class FastBoyerMoore {
                     scanner.scan(dataBytes, pos, hits);
                     for (int i = 0; i < hits.size(); i++) {
                         final int[] tmp = hits.get(i);
-                        System.out.println("Hit At:" + tmp[0] + " id: " + tmp[1]);
+                        logger.info("Hit At: {} id: {}", tmp[0], tmp[1]);
                     }
                     hits.clear();
                 }
             } catch (Exception e) {
-                System.out.println("Exception in test:" + e);
-                e.printStackTrace();
+                logger.error("Exception in test", e);
             }
         }
 

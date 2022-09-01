@@ -161,7 +161,7 @@ public class EmissaryServer {
             server.setStopAtShutdown(true);
             server.setStopTimeout(10000l);
             if (this.cmd.shouldDumpJettyBeans()) {
-                server.dump(System.out);
+                LOG.info(server.dump());
             }
             this.server = server;
             bindServer(); // emissary specific
@@ -194,8 +194,9 @@ public class EmissaryServer {
             LOG.info("Started EmissaryServer at {}", serverLocation);
             return server;
         } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            throw new RuntimeException("Emissary server didn't start", t);
+            String errorMsg = "Emissary server didn't start";
+            LOG.error(errorMsg, t);
+            throw new RuntimeException(errorMsg, t);
         }
     }
 
@@ -339,7 +340,6 @@ public class EmissaryServer {
             s.getServer().stop();
         } catch (NamespaceException e) {
             LOG.error("Unable to lookup {} ", name, e);
-            e.printStackTrace();
         } catch (InterruptedException e) {
             LOG.warn("Stop interrupted. Expected?");
         } catch (Exception e) {

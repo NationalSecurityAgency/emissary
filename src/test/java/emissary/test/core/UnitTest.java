@@ -148,7 +148,7 @@ public class UnitTest {
         try {
             ServerCommand.parse(ServerCommand.class, "-m", "cluster").setupCommand();
         } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error("Unable to setup Emissary environment", e);
             fail("Unable to setup Emissary environment");
         }
     }

@@ -37,7 +37,6 @@ public class Shutdown {
             }).start();
             return Response.ok("Shutdown initiated. Come again soon!").build();
         } catch (Exception e) {
-            e.printStackTrace();
             LOG.warn("Exception trying to initiate shutdown: {}", e.getMessage());
             return Response.serverError().entity("Error trying to initiate shutdown").build();
         }

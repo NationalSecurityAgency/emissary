@@ -55,8 +55,9 @@ public class RunCommand extends BaseCommand {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("Could not find fully qualified class named " + clazzName);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Problem calling main from " + clazzName + " with " + Arrays.toString(clazzArgs) + " : " + e.getMessage());
+            String errorMsg = "Problem calling main from " + clazzName + " with " + Arrays.toString(clazzArgs);
+            LOG.error(errorMsg, e);
+            throw new RuntimeException(errorMsg + " : " + e.getMessage());
         }
 
 
