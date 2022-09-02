@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
@@ -75,6 +77,7 @@ public class HTTPConnectionFactory {
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
     private static final String FILE_PRE = "file://";
+    private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
@@ -156,9 +159,9 @@ public class HTTPConnectionFactory {
     }
 
     /*
-     * Build char array from password or load from file.
+     * Build char array from password, load from file or read from environment variable.
      */
-    private static char[] loadPW(final String pazz) throws IOException {
+    static char[] loadPW(final String pazz) throws IOException {
         if (pazz == null) {
             return null;
         }
@@ -173,7 +176,12 @@ public class HTTPConnectionFactory {
                 throw new IOException("Unable to load store password from " + pazz);
             }
         } else {
-            realPW = pazz;
+            Matcher matcher = ENV_VARIABLE_PATTERN.matcher(pazz);
+            if (matcher.matches()) {
+                realPW = System.getenv(matcher.group(1));
+            } else {
+                realPW = pazz;
+            }
         }
         return realPW.toCharArray();
     }
