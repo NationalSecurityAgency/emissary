@@ -1,7 +1,6 @@
 package emissary.server.mvc;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,12 +26,11 @@ public class NamespaceAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/namespace")
     public Map<String, Object> getNamespace(@Context HttpServletRequest request) {
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
         Set<NamespaceInfo> namespaces = new LinkedHashSet<>();
 
         int rowCount = 0;
-        for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-            String key = i.next();
+        for (String key : Namespace.keySet()) {
             String clz = rowCount++ % 2 == 0 ? "even" : "odd";
             String context = request.getContextPath();
             namespaces.add(new NamespaceInfo(key, clz, context));
@@ -55,7 +53,7 @@ public class NamespaceAction {
         public NamespaceInfo(String key, String clz, String context) {
             this.key = key;
             this.clz = clz;
-            Object tempValue = null;
+            Object tempValue;
             try {
                 tempValue = Namespace.lookup(key);
             } catch (NamespaceException e) {
@@ -63,7 +61,7 @@ public class NamespaceAction {
             }
             this.value = tempValue;
             this.valueClassName = this.value.getClass().getName();
-            this.isDir = key.toString().indexOf("DirectoryPlace") > -1;
+            this.isDir = key.contains("DirectoryPlace");
             this.dumpUrl = context + "/DumpDirectory.action?targetDir=" + key;
             this.transferUrl = context + "/TransferDirectory.action?targetDir=" + key;
         }

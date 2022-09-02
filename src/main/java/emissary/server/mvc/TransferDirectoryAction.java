@@ -30,14 +30,14 @@ public class TransferDirectoryAction {
         final IDirectoryPlace value;
         try {
             if (dirname == null) {
-                LOG.debug("Lookup is using default name since no " + TARGET_DIR_PARAM + " was specified");
+                LOG.debug("Lookup is using default name since no {} was specified", TARGET_DIR_PARAM);
                 value = DirectoryPlace.lookup();
             } else {
-                LOG.debug("Lookup is using directory name " + dirname);
+                LOG.debug("Lookup is using directory name {}", dirname);
                 value = (IDirectoryPlace) Namespace.lookup(dirname);
             }
             if (value != null) {
-                LOG.debug("Lookup returned " + value);
+                LOG.debug("Lookup returned {}", value);
                 String msg = DirectoryXmlContainer.toXmlString(value);
                 return Response.ok().entity(msg).build();
             } else {

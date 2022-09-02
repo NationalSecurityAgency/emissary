@@ -22,11 +22,11 @@ public class EnvironmentAction {
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/environment")
     public Map<String, Object> getEnvironment() {
-        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> model = new HashMap<>();
 
         Set<JustAString> systemProperties = new TreeSet<>();
         Enumeration<?> e = System.getProperties().propertyNames();
-        Set<String> keys = new TreeSet<String>();
+        Set<String> keys = new TreeSet<>();
         while (e.hasMoreElements()) {
             keys.add((String) e.nextElement());
         }
@@ -36,7 +36,7 @@ public class EnvironmentAction {
 
         Set<JustAString> environmentVariables = new TreeSet<>();
         Map<String, String> m = System.getenv();
-        for (String s : new TreeSet<String>(m.keySet())) {
+        for (String s : new TreeSet<>(m.keySet())) {
             environmentVariables.add(new JustAString(s + ": " + m.get(s)));
         }
 
@@ -58,8 +58,8 @@ public class EnvironmentAction {
             int len1 = string.length();
             int len2 = o.string.length();
             int lim = Math.min(len1, len2);
-            char v1[] = string.toCharArray();
-            char v2[] = o.string.toCharArray();
+            char[] v1 = string.toCharArray();
+            char[] v2 = o.string.toCharArray();
 
             int k = 0;
             while (k < lim) {
