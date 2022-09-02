@@ -1,14 +1,21 @@
 package emissary.client;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +23,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
@@ -83,6 +91,10 @@ public class HTTPConnectionFactory {
 
     // singleton
     private static final HTTPConnectionFactory FACTORY = new HTTPConnectionFactory();
+
+    // PEM delimiters
+    private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
+    private static final String END_CERT = "-----END CERTIFICATE-----";
 
     final PoolingHttpClientConnectionManager connMan;
 
@@ -191,16 +203,50 @@ public class HTTPConnectionFactory {
         if ((path == null) || path.isEmpty()) {
             return null;
         }
+        Path filePath = Paths.get(path);
         final KeyStore keyStore = KeyStore.getInstance(type);
-        try (final InputStream is = Files.newInputStream(Paths.get(path))) {
-            keyStore.load(is, pazz);
+        if (isPemCert(filePath)) {
+            byte[] pemBytes = Files.readAllBytes(filePath);
+            byte[] derBytes = parseDerFromPemCert(pemBytes);
+            X509Certificate x509Certificate = generateCertFromDer(derBytes);
+            keyStore.load(null, pazz);
+            keyStore.setCertificateEntry("alias", x509Certificate);
+        } else {
+            try (final InputStream is = Files.newInputStream(filePath)) {
+                keyStore.load(is, pazz);
+            }
         }
         return keyStore;
     }
 
+    protected static boolean isPemCert(Path filePath) throws IOException {
+        byte[] beginBytes;
+        try (DataInputStream reader = new DataInputStream(Files.newInputStream(filePath))) {
+            int totalNumBytes = reader.available();
+            if (totalNumBytes <= BEGIN_CERT.length() + END_CERT.length()) {
+                return false;
+            }
+            beginBytes = new byte[BEGIN_CERT.length()];
+            reader.readFully(beginBytes);
+        }
+        return Arrays.equals(beginBytes, BEGIN_CERT.getBytes());
+    }
+
+    protected static byte[] parseDerFromPemCert(byte[] pem) {
+        String data = new String(pem);
+        String[] tokens = data.split(BEGIN_CERT);
+        tokens = tokens[1].split(END_CERT);
+        return DatatypeConverter.parseBase64Binary(tokens[0]);
+    }
+
+    protected static X509Certificate generateCertFromDer(byte[] certBytes) throws CertificateException {
+        CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
+    }
+
     /**
      * Return the configured connection manager with TLS SSL if configured.
-     * 
+     *
      * @return the connection manager
      */
     public PoolingHttpClientConnectionManager getDefaultConnectionManager() {
