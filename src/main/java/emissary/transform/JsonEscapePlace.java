@@ -11,6 +11,7 @@ import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JsonEscape;
 import emissary.util.DataUtil;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class JsonEscapePlace extends ServiceProviderPlace {
 
@@ -67,11 +68,11 @@ public class JsonEscapePlace extends ServiceProviderPlace {
         }
         String incomingForm = d.currentForm();
 
-        logger.debug("JsonEscapePlace just got a " + incomingForm);
+        logger.debug("JsonEscapePlace just got a {}", incomingForm);
 
         byte[] newData = JsonEscape.unescape(d.data());
 
-        if (newData != null && newData.length > 0) {
+        if (ArrayUtils.isNotEmpty(newData)) {
             d.setData(newData);
 
             /*
@@ -88,7 +89,7 @@ public class JsonEscapePlace extends ServiceProviderPlace {
     /**
      * Test standalone main
      */
-    public static void main(String[] argv) throws Exception {
+    public static void main(String[] argv) {
         mainRunner(JsonEscapePlace.class.getName(), argv);
     }
 }
