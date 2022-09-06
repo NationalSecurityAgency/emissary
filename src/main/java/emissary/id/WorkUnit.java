@@ -16,7 +16,7 @@ public class WorkUnit implements Serializable {
     protected byte[] header;
     protected byte[] footer;
     protected String currentForm;
-    protected Map<String, String> params = new HashMap<String, String>();
+    protected Map<String, String> params = new HashMap<>();
 
 
     public WorkUnit() {}
@@ -154,7 +154,6 @@ public class WorkUnit implements Serializable {
      * Get all parameters
      */
     public Map<String, String> getParameters() {
-        // return (Map<String,String>)((HashMap)params).clone();
-        return new HashMap<String, String>(this.params);
+        return new HashMap<>(this.params);
     }
 }

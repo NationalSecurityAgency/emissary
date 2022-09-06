@@ -106,8 +106,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
                     }
                 }
 
-                if (this.replace && currentForm.indexOf(" ") > -1) {
-                    currentForm = currentForm.replaceAll(" ", "_");
+                if (this.replace && currentForm.contains(" ")) {
+                    currentForm = currentForm.replace(" ", "_");
                 }
 
                 if (this.upcase && currentForm.length() > 0) {
@@ -115,7 +115,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
                 }
 
                 if (this.removeCommas && currentForm.indexOf(",") > 0) {
-                    currentForm = currentForm.replaceAll("", "_");
+                    currentForm = currentForm.replace("", "_");
                 }
 
                 if (this.minSizeMap.containsKey(currentForm) && (bytes.length < this.minSizeMap.get(currentForm))) {
@@ -137,9 +137,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         } catch (Exception e) {
             logger.error("Could not run unixfile", e);
             d.addProcessingError(e.getMessage());
-            return;
         }
-        return;
     }
 
     public static void main(final String[] args) {
