@@ -12,6 +12,7 @@ import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
+import emissary.util.GitRepositoryState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +100,8 @@ public class ServerCommand extends ServiceCommand {
     @Override
     protected void startService() {
         try {
-            LOG.info("Running Emissary Server");
+            LOG.info("Starting Emissary Server - version: {} - built on {} - git hash: {}", GitRepositoryState.getRepositoryState().getBuildVersion(),
+                    GitRepositoryState.getRepositoryState().getBuildTime(), GitRepositoryState.getRepositoryState().getCommitIdAbbrev());
             new EmissaryServer(this).startServer();
         } catch (EmissaryException e) {
             LOG.error("Unable to start server", e);
