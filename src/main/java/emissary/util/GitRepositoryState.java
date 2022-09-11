@@ -74,6 +74,11 @@ public class GitRepositoryState {
         return new GitRepositoryState(properties);
     }
 
+    public static String dumpVersionInfo(GitRepositoryState gitRepositoryState) {
+        return String.format("Version: %s - built by: %s - built on %s - git hash: %s", gitRepositoryState.buildVersion,
+                gitRepositoryState.buildUserName, gitRepositoryState.buildTime, gitRepositoryState.getCommitIdAbbrev());
+    }
+
     public String getTags() {
         return tags;
     }
