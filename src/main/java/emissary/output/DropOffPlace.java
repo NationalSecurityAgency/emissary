@@ -91,9 +91,9 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         this.doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
         this.failurePolicyTerminate = configG.findBooleanEntry("FAILURE_TERMINATES_CHAIN", true);
         this.outputObjectMetrics = configG.findBooleanEntry("OUTPUT_OBJECT_METRICS", false);
-        this.objectMetricsFields = configG.findEntries("objectMetricField");
-        this.outputObjectMetricsLatency = configG.findStringEntry("OUTPUT_OBJECT_METRICS_LATENCY", "");
-        String outputTldMetricsLatencyFormat = configG.findStringEntry("OUTPUT_OBJECT_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        this.objectMetricsFields = configG.findEntries("OBJECT_METRICS_FIELDS");
+        this.outputObjectMetricsLatency = configG.findStringEntry("OBJECT_METRICS_LATENCY", "");
+        String outputTldMetricsLatencyFormat = configG.findStringEntry("OBJECT_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         this.latencyDateTimeFormatter = DateTimeFormatter.ofPattern(outputTldMetricsLatencyFormat);
 
         // Build and store all the filter that are desired IN THE ORDER SPECIFIED

@@ -42,9 +42,6 @@ class DropOffPlaceTest extends UnitTest {
         cfg.addEntry("UNIX_ROOT", tempDir.toString());
         cfg.addEntry("OUTPUT_FILTER", "BLAH:emissary.output.filter.DataFilter");
         cfg.addEntry("OUTPUT_SPEC_BLAH", "%R%/xyzzy/%S%.%F%");
-        cfg.addEntry("OUTPUT_TLD_METRICS", "true");
-        cfg.addEntry("OUTPUT_TLD_METRICS_LATENCY", "UPSTREAM-DROPOFF");
-        cfg.addEntry("OUTPUT_TLD_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         this.place = new DropOffPlace(cfg);
     }
 
