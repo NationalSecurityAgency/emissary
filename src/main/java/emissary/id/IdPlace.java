@@ -27,7 +27,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
     /**
      * Create and register an id place with all default config information
      */
-    public IdPlace() throws IOException {
+    protected IdPlace() throws IOException {
         super();
         configureIdPlace();
     }
@@ -37,7 +37,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * 
      * @param placeLoc the location for registering this place
      */
-    public IdPlace(final String placeLoc) throws IOException {
+    protected IdPlace(final String placeLoc) throws IOException {
         super(placeLoc);
         configureIdPlace();
     }
@@ -60,7 +60,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @param configFile the config location file or resource
      * @param placeLocation key to use in registration
      */
-    public IdPlace(final String configFile, final String placeLocation) throws IOException {
+    protected IdPlace(final String configFile, final String placeLocation) throws IOException {
         super(configFile, placeLocation);
         configureIdPlace();
     }
@@ -137,11 +137,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * @return the renamed form
      */
     protected String renamedForm(final String form) {
-        if (this.renames.containsKey(form)) {
-            return this.renames.get(form);
-        } else {
-            return form;
-        }
+        return this.renames.getOrDefault(form, form);
     }
 
     /**
@@ -190,7 +186,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
     public int setCurrentForm(final IBaseDataObject d, final Collection<String> newForms) {
 
         final int sz;
-        if (newForms == null || newForms.size() < 1) {
+        if (newForms == null || newForms.isEmpty()) {
             sz = setNonFinalCurrentForm(d, null);
         } else {
             final String[] forms = newForms.toArray(new String[0]);

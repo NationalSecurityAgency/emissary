@@ -16,8 +16,8 @@ public class Identification implements Serializable {
     // Serializable
     static final long serialVersionUID = 9212068103720124108L;
 
-    protected List<String> types = new ArrayList<String>();
-    protected Map<String, String> props = new TreeMap<String, String>();
+    protected List<String> types = new ArrayList<>();
+    protected Map<String, String> props = new TreeMap<>();
 
     /**
      * Create a new Identification object
@@ -82,7 +82,7 @@ public class Identification implements Serializable {
      * Get a list of the types present
      */
     public List<String> getTypes() {
-        return new ArrayList<String>(this.types);
+        return new ArrayList<>(this.types);
     }
 
     /**
@@ -121,7 +121,7 @@ public class Identification implements Serializable {
      * Return a map of all the properties
      */
     public Map<String, String> getProperties() {
-        return new HashMap<String, String>(this.props);
+        return new HashMap<>(this.props);
     }
 
     /**
