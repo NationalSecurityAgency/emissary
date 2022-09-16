@@ -39,7 +39,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected static final String DEFAULT_NEW_CHILD_FORM = emissary.core.Form.UNKNOWN;
     protected static final String DEFAULT_NEW_ERROR_FORM = emissary.core.Form.ERROR;
     protected boolean setTitleToFile = true;
-    protected Map<String, String> fileTypesByExtension = new HashMap<String, String>();
+    protected Map<String, String> fileTypesByExtension = new HashMap<>();
     protected String contentFile = null;
     protected Executrix executrix;
     protected String logfilename;
@@ -196,8 +196,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                     logger.info(message);
                 }
             }
-        } catch (Exception ignore) {
-            logger.debug("Error logging messages", ignore);
+        } catch (Exception e) {
+            logger.debug("Error logging messages", e);
         }
     }
 
@@ -208,7 +208,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param inputFileName name of input file so it can be skipped
      */
     protected List<File> getFileList(File tmpDir, String inputFileName) {
-        List<File> outFiles = new ArrayList<File>();
+        List<File> outFiles = new ArrayList<>();
         getFileList(tmpDir, inputFileName, outFiles);
         return outFiles;
     }
@@ -224,7 +224,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         // Recursive call to walk the subtree of output files/dirs
         for (int d = 0; d < outDirs.size(); d++) {
             logger.debug("outDirs[{}]={}", d, outDirs.get(d));
-            File dir = null;
+            File dir;
             if (outDirs.get(d).equals(".")) {
                 dir = tmpDir;
             } else {
@@ -235,20 +235,23 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                 continue;
             }
             File[] files = dir.listFiles();
-            for (int f = 0; f < files.length; f++) {
-                if (!(files[f].exists() && files[f].canRead())) {
-                    logger.warn("cannot access child[{}]:{}", outFiles.size(), files[f].getAbsolutePath());
+            if (files == null) {
+                continue;
+            }
+            for (File file : files) {
+                if (!(file.exists() && file.canRead())) {
+                    logger.warn("cannot access child[{}]:{}", outFiles.size(), file.getAbsolutePath());
                     continue;
                 }
-                if (files[f].isDirectory()) {
+                if (file.isDirectory()) {
                     if (recurseSubDirs) {
-                        getFileList(files[f], inputFileName, outFiles);
+                        getFileList(file, inputFileName, outFiles);
                     } else {
-                        logger.debug("skipping directory: {}", files[f].getPath());
+                        logger.debug("skipping directory: {}", file.getPath());
                     }
                     continue;
                 }
-                String fname = files[f].getName();
+                String fname = file.getName();
                 if (binFiles.contains(fname)) {
                     logger.debug("Ignoring file '{}' because it is in BIN_FILES", fname);
                     continue;
@@ -258,7 +261,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                     logMessages(tmpDir.getPath());
                     continue;
                 }
-                if (fname.indexOf(".") > -1 && binFileExt.contains(fname.substring(fname.lastIndexOf(".") + 1))) {
+                if (fname.contains(".") && binFileExt.contains(fname.substring(fname.lastIndexOf(".") + 1))) {
                     logger.debug("Ignoring file '{}' because it is in BIN_EXTENSIONS.", fname);
                     continue;
                 }
@@ -270,28 +273,25 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
                     logger.debug("Ignoring file '{}' because it is the input file.", fname);
                     continue;
                 }
-                if (files[f].length() == 0) {
+                if (file.length() == 0) {
                     logger.debug("Ignoring file '{}' because it is empty.", fname);
                     continue;
                 }
                 logger.debug("Adding output file '{}' for processing", fname);
-                outFiles.add(files[f]);
+                outFiles.add(file);
             }
         }
-        Collections.sort(outFiles, new FileNameComparator());
+        outFiles.sort(new FileNameComparator());
     }
 
     protected static class FileNameComparator implements Comparator<File> {
         @Override
         public int compare(File o1, File o2) {
-            if (o1 == null && o2 != null) {
-                return 1;
+            if (o1 == null) {
+                return o2 != null ? 1 : 0;
             }
-            if (o1 != null && o2 == null) {
+            if (o2 == null) {
                 return -1;
-            }
-            if (o1 == null && o2 == null) {
-                return 0;
             }
             return o1.getName().compareTo(o2.getName());
         }
@@ -308,9 +308,9 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @return list of attachments
      */
     protected List<IBaseDataObject> sproutResults(IBaseDataObject parent, List<File> files, String tempDirName, StringBuilder newData) {
-        List<IBaseDataObject> sprouts = new ArrayList<IBaseDataObject>();
+        List<IBaseDataObject> sprouts = new ArrayList<>();
 
-        if (files.size() < 1) {
+        if (files.isEmpty()) {
             logger.warn("NO OUTPUT FILES FOUND!");
             return sprouts;
         }
@@ -319,56 +319,52 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         int actualFileCount = 0;
         int birthOrder = parent.getNumChildren() + 1;
 
-        if (fileCount > 0 || contentFile != null) {
-            parent.setNumChildren(fileCount);
-            initSprout(parent, files, newData, tempDirName);
+        parent.setNumChildren(fileCount);
+        initSprout(parent, files, newData, tempDirName);
 
-            for (int j = 0; j < fileCount; j++) {
-                File f = files.get(j);
+        for (File f : files) {
+            logger.debug("Handling data file {}", f.getName());
 
-                logger.debug("Handling data file {}", f.getName());
-
-                if (!f.canRead() || !f.isFile()) {
-                    logger.debug("Cannot read from {}", f.getAbsolutePath());
-                    continue;
-                }
-
-                byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
-                if (theData == null) {
-                    logger.debug("Cannot read data from {}", f.getAbsolutePath());
-                    continue;
-                }
-
-                if (!preSprout(theData, parent, f, birthOrder, fileCount, newData)) {
-                    continue;
-                }
-
-                Map<String, Object> metaData = new HashMap<String, Object>();
-                if (setTitleToFile) {
-                    metaData.put("DocumentTitle", f.getName());
-                }
-
-                List<String> tmpForms = getFormsFromFile(f);
-
-                IBaseDataObject dObj = DataObjectFactory.getInstance(theData, parent.getFilename() + Family.SEP + birthOrder, tmpForms.get(0));
-
-                dObj.putParameters(metaData);
-                sprouts.add(dObj);
-
-                actualFileCount++;
-                birthOrder++;
-                postSprout(theData, parent, f, birthOrder, fileCount, actualFileCount, newData, dObj);
+            if (!f.canRead() || !f.isFile()) {
+                logger.debug("Cannot read from {}", f.getAbsolutePath());
+                continue;
             }
 
-            finishSprout(parent, fileCount, actualFileCount, newData);
+            byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
+            if (theData == null) {
+                logger.debug("Cannot read data from {}", f.getAbsolutePath());
+                continue;
+            }
 
-            if (!preserveParentData) {
-                try {
-                    parent.setData(newData.toString().getBytes(charset));
-                } catch (UnsupportedEncodingException e) {
-                    logger.debug("SproutResults charset problem", e);
-                    parent.setData(newData.toString().getBytes());
-                }
+            if (!preSprout(theData, parent, f, birthOrder, fileCount, newData)) {
+                continue;
+            }
+
+            Map<String, Object> metaData = new HashMap<>();
+            if (setTitleToFile) {
+                metaData.put("DocumentTitle", f.getName());
+            }
+
+            List<String> tmpForms = getFormsFromFile(f);
+
+            IBaseDataObject dObj = DataObjectFactory.getInstance(theData, parent.getFilename() + Family.SEP + birthOrder, tmpForms.get(0));
+
+            dObj.putParameters(metaData);
+            sprouts.add(dObj);
+
+            actualFileCount++;
+            birthOrder++;
+            postSprout(theData, parent, f, birthOrder, fileCount, actualFileCount, newData, dObj);
+        }
+
+        finishSprout(parent, fileCount, actualFileCount, newData);
+
+        if (!preserveParentData) {
+            try {
+                parent.setData(newData.toString().getBytes(charset));
+            } catch (UnsupportedEncodingException e) {
+                logger.debug("SproutResults charset problem", e);
+                parent.setData(newData.toString().getBytes());
             }
         }
         return sprouts;
@@ -380,18 +376,15 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * may be customized in sub-classes, but at least one form value must be returned!
      */
     protected List<String> getFormsFromFile(File f) {
-        List<String> tmpForms = new ArrayList<String>();
+        List<String> tmpForms = new ArrayList<>();
 
-        for (String extension : fileTypesByExtension.keySet()) {
-            String newForm = fileTypesByExtension.get(extension);
-            if (f.getName().endsWith(extension)) {
-                tmpForms.add(newForm);
+        for (Map.Entry<String, String> fileTypes : fileTypesByExtension.entrySet()) {
+            if (f.getName().endsWith(fileTypes.getKey())) {
+                tmpForms.add(fileTypes.getValue());
             }
         }
-        if (tmpForms.size() == 0) {
-            for (int i = 0; i < newChildForms.size(); i++) {
-                tmpForms.add(newChildForms.get(i));
-            }
+        if (tmpForms.isEmpty()) {
+            tmpForms.addAll(newChildForms);
         }
         return tmpForms;
     }
@@ -413,7 +406,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             if (fileData != null) {
                 newData.append(new String(fileData));
             } else {
-                logger.debug("Can't find new content file:{}", (dirName + File.separator + contentFile));
+                logger.debug("Can't find new content file:{}{}{}", dirName, File.separator, contentFile);
             }
         }
     }
@@ -474,8 +467,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      */
     protected int processSingleChild(IBaseDataObject d, File f) {
         byte[] theData = Executrix.readDataFromFile(f.getAbsolutePath());
-        int result = processSingleChild(d, theData, f);
-        return result;
+        return processSingleChild(d, theData, f);
     }
 
 
@@ -494,8 +486,8 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             d.putParameter("DocumentTitle", filename);
         }
         List<String> tmpForms = getFormsFromFile(f);
-        for (int i = 0; i < tmpForms.size(); i++) {
-            d.pushCurrentForm(tmpForms.get(i));
+        for (String tmpForm : tmpForms) {
+            d.pushCurrentForm(tmpForm);
         }
         d.setFileType(SINGLE_CHILD_FILETYPE);
         return (0);
@@ -528,7 +520,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      */
     @Override
     public List<IBaseDataObject> processHeavyDuty(IBaseDataObject tData) throws ResourceException {
-        List<IBaseDataObject> entries = null;
+        List<IBaseDataObject> entries;
 
         if (doSynchronized) {
             entries = synchronizedProcess(tData);
@@ -536,7 +528,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             entries = unSynchronizedProcess(tData);
         }
 
-        if (entries == null || entries.size() == 0) {
+        if (entries == null || entries.isEmpty()) {
             logger.debug("no messages found in file.");
             return Collections.emptyList();
         }
@@ -589,7 +581,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @return attachments
      */
     protected List<IBaseDataObject> processData(IBaseDataObject tData, int start, int len) throws ResourceException {
-        List<IBaseDataObject> sprouts = new ArrayList<IBaseDataObject>();
+        List<IBaseDataObject> sprouts = new ArrayList<>();
 
         // Validate parameters
         if (tData == null) {
@@ -614,7 +606,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
 
         // make the directory and write the input file.
-        String[] names = null;
+        String[] names;
         File f = null;
         int result = -1;
         try {
@@ -648,7 +640,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             // Generate the list of resulting files in the directory(s)
             List<File> files = getFileList(f.getParentFile(), f.getName());
 
-            if (files != null && files.size() > 0) {
+            if (files != null && !files.isEmpty()) {
                 sprouts = sproutResults(tData, files, f.getParent(), parentData);
             }
         } catch (Exception ex) {
@@ -664,7 +656,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
 
         // If there was not result, then report it in 2 places.
-        if (sprouts.size() == 0) {
+        if (sprouts.isEmpty()) {
             logger.debug("Command failed. nothing to sprout for file: result={}", result);
             tData.addProcessingError("ERROR in " + placeName + ". Exec returned errno " + result);
             tData.pushCurrentForm(newErrorForm);
@@ -679,11 +671,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @return the process errno status value
      */
     protected int processCommand(String[] cmd) {
-        StringBuilder outbuf = new StringBuilder();
-        StringBuilder errbuf = new StringBuilder();
-        int status = processCommand(cmd, outbuf, errbuf);
-
-        return status;
+        return processCommand(cmd, new StringBuilder(), new StringBuilder());
     }
 
     /**
