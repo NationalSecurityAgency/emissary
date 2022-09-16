@@ -1056,7 +1056,7 @@
         <version>4.9.9</version>
         <configuration>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
-          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+          <generateGitPropertiesFilename>${project.build.outputDirectory}/emissary.git.properties</generateGitPropertiesFilename>
           <commitIdGenerationMode>full</commitIdGenerationMode>
           <useNativeGit>${git.useNative}</useNativeGit>
         </configuration>
