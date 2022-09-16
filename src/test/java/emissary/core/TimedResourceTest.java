@@ -9,12 +9,9 @@ import java.util.concurrent.TimeUnit;
 import com.codahale.metrics.Timer;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
-import emissary.test.core.UnitTest;
-import org.junit.Rule;
+import emissary.test.core.junit5.UnitTest;
+import emissary.test.core.junit5.extensions.TestAttempts;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 
 class TimedResourceTest extends UnitTest {
     private IServiceProviderPlace tp;
@@ -25,10 +22,7 @@ class TimedResourceTest extends UnitTest {
         tp = new DevNullPlace();
     }
 
-    @Rule
-    public TestRule chain = RuleChain.outerRule(new DumpFailures()).around(new Retry(3));
-
-    @Test
+    @TestAttempts
     void testCheckState() {
 
         TestMobileAgent tma = new TestMobileAgent();
@@ -43,7 +37,7 @@ class TimedResourceTest extends UnitTest {
         }
     }
 
-    @Test
+    @TestAttempts
     void test() throws Exception {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
@@ -56,7 +50,7 @@ class TimedResourceTest extends UnitTest {
         }
     }
 
-    @Test
+    @TestAttempts
     void testDontInterruptAgent() {
         TestMobileAgent tma = new TestMobileAgent();
         // little time
