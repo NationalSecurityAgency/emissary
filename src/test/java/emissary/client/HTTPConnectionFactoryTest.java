@@ -16,6 +16,7 @@ import javax.net.ssl.SSLContext;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.UnitTest;
+import emissary.util.PkiUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,6 +91,21 @@ class HTTPConnectionFactoryTest extends UnitTest {
         assertNotSame(SSLContext.getDefault(), fromConfig);
     }
 
+    @Test
+    void loadPemMultiCertsAndCommentsFile() throws Exception {
+        addKeystoreProps(this.cfg);
+        addTrustStoreProps(this.cfg);
+
+        this.cfg.removeEntry(CFG_TRUST_STORE, "*");
+        this.cfg.addEntry(CFG_TRUST_STORE, projectBase + "/test-classes/certs/testcertwithcomments.pem");
+
+        final HTTPConnectionFactory instance = new HTTPConnectionFactory(this.cfg);
+
+        final SSLContext fromConfig = instance.build(this.cfg);
+
+        assertNotSame(SSLContext.getDefault(), fromConfig);
+    }
+
     /**
      * Read a known environment variable configured during setup {@link UnitTest#setupSystemProperties()}
      *
@@ -97,7 +113,7 @@ class HTTPConnectionFactoryTest extends UnitTest {
      */
     @Test
     void loadPWFromEnv() throws Exception {
-        char[] pw = HTTPConnectionFactory.loadPW("${PROJECT_BASE}");
+        char[] pw = PkiUtil.loadPW("${PROJECT_BASE}");
         if (pw == null) {
             Assertions.fail("Failed to read environment variable");
         }
