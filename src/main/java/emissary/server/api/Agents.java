@@ -36,26 +36,44 @@ public class Agents {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String AGENTS_ENDPOINT = "api/agents";
+
+    @Deprecated
     public static final String AGENTS_CLUSTER_ENDPOINT = "api/cluster/agents";
+
+    @GET
+    @Path("/agents")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agents() {
+        return agentsV1();
+    }
 
     @GET
     @Path("/agents/log")
     @Produces(MediaType.APPLICATION_JSON)
     public Response agentsLog() {
-        AgentsResponseEntity entity = lookupAgents();
-        AgentsFormatter formatter = AgentsFormatter.builder().withHost(entity.getLocal().getHost()).build();
-        StringJoiner joiner = new StringJoiner("\n", "", "\n");
-        entity.getLocal().getAgents().forEach(agent -> joiner.add("{\"agent\":" + formatter.json(agent) + "}"));
-        entity.getErrors().forEach(err -> joiner.add("{\"agent\":" + formatter.json("error", err) + "}"));
-        return Response.ok().entity(joiner.toString()).build();
+        return agentsLogV2();
     }
 
     @GET
-    @Path("/agents")
+    @Path("/v1/agents")
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
-    public Response agents() {
+    public Response agentsV1() {
         return Response.ok().entity(lookupAgents()).build();
+    }
+
+    @GET
+    @Path("/v2/agents")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsV2() {
+        return Response.ok().entity(getAgents(",", "{\"agents\":[", "]}")).build();
+    }
+
+    @GET
+    @Path("/v2/agents/log")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsLogV2() {
+        return Response.ok().entity(getAgents("\n", "", "\n")).build();
     }
 
     @GET
@@ -82,6 +100,16 @@ public class Agents {
         }
     }
 
+    protected String getAgents(String delimiter, String prefix, String suffix) {
+        AgentsResponseEntity entity = lookupAgents();
+        AgentsFormatter formatter = AgentsFormatter.builder().withHost(entity.getLocal().getHost()).build();
+        StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
+        entity.getLocal().getAgents().forEach(agent -> joiner.add("{\"agent\":" + formatter.json(agent) + "}"));
+        entity.getErrors().forEach(err -> joiner.add("{\"agent\":" + formatter.json("error", err) + "}"));
+        return joiner.toString();
+    }
+
+    @Deprecated
     private AgentsResponseEntity lookupAgents() {
         AgentsResponseEntity entity = new AgentsResponseEntity();
         try {
