@@ -14,7 +14,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.MetadataDictionary;
 import emissary.core.MetadataDictionaryTest;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

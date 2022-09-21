@@ -12,7 +12,7 @@ import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class RehashingPlaceTest extends UnitTest {

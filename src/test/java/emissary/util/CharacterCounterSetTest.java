@@ -2,7 +2,7 @@ package emissary.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class CharacterCounterSetTest extends UnitTest {

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import emissary.place.ServiceProviderPlace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 /**

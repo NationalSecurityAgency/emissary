@@ -33,7 +33,7 @@ import emissary.output.roller.journal.JournalReader;
 import emissary.output.roller.journal.JournalWriter;
 import emissary.output.roller.journal.JournaledChannelPool;
 import emissary.output.roller.journal.KeyedOutput;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.FileNameGenerator;
 import emissary.util.io.UnitTestFileUtils;
 import org.junit.jupiter.api.AfterEach;

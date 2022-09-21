@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import emissary.config.ConfigUtil;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class BaseCommandTest extends UnitTest {

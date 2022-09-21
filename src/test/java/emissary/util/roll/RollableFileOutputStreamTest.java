@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.FileNameGenerator;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;

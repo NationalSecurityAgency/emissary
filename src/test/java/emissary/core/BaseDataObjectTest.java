@@ -28,7 +28,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

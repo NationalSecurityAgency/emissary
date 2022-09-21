@@ -15,7 +15,7 @@ import java.util.Map;
 import com.beust.jcommander.JCommander;
 import emissary.command.BaseCommand;
 import emissary.command.EmissaryCommand;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

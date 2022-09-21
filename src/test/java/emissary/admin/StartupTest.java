@@ -13,7 +13,7 @@ import emissary.pickup.file.FilePickUpPlace;
 import emissary.place.CoordinationPlace;
 import emissary.place.sample.DelayPlace;
 import emissary.place.sample.DevNullPlace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class StartupTest extends UnitTest {

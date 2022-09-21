@@ -13,7 +13,7 @@ import com.codahale.metrics.Timer;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

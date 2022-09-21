@@ -7,7 +7,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
     public static void setupClass() {
         // "warm-up" the class, but this runs before UnitTest has
         // a chance to setup, so do that first
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
         FlexibleDateTimeParser.getTimezone();
     }
 

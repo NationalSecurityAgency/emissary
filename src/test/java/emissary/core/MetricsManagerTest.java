@@ -8,7 +8,7 @@ import java.util.Map;
 import com.codahale.metrics.Timer;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class MetricsManagerTest extends UnitTest {

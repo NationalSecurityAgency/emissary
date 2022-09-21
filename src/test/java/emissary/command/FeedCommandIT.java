@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Lists;
 import emissary.config.ConfigUtil;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

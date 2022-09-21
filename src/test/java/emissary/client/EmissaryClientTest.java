@@ -12,7 +12,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
 import emissary.config.ConfigUtil;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

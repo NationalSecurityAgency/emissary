@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 import emissary.command.ServerCommand;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.Version;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;

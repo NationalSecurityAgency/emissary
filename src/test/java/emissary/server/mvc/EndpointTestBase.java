@@ -3,7 +3,7 @@ package emissary.server.mvc;
 import javax.ws.rs.core.Application;
 
 import emissary.core.Namespace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
@@ -21,7 +21,7 @@ public class EndpointTestBase extends JerseyTest {
     // Handle setting up all the Jersey Test framework components
     @Override
     protected Application configure() {
-        new UnitTest().setupSystemProperties();
+        UnitTest.setupSystemProperties();
         // Tells Jersey to use first available port, fixes address already in use exception
         forceSet(TestProperties.CONTAINER_PORT, "0");
         final ResourceConfig application = new ResourceConfig();

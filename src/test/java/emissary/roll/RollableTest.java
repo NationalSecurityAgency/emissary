@@ -6,7 +6,7 @@ import java.util.Observer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 
 public class RollableTest extends UnitTest implements Rollable, Observer {
     boolean wasRolled;

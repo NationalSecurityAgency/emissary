@@ -9,7 +9,7 @@ import java.nio.channels.ReadableByteChannel;
 
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.WindowedSeekableByteChannel;
 import org.junit.jupiter.api.Test;
 
