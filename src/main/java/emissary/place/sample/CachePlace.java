@@ -68,7 +68,7 @@ public class CachePlace extends ServiceProviderPlace {
     }
 
     public synchronized IBaseDataObject pop() {
-        if (cache.size() > 0) {
+        if (!cache.isEmpty()) {
             return cache.remove(0);
         }
         return null;
@@ -77,7 +77,7 @@ public class CachePlace extends ServiceProviderPlace {
     @Override
     public void shutDown() {
         logger.debug("Removing {} items in shutdown", cache.size());
-        while (cache.size() > 0) {
+        while (!cache.isEmpty()) {
             cache.remove(0);
         }
         super.shutDown();

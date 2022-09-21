@@ -38,7 +38,7 @@ public class DelayPlace extends ServiceProviderPlace {
     @Override
     public void process(IBaseDataObject tData) throws emissary.core.ResourceException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Delay starting " + tData.getAllCurrentForms());
+            logger.debug("Delay starting {}", tData.getAllCurrentForms());
         }
         try {
             Thread.sleep(delayTimeMillis);
@@ -46,7 +46,7 @@ public class DelayPlace extends ServiceProviderPlace {
             throw new emissary.core.ResourceException("Timed out before delay expired", e);
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Delay ended " + tData.getAllCurrentForms());
+            logger.debug("Delay ended {}", tData.getAllCurrentForms());
         }
     }
 
