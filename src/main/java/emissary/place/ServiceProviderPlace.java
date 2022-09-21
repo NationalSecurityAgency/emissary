@@ -452,7 +452,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             if (KeyManipulator.isKeyComplete(k)) {
                 keys.add(k);
             } else {
-                logger.warn("SERVICE_KEY '{}' is missing parts' and cannot be used", k);
+                logger.warn("SERVICE_KEY '{}' is missing parts and cannot be used", k);
             }
         }
 
