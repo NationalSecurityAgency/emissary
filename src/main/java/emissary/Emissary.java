@@ -138,7 +138,7 @@ public class Emissary {
     }
 
     protected void dumpVersionInfo() {
-        LOG.info(GitRepositoryState.dumpVersionInfo(GitRepositoryState.getRepositoryState()));
+        LOG.info(GitRepositoryState.dumpVersionInfo(GitRepositoryState.getRepositoryState(), "Emissary"));
     }
 
     @VisibleForTesting
