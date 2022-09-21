@@ -30,6 +30,7 @@ import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -64,7 +65,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * SERVICE_PROXY.SERCVICE_TYPE.SERVICE_NAME.PLACE_LOCATION$EXPENSE from the config file or KEY values from the config
      * file.
      */
-    protected List<String> keys = new ArrayList<String>();
+    protected List<String> keys = new ArrayList<>();
 
     // Items that are going to be deprecated, but here now to
     // make the transition easier, for compatibility
@@ -205,7 +206,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // and try finding config info with and without the
         // package name of this class (in that order)
         String myPackage = this.getClass().getPackage().getName();
-        List<String> configLocs = new ArrayList<String>();
+        List<String> configLocs = new ArrayList<>();
         // Dont use KeyManipulator for this, only works when hostname/fqdn has dots
         int pos = placeLocation.lastIndexOf("/");
         String serviceClass = (pos > -1 ? placeLocation.substring(pos + 1) : placeLocation);
@@ -241,7 +242,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // configure directory references
         if (!(this instanceof emissary.directory.DirectoryPlace)) {
             localizeDirectory(theDir);
-            logger.debug("Our localizedDirectory is " + dirPlace);
+            logger.debug("Our localizedDirectory is {}", dirPlace);
         } else {
             logger.debug("Not localizing directory since we are a directory");
         }
@@ -256,7 +257,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // us as soon as they see the keys
         for (String key : keys) {
             String bindKey = KeyManipulator.getServiceLocation(key);
-            logger.debug("Binding myself into the namespace as " + bindKey);
+            logger.debug("Binding myself into the namespace as {}", bindKey);
             Namespace.bind(bindKey, this);
         }
 
@@ -297,10 +298,10 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             try {
                 String myUrl = KeyManipulator.getServiceHostURL(keys.get(0));
                 String dirUrl = KeyManipulator.getServiceHostURL(dirPlace);
-                if (dirUrl != null && dirUrl.equals(myUrl)) {
+                if (StringUtils.equals(dirUrl, myUrl)) {
                     localDirPlace = (IDirectoryPlace) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
                 } else {
-                    logger.debug("Not localizing directory since dirPlace " + dirPlace + " is not equal to myUrl " + myUrl);
+                    logger.debug("Not localizing directory since dirPlace {} is not equal to myUrl {}", dirPlace, myUrl);
                 }
             } catch (EmissaryException ex) {
                 logger.error("Exception attempting to get local reference to directory", ex);
@@ -388,7 +389,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         if (KeyManipulator.isKeyComplete(placeLocation)) {
             keys.add(placeLocation); // save as first in list
             locationPart = KeyManipulator.getServiceLocation(placeLocation);
-        } else if (placeLocation.indexOf("://") == -1) {
+        } else if (!placeLocation.contains("://")) {
             EmissaryNode node = new EmissaryNode();
             locationPart = "http://" + node.getNodeName() + ":" + node.getNodePort() + "/" + placeLocation;
         }
@@ -451,12 +452,12 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             if (KeyManipulator.isKeyComplete(k)) {
                 keys.add(k);
             } else {
-                logger.warn("SERVICE_KEY '" + k + "' is missing parts' and cannot be used");
+                logger.warn("SERVICE_KEY '{}' is missing parts and cannot be used", k);
             }
         }
 
         // Make sure some keys were defined one way or the other
-        if (keys.size() == 0) {
+        if (keys.isEmpty()) {
             throw new IOException("NO keys were defined. Please configure at least one "
                     + "SERVICE_KEY or SERVICE_NAME/SERVICE_TYPE/SERVICE_PROXY group");
         }
@@ -474,7 +475,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         if (localDirPlace != null) {
             return (localDirPlace.nextKeys(dataID, payload, lastEntry));
         }
-        logger.error("No local directory in place " + keys.get(0) + " with dir=" + dirPlace);
+        logger.error("No local directory in place {} with dir={}", keys.get(0), dirPlace);
         return null;
     }
 
@@ -506,16 +507,16 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Override
     public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadList) throws Exception {
 
-        logger.debug("Entering agentProcessHeavyDuty with " + payloadList.size() + " payload items");
+        logger.debug("Entering agentProcessHeavyDuty with {} payload items", payloadList.size());
 
-        List<IBaseDataObject> list = new ArrayList<IBaseDataObject>();
+        List<IBaseDataObject> list = new ArrayList<>();
 
         // For each incoming payload object
         for (IBaseDataObject dataObject : payloadList) {
             try {
                 // Process the payload item
                 List<IBaseDataObject> l = agentProcessHeavyDuty(dataObject);
-                if (l.size() > 0) {
+                if (!l.isEmpty()) {
                     dataObject.setNumChildren(dataObject.getNumChildren() + l.size());
                 }
 
@@ -531,7 +532,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // Some debug output
         if (logger.isDebugEnabled()) {
             for (IBaseDataObject d : list) {
-                logger.debug("Returning child " + d.shortName() + " -> " + d.getAllCurrentForms());
+                logger.debug("Returning child {} -> {}", d.shortName(), d.getAllCurrentForms());
             }
         }
 
@@ -553,7 +554,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             rehash(payload);
             return l;
         } catch (Exception e) {
-            logger.error("Place.process threw: " + e, e);
+            logger.error("Place.process threw: {}", e, e);
             throw e;
         }
     }
@@ -580,8 +581,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     public void process(IBaseDataObject payload) throws ResourceException {
         if (processHDMethodImplemented) {
             List<IBaseDataObject> children = processHeavyDuty(payload);
-            if (children != null && children.size() > 0) {
-                logger.error("Sprouting is no longer supported, lost " + children.size() + " children");
+            if (children != null && !children.isEmpty()) {
+                logger.error("Sprouting is no longer supported, lost {} children", children.size());
             }
         } else {
             throw new RuntimeException("Neither process nor processHeavyDuty appears to be implemented");
@@ -629,7 +630,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             }
 
             if (processHDMethodImplemented || processMethodImplemented) {
-                logger.debug("Found enough process implementation at level " + c.getName());
+                logger.debug("Found enough process implementation at level {}", c.getName());
                 break;
             } else {
                 c = c.getSuperclass();
@@ -639,7 +640,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         if (!processMethodImplemented && !processHDMethodImplemented && !(this instanceof AgentsNotSupportedPlace)) {
             logger.error("It appears that neither process nor processHeavyDuty is implemented. "
                     + "If that is incorrect you can directly set one of the corresponding "
-                    + "boolean flags or override verifyProcessImplementationProvided or " + "implement AgentsNotSupported to turn this message off");
+                    + "boolean flags or override verifyProcessImplementationProvided or "
+                    + "implement AgentsNotSupported to turn this message off");
         }
     }
 
@@ -650,7 +652,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @return count of how many items removed
      */
     protected int nukeMyProxies(IBaseDataObject d) {
-        List<String> nukem = new ArrayList<String>();
+        List<String> nukem = new ArrayList<>();
         int sz = d.currentFormSize();
         Set<String> serviceProxies = getProxies();
 
@@ -674,8 +676,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         }
 
         // nukem
-        for (int i = 0; i < nukem.size(); i++) {
-            String f = nukem.get(i);
+        for (String f : nukem) {
             int pos = d.searchCurrentForm(f);
             if (pos != -1) {
                 d.deleteCurrentFormAt(pos);
@@ -692,7 +693,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      */
     @Override
     public Set<String> getProxies() {
-        Set<String> s = new TreeSet<String>();
+        Set<String> s = new TreeSet<>();
         for (String k : keys) {
             s.add(KeyManipulator.getDataType(k));
         }
@@ -705,7 +706,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      */
     @Override
     public Set<String> getKeys() {
-        Set<String> s = new TreeSet<String>();
+        Set<String> s = new TreeSet<>();
         for (String k : keys) {
             if (!k.startsWith(UNUSED_PROXY)) {
                 s.add(k);
@@ -767,14 +768,14 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                 keys.add(de.getFullKey());
 
                 // Register the new proxy in the directory
-                logger.debug("Registering new key " + de.getKey());
+                logger.debug("Registering new key {}", de.getKey());
                 register(de.getFullKey());
                 keyAdded = true;
             }
         }
 
         if (!keyAdded) {
-            logger.debug("Duplicate service proxy " + serviceProxy + " ignored");
+            logger.debug("Duplicate service proxy {} ignored", serviceProxy);
         }
     }
 
@@ -791,11 +792,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                 keys.remove(0);
             }
 
-            logger.debug("Adding and registering new key " + key);
+            logger.debug("Adding and registering new key {}", key);
             keys.add(key);
             register(key);
         } else {
-            logger.warn("Invalid key cannot be added: " + key);
+            logger.warn("Invalid key cannot be added: {}", key);
         }
     }
 
@@ -805,7 +806,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param key the new key to register
      */
     protected void register(String key) {
-        logger.debug("Registering key " + key);
+        logger.debug("Registering key {}", key);
         // Cannot register if we have no directory
         // If we are the directory, its no problem though
         if (dirPlace == null) {
@@ -817,7 +818,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         // Register place and all proxies by building up a list
         // of our interests to send to the directory
-        List<String> keylist = new ArrayList<String>();
+        List<String> keylist = new ArrayList<>();
         keylist.add(key);
         registerWithDirectory(keylist);
     }
@@ -827,7 +828,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * proxies (a scalability issue for large systems)
      */
     protected void register() {
-        logger.debug("Registering: " + this);
+        logger.debug("Registering: {}", this);
 
         // Cannot register if we have no directory
         // If we are the directory, its no problem though
@@ -840,7 +841,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         // Register place and all proxies by building up a list
         // of our current interests to send to the directory
-        registerWithDirectory(new ArrayList<String>(keys));
+        registerWithDirectory(new ArrayList<>(keys));
     }
 
     /**
@@ -855,11 +856,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                 // directory on every JVM...
                 logger.error("Key registration requires a DirectoryPlace in every Emissary Node");
             } else {
-                logger.debug("Registering my " + keylist.size() + " keys " + keylist);
+                logger.debug("Registering my {} keys {}", keylist.size(), keylist);
                 localDirPlace.addPlaces(keylist);
             }
         } catch (Exception e) {
-            logger.warn("Register ERROR for keys " + keylist, e);
+            logger.warn("Register ERROR for keys {}", keylist, e);
         }
     }
 
@@ -874,15 +875,15 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             if (localDirPlace == null && dirPlace != null) {
                 // This should never happen, we require a local
                 // directory on every JVM...
-                logger.debug("Deregistering my " + keys.size() + " proxies " + keys + " from remote dir " + dirPlace);
+                logger.debug("Deregistering my {} proxies {} from remote dir {}", keys.size(), keys, dirPlace);
                 DirectoryAdapter da = new DirectoryAdapter();
                 da.outboundRemovePlaces(dirPlace, keys, false);
             } else if (localDirPlace != null) {
-                logger.debug("Deregistering my " + keys.size() + " proxies " + keys);
+                logger.debug("Deregistering my {} proxies {}", keys.size(), keys);
                 localDirPlace.removePlaces(keys);
             }
         } catch (Exception e) {
-            logger.warn("Deregister ERROR keys=" + keys, e);
+            logger.warn("Deregister ERROR keys={}", keys, e);
         }
     }
 
@@ -896,7 +897,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Override
     public void removeServiceProxy(String serviceProxy) {
         // List of keys to deregister
-        List<String> keylist = new ArrayList<String>();
+        List<String> keylist = new ArrayList<>();
 
         // nb. no enhanced for loop due to remove
         for (Iterator<String> i = keys.iterator(); i.hasNext();) {
@@ -907,14 +908,14 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                 i.remove();
             }
         }
-        if (keylist.size() > 0) {
+        if (!keylist.isEmpty()) {
             deregisterFromDirectory(keylist);
         } else {
-            logger.debug("Unknown service proxy " + serviceProxy + " ignored");
+            logger.debug("Unknown service proxy {} ignored", serviceProxy);
         }
 
         // Make sure we leave something on the keys list
-        if (keys.size() == 0 && keylist.size() > 0) {
+        if (keys.isEmpty() && !keylist.isEmpty()) {
             DirectoryEntry de = new DirectoryEntry(keylist.get(0));
             de.setCost(serviceCost);
             de.setQuality(serviceQuality);
@@ -933,17 +934,17 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         String keyWithOutExpense = KeyManipulator.removeExpense(key);
 
         if (keys.remove(key)) {
-            List<String> keylist = new ArrayList<String>();
+            List<String> keylist = new ArrayList<>();
             keylist.add(keyWithOutExpense);
             deregisterFromDirectory(keylist);
 
-            if (keys.size() == 0) {
+            if (keys.isEmpty()) {
                 DirectoryEntry de = new DirectoryEntry(key);
                 de.setDataType(UNUSED_PROXY);
                 keys.add(de.getFullKey());
             }
         } else {
-            logger.debug("Key specified for removal not found: " + key);
+            logger.debug("Key specified for removal not found: {}", key);
         }
     }
 
@@ -956,7 +957,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         logger.debug("Called shutDown()");
 
         // List of keys without expense
-        List<String> keylist = new ArrayList<String>();
+        List<String> keylist = new ArrayList<>();
         for (String k : keys) {
             keylist.add(KeyManipulator.removeExpense(k));
         }
@@ -968,7 +969,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         for (String key : keys) {
             String bindKey = KeyManipulator.getServiceLocation(key);
             Namespace.unbind(bindKey);
-            logger.debug("Unbinding place with " + bindKey);
+            logger.debug("Unbinding place with {}", bindKey);
         }
     }
 
@@ -1029,7 +1030,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
     @Override
     public List<String> getRunningConfig() {
-        List<String> runningConfigList = new ArrayList<String>();
+        List<String> runningConfigList = new ArrayList<>();
 
         if (configG != null) {
             for (ConfigEntry c : configG.getEntries()) {
@@ -1041,8 +1042,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
     @Override
     public String getPlaceStats() {
-        ResourceWatcher resource = null;
-        Timer placeStats = null;
+        ResourceWatcher resource;
+        Timer placeStats;
         String placeStatStr = "UNAVAILABLE";
         try {
             resource = ResourceWatcher.lookup();
@@ -1060,17 +1061,17 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
     @Override
     public void dumpRunningConfig() {
-        logger.info("Dumping Running Config for " + placeName + ":");
+        logger.info("Dumping Running Config for {}:", placeName);
         logger.info("===============");
-        logger.info(getRunningConfig().toString());
+        logger.info("{}", getRunningConfig());
         logger.info("===============");
     }
 
     @Override
     public void dumpPlaceStats() {
-        logger.info("Dumping Places Stats for " + placeName + ":");
+        logger.info("Dumping Places Stats for {}:", placeName);
         logger.info("===============");
-        logger.info(getPlaceStats());
+        logger.info("{}", getPlaceStats());
         logger.info("===============");
     }
 
@@ -1090,18 +1091,18 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                     for (Object familyMember : familyTree) {
                         if (familyMember instanceof IBaseDataObject) {
                             IBaseDataObject member = (IBaseDataObject) familyMember;
-                            if (member.shortName().indexOf(emissary.core.Family.SEP) == -1) {
+                            if (!member.shortName().contains(emissary.core.Family.SEP)) {
                                 return member;
                             }
                         } else {
-                            logger.debug("Family members are not the right class - " + familyMember.getClass().getName());
+                            logger.debug("Family members are not the right class - {}", familyMember.getClass().getName());
                         }
                     }
                 } else {
-                    logger.debug("Agent is transporting unknown data type - " + payload.getClass().getName());
+                    logger.debug("Agent is transporting unknown data type - {}", payload.getClass().getName());
                 }
             } else {
-                logger.debug("System is operating with " + agent.getClass().getName() + " so there is no hope of getting the family tree");
+                logger.debug("System is operating with {} so there is no hope of getting the family tree", agent.getClass().getName());
             }
         } catch (Exception ex) {
             logger.debug("Could not get controlling agent", ex);
