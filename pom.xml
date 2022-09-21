@@ -480,6 +480,11 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>7.2</version>
+    </dependency>
+    <dependency>
       <groupId>net.spy</groupId>
       <artifactId>spymemcached</artifactId>
     </dependency>
