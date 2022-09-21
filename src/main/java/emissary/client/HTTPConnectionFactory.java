@@ -1,33 +1,19 @@
 package emissary.client;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.util.PkiUtil;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -47,7 +33,7 @@ import org.apache.log4j.Logger;
  * Emissary HTTP Connection Factory. This is a singleton class that allows for the central configuration of an Apache
  * HTTP Client Connection manager and also provides a method for building default HTTP Clients. This object can be
  * configured by providing an HTTPConnectionFactory.cfg with the following:<br>
- * 
+ *
  * <pre>
  * // Standard SSL Properties
  * javax.net.ssl.trustStore = "[Path to trust store]"
@@ -84,17 +70,11 @@ public class HTTPConnectionFactory {
     // meaningful constants
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
-    private static final String FILE_PRE = "file://";
-    private static final Pattern ENV_VARIABLE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
     // singleton
     private static final HTTPConnectionFactory FACTORY = new HTTPConnectionFactory();
-
-    // PEM delimiters
-    private static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
-    private static final String END_CERT = "-----END CERTIFICATE-----";
 
     final PoolingHttpClientConnectionManager connMan;
 
@@ -140,19 +120,20 @@ public class HTTPConnectionFactory {
     /**
      * This method will attempt to configure an SSLSocketFactory using configuration parameters from the
      * HTTPConnectionFactory.cfg.
-     * 
+     *
      * @param cfg The configurator.
      * @return the SSLContext
      * @throws IOException If there is some I/O problem.
      * @throws GeneralSecurityException If there is some security problem.
      */
     SSLContext build(final Configurator cfg) throws IOException, GeneralSecurityException {
-        final char[] kpChar = loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
-        final char[] tsChar = loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
+        final char[] kpChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
+        final char[] tsChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
 
-        final KeyStore keyStore = buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));
+        final KeyStore keyStore =
+                PkiUtil.buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));
         final KeyStore trustStore =
-                buildStore(cfg.findStringEntry(CFG_TRUST_STORE), tsChar, cfg.findStringEntry(CFG_TRUST_STORE_TYPE, DFLT_STORE_TYPE));
+                PkiUtil.buildStore(cfg.findStringEntry(CFG_TRUST_STORE), tsChar, cfg.findStringEntry(CFG_TRUST_STORE_TYPE, DFLT_STORE_TYPE));
         if ((trustStore == null) && (keyStore == null)) {
             log.debug("Trust Store and Key Store are null. Using JDK default SSLContext");
             return SSLContext.getDefault();
@@ -170,79 +151,6 @@ public class HTTPConnectionFactory {
         return sc;
     }
 
-    /*
-     * Build char array from password, load from file or read from environment variable.
-     */
-    static char[] loadPW(final String pazz) throws IOException {
-        if (pazz == null) {
-            return null;
-        }
-        String realPW;
-        if (pazz.startsWith(FILE_PRE)) {
-            final String pth = pazz.substring(FILE_PRE.length());
-            log.debug("Loading key password from file " + pth);
-            try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
-                realPW = r.readLine();
-            }
-            if (realPW == null) {
-                throw new IOException("Unable to load store password from " + pazz);
-            }
-        } else {
-            Matcher matcher = ENV_VARIABLE_PATTERN.matcher(pazz);
-            if (matcher.matches()) {
-                realPW = System.getenv(matcher.group(1));
-            } else {
-                realPW = pazz;
-            }
-        }
-        return realPW.toCharArray();
-    }
-
-    /* build the key/trust store from props */
-    private static KeyStore buildStore(final String path, final char[] pazz, final String type) throws IOException, GeneralSecurityException {
-        if ((path == null) || path.isEmpty()) {
-            return null;
-        }
-        Path filePath = Paths.get(path);
-        final KeyStore keyStore = KeyStore.getInstance(type);
-        if (isPemCert(filePath)) {
-            byte[] pemBytes = Files.readAllBytes(filePath);
-            byte[] derBytes = parseDerFromPemCert(pemBytes);
-            X509Certificate x509Certificate = generateCertFromDer(derBytes);
-            keyStore.load(null, pazz);
-            keyStore.setCertificateEntry("alias", x509Certificate);
-        } else {
-            try (final InputStream is = Files.newInputStream(filePath)) {
-                keyStore.load(is, pazz);
-            }
-        }
-        return keyStore;
-    }
-
-    protected static boolean isPemCert(Path filePath) throws IOException {
-        byte[] beginBytes;
-        try (DataInputStream reader = new DataInputStream(Files.newInputStream(filePath))) {
-            int totalNumBytes = reader.available();
-            if (totalNumBytes <= BEGIN_CERT.length() + END_CERT.length()) {
-                return false;
-            }
-            beginBytes = new byte[BEGIN_CERT.length()];
-            reader.readFully(beginBytes);
-        }
-        return Arrays.equals(beginBytes, BEGIN_CERT.getBytes());
-    }
-
-    protected static byte[] parseDerFromPemCert(byte[] pem) {
-        String data = new String(pem);
-        String[] tokens = data.split(BEGIN_CERT);
-        tokens = tokens[1].split(END_CERT);
-        return DatatypeConverter.parseBase64Binary(tokens[0]);
-    }
-
-    protected static X509Certificate generateCertFromDer(byte[] certBytes) throws CertificateException {
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        return (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(certBytes));
-    }
 
     /**
      * Return the configured connection manager with TLS SSL if configured.
@@ -260,7 +168,7 @@ public class HTTPConnectionFactory {
      * <li>The Client will have the connection manager marked as shared to preserve cached connections
      * <li>The Client will use the configured reuse strategy (HTTP Keep Alive)
      * </ul>
-     * 
+     *
      * @return a CloseableHttpClient
      */
     public CloseableHttpClient buildDefaultClient() {
@@ -270,7 +178,7 @@ public class HTTPConnectionFactory {
 
     /**
      * Returns the Factory
-     * 
+     *
      * @return the connection factory
      */
     public static HTTPConnectionFactory getFactory() {
