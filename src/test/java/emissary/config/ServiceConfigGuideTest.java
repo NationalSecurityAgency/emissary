@@ -25,6 +25,7 @@ import emissary.test.core.junit5.UnitTest;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class ServiceConfigGuideTest extends UnitTest {
 
@@ -405,8 +406,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testCreateDirAndFile() throws IOException {
-        final Path tdir = Files.createTempDirectory(null);
+    void testCreateDirAndFile(@TempDir final Path tdir) throws IOException {
         final Path tfile = Paths.get(tdir.toString(), "foo-file.txt");
         final Path t2file = Paths.get(tdir.toString(), "subdir", "blubdir", "bar-file.txt");
         String s =
@@ -508,9 +508,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testImportFileWhenFileExists() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testImportFileWhenFileExists(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
 
@@ -530,9 +528,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testImportFileWhenFileDoesNotExist() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testImportFileWhenFileDoesNotExist(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
 
@@ -558,9 +554,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testOptImportWhenOptionalFileExists() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testOptImportWhenOptionalFileExists(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String optname = dir + "/optional.cfg";
 
@@ -581,9 +575,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testOptImportWhenOptionalFileDoesNotExist() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testOptImportWhenOptionalFileDoesNotExist(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final byte[] primary = ("FOO = \"BAR\"\nOPT_IMPORT_FILE = \"/tmp/bogus.cfg\"\n").getBytes();
 
@@ -598,9 +590,7 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     @Test
-    void testOptImportWhenOptionalFileExistsButHasBadSyntax() throws IOException {
-        // Write the config bytes out to a temp file
-        final Path dir = Files.createTempDirectory(null);
+    void testOptImportWhenOptionalFileExistsButHasBadSyntax(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String optname = dir + "/optional.cfg";
 

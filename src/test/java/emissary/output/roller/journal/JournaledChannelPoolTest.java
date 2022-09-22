@@ -7,7 +7,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -17,6 +16,7 @@ import emissary.util.io.UnitTestFileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JournaledChannelPoolTest extends UnitTest {
 
@@ -25,10 +25,9 @@ class JournaledChannelPoolTest extends UnitTest {
     private JournaledChannelPool instance;
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path directory) throws Exception {
         super.setUp();
-        this.directory = Files.createTempDirectory("JournaledChannelPoolTest");
+        this.directory = directory;
         this.key = UUID.randomUUID().toString();
         this.instance = new JournaledChannelPool(this.directory, this.key, 3);
     }

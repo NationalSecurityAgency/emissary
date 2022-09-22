@@ -28,6 +28,7 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class DropOffPlaceTest extends UnitTest {
 
@@ -35,9 +36,9 @@ class DropOffPlaceTest extends UnitTest {
     private Path tempDir;
 
     @BeforeEach
-    public void createPlace() throws Exception {
+    public void createPlace(@TempDir final Path tempDir) throws Exception {
         setUp();
-        tempDir = Files.createTempDirectory("test");
+        this.tempDir = tempDir;
         final Configurator cfg = new ServiceConfigGuide();
         cfg.addEntry("UNIX_ROOT", tempDir.toString());
         cfg.addEntry("OUTPUT_FILTER", "BLAH:emissary.output.filter.DataFilter");

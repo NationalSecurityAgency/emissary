@@ -12,10 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.UnitTestFileUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class PathExistsReadableConverterTest extends UnitTest {
 
@@ -23,15 +22,9 @@ class PathExistsReadableConverterTest extends UnitTest {
     private Path path;
 
     @BeforeEach
-    public void setup() throws IOException {
-        path = Files.createTempDirectory("config");
+    public void setup(@TempDir final Path path) throws IOException {
+        this.path = path;
         converter = new PathExistsReadableConverter("path");
-    }
-
-    @Override
-    @AfterEach
-    public void tearDown() throws IOException {
-        UnitTestFileUtils.cleanupDirectoryRecursively(path);
     }
 
     @Test

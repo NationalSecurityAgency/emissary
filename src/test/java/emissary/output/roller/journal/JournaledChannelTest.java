@@ -1,6 +1,5 @@
 package emissary.output.roller.journal;
 
-import static emissary.util.io.UnitTestFileUtils.cleanupDirectoryRecursively;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,22 +13,17 @@ import java.util.UUID;
 
 import emissary.test.core.junit5.UnitTest;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JournaledChannelTest extends UnitTest {
 
+    @TempDir
     private static Path TEMP_DIR;
     private JournaledChannel channel;
     private String onekstring = "";
-
-    @BeforeAll
-    public static void setUpClass() throws Exception {
-        TEMP_DIR = Files.createTempDirectory("journaledChannelTest");
-    }
 
     @BeforeEach
     @Override
@@ -50,11 +44,6 @@ class JournaledChannelTest extends UnitTest {
         if (this.channel != null) {
             IOUtils.closeQuietly(this.channel);
         }
-    }
-
-    @AfterAll
-    public static void tearDownClass() throws IOException {
-        cleanupDirectoryRecursively(TEMP_DIR);
     }
 
     @Test

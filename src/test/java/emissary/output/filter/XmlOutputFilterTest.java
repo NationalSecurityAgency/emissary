@@ -19,6 +19,7 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class XmlOutputFilterTest extends UnitTest {
 
@@ -28,8 +29,8 @@ class XmlOutputFilterTest extends UnitTest {
     private Path tmpDir;
 
     @BeforeEach
-    public void setup() throws IOException {
-        tmpDir = java.nio.file.Files.createTempDirectory(null);
+    public void setup(@TempDir final Path tmpDir) throws IOException {
+        this.tmpDir = tmpDir;
 
         config = new ServiceConfigGuide();
         config.removeAllEntries("OUTPUT_PATH");

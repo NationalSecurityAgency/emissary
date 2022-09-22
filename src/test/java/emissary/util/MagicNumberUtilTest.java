@@ -14,8 +14,8 @@ class MagicNumberUtilTest extends UnitTest {
     @Test
     void testMultipleFileLoads() throws IOException {
         MagicNumberUtil m = new MagicNumberUtil();
-        Path f1 = Files.createTempFile("magic", ".dat");
-        Path f2 = Files.createTempFile("magic", ".dat");
+        Path f1 = Files.createTempFile(temporaryDirectory.toPath(), "magic", ".dat");
+        Path f2 = Files.createTempFile(temporaryDirectory.toPath(), "magic", ".dat");
         try {
             try (OutputStream o1 = Files.newOutputStream(f1)) {
                 o1.write("0  string  pattern1  P1".getBytes());

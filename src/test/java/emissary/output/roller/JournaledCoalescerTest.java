@@ -39,6 +39,7 @@ import emissary.util.io.UnitTestFileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class JournaledCoalescerTest extends UnitTest {
 
@@ -54,10 +55,9 @@ class JournaledCoalescerTest extends UnitTest {
     private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path tempFilesPath) throws Exception {
         fileNameGenerator = new SimpleFileNameGenerator();
-        targetBUDPath = Files.createTempDirectory("temp-files");
+        targetBUDPath = tempFilesPath;
         journaledCoalescer = new JournaledCoalescer(targetBUDPath, fileNameGenerator);
 
         // setup temp files
@@ -85,7 +85,7 @@ class JournaledCoalescerTest extends UnitTest {
     @Test
     void testNonDirectoryArgument() throws Exception {
         // test
-        Path tmpFile = Files.createTempFile(".", "temp-name");
+        Path tmpFile = Files.createTempFile(temporaryDirectory.toPath(), ".", "temp-name");
         assertThrows(IllegalArgumentException.class, () -> new JournaledCoalescer(tmpFile, fileNameGenerator));
         Files.deleteIfExists(tmpFile);
     }
@@ -97,7 +97,7 @@ class JournaledCoalescerTest extends UnitTest {
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_WRITE);
         // test
-        Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
+        Path tmpdir = Files.createTempDirectory(temporaryDirectory.toPath(), "tmpdir", PosixFilePermissions.asFileAttribute(perms));
         assertThrows(IllegalAccessError.class, () -> new JournaledCoalescer(tmpdir, fileNameGenerator));
         perms.add(PosixFilePermission.OWNER_READ);
         Files.setPosixFilePermissions(tmpdir, perms);
@@ -112,7 +112,7 @@ class JournaledCoalescerTest extends UnitTest {
         perms.add(PosixFilePermission.OWNER_READ);
 
         // test
-        Path tmpdir = Files.createTempDirectory("tmpdir", PosixFilePermissions.asFileAttribute(perms));
+        Path tmpdir = Files.createTempDirectory(temporaryDirectory.toPath(), "tmpdir", PosixFilePermissions.asFileAttribute(perms));
         assertThrows(IllegalAccessError.class, () -> new JournaledCoalescer(tmpdir, fileNameGenerator));
         UnitTestFileUtils.cleanupDirectoryRecursively(tmpdir);
     }

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 class UnixCommandPlaceTest extends UnitTest {
     private UnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
-    private final Path scriptFile = Paths.get(TMPDIR, "testUnixCommand.sh");
+    private Path scriptFile;
     private static final String W = "Президент Буш";
     private IBaseDataObject payload;
     private final String FORM = "TEST";
@@ -44,6 +44,7 @@ class UnixCommandPlaceTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
+        scriptFile = Paths.get(TMPDIR, "testUnixCommand.sh");
         // read our default config for this place, not something else that got configured in
         try (InputStream is = new ResourceReader().getConfigDataAsStream(this.getClass())) {
             place = new UnixCommandPlace(is);
