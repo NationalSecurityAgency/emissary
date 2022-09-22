@@ -12,7 +12,7 @@ import java.util.List;
 import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
-import emissary.test.core.FunctionalTest;
+import emissary.test.core.junit5.FunctionalTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

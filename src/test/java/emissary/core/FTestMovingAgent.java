@@ -15,7 +15,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.CachePlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
-import emissary.test.core.FunctionalTest;
+import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.Version;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;

@@ -11,7 +11,7 @@ import java.util.Set;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
-import emissary.test.core.FunctionalTest;
+import emissary.test.core.junit5.FunctionalTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
