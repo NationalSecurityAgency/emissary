@@ -3,6 +3,8 @@ package emissary.server.api;
 import static emissary.server.api.ApiUtils.lookupPeers;
 import static emissary.server.api.ApiUtils.stripPeerString;
 
+import java.util.StringJoiner;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,7 +12,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import emissary.client.EmissaryClient;
+import emissary.client.response.Agent;
 import emissary.client.response.AgentList;
+import emissary.client.response.AgentsFormatter;
 import emissary.client.response.AgentsResponseEntity;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
@@ -23,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The agents Emissary API endpoint. Currently contains the local (/api/agents) call and cluster (/api/clusterAgents)
+ * The agents Emissary API endpoint. Currently, contains the local (/api/agents) call and cluster (/api/clusterAgents)
  * calls.
  */
 @Path("")
@@ -32,18 +36,43 @@ public class Agents {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String AGENTS_ENDPOINT = "api/agents";
+
+    @Deprecated
     public static final String AGENTS_CLUSTER_ENDPOINT = "api/cluster/agents";
 
     @GET
     @Path("/agents")
     @Produces(MediaType.APPLICATION_JSON)
     public Response agents() {
+        return agentsV1();
+    }
+
+    @GET
+    @Path("/v1/agents")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
+    public Response agentsV1() {
         return Response.ok().entity(lookupAgents()).build();
+    }
+
+    @GET
+    @Path("/v2/agents")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsV2() {
+        return Response.ok().entity(getAgents(",", "{\"agents\":[", "]}")).build();
+    }
+
+    @GET
+    @Path("/agents/log")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response agentsLogV2() {
+        return Response.ok().entity(getAgents("\n", "", "\n")).build();
     }
 
     @GET
     @Path("/cluster/agents")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public Response clusterAgents() {
         try {
             // Get our local information first
@@ -64,6 +93,15 @@ public class Agents {
         }
     }
 
+    protected String getAgents(String delimiter, String prefix, String suffix) {
+        AgentsResponseEntity entity = lookupAgents();
+        AgentsFormatter formatter = AgentsFormatter.builder().withHost(entity.getLocal().getHost()).build();
+        StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
+        entity.getLocal().getAgents().forEach(agent -> joiner.add("{\"agent\":" + formatter.json(agent) + "}"));
+        entity.getErrors().forEach(err -> joiner.add("{\"agent\":" + formatter.json("error", err) + "}"));
+        return joiner.toString();
+    }
+
     private AgentsResponseEntity lookupAgents() {
         AgentsResponseEntity entity = new AgentsResponseEntity();
         try {
@@ -74,7 +112,7 @@ public class Agents {
             agents.setHost(localName);
             Namespace.keySet().stream().filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().forEach(agentKey -> {
                 try {
-                    agents.addAgent(agentKey + ": " + Namespace.lookup(agentKey).toString());
+                    agents.addAgent(new Agent(agentKey, Namespace.lookup(agentKey).toString()));
                 } catch (NamespaceException e) {
                     logger.error("Missing an agent in the Namespace: {}", agentKey);
                     entity.addError("ERROR - Agent " + agentKey + " not found in Namespace");

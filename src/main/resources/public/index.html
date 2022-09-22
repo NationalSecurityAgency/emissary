@@ -25,11 +25,11 @@
     <script>
         $(document).ready(function () {
             $.ajax({
-                url: "/api/agents"
+                url: "/api/v2/agents"
             }).then(function(data) {
                 var trHTML = '';
-                $.each(data.local.agents, function (i, item) {
-                    trHTML += '<tr><td>' + item + '</td></tr>';
+                $.each(data.agents, function (i, item) {
+                    trHTML += '<tr><td>' + item.agent.name + ': ' + item.agent.status + '</td></tr>';
                 });
                 $('#agents').append(trHTML);
             });
