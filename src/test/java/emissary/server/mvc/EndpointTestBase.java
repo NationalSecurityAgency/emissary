@@ -11,7 +11,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.AfterAll;
 
-public class EndpointTestBase extends JerseyTest {
+public abstract class EndpointTestBase extends JerseyTest {
 
     @AfterAll
     public static void tearDownClass() {
