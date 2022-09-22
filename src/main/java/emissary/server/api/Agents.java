@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The agents Emissary API endpoint. Currently contains the local (/api/agents) call and cluster (/api/clusterAgents)
+ * The agents Emissary API endpoint. Currently, contains the local (/api/agents) call and cluster (/api/clusterAgents)
  * calls.
  */
 @Path("")
@@ -48,13 +48,6 @@ public class Agents {
     }
 
     @GET
-    @Path("/agents/log")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response agentsLog() {
-        return agentsLogV2();
-    }
-
-    @GET
     @Path("/v1/agents")
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
@@ -70,7 +63,7 @@ public class Agents {
     }
 
     @GET
-    @Path("/v2/agents/log")
+    @Path("/agents/log")
     @Produces(MediaType.APPLICATION_JSON)
     public Response agentsLogV2() {
         return Response.ok().entity(getAgents("\n", "", "\n")).build();
@@ -109,7 +102,6 @@ public class Agents {
         return joiner.toString();
     }
 
-    @Deprecated
     private AgentsResponseEntity lookupAgents() {
         AgentsResponseEntity entity = new AgentsResponseEntity();
         try {
