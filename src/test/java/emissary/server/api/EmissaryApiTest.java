@@ -26,6 +26,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 import com.google.common.collect.Sets;
+import emissary.client.response.Agent;
 import emissary.client.response.AgentsResponseEntity;
 import emissary.client.response.MapResponseEntity;
 import emissary.client.response.PlacesResponseEntity;
@@ -75,11 +76,18 @@ class EmissaryApiTest extends EndpointTestBase {
 
     @Test
     void agents() {
-
-        String[] expectedAgents = {"MobileAgent-00: Idle", "MobileAgent-01: Idle", "MobileAgent-02: Idle", "MobileAgent-03: Idle",
-                "MobileAgent-04: Idle", "MobileAgent-05: Idle", "MobileAgent-06: Idle", "MobileAgent-07: PHASE.FORM.Place", "MobileAgent-08: Idle",
-                "MobileAgent-09: Idle"};
-
+        Agent[] expectedAgents = {
+                new Agent("MobileAgent-00", "Idle"),
+                new Agent("MobileAgent-01", "Idle"),
+                new Agent("MobileAgent-02", "Idle"),
+                new Agent("MobileAgent-03", "Idle"),
+                new Agent("MobileAgent-04", "Idle"),
+                new Agent("MobileAgent-05", "Idle"),
+                new Agent("MobileAgent-06", "Idle"),
+                new Agent("MobileAgent-07", "PHASE.FORM.Place"),
+                new Agent("MobileAgent-08", "Idle"),
+                new Agent("MobileAgent-09", "Idle")
+        };
         AgentPool pool = new AgentPool(new MobileAgentFactory("emissary.core.HDMobileAgent"), 10);
         Namespace.bind("MobileAgent-07", "PHASE.FORM.Place");
         Namespace.bind("AgentPool", pool);
