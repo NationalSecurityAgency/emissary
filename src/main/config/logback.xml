@@ -20,7 +20,9 @@
     </encoder>
   </appender>
 
-  <appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+  <appender name="OBJECT-METRICS" class="ch.qos.logback.core.ConsoleAppender">
+    <!--<appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
       <customFields>{"node":"${emissary.node.name}","port":"${emissary.node.port}","application":"server"}</customFields>
       <includeMdc>false</includeMdc>
@@ -34,10 +36,10 @@
         <message>[ignore]</message>
       </fieldNames>
     </encoder>
-    <file>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log</file>
+    <!--<file>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
-    </rollingPolicy>
+    </rollingPolicy>-->
   </appender>
 
   <logger name="objectMetrics" level="INFO" additivity="false">
