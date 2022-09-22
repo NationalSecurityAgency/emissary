@@ -1,9 +1,10 @@
 package emissary.id;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +72,8 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             InputStream[] tikaSignatures = getTikaSignatures();
             mimeTypes = MimeTypesFactory.create(tikaSignatures);
         } catch (MimeTypeException e) {
-            logger.error("Error loading tika configuration: {}", tikaSignaturePaths.toString(), e);
-            throw new IOException("Error loading tika configuration" + tikaSignaturePaths.toString());
+            logger.error("Error loading tika configuration: {}", tikaSignaturePaths, e);
+            throw new IOException("Error loading tika configuration" + tikaSignaturePaths);
         }
 
         for (Map.Entry<String, String> entry : configG.findStringMatchMap("MIN_SIZE_").entrySet()) {
@@ -102,7 +103,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             }
 
             logger.debug("Tika Signature File: {}", tikaSignaturePath);
-            tikaSignatures.add(new FileInputStream(tikaSignaturePath));
+            tikaSignatures.add(Files.newInputStream(Paths.get(tikaSignaturePath)));
         }
 
         return tikaSignatures.toArray(new InputStream[0]);
@@ -119,7 +120,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
         InputStream input = TikaInputStream.get(d.data(), metadata);
         appendFilenameMimeTypeSupport(d, metadata);
         MediaType mediaType = mimeTypes.detect(input, metadata);
-        logger.debug("Tika type: {}", mediaType.toString());
+        logger.debug("Tika type: {}", mediaType);
         return mediaType;
     }
 
@@ -177,9 +178,7 @@ public class TikaFilePlace extends emissary.id.IdPlace {
             d.setFileTypeIfEmpty(newForm);
         } catch (Exception e) {
             logger.error("Could not run Tika Detection", e);
-            return;
         }
-        return;
     }
 
     /**

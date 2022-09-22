@@ -35,7 +35,7 @@ public class DevNullPlace extends ServiceProviderPlace implements emissary.place
         tData.currentForm();
         int before = tData.currentFormSize();
         int after = nukeMyProxies(tData);
-        logger.debug("Nuked " + (after - before) + " of " + before + " current form values leaving " + tData.getAllCurrentForms());
+        logger.debug("Nuked {} of {} current form values leaving {}", (after - before), before, tData.getAllCurrentForms());
     }
 
     /**

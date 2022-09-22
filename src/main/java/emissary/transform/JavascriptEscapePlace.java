@@ -11,6 +11,7 @@ import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JavascriptEscape;
 import emissary.util.DataUtil;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class JavascriptEscapePlace extends ServiceProviderPlace {
 
@@ -67,11 +68,11 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
         }
         String incomingForm = d.currentForm();
 
-        logger.debug("JavascriptEscapePlace just got a " + incomingForm);
+        logger.debug("JavascriptEscapePlace just got a {}", incomingForm);
 
         byte[] newData = JavascriptEscape.unescape(d.data());
 
-        if (newData != null && newData.length > 0) {
+        if (ArrayUtils.isNotEmpty(newData)) {
             d.setData(newData);
 
             if (outputForm != null) {
@@ -87,7 +88,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
     /**
      * Test standalone main
      */
-    public static void main(String[] argv) throws Exception {
+    public static void main(String[] argv) {
         mainRunner(JavascriptEscapePlace.class.getName(), argv);
     }
 }

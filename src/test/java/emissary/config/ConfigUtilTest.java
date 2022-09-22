@@ -22,7 +22,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import emissary.core.EmissaryException;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -231,7 +231,7 @@ class ConfigUtilTest extends UnitTest {
             assertNotNull(p, "Properties returned");
             assertTrue(p.size() > 0, "Non-empty properties returned");
         } catch (IOException iox) {
-            fail("Should not throw on property info get: " + iox.getMessage());
+            fail("Should not throw on property info get", iox);
         }
     }
 

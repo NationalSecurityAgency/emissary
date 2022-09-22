@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class NamespaceTest extends UnitTest {
             final Object o = Namespace.lookup("myObject1");
             assertEquals(one, o, "Namespace retrieval");
         } catch (NamespaceException e) {
-            fail("Object not found: " + e);
+            fail("Object not found", e);
         }
     }
 
@@ -57,7 +57,7 @@ class NamespaceTest extends UnitTest {
             final Object o = Namespace.lookup("StuffPlace");
             assertEquals(thePlace, o, "Tail match on Namespace lookup");
         } catch (NamespaceException e) {
-            fail("Lookup failed: " + e.getMessage());
+            fail("Lookup failed", e);
         }
         assertThrows(NamespaceException.class, () -> Namespace.lookup("BadStuffPlace"));
     }
@@ -87,7 +87,7 @@ class NamespaceTest extends UnitTest {
             final Object o = Namespace.lookup("a");
             assertEquals(a[0], o, "Found by name");
         } catch (NamespaceException e) {
-            fail("Could not find object a " + e);
+            fail("Could not find object a", e);
         }
     }
 }

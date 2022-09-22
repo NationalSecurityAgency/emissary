@@ -10,7 +10,7 @@ import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class ShortNameComparatorTest extends UnitTest {
@@ -76,7 +76,7 @@ class ShortNameComparatorTest extends UnitTest {
             l.sort(new ShortNameComparator());
             checkList(l);
         } catch (Exception ex) {
-            fail("Cannot operate Comparator in subclass: " + ex.getMessage());
+            fail("Cannot operate Comparator in subclass", ex);
         } finally {
             DataObjectFactory.setImplementingClass(defaultPayloadClass);
         }

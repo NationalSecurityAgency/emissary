@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.shell.Executrix;
 import org.apache.commons.io.IOUtils;
@@ -108,9 +108,9 @@ class UnixCommandPlaceTest extends UnitTest {
         Executrix e = mock(Executrix.class);
 
         // set up three possible scenarios and force return codes from the execute method
-        when(e.execute(eq(new String[] {"negative"}), isNull(), isA(StringBuilder.class))).thenReturn(-1);
-        when(e.execute(eq(new String[] {"zero"}), isNull(), isA(StringBuilder.class))).thenReturn(0);
-        when(e.execute(eq(new String[] {"positive"}), isNull(), isA(StringBuilder.class))).thenReturn(1);
+        when(e.execute(eq(new String[] {"negative"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(-1);
+        when(e.execute(eq(new String[] {"zero"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(0);
+        when(e.execute(eq(new String[] {"positive"}), (StringBuilder) isNull(), isA(StringBuilder.class))).thenReturn(1);
 
         place.setExecutrix(e);
 

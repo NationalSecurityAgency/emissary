@@ -31,3 +31,4 @@ nbactions*.xml
 *.swp
 *.checkstyle
 .vscode/
+/logs/

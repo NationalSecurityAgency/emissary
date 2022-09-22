@@ -19,7 +19,7 @@ import java.util.List;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import emissary.util.io.UnitTestFileUtils;
 import emissary.util.shell.Executrix;

@@ -1,6 +1,7 @@
 package emissary.place;
 
 import static emissary.place.Main.filePathIsWithinBaseDirectory;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -23,7 +23,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +36,7 @@ final class MainTest extends UnitTest {
     private final String[] defaultArgs = {"-s"};
 
     @TempDir
-    public File testOutputFolder;
+    public Path testOutputFolder;
 
     @Override
     @BeforeEach
@@ -45,7 +45,7 @@ final class MainTest extends UnitTest {
         try (OutputStream ros = Files.newOutputStream(dataFile)) {
             ros.write("abcdefghijklmnopqrstuvwxyz".getBytes());
         } catch (IOException ex) {
-            fail("Unable to create test file: " + ex.getMessage());
+            fail("Unable to create test file", ex);
         }
     }
 
@@ -78,9 +78,9 @@ final class MainTest extends UnitTest {
     void testParseDefaultValues() {
         Main m = new Main(className, defaultArgs);
         m.parseArguments();
-        assertTrue(m.isSilent(), "Default args should be silent");
-        assertFalse(m.isRecursive(), "Default args should not be recursive");
-        assertFalse(m.isVerbose(), "Default args should not be verbose");
+        assertTrue(m.isSilent(), "Default args sets silent");
+        assertFalse(m.isRecursive(), "Default args are not recursive");
+        assertFalse(m.isVerbose(), "Default args are not verbose");
         assertEquals(className + ".cfg", m.getConfigLocation(), "Default config location should stick");
         assertEquals(emissary.core.Form.UNKNOWN, m.getCurrentForm(), "Default current form should be there");
         assertEquals(0, m.getFileArgs().size(), "No files should be left");
@@ -91,9 +91,9 @@ final class MainTest extends UnitTest {
         String[] newArgs = {"-v", "-R"};
         Main m = new Main(className, newArgs);
         m.parseArguments();
-        assertFalse(m.isSilent(), "These args should not be silent");
-        assertTrue(m.isVerbose(), "These args should be verbose");
-        assertTrue(m.isRecursive(), "These args should be recursive");
+        assertFalse(m.isSilent(), "These args are not silent");
+        assertTrue(m.isVerbose(), "These args are verbose");
+        assertTrue(m.isRecursive(), "These args are recursive");
         assertEquals(0, m.getFileArgs().size(), "No files should be left");
     }
 
@@ -187,11 +187,7 @@ final class MainTest extends UnitTest {
         String[] args = {"-s", "-X", TMPDIR + "/testmain.dat"};
         Main m = new Main(OOMPlace.class.getName(), args);
         m.parseArguments();
-        try {
-            m.run();
-        } catch (Throwable t) {
-            fail("Main runner allowed exception to escape: " + t);
-        }
+        assertDoesNotThrow(m::run);
     }
 
     @Test
@@ -213,14 +209,14 @@ final class MainTest extends UnitTest {
 
     @Test
     void testHandleSplitOutput() throws IOException {
-        File outputFolder = newFolder(testOutputFolder, "testmain.dat");
-        String[] args = {"-S", "-d", outputFolder.getCanonicalPath()};
+        Path outputFolder = Files.createDirectories(testOutputFolder.resolve("testmain-split.dat"));
+        String[] args = {"-S", "-d", outputFolder.toRealPath().toString()};
         Main m = new Main(this.className, args);
         m.parseArguments();
         try {
             m.run();
         } catch (Throwable t) {
-            fail("Main runner allowed exception to escape: " + t);
+            fail("Main runner allowed exception to escape", t);
         }
         IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
         List<IBaseDataObject> atts = new ArrayList<>();
@@ -252,7 +248,7 @@ final class MainTest extends UnitTest {
     @Test
     void testFilePathIsWithinBaseDirectory() {
 
-        String basePath = Paths.get(testOutputFolder.getPath(), "foo").toString();
+        String basePath = testOutputFolder.resolve("foo").toString();
         assertEquals(basePath + "/somefile", filePathIsWithinBaseDirectory(basePath, basePath + "/somefile"));
         assertEquals(basePath + "/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "//otherfile"));
         assertEquals(basePath + "/foo/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/./foo/otherfile"));
@@ -367,15 +363,4 @@ final class MainTest extends UnitTest {
         @Override
         public void process(IBaseDataObject payload) throws emissary.core.ResourceException {}
     }
-
-    private static File newFolder(File root, String... subDirs) throws IOException {
-        String subFolder = String.join("/", subDirs);
-        File result = new File(root, subFolder);
-        if (!result.mkdirs()) {
-            throw new IOException("Couldn't create folders " + root);
-        }
-        return result;
-    }
-
-
 }

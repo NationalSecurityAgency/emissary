@@ -429,6 +429,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             throw new IllegalArgumentException("caller attempted to add a null form value at position " + i);
         }
 
+        checkForAndLogDuplicates(newForm, "addCurrentFormAt");
         if (i < this.currentForm.size()) {
             this.currentForm.add(i, newForm);
         } else {
@@ -443,6 +444,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             throw new IllegalArgumentException("caller attempted to enqueue a null form value");
         }
 
+        checkForAndLogDuplicates(newForm, "enqueueCurrentForm");
         this.currentForm.add(newForm);
         return this.currentForm.size();
     }
@@ -456,6 +458,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             logger.error("INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/'. Given form: {}", newForm);
         }
 
+        checkForAndLogDuplicates(newForm, "pushCurrentForm");
         return addCurrentFormAt(0, newForm);
     }
 
@@ -494,6 +497,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             if (count > 0) {
                 this.currentForm.add(0, curForm);
             }
+        }
+    }
+
+    private void checkForAndLogDuplicates(String newForm, String method) {
+        if (currentForm.contains(newForm)) {
+            logger.info("Duplicate form {} being added through BaseDataObject.{}", newForm, method);
         }
     }
 

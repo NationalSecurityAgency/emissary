@@ -52,10 +52,7 @@ public class DataByteBufferSlicer {
 
         // Aggregate all the pieces using the baos
         byte[] ret = null;
-        ByteArrayOutputStream out = null;
-        try {
-            out = new ByteArrayOutputStream();
-
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             for (PositionRecord r : list) {
                 int start = (int) r.getPosition();
                 int len = (int) r.getLength();
@@ -79,14 +76,6 @@ public class DataByteBufferSlicer {
             ret = out.toByteArray();
         } catch (IOException iox) {
             logger.warn("io error on bytearray stream cant happen", iox);
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException ignore) {
-                    // empty catch block
-                }
-            }
         }
 
         return ret;

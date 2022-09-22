@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.8.0-SNAPSHOT</version>
+  <version>7.9.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -67,6 +67,7 @@
     <dep.webjars.popper.version>2.9.3</dep.webjars.popper.version>
     <dep.xmlbeans.version>5.0.3</dep.xmlbeans.version>
     <eclipseFormatterStyle>${project.basedir}/contrib/formatter.xml</eclipseFormatterStyle>
+    <git.useNative>false</git.useNative>
     <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -477,6 +478,11 @@
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
       <artifactId>metrics-servlets</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>7.2</version>
     </dependency>
     <dependency>
       <groupId>net.spy</groupId>
@@ -1055,8 +1061,9 @@
         <version>4.9.9</version>
         <configuration>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
-          <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+          <generateGitPropertiesFilename>${project.build.outputDirectory}/emissary.git.properties</generateGitPropertiesFilename>
           <commitIdGenerationMode>full</commitIdGenerationMode>
+          <useNativeGit>${git.useNative}</useNativeGit>
         </configuration>
         <executions>
           <execution>

@@ -1,11 +1,6 @@
 package emissary.client;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -18,6 +13,7 @@ import javax.net.ssl.TrustManagerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.util.PkiUtil;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -37,7 +33,7 @@ import org.apache.log4j.Logger;
  * Emissary HTTP Connection Factory. This is a singleton class that allows for the central configuration of an Apache
  * HTTP Client Connection manager and also provides a method for building default HTTP Clients. This object can be
  * configured by providing an HTTPConnectionFactory.cfg with the following:<br>
- * 
+ *
  * <pre>
  * // Standard SSL Properties
  * javax.net.ssl.trustStore = "[Path to trust store]"
@@ -74,7 +70,6 @@ public class HTTPConnectionFactory {
     // meaningful constants
     private static final String HTTP = "http";
     private static final String HTTPS = "https";
-    private static final String FILE_PRE = "file://";
 
     private static final Logger log = Logger.getLogger(HTTPConnectionFactory.class);
 
@@ -125,19 +120,20 @@ public class HTTPConnectionFactory {
     /**
      * This method will attempt to configure an SSLSocketFactory using configuration parameters from the
      * HTTPConnectionFactory.cfg.
-     * 
+     *
      * @param cfg The configurator.
      * @return the SSLContext
      * @throws IOException If there is some I/O problem.
      * @throws GeneralSecurityException If there is some security problem.
      */
     SSLContext build(final Configurator cfg) throws IOException, GeneralSecurityException {
-        final char[] kpChar = loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
-        final char[] tsChar = loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
+        final char[] kpChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
+        final char[] tsChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
 
-        final KeyStore keyStore = buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));
+        final KeyStore keyStore =
+                PkiUtil.buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));
         final KeyStore trustStore =
-                buildStore(cfg.findStringEntry(CFG_TRUST_STORE), tsChar, cfg.findStringEntry(CFG_TRUST_STORE_TYPE, DFLT_STORE_TYPE));
+                PkiUtil.buildStore(cfg.findStringEntry(CFG_TRUST_STORE), tsChar, cfg.findStringEntry(CFG_TRUST_STORE_TYPE, DFLT_STORE_TYPE));
         if ((trustStore == null) && (keyStore == null)) {
             log.debug("Trust Store and Key Store are null. Using JDK default SSLContext");
             return SSLContext.getDefault();
@@ -155,44 +151,10 @@ public class HTTPConnectionFactory {
         return sc;
     }
 
-    /*
-     * Build char array from password or load from file.
-     */
-    private static char[] loadPW(final String pazz) throws IOException {
-        if (pazz == null) {
-            return null;
-        }
-        String realPW;
-        if (pazz.startsWith(FILE_PRE)) {
-            final String pth = pazz.substring(FILE_PRE.length());
-            log.debug("Loading key password from file " + pth);
-            try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
-                realPW = r.readLine();
-            }
-            if (realPW == null) {
-                throw new IOException("Unable to load store password from " + pazz);
-            }
-        } else {
-            realPW = pazz;
-        }
-        return realPW.toCharArray();
-    }
-
-    /* build the key/trust store from props */
-    private static KeyStore buildStore(final String path, final char[] pazz, final String type) throws IOException, GeneralSecurityException {
-        if ((path == null) || path.isEmpty()) {
-            return null;
-        }
-        final KeyStore keyStore = KeyStore.getInstance(type);
-        try (final InputStream is = Files.newInputStream(Paths.get(path))) {
-            keyStore.load(is, pazz);
-        }
-        return keyStore;
-    }
 
     /**
      * Return the configured connection manager with TLS SSL if configured.
-     * 
+     *
      * @return the connection manager
      */
     public PoolingHttpClientConnectionManager getDefaultConnectionManager() {
@@ -206,7 +168,7 @@ public class HTTPConnectionFactory {
      * <li>The Client will have the connection manager marked as shared to preserve cached connections
      * <li>The Client will use the configured reuse strategy (HTTP Keep Alive)
      * </ul>
-     * 
+     *
      * @return a CloseableHttpClient
      */
     public CloseableHttpClient buildDefaultClient() {
@@ -216,7 +178,7 @@ public class HTTPConnectionFactory {
 
     /**
      * Returns the Factory
-     * 
+     *
      * @return the connection factory
      */
     public static HTTPConnectionFactory getFactory() {

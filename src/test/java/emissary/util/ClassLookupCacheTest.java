@@ -3,7 +3,7 @@ package emissary.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -27,7 +27,7 @@ class ClassLookupCacheTest extends UnitTest {
             final Class<?> clazz = ClassLookupCache.lookup(className);
             assertEquals(expectedClazz, clazz, "lookup of " + className + " should return known class object");
         } catch (ClassNotFoundException e) {
-            fail("could not find the class " + className + ": " + e);
+            fail("could not find the class " + className, e);
         }
     }
 

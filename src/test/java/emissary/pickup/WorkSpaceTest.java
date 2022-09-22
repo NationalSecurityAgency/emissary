@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import emissary.command.FeedCommand;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class WorkSpaceTest extends UnitTest {
         try {
             mws = new MyWorkSpace();
         } catch (Exception ex) {
-            fail("Cannot start workspace: " + ex.getMessage());
+            fail("Cannot start workspace", ex);
         }
     }
 

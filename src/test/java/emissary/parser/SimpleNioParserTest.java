@@ -14,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class SimpleNioParserTest extends UnitTest {
             SimpleNioParser sp = new SimpleNioParser(channel);
             assertTrue(sp instanceof SessionParser, "SimpleParser interface definition");
         } catch (ParserException ex) {
-            fail(ex.getMessage());
+            fail("SimpleNioParser is not a SessionParser", ex);
         }
     }
 

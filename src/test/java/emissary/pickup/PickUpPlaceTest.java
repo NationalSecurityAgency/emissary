@@ -7,7 +7,7 @@ import emissary.core.IMobileAgent;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.pickup.file.FilePickUpPlace;
 import emissary.server.EmissaryServer;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class PickUpPlaceTest extends UnitTest {

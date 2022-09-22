@@ -14,7 +14,7 @@ import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class TimeUtilTest extends UnitTest {

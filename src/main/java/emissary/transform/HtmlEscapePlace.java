@@ -6,15 +6,22 @@
 package emissary.transform;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.HtmlEscape;
 import emissary.util.CharacterCounterSet;
 import emissary.util.DataUtil;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {
+
+    private static final String HTMLESC = "-HTMLESC";
+    private static final String SUMMARY = "Summary";
+    private static final String DOCUMENT_TITLE = "DocumentTitle";
+
     /**
      * Can be overridden from config file
      */
@@ -92,80 +99,89 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
             d.pushCurrentForm(emissary.core.Form.ERROR);
         }
 
+        unescapeAltViews(d);
+        unescapeSummary(d);
+        unescapeDocTitle(d);
+        processEncoding(d);
+        processCurrentForms(d);
+        nukeMyProxies(d);
+    }
+
+    protected void unescapeAltViews(IBaseDataObject d) {
         // Unescape any TEXT alt views we may have
-        for (String viewName : d.getAlternateViewNames()) {
-            if (viewName.startsWith("TEXT")) {
-                byte[] textView = d.getAlternateView(viewName);
-                if (textView != null && textView.length > 0) {
-                    byte[] s = HtmlEscape.unescapeHtml(textView);
-                    if (s != null && s.length > 0) {
-                        s = HtmlEscape.unescapeEntities(s);
-                        if (s != null) {
-                            d.addAlternateView(viewName, s);
-                        }
+        d.getAlternateViewNames().stream().filter(v -> v.startsWith("TEXT")).forEach(viewName -> {
+            byte[] textView = d.getAlternateView(viewName);
+            if (ArrayUtils.isNotEmpty(textView)) {
+                byte[] s = HtmlEscape.unescapeHtml(textView);
+                if (ArrayUtils.isNotEmpty(s)) {
+                    s = HtmlEscape.unescapeEntities(s);
+                    if (ArrayUtils.isNotEmpty(s)) {
+                        d.addAlternateView(viewName, s);
                     }
                 }
             }
-        }
+        });
+    }
 
+    protected void unescapeSummary(IBaseDataObject d) {
         // Unescape the Summary if present
-        String summary = d.getStringParameter("Summary");
-        if (summary != null && summary.indexOf("&#") != -1) {
-            // logger.debug("Working on summary " + summary);
+        String summary = d.getStringParameter(SUMMARY);
+        if (StringUtils.contains(summary, "&#")) {
+            logger.debug("Working on summary "/* + summary */);
             String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes()));
-            if (s != null && s.length() > 0) {
+            if (StringUtils.isNotBlank(s)) {
                 s = HtmlEscape.unescapeEntities(s);
-                d.deleteParameter("Summary");
-                d.putParameter("Summary", s);
+                d.deleteParameter(SUMMARY);
+                d.putParameter(SUMMARY, s);
             }
         }
+    }
 
+    protected void unescapeDocTitle(IBaseDataObject d) {
         // Unescape the Document Title
-        String title = d.getStringParameter("DocumentTitle");
-        if (title != null && title.indexOf("&#") != -1) {
-            // logger.debug("Working on title " + title);
+        String title = d.getStringParameter(DOCUMENT_TITLE);
+        if (StringUtils.contains(title, "&#")) {
+            logger.debug("Working on title "/* + title */);
             String s = makeString(HtmlEscape.unescapeHtml(title.getBytes()));
-            if (s != null && s.length() > 0) {
-                d.deleteParameter("DocumentTitle");
+            if (StringUtils.isNotBlank(s)) {
+                d.deleteParameter(DOCUMENT_TITLE);
                 s = HtmlEscape.unescapeEntities(s);
-                d.putParameter("DocumentTitle", s);
+                d.putParameter(DOCUMENT_TITLE, s);
             }
         }
-        // logger.debug("New retrieved title is " + d.getParameter("DocumentTitle"));
+        logger.debug("Retrieved new title "/* + d.getParameter("DocumentTitle") */);
+    }
 
+    protected void processEncoding(IBaseDataObject d) {
         // If the encoding or the LANG- form has -HTMLESC from hotspot remove it
         String enc = d.getFontEncoding();
-        if (enc != null && enc.indexOf("-HTMLESC") > -1) {
-            d.setFontEncoding(enc.replaceFirst("-HTMLESC", ""));
+        if (StringUtils.contains(enc, HTMLESC)) {
+            d.setFontEncoding(enc.replaceFirst(HTMLESC, ""));
         }
+    }
 
+    protected void processCurrentForms(IBaseDataObject d) {
         for (String cf : d.getAllCurrentForms()) {
-            if (cf.indexOf("LANG-") > -1 && cf.indexOf("-HTMLESC") > -1) {
+            if (cf.contains("LANG-") && cf.contains(HTMLESC)) {
                 // Get the old pos
                 int pos = d.searchCurrentForm(cf);
                 d.deleteCurrentForm(cf);
-                cf = cf.replaceFirst("-HTMLESC", "");
+                cf = cf.replaceFirst(HTMLESC, "");
                 d.addCurrentFormAt(pos, cf);
                 break;
             }
         }
-
-        nukeMyProxies(d);
     }
 
     public static String makeString(byte[] s) {
-        try {
-            return new String(s, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            return new String(s);
-        }
+        return new String(s, StandardCharsets.UTF_8);
     }
 
 
     /**
      * Test standalone main
      */
-    public static void main(String[] argv) throws Exception {
+    public static void main(String[] argv) {
         mainRunner(HtmlEscapePlace.class.getName(), argv);
     }
 }

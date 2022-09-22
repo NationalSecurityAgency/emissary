@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class KffFileTest extends UnitTest {
         try {
             assertTrue(kffFile.check(expectedShaHash, results));
         } catch (Exception e) {
-            throw new AssertionError();
+            fail(e);
         }
         byte[] incorrectSha1Bytes = {(byte) 0, (byte) 0, (byte) 0, (byte) 32, (byte) 103, (byte) 56, (byte) 116,
                 (byte) -114, (byte) -35, (byte) -110, (byte) -60, (byte) -29, (byte) -46, (byte) -24, (byte) 35, (byte) -119,
@@ -54,7 +55,7 @@ class KffFileTest extends UnitTest {
         try {
             assertFalse(kffFile.check(expectedShaHash, results));
         } catch (Exception e) {
-            throw new AssertionError();
+            fail(e);
         }
     }
 

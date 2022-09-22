@@ -12,7 +12,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 public class MetadataDictionaryTest extends UnitTest {
@@ -23,7 +23,7 @@ public class MetadataDictionaryTest extends UnitTest {
                 m = new MetadataDictionary(TEST_NAMESPACE, conf);
             }
         } catch (Exception ex) {
-            fail("Exception configuring dictionary: " + ex.getMessage());
+            fail("Exception configuring dictionary", ex);
         }
         assertNotNull(m, "Metadata Dictionary must be created");
         return m;
@@ -87,7 +87,7 @@ public class MetadataDictionaryTest extends UnitTest {
             MetadataDictionary d2 = MetadataDictionary.lookup(TEST_NAMESPACE);
             assertEquals(d1, d2, "INitialize must bind by default lookup name");
         } catch (Exception ex) {
-            fail("Exception doing namespace lookup: " + ex.getMessage());
+            fail("Exception doing namespace lookup", ex);
         } finally {
             clearNamespace();
         }

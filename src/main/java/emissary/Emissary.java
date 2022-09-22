@@ -30,6 +30,7 @@ import emissary.command.StopCommand;
 import emissary.command.TopologyCommand;
 import emissary.command.VersionCommand;
 import emissary.command.WhatCommand;
+import emissary.util.GitRepositoryState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,6 +106,7 @@ public class Emissary {
             }
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
+            dumpVersionInfo();
             cmd.run(jc);
             // don't exit(0) here or things like server will not continue to run
         } catch (MissingCommandException e) {
@@ -133,6 +135,10 @@ public class Emissary {
 
     private void dumpBanner() {
         dumpBanner(null);
+    }
+
+    protected void dumpVersionInfo() {
+        LOG.info(GitRepositoryState.dumpVersionInfo(GitRepositoryState.getRepositoryState(), "Emissary"));
     }
 
     @VisibleForTesting

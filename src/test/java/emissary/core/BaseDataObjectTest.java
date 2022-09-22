@@ -28,7 +28,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -603,7 +603,7 @@ class BaseDataObjectTest extends UnitTest {
             this.b.addAlternateView("FLUBBER", null);
             assertEquals(0, this.b.getAlternateViewNames().size(), "View removed by orig name");
         } catch (Exception ex) {
-            fail("Could not configure test: " + ex.getMessage());
+            fail("Could not configure test", ex);
         } finally {
             // Clean up
             Namespace.unbind(MetadataDictionary.DEFAULT_NAMESPACE_NAME);
@@ -969,7 +969,7 @@ class BaseDataObjectTest extends UnitTest {
             this.b.popCurrentForm();
             assertEquals(this.b.currentFormSize(), clone.currentFormSize() - 1, "Current form stack must be detached after clone");
         } catch (CloneNotSupportedException ex) {
-            throw new AssertionError("Clone must be supported on BaseDataObject", ex);
+            fail("Clone must be supported on BaseDataObject", ex);
         }
     }
 
@@ -1106,7 +1106,7 @@ class BaseDataObjectTest extends UnitTest {
             assertEquals(this.b.getExtractedRecordCount(), this.b.clone()
                     .getExtractedRecordCount(), "Cloned IBDO should have same sized extracted record list");
         } catch (CloneNotSupportedException ex) {
-            fail("Clone method should have been called not " + ex.getMessage());
+            fail("Clone method should have been called", ex);
         }
     }
 }

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 class FastBoyerMooreTest extends UnitTest {
@@ -31,7 +31,7 @@ class FastBoyerMooreTest extends UnitTest {
             assertEquals(0, result.get(0)[1], "First result check id");
             assertEquals(3, result.get(0)[2], "First result check length");
         } catch (Exception ex) {
-            fail("Creation of scanner failure: " + ex);
+            fail("Creation of scanner failure", ex);
         }
     }
 

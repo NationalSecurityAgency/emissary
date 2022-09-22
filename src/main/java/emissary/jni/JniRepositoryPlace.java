@@ -101,13 +101,10 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
             return null;
         }
 
-        try {
-            final FileInputStream theFile = new FileInputStream(nativeLib);
-            final DataInputStream theStream = new DataInputStream(theFile);
+        try (final FileInputStream theFile = new FileInputStream(nativeLib);
+                final DataInputStream theStream = new DataInputStream(theFile)) {
             final byte[] theContent = new byte[theStream.available()];
             theStream.readFully(theContent);
-            theStream.close();
-            theFile.close();
             return theContent;
         } catch (Exception e) {
             throw new RemoteException("Repository failure", e);
