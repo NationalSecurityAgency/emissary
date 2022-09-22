@@ -66,6 +66,7 @@ class EmissaryMvcTest extends EndpointTestBase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void namespace() {
         Namespace.bind("TestDirectoryPlace", new DirectoryEntry("TEST", "TESTSERVICEPLACE", "TRANSFORM", "http://localhost:8001/TestServicePlace",
                 "emissary.test.TestServicePlace", 90, 10));
