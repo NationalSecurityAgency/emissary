@@ -18,9 +18,9 @@ import org.apache.commons.lang3.StringUtils;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {
 
-    private static final String HTMLESC = "-HTMLESC";
-    private static final String SUMMARY = "Summary";
-    private static final String DOCUMENT_TITLE = "DocumentTitle";
+    protected static final String HTMLESC = "-HTMLESC";
+    protected static final String SUMMARY = "Summary";
+    protected static final String DOCUMENT_TITLE = "DocumentTitle";
 
     /**
      * Can be overridden from config file
