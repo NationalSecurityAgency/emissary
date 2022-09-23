@@ -14,7 +14,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
-import emissary.test.core.FunctionalTest;
+import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

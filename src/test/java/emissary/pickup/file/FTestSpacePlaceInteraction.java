@@ -16,7 +16,7 @@ import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
-import emissary.test.core.FunctionalTest;
+import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;

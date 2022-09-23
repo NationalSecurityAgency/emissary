@@ -83,7 +83,8 @@ public class PkiUtilTest extends UnitTest {
     }
 
     /**
-     * Read a known environment variable configured during setup {@link emissary.test.core.UnitTest#setupSystemProperties()}
+     * Read a known environment variable configured during setup
+     * {@link emissary.test.core.junit5.UnitTest#setupSystemProperties()}
      *
      * @throws Exception thrown when an error occurs
      */
