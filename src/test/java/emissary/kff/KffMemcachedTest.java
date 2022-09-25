@@ -59,7 +59,7 @@ class KffMemcachedTest extends UnitTest {
     }
 
     @Test
-    public void testKffMemcachedCreation() throws Exception {
+    void testKffMemcachedCreation() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
         mcdFilter.setPreferredAlgorithm("SHA-256");
         assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
@@ -68,10 +68,11 @@ class KffMemcachedTest extends UnitTest {
     }
 
     @Test
-    void testThrowsWithNonAsciiAndDups() {
+    void testThrowsWithNonAsciiAndDups() throws Exception {
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
+        ChecksumResults results = createSums(mcdFilter);
         assertThrows(IllegalArgumentException.class, () -> {
-            KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
-            mcdFilter.check(testIdWithSpaces, createSums(mcdFilter));
+            mcdFilter.check(testIdWithSpaces, results);
         });
     }
 
