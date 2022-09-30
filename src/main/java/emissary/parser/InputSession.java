@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +14,12 @@ import javax.annotation.Nullable;
  * Detailed session information as it is parsed This class just records offsets and length of various things using lists
  * of PositionRecord. If you want to actually produce the bytes of a session see SessionParser.decomposeSession and
  * emissary.parser.DecomposedSession
- *
+ * <p>
  * No assertions are made about the order of the header, footer, and data sections within the original byte array, it
  * can be constructed from position records in any order, possibly overlapping and repeated, We only assert that the
  * sections asked for are not out of bounds with respect to the overall array boundaries.
- *
- * The validation scheme allows the overall bounds to be set at either the beginning or at the end of sesion parsing
+ * <p>
+ * The validation scheme allows the overall bounds to be set at either the beginning or at the end of session parsing
  * without performance penalty either way.
  */
 public class InputSession {
@@ -144,8 +145,8 @@ public class InputSession {
             } else if (val instanceof String) {
                 metaData.put(key, val);
             } else {
-                logger.warn("Ignoring metadata record named " + key + " with type of " + val.getClass().getName()
-                        + " - it is not a PositionRecord or a String");
+                logger.warn("Ignoring metadata record named {} with type of {} - it is not a PositionRecord or a String", key,
+                        val.getClass().getName());
             }
         }
     }
@@ -208,7 +209,7 @@ public class InputSession {
      * @throws ParserException when a record is out of bounds
      */
     public void addHeaderRecs(@Nullable List<PositionRecord> h) throws ParserException {
-        if (h != null && h.size() > 0) {
+        if (CollectionUtils.isNotEmpty(h)) {
             validateList(h);
             header.addAll(h);
         }
@@ -221,7 +222,7 @@ public class InputSession {
      * @throws ParserException when a record is out of bounds
      */
     public void addDataRecs(@Nullable List<PositionRecord> d) throws ParserException {
-        if (d != null && d.size() > 0) {
+        if (CollectionUtils.isNotEmpty(d)) {
             validateList(d);
             data.addAll(d);
         }
@@ -234,14 +235,14 @@ public class InputSession {
      * @throws ParserException when a record is out of bounds
      */
     public void addFooterRecs(@Nullable List<PositionRecord> f) throws ParserException {
-        if (f != null && f.size() > 0) {
+        if (CollectionUtils.isNotEmpty(f)) {
             validateList(f);
             footer.addAll(f);
         }
     }
 
     /**
-     * Add a validate a header record
+     * Add and validate a header record
      * 
      * @param r the record to add
      * @throws ParserException when a record is out of bounds
@@ -263,7 +264,7 @@ public class InputSession {
     }
 
     /**
-     * Add a validate a footer record
+     * Add and validate a footer record
      * 
      * @param r the record to add
      * @throws ParserException when a record is out of bounds
@@ -392,7 +393,7 @@ public class InputSession {
     }
 
     /**
-     * Return a map of metadata information. Some of the values will be String, others will be PositionRecord
+     * Return a map of metadata information. Some values will be Strings, others will be PositionRecords
      * 
      * @return metadata
      */

@@ -50,7 +50,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     void irdAddPeerDirectories(Set<String> keys);
 
     /**
-     * Helper class to lookup an instance of the local directory cast to this interface if possible
+     * Helper class to look up an instance of the local directory cast to this interface if possible
      */
     class Lookup {
         private final Logger logger = LoggerFactory.getLogger(Lookup.class);
@@ -58,7 +58,8 @@ public interface IRemoteDirectory extends IDirectoryPlace {
         /**
          * Look up the local directory using one of two methods. The easier method almost always works, the case where it
          * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
-         * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
+         * multiple Listeners. This is a testing scenario, but it is helpful to keep supporting it, so we have good test
+         * coverage.
          * 
          * @param name name of the local directory or null for default
          */
@@ -71,7 +72,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
                     dir = DirectoryPlace.lookup();
                 }
             } catch (emissary.core.EmissaryException ex) {
-                this.logger.debug("Could not find local directory " + name);
+                this.logger.debug("Could not find local directory {}", name);
             }
 
             IRemoteDirectory remoteDirectory = null;

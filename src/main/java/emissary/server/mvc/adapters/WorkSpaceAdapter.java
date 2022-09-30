@@ -40,7 +40,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(place);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientOpenWorkSpace.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
         method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
@@ -61,7 +61,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientSpaceTake.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
 
@@ -91,7 +91,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkBundleCompleted.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
         nvps.add(new BasicNameValuePair(WORK_BUNDLE_ID, bundleId));

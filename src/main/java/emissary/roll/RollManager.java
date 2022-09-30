@@ -62,7 +62,7 @@ public class RollManager implements Observer {
                 Map<String, String> map = configG.findStringMatchMap(roller + "_");
                 cfgRollers.add(RollUtil.buildRoller(map));
             } catch (Exception e) {
-                log.warn("Unable to configure Rollable for: " + roller);
+                log.warn("Unable to configure Rollable for: {}", roller);
             }
         }
 
@@ -76,7 +76,9 @@ public class RollManager implements Observer {
         boolean time = r.getTimeUnit() != null && r.getPeriod() > 0L;
         boolean progress = r.getMax() > 0;
         if (time) {
-            log.info("Scheduling Rollable " + r.getRollable().getClass() + " at " + r.getPeriod() + " " + r.getTimeUnit().name());
+            if (log.isInfoEnabled()) {
+                log.info("Scheduling Rollable {} at {} {}", r.getRollable().getClass(), r.getPeriod(), r.getTimeUnit().name());
+            }
             exec.scheduleAtFixedRate(r, r.getPeriod(), r.getPeriod(), r.getTimeUnit());
         }
         if (progress) {
@@ -114,7 +116,7 @@ public class RollManager implements Observer {
 
     /**
      * Synchronized on RM to prevent multiple returns on RollManager
-     *
+     * <p>
      * Used to create custom RollManager based on configs.
      */
     public static synchronized RollManager getManager(Configurator configG) {
@@ -126,14 +128,14 @@ public class RollManager implements Observer {
 
     public static void shutdown() {
         RM.exec.shutdown();
-        log.info("Closing all rollers (" + RM.rollers.size() + ")");
+        log.info("Closing all rollers ({})", RM.rollers.size());
         for (Roller roller : RM.rollers) {
             Rollable r = roller.getRollable();
             try {
                 r.roll();
                 r.close();
             } catch (IOException ex) {
-                log.warn("Error while closing Rollable: " + r.getClass(), ex);
+                log.warn("Error while closing Rollable: {}", r.getClass(), ex);
             }
         }
     }
