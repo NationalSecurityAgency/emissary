@@ -18,7 +18,7 @@ public class ProjectBaseConverter extends PathExistsConverter {
     public Path convert(String value) {
         String origValue = value;
         String projectBaseEnv = System.getenv("PROJECT_BASE");
-        Path projectBaseEnvPath = null;
+        Path projectBaseEnvPath;
         String projectBaseEnvString = null;
 
         // if PROJECT_BASE not null, set some variables
