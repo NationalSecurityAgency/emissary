@@ -1,5 +1,6 @@
 package emissary.config;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +52,16 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected String NULL_VALUE = "<null>";
 
     // Hold all service specific parameters in a list
-    protected List<ConfigEntry> p_service_parameters = new ArrayList<ConfigEntry>();
+    protected List<ConfigEntry> p_service_parameters = new ArrayList<>();
 
     // Hold all remove config entries, operator of !=
-    protected List<ConfigEntry> p_remove_parameters = new ArrayList<ConfigEntry>();
+    protected List<ConfigEntry> p_remove_parameters = new ArrayList<>();
 
     protected String operator;
 
     // Start and end to a dynamic substitution
-    protected final String VSTART = "@{";
-    protected final String VEND = "}";
+    protected static final String VSTART = "@{";
+    protected static final String VEND = "}";
 
     // Shared map of all environment properties
     // Access them with @ENV{'os.name'} for example
@@ -71,7 +72,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected static final String ENVSTOP = "'}";
 
     // Map of last values seen
-    protected Map<String, String> VALUES = new HashMap<String, String>();
+    protected Map<String, String> VALUES = new HashMap<>();
 
     // Get this once per jvm
     private static String THIS_HOST_NAME = "localhost";
@@ -242,7 +243,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (nextToken == StreamTokenizer.TT_NUMBER) {
                 paramTypeIsNumber = true;
                 nval = (int) in.nval;
-                sval = Integer.valueOf(nval).toString();
+                sval = Integer.toString(nval);
             } else {
                 sval = in.sval;
             }
@@ -304,11 +305,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         }
 
         if ("IMPORT_FILE".equals(parmName) || "OPT_IMPORT_FILE".equals(parmName)) {
-            final List<String> fileFlavorList = new ArrayList<String>();
+            final List<String> fileFlavorList = new ArrayList<>();
             // Add the base file and then add all the flavor versions
             fileFlavorList.add(sval);
             final String[] fileFlavors = ConfigUtil.addFlavors(sval);
-            if (fileFlavors != null && fileFlavors.length > 0) {
+            if (ArrayUtils.isNotEmpty(fileFlavors)) {
                 fileFlavorList.addAll(Arrays.asList(fileFlavors));
             }
             logger.debug("ServiceConfigGuide::handleNewEntry -- FileFlavorList = {}", fileFlavorList);
@@ -333,14 +334,10 @@ public class ServiceConfigGuide implements Configurator, Serializable {
                 }
             }
             return anEntry;
-        } else if ("CREATE_DIRECTORY".equals(parmName)) {
-            if (!createDirectory(sval)) {
-                logger.warn("{}: Cannot create directory {}", filename, sval);
-            }
-        } else if ("CREATE_FILE".equals(parmName)) {
-            if (!createFile(sval)) {
-                logger.warn("{}: Cannot create file {}", filename, sval);
-            }
+        } else if ("CREATE_DIRECTORY".equals(parmName) && !createDirectory(sval)) {
+            logger.warn("{}: Cannot create directory {}", filename, sval);
+        } else if ("CREATE_FILE".equals(parmName) && !createFile(sval)) {
+            logger.warn("{}: Cannot create file {}", filename, sval);
         }
 
         return anEntry;
@@ -358,37 +355,37 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected String handleReplacements(final String svalArg, final String filename, final int lineno) throws IOException {
         String sval = svalArg;
         int startpos = 0;
-        while (sval != null && sval.indexOf(this.VSTART, startpos) > -1) {
-            final int ndx = sval.indexOf(this.VSTART, startpos);
-            final int edx = sval.indexOf(this.VEND, ndx + this.VSTART.length());
+        while (sval != null && sval.indexOf(VSTART, startpos) > -1) {
+            final int ndx = sval.indexOf(VSTART, startpos);
+            final int edx = sval.indexOf(VEND, ndx + VSTART.length());
             if (ndx == -1 && ndx >= edx) {
                 throw new IOException("Problem parsing line " + lineno + " " + sval);
             }
-            final String tok = sval.substring(ndx + this.VSTART.length(), edx);
+            final String tok = sval.substring(ndx + VSTART.length(), edx);
             logger.debug("Replacement token is {}", tok);
             final String mapval = this.VALUES.get(tok);
             if (mapval != null) {
-                sval = sval.substring(0, ndx) + mapval + sval.substring(edx + this.VEND.length());
+                sval = sval.substring(0, ndx) + mapval + sval.substring(edx + VEND.length());
             } else {
                 logger.warn("Did not find replacement for '{}' in file {} at line {}", tok, filename, lineno);
-                startpos = edx + this.VEND.length();
+                startpos = edx + VEND.length();
             }
         }
 
         // This is obsolete
-        if (sval != null && sval.indexOf(ENVSTART) != -1) {
+        if (sval != null && sval.contains(ENVSTART)) {
             sval = substEnvProps(sval, filename, lineno);
         }
 
         // Do unicode stuff
-        if (sval != null && (sval.indexOf("\\u") != -1 || sval.indexOf("\\U") != -1)) {
+        if (sval != null && (sval.contains("\\u") || sval.contains("\\U"))) {
             sval = substUTFChars(sval, filename, lineno);
         }
 
         // This is obsolete
         if (sval != null && sval.equals(this.NULL_VALUE)) {
             sval = null;
-            logger.debug("Using {} is deprecated, please just use {}NULL{}", this.NULL_VALUE, this.VSTART, this.VEND);
+            logger.debug("Using {} is deprecated, please just use {}NULL{}", this.NULL_VALUE, VSTART, VEND);
         }
         return sval;
     }
@@ -448,7 +445,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         int thisPos = 0;
         int count = 0;
 
-        logger.debug("{}{} style substitution is deprecated. Please just use {}yourvalue{}", ENVSTART, ENVSTOP, this.VSTART, this.VEND);
+        logger.debug("{}{} style substitution is deprecated. Please just use {}yourvalue{}", ENVSTART, ENVSTOP, VSTART, VEND);
 
         String currentStr = str;
         while ((thisPos = currentStr.indexOf(ENVSTART, thisPos)) > lastPos) {
@@ -488,11 +485,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         final String fixedSval = sval.replace('\\', '/');
         logger.debug("Trying to create dir {}", fixedSval);
         final File d = new File(fixedSval);
-        if (!d.exists()) {
-            if (!d.mkdirs()) {
-                logger.debug("Failed to create directory {}", fixedSval);
-                return false;
-            }
+        if (!d.exists() && !d.mkdirs()) {
+            logger.debug("Failed to create directory {}", fixedSval);
+            return false;
         }
         return true;
     }
@@ -510,11 +505,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             try {
                 // Ensure the directory exists to hold the file
                 final File parent = new File(new File(d.getCanonicalPath()).getParent());
-                if (!parent.exists()) {
-                    if (!createDirectory(parent.toString())) {
-                        logger.debug("Failed to create parent directory for {}", fixedSval);
-                        return false;
-                    }
+                if (!parent.exists() && !createDirectory(parent.toString())) {
+                    logger.debug("Failed to create parent directory for {}", fixedSval);
+                    return false;
                 }
                 // Create the file in the directory
                 newFile = new FileWriter(d);
@@ -536,11 +529,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     /**
      * Get the names of all entries for this config This set is not backed by the configuration and any changes to it are
-     * not relflected in the configuration.
+     * not reflected in the configuration.
      */
     @Override
     public Set<String> entryKeys() {
-        final Set<String> set = new HashSet<String>();
+        final Set<String> set = new HashSet<>();
         for (final ConfigEntry curEntry : this.p_service_parameters) {
             set.add(curEntry.getKey());
         }
@@ -548,11 +541,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Get all of the entries for this config This is a copy and changes to it are not reflected in the configuration
+     * Get all the entries for this config This is a copy and changes to it are not reflected in the configuration
      */
     @Override
     public List<ConfigEntry> getEntries() {
-        return new ArrayList<ConfigEntry>(this.p_service_parameters);
+        return new ArrayList<>(this.p_service_parameters);
     }
 
     /**
@@ -560,7 +553,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * not part of the Configurator interface.
      */
     protected List<ConfigEntry> getRemoveEntries() {
-        return new ArrayList<ConfigEntry>(this.p_remove_parameters);
+        return new ArrayList<>(this.p_remove_parameters);
     }
 
     /**
@@ -590,7 +583,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     @Override
     public List<ConfigEntry> addEntries(final String key, final List<String> values) {
-        final List<ConfigEntry> list = new ArrayList<ConfigEntry>();
+        final List<ConfigEntry> list = new ArrayList<>();
         try {
             int i = 1;
             for (final String value : values) {
@@ -637,7 +630,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Return a list containing all of the parameter values matching the key argument passed in.
+     * Return a list containing all the parameter values matching the key argument passed in.
      *
      * @param theParameter the key to match
      * @param defaultString value for list when no matches are found
@@ -646,21 +639,21 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public List<String> findEntries(final String theParameter, final String defaultString) {
         final List<String> result = findEntries(theParameter);
-        if (result.size() == 0) {
+        if (result.isEmpty()) {
             result.add(defaultString);
         }
         return result;
     }
 
     /**
-     * Return a list containing all of the parameter values matching the key argument passed in
+     * Return a list containing all the parameter values matching the key argument passed in
      *
      * @param theParameter the key to match
      * @return list with all matching entries, or empty list if none
      */
     @Override
     public List<String> findEntries(final String theParameter) {
-        final List<String> matchingEntries = new ArrayList<String>();
+        final List<String> matchingEntries = new ArrayList<>();
 
         for (final ConfigEntry curEntry : this.p_service_parameters) {
             if (theParameter.equals(curEntry.getKey())) {
@@ -695,11 +688,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public Set<String> findEntriesAsSet(final String theParameter) {
 
-        final Set<String> matchingEntries = new HashSet<String>();
+        final Set<String> matchingEntries = new HashSet<>();
 
-        for (int i = 0; i < this.p_service_parameters.size(); i++) {
-            final ConfigEntry curEntry = this.p_service_parameters.get(i);
-
+        for (final ConfigEntry curEntry : this.p_service_parameters) {
             if (theParameter.equals(curEntry.getKey())) {
                 matchingEntries.add(curEntry.getValue());
             }
@@ -716,7 +707,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public List<ConfigEntry> findStringMatchEntries(final String theParameter) {
 
-        final List<ConfigEntry> matchingEntries = new ArrayList<ConfigEntry>();
+        final List<ConfigEntry> matchingEntries = new ArrayList<>();
 
         for (final ConfigEntry curEntry : this.p_service_parameters) {
             if (curEntry.getKey().startsWith(theParameter)) {
@@ -848,7 +839,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             return Collections.emptyMap();
         }
 
-        final Map<String, Set<String>> theHash = new HashMap<String, Set<String>>();
+        final Map<String, Set<String>> theHash = new HashMap<>();
         final List<ConfigEntry> parameters = this.findStringMatchEntries(param);
 
         for (final ConfigEntry el : parameters) {
@@ -857,7 +848,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             if (theHash.containsKey(key)) {
                 theHash.get(key).add(el.getValue());
             } else {
-                final Set<String> values = new HashSet<String>();
+                final Set<String> values = new HashSet<>();
                 values.add(el.getValue());
                 theHash.put(key, values);
             }
@@ -903,8 +894,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public String findLastStringEntry(final String theParameter) {
         String result = "";
-        for (int i = 0; i < this.p_service_parameters.size(); i++) {
-            final ConfigEntry curEntry = this.p_service_parameters.get(i);
+        for (final ConfigEntry curEntry : this.p_service_parameters) {
             if (theParameter.equals(curEntry.getKey())) {
                 result = curEntry.getValue();
             }
@@ -924,7 +914,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     @Override
     public long findSizeEntry(final String theParameter, final long dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
-        if (matchingEntries.size() > 0) {
+        if (!matchingEntries.isEmpty()) {
             long val = dflt;
             final String s = matchingEntries.get(0);
             final char c = Character.toUpperCase(s.charAt(s.length() - 1));
@@ -1001,7 +991,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public int findIntEntry(final String theParameter, final int dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
 
-        if (matchingEntries.size() > 0) {
+        if (!matchingEntries.isEmpty()) {
             try {
                 return (Integer.parseInt(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
@@ -1022,7 +1012,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public long findLongEntry(final String theParameter, final long dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
 
-        if (matchingEntries.size() > 0) {
+        if (!matchingEntries.isEmpty()) {
             try {
                 return (Long.parseLong(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
@@ -1043,9 +1033,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public double findDoubleEntry(final String theParameter, final double dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
 
-        if (matchingEntries.size() > 0) {
+        if (!matchingEntries.isEmpty()) {
             try {
-                return (Double.valueOf(matchingEntries.get(0)).doubleValue());
+                return (Double.parseDouble(matchingEntries.get(0)));
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1054,7 +1044,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Return a boolean of the first entry matching the key parameter or the default if no match is found
+     * Return boolean of the first entry matching the key parameter or the default if no match is found
      *
      * @param theParameter the key to match
      * @param dflt the value to use when no matches are found
@@ -1064,7 +1054,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     public boolean findBooleanEntry(final String theParameter, final boolean dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
 
-        if (matchingEntries.size() > 0) {
+        if (!matchingEntries.isEmpty()) {
             String el = matchingEntries.get(0);
             el = el.toUpperCase();
             if (el.startsWith("F")) {
@@ -1077,7 +1067,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     /**
-     * Return a boolean of the first entry matching the key parameter or the default if no match is found
+     * Return boolean of the first entry matching the key parameter or the default if no match is found
      *
      * @param theParameter the key to match
      * @param dflt the value to use when no matches are found
@@ -1107,8 +1097,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     public boolean debug() {
-        final String val = this.VALUES.get("DEBUG");
-        return val != null && "TRUE".equalsIgnoreCase(val);
+        return "TRUE".equalsIgnoreCase(this.VALUES.get("DEBUG"));
     }
 
     /**
@@ -1144,21 +1133,21 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      */
     public static void main(final String[] args) {
         if (args.length < 1) {
-            System.err.println("usage: java ServiceConfigGuide configfile");
+            logger.error("usage: java ServiceConfigGuide configfile");
             return;
         }
 
-        for (int j = 0; j < args.length; j++) {
+        for (String arg : args) {
             try {
-                final ServiceConfigGuide sc = new ServiceConfigGuide(args[j]);
-                System.out.println("Config File: " + args[j]);
+                final ServiceConfigGuide sc = new ServiceConfigGuide(arg);
+                logger.info("Config File:{} ", arg);
                 for (int i = 0; i < sc.p_service_parameters.size(); i++) {
                     final ConfigEntry c = sc.p_service_parameters.get(i);
-                    System.out.println(c.getKey() + ": " + c.getValue());
+                    logger.info("{}: {}", c.getKey(), c.getValue());
                 }
-                System.out.println("---");
+                logger.info("---");
             } catch (IOException e) {
-                System.err.println("Cannot process " + args[j] + ":" + e);
+                logger.info("Cannot process {}:{}", arg, e.getLocalizedMessage());
             }
         }
     }
