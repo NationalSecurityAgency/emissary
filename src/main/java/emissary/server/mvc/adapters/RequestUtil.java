@@ -12,7 +12,7 @@ public class RequestUtil {
     public static final int INT_PARAM_NOT_FOUND = -99;
     public static final float FLOAT_PARAM_NOT_FOUND = -99.99f;
 
-    private static Logger logger = LoggerFactory.getLogger(RequestUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestUtil.class);
 
     private RequestUtil() {}
 
@@ -46,7 +46,7 @@ public class RequestUtil {
      * both are present
      */
     public static String[] getParameterValues(final ServletRequest request, final String param) {
-        String[] retArray = null;
+        String[] retArray;
         Object o = request.getAttribute(param);
 
         if (o == null) {
@@ -62,10 +62,10 @@ public class RequestUtil {
 
         if (retArray != null) {
             for (int i = 0; i < retArray.length; i++) {
-                logger.debug("RequestUtil.getParameterValues for " + param + " [" + i + "]: " + retArray[i]);
+                logger.debug("RequestUtil.getParameterValues for {} [{}]: {}", param, i, retArray[i]);
             }
         } else {
-            logger.debug("RequestUtil.getParameterValues for " + param + " is null");
+            logger.debug("RequestUtil.getParameterValues for {} is null", param);
         }
 
         return retArray;
@@ -87,20 +87,20 @@ public class RequestUtil {
      */
     public static int getIntParam(final ServletRequest request, final String param, final int defValue) {
         int retval = defValue;
-        String s_int = getParameter(request, param);
-        if (s_int != null) {
-            s_int = s_int.trim();
-            if (s_int.length() > 0) {
+        String sInt = getParameter(request, param);
+        if (sInt != null) {
+            sInt = sInt.trim();
+            if (sInt.length() > 0) {
                 try {
-                    retval = Integer.parseInt(s_int);
+                    retval = Integer.parseInt(sInt);
                 } catch (NumberFormatException e) {
-                    logger.info("RequestUtil.getIntParam. Param " + param + " had unparseable value '" + s_int + "'.");
+                    logger.info("RequestUtil.getIntParam. Param {} had unparseable value '{}'.", param, sInt);
 
                 }
             }
         }
 
-        logger.debug("RequestUtil.getIntParam for " + param + ": " + retval + ".");
+        logger.debug("RequestUtil.getIntParam for {}: {}.", param, retval);
 
         return retval;
     }
@@ -169,9 +169,9 @@ public class RequestUtil {
                 }
                 intValues[i] = Integer.valueOf(temp);
             } catch (NumberFormatException ne) {
-                logger.info("RequestUtil.getIntegers. Param " + param + " had unparseable value '" + values[i] + "'.");
+                logger.info("RequestUtil.getIntegers. Param {} had unparseable value '{}'.", param, values[i]);
 
-                intValues[i] = Integer.valueOf(defValue);
+                intValues[i] = defValue;
             }
         }
 
@@ -207,20 +207,20 @@ public class RequestUtil {
      */
     public static float getFloatParam(final ServletRequest request, final String param, final float defValue) {
         float retval = defValue;
-        String s_f = getParameter(request, param);
-        if (s_f != null) {
-            s_f = s_f.trim();
-            if (s_f.length() > 0) {
+        String sFloat = getParameter(request, param);
+        if (sFloat != null) {
+            sFloat = sFloat.trim();
+            if (sFloat.length() > 0) {
                 try {
-                    retval = Float.parseFloat(s_f);
+                    retval = Float.parseFloat(sFloat);
                 } catch (NumberFormatException e) {
-                    logger.info("RequestUtil.getFloatParam. Param " + param + " had unparseable value '" + s_f + "'.");
+                    logger.info("RequestUtil.getFloatParam. Param {} had unparseable value '{}'.", param, sFloat);
 
                 }
             }
         }
 
-        logger.debug("RequestUtil.getFloatParam for " + param + ": " + retval + ".");
+        logger.debug("RequestUtil.getFloatParam for {}: {}.", param, retval);
 
         return retval;
     }
