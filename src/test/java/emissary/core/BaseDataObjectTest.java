@@ -939,6 +939,47 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    void testVisitHistoryCoordinated() {
+        assertNull(this.b.getLastPlaceVisited(), "No last place");
+        assertNull(this.b.getPenultimatePlaceVisited(), "No penultimate place");
+
+        this.b.appendTransformHistory("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010");
+        this.b.appendTransformHistory("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020");
+        this.b.appendTransformHistory("UNKNOWN.BAZ.ID.http://host:1234/BazPlace$3030", true);
+        this.b.appendTransformHistory("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040", true);
+
+        final DirectoryEntry sde = this.b.getLastPlaceVisited();
+        assertNotNull(sde, "Last place directory entry");
+        assertEquals("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020", sde.getFullKey(), "Last place key");
+
+        final DirectoryEntry pen = this.b.getPenultimatePlaceVisited();
+        assertNotNull(pen, "Penultimate place");
+        assertEquals("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010", pen.getFullKey(), "Pen place key");
+
+        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited");
+        assertTrue(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited");
+        assertFalse(this.b.hasVisited("*.BAZ.*.*"), "Not visited");
+        assertFalse(this.b.hasVisited("*.BAM.*.*"), "Not visited");
+
+        this.b.clearTransformHistory();
+        assertFalse(this.b.hasVisited("*.FOO.*.*"), "Has visited");
+        assertFalse(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has no visited after clear");
+    }
+
+    @Test
+    void testVisitHistoryLogging() {
+        this.b.appendTransformHistory("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010");
+        this.b.appendTransformHistory("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020");
+        this.b.appendTransformHistory("UNKNOWN.BAZ.ID.http://host:1234/BazPlace$3030", true);
+        this.b.appendTransformHistory("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040", true);
+        assertTrue(this.b.logTransformHistory().contains("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040"));
+        this.b.appendTransformHistory("UNKNOWN.RAZ_COORDINATION.ID.http://host:1234/BarPlace$5050", true);
+        this.b.appendTransformHistory("UNKNOWN.SAZ.ID.http://host:1234/BarPlace$6060", true);
+        this.b.appendTransformHistory("UNKNOWN.TAZ.ID.http://host:1234/BarPlace$7070", true);
+        assertTrue(this.b.logTransformHistory().contains("UNKNOWN.TAZ.ID.http://host:1234/BarPlace$7070"));
+    }
+
+    @Test
     void testFiletype() {
         this.b.setFileType(emissary.core.Form.UNKNOWN);
         assertEquals(emissary.core.Form.UNKNOWN, this.b.getFileType(), "Filetype saved");

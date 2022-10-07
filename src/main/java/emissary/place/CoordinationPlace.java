@@ -36,7 +36,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected String outputForm = null; // What we call it when we are finished
     protected boolean pushForm = true; // push or set on the form
     protected boolean updateTransformHistory = false;
-    protected String transformHistoryIndent = "";
 
     /**
      * Create the place using the supplied configuration and location
@@ -93,7 +92,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
         outputForm = configG.findStringEntry("OUTPUT_FORM", null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);
         updateTransformHistory = configG.findBooleanEntry("UPDATE_TRANSFORM_HISTORY", false);
-        transformHistoryIndent = configG.findStringEntry("TRANSFORM_HISTORY_INDENT", "");
 
         placeKeys = configG.findEntries("SERVICE_COORDINATION");
         logger.debug("We got {} entries to coordinate", placeKeys.size());
@@ -186,7 +184,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             if (updateTransformHistory) {
                 DirectoryEntry de = p.getDirectoryEntry();
                 de.setDataType(d.currentForm());
-                d.appendTransformHistory(transformHistoryIndent + de.getKey());
+                d.appendTransformHistory(de.getKey(), true);
             }
 
             // Collect attachments for hd processing

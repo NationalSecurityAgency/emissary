@@ -56,17 +56,13 @@ public class PayloadUtil {
      */
     public static String getPayloadDisplayString(final IBaseDataObject payload) {
         final StringBuilder sb = new StringBuilder();
-        final List<String> th = payload.transformHistory();
         final String fileName = payload.getFilename();
         final List<String> currentForms = payload.getAllCurrentForms();
         final Date creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
                 .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
-                .append("   transform history (").append(th.size()).append(") :").append("\n");
-        for (final String h : th) {
-            sb.append("     ").append(h).append("\n");
-        }
+                .append("   ").append(payload.logTransformHistory());
         return sb.toString();
     }
 
@@ -82,7 +78,7 @@ public class PayloadUtil {
         if (attPos != -1) {
             sb.append(fn.substring(attPos + 1)).append(" ");
         }
-        final List<String> th = payload.transformHistory();
+        final List<String> th = payload.transformHistory(true);
         String prev = "";
         for (final String h : th) {
             final int pos = h.indexOf(".");
@@ -120,7 +116,7 @@ public class PayloadUtil {
         root.addContent(JDOMUtil.simpleElement("filetype", d.getFileType()));
         root.addContent(JDOMUtil.simpleElement("classification", d.getClassification()));
         final Element th = new Element("transform-history");
-        for (final String s : d.transformHistory()) {
+        for (final String s : d.transformHistory(true)) {
             th.addContent(JDOMUtil.simpleElement("itinerary-step", s));
         }
         root.addContent(th);

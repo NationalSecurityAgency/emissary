@@ -158,7 +158,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
         // Copy over the transform history up to this point
         if (parent.transformHistory() != null) {
-            child.setHistory(parent.transformHistory());
+            child.setHistory(parent.getTransformHistory());
         }
         child.appendTransformHistory(KeyManipulator.makeSproutKey(myKey));
         child.putParameter(emissary.parser.SessionParser.ORIG_DOC_SIZE_KEY, Integer.toString(child.data().length));
