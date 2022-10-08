@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.TransformHistory;
 import emissary.util.xml.JDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -56,13 +57,21 @@ public class PayloadUtil {
      */
     public static String getPayloadDisplayString(final IBaseDataObject payload) {
         final StringBuilder sb = new StringBuilder();
+        final List<TransformHistory.History> th = payload.getTransformHistory().getHistory();
         final String fileName = payload.getFilename();
         final List<String> currentForms = payload.getAllCurrentForms();
         final Date creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
                 .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
-                .append("   ").append(payload.logTransformHistory());
+                .append("   transform history (").append(th.size()).append(") :").append("\n");
+        for (final TransformHistory.History h : th) {
+            sb.append("     ");
+            if (h.wasCoordinated()) {
+                sb.append("  ");
+            }
+            sb.append(h.getKey()).append("\n");
+        }
         return sb.toString();
     }
 

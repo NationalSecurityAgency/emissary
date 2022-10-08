@@ -1,6 +1,7 @@
 package emissary.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,7 @@ import emissary.place.IServiceProviderPlace;
 
 public class TransformHistory {
 
-    private final List<XformHistory> history;
+    private final List<History> history;
 
     public TransformHistory() {
         history = new ArrayList<>();
@@ -26,7 +27,7 @@ public class TransformHistory {
      */
     public void set(List<String> keys) {
         clear();
-        addAll(keys.stream().map(XformHistory::new).collect(Collectors.toList()));
+        addAll(keys.stream().map(History::new).collect(Collectors.toList()));
     }
 
     /**
@@ -39,7 +40,7 @@ public class TransformHistory {
         addAll(history.history);
     }
 
-    private void addAll(List<TransformHistory.XformHistory> history) {
+    private void addAll(List<History> history) {
         this.history.addAll(history);
     }
 
@@ -65,7 +66,7 @@ public class TransformHistory {
      * @param coordinated true if history entries are for informational purposes only
      */
     public void append(String key, boolean coordinated) {
-        history.add(new XformHistory(key, coordinated));
+        history.add(new History(key, coordinated));
     }
 
     /**
@@ -83,7 +84,7 @@ public class TransformHistory {
     public List<String> get() {
         return history.stream()
                 .filter(x -> !x.wasCoordinated())
-                .map(XformHistory::getKey)
+                .map(History::getKey)
                 .collect(Collectors.toList());
     }
 
@@ -94,8 +95,17 @@ public class TransformHistory {
      */
     public List<String> getFull() {
         return history.stream()
-                .map(XformHistory::getKey)
+                .map(History::getKey)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Return the full history object
+     *
+     * @return history object
+     */
+    public List<History> getHistory() {
+        return Collections.unmodifiableList(history);
     }
 
     /**
@@ -104,12 +114,12 @@ public class TransformHistory {
      * @return last place visited
      */
     public String lastVisit() {
-        List<String> xformHistory = get();
-        final int sz = xformHistory.size();
+        List<String> historyList = get();
+        final int sz = historyList.size();
         if (sz == 0) {
             return null;
         }
-        return xformHistory.get(sz - 1);
+        return historyList.get(sz - 1);
     }
 
     /**
@@ -118,12 +128,12 @@ public class TransformHistory {
      * @return second-to-last place visited
      */
     public String penultimateVisit() {
-        List<String> xformHistory = get();
-        final int sz = xformHistory.size();
+        List<String> historyList = get();
+        final int sz = historyList.size();
         if (sz < 2) {
             return null;
         }
-        return xformHistory.get(sz - 2);
+        return historyList.get(sz - 2);
     }
 
     /**
@@ -146,11 +156,11 @@ public class TransformHistory {
      * @return true if not yet started
      */
     public boolean beforeStart() {
-        List<String> xformHistory = get();
-        if (xformHistory.isEmpty()) {
+        List<String> historyList = get();
+        if (historyList.isEmpty()) {
             return true;
         }
-        final String s = xformHistory.get(xformHistory.size() - 1);
+        final String s = historyList.get(historyList.size() - 1);
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
@@ -163,15 +173,15 @@ public class TransformHistory {
         return myOutput.toString();
     }
 
-    public static class XformHistory {
+    public static class History {
         String key;
         boolean coordinated;
 
-        public XformHistory(String key) {
+        public History(String key) {
             this(key, false);
         }
 
-        public XformHistory(String key, boolean coordinated) {
+        public History(String key, boolean coordinated) {
             this.key = key;
             this.coordinated = coordinated;
         }

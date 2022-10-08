@@ -686,7 +686,6 @@ public interface IBaseDataObject {
      */
     List<String> transformHistory(boolean includeCoordinated);
 
-
     /**
      * Clear the transformation history
      */
@@ -712,13 +711,6 @@ public interface IBaseDataObject {
      * @param coordinated true if history entries are for informational purposes only
      */
     void appendTransformHistory(String key, boolean coordinated);
-
-    /**
-     * List of places the data object was carried to.
-     *
-     * @return string making up the history
-     */
-    String logTransformHistory();
 
     /**
      * Return what machine we are located on

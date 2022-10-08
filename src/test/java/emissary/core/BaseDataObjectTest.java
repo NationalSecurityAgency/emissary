@@ -967,19 +967,6 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
-    void testVisitHistoryLogging() {
-        this.b.appendTransformHistory("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010");
-        this.b.appendTransformHistory("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020");
-        this.b.appendTransformHistory("UNKNOWN.BAZ.ID.http://host:1234/BazPlace$3030", true);
-        this.b.appendTransformHistory("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040", true);
-        assertTrue(this.b.logTransformHistory().contains("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040"));
-        this.b.appendTransformHistory("UNKNOWN.RAZ_COORDINATION.ID.http://host:1234/BarPlace$5050", true);
-        this.b.appendTransformHistory("UNKNOWN.SAZ.ID.http://host:1234/BarPlace$6060", true);
-        this.b.appendTransformHistory("UNKNOWN.TAZ.ID.http://host:1234/BarPlace$7070", true);
-        assertTrue(this.b.logTransformHistory().contains("UNKNOWN.TAZ.ID.http://host:1234/BarPlace$7070"));
-    }
-
-    @Test
     void testFiletype() {
         this.b.setFileType(emissary.core.Form.UNKNOWN);
         assertEquals(emissary.core.Form.UNKNOWN, this.b.getFileType(), "Filetype saved");

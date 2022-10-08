@@ -511,7 +511,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         myOutput.append(ls);
         myOutput.append("   currentForms: ").append(getAllCurrentForms()).append(ls);
-        myOutput.append("   ").append(logTransformHistory());
+        myOutput.append("   ").append(history);
 
         return myOutput.toString();
     }
@@ -582,11 +582,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setHistory(TransformHistory newHistory) {
         this.history.set(newHistory);
-    }
-
-    @Override
-    public String logTransformHistory() {
-        return history.toString();
     }
 
     @Override
