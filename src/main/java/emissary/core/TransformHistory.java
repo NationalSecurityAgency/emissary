@@ -82,10 +82,7 @@ public class TransformHistory {
      * @return List of places visited sans coordination places
      */
     public List<String> get() {
-        return history.stream()
-                .filter(x -> !x.wasCoordinated())
-                .map(History::getKey)
-                .collect(Collectors.toList());
+        return get(false);
     }
 
     /**
@@ -93,8 +90,9 @@ public class TransformHistory {
      *
      * @return List of places visited
      */
-    public List<String> getFull() {
+    public List<String> get(boolean includeCoordinated) {
         return history.stream()
+                .filter(x -> includeCoordinated || !x.wasCoordinated())
                 .map(History::getKey)
                 .collect(Collectors.toList());
     }

@@ -549,8 +549,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public List<String> transformHistory(boolean includeNested) {
-        return includeNested ? history.getFull() : history.get();
+    public List<String> transformHistory(boolean includeCoordinated) {
+        return history.get(includeCoordinated);
     }
 
     @Override
