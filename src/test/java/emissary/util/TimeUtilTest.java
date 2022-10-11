@@ -15,6 +15,7 @@ import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
 import emissary.test.core.junit5.UnitTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class TimeUtilTest extends UnitTest {
@@ -24,16 +25,26 @@ class TimeUtilTest extends UnitTest {
     private static final LocalDateTime testLocalDate = LocalDateTime.of(2016, Month.DECEMBER, 25, 15, 30, 25);
     private static final Date testUtilDate = Date.from(testLocalDate.toInstant(ZoneOffset.UTC));
     private static final ZonedDateTime testZoneDate = ZonedDateTime.of(testLocalDate, GMT);
+    private static String DATE_TIME_FORMAT;
+    private static String DATE_TIME_ZONED_FORMAT;
+
+    @BeforeEach
+    void setup() {
+        DateTimeFormats.initialize();
+        DATE_TIME_FORMAT = DateTimeFormats.getFormat("DATE_TIME_1");
+        DATE_TIME_ZONED_FORMAT = DateTimeFormats.getFormat("DATE_TIME_ZONED_1");
+    }
 
     @Test
     void testGetDate() {
-        assertEquals("2016 Dec 25 15 25 30", TimeUtil.getDate(testZoneDate, "yyyy MMM dd HH ss mm", GMT), "getDate did not match");
-        assertEquals("2016-12-25T15:30:25 GMT", TimeUtil.getDate(testZoneDate, "yyyy-MM-dd'T'HH:mm:ss z", null), "getDate did not match");
+        assertEquals("2016 Dec 25 15 25 30", TimeUtil.getDate(testZoneDate, DATE_TIME_FORMAT, GMT), "getDate did not match");
+        assertEquals("2016-12-25T15:30:25 GMT", TimeUtil.getDate(testZoneDate, DATE_TIME_ZONED_FORMAT, null), "getDate did not match");
         assertEquals("2016-12-25T14:30:25 GMT",
-                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", GMT),
+
+                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), DATE_TIME_ZONED_FORMAT, GMT),
                 "getDate did not match");
         assertEquals("2016-12-25T15:30:25 CET",
-                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), "yyyy-MM-dd'T'HH:mm:ss z", PARIS),
+                TimeUtil.getDate(ZonedDateTime.of(testLocalDate, ZoneId.of("Europe/Paris")), DATE_TIME_ZONED_FORMAT, PARIS),
                 "getDate did not match");
         assertNull(TimeUtil.getDate(null, null, null));
     }
@@ -51,7 +62,7 @@ class TimeUtilTest extends UnitTest {
 
     @Test
     void testGetDateExceptionBadZone() {
-        assertThrows(ZoneRulesException.class, () -> TimeUtil.getDate("yyyy", "BAD"));
+        assertThrows(ZoneRulesException.class, () -> TimeUtil.getDate(DateTimeFormats.getFormat("DATE_YEAR"), "BAD"));
     }
 
     @Deprecated
@@ -137,11 +148,11 @@ class TimeUtilTest extends UnitTest {
 
     @Test
     void testTimeZoneAddedOnFormat() {
-        String dt = TimeUtil.getDate("yyyy-MM-dd'T'HH:mm:ss z", null);
+        String dt = TimeUtil.getDate(DATE_TIME_ZONED_FORMAT, null);
         assertTrue(dt.contains("GMT"), "GMT must be added by default - " + dt);
 
         // timezone changes due to daylight savings
-        dt = TimeUtil.getDate("yyyy-MM-dd'T'HH:mm:ss z", "Europe/Paris");
+        dt = TimeUtil.getDate(DATE_TIME_ZONED_FORMAT, "Europe/Paris");
         assertTrue(dt.contains("CET") || dt.contains("CEST"), "Specified tz must be added - " + dt);
     }
 

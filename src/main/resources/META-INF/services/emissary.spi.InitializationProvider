@@ -1,2 +1,3 @@
 emissary.spi.JavaCharSetInitializationProvider
 emissary.spi.MetadataDictionaryInitializationProvider
+emissary.spi.DateTimeFormatsInitializationProvider
