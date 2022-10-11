@@ -31,7 +31,7 @@ public class ProjectBaseConverter extends PathExistsConverter {
         // try to use the value from PROJECT_BASE
         if (origValue == null) {
             if (projectBaseEnvString == null) {
-                throw new RuntimeException("You set neither PROJECT_BASE nor passed in a directory with -b, --projectBase.  One is required");
+                throw new IllegalArgumentException("You set neither PROJECT_BASE nor passed in a directory with -b, --projectBase.  One is required");
             } else {
                 value = projectBaseEnvString;
             }
@@ -44,7 +44,7 @@ public class ProjectBaseConverter extends PathExistsConverter {
         if (origValue != null && projectBaseEnv != null && !projectBaseEnvString.equals(pString)) {
             String msg = "You passed in " + projectBaseEnvString + " but PROJECT_BASE was set to " + pString;
             LOG.error(msg);
-            throw new RuntimeException(msg);
+            throw new IllegalArgumentException(msg);
         }
         return p;
     }
