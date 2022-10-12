@@ -940,8 +940,8 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testVisitHistoryCoordinated() {
-        assertNull(this.b.getLastPlaceVisited(), "No last place");
-        assertNull(this.b.getPenultimatePlaceVisited(), "No penultimate place");
+        assertNull(this.b.getLastPlaceVisited(), "Transform history should be empty");
+        assertNull(this.b.getPenultimatePlaceVisited(), "Transform history should be empty");
 
         this.b.appendTransformHistory("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010");
         this.b.appendTransformHistory("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020");
@@ -949,21 +949,21 @@ class BaseDataObjectTest extends UnitTest {
         this.b.appendTransformHistory("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040", true);
 
         final DirectoryEntry sde = this.b.getLastPlaceVisited();
-        assertNotNull(sde, "Last place directory entry");
-        assertEquals("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020", sde.getFullKey(), "Last place key");
+        assertNotNull(sde, "Last place directory entry should exist");
+        assertEquals("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020", sde.getFullKey(), "Last place returned the wrong key");
 
         final DirectoryEntry pen = this.b.getPenultimatePlaceVisited();
-        assertNotNull(pen, "Penultimate place");
-        assertEquals("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010", pen.getFullKey(), "Pen place key");
+        assertNotNull(pen, "Penultimate place directory entry should exist");
+        assertEquals("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010", pen.getFullKey(), "Penultimate place returned the wrong key");
 
-        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited");
-        assertTrue(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited");
-        assertFalse(this.b.hasVisited("*.BAZ.*.*"), "Not visited");
-        assertFalse(this.b.hasVisited("*.BAM.*.*"), "Not visited");
+        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited should havev matched for pattern");
+        assertTrue(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited should have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAZ.*.*"), "Has visited should not have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAM.*.*"), "Has visited should not have matched for pattern");
 
         this.b.clearTransformHistory();
-        assertFalse(this.b.hasVisited("*.FOO.*.*"), "Has visited");
-        assertFalse(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has no visited after clear");
+        assertFalse(this.b.hasVisited("*.FOO.*.*"), "Has visited should not have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited should not have matched for pattern");
     }
 
     @Test

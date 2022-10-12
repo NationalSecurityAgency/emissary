@@ -652,6 +652,7 @@ public interface IBaseDataObject {
      * Replace history with the new history
      * 
      * @param list of new history strings to use
+     * @deprecated See {@link #setHistory(TransformHistory)}
      */
     @Deprecated
     void setHistory(List<String> list);

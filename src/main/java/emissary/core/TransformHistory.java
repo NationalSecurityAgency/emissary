@@ -63,7 +63,7 @@ public class TransformHistory {
      *
      * @see emissary.core.MobileAgent#agentControl
      * @param key the new value to append
-     * @param coordinated true if history entries are for informational purposes only
+     * @param coordinated true if history entry is for informational purposes only
      */
     public void append(String key, boolean coordinated) {
         history.add(new History(key, coordinated));
@@ -86,7 +86,7 @@ public class TransformHistory {
     }
 
     /**
-     * Return the transform history, including coordinated places
+     * Return the transform history, optionally including coordinated places
      *
      * @return List of places visited
      */

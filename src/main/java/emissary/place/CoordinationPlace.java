@@ -184,6 +184,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             if (updateTransformHistory) {
                 DirectoryEntry de = p.getDirectoryEntry();
                 de.setDataType(d.currentForm());
+                // append to the transform history, with flag indicating that the visit was coordinated
                 d.appendTransformHistory(de.getKey(), true);
             }
 

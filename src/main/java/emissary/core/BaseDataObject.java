@@ -568,11 +568,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         this.history.append(key, coordinated);
     }
 
-    /**
-     * Replace history with the new history. Is this historic revisionism? Maybe, but it is needed to support sprouting
-     *
-     * @param newHistory list of new history strings to use
-     */
     @Override
     @Deprecated
     public void setHistory(final List<String> newHistory) {
