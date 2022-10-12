@@ -956,7 +956,7 @@ class BaseDataObjectTest extends UnitTest {
         assertNotNull(pen, "Penultimate place directory entry should exist");
         assertEquals("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010", pen.getFullKey(), "Penultimate place returned the wrong key");
 
-        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited should havev matched for pattern");
+        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited should have matched for pattern");
         assertTrue(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited should have matched for pattern");
         assertFalse(this.b.hasVisited("*.BAZ.*.*"), "Has visited should not have matched for pattern");
         assertFalse(this.b.hasVisited("*.BAM.*.*"), "Has visited should not have matched for pattern");
