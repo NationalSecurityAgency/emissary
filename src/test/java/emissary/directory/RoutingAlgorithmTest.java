@@ -174,13 +174,13 @@ class RoutingAlgorithmTest extends UnitTest {
         this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s3.ID.http://example.com:8001/A$3030"));
         this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s4.ANALYZE.http://example.com:8001/A$4040"));
 
-        // if appended a coordinated=true to the transform history, we should still be in the ID phase
+        // after appending a key w/ coordinated=true to the transform history, we should be in the ID phase
         this.payload.pushCurrentForm("UNKNOWN");
         this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
         this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", true);
         assertEquals("ID", this.agent.getNextKeyAccess(this.dir, this.payload).getServiceType(), "Should go to ID place after coordinate");
 
-        // if appended coordinated=false to the transform history, we should still be in the ANALYZE phase
+        // after appending a key w/ coordinated=false to the transform history, we should be in the ANALYZE phase
         this.payload.clearTransformHistory();
         this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
         this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", false);
