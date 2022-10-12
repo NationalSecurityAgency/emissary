@@ -171,10 +171,17 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected void checkAnswers(Element el, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) throws DataConversionException {
-
-        int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
-        if (numAtt > -1) {
-            assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
+        // see if <skipAttExtCountCheck> exists in answer file and if the text != true.
+        String skipAttExtCountCheck = el.getChildTextTrim("skipAttExtCountCheck");
+        if (skipAttExtCountCheck == null || !skipAttExtCountCheck.equalsIgnoreCase("true")) {
+            // see if payload has extracted records or see if attachments is not null
+            if (attachments != null || payload.hasExtractedRecords()) {
+                // implement check on IBaseDataObject payload and attachments to compare expected v found counts
+                checkAttachmentAndExtractedRecordCount(el, payload, attachments, tname);
+            } else {
+                // implement base check of resource answer file
+                checkAttachmentAndExtractedRecordCount(el, tname);
+            }
         }
 
         for (Element currentForm : el.getChildren("currentForm")) {
@@ -187,7 +194,7 @@ public abstract class ExtractionTest extends UnitTest {
                                     payload.getAllCurrentForms()));
                 } else {
                     assertTrue(payload.searchCurrentForm(cf) > -1,
-                            String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
+                            "Current form " + cf + " not found in " + tname + ", " + payload.getAllCurrentForms());
                 }
             }
         }
@@ -248,6 +255,8 @@ public abstract class ExtractionTest extends UnitTest {
             assertFalse(payload.hasParameter(key),
                     String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
                             payload.getStringParameter(key)));
+            assertFalse(payload.hasParameter(key), String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
+                    payload.getStringParameter(key)));
         }
 
         // Check the primary view. Even though there is only one
@@ -277,9 +286,17 @@ public abstract class ExtractionTest extends UnitTest {
             byte[] viewData = payload.getAlternateView(viewName);
             assertNull(viewData, String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname));
         }
+    }
 
+    public void checkAttachmentAndExtractedRecordCount(Element el, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname)
+            throws DataConversionException {
+        // check List<IBaseDataObject> attachments
+        int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
+        if (numAtt > -1) {
+            assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
+        }
 
-        // Check each extract
+        // Check each extract based on payload
         String extractCountStr = el.getChildTextTrim("extractCount");
 
         if (payload.hasExtractedRecords()) {
@@ -288,7 +305,8 @@ public abstract class ExtractionTest extends UnitTest {
 
             if (extractCountStr != null) {
                 assertEquals(Integer.parseInt(extractCountStr), foundCount,
-                        String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount, extractCountStr));
+                        String.format("Number of extracted children in '%s' is %s, not expected %s", tname, foundCount,
+                                extractCountStr));
             }
 
             int attNum = 1;
@@ -301,9 +319,97 @@ public abstract class ExtractionTest extends UnitTest {
             }
         } else {
             if (extractCountStr != null) {
-                assertEquals(0, Integer.parseInt(extractCountStr),
+                assertEquals(Integer.parseInt(extractCountStr), 0,
                         String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr));
             }
+        }
+
+        // check resource file
+        checkAttachmentAndExtractedRecordCount(el, tname);
+    }
+
+    public void checkAttachmentAndExtractedRecordCount(Element parent, String tname) {
+        // initialize attachment/extracted record counts to 0
+        int attExpectedCount = 0;
+        int attFoundCount = 0;
+        int extExpectedCount = 0;
+        int extFoundCount = 0;
+
+        // initialize att and ext expected to false, if found, then will be true
+        boolean attExpected = false;
+        boolean extExpected = false;
+
+        // used to see if number is present between <numAttachments> and <extractCount>
+        // assumed true until child is found with defining number not present, then false
+        boolean missingNumAttachments = true;
+        boolean missingExtCount = true;
+
+        // go through children list to find 4 possibilities:
+        // expected counts of <numAttachments> & <extractCount>
+        // found counts of <att> and <extract>
+        List<Element> children = parent.getChildren();
+        for (Element child : children) {
+            String currentChild = child.toString();
+
+            if (currentChild.contains("numAttachments")) {
+                String attCountStr = parent.getChildTextTrim("numAttachments");
+                // sees if number is present between <numAttachments> tag
+                if (!attCountStr.equals("")) {
+                    attExpectedCount = Integer.parseInt(attCountStr);
+                    attExpected = true;
+                } else {
+                    missingNumAttachments = false;
+                }
+            }
+            if (currentChild.contains("att")) {
+                attFoundCount += 1;
+            }
+
+            if (currentChild.contains("extractCount")) {
+                String extractCountStr = parent.getChildTextTrim("extractCount");
+                if (!extractCountStr.equals("")) {
+                    extExpectedCount = Integer.parseInt(extractCountStr);
+                    extExpected = true;
+                } else {
+                    missingExtCount = false;
+                }
+            }
+            if (currentChild.contains("extract") && !currentChild.contains("extractCount")) {
+                extFoundCount += 1;
+            }
+        }
+
+        // first check if <numAttachments> and <extractCount> have int between tags
+        // check if <numAttachments> and <extractCount> are missing from file and <att> and <extract> still exist
+        // make sure expected = found count
+        // formats fail string output
+        if (attExpectedCount != attFoundCount || extExpectedCount != extFoundCount || !missingNumAttachments || !missingExtCount) {
+            String failResult = "Errors in " + tname + ": ";
+            if (!missingNumAttachments) {
+                failResult += "<numAttachments> missing int between tags. ";
+            } else {
+                if (!attExpected && (attFoundCount > 0)) {
+                    failResult += "<numAttachments> missing from answer file, but attachments found: <" + attFoundCount + ">. ";
+                } else {
+                    if (attExpectedCount != attFoundCount) {
+                        failResult +=
+                                "<numAttachments> expected:<" + attExpectedCount + "> but found: <" + attFoundCount + "> in answer file. ";
+                    }
+                }
+            }
+            if (!missingExtCount) {
+                failResult += "<extractCount> missing int between tags. ";
+            } else {
+                if (!extExpected && (extFoundCount > 0)) {
+                    failResult += "<extractCount> missing from answer file, but extracts found: <" + extFoundCount + ">. ";
+                } else {
+                    if (extExpectedCount != extFoundCount) {
+                        failResult += "<extractCount> expected:<" + extExpectedCount + "> but found: <"
+                                + extFoundCount + "> in answer file. ";
+                    }
+                }
+            }
+            fail(failResult);
         }
     }
 

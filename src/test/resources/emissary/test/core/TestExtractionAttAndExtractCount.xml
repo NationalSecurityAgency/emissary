@@ -3,6 +3,7 @@
   
     <numAttachments>1</numAttachments>
     <extractCount>1</extractCount>
+    <skipAttExtCountCheck>FALSE</skipAttExtCountCheck>
     
     <att1>
       <currentFormSize>1</currentFormSize>
