@@ -7,6 +7,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
+import emissary.util.GitRepositoryState;
 
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
@@ -33,9 +34,13 @@ public class Version {
 
     private static final emissary.util.Version version = new emissary.util.Version();
 
+    /**
+     * @deprecated in favor of the versionSimple endpoint
+     */
     @GET
     @Path("/version")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public Response localVersion() {
         return Response.ok().entity(lookupVersion()).build();
     }
@@ -43,6 +48,7 @@ public class Version {
     @GET
     @Path("/cluster/version")
     @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
     public Response clusterVersion() {
         try {
             // Get our local information first
@@ -81,4 +87,44 @@ public class Version {
         return entity;
     }
 
+    @GET
+    @Path("/versionSimple")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response versionSimple() {
+        try {
+            return Response.ok().entity(versionResponse(false)).build();
+        } catch (Exception e) {
+            logger.error("Problem returning version details", e);
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
+    @GET
+    @Path("/versionDetails")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response versionDetails() {
+        try {
+            return Response.ok().entity(versionResponse(true)).build();
+        } catch (Exception e) {
+            logger.error("Problem returning version details", e);
+            return Response.serverError().entity(e.getMessage()).build();
+        }
+    }
+
+    protected MapResponseEntity versionResponse(Boolean detail) {
+        MapResponseEntity entity = new MapResponseEntity();
+        entity.addKeyValue("Emissary", buildVersionResponse(GitRepositoryState.getRepositoryState("emissary.git.properties"), detail).toString());
+        return entity;
+    }
+
+    protected static MapResponseEntity buildVersionResponse(GitRepositoryState gitRepoState, Boolean detail) {
+        MapResponseEntity entity = new MapResponseEntity();
+        entity.addKeyValue("Version", gitRepoState.getBuildVersion());
+        if (detail) {
+            entity.addKeyValue("Build Date", gitRepoState.getBuildTime());
+            entity.addKeyValue("Build Host", gitRepoState.getBuildHost());
+            entity.addKeyValue("Git Abbrev Hash", gitRepoState.getCommitIdAbbrev());
+        }
+        return entity;
+    }
 }

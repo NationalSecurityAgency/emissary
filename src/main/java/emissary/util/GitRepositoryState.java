@@ -35,7 +35,7 @@ public class GitRepositoryState {
     private final String buildHost;
     private final String buildVersion;
 
-    private GitRepositoryState(Properties properties) {
+    public GitRepositoryState(Properties properties) {
 
         this.tags = properties.get("git.tags").toString();
         this.branch = properties.get("git.branch").toString();

@@ -14,6 +14,7 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
+import emissary.util.GitRepositoryState;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Metric;
@@ -176,6 +177,23 @@ class EmissaryApiTest extends EndpointTestBase {
             assertFalse(entity.getResponse().isEmpty());
             assertEquals(new emissary.util.Version().getVersion(), entity.getResponse().get("localhost:8001"));
         }
+    }
+
+    @Test
+    void buildVersionResponseSimple() {
+        GitRepositoryState gitRepositoryState = GitRepositoryState.getRepositoryState("emissary.git.properties");
+        MapResponseEntity entity = Version.buildVersionResponse(gitRepositoryState, false);
+        assertEquals("100.100.100", entity.getResponse().get("Version"));
+    }
+
+    @Test
+    void buildVersionResponseDetail() {
+        GitRepositoryState gitRepositoryState = GitRepositoryState.getRepositoryState("emissary.git.properties");
+        MapResponseEntity entity = Version.buildVersionResponse(gitRepositoryState, true);
+        assertEquals("100.100.100", entity.getResponse().get("Version"));
+        assertEquals("2022-11-20T21:25:57+0000", entity.getResponse().get("Build Date"));
+        assertEquals("ip-10-113-15-113.dev.org", entity.getResponse().get("Build Host"));
+        assertEquals("a3b0b19", entity.getResponse().get("Git Abbrev Hash"));
     }
 
     @Test
