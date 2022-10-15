@@ -1,0 +1,4 @@
+FROM docker.elastic.co/beats/metricbeat:8.3.2
+COPY metricbeat.yml /usr/share/metricbeat/metricbeat.yml
+USER root
+RUN chown root /usr/share/metricbeat/metricbeat.yml

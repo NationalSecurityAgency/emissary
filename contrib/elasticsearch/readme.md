@@ -55,3 +55,20 @@ Start up Emissary and then ingest agents logs to Elasticsearch:
 ```shell
 curl -u emissary --anyauth http://localhost:8001/api/agents/log >> target/out/agents.json
 ```
+
+
+
+# ELK Stack Docker compose (non secure)
+This is very unsecure and should only be used for local development and testing
+
+## Start ELK services:
+from project root
+```shell
+docker-compose -f contrib/elasticsearch/docker-compose.yml up
+```
+Kibana will start at http://localhost:5601/
+If this is your first time running then you will need to create index patterns for 'metricbeat' and 'emmisary-test'
+
+By default object metric logs are not output to a file. You need to modify the logback.xml in 'target/config/logback.xml' to use the RollingFileAppender and not the ConsoleAppender
+
+Still in progress is getting agents reporting to be sent to elastic via metricbeat. Still working through some docker network configurations

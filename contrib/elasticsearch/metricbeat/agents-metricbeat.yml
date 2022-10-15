@@ -1,0 +1,13 @@
+- module: http
+  metricsets:
+    - json
+  period: 10s
+  hosts: ["localhost:8001"]
+  namespace: "emissary_agents"
+  path: "/api/agents/log"
+  username: "emissary"
+  password: "emissary123"
+  json.is_array: true
+  request.enabled: true
+  response.enabled: true
+

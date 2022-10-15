@@ -1,0 +1,27 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    enabled: false
+    reload.enabled: false
+
+filebeat.inputs:
+  - type: log
+    paths:
+      - /app/logs/*object-metrics.log
+    close_inactive: 1h
+    ignore_older: 12h
+    clean_inactive: 24h
+    fields:
+      logFile: objectMetrics
+    json.keys_under_root: true
+    json.overwrite_keys: true
+
+setup.template:
+  name: "emissary-test"
+  pattern: "emissary-test-*"
+
+output.elasticsearch:
+  index: 'emissary-test-%{[agent.version]}-%{+yyyy.MM.dd}'
+  hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
+  username: '${ELASTICSEARCH_USERNAME:}'
+  password: '${ELASTICSEARCH_PASSWORD:}'
