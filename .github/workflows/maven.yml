@@ -45,5 +45,7 @@ jobs:
 
     - name: Run step only when files change
       if: steps.verify-changed-files.outputs.files_changed == 'true'
-      run: |
-        echo "Changed files: ${{ steps.verify-changed-files.outputs.changed_files }}"
+      uses: actions/github-script@v3
+      with:
+        script: |
+          core.setFailed('Changed files found: ${{ steps.verify-changed-files.outputs.changed_files }}')
