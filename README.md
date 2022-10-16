@@ -1,7 +1,7 @@
 ![Emissary Dark Knight - some code just wants to watch the core burn](emissary-knight.png) 
 
-| __Build Status__ | [![build](https://github.com/NationalSecurityAgency/emissary/workflows/build/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml) |
-| __JaCoCo Test Coverage__ | [![coverage](https://raw.githubusercontent.com/NationalSecurityAgency/emissary/blob/master/contrib/badges/jacoco.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/coverage-badges.yml) [![branches coverage](https://raw.githubusercontent.com/NationalSecurityAgency/emissary/blob/master/contrib/badges/branches.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/coverage-badges.yml)  |
+|__Build Status__|[![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml)|
+|__JaCoCo Test Coverage__|[![coverage](https://raw.githubusercontent.com/NationalSecurityAgency/emissary/blob/master/contrib/badges/jacoco.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/coverage-badges.yml) [![branches coverage](https://raw.githubusercontent.com/NationalSecurityAgency/emissary/blob/master/contrib/badges/branches.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/coverage-badges.yml)|
 
 Table of Contents
 =================
