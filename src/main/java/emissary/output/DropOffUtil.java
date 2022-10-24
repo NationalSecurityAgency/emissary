@@ -386,7 +386,7 @@ public class DropOffUtil {
                             break;
                         case 'F':
                             if (d != null) {
-                                sb.append(nvl(d.getFileType(), "NONE"));
+                                sb.append(scrub(nvl(d.getFileType(), "NONE").toString()));
                             }
                             break;
                         case 'L':
@@ -396,9 +396,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(tld.getStringParameter("DTG")));
+                                sb.append(scrub(datePath(tld.getStringParameter("DTG"))));
                             } else if (d != null) {
-                                sb.append(datePath(d.getStringParameter("DTG")));
+                                sb.append(scrub(datePath(d.getStringParameter("DTG"))));
                             }
                             break;
                         case 'R':
@@ -406,13 +406,13 @@ public class DropOffUtil {
                             break;
                         case 'B':
                             if (tld != null) {
-                                sb.append(getBestIdFrom(tld));
+                                sb.append(getScrubbedBestId(tld));
                             } else if (d != null) {
-                                sb.append(getBestIdFrom(d));
+                                sb.append(getScrubbedBestId(d));
                             }
                             break;
                         case 'b':
-                            sb.append((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d));
+                            sb.append((tld != null) ? getScrubbedBestId(tld) : getScrubbedBestId(d));
                             final String sn = d.shortName();
                             final int pos = sn.indexOf(emissary.core.Family.SEP);
                             if (pos > 0) {
@@ -446,7 +446,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 7);
                 if (endpos > i + 7) {
                     final String token = spec.substring(i + 7, endpos);
-                    final String value = d.getStringParameter(token);
+                    final String value = scrub(d.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 8 + token.length(); // META{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -457,7 +457,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 6);
                 if (endpos > i + 6) {
                     final String token = spec.substring(i + 6, endpos);
-                    final String value = tld.getStringParameter(token);
+                    final String value = scrub(tld.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 7 + token.length(); // TLD{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -508,6 +508,14 @@ public class DropOffUtil {
         }
         // if nothing else worked, use an auto gen id
         return getRandomUUID(d);
+    }
+
+    public String getScrubbedBestId(final IBaseDataObject d) {
+        return scrub(getBestIdFrom(d));
+    }
+
+    protected String scrub(String s) {
+        return s != null ? s.replaceAll("[./\\\\]", "") : null;
     }
 
     /**
