@@ -2,6 +2,7 @@ package emissary.output;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -471,18 +472,26 @@ public class DropOffUtil {
 
         }
 
-        String answer = sb.toString();
+        return cleanSpecPath(sb.toString());
+    }
 
+    protected String cleanSpecPath(String answer) {
         // Set the proper path separator
         if (osIsWindows) {
             answer = answer.replace('/', '\\');
         } else {
             answer = answer.replace('\\', '/');
         }
+
+        if (answer.contains("..")) {
+            logger.error("DropOff path contains illegal character sequence \"..\"");
+            answer = answer.replaceAll("[.]+", ".");
+            answer = Paths.get(answer).normalize().toString();
+        }
+
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
         return answer;
-
     }
 
     /**
