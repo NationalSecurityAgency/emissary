@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class StageTest extends UnitTest {
-    Stage stages;
+    Stage stages = new Stage();
 
     @Override
     @BeforeEach
@@ -30,33 +30,33 @@ class StageTest extends UnitTest {
 
     @Test
     void testIsParallelStage() {
-        assertTrue(stages.isParallelStage("ANALYZE"), "Analyze must be a parallel stage");
+        assertTrue(stages.getStage("ANALYZE").isParallelStage(), "Analyze must be a parallel stage");
     }
 
     @Test
     void testIsParallelIllegalStage() {
-        assertFalse(stages.isParallelStage("FOO"), "Illegal stage is not parallel");
+        assertFalse(stages.getStage("FOO").isParallelStage(), "Illegal stage is not parallel");
     }
 
     @Test
     void testIsParallelStageByInt() {
-        int i = stages.getStageIndex("ANALYZE");
-        assertTrue(stages.isParallelStage(i), "Analyze must be parallel by int");
+        int i = stages.getStage("ANALYZE").getIndex();
+        assertTrue(stages.getStage(i).isParallelStage(), "Analyze must be parallel by int");
     }
 
     @Test
     void testIsParallelIllegalByInt() {
-        assertFalse(stages.isParallelStage(55), "Illegal stage by int is not parallel");
+        assertFalse(stages.getStage(55).isParallelStage(), "Illegal stage by int is not parallel");
     }
 
     @Test
     void testNameMapping() {
-        assertEquals("ANALYZE", stages.getStageName(stages.getStageIndex("ANALYZE")), "Name to int to name mapping");
+        assertEquals("ANALYZE", stages.getStage(stages.getStage("ANALYZE").getIndex()).getStageName(), "Name to int to name mapping");
     }
 
     @Test
     void testIllegalNameMapping() {
-        assertEquals("UNDEFINED", stages.getStageName(-1), "Illegal name mapping");
+        assertEquals("UNDEFINED", stages.getStage(-1).getStageName(), "Illegal name mapping");
     }
 
     @Test

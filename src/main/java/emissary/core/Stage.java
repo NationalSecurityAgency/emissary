@@ -1,136 +1,240 @@
 package emissary.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * Information class about processing stages in the workflow
  */
 public class Stage {
-    // List of stages to use. Use non-default constructors or extend class to change
-    protected static List<String> stages;
+    private StageEnum stageEnum;
 
-    // Each stage must be marked parallel or not
-    protected static List<Boolean> parallel;
-
-    public Stage() {}
-
-    static {
-        stages = new ArrayList<String>();
-        parallel = new ArrayList<Boolean>();
-        stages.add("STUDY"); // prepare, coordinate idents
-        parallel.add(Boolean.FALSE);
-
-        stages.add("ID"); // identification phase
-        parallel.add(Boolean.FALSE);
-
-        stages.add("COORDINATE"); // Coordinate processing
-        parallel.add(Boolean.FALSE);
-
-        stages.add("PRETRANSFORM"); // before transform hook
-        parallel.add(Boolean.TRUE);
-
-        stages.add("TRANSFORM"); // transformation phase
-        parallel.add(Boolean.FALSE);
-
-        stages.add("POSTTRANSFORM"); // after transform hook
-        parallel.add(Boolean.TRUE);
-
-        stages.add("ANALYZE"); // analysis/metadata generation
-        parallel.add(Boolean.TRUE);
-
-        stages.add("VERIFY"); // verify for output
-        parallel.add(Boolean.FALSE);
-
-        stages.add("IO"); // output
-        parallel.add(Boolean.FALSE);
-
-        stages.add("REVIEW"); // finish off
-        parallel.add(Boolean.FALSE);
-    }
-
-
-    /**
-     * Indicate if a stage supports parallel processing or not
-     * 
-     * @param i the index of the stage
-     */
-    public boolean isParallelStage(final int i) {
-        if (i >= 0 && i < parallel.size()) {
-            return parallel.get(i).booleanValue();
-        }
-        return false;
-    }
-
-    /**
-     * Indicate if named stages supports parallel processing or not
-     * 
-     * @param stage the name of the stage
-     */
-    public boolean isParallelStage(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                return parallel.get(i).booleanValue();
+    public enum StageEnum {
+        UNDEFINED(-2) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
             }
-        }
-        return false;
-    }
 
-
-    /**
-     * Return stage name at index
-     */
-    public String getStageName(final int i) {
-        if (i >= 0 && i < stages.size()) {
-            return stages.get(i);
-        } else {
-            return "UNDEFINED";
-        }
-    }
-
-    /**
-     * Return stage index for name
-     * 
-     * @param stage the name of the stage
-     * @return the index of the stage or -1 if no such stage
-     */
-    public int getStageIndex(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                return i;
+            @Override
+            public String getStageName() {
+                return "UNDEFINED";
             }
+        },
+        STUDY(0) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "STUDY";
+            }
+        },
+        ID(1) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "ID";
+            }
+        },
+        COORDINATE(2) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "COORDINATE";
+            }
+        },
+        PRETRANSFORM(3) {
+            @Override
+            public boolean isParallelStage() {
+                return true;
+            }
+
+            @Override
+            public String getStageName() {
+                return "PRETRANSFORM";
+            }
+        },
+        TRANSFORM(4) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "TRANSFORM";
+            }
+        },
+        POSTTRANSFORM(5) {
+            @Override
+            public boolean isParallelStage() {
+                return true;
+            }
+
+            @Override
+            public String getStageName() {
+                return "POSTTRANSFORM";
+            }
+        },
+        ANALYZE(6) {
+            @Override
+            public boolean isParallelStage() {
+                return true;
+            }
+
+            @Override
+            public String getStageName() {
+                return "ANALYZE";
+            }
+        },
+        VERIFY(7) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "VERIFY";
+            }
+        },
+        IO(8) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "IO";
+            }
+        },
+        REVIEW(9) {
+            @Override
+            public boolean isParallelStage() {
+                return false;
+            }
+
+            @Override
+            public String getStageName() {
+                return "REVIEW";
+            }
+        };
+
+        private final int index;
+
+        public boolean isParallelStage() {
+            return false;
         }
-        return -1;
+
+        public abstract String getStageName();
+
+        public int getIndex() {
+            return index;
+        }
+
+        StageEnum(int index) {
+            this.index = index;
+        }
     }
 
+    public StageEnum getStageEnum() {
+        return stageEnum;
+    }
 
-    /**
-     * Return a list of stages
-     */
+    public void setStageEnum(StageEnum stageEnum) {
+        this.stageEnum = stageEnum;
+    }
+
+    public boolean isParallelStage() {
+        return this.stageEnum.isParallelStage();
+    }
+
+    public String getStageName() {
+        return this.stageEnum.getStageName();
+    }
+
+    public StageEnum getStage(int index) {
+        switch (index) {
+            case 0:
+                return StageEnum.STUDY;
+            case 1:
+                return StageEnum.ID;
+            case 2:
+                return StageEnum.COORDINATE;
+            case 3:
+                return StageEnum.PRETRANSFORM;
+            case 4:
+                return StageEnum.TRANSFORM;
+            case 5:
+                return StageEnum.POSTTRANSFORM;
+            case 6:
+                return StageEnum.ANALYZE;
+            case 7:
+                return StageEnum.VERIFY;
+            case 8:
+                return StageEnum.IO;
+            case 9:
+                return StageEnum.REVIEW;
+            default:
+                return StageEnum.UNDEFINED;
+        }
+    }
+
+    public StageEnum getStage(String name) {
+        switch (name) {
+            case "STUDY":
+                return StageEnum.STUDY;
+            case "ID":
+                return StageEnum.ID;
+            case "COORDINATE":
+                return StageEnum.COORDINATE;
+            case "PRETRANSFORM":
+                return StageEnum.PRETRANSFORM;
+            case "TRANSFORM":
+                return StageEnum.TRANSFORM;
+            case "POSTTRANSFORM":
+                return StageEnum.POSTTRANSFORM;
+            case "ANALYZE":
+                return StageEnum.ANALYZE;
+            case "VERIFY":
+                return StageEnum.VERIFY;
+            case "IO":
+                return StageEnum.IO;
+            case "REVIEW":
+                return StageEnum.REVIEW;
+            default:
+                return StageEnum.UNDEFINED;
+        }
+    }
+
     public List<String> getStages() {
-        return new ArrayList<String>(stages);
+        List<String> stages = new ArrayList<>();
+        Arrays.stream(StageEnum.values())
+                .filter(stageType -> stageType != StageEnum.UNDEFINED)
+                .map(StageEnum::getStageName)
+                .forEach(stages::add);
+        return stages;
     }
 
-    /**
-     * Return the stage following the named stage or null if the end of the list
-     * 
-     * @param stage the one to find following for
-     */
-    public String nextStageAfter(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                if (i < stages.size() - 1) {
-                    return stages.get(i + 1);
-                }
-            }
-        }
-        return null;
+    public int getSize() {
+        return StageEnum.values().length;
     }
 
-    /**
-     * Get size of stage list
-     */
-    public int size() {
-        return stages.size();
+    public String nextStageAfter(String stage) {
+        String nextStage = this.getStage(this.getStage(stage).getIndex() + 1).getStageName();
+        return nextStage.equals("UNDEFINED") ? null : nextStage;
     }
 }

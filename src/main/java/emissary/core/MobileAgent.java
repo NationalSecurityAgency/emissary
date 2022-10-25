@@ -479,7 +479,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         logger.debug(">>> Current forms for {} are {}", payloadArg.shortName(), dataForms);
 
         /* Get the last service type from the last key */
-        String lastServiceType = STAGES.getStageName(0);
+        String lastServiceType = STAGES.getStage(0).getStageName();
         if (lastEntry != null) {
             // lastServiceType = KeyManipulator.serviceType(lastEntry.key());
             lastServiceType = lastEntry.getServiceType();
@@ -496,17 +496,17 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         if (lastEntry != null && startType != 0) {
             // String key = lastEntry.key();
             // if (key.indexOf(".TRANSFORM.") > -1) {
-            if ("TRANSFORM".equals(lastEntry.getServiceType())) {
+            if (STAGES.getStage("TRANSFORM").getStageName().equals(lastEntry.getServiceType())) {
                 startType = 0;
             }
         }
 
         DirectoryEntry curEntry = null;
-        for (int curType = startType; curType < STAGES.size(); curType++) {
+        for (int curType = startType; curType < STAGES.getSize(); curType++) {
             // Search the form stack starting with the top.
             for (int curForm = 0; curForm < dataForms.size(); curForm++) {
                 final String cform = dataForms.get(curForm);
-                final String tform = STAGES.getStageName(curType);
+                final String tform = STAGES.getStage(curType).getStageName();
 
                 // Test a full key form to see if it is the correct
                 // stage to be chosen
@@ -530,8 +530,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                         logger.debug(
                                 "curEntry isParallel with curType={}, curEntry={}, visitedPlace={}, serviceName={}, lastServiceType={}, curTypeName={}",
                                 curType, curEntry.getFullKey(), this.visitedPlaces, curEntry.getServiceName(), lastServiceType,
-                                STAGES.getStageName(curType));
-                        if (this.visitedPlaces.isEmpty() || STAGES.getStageName(curType).equals(lastServiceType)) {
+                                STAGES.getStage(curType).getStageName());
+                        if (this.visitedPlaces.isEmpty() || STAGES.getStage(curType).getStageName().equals(lastServiceType)) {
                             if (checkParallelTrackingFor(curEntry.getServiceName())) {
                                 lastEntry = new DirectoryEntry(curEntry);
                                 lastEntry.setDataType(cform);
@@ -552,7 +552,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 }
 
                 if (curEntry != null) {
-                    logger.debug("===== --- *** Doing {}.{}--{}", STAGES.getStageName(curType), formID, curEntry.getServiceName());
+                    logger.debug("===== --- *** Doing {}.{}--{}", STAGES.getStage(curType).getStageName(), formID, curEntry.getServiceName());
                     payloadArg.pullFormToTop(cform);
                     return curEntry;
                 }
@@ -565,14 +565,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Evaluate parallel attribute of specified type index
      */
     protected boolean isParallelServiceType(final int typeSetPosition) {
-        return STAGES.isParallelStage(typeSetPosition);
+        return STAGES.getStage(typeSetPosition).isParallelStage();
     }
 
     /**
      * Get index in typeSet for specified string, 0 if not found
      */
     public static int typeLookup(final String s) {
-        int idx = STAGES.getStageIndex(s);
+        int idx = STAGES.getStage(s).getIndex();
         if (idx < 0) {
             idx = 0; // failsafe
         }
