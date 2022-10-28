@@ -18,7 +18,7 @@ public class HtmlEntityMap {
 
     private static final Logger logger = LoggerFactory.getLogger(HtmlEntityMap.class);
 
-    protected Map<String, String> entityMap = new TreeMap<String, String>();
+    protected Map<String, String> entityMap = new TreeMap<>();
 
     public HtmlEntityMap() {
         configure();

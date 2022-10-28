@@ -45,10 +45,7 @@ public class Entropy {
 
         entropy = entropy / Math.log(2);
 
-        if (entropy < 6.0) {
-            return true;
-        }
-        return false;
+        return entropy < 6.0;
     }
 
     /** This class is not meant to be instantiated. */

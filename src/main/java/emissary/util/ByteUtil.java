@@ -136,11 +136,7 @@ public class ByteUtil {
         // Check if the current pos is the second byte in a UTF-8 C1
         // control character (U+0080..U+009f).
         final int prev = (pos > 0) ? (((int) b[pos - 1]) & 0xff) : -1;
-        if ((prev == 0xc2) && (curr >= 0x80) && (curr <= 0x9f)) {
-            return true;
-        }
-
-        return false;
+        return (prev == 0xc2) && (curr >= 0x80) && (curr <= 0x9f);
     }
 
     /**

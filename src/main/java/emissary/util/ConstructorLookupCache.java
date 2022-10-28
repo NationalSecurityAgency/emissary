@@ -95,10 +95,10 @@ public final class ConstructorLookupCache {
      * A cached constructor lookup result. If a thread is asked to invoke the same constructor repeatedly, we can cache the
      * result of the lookup to avoid some costly reflection calls.
      */
-    private static final ThreadLocal<SoftReference<KnownConstructor>> cachedConstructorLookup = new ThreadLocal<SoftReference<KnownConstructor>>();
+    private static final ThreadLocal<SoftReference<KnownConstructor>> cachedConstructorLookup = new ThreadLocal<>();
 
     /** A table mapping boxed classes to their primitive types. */
-    private static final Map<Class<?>, Class<?>> PrimClass = new HashMap<Class<?>, Class<?>>();
+    private static final Map<Class<?>, Class<?>> PrimClass = new HashMap<>();
 
     // Initialize the mappings.
     static {
@@ -224,7 +224,7 @@ public final class ConstructorLookupCache {
      * @param constructor A constructor for {@code clazz} that can accept the argument types specified in {@code argTypes}.
      */
     public static void put(final Class<?> clazz, final Class<?>[] argTypes, final Constructor<?> constructor) {
-        cachedConstructorLookup.set(new SoftReference<KnownConstructor>(new KnownConstructor(clazz, argTypes, constructor)));
+        cachedConstructorLookup.set(new SoftReference<>(new KnownConstructor(clazz, argTypes, constructor)));
     }
 
     /**

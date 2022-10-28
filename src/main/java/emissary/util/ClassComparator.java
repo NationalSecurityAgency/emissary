@@ -26,13 +26,13 @@ public class ClassComparator {
         String currentTwo = two;
         try {
             while (currentTwo != null) {
-                logger.debug("Check " + one + " and " + currentTwo);
+                logger.debug("Check {} and {}", one, currentTwo);
                 if (one.equals(currentTwo)) {
                     return true;
                 }
                 final Class<?> c = Class.forName(currentTwo).getSuperclass();
                 if (c == null) {
-                    logger.debug("Out with a null superclass from two " + currentTwo);
+                    logger.debug("Out with a null superclass from two {}", currentTwo);
                     break;
                 }
                 currentTwo = c.getName();

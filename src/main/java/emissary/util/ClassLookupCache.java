@@ -65,7 +65,7 @@ public final class ClassLookupCache {
          * @return A binding between the given name and class object.
          */
         public static <T> NamedClass<T> getInstance(final String className, final Class<T> clazz) {
-            return new NamedClass<T>(className, clazz);
+            return new NamedClass<>(className, clazz);
         }
     }
 
@@ -74,7 +74,7 @@ public final class ClassLookupCache {
      * name lookup so that subsequent constructions can get to the {@link Class} object without doing a full lookup in the
      * JVM.
      */
-    private static final ThreadLocal<SoftReference<NamedClass<?>>> cachedLookupResult = new ThreadLocal<SoftReference<NamedClass<?>>>();
+    private static final ThreadLocal<SoftReference<NamedClass<?>>> cachedLookupResult = new ThreadLocal<>();
 
     /**
      * Look up a class in the cache.
@@ -109,7 +109,7 @@ public final class ClassLookupCache {
      * @param clazz The class. Assumed to match {@code className}.
      */
     public static void put(final String className, final Class<?> clazz) {
-        cachedLookupResult.set(new SoftReference<NamedClass<?>>(NamedClass.getInstance(className, clazz)));
+        cachedLookupResult.set(new SoftReference<>(NamedClass.getInstance(className, clazz)));
     }
 
     /**

@@ -37,12 +37,14 @@ public class SizeUtil {
 
     /**
      * <i>Approximate</i> the amount of RAM consumed by a String.
-     * 
-     * See https://www.cs.virginia.edu/kim/publicity/pldi09tutorials/memory-efficient-java-tutorial.pdf Slide 26.
-     * 
+     * <p>
+     * See
+     * <a href="https://www.cs.virginia.edu/kim/publicity/pldi09tutorials/memory-efficient-java-tutorial.pdf">tutorial</a>
+     * Slide 26.
+     * <p>
      * This calculation is affected by the JVM architecture and whether
-     * https://wikis.oracle.com/display/HotSpotInternals/CompressedOops are enabled.
-     * 
+     * <a href="https://wikis.oracle.com/display/HotSpotInternals/CompressedOops">CompressedOops</a> are enabled.
+     *
      * @param str - the String to approximate
      * @return The approximate size, in bytes, in RAM for str
      */
@@ -51,9 +53,9 @@ public class SizeUtil {
             return 0L;
         }
         if (arch64) {
-            return (str.length() * 2) + 52; // 2 bytes per UTF-16, 52 for JVM overhead & bookkeeping, 64-bit arch
+            return (str.length() * 2L) + 52; // 2 bytes per UTF-16, 52 for JVM overhead & bookkeeping, 64-bit arch
         } else {
-            return (str.length() * 2) + 48; // 2 bytes per UTF-16, 48 for JVM overhead & bookkeeping, 32-bit arch
+            return (str.length() * 2L) + 48; // 2 bytes per UTF-16, 48 for JVM overhead & bookkeeping, 32-bit arch
         }
     }
 
