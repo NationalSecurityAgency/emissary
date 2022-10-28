@@ -40,7 +40,7 @@ public class ReadOutputBuffer extends ProcessReader {
         try {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
-            logger.error("Cannot read output using charset " + charset + ", reverting to JVM default");
+            logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
             this.br = new BufferedReader(new InputStreamReader(is));
         }
     }
@@ -63,7 +63,7 @@ public class ReadOutputBuffer extends ProcessReader {
         try {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
-            logger.error("Cannot read output using charset " + charset + ", reverting to JVM default");
+            logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
             this.br = new BufferedReader(new InputStreamReader(is));
         }
     }
@@ -74,7 +74,7 @@ public class ReadOutputBuffer extends ProcessReader {
         try {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
-            logger.error("Cannot read output using charset " + charset + ", reverting to JVM default");
+            logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
             this.br = new BufferedReader(new InputStreamReader(is));
         }
     }

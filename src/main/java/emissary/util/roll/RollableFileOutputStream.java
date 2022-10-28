@@ -67,7 +67,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         // Look for any dot files in directory
         for (File file : this.dir.listFiles(filter)) {
             if (file.isFile()) {
-                LOG.info("Renaming orphaned file, " + file.getName() + ", to non-dot file.");
+                LOG.info("Renaming orphaned file, {}, to non-dot file.", file.getName());
                 rename(file);
             }
         }
@@ -84,17 +84,16 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         String dotFile = "." + newName;
         String seqFname = "." + seq.get() + "_" + newName;
         if (currentFile != null && (dotFile.equals(currentFile.getName()) || seqFname.equals(currentFile.getName()))) {
-            LOG.warn("Duplicate file name returned from " + namegen.getClass() + ". Using internal sequencer to uniquify.");
+            LOG.warn("Duplicate file name returned from {}. Using internal sequencer to uniquify.", namegen.getClass());
             dotFile = "." + seq.getAndIncrement() + "_" + newName;
         }
-        File newFile = new File(dir, dotFile);
-        return newFile;
+        return new File(dir, dotFile);
     }
 
     private void closeAndRename() throws IOException {
         fileOutputStream.flush();
         if (!internalClose(fileOutputStream)) {
-            LOG.error("Error closing file " + currentFile.getAbsolutePath());
+            LOG.error("Error closing file {}", currentFile.getAbsolutePath());
         }
         rename(currentFile);
         bytesWritten = 0L;
@@ -102,7 +101,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     private void rename(File f) {
         if (f.length() == 0L && deleteZeroByteFiles) {
-            LOG.debug("Deleting Zero Byte File " + f.getAbsolutePath());
+            LOG.debug("Deleting Zero Byte File {}", f.getAbsolutePath());
             f.delete();
             return;
         }
@@ -111,11 +110,11 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         File nd = new File(dir, nonDot);
         // This shouldn't happen
         if (nd.exists()) {
-            LOG.error("Non dot file " + nd.getAbsolutePath() + " already exists. Forcing unique name.");
+            LOG.error("Non dot file {} already exists. Forcing unique name.", nd.getAbsolutePath());
             nd = new File(dir, nonDot + UUID.randomUUID().toString());
         }
         if (!f.renameTo(nd)) {
-            LOG.error("Rename from " + f.getAbsolutePath() + " to " + nd.getAbsolutePath() + " failed.");
+            LOG.error("Rename from {} to {} failed.", f.getAbsolutePath(), nd.getAbsolutePath());
         }
     }
 

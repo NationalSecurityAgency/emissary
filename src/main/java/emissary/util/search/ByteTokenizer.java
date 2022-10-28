@@ -98,7 +98,7 @@ public class ByteTokenizer implements Enumeration<String> {
         // CharToByteConverter.getConverter(encoding);
         try {
             Charset c = Charset.forName(encoding);
-            logger.debug("Loaded charset " + c);
+            logger.debug("Loaded charset {}", c);
         } catch (Exception ex) {
             throw new UnsupportedEncodingException("No support for " + encoding);
         }
