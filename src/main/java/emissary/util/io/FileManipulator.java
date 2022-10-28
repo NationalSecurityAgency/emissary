@@ -20,20 +20,20 @@ public class FileManipulator implements Serializable {
     /**
      * Create a unique filename and append it to the passed in path.
      */
-    private static String FS = System.getProperty("file.separator", "/");
+    private static final String FILE_SEPARATOR = System.getProperty("file.separator", "/");
 
     // Use ThreadLocal to allocate a SecureRandom instance per thread instead
     // of Math.random() which uses the same instance of Random for all threads
     // that causes resource contention and is not as secure.
-    private static final ThreadLocal<SecureRandom> secureRandomThreadLocal = ThreadLocal.withInitial(() -> new SecureRandom());
+    private static final ThreadLocal<SecureRandom> secureRandomThreadLocal = ThreadLocal.withInitial(SecureRandom::new);
 
     public static String mkTempFile(final String dirPath, final String file) {
         String theFullPath;
         String tempName = file + (secureRandomThreadLocal.get().nextLong() & Long.MAX_VALUE);
-        if (dirPath.endsWith(FS) || dirPath.endsWith("/")) {
+        if (dirPath.endsWith(FILE_SEPARATOR) || dirPath.endsWith("/")) {
             theFullPath = dirPath + tempName;
         } else {
-            theFullPath = dirPath + FS + tempName;
+            theFullPath = dirPath + FILE_SEPARATOR + tempName;
         }
 
         // Check to make sure file does not already exist
@@ -43,7 +43,7 @@ public class FileManipulator implements Serializable {
             if (dirPath.endsWith("/")) {
                 theFullPath = dirPath + tempName;
             } else {
-                theFullPath = dirPath + FS + tempName;
+                theFullPath = dirPath + FILE_SEPARATOR + tempName;
             }
 
         }

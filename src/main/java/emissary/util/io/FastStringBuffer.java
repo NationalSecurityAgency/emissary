@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -25,16 +26,16 @@ public class FastStringBuffer extends OutputStream {
     protected static final Logger logger = LoggerFactory.getLogger(FastStringBuffer.class);
 
     public static final int MAX_CACHE_SIZE = 256;
-
     private static final byte[] CRBYTES = "\n".getBytes();
     private static final byte[] CRLFBYTES = "\r\n".getBytes();
+    private static final String UNSUPPORTED_ERR = "Unsupported encoding:{}";
 
-    static Map<String, byte[]> strings = new HashMap<String, byte[]>(MAX_CACHE_SIZE * 3);
+    static Map<String, byte[]> strings = new HashMap<>(MAX_CACHE_SIZE * 3);
 
     protected int curPos = 0;
     protected byte[] buffer;
     protected String myString = null;
-    protected OutputStream stream = null;
+    protected OutputStream stream;
     protected int bytesWritten = 0;
 
     public FastStringBuffer() {
@@ -55,7 +56,7 @@ public class FastStringBuffer extends OutputStream {
     }
 
     public FastStringBuffer append(final String s) throws IOException {
-        return append(s, "ISO8859_1");
+        return append(s, StandardCharsets.ISO_8859_1.name());
     }
 
     public FastStringBuffer append(final int i) throws IOException {
@@ -77,18 +78,18 @@ public class FastStringBuffer extends OutputStream {
             return this;
         }
 
-        byte[] tmp = null;
+        byte[] tmp;
         try {
             tmp = s.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding:" + e);
+            logger.warn(UNSUPPORTED_ERR, e.toString());
             tmp = s.getBytes();
         }
         return append(tmp);
     }
 
     public FastStringBuffer appendEscaped(final String s) throws IOException {
-        return appendEscaped(s, "ISO8859_1");
+        return appendEscaped(s, StandardCharsets.ISO_8859_1.name());
     }
 
     public FastStringBuffer appendEscaped(@Nullable final String s, final String charset) throws IOException {
@@ -98,11 +99,11 @@ public class FastStringBuffer extends OutputStream {
 
         final String escapedS = HtmlEscaper.escapeHtml(s);
 
-        byte[] tmp = null;
+        byte[] tmp;
         try {
             tmp = escapedS.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding:" + e);
+            logger.warn(UNSUPPORTED_ERR, e.toString());
             tmp = escapedS.getBytes();
         }
         return append(tmp);
@@ -110,7 +111,7 @@ public class FastStringBuffer extends OutputStream {
 
     /** Appends constant string literals only!!!!! */
     public FastStringBuffer appendCLS(final String s) throws IOException {
-        return appendCLS(s, "ISO8859_1");
+        return appendCLS(s, StandardCharsets.ISO_8859_1.name());
     }
 
     /** Appends constant string literals only!!!!! */
@@ -124,14 +125,15 @@ public class FastStringBuffer extends OutputStream {
             try {
                 tmp = s.getBytes(charset);
             } catch (UnsupportedEncodingException e) {
-                logger.warn("Unsupported encoding:" + e);
+                logger.warn(UNSUPPORTED_ERR, e.toString());
                 tmp = s.getBytes();
             }
             if (strings.size() < MAX_CACHE_SIZE) {
-                // logger.info("AddedString["+strings.size()+"} :" + s.replace('\n','~'));
                 strings.put(s, tmp);
             } else {
-                logger.debug("Dropping literal from cache:" + s.replace('\n', '~'));
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Dropping literal from cache:{}", s.replace('\n', '~'));
+                }
             }
         }
         return append(tmp);
@@ -280,10 +282,9 @@ public class FastStringBuffer extends OutputStream {
         if (charset != null) {
             try {
                 converted = new String(data, actualStart, actualEnd - actualStart, charset);
-                logger.debug("Converted data from " + charset + " to utf-8");
+                logger.debug("Converted data from {} to utf-8", charset);
             } catch (UnsupportedEncodingException uee) {
-                // logger.warn("Unable to convert from " + charset,uee);
-                logger.warn("Unable to convert from " + charset);
+                logger.warn("Unable to convert from {}", charset);
                 converted = null; // make sure we write something below
             }
         } else {
@@ -311,13 +312,13 @@ public class FastStringBuffer extends OutputStream {
             actualStart = start;
         }
 
-        String converted = null;
+        String converted;
         if (charset != null) {
             try {
                 converted = new String(data, actualStart, actualEnd - actualStart, charset);
-                logger.debug("Converted data from " + charset + " to utf-8");
+                logger.debug("Converted data from {} to utf-8", charset);
             } catch (UnsupportedEncodingException uee) {
-                logger.warn("Unable to convert from " + charset);
+                logger.warn("Unable to convert from {}", charset);
                 converted = new String(data, actualStart, actualEnd - actualStart);
             }
         } else {

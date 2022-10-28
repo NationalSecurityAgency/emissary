@@ -90,7 +90,7 @@ public class FileFind {
         /**
          * Stack of Files and directory lists keeping track of where in the tree we are.
          */
-        private Stack<Object> currentPath = new Stack<Object>();
+        private Stack<Object> currentPath = new Stack<>();
         private FileFilter filter = null;
 
         public FileIterator(String filename) throws IOException {
@@ -112,33 +112,32 @@ public class FileFind {
          */
         @Override
         public boolean hasNext() {
-            return currentPath.size() > 0;
+            return !currentPath.isEmpty();
         }
 
         /** {@inheritDoc} */
         @Override
         public Object next() {
-            if (currentPath.size() > 0) {
+            if (!currentPath.isEmpty()) {
                 Object tmp = currentPath.pop();
                 findNextFile();
                 return tmp;
             }
             throw new NoSuchElementException();
-            // return null;
         }
 
         /** Not supported, but we could delete the file in this case, or should we? */
         @Override
-        public void remove() {}
+        public void remove() {
+            throw new UnsupportedOperationException("Not implemented");
+        }
 
-        /** Finally here is all of the meat of this file. */
+        /** Finally here is all the meat of this file. */
         private void findNextFile() {
             // Start by assumming that there are no files left.
             boolean found = false;
-            /**
-             * While the stack is not empty, and we have not found the type of file that we are looking for.
-             */
-            while (currentPath.size() > 0 && !found) {
+            // While the stack is not empty, and we have not found the type of file that we are looking for.
+            while (!currentPath.isEmpty() && !found) {
                 Object tmp = currentPath.peek();
                 if (tmp instanceof File && !((File) tmp).isDirectory()) {
                     // We found one. Leave it on the stack for 'next()'

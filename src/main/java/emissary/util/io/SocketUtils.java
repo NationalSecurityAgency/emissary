@@ -17,8 +17,7 @@ public class SocketUtils {
         int contentSize = is.readInt();
         byte[] theContent = new byte[contentSize];
         is.readFully(theContent);
-        String contentString = new String(theContent);
-        return contentString;
+        return new String(theContent);
     }
 
     public static void sendByteArray(byte[] bb, DataOutputStream os) throws IOException {

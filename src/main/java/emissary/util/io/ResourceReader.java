@@ -118,8 +118,7 @@ public class ResourceReader {
         if (name != null && name.length() > 1 && name.charAt(1) == ':') {
             name = name.substring(2);
         }
-        URL resourceUrl = Thread.currentThread().getContextClassLoader().getResource(name);
-        return resourceUrl;
+        return Thread.currentThread().getContextClassLoader().getResource(name);
     }
 
     /**
@@ -132,8 +131,7 @@ public class ResourceReader {
         if (name != null && name.length() > 1 && name.charAt(1) == ':') {
             name = name.substring(2);
         }
-        InputStream configStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
-        return configStream;
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
     }
 
     /**
@@ -202,7 +200,7 @@ public class ResourceReader {
      * @return sorted list of resources found or an empty list if none
      */
     public List<String> findResourcesFor(Class<?> c, String suffix) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         URL url = which(c);
         if (url == null) {
             return results;
@@ -229,7 +227,7 @@ public class ResourceReader {
      * @return list of resources found
      */
     public List<String> getJarResourcesFor(Class<?> c, URL url, String suffix) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         try {
             JarURLConnection jc = (JarURLConnection) url.openConnection();
             JarFile jf = jc.getJarFile();
@@ -260,12 +258,12 @@ public class ResourceReader {
      * @return list of resources found
      */
     public List<String> getFileResourcesFor(Class<?> c, URL url, String suffix) {
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         String cmatch = getResourceName(c);
 
         // The url may or may not have the class portion on it
         String path = url.getPath();
-        if (path.indexOf(CLASS_SUFFIX) > -1) {
+        if (path.contains(CLASS_SUFFIX)) {
             // Take off the ".class"
             path = path.substring(0, path.length() - CLASS_SUFFIX.length());
         } else {
@@ -279,9 +277,9 @@ public class ResourceReader {
         String classNamePart = cmatch.substring(cmatch.lastIndexOf('/') + 1);
         if (base.exists() && base.isDirectory()) {
             String[] list = base.list();
-            for (int i = 0; i < list.length; i++) {
-                if (list[i].startsWith(classNamePart) && list[i].endsWith(suffix)) {
-                    results.add(pkgNamePart + "/" + list[i]);
+            for (String s : list) {
+                if (s.startsWith(classNamePart) && s.endsWith(suffix)) {
+                    results.add(pkgNamePart + "/" + s);
                 }
             }
         }
@@ -290,9 +288,9 @@ public class ResourceReader {
         File dir = new File(path);
         if (dir.isDirectory()) {
             String[] list = dir.list();
-            for (int i = 0; i < list.length; i++) {
-                if (list[i].endsWith(suffix)) {
-                    results.add(cmatch + '/' + list[i]);
+            for (String s : list) {
+                if (s.endsWith(suffix)) {
+                    results.add(cmatch + '/' + s);
                 }
             }
         }
