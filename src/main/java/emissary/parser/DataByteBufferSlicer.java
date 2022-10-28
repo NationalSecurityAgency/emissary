@@ -29,7 +29,7 @@ public class DataByteBufferSlicer {
             data.position((int) r.getPosition());
             data.get(n);
         } catch (BufferUnderflowException ex) {
-            logger.warn("Underflow getting " + n.length + " bytes at " + r.getPosition());
+            logger.warn("Underflow getting {} bytes at {}", n.length, r.getPosition());
         }
         return n;
     }
@@ -71,7 +71,7 @@ public class DataByteBufferSlicer {
                     data.get(n);
                     out.write(n);
                 } catch (BufferUnderflowException ex) {
-                    logger.error("Underflow getting " + len + " bytes at " + start);
+                    logger.error("Underflow getting {} bytes at {}", len, start);
                 }
             }
             ret = out.toByteArray();

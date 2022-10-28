@@ -9,6 +9,8 @@ import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -216,7 +218,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             }
 
             // Track any new attachments
-            if (sprouts != null && sprouts.size() > 0) {
+            if (CollectionUtils.isNotEmpty(sprouts)) {
                 sproutCollection.addAll(sprouts);
             }
         }
@@ -256,7 +258,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
     @Override
     public void process(IBaseDataObject d) throws emissary.core.ResourceException {
         List<IBaseDataObject> l = coordinate(d, false);
-        if (l != null && l.size() > 0) {
+        if (CollectionUtils.isNotEmpty(l)) {
             logger.error("Non-sprouted documents are being lost {}", l.size());
         }
     }

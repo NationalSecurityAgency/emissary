@@ -2,6 +2,8 @@ package emissary.kff;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
@@ -26,7 +28,7 @@ public class ChecksumCalculator {
     private Ssdeep ssdeep = null;
 
     /** Used for hash calculations */
-    private List<MessageDigest> digest = new ArrayList<MessageDigest>();
+    private List<MessageDigest> digest = new ArrayList<>();
 
     /**
      * Constructor initializes SHA-1 generator and turns on the CRC32 processing as well
@@ -76,7 +78,7 @@ public class ChecksumCalculator {
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
     public ChecksumCalculator(@Nullable Collection<String> algs) throws NoSuchAlgorithmException {
-        if (algs != null && algs.size() > 0) {
+        if (CollectionUtils.isNotEmpty(algs)) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
                     setUseCRC(true);
@@ -164,7 +166,7 @@ public class ChecksumCalculator {
 
     /**
      * Calculates a CRC32 and a digest on a {@link java.nio.channels.SeekableByteChannel} of data.
-     * 
+     *
      * @param sbcf Provider of data to compute results for
      * @return results of computing the requested hashes on the data
      */
