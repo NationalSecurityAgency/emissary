@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.List;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.directory.IDirectoryPlace;
@@ -17,6 +15,8 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.Version;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.jupiter.api.AfterEach;
@@ -88,7 +88,7 @@ class FTestMovingAgent extends FunctionalTest {
         runHttpTest();
     }
 
-    private void runTest(final String agentClass) {
+    private void runTest(@Nullable final String agentClass) {
         assertNotNull(this.dir1, "Directory1 should have been set up");
         assertNotNull(this.dir2, "Directory2 should have been set up");
         assertNotNull(this.toLower, "toLower place should have been set up");

@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
 
+import emissary.kff.KffFilter.FilterType;
+import emissary.test.core.junit5.UnitTest;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.NoSuchAlgorithmException;
@@ -19,9 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
-import emissary.kff.KffFilter.FilterType;
-import emissary.test.core.junit5.UnitTest;
+import javax.annotation.Nullable;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.GetFuture;
 import net.spy.memcached.internal.OperationFuture;
@@ -129,7 +129,7 @@ class KffMemcachedTest extends UnitTest {
         }
     }
 
-    private void setPrivateMembersForTesting(KffMemcached cacheFilter, Boolean storeIdDupe) throws NoSuchFieldException, IllegalAccessException {
+    private void setPrivateMembersForTesting(KffMemcached cacheFilter, @Nullable Boolean storeIdDupe) throws NoSuchFieldException, IllegalAccessException {
 
         // Overriding the protected attribute of the field for testing
         if (storeIdDupe != null) {
