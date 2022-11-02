@@ -48,6 +48,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
     protected String winInRoot;
     protected String unixOutRoot;
     protected String winOutRoot;
+    protected String digestHashType;
 
     protected MessageDigest digest = null;
 
@@ -88,18 +89,19 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
      * Configure this place
      */
     protected void configurePlace() {
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-        } catch (Exception ex) {
-            logger.warn("Could not initialize message digest: ", ex);
-        }
-
         pollingInterval = configG.findIntEntry("POLLING_INTERVAL", pollingInterval);
         MAX_QUE_SIZE = configG.findIntEntry("MAX_QUE_SIZE", MAX_QUE_SIZE);
         unixInRoot = configG.findStringEntry("UNIX_IN_ROOT", null);
         winInRoot = configG.findStringEntry("WIN_IN_ROOT", null);
         unixOutRoot = configG.findStringEntry("UNIX_OUT_ROOT", null);
         winOutRoot = configG.findStringEntry("WIN_OUT_ROOT", null);
+        digestHashType = configG.findStringEntry("DIGEST_HASH_TYPE", "SHA-256");
+
+        try {
+            digest = MessageDigest.getInstance(digestHashType);
+        } catch (Exception ex) {
+            logger.warn("Could not initialize message digest: ", ex);
+        }
     }
 
     protected void configureQueueServer() {
