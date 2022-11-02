@@ -89,7 +89,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
      */
     protected void configurePlace() {
         try {
-            digest = MessageDigest.getInstance("MD5");
+            digest = MessageDigest.getInstance("SHA-256");
         } catch (Exception ex) {
             logger.warn("Could not initialize message digest: ", ex);
         }
