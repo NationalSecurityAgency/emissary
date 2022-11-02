@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +32,7 @@ public class KffChain {
     /**
      * Add a new filter to our list
      */
-    public void addFilter(KffFilter f) {
+    public void addFilter(@Nullable KffFilter f) {
         if (f != null) {
             list.add(f);
         }

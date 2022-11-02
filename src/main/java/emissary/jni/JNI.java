@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -73,7 +75,7 @@ public class JNI implements Serializable {
     /**
      * Public constructor args are easy when called from ServiceProviderPlace
      */
-    public JNI(final String theDir, final Configurator configG) {
+    public JNI(@Nullable final String theDir, final Configurator configG) {
         if (theDir != null) {
             try {
                 this.theDir = (IDirectoryPlace) Namespace.lookup(theDir);

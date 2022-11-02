@@ -10,6 +10,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.annotation.Nullable;
+
 import emissary.roll.Rollable;
 import emissary.util.io.FileNameGenerator;
 import org.slf4j.Logger;
@@ -149,7 +151,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         return rolling;
     }
 
-    private static boolean internalClose(Closeable c) {
+    private static boolean internalClose(@Nullable Closeable c) {
         try {
             if (c != null) {
                 c.close();

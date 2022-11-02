@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -340,7 +342,7 @@ public class MagicNumber {
     /**
      * Retrieves the data sample
      */
-    private static byte[] getElement(byte[] data, int offset, int length) {
+    private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
         if (data == null)
             return null;
         if (data.length < (offset + length))

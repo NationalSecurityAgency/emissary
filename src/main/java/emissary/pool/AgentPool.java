@@ -2,6 +2,8 @@ package emissary.pool;
 
 import java.time.Duration;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -45,7 +47,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
      * @param maxMemoryInBytes System max memory used in calculating pool size
      * @param poolSizeOverride User set property for pool size
      */
-    protected static int computePoolSize(final long maxMemoryInBytes, final Integer poolSizeOverride) {
+    protected static int computePoolSize(final long maxMemoryInBytes, @Nullable final Integer poolSizeOverride) {
 
         // Override based on property
         if (poolSizeOverride != null && poolSizeOverride > 0) {

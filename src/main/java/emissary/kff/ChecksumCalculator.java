@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.zip.CRC32;
 
+import javax.annotation.Nullable;
+
 /**
  * ChecksumCalculator is a utility class which computes checksums and message digests.
  * 
@@ -49,7 +51,7 @@ public class ChecksumCalculator {
      * @param algs array of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
-    public ChecksumCalculator(String[] algs) throws NoSuchAlgorithmException {
+    public ChecksumCalculator(@Nullable String[] algs) throws NoSuchAlgorithmException {
         if (algs != null && algs.length > 0) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
@@ -69,7 +71,7 @@ public class ChecksumCalculator {
      * @param algs Collection of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
-    public ChecksumCalculator(Collection<String> algs) throws NoSuchAlgorithmException {
+    public ChecksumCalculator(@Nullable Collection<String> algs) throws NoSuchAlgorithmException {
         if (algs != null && algs.size() > 0) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {

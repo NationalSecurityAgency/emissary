@@ -1,5 +1,6 @@
 package emissary.server.mvc;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -26,7 +27,7 @@ public class TransferDirectoryAction {
     @GET
     @Path("/TransferDirectory.action")
     @Produces(MediaType.APPLICATION_XML)
-    public Response dumpDirectory(@QueryParam(TARGET_DIR_PARAM) String dirname) {
+    public Response dumpDirectory(@Nullable @QueryParam(TARGET_DIR_PARAM) String dirname) {
         final IDirectoryPlace value;
         try {
             if (dirname == null) {

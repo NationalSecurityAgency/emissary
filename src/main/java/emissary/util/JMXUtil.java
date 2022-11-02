@@ -2,6 +2,7 @@ package emissary.util;
 
 import java.lang.management.ManagementFactory;
 
+import javax.annotation.Nullable;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -24,7 +25,7 @@ public class JMXUtil {
         registerMBean(obj, obj.getClass().getName());
     }
 
-    public static void registerMBean(final Object obj, final String name) {
+    public static void registerMBean(@Nullable final Object obj, final String name) {
         if (Boolean.parseBoolean(System.getProperty("emissary.jmx.disabled"))) {
             logger.info("Emissary JMX is disabled via emissary.jmx.disabled property");
             return;

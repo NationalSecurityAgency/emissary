@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ public class DataByteArraySlicer {
      * @param data the data to pull from
      * @param list the list of position records indicating offsets
      */
-    public static byte[] makeDataSlice(byte[] data, List<PositionRecord> list) {
+    public static byte[] makeDataSlice(byte[] data, @Nullable List<PositionRecord> list) {
 
         // Nothing to do
         if (list == null || list.size() == 0) {

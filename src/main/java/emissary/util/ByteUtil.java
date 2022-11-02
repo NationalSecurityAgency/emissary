@@ -3,6 +3,8 @@ package emissary.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * Common place for the logic to glue byte arrays back together This is error prone and shouldn't be thought about any
  * more than necessary
@@ -149,7 +151,7 @@ public class ByteUtil {
      * @param b the second byte array
      * @return the whole
      */
-    public static byte[] glue(byte[] a, byte[] b) {
+    public static byte[] glue(@Nullable byte[] a, @Nullable byte[] b) {
         if (a == null) {
             return b;
         }
@@ -167,7 +169,7 @@ public class ByteUtil {
      * @param c the third byte array
      * @return the whole
      */
-    public static byte[] glue(byte[] a, byte[] b, byte[] c) {
+    public static byte[] glue(@Nullable byte[] a, @Nullable byte[] b, @Nullable byte[] c) {
         if (a == null) {
             return glue(b, c);
         }
@@ -233,7 +235,7 @@ public class ByteUtil {
      * @param a the byte array
      * @param pos the split position (a[pos] goes to the second part)
      */
-    public static List<byte[]> split(byte[] a, int pos) {
+    public static List<byte[]> split(@Nullable byte[] a, int pos) {
         List<byte[]> list = new ArrayList<byte[]>();
         if (a != null && pos > 0 && pos <= a.length) {
             byte[] part1 = new byte[pos];

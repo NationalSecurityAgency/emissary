@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -334,7 +336,7 @@ public class DropOffUtil {
      * @param tld the top level document in the d family, possibly null
      * @return string path name with correct separators for this OS
      */
-    public String getPathFromSpec(final String specArg, final IBaseDataObject d, final IBaseDataObject tld) {
+    public String getPathFromSpec(final String specArg, @Nullable final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
         final StringBuffer sb = new StringBuffer(128);
 
         // Provide a default spec, just like the old days...
@@ -546,7 +548,7 @@ public class DropOffUtil {
         return getSubDirName(d, null, null);
     }
 
-    public String getSubDirName(final IBaseDataObject d, final String spec, final IBaseDataObject tld) {
+    public String getSubDirName(final IBaseDataObject d, @Nullable final String spec, final IBaseDataObject tld) {
         String fileName = null;
 
         if (spec != null && spec.length() > 0) {
@@ -633,7 +635,7 @@ public class DropOffUtil {
         return ret.toString();
     }
 
-    protected Object nvl(final Object a, final Object b) {
+    protected Object nvl(@Nullable final Object a, final Object b) {
         if (a != null) {
             return a;
         }
@@ -644,7 +646,7 @@ public class DropOffUtil {
      * @param dtg expected format yyyymmddhhmmss
      * @return yyyy-mm-dd/hh/(mm%10)
      */
-    protected String datePath(final String dtg) {
+    protected String datePath(@Nullable final String dtg) {
         if (dtg == null) {
             return emissary.util.TimeUtil.getDateAsPath(Instant.now());
         } else {
@@ -754,7 +756,7 @@ public class DropOffUtil {
      * @param formsArg Optional space separated string of current forms
      * @return the file type
      */
-    public static String getAndPutFileType(final IBaseDataObject bdo, final Map<String, String> metaData, final String formsArg) {
+    public static String getAndPutFileType(final IBaseDataObject bdo, @Nullable final Map<String, String> metaData, final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
             forms = bdo.getStringParameter(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
@@ -832,7 +834,7 @@ public class DropOffUtil {
      * @param tld if a param is specified and cannot be found in the d method parameter, tries to get param from tld.
      * @return the id based the best ID available, shortname or auto gen id. If no id is found, defaults to auto gen.
      */
-    public String getBestId(final IBaseDataObject d, final IBaseDataObject tld) {
+    public String getBestId(final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
 
         for (final String s : this.idTokens) {
             if (AUTO_GENERATED_ID.equals(s)) {
@@ -959,7 +961,7 @@ public class DropOffUtil {
      * @param d the data object in question
      * @return the Date when the event occurred
      */
-    public Date getEventDate(final IBaseDataObject d, final IBaseDataObject tld) {
+    public Date getEventDate(final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
         Date eventDate = extractEventDateFrom(d, false);
         if (eventDate == null && tld != null) {
             eventDate = extractEventDateFrom(tld, this.defaultEventDateToNow);
@@ -995,7 +997,7 @@ public class DropOffUtil {
      * @return the GMT time of the event or NOW if unparseable, or null if supplyDefaultOnBad is false
      */
     @Deprecated
-    public Date parseEventDate(final String dateString, final boolean supplyDefaultOnBad) {
+    public Date parseEventDate(@Nullable final String dateString, final boolean supplyDefaultOnBad) {
         Date date = null;
 
         if (dateString != null && dateString.length() > 0) {

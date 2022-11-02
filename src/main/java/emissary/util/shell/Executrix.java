@@ -16,6 +16,8 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.directory.KeyManipulator;
@@ -102,7 +104,7 @@ public class Executrix {
      * 
      * @param configGArg the configuration stream
      */
-    protected void configure(final Configurator configGArg) {
+    protected void configure(@Nullable final Configurator configGArg) {
         final Configurator configG = (configGArg != null) ? configGArg : new ServiceConfigGuide();
 
         this.command = configG.findStringEntry("EXEC_COMMAND", "echo 'YouForGotToSetEXEC_COMMAND' | tee bla.txt");
@@ -188,7 +190,8 @@ public class Executrix {
      * @param append if true we append to the file
      * @return true if it worked
      */
-    public static boolean writeDataToFile(final byte[] theContent, final int pos, final int len, final String filename, final boolean append) {
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final int pos, final int len, @Nullable final String filename,
+            final boolean append) {
         if (filename == null) {
             return false;
         }
@@ -226,7 +229,7 @@ public class Executrix {
      * @param theFileName the file to write to
      * @return true if it worked
      */
-    public static boolean writeDataToFile(final byte[] theContent, final String theFileName) {
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final String theFileName) {
         if (theContent == null) {
             logger.warn("Null content in writeDataToFile({})", theFileName);
             return false;
@@ -242,7 +245,7 @@ public class Executrix {
      * @param append if true we append to the file
      * @return true if it worked
      */
-    public static boolean writeDataToFile(final byte[] theContent, final String theFileName, final boolean append) {
+    public static boolean writeDataToFile(@Nullable final byte[] theContent, final String theFileName, final boolean append) {
         if (theContent == null) {
             logger.warn("Null content in writeDataToFile({})", theFileName);
             return false;
@@ -394,7 +397,7 @@ public class Executrix {
      * @param length the maximum byte count to read or -1 for all
      * @return bytes of data or null on exception
      */
-    public static byte[] readDataFromChannel(final SeekableByteChannel channel, final long offset, final int length) {
+    public static byte[] readDataFromChannel(@Nullable final SeekableByteChannel channel, final long offset, final int length) {
         if (channel == null) {
             return null;
         }
@@ -690,7 +693,7 @@ public class Executrix {
      * @param charset character set of the output
      * @return process exit status
      */
-    public int execute(final String[] cmd, final StringBuffer out, final StringBuffer err, final String charset) {
+    public int execute(final String[] cmd, @Nullable final StringBuffer out, @Nullable final StringBuffer err, final String charset) {
         final StringBuilder bout = (out != null) ? new StringBuilder() : null;
         final StringBuilder berr = (err != null) ? new StringBuilder() : null;
 
@@ -791,8 +794,9 @@ public class Executrix {
      * @param env environment variables for the new process supplied in name=value format.
      * @return process exit status
      */
-    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset,
-            final Map<String, String> env) {
+    public int execute(final String[] cmd, final byte[] data, @Nullable final StringBuilder out, @Nullable final StringBuilder err,
+            @Nullable final String charset,
+            @Nullable final Map<String, String> env) {
         int exitValue = -1;
         ExecuteWatchdog dog = null;
         try {

@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.LinkedListMultimap;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
@@ -198,14 +200,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param name the name of the data item
      * @param form the initial form of the data
      */
-    public BaseDataObject(final byte[] newData, final String name, final String form) {
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form) {
         this(newData, name);
         if (form != null) {
             pushCurrentForm(form);
         }
     }
 
-    public BaseDataObject(final byte[] newData, final String name, final String form, final String fileType) {
+    public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType) {
         this(newData, name, form);
         if (fileType != null) {
             this.setFileType(fileType);
@@ -283,7 +285,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param newData byte array to set replacing any existing data
      */
     @Override
-    public void setData(final byte[] newData) {
+    public void setData(@Nullable final byte[] newData) {
         if (newData == null) {
             this.theData = new byte[0];
         } else {
@@ -292,7 +294,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void setData(final byte[] newData, final int offset, final int length) {
+    public void setData(@Nullable final byte[] newData, final int offset, final int length) {
         if (length <= 0 || newData == null) {
             this.theData = new byte[0];
         } else {
@@ -374,7 +376,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void replaceCurrentForm(final String form) {
+    public void replaceCurrentForm(@Nullable final String form) {
         this.currentForm.clear();
         if (form != null) {
             pushCurrentForm(form);
@@ -979,7 +981,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param v the value to store or null
      */
     @Override
-    public void setFileType(final String v) {
+    public void setFileType(@Nullable final String v) {
         deleteParameter(FILETYPE);
         if (v != null) {
             setParameter(FILETYPE, v);
@@ -1005,7 +1007,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      *
      * @param empties a list of types that count as empty
      */
-    protected boolean isFileTypeEmpty(final String[] empties) {
+    protected boolean isFileTypeEmpty(@Nullable final String[] empties) {
         final String s = getFileType();
 
         if (StringUtils.isEmpty(s)) {
@@ -1094,7 +1096,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param data the byte array of data for the view
      */
     @Override
-    public void addAlternateView(final String name, final byte[] data) {
+    public void addAlternateView(final String name, @Nullable final byte[] data) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
@@ -1111,7 +1113,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
+    public void addAlternateView(final String name, @Nullable final byte[] data, final int offset, final int length) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
@@ -1156,7 +1158,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void setBroken(final String v) {
+    public void setBroken(@Nullable final String v) {
         if (v == null) {
             this.brokenDocument = null;
             return;

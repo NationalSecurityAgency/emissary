@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +80,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
-    public HitList findAll(final byte[] dataArg) {
+    public HitList findAll(@Nullable final byte[] dataArg) {
         if (dataArg != null) {
             return this.findAll(dataArg, 0, dataArg.length);
         }
@@ -86,7 +88,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
-    public HitList findAll(final byte[] dataArg, final int start) {
+    public HitList findAll(@Nullable final byte[] dataArg, final int start) {
         if (dataArg != null) {
             return this.findAll(dataArg, start, dataArg.length);
         }
@@ -122,7 +124,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
-    public HitList findNext(final byte[] dataArg) {
+    public HitList findNext(@Nullable final byte[] dataArg) {
         if (dataArg != null) {
             return this.findNext(dataArg, this.lastPosition + 1, dataArg.length);
         }
@@ -130,7 +132,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
     }
 
     @Override
-    public HitList findNext(final byte[] dataArg, final int start) {
+    public HitList findNext(@Nullable final byte[] dataArg, final int start) {
         if (dataArg != null) {
             return this.findNext(dataArg, start, dataArg.length);
         }

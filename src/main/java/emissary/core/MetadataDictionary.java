@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import org.apache.commons.collections4.map.LRUMap;
@@ -96,7 +98,7 @@ public class MetadataDictionary {
      * @param confArg the config stream to use or null for default
      */
     @SuppressWarnings("unchecked")
-    protected void reconfigure(final Configurator confArg) {
+    protected void reconfigure(@Nullable final Configurator confArg) {
         try {
             final Configurator conf;
             if (confArg == null) {

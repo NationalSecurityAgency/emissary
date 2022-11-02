@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -286,7 +288,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     protected static class FileNameComparator implements Comparator<File> {
         @Override
-        public int compare(File o1, File o2) {
+        public int compare(@Nullable File o1, @Nullable File o2) {
             if (o1 == null) {
                 return o2 != null ? 1 : 0;
             }
@@ -580,7 +582,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param len length of data to use
      * @return attachments
      */
-    protected List<IBaseDataObject> processData(IBaseDataObject tData, int start, int len) throws ResourceException {
+    protected List<IBaseDataObject> processData(@Nullable IBaseDataObject tData, int start, int len) throws ResourceException {
         List<IBaseDataObject> sprouts = new ArrayList<>();
 
         // Validate parameters

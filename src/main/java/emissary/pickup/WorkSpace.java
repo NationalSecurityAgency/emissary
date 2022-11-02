@@ -19,6 +19,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.annotation.Nullable;
+
 import emissary.client.EmissaryResponse;
 import emissary.command.FeedCommand;
 import emissary.command.ServerCommand;
@@ -513,7 +515,7 @@ public class WorkSpace implements Runnable {
      * @param thePattern the new pattern
      * @see emissary.directory.KeyManipulator#gmatch(String,String)
      */
-    public void setPattern(final String thePattern) throws Exception {
+    public void setPattern(@Nullable final String thePattern) throws Exception {
 
         if ((this.pattern != null) && (thePattern != null) && this.pattern.equals(thePattern)) {
             logger.debug("The pattern is already set to " + thePattern);

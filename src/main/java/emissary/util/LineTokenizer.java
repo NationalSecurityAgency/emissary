@@ -2,6 +2,8 @@ package emissary.util;
 
 import java.nio.charset.Charset;
 
+import javax.annotation.Nullable;
+
 /**
  * Used the default way, this is equivalent to StringTokenizer st = new StringTokenizer(new String(theData),"\n",false);
  * except that a token is returned for blank lines as well. There seems no way to tell the StringTokenizer to do that.
@@ -57,7 +59,7 @@ public class LineTokenizer {
      * @param delim the delimiter to mark off lines
      * @param charset the character set to use the outputting tokens as strings
      */
-    public LineTokenizer(byte[] theData, byte delim, String charset) {
+    public LineTokenizer(byte[] theData, byte delim, @Nullable String charset) {
         this(theData, delim);
         this.charset = (charset == null ? null : Charset.forName(charset));
     }
@@ -80,7 +82,7 @@ public class LineTokenizer {
      * @param theData byte array of data
      * @param charset the character set to use the outputting tokens as strings
      */
-    public LineTokenizer(byte[] theData, String charset) {
+    public LineTokenizer(byte[] theData, @Nullable String charset) {
         this(theData);
         this.charset = (charset == null ? null : Charset.forName(charset));
     }
@@ -101,7 +103,7 @@ public class LineTokenizer {
      * 
      * @param charset the java charset value
      */
-    public void setCharset(String charset) {
+    public void setCharset(@Nullable String charset) {
         this.charset = (charset == null ? null : Charset.forName(charset));
     }
 

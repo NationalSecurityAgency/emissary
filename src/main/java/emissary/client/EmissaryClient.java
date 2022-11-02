@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.core.MediaType;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -175,7 +176,7 @@ public class EmissaryClient {
      * @param method the method to be sent
      * @param cookie a cookie to set on the request
      */
-    public EmissaryResponse send(final HttpRequestBase method, final Cookie cookie) {
+    public EmissaryResponse send(final HttpRequestBase method, @Nullable final Cookie cookie) {
         LOGGER.debug("Sending {} to {}", method.getMethod(), method.getURI());
         EmissaryResponse er;
 
