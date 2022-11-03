@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.directory.IDirectoryPlace;
@@ -15,8 +19,6 @@ import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.Version;
-import java.util.List;
-import javax.annotation.Nullable;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.junit.jupiter.api.AfterEach;

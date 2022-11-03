@@ -743,6 +743,13 @@
               </goals>
               <phase>process-sources</phase>
             </execution>
+            <execution>
+              <id>format-java-test-sources</id>
+              <goals>
+                <goal>format</goal>
+              </goals>
+              <phase>process-test-sources</phase>
+            </execution>
           </executions>
         </plugin>
         <plugin>
