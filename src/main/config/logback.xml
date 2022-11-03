@@ -20,31 +20,34 @@
     </encoder>
   </appender>
 
+  <!-- Enable output metrics logging by creating an environment variable of "LogObjectMetrics=true" -->
+  <if condition='${LogObjectMetrics} == true'>
+    <then>
+      <appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+          <customFields>{"node":"${emissary.node.name}","port":"${emissary.node.port}","application":"server"}</customFields>
+          <includeMdc>false</includeMdc>
+          <fieldNames>
+            <version>[ignore]</version>
+            <logValue>[ignore]</logValue>
+            <logger>[ignore]</logger>
+            <thread>[ignore]</thread>
+            <levelValue>[ignore]</levelValue>
+            <level>[ignore]</level>
+            <message>[ignore]</message>
+          </fieldNames>
+        </encoder>
+        <file>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
+        </rollingPolicy>
+      </appender>
 
-  <appender name="OBJECT-METRICS" class="ch.qos.logback.core.ConsoleAppender">
-    <!--<appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <customFields>{"node":"${emissary.node.name}","port":"${emissary.node.port}","application":"server"}</customFields>
-      <includeMdc>false</includeMdc>
-      <fieldNames>
-        <version>[ignore]</version>
-        <logValue>[ignore]</logValue>
-        <logger>[ignore]</logger>
-        <thread>[ignore]</thread>
-        <levelValue>[ignore]</levelValue>
-        <level>[ignore]</level>
-        <message>[ignore]</message>
-      </fieldNames>
-    </encoder>
-    <!--<file>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log</file>
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}-object-metrics.log.%d{yyyy-MM-dd-HH}</fileNamePattern>
-    </rollingPolicy>-->
-  </appender>
-
-  <logger name="objectMetrics" level="INFO" additivity="false">
-    <appender-ref ref="OBJECT-METRICS" />
-  </logger>
+      <logger name="objectMetrics" level="INFO" additivity="false">
+        <appender-ref ref="OBJECT-METRICS" />
+      </logger>
+    </then>
+  </if>
 
   <root level="INFO">
     <!-- stop logging to a file in development man, redirect or tee to a file
