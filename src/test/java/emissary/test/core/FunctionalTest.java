@@ -10,6 +10,7 @@ import emissary.admin.PlaceStarter;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.Namespace;
+import emissary.core.NamespaceException;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.place.IServiceProviderPlace;
@@ -111,12 +112,12 @@ public class FunctionalTest extends UnitTest {
 
         try {
             pool = AgentPool.lookup();
-        } catch (emissary.core.NamespaceException ex) {
+        } catch (NamespaceException ex) {
             logger.warn("Agent pool is missing");
         }
         try {
             spool = MoveSpool.lookup();
-        } catch (emissary.core.NamespaceException ex) {
+        } catch (NamespaceException ex) {
             logger.warn("Move spool is missing");
         }
     }
@@ -150,7 +151,7 @@ public class FunctionalTest extends UnitTest {
                     logger.debug("Stopping " + obj);
                     ((IServiceProviderPlace) obj).shutDown();
                 }
-            } catch (emissary.core.NamespaceException ignore) {
+            } catch (NamespaceException ignore) {
                 // empty catch block
             }
         }

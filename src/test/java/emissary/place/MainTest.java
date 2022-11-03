@@ -23,6 +23,7 @@ import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
+import emissary.core.ResourceException;
 import emissary.test.core.junit5.UnitTest;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
@@ -346,7 +347,7 @@ final class MainTest extends UnitTest {
         }
 
         @Override
-        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws emissary.core.ResourceException {
+        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException {
             IBaseDataObject extr = DataObjectFactory.getInstance("cde".getBytes(), "test-att-2", "UNKNOWN");
             extr.putParameter("RECORD_KEY", "record value");
             payload.addExtractedRecord(extr);
@@ -361,6 +362,6 @@ final class MainTest extends UnitTest {
         }
 
         @Override
-        public void process(IBaseDataObject payload) throws emissary.core.ResourceException {}
+        public void process(IBaseDataObject payload) throws ResourceException {}
     }
 }

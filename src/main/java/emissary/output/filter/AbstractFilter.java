@@ -15,6 +15,8 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
+import emissary.util.JavaCharSet;
+import emissary.util.ShortNameComparator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,7 +237,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params) {
         // Important to process them in order, if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
+            Collections.sort(list, new ShortNameComparator()); // unsafe?
             params.put(PRE_SORTED, Boolean.TRUE);
         }
 
@@ -258,7 +260,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
         // Important to process them in order, if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
+            Collections.sort(list, new ShortNameComparator()); // unsafe?
             params.put(PRE_SORTED, Boolean.TRUE);
         }
 
@@ -399,7 +401,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         if (lang == null) {
             return defaultCharset;
         } else {
-            return emissary.util.JavaCharSet.get(lang);
+            return JavaCharSet.get(lang);
         }
     }
 

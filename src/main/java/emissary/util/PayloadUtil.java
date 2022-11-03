@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.util.xml.JDOMUtil;
 import org.jdom2.Document;
@@ -78,7 +79,7 @@ public class PayloadUtil {
     public static String getPayloadOneLineString(final IBaseDataObject payload) {
         final StringBuilder sb = new StringBuilder();
         final String fn = payload.getFilename();
-        final int attPos = fn.indexOf(emissary.core.Family.SEP);
+        final int attPos = fn.indexOf(Family.SEP);
         if (attPos != -1) {
             sb.append(fn.substring(attPos + 1)).append(" ");
         }

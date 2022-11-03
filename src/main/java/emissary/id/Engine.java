@@ -2,6 +2,8 @@ package emissary.id;
 
 import java.io.IOException;
 
+import emissary.config.Configurator;
+
 /**
  * An interface between and Identification place and the engine that does the work
  */
@@ -11,7 +13,7 @@ public interface Engine {
      * 
      * @param config the configuration stream or resource
      */
-    void reconfigure(emissary.config.Configurator config) throws IOException;
+    void reconfigure(Configurator config) throws IOException;
 
     /**
      * Determine if the engine is ready

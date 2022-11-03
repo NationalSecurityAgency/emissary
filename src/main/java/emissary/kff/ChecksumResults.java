@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import emissary.util.Hexl;
+
 /**
  * This class is a value object to store the results of both a CRC32 and a message digest computation.
  */
@@ -90,7 +92,7 @@ public class ChecksumResults implements Serializable {
             return null;
         }
 
-        return emissary.util.Hexl.toUnformattedHexString(comp);
+        return Hexl.toUnformattedHexString(comp);
     }
 
     /**

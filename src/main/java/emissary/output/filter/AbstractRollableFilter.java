@@ -22,6 +22,7 @@ import emissary.output.roller.journal.KeyedOutput;
 import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
+import emissary.util.ShortNameComparator;
 import emissary.util.io.FileNameGenerator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -188,7 +189,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
         // Important to process them in order if not already sorted
         if (params.get(PRE_SORTED) == null) {
-            list.sort(new emissary.util.ShortNameComparator());
+            list.sort(new ShortNameComparator());
             params.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
         }
 

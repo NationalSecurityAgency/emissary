@@ -9,12 +9,16 @@ import java.util.Collection;
 import java.util.Map;
 
 import emissary.core.IBaseDataObject;
+import emissary.parser.SessionParser;
 import emissary.pickup.IPickUp;
 import emissary.pickup.IPickUpSpace;
+import emissary.pickup.PickUpSpace;
 import emissary.pickup.PickupQueue;
 import emissary.pickup.QueServer;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkUnit;
+import emissary.util.Hexl;
+import emissary.util.TimeUtil;
 
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
@@ -22,7 +26,7 @@ import emissary.pickup.WorkUnit;
  * processed in simpleMode or not is controlled by the bundle settings not by the inherited configuration of this
  * client.
  */
-public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPickUp {
+public class FilePickUpClient extends PickUpSpace implements IPickUp {
     /**
      * These parameters determine the enqueing behavior. The desire is to minimize the number of remote calls from WorkSpace
      * or Distributor to an instance of this class with the getQueSize method, and at the same keep all of the places busy.
@@ -392,7 +396,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
 
         // payloadHandler.setup(d);
         d.putParameter("TARGETBIN", fixedDirName);
-        d.putParameter(emissary.parser.SessionParser.ORIG_DOC_SIZE_KEY, Integer.valueOf(d.dataLength()));
+        d.putParameter(SessionParser.ORIG_DOC_SIZE_KEY, Integer.valueOf(d.dataLength()));
         d.setPriority(currentBundle.getPriority());
 
         // Fix up the complete path
@@ -406,7 +410,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
             d.putParameter("Original-Filename", fn);
         }
 
-        d.putParameter("INPUT_FILEDATE", emissary.util.TimeUtil.getDateAsISO8601(f.lastModified()));
+        d.putParameter("INPUT_FILEDATE", TimeUtil.getDateAsISO8601(f.lastModified()));
         d.putParameter("INPUT_FILENAME", f.getName());
 
         // Fix up the case/project metadata, e.g. PROJECT:GERONIMO22
@@ -422,7 +426,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
                 synchronized (theDigest) {
                     theDigest.reset();
                     byte[] hash = theDigest.digest(fn.getBytes());
-                    d.setFilename(parts[1] + "-" + emissary.util.Hexl.toUnformattedHexString(hash));
+                    d.setFilename(parts[1] + "-" + Hexl.toUnformattedHexString(hash));
                 }
             }
         } else {
@@ -430,7 +434,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
             String fixedCaseId = caseIdHook(cid, d.shortName(), f.toString(), d.getParameters());
             if (fixedCaseId == null) {
                 // current yyyyjjj
-                fixedCaseId = emissary.util.TimeUtil.getCurrentDateOrdinal();
+                fixedCaseId = TimeUtil.getCurrentDateOrdinal();
             }
             d.putParameter("DATABASE_CASE_ID", fixedCaseId);
         }
@@ -448,7 +452,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
         synchronized (theDigest) {
             theDigest.reset();
             byte[] hash = theDigest.digest(filePath.getBytes());
-            return new File(prefix + "-" + emissary.util.Hexl.toUnformattedHexString(hash)).getName();
+            return new File(prefix + "-" + Hexl.toUnformattedHexString(hash)).getName();
         }
     }
 

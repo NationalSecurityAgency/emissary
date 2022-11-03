@@ -2,6 +2,8 @@ package emissary.pool;
 
 import java.io.IOException;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.core.IMobileAgent;
 import org.apache.commons.pool2.PooledObject;
@@ -42,7 +44,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
     protected void configure() {
         // Setup the DEFAULT_CLASS_STRING value by peeking at the config file
         try {
-            emissary.config.Configurator conf = emissary.config.ConfigUtil.getConfigInfo(AgentPool.class);
+            Configurator conf = ConfigUtil.getConfigInfo(AgentPool.class);
             classString = conf.findStringEntry("agent.class", DEFAULT_CLASS_STRING);
 
             maxAgentMoveErrors = conf.findIntEntry("agent.move.errors", maxAgentMoveErrors);

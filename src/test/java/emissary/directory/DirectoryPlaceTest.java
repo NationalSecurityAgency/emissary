@@ -18,6 +18,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
+import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 import org.junit.jupiter.api.AfterEach;
@@ -104,7 +105,7 @@ class DirectoryPlaceTest extends UnitTest {
         final DirectoryEntry d = new DirectoryEntry(this.client.getKey());
         assertEquals(this.client.getKey(), d.getKey(), "Entry produced");
         assertTrue(d.isLocal(), "Entry points to local place");
-        final emissary.place.IServiceProviderPlace p = d.getLocalPlace();
+        final IServiceProviderPlace p = d.getLocalPlace();
         assertNotNull(p, "Entry points to local place");
         assertTrue(p instanceof IDirectoryPlace, "Entry is directory");
     }

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import emissary.core.Form;
 import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ class KeyManipulatorTest extends UnitTest {
     void testParsing() {
         final String t = "UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace$5050";
 
-        assertEquals(emissary.core.Form.UNKNOWN, KeyManipulator.getDataType(t), "Data type");
+        assertEquals(Form.UNKNOWN, KeyManipulator.getDataType(t), "Data type");
         assertEquals("FOOPLACE", KeyManipulator.getServiceName(t), "Service name");
         assertEquals("ID", KeyManipulator.getServiceType(t), "Service type");
         assertEquals("host.domain.com:8001", KeyManipulator.getServiceHost(t), "Service host");

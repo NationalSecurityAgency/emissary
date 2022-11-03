@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import emissary.core.Form;
 import emissary.util.shell.Executrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ public class UnixFile {
     public static final String FILETYPE_ASCII = "ASCII File";
 
     /** The empty file type description */
-    public static final String FILETYPE_EMPTY = emissary.core.Form.EMPTY;
+    public static final String FILETYPE_EMPTY = Form.EMPTY;
 
     /**
      * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be thrown

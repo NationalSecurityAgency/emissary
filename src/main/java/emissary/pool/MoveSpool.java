@@ -11,6 +11,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
@@ -425,7 +426,7 @@ public class MoveSpool implements Runnable {
          */
         public String getServiceName() {
             if (place != null) {
-                return emissary.directory.KeyManipulator.getServiceName(place.getKey());
+                return KeyManipulator.getServiceName(place.getKey());
             }
             return "sprout";
         }

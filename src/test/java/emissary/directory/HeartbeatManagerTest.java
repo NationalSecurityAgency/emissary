@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
+import org.apache.http.NoHttpResponseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -50,7 +51,7 @@ class HeartbeatManagerTest extends UnitTest {
         // IOException
         CloseableHttpClient mockClient = mock(CloseableHttpClient.class);
         when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenThrow(
-                new org.apache.http.NoHttpResponseException("localhost:1222 failed to respond"));
+                new NoHttpResponseException("localhost:1222 failed to respond"));
 
         EmissaryClient client = new EmissaryClient(mockClient);
 

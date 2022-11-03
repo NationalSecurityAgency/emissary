@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import emissary.directory.DirectoryEntry;
+
 public interface IBaseDataObject {
 
     /**
@@ -688,14 +690,14 @@ public interface IBaseDataObject {
      * 
      * @return last item in history
      */
-    emissary.directory.DirectoryEntry getLastPlaceVisited();
+    DirectoryEntry getLastPlaceVisited();
 
     /**
      * Return an SDE based on the penultimate item in the transform history or null if empty
      * 
      * @return penultimate item in history
      */
-    emissary.directory.DirectoryEntry getPenultimatePlaceVisited();
+    DirectoryEntry getPenultimatePlaceVisited();
 
     /**
      * Return true if the payload has been to a place matching the key passed in.

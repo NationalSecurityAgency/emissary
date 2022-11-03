@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import emissary.core.DataObjectFactory;
+import emissary.core.Form;
 import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
@@ -236,7 +237,7 @@ class RoutingAlgorithmTest extends UnitTest {
     void testPayloadWithDoneForm() {
         loadAllTestEntries();
         this.dir.addTestEntry(new DirectoryEntry("DONE.d1.IO.http://example.com:8001/D$5050"));
-        this.payload.pushCurrentForm(emissary.core.Form.DONE);
+        this.payload.pushCurrentForm(Form.DONE);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertNull(result, "Must not return result when payload has DONE form");
     }
@@ -249,7 +250,7 @@ class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("FOO");
         this.payload.pushCurrentForm("BAR");
         this.payload.pushCurrentForm("BAZ");
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(eplace.getKey(), result.getKey(), "Routing to error handling place should occur");
         assertEquals(1, this.payload.currentFormSize(), "Routing to error handling place removes other forms");
@@ -260,9 +261,9 @@ class RoutingAlgorithmTest extends UnitTest {
         loadAllTestEntries();
         final DirectoryEntry eplace = new DirectoryEntry("ERROR.e1.IO.http://example.com:8001/E$5050");
         this.dir.addTestEntry(eplace);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(0, this.payload.currentFormSize(), "Error in error handling place removes all forms");
         assertNull(result, "Error in Error handling must not re-route to error handler but we got " + result);

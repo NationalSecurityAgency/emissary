@@ -3,6 +3,9 @@ package emissary.core;
 import java.io.Serializable;
 import java.util.List;
 
+import emissary.directory.DirectoryEntry;
+import emissary.place.IServiceProviderPlace;
+
 /**
  * Interface to the MobileAgent
  */
@@ -25,7 +28,7 @@ public interface IMobileAgent extends Serializable, Runnable {
      * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but the
      *        payload will not be processed here
      */
-    void go(Object payload, emissary.place.IServiceProviderPlace sourcePlace);
+    void go(Object payload, IServiceProviderPlace sourcePlace);
 
     /**
      * Arriving payload assigned to an agent for process at arrivalPlace
@@ -36,7 +39,7 @@ public interface IMobileAgent extends Serializable, Runnable {
      * @param mec the move error count to update the agent's state
      * @param iq the list of DirectoryEntry stored itinerary steps if any
      */
-    void arrive(Object payload, emissary.place.IServiceProviderPlace arrivalPlace, int mec, List<emissary.directory.DirectoryEntry> iq)
+    void arrive(Object payload, IServiceProviderPlace arrivalPlace, int mec, List<DirectoryEntry> iq)
             throws Exception;
 
     /**
@@ -49,7 +52,7 @@ public interface IMobileAgent extends Serializable, Runnable {
      * 
      * @return array of DirectoryEntry
      */
-    emissary.directory.DirectoryEntry[] getItineraryQueueItems();
+    DirectoryEntry[] getItineraryQueueItems();
 
     /**
      * Return true if agent is working on a payload

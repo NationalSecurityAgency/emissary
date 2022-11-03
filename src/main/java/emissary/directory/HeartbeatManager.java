@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -365,7 +366,7 @@ public class HeartbeatManager {
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.FROM_PLACE_NAME, fromPlace));
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.TO_PLACE_NAME, loc));
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
 
         return client.send(method);
     }

@@ -13,6 +13,7 @@ import emissary.core.Namespace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.test.core.junit5.FunctionalTest;
+import emissary.util.shell.Executrix;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -215,7 +216,7 @@ class FTestFailedPickupClient extends FunctionalTest {
         // Detailed debugging help on the structure of what is left in the file system
         if (logger.isDebugEnabled()) {
             StringBuilder sb = new StringBuilder();
-            new emissary.util.shell.Executrix().execute(new String[] {"find", TMPDIR + "/filepicktest", TMPDIR + "/data", "-print"}, sb);
+            new Executrix().execute(new String[] {"find", TMPDIR + "/filepicktest", TMPDIR + "/data", "-print"}, sb);
             logger.debug("Files:\n" + sb);
         }
 

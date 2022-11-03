@@ -3,12 +3,13 @@ package emissary.place.sample;
 import java.io.IOException;
 
 import emissary.core.IBaseDataObject;
+import emissary.place.EmptyFormPlace;
 import emissary.place.ServiceProviderPlace;
 
 /**
  * This place is a sink hole for everything it registers for
  */
-public class DevNullPlace extends ServiceProviderPlace implements emissary.place.EmptyFormPlace {
+public class DevNullPlace extends ServiceProviderPlace implements EmptyFormPlace {
     /**
      * Create and register
      */

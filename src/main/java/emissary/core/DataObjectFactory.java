@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.pool.AgentPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class DataObjectFactory {
      */
     static {
         try {
-            final Configurator c = ConfigUtil.getConfigInfo(emissary.pool.AgentPool.class);
+            final Configurator c = ConfigUtil.getConfigInfo(AgentPool.class);
             CLAZZ = c.findStringEntry("payload.class", DEFAULT_CLASS);
         } catch (IOException ioe) {
             logger.warn("Unable to configure DataObjectFactory", ioe);

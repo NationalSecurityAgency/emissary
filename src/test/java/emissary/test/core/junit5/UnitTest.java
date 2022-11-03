@@ -12,9 +12,11 @@ import java.util.stream.Stream;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
+import emissary.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,7 +100,7 @@ public abstract class UnitTest {
     }
 
     public void assertMaxNonSystemThreadCount(int max) {
-        emissary.util.ThreadDump td = new emissary.util.ThreadDump();
+        ThreadDump td = new ThreadDump();
         ThreadInfo[] ti = td.getThreadInfo(true);
         if (ti.length > max) {
             StringBuilder sb = new StringBuilder();
@@ -193,7 +195,7 @@ public abstract class UnitTest {
         }
 
         String aname = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
-        SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         Document answerDoc;
         try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
             answerDoc = builder.build(is);

@@ -14,6 +14,7 @@ import java.util.Map;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
@@ -32,12 +33,12 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected List<String> binFiles = null;
     protected List<String> binFileExt = null;
     protected List<String> outDirs = null;
-    protected String SINGLE_CHILD_FILETYPE = emissary.core.Form.UNKNOWN;
+    protected String SINGLE_CHILD_FILETYPE = Form.UNKNOWN;
     protected boolean KEEP_PARENT_HASHES_FOR_SINGLE_CHILD = false;
     protected boolean KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD = false;
     protected static final String DEFAULT_NEW_PARENT_FORM = "SAFE_HTML";
-    protected static final String DEFAULT_NEW_CHILD_FORM = emissary.core.Form.UNKNOWN;
-    protected static final String DEFAULT_NEW_ERROR_FORM = emissary.core.Form.ERROR;
+    protected static final String DEFAULT_NEW_CHILD_FORM = Form.UNKNOWN;
+    protected static final String DEFAULT_NEW_ERROR_FORM = Form.ERROR;
     protected boolean setTitleToFile = true;
     protected Map<String, String> fileTypesByExtension = new HashMap<>();
     protected String contentFile = null;

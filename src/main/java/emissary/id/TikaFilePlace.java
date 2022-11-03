@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.io.TikaInputStream;
@@ -146,8 +147,8 @@ public class TikaFilePlace extends emissary.id.IdPlace {
     public void process(IBaseDataObject d) {
         // Bail out on empty data
         if (d.data() == null || d.data().length == 0) {
-            d.setCurrentForm(emissary.core.Form.EMPTY);
-            d.setFileType(emissary.core.Form.EMPTY);
+            d.setCurrentForm(Form.EMPTY);
+            d.setFileType(Form.EMPTY);
             return;
         }
 

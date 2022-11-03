@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+
 /**
  * Interface for drop off filter.
  */
@@ -45,7 +48,7 @@ public interface IDropOffFilter {
      * @param configG passed in configuration object, usually DropOff's
      * @param filterName the configured name of this filter or null for the default
      */
-    void initialize(emissary.config.Configurator configG, String filterName);
+    void initialize(Configurator configG, String filterName);
 
     /**
      * Initialization phase hook for the filter
@@ -54,7 +57,7 @@ public interface IDropOffFilter {
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig configuration for specific runtime filter
      */
-    void initialize(emissary.config.Configurator configG, String filterName, emissary.config.Configurator filterConfig);
+    void initialize(Configurator configG, String filterName, Configurator filterConfig);
 
     /**
      * Run the filter for a document
@@ -63,7 +66,7 @@ public interface IDropOffFilter {
      * @param params map of params
      * @return status value
      */
-    int filter(emissary.core.IBaseDataObject d, Map<String, Object> params);
+    int filter(IBaseDataObject d, Map<String, Object> params);
 
     /**
      * Run the filter for a set of documents
@@ -72,7 +75,7 @@ public interface IDropOffFilter {
      * @param params map of params
      * @return status value
      */
-    int filter(List<emissary.core.IBaseDataObject> list, Map<String, Object> params);
+    int filter(List<IBaseDataObject> list, Map<String, Object> params);
 
     /**
      * Run the filter for a document
@@ -82,7 +85,7 @@ public interface IDropOffFilter {
      * @param output the output stream to log the data onto
      * @return status value
      */
-    int filter(emissary.core.IBaseDataObject d, Map<String, Object> params, OutputStream output);
+    int filter(IBaseDataObject d, Map<String, Object> params, OutputStream output);
 
     /**
      * Run the filter for a set of documents
@@ -92,7 +95,7 @@ public interface IDropOffFilter {
      * @param output the output stream to log the data onto
      * @return status value
      */
-    int filter(List<emissary.core.IBaseDataObject> list, Map<String, Object> params, OutputStream output);
+    int filter(List<IBaseDataObject> list, Map<String, Object> params, OutputStream output);
 
     /**
      * Determine if the payload is outputtable by the filter
@@ -101,7 +104,7 @@ public interface IDropOffFilter {
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
      */
-    boolean isOutputtable(emissary.core.IBaseDataObject d, Map<String, Object> params);
+    boolean isOutputtable(IBaseDataObject d, Map<String, Object> params);
 
     /**
      * Determine if the payload list is outputtable by the filter
@@ -110,7 +113,7 @@ public interface IDropOffFilter {
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
      */
-    boolean isOutputtable(List<emissary.core.IBaseDataObject> list, Map<String, Object> params);
+    boolean isOutputtable(List<IBaseDataObject> list, Map<String, Object> params);
 
     /**
      * Determine if the payload is outputtable by the filter
@@ -118,7 +121,7 @@ public interface IDropOffFilter {
      * @param d the IBaseDataObject to check for outputtability
      * @return true if the filter will attempt to output this payload
      */
-    boolean isOutputtable(emissary.core.IBaseDataObject d);
+    boolean isOutputtable(IBaseDataObject d);
 
     /**
      * Determine if the payload list is outputtable by the filter
@@ -126,7 +129,7 @@ public interface IDropOffFilter {
      * @param list collection of IBaseDataObject to check for outputtability
      * @return true if the filter will attempt to output these payload
      */
-    boolean isOutputtable(List<emissary.core.IBaseDataObject> list);
+    boolean isOutputtable(List<IBaseDataObject> list);
 
     /**
      * Close the filter

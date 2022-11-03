@@ -3,6 +3,7 @@ package emissary.directory;
 import java.util.List;
 import java.util.Set;
 
+import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
                 } else {
                     dir = DirectoryPlace.lookup();
                 }
-            } catch (emissary.core.EmissaryException ex) {
+            } catch (EmissaryException ex) {
                 this.logger.debug("Could not find local directory " + name);
             }
 

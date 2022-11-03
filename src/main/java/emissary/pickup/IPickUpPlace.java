@@ -3,7 +3,9 @@
  */
 package emissary.pickup;
 
-public interface IPickUpPlace extends emissary.place.IServiceProviderPlace {
+import emissary.place.IServiceProviderPlace;
+
+public interface IPickUpPlace extends IServiceProviderPlace {
     String getDoneArea();
 
     String getInProcessArea();

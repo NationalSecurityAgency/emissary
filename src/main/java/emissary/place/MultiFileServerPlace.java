@@ -8,6 +8,7 @@ import java.util.Set;
 import emissary.core.IBaseDataObject;
 import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
+import emissary.parser.SessionParser;
 import emissary.pickup.PickUpPlace;
 import emissary.util.DataUtil;
 import emissary.util.TypeEngine;
@@ -161,7 +162,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
             child.setHistory(parent.transformHistory());
         }
         child.appendTransformHistory(KeyManipulator.makeSproutKey(myKey));
-        child.putParameter(emissary.parser.SessionParser.ORIG_DOC_SIZE_KEY, Integer.toString(child.data().length));
+        child.putParameter(SessionParser.ORIG_DOC_SIZE_KEY, Integer.toString(child.data().length));
 
         // start over with no FILETYPE if so directed
         if (nullifyFileType) {

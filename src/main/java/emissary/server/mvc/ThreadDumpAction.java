@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import emissary.util.Version;
 import org.glassfish.jersey.server.mvc.Template;
 
 @Path("")
@@ -27,7 +28,7 @@ public class ThreadDumpAction {
         ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
         Map<String, Object> model = new HashMap<>();
-        model.put("emissary.version", new emissary.util.Version());
+        model.put("emissary.version", new Version());
         model.put("java.version", System.getProperty("java.vm.version"));
         model.put("java.name", System.getProperty("java.vm.name"));
         Map<String, Object> threadcount = new HashMap<>();

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.codahale.metrics.Timer;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -62,7 +63,7 @@ class FTestCoordinatePlace extends FunctionalTest {
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
         assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
-        Map<String, com.codahale.metrics.Timer> resourcesUsed = rw.getStats();
+        Map<String, Timer> resourcesUsed = rw.getStats();
         rw.quit();
         assertTrue(resourcesUsed.containsKey("ToLowerPlace"), "Resource must be tracked for coordinated place");
         assertTrue(resourcesUsed.containsKey("ToUpperPlace"), "Resource must be tracked for coordinated place");

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import emissary.core.IBaseDataObject;
 
 /**
  * Representation of a fully built session with metadata, header, footer, classification, initial forms, and data
@@ -243,7 +244,7 @@ public class DecomposedSession {
      * @param key the name
      */
     public String getStringMetadataItem(String key) {
-        return getStringMetadataItem(key, emissary.core.IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
+        return getStringMetadataItem(key, IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
     }
 
     /**

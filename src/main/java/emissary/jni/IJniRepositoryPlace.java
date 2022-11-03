@@ -2,7 +2,9 @@ package emissary.jni;
 
 import java.rmi.RemoteException;
 
-public interface IJniRepositoryPlace extends emissary.place.IServiceProviderPlace {
+import emissary.place.IServiceProviderPlace;
+
+public interface IJniRepositoryPlace extends IServiceProviderPlace {
 
     public boolean nativeLibraryQuery(String query);
 

@@ -8,6 +8,7 @@ import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.log.MDCConstants;
 import emissary.place.IServiceProviderPlace;
+import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -21,7 +22,7 @@ public class PayloadLauncher {
 
     public static boolean launch(Object payload, IServiceProviderPlace place, int errorCount, List<DirectoryEntry> itineraryItems)
             throws EmissaryException {
-        String payloadName = emissary.util.PayloadUtil.getName(payload);
+        String payloadName = PayloadUtil.getName(payload);
         // Try to grab the arrival spool and save the payload and place
         // because this will allow us to give an asynchronous response
 

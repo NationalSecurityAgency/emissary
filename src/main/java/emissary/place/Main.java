@@ -30,6 +30,7 @@ import emissary.parser.ParserException;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.parser.SimpleParser;
+import emissary.util.Version;
 import emissary.util.shell.Executrix;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -180,7 +181,7 @@ public class Main {
      */
     public void printUsage() {
         // automatically generate the help statement
-        System.out.println("Emissary Version: " + new emissary.util.Version().toString());
+        System.out.println("Emissary Version: " + new Version().toString());
         HelpFormatter formatter = new HelpFormatter();
         String header = null;
         String footer = "    [file1 [ file2 ... fileN]]";
