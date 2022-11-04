@@ -599,11 +599,9 @@ class DropOffUtilTest extends UnitTest {
     @Test
     void testCleanSpecPath() {
         assertEquals("/this/is/fine", util.cleanSpecPath("/this/is/fine"));
-        assertEquals("/this/is/fine", util.cleanSpecPath("\\this\\is\\fine"));
-        assertEquals("/this/is/fine", util.cleanSpecPath("/this/../is/fine"));
-        assertEquals("/this/is/fine", util.cleanSpecPath("/this/../is/../fine"));
-        assertEquals("/this/is/fine", util.cleanSpecPath("/this/....../../..//./is/fine"));
-        assertEquals("/this/is/fine", util.cleanSpecPath("\\this\\......\\..\\..\\\\.\\is\\fine"));
+        assertEquals("/this/./is/fine", util.cleanSpecPath("/this/../is/fine"));
+        assertEquals("/this/./is/./fine", util.cleanSpecPath("/this/../is/../fine"));
+        assertEquals("/this/./././/./is/fine", util.cleanSpecPath("/this/....../../..//./is/fine"));
     }
 
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {

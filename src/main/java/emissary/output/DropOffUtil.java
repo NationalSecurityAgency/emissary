@@ -2,7 +2,6 @@ package emissary.output;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -399,9 +398,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(tld.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
                             } else if (d != null) {
-                                sb.append(datePath(d.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
                             }
                             break;
                         case 'R':
@@ -409,13 +408,13 @@ public class DropOffUtil {
                             break;
                         case 'B':
                             if (tld != null) {
-                                sb.append(getBestIdFrom(tld));
+                                sb.append(cleanSpecPath(getBestIdFrom(tld)));
                             } else if (d != null) {
-                                sb.append(getBestIdFrom(d));
+                                sb.append(cleanSpecPath(getBestIdFrom(d)));
                             }
                             break;
                         case 'b':
-                            sb.append((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d));
+                            sb.append(cleanSpecPath((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d)));
                             final String sn = d.shortName();
                             final int pos = sn.indexOf(emissary.core.Family.SEP);
                             if (pos > 0) {
@@ -449,7 +448,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 7);
                 if (endpos > i + 7) {
                     final String token = spec.substring(i + 7, endpos);
-                    final String value = d.getStringParameter(token);
+                    final String value = cleanSpecPath(d.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 8 + token.length(); // META{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -460,7 +459,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 6);
                 if (endpos > i + 6) {
                     final String token = spec.substring(i + 6, endpos);
-                    final String value = tld.getStringParameter(token);
+                    final String value = cleanSpecPath(tld.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 7 + token.length(); // TLD{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -472,10 +471,8 @@ public class DropOffUtil {
 
         }
 
-        return cleanSpecPath(sb.toString());
-    }
+        String answer = sb.toString();
 
-    protected String cleanSpecPath(String answer) {
         // Set the proper path separator
         if (osIsWindows) {
             answer = answer.replace('/', '\\');
@@ -483,15 +480,13 @@ public class DropOffUtil {
             answer = answer.replace('\\', '/');
         }
 
-        if (answer.contains("..")) {
-            logger.error("DropOff path contains illegal character sequence \"..\"");
-            answer = answer.replaceAll("[.]+", ".");
-            answer = Paths.get(answer).normalize().toString();
-        }
-
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
         return answer;
+    }
+
+    protected String cleanSpecPath(@Nullable String token) {
+        return token == null ? null : token.replaceAll("[.]+", ".");
     }
 
     /**
