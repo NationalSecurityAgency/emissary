@@ -20,7 +20,7 @@ public class PathExistsReadableConverter extends PathExistsConverter {
         if (!Files.isReadable(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which is not readable", getOptionName(), p);
             LOG.error(msg);
-            throw new RuntimeException(msg);
+            throw new IllegalArgumentException(msg);
         }
         return p;
     }
