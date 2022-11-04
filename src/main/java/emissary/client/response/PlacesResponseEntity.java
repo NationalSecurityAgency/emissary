@@ -3,6 +3,7 @@ package emissary.client.response;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -30,7 +31,7 @@ public class PlacesResponseEntity extends BaseResponseEntity {
         this.local = local;
     }
 
-    public void addClusterPlaces(PlaceList pl) {
+    public void addClusterPlaces(@Nullable PlaceList pl) {
         if (cluster == null) {
             cluster = new HashSet<>();
         }

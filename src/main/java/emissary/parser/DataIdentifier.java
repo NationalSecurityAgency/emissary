@@ -5,6 +5,8 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.shell.Executrix;
@@ -42,7 +44,7 @@ public class DataIdentifier {
         configure(config);
     }
 
-    protected void configure(Configurator config) {
+    protected void configure(@Nullable Configurator config) {
         try {
             if (config == null) {
                 config = ConfigUtil.getConfigInfo(this.getClass());

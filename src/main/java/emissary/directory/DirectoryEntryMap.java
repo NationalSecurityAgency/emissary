@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +70,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @param map the map to copy
      * @param deepCopy true if should be a deep copy
      */
-    public DirectoryEntryMap(final DirectoryEntryMap map, final boolean deepCopy) {
+    public DirectoryEntryMap(@Nullable final DirectoryEntryMap map, final boolean deepCopy) {
         this();
         if (map != null) {
             for (final Map.Entry<String, DirectoryEntryList> entry : map.entrySet()) {
@@ -349,7 +351,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      *
      * @param entryList the list of entries to merge
      */
-    public void addEntries(final List<DirectoryEntry> entryList) {
+    public void addEntries(@Nullable final List<DirectoryEntry> entryList) {
         if (entryList != null) {
             for (final DirectoryEntry d : entryList) {
                 addEntry(d);
@@ -362,7 +364,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * 
      * @param that the new entries
      */
-    public void addEntries(final DirectoryEntryMap that) {
+    public void addEntries(@Nullable final DirectoryEntryMap that) {
         if (that != null) {
             for (final Map.Entry<String, DirectoryEntryList> entry : that.entrySet()) {
                 // Optimized add since already grouped by same key

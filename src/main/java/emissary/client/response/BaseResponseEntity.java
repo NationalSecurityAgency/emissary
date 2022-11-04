@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
@@ -35,7 +36,7 @@ public class BaseResponseEntity implements Serializable, BaseEntity {
         addErrors(entity.getErrors());
     }
 
-    protected void addErrors(Set<String> errors) {
+    protected void addErrors(@Nullable Set<String> errors) {
         if (errors != null) {
             for (String err : errors) {
                 this.addError(err);

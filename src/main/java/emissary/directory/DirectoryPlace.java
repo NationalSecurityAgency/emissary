@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import javax.annotation.Nullable;
+
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -314,7 +316,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param keys set of string key for peer directories
      */
     @Override
-    public void irdAddPeerDirectories(final Set<String> keys) {
+    public void irdAddPeerDirectories(@Nullable final Set<String> keys) {
         // Validate contract
         if ((keys == null) || keys.isEmpty()) {
             logger.warn("Ignoring irdAddPeerDirectories called with null or no keys");
@@ -453,7 +455,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
      * @return the new entries
      */
-    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap) {
+    private DirectoryEntryMap loadRemoteEntries(final String key, @Nullable final DirectoryEntryMap loadMap) {
 
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot load remote entries in standalone nodes");
@@ -528,7 +530,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @return list of entries that were removed
      */
     private List<DirectoryEntry> removeStaleEntries(final DirectoryEntryMap loadMap, final String key, final long checkpoint,
-            final DirectoryEntryMap newEntries, final boolean performNotification) {
+            @Nullable final DirectoryEntryMap newEntries, final boolean performNotification) {
 
         final List<DirectoryEntry> staleEntries = new ArrayList<>();
 
@@ -589,7 +591,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param purgeKey remove any keys matching
      * @param costBump add cost to incoming
      */
-    private void cleanLoadNotifyEntries(final DirectoryEntryMap map, final DirectoryEntryMap loadMap, final String purgeKey, final int costBump) {
+    private void cleanLoadNotifyEntries(final DirectoryEntryMap map, @Nullable final DirectoryEntryMap loadMap, @Nullable final String purgeKey,
+            final int costBump) {
         // Remove local entries from the new map
         // We already know about our local stuff.
         if (purgeKey != null) {
@@ -895,7 +898,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param keys list of complete keys with expense
      */
     @Override
-    public void addPlaces(final List<String> keys) {
+    public void addPlaces(@Nullable final List<String> keys) {
         // Validate contract
         if ((keys == null) || keys.isEmpty() || (keys.get(0) == null)) {
             logger.error("addPlaces skipping place with no keys");
@@ -920,7 +923,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param propagating true if going back down the directory chain
      */
     @Override
-    public void irdAddPlaces(final List<DirectoryEntry> entryList, final boolean propagating) {
+    public void irdAddPlaces(@Nullable final List<DirectoryEntry> entryList, final boolean propagating) {
 
         if ((entryList == null) || entryList.isEmpty()) {
             logger.debug("irdAddPlaces called with null or empty entryList!");
@@ -1027,7 +1030,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param entries map of DirectoryEntry stored in this directory
      * @return List of DirectoryEntry with next place to go or empty list if none
      */
-    protected List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastPlace,
+    protected List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
             final DirectoryEntryMap entries) {
         // Find the entry list for the type being requested
         final DirectoryEntryList currentList = getWildcardedEntryList(dataID, entries);
@@ -1240,7 +1243,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @return count of how many keys removed
      */
     @Override
-    public int irdRemovePlaces(final List<String> keys, final boolean propagating) {
+    public int irdRemovePlaces(@Nullable final List<String> keys, final boolean propagating) {
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot remove remote places in standalone nodes");
             return 0;

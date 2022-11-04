@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -83,7 +85,7 @@ public class DecomposedSession {
      * @param d bytes to set
      * @param copy make a copy when true
      */
-    public void setData(byte[] d, boolean copy) {
+    public void setData(@Nullable byte[] d, boolean copy) {
         if (d == null || !copy) {
             data = d;
         } else {
@@ -203,7 +205,7 @@ public class DecomposedSession {
      * @param name the name of the meta record to add
      * @param value the value to add
      */
-    public void addMetaData(String name, Object value) {
+    public void addMetaData(@Nullable String name, @Nullable Object value) {
         if (name != null && value != null) {
             metadata.put(name, value);
         }
@@ -214,7 +216,7 @@ public class DecomposedSession {
      *
      * @param m map of items to add
      */
-    public void addMetaData(Map<String, ? extends Object> m) {
+    public void addMetaData(@Nullable Map<String, ? extends Object> m) {
         if (m != null && m.size() > 0) {
             for (Map.Entry<String, ? extends Object> entry : m.entrySet()) {
                 String key = entry.getKey();
@@ -272,7 +274,7 @@ public class DecomposedSession {
      *
      * @param form initial form to add
      */
-    public void addInitialForm(String form) {
+    public void addInitialForm(@Nullable String form) {
         if (form != null) {
             initialForms.add(form);
         }
@@ -281,7 +283,7 @@ public class DecomposedSession {
     /**
      * Set the list of initial forms to use This will overwrite existing initial forms
      */
-    public void setInitialForms(List<String> forms) {
+    public void setInitialForms(@Nullable List<String> forms) {
         if (forms != null) {
             initialForms = new ArrayList<String>(forms);
         }

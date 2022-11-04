@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
@@ -25,7 +27,7 @@ public class DataFilter extends AbstractFilter {
      * @param filterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final Configurator configG, final String filterName, final Configurator filterConfig) {
+    public void initialize(final Configurator configG, @Nullable final String filterName, final Configurator filterConfig) {
         if (filterName == null) {
             setFilterName("DATA");
         }
@@ -144,7 +146,7 @@ public class DataFilter extends AbstractFilter {
      * @param type of data
      */
     protected boolean writeDataFile(final IBaseDataObject d, final IBaseDataObject tld, final String baseFileName, final byte[] data,
-            final String type) {
+            @Nullable final String type) {
         String fileName = baseFileName;
         if (type != null) {
             fileName += "." + type;

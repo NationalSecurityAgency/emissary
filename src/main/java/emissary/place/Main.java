@@ -16,6 +16,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.core.Factory;
 import emissary.core.Family;
@@ -817,7 +819,7 @@ public class Main {
      * @param args the remaining (non-option) arguments
      * @param path the path we are operating in, for appending when doing file recursion
      */
-    public void processMainData(String[] args, String path) {
+    public void processMainData(String[] args, @Nullable String path) {
         for (int i = 0; i < args.length; i++) {
             String spath = (path != null ? (path + "/") : "") + args[i];
             File f = new File(spath);
@@ -982,7 +984,7 @@ public class Main {
      *
      * @param payload the processed object
      */
-    public void printPayload(IBaseDataObject payload) {
+    public void printPayload(@Nullable IBaseDataObject payload) {
         if (payload == null) {
             return;
         }

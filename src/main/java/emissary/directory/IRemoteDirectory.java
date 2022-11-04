@@ -3,6 +3,8 @@ package emissary.directory;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import emissary.core.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +62,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
          * 
          * @param name name of the local directory or null for default
          */
-        public IRemoteDirectory getLocalDirectory(final String name) {
+        public IRemoteDirectory getLocalDirectory(@Nullable final String name) {
             IDirectoryPlace dir = null;
             try {
                 if (name != null) {

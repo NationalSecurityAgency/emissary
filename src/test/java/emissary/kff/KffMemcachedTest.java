@@ -20,6 +20,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.Nullable;
+
 import emissary.kff.KffFilter.FilterType;
 import emissary.test.core.junit5.UnitTest;
 import net.spy.memcached.MemcachedClient;
@@ -130,7 +132,8 @@ class KffMemcachedTest extends UnitTest {
         }
     }
 
-    private void setPrivateMembersForTesting(KffMemcached cacheFilter, Boolean storeIdDupe) throws NoSuchFieldException, IllegalAccessException {
+    private void setPrivateMembersForTesting(KffMemcached cacheFilter, @Nullable Boolean storeIdDupe)
+            throws NoSuchFieldException, IllegalAccessException {
 
         // Overriding the protected attribute of the field for testing
         if (storeIdDupe != null) {

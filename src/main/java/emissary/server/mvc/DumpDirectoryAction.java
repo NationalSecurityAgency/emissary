@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,7 +37,7 @@ public class DumpDirectoryAction {
     @Path("/DumpDirectory.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/dump_directory")
-    public Map<String, Object> dumpDirectory(@Context HttpServletRequest request, @QueryParam("targetDir") String targetDir) {
+    public Map<String, Object> dumpDirectory(@Context HttpServletRequest request, @Nullable @QueryParam("targetDir") String targetDir) {
         Map<String, Object> map = new HashMap<>();
         IDirectoryPlace dir = null;
         List<String> errors = new ArrayList<>();

@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.directory.KeyManipulator;
@@ -217,7 +219,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     /**
      * Validate that we should process this data
      */
-    protected boolean validDataHook(IBaseDataObject d) {
+    protected boolean validDataHook(@Nullable IBaseDataObject d) {
         return d != null;
     }
 

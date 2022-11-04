@@ -3,6 +3,8 @@ package emissary.kff;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IBaseDataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +83,7 @@ public class KffDataObjectHandler {
      * @param prefix prepended to hash name entries
      * @return parameter entries suitable for a BaseDataObject
      */
-    public Map<String, String> hashData(byte[] data, String name, String prefix) {
+    public Map<String, String> hashData(@Nullable byte[] data, String name, @Nullable String prefix) {
         Map<String, String> results = new HashMap<String, String>();
 
         if (prefix == null) {
@@ -116,7 +118,7 @@ public class KffDataObjectHandler {
      * 
      * @param d the data object
      */
-    public void hash(IBaseDataObject d) {
+    public void hash(@Nullable IBaseDataObject d) {
         if (d != null) {
             removeHash(d);
         }
@@ -192,7 +194,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      * @param hash the value
      */
-    public static void setHashValue(IBaseDataObject d, String hash) {
+    public static void setHashValue(IBaseDataObject d, @Nullable String hash) {
         int hl = hash != null ? hash.length() : -1;
 
         if (hash.indexOf(":") > -1) {

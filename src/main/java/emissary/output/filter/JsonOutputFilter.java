@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -53,7 +55,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected ObjectMapper jsonMapper;
 
     @Override
-    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, @Nullable final String filterName, final Configurator theFilterConfig) {
         if (filterName == null) {
             setFilterName("JSON");
         }

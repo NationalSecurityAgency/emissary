@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,7 +97,7 @@ public final class Ssdeep {
          * @param f The file that will be processed, if known. If non-{@code null}, the length of the file is used to guess the
          *        hash block size to use.
          */
-        public SsContext(final File f) {
+        public SsContext(@Nullable final File f) {
             final long expectedInputLength = (f != null) ? f.length() : 0;
             this.blockSize = estimateBlockSize(expectedInputLength);
         }
@@ -106,7 +108,7 @@ public final class Ssdeep {
          * @param data The bytes that will be processed, if known. If non-{@code null}, the length of the array is used to guess
          *        the hash block size to use.
          */
-        public SsContext(final byte[] data) {
+        public SsContext(@Nullable final byte[] data) {
             final long expectedInputLength = (data != null) ? data.length : 0;
             this.blockSize = estimateBlockSize(expectedInputLength);
         }
@@ -242,7 +244,7 @@ public final class Ssdeep {
          * @param data The bytes to hash.
          * @return The signature for the given data.
          */
-        public SpamSumSignature generateHash(final byte[] data) {
+        public SpamSumSignature generateHash(@Nullable final byte[] data) {
             beginHashing();
             final RollingState rollState = new RollingState();
 
@@ -602,7 +604,7 @@ public final class Ssdeep {
      * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100 is a
      *         great match.
      */
-    public int Compare(final SpamSumSignature signature1, final SpamSumSignature signature2) {
+    public int Compare(@Nullable final SpamSumSignature signature1, @Nullable final SpamSumSignature signature2) {
         if ((null == signature1) || (null == signature2)) {
             return -1;
         }

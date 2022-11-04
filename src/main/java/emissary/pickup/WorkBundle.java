@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -178,7 +180,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         return null;
     }
 
-    static void writeUTFOrNull(String s, DataOutputStream out) throws IOException {
+    static void writeUTFOrNull(@Nullable String s, DataOutputStream out) throws IOException {
         out.writeBoolean(s != null);
         if (s != null) {
             out.writeUTF(s);

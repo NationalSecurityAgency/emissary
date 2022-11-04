@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -57,7 +58,7 @@ public class ThreadDumpAction {
     public static class ThreadDumpInfo {
         public String stack;
 
-        public ThreadDumpInfo(ThreadInfo ti) {
+        public ThreadDumpInfo(@Nullable ThreadInfo ti) {
             StringBuilder sb = new StringBuilder();
             if (ti == null) {
                 sb.append("A null thread?");

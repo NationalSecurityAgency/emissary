@@ -6,6 +6,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +86,7 @@ public abstract class NIOSessionParser extends SessionParser {
      * @return the byte array of data
      * @throws ParserException in cases where a new array can't be read.
      */
-    protected byte[] loadNextRegion(byte[] data) throws ParserException {
+    protected byte[] loadNextRegion(@Nullable byte[] data) throws ParserException {
         logger.debug("loadNextRegion(): data.length = {}, maxChunkSize = {}, chunkStart = {}, writeOffset = {}",
                 data == null ? -1 : data.length, maxChunkSize, chunkStart, writeOffset);
 

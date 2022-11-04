@@ -1,5 +1,7 @@
 package emissary.parser;
 
+import javax.annotation.Nullable;
+
 /**
  * Record offset and length of something in an array
  */
@@ -21,7 +23,7 @@ public class PositionRecord {
      * 
      * @param posAndLen Position at 0 and Length at 1
      */
-    public PositionRecord(long[] posAndLen) {
+    public PositionRecord(@Nullable long[] posAndLen) {
         if (posAndLen != null && posAndLen.length == 2) {
             this.position = posAndLen[0];
             this.length = posAndLen[1];

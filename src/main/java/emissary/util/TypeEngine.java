@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import org.slf4j.Logger;
@@ -49,7 +51,7 @@ public class TypeEngine {
     /**
      * Configure it
      */
-    public void configure(List<String> configFiles) {
+    public void configure(@Nullable List<String> configFiles) {
 
         if (configFiles == null) {
             logger.info("No files specified for type engine");
@@ -75,7 +77,7 @@ public class TypeEngine {
      * @param label LHS part of equation to lookup
      * @return RHS part of mapping or null if none found
      */
-    public String getForm(String engine, String label) {
+    public String getForm(@Nullable String engine, @Nullable String label) {
 
         String ret = null;
 
@@ -121,7 +123,7 @@ public class TypeEngine {
     /**
      * Chop down to file extension and look it up in specified engine
      */
-    public String getFormByExtension(String engine, String fn) {
+    public String getFormByExtension(String engine, @Nullable String fn) {
         if (fn == null) {
             return null;
         }

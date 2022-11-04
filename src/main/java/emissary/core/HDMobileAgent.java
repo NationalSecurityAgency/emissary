@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
@@ -71,7 +73,7 @@ public class HDMobileAgent extends MobileAgent {
      * @param p the payload, clear list if null to retain previous behavior
      */
     @Override
-    protected synchronized void setPayload(final IBaseDataObject p) {
+    protected synchronized void setPayload(@Nullable final IBaseDataObject p) {
         if (p == null) {
             this.payloadList.clear();
             super.setPayload(null);

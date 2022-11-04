@@ -5,6 +5,7 @@ import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 
+import javax.annotation.Nullable;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -89,7 +90,7 @@ public class HTTPConnectionFactory {
     }
 
     @VisibleForTesting
-    HTTPConnectionFactory(final Configurator config) {
+    HTTPConnectionFactory(@Nullable final Configurator config) {
         Registry<ConnectionSocketFactory> registry = null;
         try {
             final Configurator cfg = config == null ? ConfigUtil.getConfigInfo(HTTPConnectionFactory.class) : config;

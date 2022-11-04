@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public class SimpleNioParser extends NIOSessionParser {
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements
      */
-    protected DecomposedSession decomposeSession(InputSession session) throws ParserException {
+    protected DecomposedSession decomposeSession(@Nullable InputSession session) throws ParserException {
         try {
             DecomposedSession d = new DecomposedSession();
             if (session != null) {
@@ -172,7 +174,7 @@ public class SimpleNioParser extends NIOSessionParser {
      *
      * @param records the list of position records indicating absolute offsets
      */
-    byte[] makeDataSlice(List<PositionRecord> records) throws IOException {
+    byte[] makeDataSlice(@Nullable List<PositionRecord> records) throws IOException {
         if (records == null || records.isEmpty()) {
             return null;
         }

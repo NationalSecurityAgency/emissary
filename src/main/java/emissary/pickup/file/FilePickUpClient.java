@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IBaseDataObject;
 import emissary.pickup.IPickUp;
 import emissary.pickup.IPickUpSpace;
@@ -173,7 +175,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
     /**
      * Find a file in the holding area that matches our guy.
      */
-    protected File findFileInHoldingArea(File f, String eatPrefix) {
+    protected File findFileInHoldingArea(File f, @Nullable String eatPrefix) {
         if (holdingArea != null) {
             String fpart = f.getName();
             ;
@@ -478,7 +480,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
      * @param dir the directory entry encountered
      * @param simpleMode true if the workBundle indicated simpleMode
      */
-    protected void processDirectoryEntry(String root, String prefix, String caseid, File dir, boolean simpleMode) {
+    protected void processDirectoryEntry(String root, String prefix, String caseid, @Nullable File dir, boolean simpleMode) {
         if (dir != null) {
             logger.warn("Entry " + dir.getName() + " ignored");
         }
