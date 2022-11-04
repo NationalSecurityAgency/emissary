@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Element;
 import org.slf4j.Logger;
@@ -68,7 +70,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
      * @param deepCopy true if should be a deep copy
      * @param preserveTime true if time should be preserved on entries
      */
-    protected DirectoryEntryList(final DirectoryEntryList list, final boolean deepCopy, final boolean preserveTime) {
+    protected DirectoryEntryList(@Nullable final DirectoryEntryList list, final boolean deepCopy, final boolean preserveTime) {
         super();
         if (list != null) {
             for (final DirectoryEntry d : list) {
@@ -272,7 +274,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
      * @param sort true if returned list should be sorted
      * @return the new list
      */
-    public static List<DirectoryEntry> deepCopy(final List<DirectoryEntry> that, final boolean sort) {
+    public static List<DirectoryEntry> deepCopy(@Nullable final List<DirectoryEntry> that, final boolean sort) {
         final List<DirectoryEntry> copies = new ArrayList<DirectoryEntry>();
         if (that != null) {
             for (final DirectoryEntry e : that) {

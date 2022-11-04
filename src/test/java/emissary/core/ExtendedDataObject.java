@@ -3,6 +3,8 @@ package emissary.core;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +41,7 @@ public class ExtendedDataObject extends BaseDataObject implements Serializable, 
         this.intVar = 38;
     }
 
-    public ExtendedDataObject(final byte[] newData, final String name, final String form) {
+    public ExtendedDataObject(final byte[] newData, final String name, @Nullable final String form) {
         this(newData, name);
         if (form != null) {
             pushCurrentForm(form);

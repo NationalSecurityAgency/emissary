@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
@@ -252,7 +254,7 @@ public class Startup {
     /**
      * Count all entries in lists of a map
      */
-    private int hashListSize(final Map<String, List<String>> m) {
+    private int hashListSize(@Nullable final Map<String, List<String>> m) {
         int total = 0;
         if (m != null) {
             for (final List<String> l : m.values()) {

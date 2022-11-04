@@ -8,6 +8,8 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.jdom2.CDATA;
@@ -52,7 +54,7 @@ public abstract class AbstractJDOMUtil {
         return builder;
     }
 
-    protected static Document createDocument(final String xml, final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
+    protected static Document createDocument(final String xml, @Nullable final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }
@@ -64,7 +66,8 @@ public abstract class AbstractJDOMUtil {
         }
     }
 
-    protected static Document createDocument(final byte[] xml, final XMLFilter filter, final String charset, final SAXBuilder builder)
+    protected static Document createDocument(final byte[] xml, @Nullable final XMLFilter filter, @Nullable final String charset,
+            final SAXBuilder builder)
             throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
@@ -89,7 +92,7 @@ public abstract class AbstractJDOMUtil {
         }
     }
 
-    protected static Document createDocument(final InputSource is, final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
+    protected static Document createDocument(final InputSource is, @Nullable final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }

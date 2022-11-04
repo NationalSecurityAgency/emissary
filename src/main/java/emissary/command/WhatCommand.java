@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -196,7 +198,7 @@ public class WhatCommand extends BaseCommand {
         }
     }
 
-    protected Identification identify(final IBaseDataObject b, final boolean useHeaderArg) {
+    protected Identification identify(@Nullable final IBaseDataObject b, final boolean useHeaderArg) {
         Identification ident = null;
         if (b == null || b.data() == null) {
             ident = new Identification("BAD_SESSION");
@@ -211,7 +213,7 @@ public class WhatCommand extends BaseCommand {
         return ident;
     }
 
-    private Identification runEngines(final IBaseDataObject b) {
+    private Identification runEngines(@Nullable final IBaseDataObject b) {
 
         final Identification ident = new Identification();
         final List<String> typesFound = new ArrayList<String>();

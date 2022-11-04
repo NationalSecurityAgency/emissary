@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.Nullable;
+
 import com.codahale.metrics.Timer;
 import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
@@ -176,7 +178,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param configStream the stream to use or null to auto configure
      */
-    protected Configurator loadConfigurator(InputStream configStream, String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable InputStream configStream, String placeLocation) throws IOException {
         // Read the configuration stream
         if (configStream != null) {
             // Use supplied stream
@@ -190,7 +192,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param configFileName the file name to use or null to auto configure
      */
-    protected Configurator loadConfigurator(String configFileName, String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable String configFileName, String placeLocation) throws IOException {
         // Read the configuration stream
         if (configFileName != null) {
             // Use supplied stream
@@ -203,7 +205,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     /**
      * Load the configurator, figuring out whence automatically
      */
-    protected Configurator loadConfigurator(String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable String placeLocation) throws IOException {
         if (placeLocation == null) {
             placeLocation = this.getClass().getSimpleName();
         }
@@ -285,7 +287,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param theDir key for the directory to use, if null will look up default name
      * @return true if it worked
      */
-    private boolean localizeDirectory(String theDir) {
+    private boolean localizeDirectory(@Nullable String theDir) {
         // Get a local (non proxy) copy of the directory if possible!
         // Looking up both if nothing is provided
         if (theDir == null) {
@@ -381,7 +383,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param placeLocation the specified placeLocation or a full four part key to register with
      */
-    protected void configureServicePlace(String placeLocation) throws IOException {
+    protected void configureServicePlace(@Nullable String placeLocation) throws IOException {
         serviceDescription = configG.findStringEntry("SERVICE_DESCRIPTION");
         if (serviceDescription == null || serviceDescription.length() == 0) {
             serviceDescription = "Description not available";
@@ -570,7 +572,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param payload the payload to evaluate and rehash
      */
-    protected void rehash(IBaseDataObject payload) {
+    protected void rehash(@Nullable IBaseDataObject payload) {
         // Recompute hash if marker interface is enabled
         if (this instanceof RehashingPlace && kff != null && payload != null) {
             kff.hash(payload);

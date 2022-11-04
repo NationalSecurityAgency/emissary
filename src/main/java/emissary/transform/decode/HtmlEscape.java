@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import emissary.util.ByteUtil;
 import emissary.util.CharacterCounterSet;
 import emissary.util.HtmlEntityMap;
@@ -49,7 +51,7 @@ public class HtmlEscape {
      * @param counters to measure what is changed
      * @return modified byte array
      */
-    public static byte[] unescapeHtml(byte[] data, CharacterCounterSet counters) {
+    public static byte[] unescapeHtml(@Nullable byte[] data, @Nullable CharacterCounterSet counters) {
 
         ByteArrayOutputStream baos = null;
         byte[] returnBytes = null;
@@ -123,7 +125,7 @@ public class HtmlEscape {
      * @param counters to measure what is changed
      * @return the new String without escaped HTML
      */
-    public static String unescapeHtml(String s, CharacterCounterSet counters) {
+    public static String unescapeHtml(@Nullable String s, @Nullable CharacterCounterSet counters) {
         if (s == null || s.length() == 0)
             return "";
 
@@ -198,7 +200,7 @@ public class HtmlEscape {
      * @param s the string to find entities in
      * @param counters to measure what was changed
      */
-    public static String unescapeEntities(String s, CharacterCounterSet counters) {
+    public static String unescapeEntities(String s, @Nullable CharacterCounterSet counters) {
         int slen = s.length();
         StringBuilder sb = new StringBuilder(s.length());
 
@@ -277,7 +279,7 @@ public class HtmlEscape {
      * Unescape HTML Entities like &amp;nbsp; into normal characters Also handle broken entities like &amp;;nbsp; and
      * &amp;nbsp (extra semi-colon and missing semi-colon respectively)
      */
-    public static byte[] unescapeEntities(byte[] s, CharacterCounterSet counters) {
+    public static byte[] unescapeEntities(byte[] s, @Nullable CharacterCounterSet counters) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int slen = s.length;
 

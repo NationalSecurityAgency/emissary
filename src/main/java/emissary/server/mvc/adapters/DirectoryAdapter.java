@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
@@ -242,7 +243,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @return DirectoryEntryList map from the remote side
      * @throws EmissaryException if remote returns an error
      */
-    private DirectoryEntryMap zoneTransfer(final String key, final String myKey, final String action) throws EmissaryException {
+    private DirectoryEntryMap zoneTransfer(final String key, @Nullable final String myKey, final String action) throws EmissaryException {
         final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(key), CONTEXT, action);
 
         final String parentLoc = KeyManipulator.getServiceLocation(key);

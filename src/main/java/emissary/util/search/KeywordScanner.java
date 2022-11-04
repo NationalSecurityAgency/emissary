@@ -2,6 +2,8 @@ package emissary.util.search;
 
 import java.nio.charset.Charset;
 
+import javax.annotation.Nullable;
+
 /**
  * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.
  */
@@ -45,7 +47,7 @@ public class KeywordScanner {
      * 
      * @param data - bytes to match against
      */
-    public void resetData(byte[] data) {
+    public void resetData(@Nullable byte[] data) {
         this.data = data;
         if (data != null) {
             this.dataLength = data.length;
@@ -95,7 +97,7 @@ public class KeywordScanner {
      * @param stop the index to stop searching at, exclusive, negative value returns -1
      * @return the index in the data where the pattern begins, -1 if not found
      */
-    public int indexOf(final byte[] patternArg, final int start, final int stop) {
+    public int indexOf(@Nullable final byte[] patternArg, final int start, final int stop) {
         if ((start >= this.dataLength) || (stop > this.dataLength) || (patternArg == null)) {
             return -1;
         }

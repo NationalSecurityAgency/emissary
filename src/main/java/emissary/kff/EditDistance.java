@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import javax.annotation.Nullable;
+
 /**
  * A java port of the ssdeep code for "fuzzy hashing". http://ssdeep.sourceforge.net There are a number of ports out
  * there that all look basically the same. This one is from
@@ -147,7 +149,7 @@ public class EditDistance {
     /*
      * edit_distn -- returns the edit distance between two strings, or -1 on failure
      */
-    public static int edit_distn(byte[] from, int _from_len, byte[] to, int _to_len) {
+    public static int edit_distn(@Nullable byte[] from, int _from_len, @Nullable byte[] to, int _to_len) {
         from_len = _from_len;
         to_len = _to_len;
 

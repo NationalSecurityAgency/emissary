@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import javax.annotation.Nullable;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -121,7 +123,7 @@ public class Emissary {
         }
     }
 
-    private void dumpBanner(EmissaryCommand cmd) {
+    private void dumpBanner(@Nullable EmissaryCommand cmd) {
         if (!bannerDumped) {
             bannerDumped = true;
             if (cmd == null) {

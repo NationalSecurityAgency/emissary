@@ -45,7 +45,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
 
     /**
      * Order the queue by the oldest file modification time in the bundles. "Oldest" is relative to "now".
-     *
+     * <p>
      * However, if the priority of the bundles differ, the priority overrules the times
      */
     public static final class OldestFirstComparator implements Comparator<WorkBundle> {
@@ -70,7 +70,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
 
     /**
      * Order the queue by the youngest/most-recent file modification time in the bundles. "Youngest" is relative to "now".
-     *
+     * <p>
      * However, if the priority of the bundles differ, the priority overrules the times
      */
     public static final class YoungestFirstComparator implements Comparator<WorkBundle> {
@@ -95,7 +95,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
 
     /**
      * Order the queue by the largest work bundle (in aggregate file size).
-     *
+     * <p>
      * However, if the priority of the bundles differ, the priority overrules the sizes
      */
     public static final class LargestFirstComparator implements Comparator<WorkBundle> {
@@ -120,7 +120,7 @@ public class WorkspaceSortModeConverter implements IStringConverter<Comparator<W
 
     /**
      * Order the queue by the smallest work bundle (in aggregate file size).
-     *
+     * <p>
      * However, if the priority of the bundles differ, the priority overrules the sizes
      */
     public static final class SmallestFirstComparator implements Comparator<WorkBundle> {

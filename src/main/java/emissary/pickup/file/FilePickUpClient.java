@@ -8,6 +8,8 @@ import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IBaseDataObject;
 import emissary.parser.SessionParser;
 import emissary.pickup.IPickUp;
@@ -52,6 +54,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     protected String winInRoot;
     protected String unixOutRoot;
     protected String winOutRoot;
+    protected String digestHashType;
 
     protected MessageDigest digest = null;
 
@@ -92,18 +95,19 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      * Configure this place
      */
     protected void configurePlace() {
-        try {
-            digest = MessageDigest.getInstance("MD5");
-        } catch (Exception ex) {
-            logger.warn("Could not initialize message digest: ", ex);
-        }
-
         pollingInterval = configG.findIntEntry("POLLING_INTERVAL", pollingInterval);
         MAX_QUE_SIZE = configG.findIntEntry("MAX_QUE_SIZE", MAX_QUE_SIZE);
         unixInRoot = configG.findStringEntry("UNIX_IN_ROOT", null);
         winInRoot = configG.findStringEntry("WIN_IN_ROOT", null);
         unixOutRoot = configG.findStringEntry("UNIX_OUT_ROOT", null);
         winOutRoot = configG.findStringEntry("WIN_OUT_ROOT", null);
+        digestHashType = configG.findStringEntry("DIGEST_HASH_TYPE", "SHA-256");
+
+        try {
+            digest = MessageDigest.getInstance(digestHashType);
+        } catch (Exception ex) {
+            logger.warn("Could not initialize message digest: ", ex);
+        }
     }
 
     protected void configureQueueServer() {
@@ -175,7 +179,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     /**
      * Find a file in the holding area that matches our guy.
      */
-    protected File findFileInHoldingArea(File f, String eatPrefix) {
+    protected File findFileInHoldingArea(File f, @Nullable String eatPrefix) {
         if (holdingArea != null) {
             String fpart = f.getName();
             ;
@@ -480,7 +484,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      * @param dir the directory entry encountered
      * @param simpleMode true if the workBundle indicated simpleMode
      */
-    protected void processDirectoryEntry(String root, String prefix, String caseid, File dir, boolean simpleMode) {
+    protected void processDirectoryEntry(String root, String prefix, String caseid, @Nullable File dir, boolean simpleMode) {
         if (dir != null) {
             logger.warn("Entry " + dir.getName() + " ignored");
         }

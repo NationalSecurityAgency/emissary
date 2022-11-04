@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,7 @@ public class SimpleParser extends SessionParser {
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements.
      */
-    protected DecomposedSession decomposeSession(InputSession session) {
+    protected DecomposedSession decomposeSession(@Nullable InputSession session) {
         DecomposedSession d = new DecomposedSession();
         if (session != null) {
             List<PositionRecord> header = session.getHeader();

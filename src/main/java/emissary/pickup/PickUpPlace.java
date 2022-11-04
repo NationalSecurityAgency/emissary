@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.Form;
@@ -320,7 +322,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param outputRoot a specified output root
      * @return true if the file was renamed
      */
-    protected boolean renameFileToDoneArea(File theFile, String outputRoot) {
+    protected boolean renameFileToDoneArea(File theFile, @Nullable String outputRoot) {
         String base = theFile.getPath();
         boolean renamed = false;
         if (holdingArea != null) {
@@ -347,7 +349,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param eatPrefix optional prefix strip from the work bundle
      * @return null if no holdingArea, else the new File endpoint
      */
-    protected File getInProcessFileNameFor(File theFile, String eatPrefix) {
+    protected File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
         String base = theFile.getPath();
         if (eatPrefix != null) {
             base = base.substring(eatPrefix.length());
@@ -367,7 +369,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param dest where it should end up, or use the holdingArea if nil
      * @return true if renamed, false if not
      */
-    protected boolean renameToInProcessAreaAs(File source, File dest) {
+    protected boolean renameToInProcessAreaAs(File source, @Nullable File dest) {
         if (holdingArea == null && dest == null) {
             logger.warn("Holding area not configured, cannot rename {}", source);
             return false;
@@ -434,7 +436,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param theFile the file that was processed
      * @param outputRoot the specified output done area
      */
-    protected void handleFileSuccess(File theFile, String outputRoot) {
+    protected void handleFileSuccess(File theFile, @Nullable String outputRoot) {
         if (outputRoot != null) {
             logger.debug("Handling file success by moving to doneArea {}", theFile);
             renameFileToDoneArea(theFile, outputRoot);
@@ -655,7 +657,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * 
      * @return fixed filename
      */
-    protected String fixFileName(String v) {
+    protected String fixFileName(@Nullable String v) {
         if (v == null) {
             return null;
         }
@@ -711,7 +713,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @return mobile agent assigned to pool
      * @throws EmissaryException when an agent cannot be obtained
      */
-    public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, AgentPool agentPool, IServiceProviderPlace startingLocation,
+    public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, @Nullable AgentPool agentPool, IServiceProviderPlace startingLocation,
             long timeoutMs) throws EmissaryException {
         IMobileAgent agent = null;
         long startTime = System.currentTimeMillis();

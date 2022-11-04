@@ -2,6 +2,8 @@ package emissary.pickup;
 
 import java.util.LinkedList;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +46,7 @@ public class PickupQueue {
      * @param paths the WorkBundle object containing files to queue up
      * @return true if it was enqueued, false if we are too busy to handle it
      */
-    public boolean enque(WorkBundle paths) {
+    public boolean enque(@Nullable WorkBundle paths) {
         if (paths == null || paths.size() == 0) {
             logger.warn("Enque of a null or empty WorkBundle structure!");
             return true;

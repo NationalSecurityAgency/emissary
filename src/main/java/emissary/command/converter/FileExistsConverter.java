@@ -23,7 +23,7 @@ public class FileExistsConverter extends BaseConverter<File> {
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", getOptionName(), p);
             LOG.error(msg);
-            throw new RuntimeException(msg);
+            throw new IllegalArgumentException(msg);
         }
         return p.toFile();
     }

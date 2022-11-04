@@ -99,7 +99,7 @@ class FilePickUpClientTest extends UnitTest {
     void testCreateFileName() throws Exception {
         // Perform the default filename creation strategy
         String filePath = "/foo/bar";
-        MessageDigest digest = MessageDigest.getInstance("MD5");
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
         byte[] resultHash = digest.digest(filePath.getBytes());
         String resultString = Hexl.toUnformattedHexString(resultHash);

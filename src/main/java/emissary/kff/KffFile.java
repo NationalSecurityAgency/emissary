@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +142,7 @@ public class KffFile implements KffFilter {
      * @param crc Result of CRC calculation
      * @return true if the record is in the list, false if it isn't
      */
-    private boolean binaryFileSearch(byte[] hash, long crc) {
+    private boolean binaryFileSearch(@Nullable byte[] hash, long crc) {
         if (hash == null && myPreferredAlgorithm != null) {
             logger.error("Unable to get digest computation for " + myPreferredAlgorithm);
             return false;

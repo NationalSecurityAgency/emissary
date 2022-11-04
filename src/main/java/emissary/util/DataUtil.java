@@ -12,6 +12,8 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.id.WorkUnit;
@@ -52,7 +54,7 @@ public class DataUtil {
      * @param d the data object
      * @return true if d is not null and not empty
      */
-    public static boolean isNotEmpty(final IBaseDataObject d) {
+    public static boolean isNotEmpty(@Nullable final IBaseDataObject d) {
         return (d != null) && !isEmpty(d);
     }
 
@@ -70,7 +72,7 @@ public class DataUtil {
      * @param data array to check
      * @return true if data is null or devoid of real characters
      */
-    public static boolean isEmpty(final byte[] data) {
+    public static boolean isEmpty(@Nullable final byte[] data) {
         return (data == null) || (data.length == 0);
     }
 

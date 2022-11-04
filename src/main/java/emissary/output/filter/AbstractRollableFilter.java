@@ -158,13 +158,11 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params);
     }
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params, final OutputStream output) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params, output);
     }
 

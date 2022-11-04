@@ -3,6 +3,8 @@ package emissary.directory;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import emissary.util.xml.SaferJDOMUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -122,7 +124,7 @@ public class DirectoryXmlContainer {
      * @param requester the key of the remote directory that is requesting the local directory contents
      * @return xml string representing the proxied keys
      */
-    public static String toXmlString(final IDirectoryPlace dir, final String proxyKey, final String requester) {
+    public static String toXmlString(final IDirectoryPlace dir, @Nullable final String proxyKey, final String requester) {
         logger.debug("Building xml string for " + requester);
         final String xml;
         if ((proxyKey == null) || !(dir instanceof IRemoteDirectory)) {

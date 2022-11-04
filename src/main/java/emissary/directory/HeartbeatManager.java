@@ -9,6 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.Nullable;
+
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.core.Namespace;
@@ -99,7 +101,8 @@ public class HeartbeatManager {
      * @param initialDelaySeconds seconds to wait before initial timer task
      * @param intervalSeconds how often the timeer task kicks off
      */
-    public HeartbeatManager(final String directoryKey, final List<String> dirList, final int initialDelaySeconds, final int intervalSeconds) {
+    public HeartbeatManager(final String directoryKey, @Nullable final List<String> dirList, final int initialDelaySeconds,
+            final int intervalSeconds) {
         this.initialDelaySeconds = initialDelaySeconds;
         this.intervalSeconds = intervalSeconds;
 

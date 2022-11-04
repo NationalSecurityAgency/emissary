@@ -1,8 +1,6 @@
 package emissary.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -10,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -88,12 +87,12 @@ public class ConfigUtil {
     /** The bin dir */
     private static String binDir = null;
 
-    /** True if we are running on windows */
+    /** True if we are running on Windows */
     private static boolean isWindows = false;
 
     /**
      * The configuration flavor, allows multiple layers of config stuff to be stored together in one package or directory,
-     * sort of like a mini single inheritance model. It is a comma separated, ordered list of sub-types to try to merge into
+     * sort of like a mini single inheritance model. It is a comma separated, ordered list of subtypes to try to merge into
      * the current config.
      */
     private static String configFlavors = null;
@@ -104,16 +103,16 @@ public class ConfigUtil {
      * XML bean configuration with Jetty 6 does a poor job of propagating exceptions during configure. Once we update to
      * Jetty 9, evaluate removing this. Otherwise, there is no way I could find to stop the server from starting if there is
      * a configuration error.
-     * 
+     * <p>
      * TODO: evaluate whether we can change this now that we are on jetty 9
-     *
+     * <p>
      * This method is used in JettyServer to determine whether to fail startup.
      */
     public static boolean hasConfigErrors() {
         return configErrors;
     }
 
-    /**
+    /*
      * Perform initialization
      */
     static {
@@ -129,7 +128,7 @@ public class ConfigUtil {
      *
      * @param in The input string.
      * @return If {@code in} ends with a slash, this returns a string with the same content except without the trailing
-     *         slash. Otherwise this returns a string with the same content as {@code in}.
+     *         slash. Otherwise, this returns a string with the same content as {@code in}.
      */
     private static String removeTrailingSlash(final String in) {
         if (in.endsWith("/")) {
@@ -144,8 +143,7 @@ public class ConfigUtil {
      * system properties and re-call this method when they need to.
      */
     public static void initialize() throws EmissaryException {
-        // PlaceStarter.class.getName();
-        isWindows = System.getProperty("os.name").indexOf("Window") != -1;
+        isWindows = System.getProperty("os.name").contains("Window");
 
         // throws NPE if not defined
         projectRoot = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
@@ -165,15 +163,15 @@ public class ConfigUtil {
         configFlavors = System.getProperty(CONFIG_FLAVOR_PROPERTY, null);
         configPkg = System.getProperty(CONFIG_PKG_PROPERTY, configPkg);
 
-        configDirs = new ArrayList<String>();
-        final List<String> dirs = Arrays.asList(configDirProperty.split(","));
+        configDirs = new ArrayList<>();
+        final String[] dirs = configDirProperty.split(",");
         for (final String dir : dirs) {
             final String dirNoTrailingSlash = removeTrailingSlash(dir);
             // only add directories that exist
             if (Files.exists(Paths.get(dirNoTrailingSlash))) {
                 configDirs.add(dirNoTrailingSlash);
             } else {
-                logger.warn("Directory configured but didn't exist: " + dirNoTrailingSlash);
+                logger.warn("Directory configured but didn't exist: {}", dirNoTrailingSlash);
             }
         }
     }
@@ -211,7 +209,7 @@ public class ConfigUtil {
      */
     public static List<String> getConfigDirs() {
         if (configDirs == null) {
-            throw new RuntimeException("No config directory specified");
+            throw new IllegalStateException("No config directory specified");
         }
         return configDirs;
     }
@@ -245,10 +243,10 @@ public class ConfigUtil {
                 }
             }
             if (candidates.isEmpty()) {
-                logger.debug("No file found in any of the configured directories: " + file);
+                logger.debug("No file found in any of the configured directories: {}", file);
                 return getFirstConfigDir() + "/" + file;
             } else if (candidates.size() > 1) {
-                logger.error("Multiple files found in the configured directories: " + file + ", returning the first.");
+                logger.error("Multiple files found in the configured directories: {}, returning the first.", file);
             }
             logger.trace("Returning {}", candidates.get(0));
             return candidates.get(0);
@@ -283,10 +281,10 @@ public class ConfigUtil {
             file = file.substring(0, file.length() - CONFIG_FILE_ENDING.length());
         }
 
-        if (file.indexOf("$") > -1) {
+        if (file.contains("$")) {
             file = file.replace('$', '_');
         }
-        if (file.indexOf(".") > -1) {
+        if (file.contains(".")) {
             file = file.substring(file.lastIndexOf(".") + 1);
         }
         return getConfigFile(file + CONFIG_FILE_ENDING);
@@ -321,7 +319,7 @@ public class ConfigUtil {
      * @throws IOException if none of the prefs can be found
      */
     public static Configurator getConfigInfo(final List<String> preferences) throws IOException {
-        Configurator c = null;
+        Configurator c;
         for (final String s : preferences) {
             try {
                 c = getConfigInfo(s);
@@ -387,7 +385,7 @@ public class ConfigUtil {
         File f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file {}", f.getPath());
-            return new FileInputStream(f);
+            return Files.newInputStream(f.toPath());
         }
         logger.debug("No file config found using new style {}", f.getName());
 
@@ -401,10 +399,9 @@ public class ConfigUtil {
                 }
 
                 try {
-                    final InputStream is = url.openStream();
-                    return is;
+                    return url.openStream();
                 } catch (IOException ex) {
-                    logger.warn("IOException opening stream for resource for " + rezname);
+                    logger.warn("IOException opening stream for resource for {}", rezname);
                 }
             }
 
@@ -417,7 +414,7 @@ public class ConfigUtil {
         f = new File(sname);
         if (f.exists() && f.canRead()) {
             logger.debug("Found config data as file old style {}", f.getPath());
-            return new FileInputStream(f);
+            return Files.newInputStream(f.toPath());
         }
         logger.debug("No file config found using old style {}", f.getName());
 
@@ -441,7 +438,7 @@ public class ConfigUtil {
         } else if (r.toUpperCase().endsWith("/JS")) {
             r = r.substring(0, r.length() - JS_FILE_ENDING.length()) + JS_FILE_ENDING;
         }
-        final List<String> prefs = new ArrayList<String>();
+        final List<String> prefs = new ArrayList<>();
         if (configPkg != null) {
             prefs.add(configPkg.replace('.', '/') + "/" + r);
         }
@@ -454,31 +451,28 @@ public class ConfigUtil {
      */
     public static Properties getPropertyInfo(final String name) throws IOException {
         final Properties props = new Properties();
-        final File f = new File(getConfigFile(name));
-        InputStream is = null;
-
-        try {
-            if (f.exists() && f.canRead()) {
-                is = new FileInputStream(f);
-            } else {
-                final List<String> cnameprefs = toResourceName(name);
-                for (final String cname : cnameprefs) {
-                    is = new ResourceReader().getResourceAsStream(cname);
-                    if (is != null) {
-                        break;
-                    }
-                }
-            }
-
+        try (InputStream is = getPropertyStream(name, new File(getConfigFile(name)))) {
             if (is != null) {
                 props.load(is);
             }
-        } finally {
-            if (is != null) {
-                is.close();
-            }
         }
         return props;
+    }
+
+    protected static InputStream getPropertyStream(final String name, final File f) throws IOException {
+        InputStream is = null;
+        if (f.exists() && f.canRead()) {
+            is = Files.newInputStream(f.toPath());
+        } else {
+            final List<String> cnameprefs = toResourceName(name);
+            for (final String cname : cnameprefs) {
+                is = new ResourceReader().getResourceAsStream(cname);
+                if (is != null) {
+                    break;
+                }
+            }
+        }
+        return is;
     }
 
     /**
@@ -488,7 +482,7 @@ public class ConfigUtil {
         if (configFlavors == null) {
             return null;
         }
-        return Arrays.asList(configFlavors);
+        return Collections.singletonList(configFlavors);
     }
 
     /**
@@ -550,7 +544,7 @@ public class ConfigUtil {
         // Add config.dir part if not already absolute
         final String filename = (f.startsWith("/") || (isWindows && f.charAt(1) == ':')) ? f : getConfigFile(f);
 
-        return new FileInputStream(filename);
+        return Files.newInputStream(Paths.get(filename));
     }
 
     /**
@@ -568,26 +562,23 @@ public class ConfigUtil {
     public static Configurator getMasterClassNames() throws IOException, EmissaryException {
         final List<File> masterClassNames = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(final File dir, final String name) {
-                    return name.startsWith("emissary.admin.MasterClassNames") && name.endsWith(".cfg");
-                }
-            });
+            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith("emissary.admin.MasterClassNames") && name.endsWith(".cfg"));
             // sort the files, to put emissary.admin.MasterClassNames.cfg before emssary.admin.MasterClassNames-blah.cfg
-            Arrays.sort(files);
-            masterClassNames.addAll(Arrays.asList(files));
+            if (files != null) {
+                Arrays.sort(files);
+                masterClassNames.addAll(Arrays.asList(files));
+            }
         }
         // check to make sure we have at least one
         // TODO make a test for this
-        if (masterClassNames.size() < 1) {
+        if (masterClassNames.isEmpty()) {
             throw new EmissaryException("No emissary.admin.MasterClassNames.cfg files found.  No places to start");
         }
 
         ServiceConfigGuide scg = null;
         for (final File f : masterClassNames) {
             if (!f.exists() || !f.canRead()) {
-                logger.warn("Could not read MasterClassNames from " + f.getAbsolutePath());
+                logger.warn("Could not read MasterClassNames from {}", f.getAbsolutePath());
             } else {
                 logger.debug("Reading MasterClassNames from {}", f.getAbsolutePath());
             }
@@ -598,14 +589,14 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(new FileInputStream(f), "MasterClassNames");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
-                        logger.error("Tried to overwrite existing key from MasterClassNames:" + key + " in " + f.getAbsolutePath());
+                        logger.error("Tried to overwrite existing key from MasterClassNames:{} in {}", key, f.getAbsolutePath());
                         noErrorsForFile = false;
                         // System.exit(43); // this is swallowed in JettyServer in jetty 6
                     }
@@ -654,20 +645,20 @@ public class ConfigUtil {
      */
     public static void main(final String[] args) {
         if (args.length < 1) {
-            System.err.println("usage: java " + ConfigUtil.class.getName() + " configfile");
+            logger.error("usage: java {} configfile", ConfigUtil.class.getName());
             return;
         }
 
-        for (int j = 0; j < args.length; j++) {
+        for (String arg : args) {
             try {
-                final Configurator config = ConfigUtil.getConfigInfo(args[j]);
-                System.out.println("Config File: " + args[j]);
+                final Configurator config = ConfigUtil.getConfigInfo(arg);
+                logger.info("Config File: {}", arg);
                 for (final ConfigEntry c : config.getEntries()) {
-                    System.out.println(c.getKey() + ": " + c.getValue());
+                    logger.info("{}: {}", c.getKey(), c.getValue());
                 }
-                System.out.println("---");
+                logger.info("---");
             } catch (IOException e) {
-                System.err.println("Cannot process " + args[j] + ":" + e);
+                logger.error("Cannot process {}: {}", arg, e.getLocalizedMessage());
             }
         }
     }

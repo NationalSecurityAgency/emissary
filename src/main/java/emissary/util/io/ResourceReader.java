@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +115,7 @@ public class ResourceReader {
      * @param name name of the resource
      * @return a url to the resource
      */
-    public URL getResource(String name) {
+    public URL getResource(@Nullable String name) {
         if (name != null && name.length() > 1 && name.charAt(1) == ':') {
             name = name.substring(2);
         }
@@ -127,7 +129,7 @@ public class ResourceReader {
      * @param name name of resource
      * @return stream, caller must close
      */
-    public InputStream getResourceAsStream(String name) {
+    public InputStream getResourceAsStream(@Nullable String name) {
         if (name != null && name.length() > 1 && name.charAt(1) == ':') {
             name = name.substring(2);
         }
@@ -141,7 +143,7 @@ public class ResourceReader {
      * @param c the class
      * @return a URL indicating the jar file or file location or null if none
      */
-    public URL which(Class<?> c) {
+    public URL which(@Nullable Class<?> c) {
         if (c == null) {
             return null;
         }

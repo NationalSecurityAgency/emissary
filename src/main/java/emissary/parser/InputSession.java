@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -206,7 +208,7 @@ public class InputSession {
      * @param h list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
-    public void addHeaderRecs(List<PositionRecord> h) throws ParserException {
+    public void addHeaderRecs(@Nullable List<PositionRecord> h) throws ParserException {
         if (h != null && h.size() > 0) {
             validateList(h);
             header.addAll(h);
@@ -219,7 +221,7 @@ public class InputSession {
      * @param d list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
-    public void addDataRecs(List<PositionRecord> d) throws ParserException {
+    public void addDataRecs(@Nullable List<PositionRecord> d) throws ParserException {
         if (d != null && d.size() > 0) {
             validateList(d);
             data.addAll(d);
@@ -232,7 +234,7 @@ public class InputSession {
      * @param f list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
-    public void addFooterRecs(List<PositionRecord> f) throws ParserException {
+    public void addFooterRecs(@Nullable List<PositionRecord> f) throws ParserException {
         if (f != null && f.size() > 0) {
             validateList(f);
             footer.addAll(f);
@@ -435,7 +437,7 @@ public class InputSession {
      * @param list the list of PositionRecord
      * @throws ParserException when out of bounds
      */
-    protected void validateList(List<PositionRecord> list) throws ParserException {
+    protected void validateList(@Nullable List<PositionRecord> list) throws ParserException {
 
         if (overall == null || list == null) {
             return;

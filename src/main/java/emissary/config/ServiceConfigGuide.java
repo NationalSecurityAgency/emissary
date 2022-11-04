@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -799,7 +801,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @return map where key is remainder after match and value is the config value, or an empty map if none found
      */
     @Override
-    public Map<String, String> findStringMatchMap(final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
+    public Map<String, String> findStringMatchMap(@Nullable final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
         if (theParameter == null) {
             return Collections.emptyMap();
         }
@@ -841,7 +843,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      *         found
      */
     @Override
-    public Map<String, Set<String>> findStringMatchMultiMap(final String param) {
+    public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param) {
 
         if (param == null) {
             return Collections.emptyMap();

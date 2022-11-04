@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import emissary.core.IBaseDataObject;
 import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
@@ -99,7 +101,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param children the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
-    protected void addParentInformation(IBaseDataObject parent, List<IBaseDataObject> children, boolean nullifyFileType) {
+    protected void addParentInformation(IBaseDataObject parent, @Nullable List<IBaseDataObject> children, boolean nullifyFileType) {
         int birthOrder = 1;
         if (children != null) {
             int totalNumSiblings = children.size();
@@ -132,7 +134,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param child the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
-    protected void addParentInformation(IBaseDataObject parent, IBaseDataObject child, boolean nullifyFileType) {
+    protected void addParentInformation(@Nullable IBaseDataObject parent, @Nullable IBaseDataObject child, boolean nullifyFileType) {
         if (parent == null) {
             logger.warn("addParentInformation with null parent!");
             return;

@@ -3,6 +3,8 @@ package emissary.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 /**
  * Convert any charset to a Java Charset name that a JDK 1.1 and up will understand. Just returns ones that need
  * remapping. Callers should be advised that getting a null back means the code set passed might be valid *as is* or it
@@ -32,7 +34,7 @@ public class JavaCharSet {
     /**
      * Look up the encoding and return the Java CharSet for it if different from the string passed in
      */
-    public static String get(final String cs) {
+    public static String get(@Nullable final String cs) {
         if (cs == null) {
             return null;
         }

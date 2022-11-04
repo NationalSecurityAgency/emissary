@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
+
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.Hexl;
@@ -118,7 +120,7 @@ public class KffMemcached implements KffFilter {
      * @param testClient Memcached client to be used if specified (will instantiate a client if null)
      * @throws IOException is thrown if either the file cannot be read of memcached cannot be contacted
      */
-    public KffMemcached(String testIdWithSpaces, String filterName, FilterType duplicate, MemcachedClient testClient) throws IOException {
+    public KffMemcached(String testIdWithSpaces, String filterName, FilterType duplicate, @Nullable MemcachedClient testClient) throws IOException {
         // Set logger to run time class
         logger = LoggerFactory.getLogger(this.getClass().getName());
         // Set the logger impl to use log4j
