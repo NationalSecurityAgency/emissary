@@ -1,5 +1,7 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.UnsupportedEncodingException;
 
 import javax.annotation.Nullable;
@@ -161,7 +163,7 @@ public class CharsetUtil {
      * @param bArray the input data
      */
     public static char[] byteToCharArray(final byte[] bArray) {
-        final String theContent = new String(bArray);
+        final String theContent = new String(bArray, UTF_8);
         final char[] cArray = theContent.toCharArray();
         return cArray;
     }
@@ -323,7 +325,7 @@ public class CharsetUtil {
             return false;
         }
         final int cpc = value.codePointCount(0, value.length());
-        final int bc = value.getBytes().length;
+        final int bc = value.getBytes(UTF_8).length;
         return cpc != bc;
     }
 

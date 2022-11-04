@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
@@ -49,7 +51,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
         final int numKeywords = this.keywords.length;
 
         for (int i = 0; i < numKeywords; i++) {
-            final byte[] keyword = this.keywords[i].getBytes();
+            final byte[] keyword = this.keywords[i].getBytes(UTF_8);
             final int keywordLength = keyword.length;
             if (i == 0) {
                 this.standardSkip = keywordLength;
@@ -63,7 +65,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
         }
 
         for (int i = 0; i < numKeywords; i++) {
-            final byte[] keyword = this.keywords[i].getBytes();
+            final byte[] keyword = this.keywords[i].getBytes(UTF_8);
             final int keywordLength = keyword.length;
             for (int j = 0; j < (keywordLength - 1); j++) {
                 final int byteValue = get256Value(keyword[j]);

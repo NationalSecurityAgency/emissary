@@ -1,5 +1,6 @@
 package emissary.place;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,12 +20,12 @@ class RehashingPlaceTest extends UnitTest {
 
     private static final byte[] configKeyData = ("TGT_HOST = \"myhost.example.com\"\n" + "TGT_PORT = \"9999\"\n"
             + "SERVICE_KEY = \"TPROXY.TRANSFORM.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-                    .getBytes();
+                    .getBytes(UTF_8);
 
     @Test
     void testRehash() throws Exception {
-        byte[] DATA = "abcdefghijklmnopqrstuvwxyz".getBytes();
-        byte[] DOUBLE_DATA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
+        byte[] DATA = "abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8);
+        byte[] DOUBLE_DATA = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes(UTF_8);
 
 
         InputStream config = new ByteArrayInputStream(configKeyData);

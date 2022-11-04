@@ -1,5 +1,7 @@
 package emissary.command;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.DirectoryStream;
@@ -228,7 +230,7 @@ public class WhatCommand extends BaseCommand {
         final byte[] data = b.data();
 
         if (LOG.isDebugEnabled()) {
-            final String ds = (data.length > 10 ? new String(data, 0, 9) : new String(data));
+            final String ds = (data.length > 10 ? new String(data, 0, 9, UTF_8) : new String(data, UTF_8));
             LOG.debug("Running engines with data=" + ds + "...");
         }
 

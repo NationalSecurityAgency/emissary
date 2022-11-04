@@ -1,5 +1,6 @@
 package emissary.place;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -60,7 +61,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
             logger.error("Cannot create MultiFileUnixCommandPlace", ex);
         }
 
-        payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(), "myPayload", FORM});
+        payload = DataObjectFactory.getInstance(new Object[] {PAYLOAD_STRING.getBytes(UTF_8), "myPayload", FORM});
 
         payload.putParameter("COPY_THIS", "copy value");
         payload.putParameter("IGNORE_THIS", "ignore value");
@@ -85,9 +86,9 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals(1, att.size(), "Attachments should be created");
         assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must in attachment");
+        assertEquals(W, new String(att.get(0).data(), UTF_8).trim(), "Clean UTF-8 coming from the script must in attachment");
         assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
-        assertEquals(W, new String(payload.data()).trim(), "Clean UTF-8 coming from script must be in parent");
+        assertEquals(W, new String(payload.data(), UTF_8).trim(), "Clean UTF-8 coming from script must be in parent");
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
         assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
@@ -105,7 +106,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         assertEquals("UCP-PROCESSED", payload.currentForm(), "Payload should have configured current form");
         assertEquals(2, att.size(), "Attachments should be created");
         assertEquals("UNKNOWN", att.get(0).currentForm(), "Attachment current form set");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(W, new String(att.get(0).data(), UTF_8).trim(), "Clean UTF-8 coming from the script must be maintained");
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
         assertEquals(1, att.get(0).currentFormSize(), "Single form for child");
 
@@ -122,7 +123,7 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals(0, att.size(), "Attachments should not be created");
         assertEquals("UNKNOWN", payload.currentForm(), "Current form set due to processing");
-        assertEquals(W, new String(payload.data()).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(W, new String(payload.data(), UTF_8).trim(), "Clean UTF-8 coming from the script must be maintained");
         assertEquals(1, payload.currentFormSize(), "Single form remaining for parent");
 
         assertEquals("copy value", payload.getStringParameter("COPY_THIS"), "Parent should have propagating metadata value");
@@ -140,8 +141,8 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
 
         List<IBaseDataObject> att = place.processHeavyDuty(payload);
         assertEquals(1, att.size(), "One Attachment should be created");
-        assertEquals(PAYLOAD_STRING, new String(payload.data()), "Parent data should be preserved");
-        assertEquals(W, new String(att.get(0).data()).trim(), "Child payload should match script output");
+        assertEquals(PAYLOAD_STRING, new String(payload.data(), UTF_8), "Parent data should be preserved");
+        assertEquals(W, new String(att.get(0).data(), UTF_8).trim(), "Child payload should match script output");
     }
 
     @Test
@@ -163,11 +164,11 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
 
             // Add messages to the log file, name matched to serviceName from place key
             for (String msg : LOG_MSGS) {
-                fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes());
+                fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes(UTF_8));
             }
 
             // Make some output
-            fos.write("cat ${1} ${2}\n".getBytes());
+            fos.write("cat ${1} ${2}\n".getBytes(UTF_8));
             scriptFile.setExecutable(true); // jdk 1.6+ only
         }
     }
@@ -175,23 +176,23 @@ class MultiFileUnixCommandPlaceTest extends UnitTest {
     private OutputStream startScript() throws IOException {
         Files.deleteIfExists(scriptFile.toPath());
         OutputStream fos = Files.newOutputStream(scriptFile.toPath());
-        fos.write("#!/bin/bash\n".getBytes());
+        fos.write("#!/bin/bash\n".getBytes(UTF_8));
         return fos;
     }
 
     private void createScript(Executrix.OUTPUT_TYPE ot, int outputCount) throws IOException {
         try (OutputStream fos = startScript()) {
             // Write a line to either stdout or outfile.one
-            fos.write(("echo '" + W + "'").getBytes());
+            fos.write(("echo '" + W + "'").getBytes(UTF_8));
             if (ot == Executrix.OUTPUT_TYPE.FILE) {
-                fos.write(" > outfile.one".getBytes());
+                fos.write(" > outfile.one".getBytes(UTF_8));
             }
             fos.write('\n');
 
             // Write a line to outfile.two
             if (outputCount == 2) {
-                fos.write(("echo '" + W + "'").getBytes());
-                fos.write(" > outfile.two".getBytes());
+                fos.write(("echo '" + W + "'").getBytes(UTF_8));
+                fos.write(" > outfile.two".getBytes(UTF_8));
                 fos.write('\n');
             }
 

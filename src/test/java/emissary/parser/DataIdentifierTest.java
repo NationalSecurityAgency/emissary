@@ -1,6 +1,7 @@
 package emissary.parser;
 
 import static emissary.parser.DataIdentifier.UNKNOWN_TYPE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,7 +51,7 @@ class DataIdentifierTest extends UnitTest {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
-        String result = id.identify(identify.getBytes());
+        String result = id.identify(identify.getBytes(UTF_8));
         assertEquals(expected, result, msg);
     }
 

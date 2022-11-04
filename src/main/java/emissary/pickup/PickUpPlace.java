@@ -1,5 +1,7 @@
 package emissary.pickup;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -278,7 +280,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
     protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
         // Send it away, blocks until an agent is ready
         IBaseDataObject dataObject =
-                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(), fixedName,
+                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(UTF_8), fixedName,
                         "OVERSIZE"});
         dataObject.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(dataObject, theFile);

@@ -1,5 +1,7 @@
 package emissary.pickup.file;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -425,7 +427,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
                 final MessageDigest theDigest = this.digest;
                 synchronized (theDigest) {
                     theDigest.reset();
-                    byte[] hash = theDigest.digest(fn.getBytes());
+                    byte[] hash = theDigest.digest(fn.getBytes(UTF_8));
                     d.setFilename(parts[1] + "-" + emissary.util.Hexl.toUnformattedHexString(hash));
                 }
             }
@@ -451,7 +453,7 @@ public class FilePickUpClient extends emissary.pickup.PickUpSpace implements IPi
         final MessageDigest theDigest = this.digest;
         synchronized (theDigest) {
             theDigest.reset();
-            byte[] hash = theDigest.digest(filePath.getBytes());
+            byte[] hash = theDigest.digest(filePath.getBytes(UTF_8));
             return new File(prefix + "-" + emissary.util.Hexl.toUnformattedHexString(hash)).getName();
         }
     }

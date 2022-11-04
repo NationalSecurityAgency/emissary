@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -64,10 +66,10 @@ public class ChecksumResults implements Serializable {
      */
     public byte[] getHash(String alg) {
         if ("CRC32".equals(alg) && crc > -1L) {
-            return Long.toString(crc).getBytes();
+            return Long.toString(crc).getBytes(UTF_8);
         }
         if ("SSDEEP".equals(alg) && ssdeep != null) {
-            return ssdeep.getBytes();
+            return ssdeep.getBytes(UTF_8);
         }
         return hashComp.get(alg);
     }

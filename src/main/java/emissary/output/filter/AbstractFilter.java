@@ -1,5 +1,7 @@
 package emissary.output.filter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -352,7 +354,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         if (s == null) {
             // from exception or no charset
-            s = new String(value, start, len);
+            s = new String(value, start, len, UTF_8);
         }
 
         return s;

@@ -1,5 +1,6 @@
 package emissary.util.web;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -40,7 +41,7 @@ class UrlDataTest extends UnitTest {
         urlData.setResponseCode(49);
         assertEquals(49, urlData.getResponseCode());
 
-        urlData.setTheContent("1234".getBytes());
+        urlData.setTheContent("1234".getBytes(UTF_8));
         assertEquals(4, urlData.getContentLength());
 
         urlData.setTheMethod(Url.POST);

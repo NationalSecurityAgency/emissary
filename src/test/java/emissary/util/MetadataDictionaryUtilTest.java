@@ -1,5 +1,6 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -35,7 +36,7 @@ class MetadataDictionaryUtilTest extends UnitTest {
     @Test
     void keysCanMapToMultipleVals() {
         try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-            final Map<String, Collection<String>> map = this.md.convertLinesToMap(this.lines.getBytes(), output);
+            final Map<String, Collection<String>> map = this.md.convertLinesToMap(this.lines.getBytes(UTF_8), output);
 
             assertEquals(2, map.size());
             assertEquals(2, map.get("NothingHappens").size());
@@ -58,9 +59,9 @@ class MetadataDictionaryUtilTest extends UnitTest {
         kv.put("another", "val4");
 
         final byte[] mapped = MetadataDictionaryUtil.convertMapToByteArray(kv.asMap());
-        assertEquals("abc val1\nanother val4\nxyzzy val3\nzzz val2\n", new String(mapped));
+        assertEquals("abc val1\nanother val4\nxyzzy val3\nzzz val2\n", new String(mapped, UTF_8));
 
         final byte[] mappedAgain = this.md.map(mapped);
-        assertEquals("NothingHappens val3\nNothingHappens val4\nabc val1\nzzz val2\n", new String(mappedAgain));
+        assertEquals("NothingHappens val3\nNothingHappens val4\nabc val1\nzzz val2\n", new String(mappedAgain, UTF_8));
     }
 }

@@ -1,5 +1,6 @@
 package emissary.place;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -34,7 +35,7 @@ class MultiFileServerPlaceTest extends UnitTest {
         } catch (Exception ex) {
             logger.error("Cannot create MFSPlace", ex);
         }
-        parent = DataObjectFactory.getInstance("This is the parent data".getBytes(), "/name/of/the/parent", "PARENT_FORM");
+        parent = DataObjectFactory.getInstance("This is the parent data".getBytes(UTF_8), "/name/of/the/parent", "PARENT_FORM");
     }
 
     @Override
@@ -122,7 +123,7 @@ class MultiFileServerPlaceTest extends UnitTest {
             IBaseDataObject s = DataObjectFactory.getInstance();
             s.setFilename(payload.getFilename() + Family.initial());
             s.setCurrentForm("CHILD_FORM");
-            s.setData("This is the child data".getBytes());
+            s.setData("This is the child data".getBytes(UTF_8));
             if (cft != null) {
                 s.setFileType(cft);
             }

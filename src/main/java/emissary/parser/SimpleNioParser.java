@@ -1,5 +1,7 @@
 package emissary.parser;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -86,7 +88,7 @@ public class SimpleNioParser extends NIOSessionParser {
             if (tmp != null) {
                 String value;
                 if (tmp instanceof PositionRecord) {
-                    value = new String(makeDataSlice((PositionRecord) tmp)).trim();
+                    value = new String(makeDataSlice((PositionRecord) tmp), UTF_8).trim();
                 } else {
                     value = tmp.toString();
                 }

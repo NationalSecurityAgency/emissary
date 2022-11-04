@@ -1,11 +1,11 @@
 package emissary.util;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -90,7 +90,7 @@ public class PkiUtil {
         if (pazz.startsWith(FILE_PRE)) {
             final String pth = pazz.substring(FILE_PRE.length());
             log.debug("Loading key password from file " + pth);
-            try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
+            try (BufferedReader r = Files.newBufferedReader(Paths.get(pth), UTF_8)) {
                 realPW = r.readLine();
             }
             if (realPW == null) {

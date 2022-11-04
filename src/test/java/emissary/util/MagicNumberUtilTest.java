@@ -1,5 +1,6 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -18,10 +19,10 @@ class MagicNumberUtilTest extends UnitTest {
         Path f2 = Files.createTempFile(temporaryDirectory.toPath(), "magic", ".dat");
         try {
             try (OutputStream o1 = Files.newOutputStream(f1)) {
-                o1.write("0  string  pattern1  P1".getBytes());
+                o1.write("0  string  pattern1  P1".getBytes(UTF_8));
             }
             try (OutputStream o2 = Files.newOutputStream(f2)) {
-                o2.write("0  string  pattern2  P2".getBytes());
+                o2.write("0  string  pattern2  P2".getBytes(UTF_8));
             }
             m.load(f1.toFile());
             m.load(f2.toFile());
@@ -35,8 +36,8 @@ class MagicNumberUtilTest extends UnitTest {
     @Test
     void testMultipleByteLoads() {
         MagicNumberUtil m = new MagicNumberUtil();
-        m.load("0 string pattern1 S1".getBytes());
-        m.load("0 string pattern2 S2".getBytes());
+        m.load("0 string pattern1 S1".getBytes(UTF_8));
+        m.load("0 string pattern2 S2".getBytes(UTF_8));
         assertEquals(2, m.size(), "Rules from both files must load");
     }
 }

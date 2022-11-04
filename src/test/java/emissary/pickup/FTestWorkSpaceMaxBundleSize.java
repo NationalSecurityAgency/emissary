@@ -1,5 +1,6 @@
 package emissary.pickup;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -64,13 +65,13 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
         workingFilePaths.add(testfile3.getName());
         testfile3.deleteOnExit();
         FileOutputStream os = new FileOutputStream(testfile);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile2);
-        os.write("This is an even bigger test file!".getBytes());
+        os.write("This is an even bigger test file!".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile3);
-        os.write("This is a 3rd test.".getBytes());
+        os.write("This is a 3rd test.".getBytes(UTF_8));
         os.close();
 
         // start jetty and directory services

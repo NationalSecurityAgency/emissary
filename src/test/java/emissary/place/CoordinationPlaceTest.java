@@ -1,5 +1,6 @@
 package emissary.place;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -65,7 +66,7 @@ class CoordinationPlaceTest extends UnitTest {
 
     @Test
     void process() throws Exception {
-        IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(), "test_file", "text");
+        IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(UTF_8), "test_file", "text");
         place.process(ibdo);
         assertTrue(ibdo.getAllCurrentForms().contains("TESTCOORDINATE"));
     }
@@ -73,9 +74,9 @@ class CoordinationPlaceTest extends UnitTest {
     @Test
     void processHeavyDuty() throws Exception {
         when(mockCoordPlace.agentProcessHeavyDuty(any(IBaseDataObject.class))).thenReturn(
-                Collections.singletonList(DataObjectFactory.getInstance("child testing this".getBytes(), "test_file", "text")));
+                Collections.singletonList(DataObjectFactory.getInstance("child testing this".getBytes(UTF_8), "test_file", "text")));
 
-        IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(), "test_file", "text");
+        IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(UTF_8), "test_file", "text");
         List<IBaseDataObject> sprouts = place.processHeavyDuty(ibdo);
         assertTrue(CollectionUtils.isNotEmpty(sprouts) && sprouts.size() == 1);
         assertTrue(ibdo.getAllCurrentForms().contains("TESTCOORDINATE"));

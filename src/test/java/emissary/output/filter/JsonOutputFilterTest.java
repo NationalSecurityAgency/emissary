@@ -1,5 +1,6 @@
 package emissary.output.filter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,7 +44,7 @@ class JsonOutputFilterTest extends UnitTest {
         f = new JsonOutputFilter();
 
         payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.appendParameter("FOO", "bar");
@@ -101,7 +102,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
 
@@ -168,7 +169,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.putParameter("FOO", "myFoo");
@@ -201,7 +202,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         payload.putParameter("FOO", "myFoo");
@@ -258,7 +259,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR_BAR", "bar");
         payload.appendParameter("BAR_BAZ", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -282,7 +283,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR_BAR", "bar");
         payload.appendParameter("BAR_BAZ", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -306,7 +307,7 @@ class JsonOutputFilterTest extends UnitTest {
 
         // setup ibdo
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the dBAR_BARata".getBytes());
+        payload.setData("This is the dBAR_BARata".getBytes(UTF_8));
         payload.appendParameter("BAR", "bar");
         payload.appendParameter("BAR", "baz");
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -329,13 +330,13 @@ class JsonOutputFilterTest extends UnitTest {
         // setup
         IBaseDataObject parent = DataObjectFactory.getInstance();
         parent.setFilename("parent");
-        parent.setData("some data".getBytes());
+        parent.setData("some data".getBytes(UTF_8));
         IBaseDataObject child = DataObjectFactory.getInstance();
         child.setFilename("parent-att-1");
-        child.setData("some child data".getBytes());
+        child.setData("some child data".getBytes(UTF_8));
         IBaseDataObject child2 = DataObjectFactory.getInstance();
         child2.setFilename("parent-att-2");
-        child2.setData("some child data".getBytes());
+        child2.setData("some child data".getBytes(UTF_8));
 
         config.addEntry("EXTRA_PARAM", "DESCENDANT_COUNT");
         f.initialize(config, "FOO", config);
@@ -360,7 +361,7 @@ class JsonOutputFilterTest extends UnitTest {
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.putParameter("IGNORE_FOO", "ONE");
         payload.putParameter("IGNORE_BAR", "TWO");

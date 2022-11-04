@@ -1,5 +1,6 @@
 package emissary.client;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
@@ -75,7 +76,7 @@ class EmissaryClientTest extends UnitTest {
             String cfg =
                     "connectionTimeout = " + newConnectionTimeout + "\n" + "connectionManagerTimeout = " + newConnectionManagerTimeout + "\n"
                             + "soTimeout = " + newSocketTimeout;
-            byte[] data = cfg.getBytes();
+            byte[] data = cfg.getBytes(UTF_8);
             out.write(data, 0, data.length);
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();

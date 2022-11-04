@@ -4,6 +4,8 @@
 
 package emissary.util.web;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -172,7 +174,7 @@ public class Url {
             // Write post data if POSTing
             if (method == Url.POST && parms != null) {
                 os = conn.getOutputStream();
-                os.write(parms.toPostString().getBytes());
+                os.write(parms.toPostString().getBytes(UTF_8));
                 os.flush();
             }
 
@@ -204,7 +206,7 @@ public class Url {
 
             // Get page unless HEADing
             if (method != Url.HEAD) {
-                dis = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                dis = new BufferedReader(new InputStreamReader(conn.getInputStream(), UTF_8));
 
                 // Get the content
                 String line;
@@ -212,7 +214,7 @@ public class Url {
                     theOutput.append(line).append(System.getProperty("line.separator", "\n"));
                 }
 
-                response.setTheContent(theOutput.toString().getBytes());
+                response.setTheContent(theOutput.toString().getBytes(UTF_8));
             }
         } catch (MalformedURLException e) {
             logger.warn("Bad URL " + urlString, e);

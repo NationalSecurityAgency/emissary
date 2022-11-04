@@ -1,5 +1,7 @@
 package emissary.parser;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +105,7 @@ public class SimpleParser extends SessionParser {
             if (tmp != null) {
                 String value = null;
                 if (tmp instanceof PositionRecord) {
-                    value = new String(DataByteArraySlicer.makeDataSlice(data, (PositionRecord) tmp)).trim();
+                    value = new String(DataByteArraySlicer.makeDataSlice(data, (PositionRecord) tmp), UTF_8).trim();
                 } else {
                     value = tmp.toString();
                 }

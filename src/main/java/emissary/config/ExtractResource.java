@@ -1,5 +1,7 @@
 package emissary.config;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -63,7 +65,7 @@ public class ExtractResource {
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
         try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
-            os.write(rezdata.getBytes());
+            os.write(rezdata.getBytes(UTF_8));
         }
     }
 

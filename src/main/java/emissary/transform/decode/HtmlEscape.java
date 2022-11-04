@@ -1,5 +1,7 @@
 package emissary.transform.decode;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -79,11 +81,11 @@ public class HtmlEscape {
 
                     if (j < data.length && data[j] == ';') {
                         // Try to convert it
-                        char[] c = unescapeHtmlChar(new String(data, startPos, j - startPos), isHex);
+                        char[] c = unescapeHtmlChar(new String(data, startPos, j - startPos, UTF_8), isHex);
                         if (c != null) {
                             // write a codepoint
                             String s = new String(c);
-                            baos.write(s.getBytes());
+                            baos.write(s.getBytes(UTF_8));
                             if (counters != null) {
                                 counters.count(s);
                             }
@@ -297,10 +299,10 @@ public class HtmlEscape {
                         epos++;
                 }
 
-                String val = HTML_ENTITY_MAP.getValueForHTMLEntity(new String(s, spos + 1, epos - (spos + 1)));
+                String val = HTML_ENTITY_MAP.getValueForHTMLEntity(new String(s, spos + 1, epos - (spos + 1), UTF_8));
                 if (val != null) {
                     try {
-                        baos.write(val.getBytes());
+                        baos.write(val.getBytes(UTF_8));
                         if (counters != null) {
                             counters.count(val);
                         }
@@ -346,7 +348,7 @@ public class HtmlEscape {
 
             System.out.println(args[i]);
             if (useString) {
-                String escaped = HtmlEscape.unescapeHtml(new String(content));
+                String escaped = HtmlEscape.unescapeHtml(new String(content, UTF_8));
                 escaped = HtmlEscape.unescapeEntities(escaped);
                 System.out.println(escaped);
             } else {

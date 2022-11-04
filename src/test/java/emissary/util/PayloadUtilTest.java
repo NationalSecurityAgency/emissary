@@ -1,5 +1,6 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +47,7 @@ public class PayloadUtilTest extends UnitTest {
     void testOneLineString() {
         // setup
         final String fn = "fname" + Family.SEP + "4";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
@@ -65,7 +66,7 @@ public class PayloadUtilTest extends UnitTest {
     void testOneLineStringOnTLD() {
         // setup
         final String fn = "fname";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.setCreationTimestamp(new Date(0));
         d.appendTransformHistory("BOGUSKEYELEMENT");
         final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0));
@@ -82,7 +83,7 @@ public class PayloadUtilTest extends UnitTest {
     void testMultiLineString() {
         // setup
         final String fn = "fname" + Family.SEP + "4";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.setCreationTimestamp(new Date(0));
@@ -105,7 +106,7 @@ public class PayloadUtilTest extends UnitTest {
 
     @Test
     void testNameOfSimpleObject() {
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn", Form.UNKNOWN);
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "ab/fn", Form.UNKNOWN);
         assertEquals("fn", PayloadUtil.getName(d), "Name of simple payload is shortname");
     }
 
@@ -113,7 +114,7 @@ public class PayloadUtilTest extends UnitTest {
     void testNameOfCollection() {
         final List<IBaseDataObject> list = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "ab/fn" + i, Form.UNKNOWN);
+            final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "ab/fn" + i, Form.UNKNOWN);
             list.add(d);
         }
         assertEquals("fn0(3)", PayloadUtil.getName(list), "Name of collection payload is shortname with count");
@@ -133,12 +134,12 @@ public class PayloadUtilTest extends UnitTest {
 
     @Test
     void testXmlSerizliaztion() {
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), "testfile", Form.UNKNOWN);
-        d.addAlternateView("AV", "def".getBytes());
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(UTF_8), "testfile", Form.UNKNOWN);
+        d.addAlternateView("AV", "def".getBytes(UTF_8));
         d.putParameter("P", "ghi");
         d.addProcessingError("jkl");
-        d.setHeader("mno".getBytes());
-        d.setFooter("pqr".getBytes());
+        d.setHeader("mno".getBytes(UTF_8));
+        d.setFooter("pqr".getBytes(UTF_8));
         d.appendTransformHistory("stu");
 
         final String xml = PayloadUtil.toXmlString(d);

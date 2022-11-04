@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -261,14 +262,14 @@ class FTestPeerDirectoryPlace extends FunctionalTest {
 
         // Build a payload and verify proper keys selected on peer1
         logger.debug("STARTING PAYLOAD RELAY FROM PEER TO CHILD");
-        IBaseDataObject payload = new BaseDataObject("test data".getBytes(), "test object", "LOWER_CASE");
+        IBaseDataObject payload = new BaseDataObject("test data".getBytes(UTF_8), "test object", "LOWER_CASE");
         payload.appendTransformHistory("UNKNOWN.UNIXFILE.ID.http://localhost:9005/UnixFilePlace");
         payload.appendTransformHistory("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8005/DirectoryPlace");
         this.peer1.process(payload);
         assertEquals("LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8006/ToUpperPlace", payload.currentForm(), "Child key selected for payload");
 
         logger.debug("STARTING PAYLOAD RELAY FROM CHILD TO PEER");
-        payload = new BaseDataObject("test data".getBytes(), "test object", "UPPER_CASE");
+        payload = new BaseDataObject("test data".getBytes(UTF_8), "test object", "UPPER_CASE");
         payload.appendTransformHistory("UNKNOWN.UNIXFILE.ID.http://localhost:8006/UnixFilePlace");
         payload.appendTransformHistory("UPPER_CASE.TO_LOWER.TRANSFORM.http://localhost:8005/DirectoryPlace");
         this.peer1.process(payload);
@@ -300,7 +301,7 @@ class FTestPeerDirectoryPlace extends FunctionalTest {
         // Verify the routing from DevNull to ToUpper
         // Should go from grandchild2 > child2 > peer2 > peer1 > child1
         final DirectoryEntry upperde = toUpper.getDirectoryEntry();
-        payload = new BaseDataObject("test data".getBytes(), "test oject", upperde.getDataType());
+        payload = new BaseDataObject("test data".getBytes(UTF_8), "test oject", upperde.getDataType());
         payload.appendTransformHistory(devnull.getKey());
 
         // Should be proxy key on peer2

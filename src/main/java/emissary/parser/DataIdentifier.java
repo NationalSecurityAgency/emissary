@@ -1,5 +1,7 @@
 package emissary.parser;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
@@ -64,9 +66,9 @@ public class DataIdentifier {
      */
     protected String getTestString(byte[] data, int limit) {
         if (data.length < limit) {
-            return new String(data);
+            return new String(data, UTF_8);
         }
-        return new String(data, 0, limit);
+        return new String(data, 0, limit, UTF_8);
     }
 
     /**
@@ -86,7 +88,7 @@ public class DataIdentifier {
      */
     public String identify(byte[] data) {
         for (Map.Entry<String, String> entry : TYPES.entrySet()) {
-            byte[] pattern = entry.getValue().getBytes();
+            byte[] pattern = entry.getValue().getBytes(UTF_8);
             if (data.length < pattern.length) {
                 continue;
             }

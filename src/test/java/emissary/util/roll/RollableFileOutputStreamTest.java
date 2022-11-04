@@ -1,5 +1,6 @@
 package emissary.util.roll;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,7 +43,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         String file2name = this.nextFileName();
         Path file1 = Paths.get(tmpDir.toString(), "." + file1name);
         Files.createFile(file1);
-        Files.write(file1, "Foo".getBytes());
+        Files.write(file1, "Foo".getBytes(UTF_8));
         Path file2 = Paths.get(tmpDir.toString(), "." + file2name);
         Files.createFile(file2);
         // test
@@ -64,7 +65,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
     void testRoll() throws Exception {
 
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
-            instance.write(data.getBytes());
+            instance.write(data.getBytes(UTF_8));
             assertEquals(data.length(), instance.bytesWritten);
             instance.roll();
             assertTrue(Files.exists(Paths.get(tmpDir.toString(), lastFile)));
@@ -104,7 +105,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
     @Test
     void testWriteBytes() throws Exception {
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
-            instance.write(data.getBytes(), 0, data.length());
+            instance.write(data.getBytes(UTF_8), 0, data.length());
         }
         Path f = Paths.get(tmpDir.toString(), currentFile);
         try (InputStream is = Files.newInputStream(f)) {

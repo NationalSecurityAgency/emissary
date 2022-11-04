@@ -1,5 +1,6 @@
 package emissary.output.roller.journal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,7 +57,7 @@ class JournaledChannelTest extends UnitTest {
 
     @Test
     void testWrite_3args() throws Exception {
-        final byte[] onekbuff = this.onekstring.getBytes();
+        final byte[] onekbuff = this.onekstring.getBytes(UTF_8);
         this.channel.write(onekbuff, 0, onekbuff.length);
         this.channel.commit();
         assertEquals(this.channel.position(), onekbuff.length, "Position is 1k " + this.channel.position());
@@ -64,7 +65,7 @@ class JournaledChannelTest extends UnitTest {
         for (int i = 0; i < 5; i++) {
             fiveKStr.append(this.onekstring);
         }
-        final byte[] fiveK = fiveKStr.toString().getBytes();
+        final byte[] fiveK = fiveKStr.toString().getBytes(UTF_8);
         this.channel.write(fiveK, 0, fiveK.length);
         this.channel.commit();
         assertEquals(this.channel.position(), (onekbuff.length + fiveK.length), "Position is 6k " + this.channel.position());
@@ -76,7 +77,7 @@ class JournaledChannelTest extends UnitTest {
                 buff.clear();
                 sbc.read(buff);
                 buff.flip();
-                final String read = new String(buff.array());
+                final String read = new String(buff.array(), UTF_8);
                 assertEquals(read, this.onekstring, "Read one k back\n" + read + "\n" + this.onekstring);
             }
         }
@@ -86,7 +87,7 @@ class JournaledChannelTest extends UnitTest {
     void testWrite_ByteBuffer() throws Exception {
         final ByteBuffer buff = ByteBuffer.allocateDirect(6 * 1024);
         for (int i = 0; i < 6; i++) {
-            buff.put(this.onekstring.getBytes());
+            buff.put(this.onekstring.getBytes(UTF_8));
         }
         buff.flip();
         this.channel.write(buff);

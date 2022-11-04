@@ -1,5 +1,7 @@
 package emissary.output.roller.journal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +19,7 @@ public final class Journal {
 
     static final byte SEP = 0x00;
     // 6 byte magic
-    static final byte[] MAGIC = "BGJRNL".getBytes();
+    static final byte[] MAGIC = "BGJRNL".getBytes(UTF_8);
     static final byte CURRENT_VERSION = 1;
     static final int ENTRY_LENGTH = 1024;
     // eight bytes and a null separator

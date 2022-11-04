@@ -1,5 +1,6 @@
 package emissary.util.shell;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -92,13 +93,13 @@ class ExecutrixTest extends UnitTest {
     @Test
     void testReadWrite() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
-        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(UTF_8), 0, 3, TMPDIR + "/foo.dat", false), "File written");
         byte[] data = Executrix.readFile(TMPDIR + "/foo.dat");
         assertNotNull(data, "Data must be read");
         assertEquals(3, data.length, "Data must all be read");
 
         // append
-        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", true), "File written");
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(UTF_8), 0, 3, TMPDIR + "/foo.dat", true), "File written");
         data = Executrix.readFile(TMPDIR + "/foo.dat");
         assertNotNull(data, "Data must be read");
         assertEquals(6, data.length, "Data must all be read");
@@ -115,7 +116,8 @@ class ExecutrixTest extends UnitTest {
         assertFalse(Executrix.writeDataToFile(null, TMPDIR + "/foo.dat", false), "Should not write null data");
         assertFalse(Executrix.writeDataToFile(null, 0, 3, TMPDIR + "/foo.dat", false), "Should not write null data");
 
-        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), TMPDIR + "/foo.dat", false), "Overwrite longer file should truncate previous data");
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(UTF_8), TMPDIR + "/foo.dat", false),
+                "Overwrite longer file should truncate previous data");
         data = Executrix.readFile(TMPDIR + "/foo.dat");
         assertNotNull(data, "Data must be read");
         assertEquals(3, data.length, "Data must be read up to actual size");
@@ -127,9 +129,9 @@ class ExecutrixTest extends UnitTest {
         data = Executrix.readDataFromFile(TMPDIR + "/filedoesnotexist.dat");
         assertNull(data, "Read non existent does not throw");
 
-        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), null), "Write to null path");
-        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), null, false), "Write to null path");
-        assertFalse(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, null, false), "Write to null path");
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(UTF_8), null), "Write to null path");
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(UTF_8), null, false), "Write to null path");
+        assertFalse(Executrix.writeDataToFile("aaa".getBytes(UTF_8), 0, 3, null, false), "Write to null path");
 
         RandomAccessFile raf = new RandomAccessFile(TMPDIR + "/foo.dat", "rw");
         data = Executrix.readDataFromFile(raf);
@@ -181,12 +183,12 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testReadWriteTempDir() throws IOException {
-        String[] names = this.e.writeDataToNewTempDir("aaa".getBytes());
+        String[] names = this.e.writeDataToNewTempDir("aaa".getBytes(UTF_8));
         assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
 
-        names = this.e.writeDataToNewTempDir("aaa".getBytes(), 0, 1);
+        names = this.e.writeDataToNewTempDir("aaa".getBytes(UTF_8), 0, 1);
         assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
@@ -196,7 +198,7 @@ class ExecutrixTest extends UnitTest {
     void testCopyFile() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
         try {
-            assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
+            assertTrue(Executrix.writeDataToFile("aaa".getBytes(UTF_8), 0, 3, TMPDIR + "/foo.dat", false), "File written");
             Executrix.copyFile(TMPDIR + "/foo.dat", TMPDIR + "/bar.dat");
             final byte[] data = Executrix.readFile(TMPDIR + "/bar.dat");
             assertNotNull(data, "Data read from copy");
@@ -242,7 +244,7 @@ class ExecutrixTest extends UnitTest {
     @Test
     void testWriteWithCleanup() throws Exception {
         final String TMPDIR = this.e.getTmpDir();
-        assertTrue(Executrix.writeDataToFile("abc".getBytes(), TMPDIR + "/foo/bar/baz.dat"), "File Written in subdir");
+        assertTrue(Executrix.writeDataToFile("abc".getBytes(UTF_8), TMPDIR + "/foo/bar/baz.dat"), "File Written in subdir");
         byte[] data = Executrix.readFile(TMPDIR + "/foo/bar/baz.dat");
         assertNotNull(data, "Data read from subdir");
         assertEquals(3, data.length, "All data read from subdir");
@@ -263,7 +265,7 @@ class ExecutrixTest extends UnitTest {
         Files.createDirectories(tdir.toPath());
         assertTrue(tdir.exists() && tdir.isDirectory(), "Temp dir exists");
 
-        assertTrue(Executrix.writeDataToFile("aaa".getBytes(), names[Executrix.INPATH]), "File written");
+        assertTrue(Executrix.writeDataToFile("aaa".getBytes(UTF_8), names[Executrix.INPATH]), "File written");
         final byte[] data = Executrix.readDataFromFile(names[Executrix.INPATH]);
         assertNotNull(data, "Data must be read from " + names[Executrix.INPATH]);
 
@@ -342,7 +344,7 @@ class ExecutrixTest extends UnitTest {
     void testExecuteStream() {
 
         String expected = "bbb";
-        final byte[] data = expected.getBytes();
+        final byte[] data = expected.getBytes(UTF_8);
 
         final String cmd = "/bin/cat";
 

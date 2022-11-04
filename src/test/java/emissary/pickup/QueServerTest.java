@@ -1,5 +1,6 @@
 package emissary.pickup;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,7 +23,7 @@ class QueServerTest extends UnitTest {
                 "PLACE_NAME = TestPickUpPlace\n" + "SERVICE_NAME = TEST_PICK_UP\n" + "SERVICE_TYPE = \"INITIAL\"\n"
                         + "SERVICE_DESCRIPTION = \"Test Place\"\n" + "SERVICE_COST = 50\n" + "SERVICE_QUALITY = 50\n"
                         + "INITIAL_FORM = \"UNKNOWN\"\n" + "SERVICE_PROXY = \"TESTJUNK\"\n";
-        tepusConfigStream = new ByteArrayInputStream(cdata.getBytes());
+        tepusConfigStream = new ByteArrayInputStream(cdata.getBytes(UTF_8));
     }
 
     @Test

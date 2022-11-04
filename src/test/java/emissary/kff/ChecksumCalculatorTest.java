@@ -1,5 +1,6 @@
 package emissary.kff;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 class ChecksumCalculatorTest extends UnitTest {
 
-    static final byte[] DATA = "This is a test".getBytes();
+    static final byte[] DATA = "This is a test".getBytes(UTF_8);
 
     // echo -n "This is a test" | openssl sha1
     static final String DATA_SHA1 = "a54d88e06612d820bc3be72877c74f257b561b19";

@@ -1,5 +1,7 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.charset.Charset;
 
 import javax.annotation.Nullable;
@@ -161,7 +163,7 @@ public class LineTokenizer {
             if (charset != null) {
                 tok = new String(btok, charset);
             } else {
-                tok = new String(btok);
+                tok = new String(btok, UTF_8);
             }
         }
         return tok;

@@ -6,6 +6,8 @@
 
 package emissary.util.shell;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +31,7 @@ public class ReadOutputLogger extends ProcessReader {
     public String name;
 
     public ReadOutputLogger(final String name, final InputStream in) {
-        this.inputReader = new InputStreamReader(in);
+        this.inputReader = new InputStreamReader(in, UTF_8);
         this.bufferedReader = new BufferedReader(this.inputReader);
         this.finished = false;
         this.name = name;

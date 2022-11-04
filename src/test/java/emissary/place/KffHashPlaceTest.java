@@ -1,5 +1,6 @@
 package emissary.place;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,11 +23,11 @@ class KffHashPlaceTest extends UnitTest {
     void testProcess() throws Exception {
         final KffHashPlace place = new KffHashPlace("KffHashPlace");
 
-        final IBaseDataObject toHash = new BaseDataObject(this.phonyData.getBytes(), "phony_data");
+        final IBaseDataObject toHash = new BaseDataObject(this.phonyData.getBytes(UTF_8), "phony_data");
         place.process(toHash);
         assertTrue(KffDataObjectHandler.hashPresent(toHash));
 
-        final IBaseDataObject orNotToHash = new BaseDataObject(this.phonyData.getBytes(), "phony_data");
+        final IBaseDataObject orNotToHash = new BaseDataObject(this.phonyData.getBytes(UTF_8), "phony_data");
         orNotToHash.setParameter(KffHashPlace.SKIP_KFF_HASH, "TRUE");
         assertFalse(KffDataObjectHandler.hashPresent(orNotToHash));
     }

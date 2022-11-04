@@ -1,5 +1,6 @@
 package emissary.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -49,7 +50,7 @@ class DataObjectFactoryTest extends UnitTest {
 
     @Test
     void testWithArgs() {
-        final Object[] args = new Object[] {"This is a test".getBytes(), "TestItem"};
+        final Object[] args = new Object[] {"This is a test".getBytes(UTF_8), "TestItem"};
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         final IBaseDataObject d = DataObjectFactory.getInstance(args);
         assertNotNull(d, "DataObject created");
@@ -57,7 +58,7 @@ class DataObjectFactoryTest extends UnitTest {
 
     @Test
     void testWtihFullSet() {
-        byte[] testPayload = "This is a test".getBytes();
+        byte[] testPayload = "This is a test".getBytes(UTF_8);
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "form", "type");
         assertEquals("filename", ibdo.getFilename());
         assertEquals("form", ibdo.currentForm());
@@ -67,7 +68,7 @@ class DataObjectFactoryTest extends UnitTest {
 
     @Test
     void testFormAndFileType() {
-        byte[] testPayload = "This is a test".getBytes();
+        byte[] testPayload = "This is a test".getBytes(UTF_8);
         IBaseDataObject ibdo = DataObjectFactory.getInstance(testPayload, "filename", "formAndFileType");
         assertEquals("filename", ibdo.getFilename());
         assertEquals("formAndFileType", ibdo.currentForm());

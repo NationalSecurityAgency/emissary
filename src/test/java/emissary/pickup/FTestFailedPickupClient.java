@@ -1,5 +1,6 @@
 package emissary.pickup;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -60,10 +61,10 @@ class FTestFailedPickupClient extends FunctionalTest {
         workingFilePaths.add("subdir/" + testfile2.getName());
         testfile2.deleteOnExit();
         FileOutputStream os = new FileOutputStream(testfile);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile2);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
 
         // start jetty and a workspace

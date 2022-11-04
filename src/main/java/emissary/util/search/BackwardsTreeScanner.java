@@ -6,6 +6,8 @@
 
 package emissary.util.search;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.PrintStream;
 
 /**
@@ -56,8 +58,8 @@ public class BackwardsTreeScanner {
         root = new State((byte) 0); // reset state
         // and learn them
         for (int i = 0; i < keywords.length; i++) {
-            keywords[i] = keywordStrings[i].getBytes();
-            root.learn(keywordStrings[i].getBytes(), i);
+            keywords[i] = keywordStrings[i].getBytes(UTF_8);
+            root.learn(keywordStrings[i].getBytes(UTF_8), i);
         }
         // root.print(System.out);
     }

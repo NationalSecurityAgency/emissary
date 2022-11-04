@@ -1,5 +1,7 @@
 package emissary.output.roller.journal;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
@@ -24,7 +26,7 @@ public final class JournalEntry {
     void serialize(final ByteBuffer b) {
         b.putInt(this.val.length());
         b.put(SEP);
-        b.put(this.val.getBytes());
+        b.put(this.val.getBytes(UTF_8));
         b.put(SEP);
         b.putLong(this.offset);
     }
@@ -41,7 +43,7 @@ public final class JournalEntry {
         b.get(_keyBytes, 0, _keyLen);
         validateSep(b.get());
         final long _offset = b.getLong();
-        return new JournalEntry(new String(_keyBytes), _offset);
+        return new JournalEntry(new String(_keyBytes, UTF_8), _offset);
     }
 
     static void validateSep(final byte b) {

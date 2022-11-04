@@ -1,5 +1,6 @@
 package emissary.core;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -37,7 +38,7 @@ class BaseDataWithRemappingTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
+        b = new BaseDataObject("This is a test".getBytes(UTF_8), "filename.txt");
         b.pushCurrentForm("ONE");
         b.pushCurrentForm("TWO");
         b.pushCurrentForm("THREE");
@@ -52,9 +53,9 @@ class BaseDataWithRemappingTest extends UnitTest {
 
     @Test
     void testAltViews() {
-        b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
 
         b.addAlternateView("TESTVIEW2", null);
         assertNull(b.getAlternateView("TESTVIEW2"), "Null view after removal");
@@ -67,9 +68,9 @@ class BaseDataWithRemappingTest extends UnitTest {
 
     @Test
     void testSetOfAltViewNames() {
-        b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
         Set<String> vnames = b.getAlternateViewNames();
         assertEquals(3, vnames.size(), "Count of view names");
         assertTrue(vnames.contains("testview1"), "Altview names should have been remapped");
@@ -79,9 +80,9 @@ class BaseDataWithRemappingTest extends UnitTest {
 
     @Test
     void testMapOfAltViews() {
-        b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
         Map<String, byte[]> v = b.getAlternateViews();
         assertEquals(3, v.size(), "Count of views");
         Set<String> vnames = v.keySet();

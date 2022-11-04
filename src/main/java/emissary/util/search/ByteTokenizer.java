@@ -5,6 +5,8 @@
 
 package emissary.util.search;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
@@ -297,7 +299,7 @@ public class ByteTokenizer implements Enumeration<String> {
             if (encoding != null) {
                 token = new String(data, start, currentPosition - start, encoding);
             } else {
-                token = new String(data, start, currentPosition - start);
+                token = new String(data, start, currentPosition - start, UTF_8);
             }
         } catch (UnsupportedEncodingException uee) {
             // cannot happen...we already verified in constructer

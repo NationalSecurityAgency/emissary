@@ -1,5 +1,7 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -270,10 +272,10 @@ public class ByteUtil {
         }
         if (eolnPos != -1) {
             // String up to the found \n pos
-            ret = new String(data, pos, eolnPos - pos + 1);
+            ret = new String(data, pos, eolnPos - pos + 1, UTF_8);
         } else {
             // String to end of buffer
-            ret = new String(data, pos, data.length - pos);
+            ret = new String(data, pos, data.length - pos, UTF_8);
         }
         return ret;
     }

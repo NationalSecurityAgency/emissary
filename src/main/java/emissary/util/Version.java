@@ -1,5 +1,7 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -41,7 +43,7 @@ public final class Version {
             if (rstream != null) {
                 byte[] data = new byte[rstream.available()];
                 rstream.read(data, 0, data.length);
-                String sdata = new String(data);
+                String sdata = new String(data, UTF_8);
                 String[] lines = sdata.split("[\r\n]+");
                 if (lines != null) {
                     // System.out.println(" Got " + lines.length + " lines");

@@ -1,5 +1,6 @@
 package emissary.util;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,12 +28,12 @@ class CharsetUtilTest extends UnitTest {
         assertTrue(CharsetUtil.isUTF8("!@#$%^&*(F)=+-_[]{}\\|'\";:,.></?`~"), "Punctuation is utf8");
         assertTrue(CharsetUtil.isUTF8("0123456789 9876543210"), "Numbers are utf8");
 
-        assertTrue(CharsetUtil.isUTF8("This is a bytes array test. 123 #$%".getBytes()), "Ascii bytes are utf8");
+        assertTrue(CharsetUtil.isUTF8("This is a bytes array test. 123 #$%".getBytes(UTF_8)), "Ascii bytes are utf8");
 
         for (int i = 0; i < S.length; i++) {
             assertTrue(CharsetUtil.isUTF8(S[i]), "Foreign strings from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].length());
-            assertTrue(CharsetUtil.isUTF8(S[i].getBytes()),
-                    "Foreign bytes from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].getBytes().length);
+            assertTrue(CharsetUtil.isUTF8(S[i].getBytes(UTF_8)),
+                    "Foreign bytes from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].getBytes(UTF_8).length);
 
         }
     }

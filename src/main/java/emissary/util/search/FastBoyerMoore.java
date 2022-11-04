@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +36,7 @@ public class FastBoyerMoore {
         this.keywords = new byte[keywordStrings.length][];
         this.minKeywordLength = Integer.MAX_VALUE;
         for (int i = 0; i < this.keywords.length; i++) {
-            this.keywords[i] = keywordStrings[i].getBytes();
+            this.keywords[i] = keywordStrings[i].getBytes(UTF_8);
             this.minKeywordLength = Math.min(this.minKeywordLength, this.keywords[i].length);
         }
         for (int i = 0; i < this.lookup.length; i++) {
@@ -66,7 +68,7 @@ public class FastBoyerMoore {
         // each keyword
         for (int i = 0; i < keywordStrings.length; i++) {
             for (int j = 0; j < keywordStrings[i].length; j++) {
-                final byte[] kw = keywordStrings[i][j].getBytes();
+                final byte[] kw = keywordStrings[i][j].getBytes(UTF_8);
                 // each keyword character
                 for (int k = 0; k < kw.length - 1; k++) {
                     this.lookup[kw[k]] = Math.min(this.lookup[kw[k]], kw.length - k - 1);
@@ -193,7 +195,7 @@ public class FastBoyerMoore {
             }
             // for (int i = 0;i<keys.length;i++)dataString +=keys[i].toString().substring(0,2);
             // A byte array version of the data.
-            final byte[] dataBytes = dataString.toString().getBytes();
+            final byte[] dataBytes = dataString.toString().getBytes(UTF_8);
 
             // A vector for holding the results.
             final List<int[]> result = new ArrayList<int[]>();
@@ -244,7 +246,7 @@ public class FastBoyerMoore {
                 }
                 // for (int i = 0;i<keys.length;i++)dataString +=keys[i].toString().substring(0,2);
                 // A byte array version of the data.
-                final byte[] dataBytes = dataString.toString().getBytes();
+                final byte[] dataBytes = dataString.toString().getBytes(UTF_8);
 
                 // A vector for holding the results.
                 final List<int[]> hits = new ArrayList<int[]>();
@@ -279,7 +281,7 @@ public class FastBoyerMoore {
                 }
                 // for (int i = 0;i<keys.length;i++)dataString +=keys[i].toString().substring(0,2);
                 // A byte array version of the data.
-                final byte[] dataBytes = dataString.toString().getBytes();
+                final byte[] dataBytes = dataString.toString().getBytes(UTF_8);
 
                 // A vector for holding the results.
                 final List<int[]> hits = new ArrayList<int[]>();
@@ -303,7 +305,7 @@ public class FastBoyerMoore {
         public BackwardsTreeScanner(final String[][] keywordStrings) throws Exception {
             for (int i = 0; i < keywordStrings.length; i++) {
                 for (int j = 0; j < keywordStrings[i].length; j++) {
-                    this.root.learn(keywordStrings[i][j].getBytes(), i);
+                    this.root.learn(keywordStrings[i][j].getBytes(UTF_8), i);
                 }
             }
             // this.root.print(System.out);
@@ -314,8 +316,8 @@ public class FastBoyerMoore {
             final byte[][] keywords = new byte[keywordStrings.length][];
             // and learn them
             for (int i = 0; i < keywords.length; i++) {
-                keywords[i] = keywordStrings[i].getBytes();
-                this.root.learn(keywordStrings[i].getBytes(), i);
+                keywords[i] = keywordStrings[i].getBytes(UTF_8);
+                this.root.learn(keywordStrings[i].getBytes(UTF_8), i);
             }
             // this.root.print(System.out);
         }

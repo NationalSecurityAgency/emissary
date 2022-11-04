@@ -1,6 +1,7 @@
 package emissary.output.roller.journal;
 
 import static emissary.output.roller.journal.Journal.SEP;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class JournalWriter implements Closeable {
         b.clear();
         b.put(Journal.MAGIC);
         b.put(Journal.CURRENT_VERSION);
-        byte[] keyBytes = key.getBytes();
+        byte[] keyBytes = key.getBytes(UTF_8);
         b.putInt(keyBytes.length);
         for (int i = 0; i < keyBytes.length; i++) {
             if (b.remaining() == 0) {
