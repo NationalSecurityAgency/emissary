@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import emissary.client.EmissaryResponse;
+import emissary.command.BaseCommand;
 import emissary.command.FeedCommand;
 import emissary.command.ServerCommand;
 import emissary.core.EmissaryException;
@@ -42,7 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a
  * bundle of work to do.
- *
+ * <p>
  * The work bundles, emissary.pickup.WorkBundle objects, are placed on a queue for sending to consumers by the producer
  * here. Once a WorkBundle has been requested and sent to a consumer (i.e. FilePickUpClient) it is placed on a pending
  * queue tagged with the consumer id until the consumer notifies this WorkSpace that the work has been completed. If the
@@ -58,7 +59,7 @@ public class WorkSpace implements Runnable {
     /**
      * Pickup places we will send to, loaded and modified by directory observation during runtime
      */
-    protected List<String> pups = new CopyOnWriteArrayList<String>();
+    protected List<String> pups = new CopyOnWriteArrayList<>();
 
     /**
      * Initial pattern for finding pickup places
@@ -75,12 +76,12 @@ public class WorkSpace implements Runnable {
     protected boolean simpleMode = false;
     protected String outputRootPath = System.getProperty("outputRoot", null);
     protected String eatPrefix = System.getProperty("eatPrefix", null);
-    protected int numberOfBundlesToSkip = Integer.getInteger(CLZ + ".skip", 0).intValue();
+    protected int numberOfBundlesToSkip = Integer.getInteger(CLZ + ".skip", 0);
     protected boolean skipDotFiles = Boolean.getBoolean(CLZ + ".skipDotFiles");
     protected boolean loop = false;
     protected boolean useRetryStrategy = false;
     protected int MAX_BUNDLE_RETRIES = 5;
-    protected PriorityQueue<PriorityDirectory> myDirectories = new PriorityQueue<PriorityDirectory>();
+    protected PriorityQueue<PriorityDirectory> myDirectories = new PriorityQueue<>();
 
     // Stats tracking, map of stats per remote pick up place
     protected WorkSpaceStats stats = new WorkSpaceStats();
@@ -118,17 +119,17 @@ public class WorkSpace implements Runnable {
     protected boolean caseClosed = false;
 
     // List of WorkBundle objects we are going to distribute
-    protected PriorityQueue<WorkBundle> outbound = new PriorityQueue<WorkBundle>();
+    protected PriorityQueue<WorkBundle> outbound = new PriorityQueue<>();
 
     // List of WorkBundle objects that are pending completion notice
-    // Keyed by bundleId to quicky remove items that are processed
+    // Keyed by bundleId to quickly remove items that are processed
     // normally (the expected case)
-    protected Map<String, WorkBundle> pending = new HashMap<String, WorkBundle>();
+    protected Map<String, WorkBundle> pending = new HashMap<>();
 
     // Keep track of files we have seen that are either outbound or pending
     // so that we can avoid using file timestamps in the collector loop
-    protected Map<String, Long> filesSeen = new HashMap<String, Long>();
-    protected Map<String, Long> filesDone = new HashMap<String, Long>();
+    protected Map<String, Long> filesSeen = new HashMap<>();
+    protected Map<String, Long> filesDone = new HashMap<>();
 
     // Used to synchronize access to the pending and outbound queues
     // One lock to rule them all
@@ -146,7 +147,7 @@ public class WorkSpace implements Runnable {
      */
     public static void main(final String[] args) {
         try {
-            final WorkSpace ws = new WorkSpace(FeedCommand.parse(FeedCommand.class, args));
+            final WorkSpace ws = new WorkSpace(BaseCommand.parse(FeedCommand.class, args));
             ws.run();
             logger.info("Workspace has completed the mission [ +1 health ].");
             ws.shutDown();
@@ -194,7 +195,7 @@ public class WorkSpace implements Runnable {
     protected void startJetty() {
         if (!emissary.server.EmissaryServer.isStarted()) {
             // TODO investigate passing the feedCommand object directly to the serverCommand
-            List<String> args = new ArrayList<String>();
+            List<String> args = new ArrayList<>();
             args.add("-b");
             args.add(PROJECT_BASE);
             args.add("--agents");
@@ -213,12 +214,11 @@ public class WorkSpace implements Runnable {
             }
             try {
                 // To ensure the feed command starts correctly, depends on a node-{feedCommand.getPort}.cfg file
-                ServerCommand cmd = ServerCommand.parse(ServerCommand.class, args);
+                ServerCommand cmd = BaseCommand.parse(ServerCommand.class, args);
                 Server server = new EmissaryServer(cmd).startServer();
                 final boolean jettyStatus = server.isStarted();
                 if (!jettyStatus) {
                     logger.error("Cannot start the Workspace due to EmissaryServer not starting!");
-                    // throw new Exception("Cannot start embedded jetty server");
                 } else {
                     logger.info("Workspace is up and running");
                     this.jettyStartedHere = true;
@@ -235,13 +235,13 @@ public class WorkSpace implements Runnable {
         // Load existing pickup client list
         try {
             this.pups.addAll(getPickUpClients(this.pattern));
-            logger.info("Found " + this.pups.size() + " initial clients using " + this.pattern + " in " + getKey());
-            logger.debug("Initial pickups : " + this.pups);
+            logger.info("Found {} initial clients using {} in {}", this.pups.size(), this.pattern, getKey());
+            logger.debug("Initial pickups : {}", this.pups);
         } catch (EmissaryException ex) {
-            logger.error("Cannot lookup pickup places using pattern " + this.pattern + " in " + getKey(), ex);
+            logger.error("Cannot lookup pickup places using pattern {} in {}", this.pattern, getKey(), ex);
         }
 
-        // Hook our observer onto the local directory
+        // Hook our observer onto the local directory,
         // so we keep in sync with any changes to the clients
         this.watcher = new WorkSpaceDirectoryWatcher(this.pattern);
         try {
@@ -393,7 +393,7 @@ public class WorkSpace implements Runnable {
      */
     public void addDirectory(final PriorityDirectory dir) {
         this.myDirectories.add(dir);
-        logger.debug("Adding input directory " + dir);
+        logger.debug("Adding input directory {}", dir);
     }
 
     /**
@@ -407,7 +407,7 @@ public class WorkSpace implements Runnable {
     }
 
     public List<String> getDirectories() {
-        final List<String> l = new ArrayList<String>();
+        final List<String> l = new ArrayList<>();
         final PriorityDirectory[] pds = this.myDirectories.toArray(new PriorityDirectory[0]);
         Arrays.sort(pds);
         for (final PriorityDirectory pd : pds) {
@@ -432,7 +432,7 @@ public class WorkSpace implements Runnable {
      * @param prefix the new prefix
      */
     public void setEatPrefix(final String prefix) {
-        logger.debug("Reset eatPrefix to " + prefix);
+        logger.debug("Reset eatPrefix to {}", prefix);
         this.eatPrefix = prefix;
         normalizeEatPrefix();
     }
@@ -452,7 +452,7 @@ public class WorkSpace implements Runnable {
      * @param value the new outputRoot value
      */
     public void setOutputRoot(final String value) {
-        logger.debug("Reset outputRoot to " + value);
+        logger.debug("Reset outputRoot to {}", value);
         this.outputRootPath = value;
     }
 
@@ -469,7 +469,7 @@ public class WorkSpace implements Runnable {
      * @param value the new value for caseId
      */
     public void setCaseId(final String value) {
-        logger.debug("Reset caseId to " + value);
+        logger.debug("Reset caseId to {}", value);
         this.dataCaseId = value;
     }
 
@@ -515,15 +515,15 @@ public class WorkSpace implements Runnable {
      */
     public void setPattern(final String thePattern) throws Exception {
 
-        if ((this.pattern != null) && (thePattern != null) && this.pattern.equals(thePattern)) {
-            logger.debug("The pattern is already set to " + thePattern);
+        if ((this.pattern != null) && this.pattern.equals(thePattern)) {
+            logger.debug("The pattern is already set to {}", thePattern);
             return;
         }
 
         this.pattern = thePattern;
 
         // Clear out old pick up clients
-        logger.warn("Clearing client list so we can look for new pattern " + thePattern + " in " + getKey());
+        logger.warn("Clearing client list so we can look for new pattern {} in {}", thePattern, getKey());
         this.pups.clear();
 
         // Find new ones
@@ -546,7 +546,7 @@ public class WorkSpace implements Runnable {
             this.workSpaceUrl = node.getNodeScheme() + "://" + node.getNodeName() + ":" + node.getNodePort() + "/" + this.WORK_SPACE_NAME;
         } else {
             this.workSpaceUrl = "http://localhost:8001/" + this.WORK_SPACE_NAME;
-            logger.warn("WorkSpace is not running in a valid emissary node." + " Using URL " + this.workSpaceUrl);
+            logger.warn("WorkSpace is not running in a valid emissary node. Using URL {}", this.workSpaceUrl);
         }
         this.workSpaceKey = "WORKSPACE.WORK_SPACE.INPUT." + this.workSpaceUrl;
 
@@ -559,20 +559,20 @@ public class WorkSpace implements Runnable {
 
 
     /**
-     * Get the initial list of pick up client places from the local directory. Our observer will keep us in sync after this
+     * Get the initial list of pickup client places from the local directory. Our observer will keep us in sync after this
      * initial pull. This method does not cause clients to be notified.
      *
      * @param thePattern the key pattern to match for places of interest
      */
     protected Set<String> getPickUpClients(final String thePattern) throws EmissaryException {
-        final Set<String> thePups = new HashSet<String>();
+        final Set<String> thePups = new HashSet<>();
         final IDirectoryPlace dir = DirectoryPlace.lookup();
         final List<DirectoryEntry> list = dir.getMatchingEntries(thePattern);
         for (final DirectoryEntry d : list) {
             thePups.add(d.getKey());
-            logger.info("Adding pickup client " + d.getKey());
+            logger.info("Adding pickup client {}", d.getKey());
         }
-        logger.debug("Found " + thePups.size() + " initial pickup client entries");
+        logger.debug("Found {} initial pickup client entries", thePups.size());
         return thePups;
     }
 
@@ -585,7 +585,7 @@ public class WorkSpace implements Runnable {
             final Thread collectorThread = new Thread(collector, "WorkSpace Collector " + pd);
             collectorThread.setDaemon(true);
             collectorThread.start();
-            logger.debug("Started WorkSpace Collector thread on " + pd);
+            logger.debug("Started WorkSpace Collector thread on {}", pd);
         }
     }
 
@@ -624,7 +624,7 @@ public class WorkSpace implements Runnable {
                 break;
             }
         }
-        logger.debug("Notified " + successCount + " of " + this.pups.size() + " pickup places");
+        logger.debug("Notified {} of {} pickup places", successCount, this.pups.size());
         return successCount;
     }
 
@@ -635,10 +635,10 @@ public class WorkSpace implements Runnable {
         if (!this.pups.contains(pup)) {
             this.pups.add(pup);
             if (logger.isDebugEnabled()) {
-                logger.debug("Adding pickup " + pup + ", new size=" + this.pups.size() + ": " + this.pups);
+                logger.debug("Adding pickup {}, new size={}: {}", pup, this.pups.size(), this.pups);
             }
         } else {
-            logger.debug("Not adding " + pup + " already on list size " + this.pups.size());
+            logger.debug("Not adding {} already on list size {}", pup, this.pups.size());
         }
     }
 
@@ -649,7 +649,7 @@ public class WorkSpace implements Runnable {
      */
     protected boolean notifyPickUp(final String pup) {
         final WorkSpaceAdapter tpa = new WorkSpaceAdapter();
-        logger.debug("Sending notice to " + pup);
+        logger.debug("Sending notice to {}", pup);
 
         boolean notified = false;
         int tryCount = 0;
@@ -659,9 +659,9 @@ public class WorkSpace implements Runnable {
 
             // TODO Consider putting this method in the response
             if (status.getStatus() != HttpStatus.SC_OK) {
-                logger.warn("Failed to notify " + pup + " on try " + tryCount + ": " + status.getContentString());
+                logger.warn("Failed to notify {} on try {}: {}", pup, tryCount, status.getContentString());
                 try {
-                    Thread.sleep((tryCount + 1) * 100);
+                    Thread.sleep((tryCount + 1) * 100L);
                 } catch (InterruptedException ignore) {
                     // empty catch block
                 }
@@ -672,7 +672,7 @@ public class WorkSpace implements Runnable {
         }
 
         if (logger.isInfoEnabled()) {
-            logger.info("Notified " + pup + " in " + tryCount + " attempts: " + (notified ? "SUCCESS" : "FAILED"));
+            logger.info("Notified {} in {} attempts: {}", pup, tryCount, (notified ? "SUCCESS" : "FAILED"));
         }
 
         return notified;
@@ -700,7 +700,7 @@ public class WorkSpace implements Runnable {
     protected void removePickUp(final String remoteKey) {
         this.pups.remove(remoteKey);
         if (logger.isDebugEnabled()) {
-            logger.debug("Removed pickup " + remoteKey + ", size=" + this.pups.size() + ": " + this.pups);
+            logger.debug("Removed pickup {}, size={}: {}", remoteKey, this.pups.size(), this.pups);
         }
         int pendCount = 0;
         final String remoteName = KeyManipulator.getServiceHost(remoteKey);
@@ -714,26 +714,26 @@ public class WorkSpace implements Runnable {
                     wb.setSentTo(null); // clear in progress indicator
                     this.retryCount++;
                     if (wb.incrementErrorCount() <= this.MAX_BUNDLE_RETRIES) {
-                        logger.debug("Removing pending bundle " + wb.getBundleId() + " from pending pool, re-adding to outbound with errorCount="
-                                + wb.getErrorCount());
+                        logger.debug("Removing pending bundle {} from pending pool, re-adding to outbound with errorCount={}", wb.getBundleId(),
+                                wb.getErrorCount());
                         addOutboundBundle(wb); // send to outbound again
                         pendCount++;
 
                         // Set overall counts back to normal
                         this.bundlesProcessed--;
                     } else {
-                        logger.error("Bundle " + wb + " associated with too " + "many failures, permanently discarding");
+                        logger.error("Bundle {} associated with too many failures, permanently discarding", wb);
                     }
                 }
             }
         }
         if (pendCount > 0) {
-            logger.info("Moved " + pendCount + " items back to outbound queue from " + remoteName);
+            logger.info("Moved {} items back to outbound queue from {}", pendCount, remoteName);
         }
     }
 
     /**
-     * Method called by remote PickUp client instances when they are ready to reteive data from this WorkSpace Access via
+     * Method called by remote PickUp client instances when they are ready to receive data from this WorkSpace Access via
      * emissary.comms.http.WorkSpaceApapter
      *
      * @param remoteKey key of the requesting PickUp place
@@ -741,28 +741,28 @@ public class WorkSpace implements Runnable {
      */
     public WorkBundle take(final String remoteKey) {
         final String remoteName = KeyManipulator.getServiceHost(remoteKey);
-        WorkBundle item = null;
+        WorkBundle item;
         synchronized (this.QLOCK) {
             if (getOutboundQueueSize() == 0) {
                 // Empty WorkBundle will let them know to stop asking us
-                logger.info("Sent shutdown msg to " + remoteName);
+                logger.info("Sent shutdown msg to {}", remoteName);
                 this.stats.shutDownSent(remoteName);
                 item = new WorkBundle();
             } else {
                 // transfer from outbound to pending list and
-                // record who the work was given to to track
+                // record who the work was given to track
                 // completion status
                 this.stats.bump(remoteName);
                 item = this.outbound.poll();
                 item.setSentTo(remoteName);
                 this.pending.put(item.getBundleId(), item);
-                logger.info("Gave bundle " + item + " to " + remoteName);
+                logger.info("Gave bundle {} to {}", item, remoteName);
                 final WorkBundle nextItem = this.outbound.peek();
-                if (nextItem != null) {
-                    logger.info("After take: new top differs to prior by [oldest/youngest/size]=["
-                            + ((long) nextItem.getOldestFileModificationTime() - item.getOldestFileModificationTime()) + "/"
-                            + ((long) nextItem.getYoungestFileModificationTime() - item.getYoungestFileModificationTime()) + "/"
-                            + ((long) nextItem.getTotalFileSize() - item.getTotalFileSize()) + "]");
+                if (nextItem != null && logger.isInfoEnabled()) {
+                    logger.info("After take: new top differs to prior by [oldest/youngest/size]=[{}/{}/{}]",
+                            nextItem.getOldestFileModificationTime() - item.getOldestFileModificationTime(),
+                            nextItem.getYoungestFileModificationTime() - item.getYoungestFileModificationTime(),
+                            nextItem.getTotalFileSize() - item.getTotalFileSize());
                 }
             }
         }
@@ -775,7 +775,7 @@ public class WorkSpace implements Runnable {
      * @param wb the new bundle
      */
     protected void addOutboundBundle(final WorkBundle wb) {
-        int sz = 0;
+        int sz;
         synchronized (this.QLOCK) {
             this.bundlesProcessed++;
             sz = this.outbound.size();
@@ -784,7 +784,7 @@ public class WorkSpace implements Runnable {
         }
 
         if (logger.isInfoEnabled()) {
-            logger.info("Adding workbundle " + wb + " size " + (sz + 1) + " filesSeen " + this.filesSeen.size());
+            logger.info("Adding workbundle {} size {} filesSeen {}", wb, (sz + 1), this.filesSeen.size());
         }
     }
 
@@ -792,7 +792,7 @@ public class WorkSpace implements Runnable {
      * Show items that are pending completion (debug)
      */
     public String[] showPendingItems() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         synchronized (this.QLOCK) {
             for (final Map.Entry<String, WorkBundle> entry : this.pending.entrySet()) {
                 list.add(entry.getValue().toString());
@@ -811,12 +811,12 @@ public class WorkSpace implements Runnable {
 
         if (size > 0) {
             synchronized (this.QLOCK) {
-                logger.debug("Clearing pending queue of " + size + " items");
+                logger.debug("Clearing pending queue of {} items", size);
                 for (final Map.Entry<String, WorkBundle> entry : this.pending.entrySet()) {
                     removeFilesSeen(entry.getValue().getFileNameList());
                 }
                 this.pending.clear();
-                logger.debug("Cleared filesSeen leaving " + this.filesSeen.size() + " items");
+                logger.debug("Cleared filesSeen leaving {} items", this.filesSeen.size());
             }
         }
         return size;
@@ -832,28 +832,30 @@ public class WorkSpace implements Runnable {
      * @return true if the item was removed from the pending list
      */
     public boolean workCompleted(final String remoteName, final String bundleId, final boolean itWorked) {
-        WorkBundle item = null;
+        WorkBundle item;
 
         synchronized (this.QLOCK) {
             item = this.pending.remove(bundleId);
             if (item != null) {
                 addFilesDone(item.getFileNameList());
                 removeFilesSeen(item.getFileNameList());
-                logger.debug("Removed " + item.size() + " from filesSeen leaving " + this.filesSeen.size());
+                logger.debug("Removed {} from filesSeen leaving {}", item.size(), this.filesSeen.size());
             }
         }
         if (item == null) {
-            logger.info("Unknown bundle completed: " + bundleId);
+            logger.info("Unknown bundle completed: {}", bundleId);
         } else if (!itWorked) {
             item.setSentTo(null); // clear in progress indicator
             if (item.incrementErrorCount() > this.MAX_BUNDLE_RETRIES) {
-                logger.error("Bundle " + item + " has too many " + " errors, permanently discarded");
+                logger.error("Bundle {} has too many errors, permanently discarded", item);
             } else {
                 addOutboundBundle(item); // send to outbound again
             }
         }
-        logger.debug("Bundle " + bundleId + " completed by " + remoteName
-                + (itWorked ? "" : (" but failed for the " + (item != null ? item.getErrorCount() : -1) + " time")));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Bundle {} completed by {}{}", bundleId, remoteName,
+                    (itWorked ? "" : (" but failed for the " + (item != null ? item.getErrorCount() : -1) + " time")));
+        }
         return item != null;
     }
 
@@ -861,7 +863,7 @@ public class WorkSpace implements Runnable {
      * begin the case processing, does nothing in this implementation
      */
     protected void initializeCase() {
-        // Dont care in this implementation
+        // Don't care in this implementation
         logger.debug("In base initializeCase implementation (do nothing)");
     }
 
@@ -869,7 +871,7 @@ public class WorkSpace implements Runnable {
      * end the case processing does nothing in this implementation
      */
     protected void closeCase() {
-        // Dont care in this implementation
+        // Don't care in this implementation
         this.caseClosed = true;
         logger.debug("In base closeCase implementation (do nothing)");
     }
@@ -881,7 +883,7 @@ public class WorkSpace implements Runnable {
      */
     protected void processDirectory(final File dir) {
         // We don't care in this implementation
-        logger.debug("got a directory processDirectory(" + dir + ")");
+        logger.debug("got a directory processDirectory({})", dir);
     }
 
     /**
@@ -891,7 +893,7 @@ public class WorkSpace implements Runnable {
      */
     protected void addFilesSeen(final Collection<String> fileNames) {
         for (final String fn : fileNames) {
-            this.filesSeen.put(fn, Long.valueOf(getFileModificationDate(fn)));
+            this.filesSeen.put(fn, getFileModificationDate(fn));
         }
     }
 
@@ -902,7 +904,7 @@ public class WorkSpace implements Runnable {
      */
     protected void addFilesDone(final Collection<String> fileNames) {
         for (final String fn : fileNames) {
-            this.filesDone.put(fn, Long.valueOf(getFileModificationDate(fn)));
+            this.filesDone.put(fn, getFileModificationDate(fn));
         }
     }
 
@@ -921,7 +923,7 @@ public class WorkSpace implements Runnable {
      * Lookup a lastModified date for a file
      *
      * @param fn the filename
-     * @return the long representing the date of last modification or 0L if an error or it does not exist
+     * @return the long representing the date of last modification or 0L if an error, or it does not exist
      */
     protected long getFileModificationDate(final String fn) {
         return new File(fn).lastModified();
@@ -955,9 +957,9 @@ public class WorkSpace implements Runnable {
             // See if it is time to give up on pending items
             if ((outboundSize == 0) && !this.loop && ((outboundEmptyTimestamp + this.PENDING_HANG_TIME) < System.currentTimeMillis())) {
                 if (logger.isInfoEnabled()) {
-                    logger.info("Giving up on " + pendingSize + " items due to timeout");
+                    logger.info("Giving up on {} items due to timeout", pendingSize);
                     for (final Map.Entry<String, WorkBundle> entry : this.pending.entrySet()) {
-                        logger.info("Pending item " + entry.getKey() + ": " + entry.getValue());
+                        logger.info("Pending item {}: {}", entry.getKey(), entry.getValue());
                     }
                 }
                 clearPendingQueue();
@@ -1000,7 +1002,7 @@ public class WorkSpace implements Runnable {
         logger.info(getStatsMessage());
         for (Iterator<String> i = this.stats.machinesUsed(); i.hasNext();) {
             final String machine = i.next();
-            logger.info("Machine " + machine + " took " + this.stats.getCountUsed(machine) + " bundles");
+            logger.info("Machine {} took {} bundles", machine, this.stats.getCountUsed(machine));
         }
     }
 
@@ -1087,12 +1089,12 @@ public class WorkSpace implements Runnable {
                 if (qsize > 0) {
                     final long start = System.currentTimeMillis();
                     if (logger.isDebugEnabled()) {
-                        logger.debug("ClientNotification starting with #clients=" + getPickUpPlaceCount() + " outbound=" + qsize);
+                        logger.debug("ClientNotification starting with #clients={} outbound={}", getPickUpPlaceCount(), qsize);
                     }
                     notifyPickUps();
                     if (logger.isDebugEnabled()) {
                         final long end = System.currentTimeMillis();
-                        logger.debug("ClientNotification took " + (end - start) / 1000.0 + "s for #clients=" + getPickUpPlaceCount());
+                        logger.debug("ClientNotification took {}s for #clients={}", (end - start) / 1000.0, getPickUpPlaceCount());
                     }
                 }
 
@@ -1129,27 +1131,27 @@ public class WorkSpace implements Runnable {
         }
 
         /**
-         * Pull all of the files into bundles, emit some stats, and notify the PickUp client instances to start work. When the
-         * list of file bundles is empty we can quit or loop around again.
+         * Pull all the files into bundles, emit some stats, and notify the PickUp client instances to start work. When the list
+         * of file bundles is empty we can quit or loop around again.
          */
         @Override
         public void run() {
             long versionOutputTime = System.currentTimeMillis();
-            long start = versionOutputTime;
-            long stop = start;
+            long start;
+            long stop;
             long minFileTime = 0L;
 
             // Run the processing
             long lastFileCollect = 0L;
             int loopCount = 0;
 
-            logger.info("Running Workspace from " + getVersionString());
+            logger.info("Running Workspace from {}", getVersionString());
 
             do {
                 start = System.currentTimeMillis();
                 // every hour
                 if (start - versionOutputTime > 3600000) {
-                    logger.info("Continuing Workspace from " + getVersionString());
+                    logger.info("Continuing Workspace from {}", getVersionString());
                     versionOutputTime = start;
                 }
 
@@ -1157,13 +1159,13 @@ public class WorkSpace implements Runnable {
                 paths.setCaseId(WorkSpace.this.dataCaseId);
                 paths.setSimpleMode(getSimpleMode());
 
-                logger.debug("Processing files in " + this.myDirectory.getDirectoryName());
+                logger.debug("Processing files in {}", this.myDirectory.getDirectoryName());
 
                 final int collectCount =
                         collectFiles(this.myDirectory, WorkSpace.this.WANT_DIRECTORIES, paths, WorkSpace.this.numberOfBundlesToSkip, minFileTime,
                                 WorkSpace.this.skipDotFiles);
 
-                // Set times so we dont redistribute files next loop
+                // Set times, so we don't redistribute files next loop
                 // if configured to use timestamps
                 if (WorkSpace.this.useFileTimestamps) {
                     lastFileCollect = System.currentTimeMillis();
@@ -1174,8 +1176,8 @@ public class WorkSpace implements Runnable {
                 // We can only skip bundles on the first time through
                 WorkSpace.this.numberOfBundlesToSkip = 0;
 
-                logger.info("Collected " + collectCount + " file bundles in " + ((stop - start) / 1000.0) + "s in loop iteration " + loopCount + ", "
-                        + WorkSpace.this.outbound.size() + " items in outbound queue");
+                logger.info("Collected {} file bundles in {}s in loop iteration {}, {} items in outbound queue", collectCount,
+                        ((stop - start) / 1000.0), loopCount, WorkSpace.this.outbound.size());
 
                 if ((collectCount == 0) && WorkSpace.this.loop) {
                     // Wait pause time seconds and try again if looping
@@ -1231,25 +1233,24 @@ public class WorkSpace implements Runnable {
                     final File next = (File) f.next();
                     final String fileName = next.getPath();
 
-                    // We should only be getting these if we asked for them
-                    // We should only use them if we are not resuming a
-                    // previous run.
+                    // We should only be getting these if we asked for them.
+                    // We should only use them if we are not resuming a previous run.
                     if (next.isDirectory() && numberOfBundlesToSkipArg == 0) {
-                        logger.debug("Doing directory " + fileName);
+                        logger.debug("Doing directory {}", fileName);
                         processDirectory(next);
                         continue;
                     }
 
                     // Can we read the file?
                     if (!next.isFile() && !next.canRead()) {
-                        logger.debug("Cannot access file: " + fileName);
+                        logger.debug("Cannot access file: {}", fileName);
                         continue;
                     }
 
                     // Skip dot files possibly
                     // TODO Maybe we want to change this to explicitly look for "." instead of isHidden
                     if (skipDotFilesArg && Files.isHidden(Paths.get(fileName))) {
-                        logger.debug("Skipping dot file " + fileName);
+                        logger.debug("Skipping dot file {}", fileName);
                         continue;
                     }
 
@@ -1264,18 +1265,18 @@ public class WorkSpace implements Runnable {
                             WorkSpace.this.filesDone.remove(fileName);
                             continue;
                         } else if (WorkSpace.this.filesSeen.containsKey(fileName)
-                                && WorkSpace.this.filesSeen.get(fileName).longValue() == next.lastModified()) {
-                            logger.debug("Skipping file already seen " + fileName + ", touch file to force add");
+                                && WorkSpace.this.filesSeen.get(fileName) == next.lastModified()) {
+                            logger.debug("Skipping file already seen {}, touch file to force add", fileName);
                             continue;
                         }
                     }
 
-                    logger.debug("Adding filename to bundle " + fileName);
+                    logger.debug("Adding filename to bundle {}", fileName);
 
                     // add file to workbundle (at least 1)
                     if (workbundleHasRoom(paths, bytesInBundle)) {
-                        logger.debug("Added file to workbundle: " + fileName);
-                        paths.addFileName(fileName, Long.valueOf(getFileModificationDate(fileName)), getFileSize(fileName));
+                        logger.debug("Added file to workbundle: {}", fileName);
+                        paths.addFileName(fileName, getFileModificationDate(fileName), getFileSize(fileName));
                         bytesInBundle += next.length();
                         WorkSpace.this.filesProcessed++; // overall
                         fileCount++; // this loop
@@ -1318,8 +1319,8 @@ public class WorkSpace implements Runnable {
                 return collected;
             }
 
-            if (WorkSpace.this.outbound.size() > 0) {
-                logger.info("Processed " + fileCount + " files into " + collected + " bundles, skipping " + skipped + " bundles.");
+            if (!WorkSpace.this.outbound.isEmpty()) {
+                logger.info("Processed {} files into {} bundles, skipping {} bundles.", fileCount, collected, skipped);
             }
             return collected;
         }
@@ -1332,18 +1333,15 @@ public class WorkSpace implements Runnable {
          * @return true if bundle does not exceed max byte size, or max file count.
          */
         private boolean workbundleHasRoom(final WorkBundle bundle, final long bytesInBundle) {
-            boolean bReturn = true;
 
             // must have a min size of 1 file, but cannot be over the
             // max byte size, or max file count
-            if ((bundle.size() > 0)
-                    && (((WorkSpace.this.MAX_BUNDLE_SIZE > -1) && (bytesInBundle >= WorkSpace.this.MAX_BUNDLE_SIZE))
-                            || ((WorkSpace.this.FILES_PER_MESSAGE > -1) && (bundle
-                                    .size() >= WorkSpace.this.FILES_PER_MESSAGE)))) {
-                bReturn = false;
-            }
+            boolean bReturn = (bundle.size() <= 0)
+                    || (((WorkSpace.this.MAX_BUNDLE_SIZE <= -1) || (bytesInBundle < WorkSpace.this.MAX_BUNDLE_SIZE))
+                            && ((WorkSpace.this.FILES_PER_MESSAGE <= -1) || (bundle
+                                    .size() < WorkSpace.this.FILES_PER_MESSAGE)));
 
-            logger.debug("workbundle has room = " + bReturn);
+            logger.debug("workbundle has room = {}", bReturn);
             return bReturn;
         }
 
@@ -1361,7 +1359,7 @@ public class WorkSpace implements Runnable {
             MemoryUsage heap = mbean.getHeapMemoryUsage();
             int count = 0;
             while ((((double) heap.getUsed() / (double) heap.getCommitted()) > WorkSpace.this.MEM_THRESHOLD) && (getOutboundQueueSize() > 500)) {
-                logger.debug("Collection memory threshold exceeded " + heap);
+                logger.debug("Collection memory threshold exceeded {}", heap);
                 try {
                     Thread.sleep(intv);
                 } catch (InterruptedException ex) {
@@ -1372,9 +1370,9 @@ public class WorkSpace implements Runnable {
             }
 
             if (count > 0 && logger.isDebugEnabled()) {
-                logger.debug("Paused collector " + count + " times for " + (intv / 1000) + "s waiting for memory usage to " + "go below threshold "
-                        + WorkSpace.this.MEM_THRESHOLD + " resuming at " + heap + ", queueSize was/is=" + initialQueueSize + "/"
-                        + getOutboundQueueSize());
+                logger.debug(
+                        "Paused collector {} times for {}s waiting for memory usage to go below threshold {} resuming at {}, queueSize was/is={}/{}",
+                        count, (intv / 1000), WorkSpace.this.MEM_THRESHOLD, heap, initialQueueSize, getOutboundQueueSize());
             }
         }
     }
@@ -1383,8 +1381,8 @@ public class WorkSpace implements Runnable {
      * Collect per pickup statistics for this run
      */
     public static class WorkSpaceStats {
-        final Map<String, Integer> remoteMap = new HashMap<String, Integer>();
-        final Set<String> shutDownSent = new HashSet<String>();
+        final Map<String, Integer> remoteMap = new HashMap<>();
+        final Set<String> shutDownSent = new HashSet<>();
 
         /**
          * Increment the bundle count for the machine when it takes one
@@ -1394,9 +1392,9 @@ public class WorkSpace implements Runnable {
         public void bump(final String machine) {
             Integer count = this.remoteMap.get(machine);
             if (count == null) {
-                count = Integer.valueOf(1);
+                count = 1;
             } else {
-                count = Integer.valueOf(count.intValue() + 1);
+                count = count + 1;
             }
             this.remoteMap.put(machine, count);
         }
@@ -1411,14 +1409,14 @@ public class WorkSpace implements Runnable {
         }
 
         /**
-         * Count how many machines got shutdown msg
+         * Count how many machines got shut down msg
          */
         public int getShutDownCount() {
             return this.shutDownSent.size();
         }
 
         /**
-         * Iterate over set of machines uese
+         * Iterate over set of machines used
          */
         public Iterator<String> machinesUsed() {
             return this.remoteMap.keySet().iterator();
@@ -1429,7 +1427,7 @@ public class WorkSpace implements Runnable {
          */
         public int getCountUsed(final String machine) {
             final Integer count = this.remoteMap.get(machine);
-            return (count == null) ? 0 : count.intValue();
+            return (count == null) ? 0 : count;
         }
     }
 
@@ -1444,7 +1442,7 @@ public class WorkSpace implements Runnable {
          */
         public WorkSpaceDirectoryWatcher(final String pattern) {
             super(pattern);
-            logger.debug("PickupClient pattern is " + pattern);
+            logger.debug("PickupClient pattern is {}", pattern);
         }
 
         /**
@@ -1456,17 +1454,17 @@ public class WorkSpace implements Runnable {
         @Override
         public void placeRegistered(final String observableKey, final String placeKey) {
             final String k = KeyManipulator.removeExpense(placeKey);
-            logger.debug("Registration message from " + k);
+            logger.debug("Registration message from {}", k);
             if (WorkSpace.this.pups.contains(k) && WorkSpace.this.useRetryStrategy) {
                 // This covers the case where the pickup dies and restarts
                 // before the Heartbeat mechanism figures out there was
                 // a problem.
-                logger.info("Already known pickup " + k + " must be reinitialized to clear pending work.");
+                logger.info("Already known pickup {} must be reinitialized to clear pending work.", k);
                 removePickUp(k);
             }
 
             if (!WorkSpace.this.pups.contains(k)) {
-                logger.info("New pickup place " + k);
+                logger.info("New pickup place {}", k);
             }
 
             // add to list and maybe send open msg. Dup places
@@ -1484,11 +1482,11 @@ public class WorkSpace implements Runnable {
         @Override
         public void placeDeregistered(final String observableKey, final String placeKey) {
             final String k = KeyManipulator.removeExpense(placeKey);
-            logger.debug("DeRegistration message from " + k);
+            logger.debug("DeRegistration message from {}", k);
             if (!WorkSpace.this.pups.contains(k)) {
-                logger.info("Unknown pickup deregistered " + k);
+                logger.info("Unknown pickup deregistered {}", k);
             } else {
-                logger.info("Pickup place " + k + " is gone");
+                logger.info("Pickup place {} is gone", k);
                 if (WorkSpace.this.useRetryStrategy) {
                     removePickUp(k);
                 }
