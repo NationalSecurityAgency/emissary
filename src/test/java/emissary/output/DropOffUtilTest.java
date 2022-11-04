@@ -596,6 +596,14 @@ class DropOffUtilTest extends UnitTest {
         assertTrue(fileExts.contains("mp3"), "FILEXT values should contain \"mp3\"");
     }
 
+    @Test
+    void testCleanSpecPath() {
+        assertEquals("/this/is/fine", util.cleanSpecPath("/this/is/fine"));
+        assertEquals("/this/./is/fine", util.cleanSpecPath("/this/../is/fine"));
+        assertEquals("/this/./is/./fine", util.cleanSpecPath("/this/../is/../fine"));
+        assertEquals("/this/./././/./is/fine", util.cleanSpecPath("/this/....../../..//./is/fine"));
+    }
+
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
         bdo.clearParameters();
         bdo.putParameter(fileTypeCheckParameter.getFieldName(), fieldValue);
