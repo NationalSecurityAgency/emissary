@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -32,6 +33,9 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class BaseDataObjectTest extends UnitTest {
 
@@ -515,35 +519,20 @@ class BaseDataObjectTest extends UnitTest {
         assertThrows(IllegalArgumentException.class, () -> this.b.addCurrentFormAt(0, null));
     }
 
-    @Test
-    void testPullToTopFromMiddle() {
-        this.b.pullFormToTop("TWO");
-        assertEquals("TWO", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
+    static Stream<Arguments> arguments() {
+        return Stream.of(
+                Arguments.of("TWO", "TWO", "ONE", "pull to top from middle"),
+                Arguments.of("ONE", "ONE", "TWO", "pull to top from bottom"),
+                Arguments.of("THREE", "THREE", "ONE", "pull to top from top"),
+                Arguments.of("SEVENTEEN", "THREE", "ONE", "pull non existent to top"));
     }
 
-    @Test
-    void testPullToTopFromBottom() {
-        this.b.pullFormToTop("ONE");
-        assertEquals("ONE", this.b.currentForm(), "Form on top");
-        assertEquals("TWO", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
-    }
-
-    @Test
-    void testPullToTopFromTop() {
-        this.b.pullFormToTop("THREE");
-        assertEquals("THREE", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
-    }
-
-    @Test
-    void testPullNonExistentToTop() {
-        this.b.pullFormToTop("SEVENTEEN");
-        assertEquals("THREE", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
+    @ParameterizedTest
+    @MethodSource("arguments")
+    void testPullToTop(String pullToTop, String expected, String expectedAt, String msg) {
+        this.b.pullFormToTop(pullToTop);
+        assertEquals(expected, this.b.currentForm(), msg);
+        assertEquals(expectedAt, this.b.currentFormAt(2), "Form on bottom");
         assertEquals(3, this.b.currentFormSize(), "Stack size after set");
     }
 

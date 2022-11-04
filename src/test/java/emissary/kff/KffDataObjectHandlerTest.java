@@ -89,7 +89,7 @@ class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Test
-    public void testHashMethod() {
+    void testHashMethod() {
         kff = new KffDataObjectHandler(true, true, true);
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
@@ -105,14 +105,14 @@ class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Test
-    public void testParentToChildMethod() {
+    void testParentToChildMethod() {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT, payload);
         KffDataObjectHandler.parentToChild(payload);
         assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
     }
 
     @Test
-    public void testSetAndGetHash() {
+    void testSetAndGetHash() {
         KffDataObjectHandler.setHashValue(payload, DATA_MD5);
         assertEquals(DATA_MD5, KffDataObjectHandler.getMd5Value(payload));
         KffDataObjectHandler.setHashValue(payload, DATA_SHA1);
