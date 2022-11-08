@@ -652,8 +652,25 @@ public interface IBaseDataObject {
      * Replace history with the new history
      * 
      * @param list of new history strings to use
+     * @deprecated See {@link #setHistory(TransformHistory)}
      */
+    @Deprecated
     void setHistory(List<String> list);
+
+
+    /**
+     * Replace history with the new history
+     *
+     * @param history of new history strings to use
+     */
+    void setHistory(TransformHistory history);
+
+    /**
+     * Get the transform history
+     *
+     * @return history of places visited
+     */
+    TransformHistory getTransformHistory();
 
     /**
      * List of places the data object was carried to.
@@ -661,6 +678,14 @@ public interface IBaseDataObject {
      * @return List of strings making up the history
      */
     List<String> transformHistory();
+
+    /**
+     * List of places the data object was carried to.
+     *
+     * @param includeCoordinated include the places that were coordinated
+     * @return List of strings making up the history
+     */
+    List<String> transformHistory(boolean includeCoordinated);
 
     /**
      * Clear the transformation history
@@ -675,6 +700,18 @@ public interface IBaseDataObject {
      * @param key the new value to append
      */
     void appendTransformHistory(String key);
+
+    /**
+     * Appends the new key to the transform history. This is called by MobileAgent before moving to the new place. It
+     * usually adds the four-tuple of a place's key. Coordinated history keys are meant for informational purposes and have
+     * no bearing on the routing algorithm. It is important to list the places visited in coordination, but should not
+     * report as the last place visited.
+     *
+     * @see emissary.core.MobileAgent#agentControl
+     * @param key the new value to append
+     * @param coordinated true if history entries are for informational purposes only
+     */
+    void appendTransformHistory(String key, boolean coordinated);
 
     /**
      * Return what machine we are located on

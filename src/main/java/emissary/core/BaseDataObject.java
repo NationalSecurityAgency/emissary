@@ -21,9 +21,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.LinkedListMultimap;
 import emissary.directory.DirectoryEntry;
-import emissary.directory.KeyManipulator;
 import emissary.pickup.Priority;
-import emissary.place.IServiceProviderPlace;
 import emissary.util.ByteUtil;
 import emissary.util.PayloadUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +70,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * A travelogue built up as the agent moves about. Appended to by the agent as it goes from place to place.
      */
-    protected List<String> history = new ArrayList<>();
+    protected TransformHistory history = new TransformHistory();
 
     /**
      * The last determined language(characterset) of the data.
@@ -515,11 +513,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         myOutput.append(ls);
         myOutput.append("   currentForms: ").append(getAllCurrentForms()).append(ls);
-        myOutput.append("   transform history (").append(this.history.size()).append(") :").append(ls);
-
-        for (final String historyValue : this.history) {
-            myOutput.append("        -> ").append(historyValue).append(ls);
-        }
+        myOutput.append("   ").append(history);
 
         return myOutput.toString();
     }
@@ -547,8 +541,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    public TransformHistory getTransformHistory() {
+        return new TransformHistory(history);
+    }
+
+    @Override
     public List<String> transformHistory() {
-        return new ArrayList<>(this.history);
+        return transformHistory(false);
+    }
+
+    @Override
+    public List<String> transformHistory(boolean includeCoordinated) {
+        return history.get(includeCoordinated);
     }
 
     @Override
@@ -558,18 +562,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void appendTransformHistory(final String key) {
-        this.history.add(key);
+        appendTransformHistory(key, false);
     }
 
-    /**
-     * Replace history with the new history. Is this historic revisionism? Maybe, but it is needed to support sprouting
-     *
-     * @param newHistory list of new history strings to use
-     */
     @Override
+    public void appendTransformHistory(final String key, boolean coordinated) {
+        this.history.append(key, coordinated);
+    }
+
+    @Override
+    @Deprecated
     public void setHistory(final List<String> newHistory) {
-        this.history.clear();
-        this.history.addAll(newHistory);
+        this.history.set(newHistory);
+    }
+
+    @Override
+    public void setHistory(TransformHistory newHistory) {
+        this.history.set(newHistory);
     }
 
     @Override
@@ -585,39 +594,24 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public DirectoryEntry getLastPlaceVisited() {
-        final int sz = this.history.size();
-        if (sz == 0) {
-            return null;
-        }
-        return new DirectoryEntry(this.history.get(sz - 1));
+        String entry = history.lastVisit();
+        return entry == null ? null : new DirectoryEntry(entry);
     }
 
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
-        final int sz = this.history.size();
-        if (sz < 2) {
-            return null;
-        }
-        return new DirectoryEntry(this.history.get(sz - 2));
+        String entry = history.penultimateVisit();
+        return entry == null ? null : new DirectoryEntry(entry);
     }
 
     @Override
     public boolean hasVisited(final String pattern) {
-        for (final String historyValue : this.history) {
-            if (KeyManipulator.gmatch(historyValue, pattern)) {
-                return true;
-            }
-        }
-        return false;
+        return history.hasVisited(pattern);
     }
 
     @Override
     public boolean beforeStart() {
-        if (this.history.isEmpty()) {
-            return true;
-        }
-        final String s = this.history.get(this.history.size() - 1);
-        return s.indexOf(IServiceProviderPlace.SPROUT_KEY) > -1;
+        return history.beforeStart();
     }
 
     @Override
@@ -1210,7 +1204,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             c.setData(this.theData, 0, this.theData.length);
         }
         c.currentForm = new ArrayList<>(this.currentForm);
-        c.history = new ArrayList<>(this.history);
+        c.history = new TransformHistory(this.history);
         c.multipartAlternative = new HashMap<>(this.multipartAlternative);
         c.priority = this.priority;
         c.creationTimestamp = this.creationTimestamp;

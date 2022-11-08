@@ -168,6 +168,26 @@ class RoutingAlgorithmTest extends UnitTest {
     }
 
     @Test
+    void testBackToIdPhaseAfterCoordinate() {
+        final DirectoryEntry lastPlace = new DirectoryEntry("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.dir.addTestEntry(lastPlace);
+        this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s3.ID.http://example.com:8001/A$3030"));
+        this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s4.ANALYZE.http://example.com:8001/A$4040"));
+
+        // after appending a key w/ coordinated=true to the transform history, we should be in the ID phase
+        this.payload.pushCurrentForm("UNKNOWN");
+        this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", true);
+        assertEquals("ID", this.agent.getNextKeyAccess(this.dir, this.payload).getServiceType(), "Should go to ID place after coordinate");
+
+        // after appending a key w/ coordinated=false to the transform history, we should be in the ANALYZE phase
+        this.payload.clearTransformHistory();
+        this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", false);
+        assertEquals("ANALYZE", this.agent.getNextKeyAccess(this.dir, this.payload).getServiceType(), "Should not return to ID place after analyze");
+    }
+
+    @Test
     void testCheckTransformProxyWithTwoFormsDoesNotRepeat() {
         loadAllTestEntries();
 
