@@ -10,7 +10,6 @@ import ch.qos.logback.core.read.ListAppender;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
@@ -417,22 +416,38 @@ class ConfigUtilTest extends UnitTest {
         assertEquals("emissary.place.iamtheone.DevNullPlace", c.findStringEntry("Dev3NullPlace"), "Should have set Dev3NullPlace");
     }
 
-    @Disabled("causing issues, fix this")
     @Test
-    void testOldMasterClassNameNotRead() throws IOException, EmissaryException {
-        // no longer reading MasterClassNames.cfg
-        final String contents = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "MasterClassNames.cfg", contents);
+    void testNoMasterClassNamesFilesExist() throws EmissaryException, IOException {
 
+        final Path noCfgsFolder = createTmpSubDir("folder_with_no_cfg_files");
+
+        System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(noCfgsFolder.toAbsolutePath()));
         emissary.config.ConfigUtil.initialize();
 
-        Configurator c = null;
-        try {
-            c = ConfigUtil.getMasterClassNames();
-        } catch (EmissaryException e) {
-            // Swallow, this should happen
-        }
-        assertNull(c, "Configurator should be null");
+        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
+            final Configurator c = ConfigUtil.getMasterClassNames();
+        });
+
+        assertTrue(thrown.getMessage().contains("No places to start."));
+    }
+
+    @Test
+    void testOldMasterClassNamesFileExistsButIsIgnored() throws EmissaryException, IOException {
+
+        // create a config file using old/deprecated file name convention MasterClassNames.cfg
+        final Path oldCfgsFolder = createTmpSubDir("folder_with_old_cfg_file_name");
+
+        final String contents = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
+        createFileAndPopulate(oldCfgsFolder, "MasterClassNames.cfg", contents);
+
+        System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(oldCfgsFolder.toAbsolutePath()));
+        emissary.config.ConfigUtil.initialize();
+
+        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
+            final Configurator c = ConfigUtil.getMasterClassNames();
+        });
+
+        assertTrue(thrown.getMessage().contains("No places to start."));
     }
 
     @Test
