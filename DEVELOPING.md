@@ -592,6 +592,12 @@ mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . -t emissary
 ```
 
+For a lightweight emissary darker image the Dockerfile.alpine can be used. 
+This image is 1/3 of the size of the normal centOS 7 based image
+```
+docker build -f contrib/docker/Dockerfile.alpine . -t emissary-light
+```
+
 ### Run Emissary with Docker
 
 Once the image is successfully built, the image should be in your list of local images. Run ```docker images``` and there
