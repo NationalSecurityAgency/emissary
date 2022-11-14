@@ -1,5 +1,14 @@
 package emissary.core;
 
+import emissary.place.IServiceProviderPlace;
+
+import com.codahale.metrics.ExponentiallyDecayingReservoir;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.Map;
@@ -8,14 +17,6 @@ import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import com.codahale.metrics.ExponentiallyDecayingReservoir;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
-import emissary.place.IServiceProviderPlace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Track mobile agents and make them obey resource limitations

@@ -1,5 +1,10 @@
 package emissary.directory;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,13 +12,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hold a set of Directory keys (four-tuples) in sorted order by expense, cheapest first, no duplicates

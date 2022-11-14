@@ -1,7 +1,13 @@
 package emissary.output.filter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.shell.Executrix;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,13 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.shell.Executrix;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataFilterTest extends UnitTest {
 

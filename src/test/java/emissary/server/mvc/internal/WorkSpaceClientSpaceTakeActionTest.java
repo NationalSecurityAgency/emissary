@@ -1,5 +1,22 @@
 package emissary.server.mvc.internal;
 
+import emissary.core.Namespace;
+import emissary.pickup.WorkBundle;
+import emissary.pickup.WorkSpace;
+import emissary.server.mvc.EndpointTestBase;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Collections;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
+
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.CLIENT_NAME;
 import static emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.SPACE_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -7,23 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-
-import java.util.Collections;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
-import emissary.core.Namespace;
-import emissary.pickup.WorkBundle;
-import emissary.pickup.WorkSpace;
-import emissary.server.mvc.EndpointTestBase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
 

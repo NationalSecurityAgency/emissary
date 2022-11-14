@@ -1,10 +1,5 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.admin.PlaceStarter;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
@@ -13,6 +8,11 @@ import emissary.core.ResourceWatcher;
 import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This place will coordinate service to several lower level service places. We have a list and will execute each place

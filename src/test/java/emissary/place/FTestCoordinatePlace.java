@@ -1,13 +1,5 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.InputStream;
-import java.util.Map;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -16,9 +8,18 @@ import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FTestCoordinatePlace extends FunctionalTest {
 

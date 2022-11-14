@@ -1,7 +1,9 @@
 package emissary.kff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.Hexl;
+
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -9,9 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Random;
 
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.Hexl;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Unit tests for {@link Ssdeep}.

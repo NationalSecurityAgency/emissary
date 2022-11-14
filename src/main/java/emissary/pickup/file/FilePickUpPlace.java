@@ -1,11 +1,11 @@
 package emissary.pickup.file;
 
+import emissary.pickup.IPickUp;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import emissary.pickup.IPickUp;
 
 /**
  * Monitor one or more directories and pickup files for the system

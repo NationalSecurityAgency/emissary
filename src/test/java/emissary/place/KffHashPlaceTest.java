@@ -1,13 +1,14 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.kff.KffDataObjectHandler;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the KffHashPlace

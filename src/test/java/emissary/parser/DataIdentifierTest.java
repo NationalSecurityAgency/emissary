@@ -1,19 +1,20 @@
 package emissary.parser;
 
-import static emissary.parser.DataIdentifier.UNKNOWN_TYPE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import static emissary.parser.DataIdentifier.UNKNOWN_TYPE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataIdentifierTest extends UnitTest {
 

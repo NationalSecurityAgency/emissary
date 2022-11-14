@@ -1,10 +1,8 @@
 package emissary.command;
 
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
+import emissary.command.converter.PathExistsConverter;
+import emissary.command.converter.ProjectBaseConverter;
+import emissary.config.ConfigUtil;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
@@ -12,11 +10,14 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import emissary.command.converter.PathExistsConverter;
-import emissary.command.converter.ProjectBaseConverter;
-import emissary.config.ConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 public abstract class BaseCommand implements EmissaryCommand {
 

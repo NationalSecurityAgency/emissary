@@ -1,9 +1,9 @@
 package emissary.place;
 
+import emissary.directory.DirectoryEntry;
+
 import java.util.List;
 import java.util.Set;
-
-import emissary.directory.DirectoryEntry;
 
 /**
  * IServiceProviderPlace. IServiceProviderPlaces can be created by the emissary.admin.PlaceStarter and registered with

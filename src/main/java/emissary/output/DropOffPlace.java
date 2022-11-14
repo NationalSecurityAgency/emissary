@@ -1,6 +1,16 @@
 package emissary.output;
 
-import static net.logstash.logback.marker.Markers.appendEntries;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.DataObjectFactory;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.output.filter.IDropOffFilter;
+import emissary.place.ServiceProviderPlace;
+import emissary.util.DataUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -14,16 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.DataObjectFactory;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.output.filter.IDropOffFilter;
-import emissary.place.ServiceProviderPlace;
-import emissary.util.DataUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static net.logstash.logback.marker.Markers.appendEntries;
 
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,

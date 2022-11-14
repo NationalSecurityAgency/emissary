@@ -1,8 +1,9 @@
 package emissary.command.converter;
 
-import com.beust.jcommander.IStringConverter;
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
+
+import com.beust.jcommander.IStringConverter;
 
 public class PriorityDirectoryConverter implements IStringConverter<PriorityDirectory> {
     public static final String PRIORITY_DIR_REGEX = ".*:\\d+$";

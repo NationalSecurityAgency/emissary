@@ -1,16 +1,5 @@
 package emissary.pickup;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -25,7 +14,18 @@ import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
 import emissary.util.shell.Executrix;
+
 import org.slf4j.MDC;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about

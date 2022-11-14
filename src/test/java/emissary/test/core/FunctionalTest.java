@@ -1,11 +1,5 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-
 import emissary.admin.PlaceStarter;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
@@ -16,7 +10,14 @@ import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.server.EmissaryServer;
+
 import org.eclipse.jetty.server.Server;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Base class of all the functional tests

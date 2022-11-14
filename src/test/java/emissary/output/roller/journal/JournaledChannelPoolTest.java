@@ -1,7 +1,12 @@
 package emissary.output.roller.journal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.UnitTestFileUtils;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,12 +16,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.UnitTestFileUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JournaledChannelPoolTest extends UnitTest {
 

@@ -1,9 +1,9 @@
 package emissary.output.filter;
 
-import java.util.List;
-
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
+
+import java.util.List;
 
 /**
  * Defines a simple interface for accepting a filter condition

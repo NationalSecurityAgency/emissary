@@ -1,26 +1,26 @@
 package emissary.server.mvc;
 
+import emissary.core.Namespace;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryEntryList;
+import emissary.directory.IDirectoryPlace;
+import emissary.util.Version;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-
-import emissary.core.Namespace;
-import emissary.directory.DirectoryEntry;
-import emissary.directory.DirectoryEntryList;
-import emissary.directory.IDirectoryPlace;
-import emissary.util.Version;
-import org.junit.jupiter.api.Test;
 
 class EmissaryMvcTest extends EndpointTestBase {
 

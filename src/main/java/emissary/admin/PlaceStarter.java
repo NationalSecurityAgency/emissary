@@ -1,12 +1,5 @@
 package emissary.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -18,9 +11,16 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Static methods to start places in the system.

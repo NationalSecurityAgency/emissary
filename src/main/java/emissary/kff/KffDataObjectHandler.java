@@ -1,13 +1,13 @@
 package emissary.kff;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import emissary.core.IBaseDataObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * A helpful class to set and evaluate the KFF details of a BaseDataObject

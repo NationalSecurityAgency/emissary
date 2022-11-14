@@ -1,12 +1,12 @@
 package emissary.util.search;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FastBoyerMoore {
     private static Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);

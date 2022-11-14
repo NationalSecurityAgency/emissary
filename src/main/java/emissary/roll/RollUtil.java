@@ -1,12 +1,11 @@
 package emissary.roll;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
-
 import emissary.config.Configurator;
 import emissary.core.Factory;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * Util class to grab known parameters from configs to help configure Rollable objects.

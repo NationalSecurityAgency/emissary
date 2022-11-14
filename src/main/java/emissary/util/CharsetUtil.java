@@ -1,11 +1,10 @@
 package emissary.util;
 
-import java.io.UnsupportedEncodingException;
-
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import javax.annotation.Nullable;
 
 /**
  * A collection of utilities for dealing with different character sets in Java. Mainly with the aim of getting to UTF-8.

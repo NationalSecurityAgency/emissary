@@ -1,13 +1,8 @@
 package emissary.client;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
-import javax.ws.rs.core.MediaType;
+import emissary.client.response.BaseEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import emissary.client.response.BaseEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -16,6 +11,11 @@ import org.apache.http.HttpResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import javax.ws.rs.core.MediaType;
 
 public class EmissaryResponse {
 

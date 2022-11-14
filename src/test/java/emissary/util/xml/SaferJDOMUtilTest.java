@@ -1,13 +1,14 @@
 package emissary.util.xml;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import emissary.test.core.junit5.UnitTest;
+
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.jdom2.input.JDOMParseException;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SaferJDOMUtilTest extends UnitTest {
 

@@ -1,10 +1,10 @@
 package emissary.util;
 
-import java.io.IOException;
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * POJO for parsing and returning values from a git properties file. The properties file is created during the maven

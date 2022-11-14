@@ -1,11 +1,11 @@
 /* $Id$ */
 package emissary.util;
 
+import emissary.util.io.ReadOutput;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
-
-import emissary.util.io.ReadOutput;
 
 public class WatcherThread extends Thread {
     private Process proc = null;

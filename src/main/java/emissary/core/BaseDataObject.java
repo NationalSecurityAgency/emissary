@@ -1,5 +1,15 @@
 package emissary.core;
 
+import emissary.directory.DirectoryEntry;
+import emissary.pickup.Priority;
+import emissary.util.ByteUtil;
+import emissary.util.PayloadUtil;
+
+import com.google.common.collect.LinkedListMultimap;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,17 +26,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
-import com.google.common.collect.LinkedListMultimap;
-import emissary.directory.DirectoryEntry;
-import emissary.pickup.Priority;
-import emissary.util.ByteUtil;
-import emissary.util.PayloadUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class to hold byte array of data, header, footer, and attributes

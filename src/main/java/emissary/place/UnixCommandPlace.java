@@ -1,17 +1,16 @@
 package emissary.place;
 
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.util.shell.Executrix;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-
 import javax.annotation.Nullable;
-
-import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
-import emissary.directory.KeyManipulator;
-import emissary.util.shell.Executrix;
 
 /**
  * Run a command external to the Emissary JVM to process data

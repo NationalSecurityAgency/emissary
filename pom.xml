@@ -687,10 +687,11 @@
           </configuration>
           <executions>
             <execution>
-              <id>sort-imports</id>
+              <id>sort-java-imports</id>
               <goals>
                 <goal>sort</goal>
               </goals>
+              <phase>generate-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -717,14 +718,14 @@
               <goals>
                 <goal>format</goal>
               </goals>
-              <phase>process-sources</phase>
+              <phase>generate-sources</phase>
             </execution>
             <execution>
               <id>format-java-test-sources</id>
               <goals>
                 <goal>format</goal>
               </goals>
-              <phase>process-test-sources</phase>
+              <phase>generate-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -739,8 +740,14 @@
           <version>3.1.1</version>
           <configuration>
             <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
-            <violationSeverity>warn</violationSeverity>
+            <!-- this combination of these two configurations
+              (failOnViolation=true and violationSeverity=error) means
+              any checks with severity=error will fail the build -->
+            <!-- TODO enforce more checkstyle categories as the build gets cleaned up -->
+            <!-- As you fix checkstyle warning categories, change the severity of that category
+              to "error" so it will fail the build if new violations of that category get introduced. -->
+            <failOnViolation>true</failOnViolation>
+            <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <excludes />
           </configuration>
@@ -753,10 +760,18 @@
           </dependencies>
           <executions>
             <execution>
-              <id>check-style</id>
+              <id>checkstyle-sources</id>
               <goals>
                 <goal>check</goal>
               </goals>
+              <phase>process-sources</phase>
+            </execution>
+            <execution>
+              <id>checkstyle-test-sources</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>process-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -1260,7 +1275,8 @@
       <id>checkstyle</id>
       <activation>
         <property>
-          <name>code-quality</name>
+          <!-- skip with -DskipCheckstyle -->
+          <name>!skipCheckstyle</name>
         </property>
       </activation>
       <build>
@@ -1348,8 +1364,33 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
+            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
+            <version>1.6.2</version>
+            <!--TODO update to latest once we move past JDK11 -->
+            <configuration>
+              <groups>emissary,*,java</groups>
+              <staticGroups>*</staticGroups>
+              <staticAfter>true</staticAfter>
+              <removeUnused>true</removeUnused>
+            </configuration>
+            <executions>
+              <execution>
+                <id>impsort-sources</id>
+                <goals>
+                  <goal>sort</goal>
+                </goals>
+                <phase>generate-sources</phase>
+              </execution>
+              <execution>
+                <id>impsort-test-sources</id>
+                <goals>
+                  <goal>sort</goal>
+                </goals>
+                <phase>generate-test-sources</phase>
+              </execution>
+            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>

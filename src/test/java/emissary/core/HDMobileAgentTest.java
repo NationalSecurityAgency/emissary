@@ -1,15 +1,16 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import emissary.place.ServiceProviderPlace;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import emissary.place.ServiceProviderPlace;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *

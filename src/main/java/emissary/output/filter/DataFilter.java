@@ -1,18 +1,17 @@
 package emissary.output.filter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.output.DropOffUtil;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as raw bytes

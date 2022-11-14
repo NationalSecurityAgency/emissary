@@ -1,18 +1,10 @@
 package emissary.test.core.junit5;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
-import java.io.InputStream;
-import java.lang.management.ThreadInfo;
-import java.util.List;
-import java.util.stream.Stream;
-
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
+
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +17,15 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.provider.Arguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.InputStream;
+import java.lang.management.ThreadInfo;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Base class of all the unit tests

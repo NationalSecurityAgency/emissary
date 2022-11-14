@@ -1,12 +1,13 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClassComparatorTest extends UnitTest {
     @Test

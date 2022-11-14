@@ -1,10 +1,10 @@
 package emissary.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import emissary.config.ConfigUtil;
 import emissary.util.io.ResourceReader;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public final class Version {
     private String version = "missing version";

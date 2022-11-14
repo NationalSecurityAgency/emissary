@@ -1,22 +1,23 @@
 package emissary.command;
 
-import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.Parameters;
 import emissary.command.converter.PriorityDirectoryConverter;
 import emissary.command.converter.WorkspaceSortModeConverter;
 import emissary.pickup.PriorityDirectory;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
+
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.Parameters;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implemetation to distribute work to peer nodes")
 public class FeedCommand extends ServiceCommand {

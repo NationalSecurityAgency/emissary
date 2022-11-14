@@ -1,15 +1,15 @@
 package emissary.output.roller;
 
-import static emissary.output.roller.journal.Journal.EXT;
-import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
-import static java.nio.file.Files.exists;
-import static java.nio.file.Files.isDirectory;
-import static java.nio.file.Files.isReadable;
-import static java.nio.file.Files.isWritable;
-import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.READ;
-import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
-import static java.nio.file.StandardOpenOption.WRITE;
+import emissary.output.roller.journal.Journal;
+import emissary.output.roller.journal.JournalEntry;
+import emissary.output.roller.journal.JournalReader;
+import emissary.output.roller.journal.JournaledChannelPool;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.util.io.FileNameGenerator;
+
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,15 +24,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-import emissary.output.roller.journal.Journal;
-import emissary.output.roller.journal.JournalEntry;
-import emissary.output.roller.journal.JournalReader;
-import emissary.output.roller.journal.JournaledChannelPool;
-import emissary.output.roller.journal.KeyedOutput;
-import emissary.util.io.FileNameGenerator;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.output.roller.journal.Journal.EXT;
+import static emissary.output.roller.journal.JournaledChannelPool.EXTENSION;
+import static java.nio.file.Files.exists;
+import static java.nio.file.Files.isDirectory;
+import static java.nio.file.Files.isReadable;
+import static java.nio.file.Files.isWritable;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 
 /**
  * The Rollable implemenation that uses a journal to record offsets of completed writes to a pool of outputs. The

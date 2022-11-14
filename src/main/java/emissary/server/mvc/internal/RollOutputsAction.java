@@ -1,9 +1,11 @@
 package emissary.server.mvc.internal;
 
-import static emissary.util.PayloadUtil.logger;
+import emissary.core.Namespace;
+import emissary.core.ResourceWatcher;
+import emissary.output.DropOffPlace;
+import emissary.output.filter.IDropOffFilter;
 
 import java.util.List;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -12,10 +14,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import emissary.core.Namespace;
-import emissary.core.ResourceWatcher;
-import emissary.output.DropOffPlace;
-import emissary.output.filter.IDropOffFilter;
+import static emissary.util.PayloadUtil.logger;
 
 @Path("")
 // context is /emissary, set in EmissaryServer

@@ -1,5 +1,14 @@
 package emissary.output;
 
+import emissary.config.Configurator;
+import emissary.core.Family;
+import emissary.core.IBaseDataObject;
+import emissary.util.shell.Executrix;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -17,16 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
-
 import javax.annotation.Nullable;
-
-import emissary.config.Configurator;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.util.shell.Executrix;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);

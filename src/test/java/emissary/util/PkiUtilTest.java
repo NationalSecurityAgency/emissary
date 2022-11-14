@@ -1,5 +1,11 @@
 package emissary.util;
 
+import emissary.test.core.junit5.UnitTest;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -10,11 +16,6 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
-
-import emissary.test.core.junit5.UnitTest;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 class PkiUtilTest extends UnitTest {
     private static final String projectBase = System.getenv("PROJECT_BASE"); // set in surefire config

@@ -1,5 +1,27 @@
 package emissary.pickup;
 
+import emissary.client.EmissaryResponse;
+import emissary.command.BaseCommand;
+import emissary.command.FeedCommand;
+import emissary.command.ServerCommand;
+import emissary.core.EmissaryException;
+import emissary.core.NamespaceException;
+import emissary.directory.DirectoryAdapter;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
+import emissary.pool.AgentPool;
+import emissary.server.EmissaryServer;
+import emissary.server.mvc.adapters.WorkSpaceAdapter;
+import emissary.util.io.FileFind;
+
+import org.apache.http.HttpStatus;
+import org.eclipse.jetty.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -18,29 +40,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.annotation.Nullable;
-
-import emissary.client.EmissaryResponse;
-import emissary.command.BaseCommand;
-import emissary.command.FeedCommand;
-import emissary.command.ServerCommand;
-import emissary.core.EmissaryException;
-import emissary.core.NamespaceException;
-import emissary.directory.DirectoryAdapter;
-import emissary.directory.DirectoryEntry;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.EmissaryNode;
-import emissary.directory.IDirectoryPlace;
-import emissary.directory.KeyManipulator;
-import emissary.pool.AgentPool;
-import emissary.server.EmissaryServer;
-import emissary.server.mvc.adapters.WorkSpaceAdapter;
-import emissary.util.io.FileFind;
-import org.apache.http.HttpStatus;
-import org.eclipse.jetty.server.Server;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Recursively process input and distribute files to one or more remote PickUp client instances when they ask for a

@@ -1,20 +1,21 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.core.DataObjectFactory;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.id.WorkUnit;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.id.WorkUnit;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataUtilTest extends UnitTest {
 

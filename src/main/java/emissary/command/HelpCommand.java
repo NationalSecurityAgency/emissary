@@ -1,15 +1,15 @@
 package emissary.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
 
 @Parameters(commandDescription = "Print commands or usage for subcommand")
 public class HelpCommand implements EmissaryCommand {

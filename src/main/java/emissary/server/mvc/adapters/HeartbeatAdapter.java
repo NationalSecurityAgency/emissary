@@ -6,6 +6,7 @@ import emissary.core.NamespaceException;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

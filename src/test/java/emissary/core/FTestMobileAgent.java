@@ -1,16 +1,17 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.FunctionalTest;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class FTestMobileAgent extends FunctionalTest {
 

@@ -1,15 +1,16 @@
 package emissary.command;
 
-import static emissary.server.api.HealthCheckAction.HEALTH;
-import static emissary.server.api.Shutdown.SHUTDOWN;
+import emissary.client.EmissaryResponse;
+import emissary.directory.EmissaryNode;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import emissary.client.EmissaryResponse;
-import emissary.directory.EmissaryNode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static emissary.server.api.HealthCheckAction.HEALTH;
+import static emissary.server.api.Shutdown.SHUTDOWN;
 
 /**
  * Abstract command to control service components (stop/pause/unpause)

@@ -1,16 +1,17 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DependencyCheckTest extends UnitTest {
 

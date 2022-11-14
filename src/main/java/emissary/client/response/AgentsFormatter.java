@@ -1,7 +1,8 @@
 package emissary.client.response;
 
-import com.google.gson.JsonObject;
 import emissary.util.TimeUtil;
+
+import com.google.gson.JsonObject;
 
 /**
  * Formatter for Emissary MobileAgents. Currently,supports json output, but could be expanded to support any number of

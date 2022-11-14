@@ -1,18 +1,17 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import emissary.core.IBaseDataObject;
 import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
 import emissary.pickup.PickUpPlace;
 import emissary.util.DataUtil;
 import emissary.util.TypeEngine;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * A hybrid of the MultiFileServerPlace and the FilePickupPlace. Knows how to sprout agents using the MoveSpool

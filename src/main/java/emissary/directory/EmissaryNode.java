@@ -1,12 +1,5 @@
 package emissary.directory;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.admin.Startup;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -17,8 +10,16 @@ import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.spi.SPILoader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node

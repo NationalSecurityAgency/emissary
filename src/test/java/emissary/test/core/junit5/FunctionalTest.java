@@ -1,13 +1,5 @@
 package emissary.test.core.junit5;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-
 import emissary.admin.PlaceStarter;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
@@ -18,7 +10,16 @@ import emissary.place.IServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.pool.MoveSpool;
 import emissary.server.EmissaryServer;
+
 import org.eclipse.jetty.server.Server;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Base class of all the functional tests

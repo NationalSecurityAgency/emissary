@@ -1,17 +1,16 @@
 package emissary.id;
 
+import emissary.config.Configurator;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
-import emissary.config.Configurator;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.place.ServiceProviderPlace;
 
 /**
  * Abstract class that is the parent of all places that operate in the ID phase of the workflow.

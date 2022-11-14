@@ -1,17 +1,16 @@
 package emissary.server.mvc;
 
+import org.glassfish.jersey.server.mvc.Template;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import org.glassfish.jersey.server.mvc.Template;
 
 @Path("")
 // context is emissary

@@ -1,16 +1,9 @@
 package emissary.client;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
-import javax.ws.rs.core.MediaType;
-
-import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.HttpEntity;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -37,6 +30,13 @@ import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Base class of all the actions that use HttpClient.

@@ -1,15 +1,5 @@
 package emissary.pickup.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.pickup.Priority;
@@ -18,10 +8,21 @@ import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class FTestSpacePlaceInteraction extends FunctionalTest {
     private FilePickUpClient place = null;

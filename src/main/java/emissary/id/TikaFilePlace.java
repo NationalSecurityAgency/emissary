@@ -1,5 +1,15 @@
 package emissary.id;
 
+import emissary.core.IBaseDataObject;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MediaType;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
+import org.apache.tika.mime.MimeTypesFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,15 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import emissary.core.IBaseDataObject;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tika.io.TikaInputStream;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MediaType;
-import org.apache.tika.mime.MimeTypeException;
-import org.apache.tika.mime.MimeTypes;
-import org.apache.tika.mime.MimeTypesFactory;
 
 /**
  * Perform file identification tests using the configured TIKA_SIGNATURE_FILE to drive the identification process

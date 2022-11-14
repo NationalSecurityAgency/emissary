@@ -1,9 +1,9 @@
 package emissary.place;
 
+import emissary.core.IBaseDataObject;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import emissary.core.IBaseDataObject;
 
 public class MyStreamConfigedTestPlace extends ServiceProviderPlace {
 

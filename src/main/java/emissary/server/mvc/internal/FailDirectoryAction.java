@@ -1,9 +1,13 @@
 package emissary.server.mvc.internal;
 
-import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
-import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
-import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
-import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
+import emissary.directory.IRemoteDirectory;
+import emissary.directory.KeyManipulator;
+import emissary.log.MDCConstants;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -13,13 +17,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import emissary.directory.IRemoteDirectory;
-import emissary.directory.KeyManipulator;
-import emissary.log.MDCConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
+import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
+import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
+import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
 
 @Path("")
 // context is /emissary, set in EmissaryServer

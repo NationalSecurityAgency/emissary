@@ -1,12 +1,12 @@
 package emissary.command.converter;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import com.beust.jcommander.converters.BaseConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PathExistsConverter extends BaseConverter<Path> {
 

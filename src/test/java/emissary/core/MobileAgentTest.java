@@ -1,17 +1,18 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-
 import emissary.admin.PlaceStarter;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MobileAgentTest extends UnitTest {
     private MobAg agent;

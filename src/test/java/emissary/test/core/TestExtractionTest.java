@@ -1,17 +1,18 @@
 package emissary.test.core;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import emissary.place.IServiceProviderPlace;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TestExtractionTest extends UnitTest {
 

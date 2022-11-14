@@ -1,12 +1,12 @@
 package emissary.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.shell.Executrix;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * Class that performs simple checks to determine if an executable, directory, and/or file exists on the host machine.

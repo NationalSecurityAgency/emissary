@@ -1,26 +1,5 @@
 package emissary.server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.UnknownHostException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import javax.naming.directory.AttributeInUseException;
-
-import ch.qos.logback.classic.ViewStatusMessagesServlet;
-import com.google.common.annotations.VisibleForTesting;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.client.HTTPConnectionFactory;
@@ -40,6 +19,9 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+
+import ch.qos.logback.classic.ViewStatusMessagesServlet;
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -68,6 +50,24 @@ import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import javax.naming.directory.AttributeInUseException;
 
 public class EmissaryServer {
 

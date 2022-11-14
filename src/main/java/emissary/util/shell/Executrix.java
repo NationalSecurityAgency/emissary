@@ -1,5 +1,15 @@
 package emissary.util.shell;
 
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.directory.KeyManipulator;
+import emissary.util.io.FileManipulator;
+
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -15,17 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.directory.KeyManipulator;
-import emissary.util.io.FileManipulator;
-import org.apache.commons.exec.ExecuteWatchdog;
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class wraps up things related to exec-ing of external processes and reading and writing disk files.
