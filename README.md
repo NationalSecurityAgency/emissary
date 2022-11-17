@@ -166,6 +166,32 @@ Starting  the Emissary server actually calls this endpoint and dumps out $PROJEC
 with the configured variables.  This is done so that shell scripts can `source $PROJECT_BASE}/env.sh` 
 and then have those variable available without having to worry with configuring them elsewhere.
 
+#### Config
+
+The config commands allows you to see the configuration of a specified class. This command can 
+be used to connect to a running Emissary node, or can be used in an offline mode that is useful 
+for local testing. Since Emissary uses flavors, this command will show the resulting configuration
+of a class after all flavors have been applied. To connect to a locally running Emissary on port 
+8001, any of the following commands will work:
+```
+./emissary config --place emissary.place.sample.ToLowerPlace
+./emissary config --place emissary.place.sample.ToLowerPlace -h localhost -p 8001
+```
+In offline mode, you can provide flavors to see the differences in configurations:
+```
+./emissary config --place emissary.place.sample.ToLowerPlace --offline --flavor STANDALONE,TESTING
+```
+These are useful to see the effective configuration, but we can also run in a verbose mode to 
+see all the configuration files along with the final output. This is controlled with the 
+`--detailed` flag:
+```
+./emissary config --place emissary.place.sample.ToLowerPlace --detailed
+```
+or in offline mode:
+```
+./emissary config --place emissary.place.sample.ToLowerPlace --offline --detailed
+```
+
 #### Run
 
 The Run command is a simple command to execute the main method of the given class.  For example

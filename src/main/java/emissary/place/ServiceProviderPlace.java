@@ -27,6 +27,7 @@ import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
 
 import com.codahale.metrics.Timer;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,18 @@ import static emissary.core.constants.Configurations.SERVICE_TYPE;
  */
 public abstract class ServiceProviderPlace implements emissary.place.IServiceProviderPlace,
         ServiceProviderPlaceMBean {
+
+    public static final String PLACE_NAME = "PLACE_NAME";
+    public static final String SERVICE_NAME = "SERVICE_NAME";
+    public static final String SERVICE_TYPE = "SERVICE_TYPE";
+    public static final String SERVICE_DESCRIPTION = "SERVICE_DESCRIPTION";
+    public static final String SERVICE_COST = "SERVICE_COST";
+    public static final String SERVICE_QUALITY = "SERVICE_QUALITY";
+    public static final String SERVICE_PROXY = "SERVICE_PROXY";
+    public static final String SERVICE_KEY = "SERVICE_KEY";
+
+    public static final List<String> RESERVED_PROPS = Collections.unmodifiableList(Lists.newArrayList(PLACE_NAME, SERVICE_KEY, SERVICE_NAME,
+            SERVICE_TYPE, SERVICE_DESCRIPTION, SERVICE_COST, SERVICE_QUALITY, SERVICE_PROXY));
 
     /**
      * Container for all configuration parameters read from the configuration file for this place. The net result is that
