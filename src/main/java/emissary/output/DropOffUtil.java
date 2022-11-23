@@ -44,10 +44,6 @@ public class DropOffUtil {
     /** Sources for building a date string for an item */
     protected List<String> dateTokens = new ArrayList<>();
 
-    /** Date formats we can use to parse event date strings */
-    @Deprecated
-    protected final List<SimpleDateFormat> dateFormats = new ArrayList<>();
-
     /** params to get from parent and save as PARENT_param */
     protected List<String> parentParams = new ArrayList<>();
 
@@ -127,16 +123,6 @@ public class DropOffUtil {
             this.dateTokens = actualConfigG.findEntries("DATE_PARAMETER");
             this.parentParams = actualConfigG.findEntries("PARENT_PARAM");
 
-            for (final String dfentry : actualConfigG.findEntries("DATE_FORMAT")) {
-                try {
-                    final SimpleDateFormat sdf = new SimpleDateFormat(dfentry);
-                    sdf.setLenient(true);
-                    this.dateFormats.add(sdf);
-                } catch (Exception ex) {
-                    logger.debug("DATE_FORMAT entry '{}' cannot be parsed", dfentry, ex);
-                }
-            }
-            logger.debug("Loaded {} DATE_FORMAT entries", this.dateFormats.size());
 
             this.defaultEventDateToNow = actualConfigG.findBooleanEntry(DEFAULT_EVENT_DATE_TO_NOW, this.defaultEventDateToNow);
 
@@ -984,48 +970,6 @@ public class DropOffUtil {
 
         // Default to current system time if last resort
         return lastResortDefault ? new Date() : null;
-    }
-
-    /**
-     * Parse an RFC-822 Date or one of the thousands of variants make a quick attempt to normalize the timezone information
-     * and get the timestamp in GMT. Should change to pass in a default from the U124 header
-     *
-     * @param dateString the string date from the RFC 822 Date header
-     * @param supplyDefaultOnBad when true use current date if sentDate is unparseable
-     * @return the GMT time of the event or NOW if unparseable, or null if supplyDefaultOnBad is false
-     */
-    @Deprecated
-    public Date parseEventDate(final String dateString, final boolean supplyDefaultOnBad) {
-        Date date = null;
-
-        if (dateString != null && dateString.length() > 0) {
-            // Take it apart and stick it back together to get
-            // get rid of multiple contiguous spaces
-            String instr = dateString.replaceAll("\t+", " "); // tabs
-            instr = instr.replaceAll("[ ]+", " "); // multiple spaces
-            instr = instr.replaceAll("=0D$", ""); // common qp'ified ending
-
-            // try each date format in turn until one works
-            synchronized (this.dateFormats) {
-                for (final SimpleDateFormat sdf : this.dateFormats) {
-                    try {
-                        date = sdf.parse(instr);
-                        break;
-                    } catch (Exception e) {
-                        // Ignore.
-                        logger.debug("Error parsing date", e);
-                    }
-                }
-            }
-        }
-
-        // Use the default if required
-        if (date == null && supplyDefaultOnBad) {
-            date = new Date();
-        }
-
-        // Let them have it.
-        return date;
     }
 
     /**
