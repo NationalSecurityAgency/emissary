@@ -175,6 +175,11 @@ public class TransformHistory {
         String key;
         boolean coordinated;
 
+        /**
+         * Needed to support Kryo deserialization
+         */
+        private History() {}
+
         public History(String key) {
             this(key, false);
         }
