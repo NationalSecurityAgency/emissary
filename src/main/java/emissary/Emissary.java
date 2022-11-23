@@ -107,7 +107,9 @@ public class Emissary {
                 exit(1);
             }
             EmissaryCommand cmd = commands.get(commandName);
-            dumpBanner(cmd);
+            if (!commands.containsKey(VersionCommand.COMMAND_NAME)) {
+                dumpVersionInfo();
+            }
             dumpVersionInfo();
             cmd.run(jc);
             // don't exit(0) here or things like server will not continue to run
