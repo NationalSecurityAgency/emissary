@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 public class VersionCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(VersionCommand.class);
+    public static final String COMMAND_NAME = "version";
 
     @Parameter(names = "--showMobi1eAgents", description = "show MobileAgents", hidden = true)
     private boolean showMobileAgent = false;
