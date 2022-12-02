@@ -539,7 +539,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                                 lastEntry.setDataType(cform);
                                 formID = lastEntry.getDataID();
                                 parallelEntryRejected = true;
-                                logger.error("Rejecting parallel entry found for {}: visitedPlaces={}", lastEntry.getFullKey(), this.visitedPlaces);
+                                logger.debug("Rejecting parallel entry found for {}: visitedPlaces={}", lastEntry.getFullKey(), this.visitedPlaces);
                                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
                             } else {
                                 addParallelTrackingInfo(curEntry.getServiceName());
