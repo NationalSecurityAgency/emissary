@@ -22,7 +22,13 @@
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
   </issueManagement>
   <ciManagement />
-  <distributionManagement />
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/NationalSecurityAgency/emissary</url>
+    </repository>
+  </distributionManagement>
   <properties>
     <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
