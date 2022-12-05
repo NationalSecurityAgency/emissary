@@ -1,5 +1,6 @@
 package emissary.core.channels;
 
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -17,10 +18,17 @@ class ImmutableChannelFactoryTest {
 
     @Test
     void testNormalPath() throws IOException {
-        SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(TEST_STRING.getBytes());
-        SeekableByteChannel sbc = ImmutableChannelFactory.create(sbcf).create();
+        final SeekableByteChannelFactory simbcf = new SeekableByteChannelFactory() {
+            @Override
+            public SeekableByteChannel create() {
+                return new SeekableInMemoryByteChannel(TEST_STRING.getBytes());
+            }
+        };
+        final SeekableByteChannelFactory sbcf = ImmutableChannelFactory.create(simbcf);
         final ByteBuffer buff = ByteBuffer.wrap(TEST_STRING.concat(TEST_STRING).getBytes());
-        assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Writes aren't allowed to immutable channels");
+        try (final SeekableByteChannel sbc = sbcf.create()) {
+            assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Writes aren't allowed to immutable channels");
+        }
     }
 
     @Test

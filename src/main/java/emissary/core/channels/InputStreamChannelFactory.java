@@ -69,7 +69,7 @@ public class InputStreamChannelFactory {
         }
 
         @Override
-        protected final int readImpl(final ByteBuffer byteBuffer) throws IOException {
+        protected final int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
             if (position() < currentPosition) {
                 currentPosition = 0;
                 inputStream.close();
@@ -82,7 +82,7 @@ public class InputStreamChannelFactory {
 
             // Actually perform the read
             final int bytesRead = SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer,
-                    position() - currentPosition);
+                    position() - currentPosition, maxBytesToRead);
 
             // Update positioning
             position(position() + bytesRead);
@@ -96,7 +96,7 @@ public class InputStreamChannelFactory {
         protected long sizeImpl() throws IOException {
             if (size < 0) {
                 try (final InputStream is = inputStreamFactory.create()) {
-                    size = SeekableByteChannelHelper.length(is);
+                    size = SeekableByteChannelHelper.available(is);
                 }
             }
             return size;

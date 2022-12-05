@@ -1,7 +1,5 @@
 package emissary.core.channels;
 
-import emissary.core.BaseDataObject;
-
 import com.google.common.io.Files;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -12,10 +10,7 @@ import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,27 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FileChannelFactoryTest {
     private static final String TEST_STRING = "test data";
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);
-
-    @Test
-    void testLargestFile() throws IOException {
-        final BaseDataObject bdo = new BaseDataObject();
-        final long fileSize = Long.MAX_VALUE;
-        final SeekableByteChannelFactory sbcf = FillChannelFactory.create(fileSize, (byte) 0);
-        bdo.setChannelFactory(sbcf);
-        assertEquals(fileSize, bdo.getChannelSize());
-        assertEquals(Integer.MAX_VALUE, bdo.dataLength());
-
-        final SeekableByteChannel sbc = sbcf.create();
-        final long newPosition = ThreadLocalRandom.current().nextLong(Integer.MAX_VALUE, Long.MAX_VALUE);
-        sbc.position(newPosition);
-        assertEquals(newPosition, sbc.position());
-        final ByteBuffer buff = ByteBuffer.allocate(16);
-        final int bytesRead = sbc.read(buff);
-        assertEquals(16, bytesRead);
-        final byte[] zeroByteArray = new byte[16];
-        Arrays.fill(zeroByteArray, (byte) 0);
-        assertArrayEquals(zeroByteArray, buff.array());
-    }
 
     @Test
     void testCanCreateMultipleIndependentChannelsForTheSameFile(@TempDir Path tempDir) throws IOException {

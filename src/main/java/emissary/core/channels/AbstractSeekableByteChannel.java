@@ -36,11 +36,20 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
     /**
      * Real read implementation
      * 
+     * Max bytes to read should be based on SBC position and size, and the byteBuffer position and size to avoid returning
+     * more data from the underlying implementation.
+     * 
+     * For example, if the underlying channel contains 64 bytes of data, but your implementation wraps this to present a
+     * 'window' of the first 16 bytes, the read operation shouldn't be able to return anything other than the first 16
+     * bytes, otherwise unexpected behaviour is likely. If the byteBuffer provided is larger than the amount of bytes
+     * available we need to limit the number of bytes read into it.
+     * 
      * @param byteBuffer to read from the SBC into.
+     * @param maxBytesToRead regardless of the remaining bytes in the implementation.
      * @return the number of bytes read
      * @throws IOException if an error occurs
      */
-    protected abstract int readImpl(ByteBuffer byteBuffer) throws IOException;
+    protected abstract int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException;
 
     /**
      * Real size implementation
@@ -111,7 +120,8 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
         if (position() >= size()) {
             return -1;
         }
-        return readImpl(byteBuffer);
+        final int maxBytesToRead = (int) Math.min(size() - position(), byteBuffer.remaining());
+        return readImpl(byteBuffer, maxBytesToRead);
     }
 
     /**

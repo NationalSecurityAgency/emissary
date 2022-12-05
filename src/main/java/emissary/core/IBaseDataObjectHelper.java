@@ -75,7 +75,7 @@ public final class IBaseDataObjectHelper {
 
         if (fullClone) {
             try {
-                setPrivateField(bdo, "internalId", iBaseDataObject.getInternalId());
+                setPrivateFieldValue(bdo, "internalId", iBaseDataObject.getInternalId());
             } catch (IllegalAccessException | NoSuchFieldException e) {
                 // Ignore any problems setting the internal id.
             }
@@ -113,7 +113,7 @@ public final class IBaseDataObjectHelper {
      *         underlying field is either inaccessible or final.
      * @throws NoSuchFieldException if a field with the specified name is not found.
      */
-    public static void setPrivateField(final BaseDataObject bdo, final String fieldName, final Object object)
+    public static void setPrivateFieldValue(final BaseDataObject bdo, final String fieldName, final Object object)
             throws IllegalAccessException, NoSuchFieldException {
         Validate.notNull(bdo, "Required: bdo not null");
         Validate.notNull(fieldName, "Required: fieldName not null");

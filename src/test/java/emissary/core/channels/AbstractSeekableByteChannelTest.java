@@ -26,10 +26,11 @@ class AbstractSeekableByteChannelTest {
         protected void closeImpl() throws IOException {}
 
         @Override
-        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+        protected int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
             final int remaining = byteBuffer.remaining();
 
             byteBuffer.position(byteBuffer.capacity());
+            position(position() + maxBytesToRead);
 
             return remaining;
         }
@@ -99,6 +100,16 @@ class AbstractSeekableByteChannelTest {
             sbc.position(15);
 
             Assertions.assertEquals(-1, sbc.read(byteBuffer));
+        }
+    }
+
+    @Test
+    void testReadBeyondSize() throws IOException {
+        try (SeekableByteChannel sbc = new TestSeekableByteChannel(4)) {
+            final ByteBuffer buff = ByteBuffer.allocate(8);
+            sbc.position(2);
+            sbc.read(buff);
+            Assertions.assertEquals(4, sbc.position());
         }
     }
 }

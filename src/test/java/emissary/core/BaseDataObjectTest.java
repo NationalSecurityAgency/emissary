@@ -2,6 +2,7 @@ package emissary.core;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.channels.FillChannelFactory;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -105,6 +107,28 @@ class BaseDataObjectTest extends UnitTest {
         assertEquals(10, this.b.dataLength());
     }
 
+
+    @Test
+    void testLargestFile() throws IOException {
+        final BaseDataObject bdo = new BaseDataObject();
+        final long fileSize = Long.MAX_VALUE;
+        final SeekableByteChannelFactory sbcf = FillChannelFactory.create(fileSize, (byte) 0);
+        bdo.setChannelFactory(sbcf);
+        assertEquals(fileSize, bdo.getChannelSize());
+        assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
+
+        final SeekableByteChannel sbc = sbcf.create();
+        final long newPosition = ThreadLocalRandom.current().nextLong(Integer.MAX_VALUE, Long.MAX_VALUE);
+        sbc.position(newPosition);
+        assertEquals(newPosition, sbc.position());
+        final ByteBuffer buff = ByteBuffer.allocate(16);
+        final int bytesRead = sbc.read(buff);
+        assertEquals(16, bytesRead);
+        final byte[] zeroByteArray = new byte[16];
+        Arrays.fill(zeroByteArray, (byte) 0);
+        assertArrayEquals(zeroByteArray, buff.array());
+    }
+
     @Test
     void testDataLengthWhenLargerThanMaxInt() throws IOException {
         final Long higherLength = Long.valueOf(Integer.MAX_VALUE + 100l);
@@ -113,7 +137,7 @@ class BaseDataObjectTest extends UnitTest {
         Mockito.when(bdo.getChannelSize()).thenReturn(higherLength);
         bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
         assertEquals(higherLength.longValue(), bdo.getChannelSize());
-        assertEquals(Integer.MAX_VALUE, bdo.dataLength());
+        assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
     }
 
     @Test
