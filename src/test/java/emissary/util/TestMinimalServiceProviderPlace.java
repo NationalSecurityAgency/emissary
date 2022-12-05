@@ -9,12 +9,12 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
-public class PlaceComparisonHelperTestPlace extends ServiceProviderPlace {
-    public PlaceComparisonHelperTestPlace(final InputStream inputStream) throws IOException {
+public class TestMinimalServiceProviderPlace extends ServiceProviderPlace {
+    public TestMinimalServiceProviderPlace(final InputStream inputStream) throws IOException {
         super(inputStream);
     }
 
-    public PlaceComparisonHelperTestPlace(final String configuration) throws IOException {
+    public TestMinimalServiceProviderPlace(final String configuration) throws IOException {
         super(configuration);
     }
 

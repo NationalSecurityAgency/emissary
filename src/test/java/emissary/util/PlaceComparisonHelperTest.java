@@ -8,6 +8,7 @@ import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlaceComparisonHelperTest extends UnitTest {
-
-    private static final Class<NullPointerException> NPE = NullPointerException.class;
 
     private static final byte[] configurationBytes = new StringBuilder()
             .append("PLACE_NAME = \"TesterPlace\"")
@@ -40,37 +39,39 @@ class PlaceComparisonHelperTest extends UnitTest {
         assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1));
     }
 
+    private void checkThrowsNull(final Executable e) {
+        assertThrows(NullPointerException.class, e);
+    }
+
     @Test
     void testCompareToPlaceArguments() throws IOException {
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
-        final ServiceProviderPlace newPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
+        final ServiceProviderPlace newPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String newMethodName = "newMethodName";
-        final ServiceProviderPlace oldPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
+        final ServiceProviderPlace oldPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "oldMethodName";
-
-
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                null, ibdoForNewPlace, newPlace, newMethodName, oldPlace, oldMethodName));
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                newResults, null, newPlace, newMethodName, oldPlace, oldMethodName));
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                newResults, ibdoForNewPlace, null, newMethodName, oldPlace, oldMethodName));
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                newResults, ibdoForNewPlace, newPlace, null, oldPlace, oldMethodName));
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                newResults, ibdoForNewPlace, newPlace, newMethodName, null, oldMethodName));
-        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
-                newResults, ibdoForNewPlace, newPlace, newMethodName, oldPlace, null));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(null, ibdoForNewPlace,
+                newPlace, newMethodName, oldPlace, oldMethodName));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, null,
+                newPlace, newMethodName, oldPlace, oldMethodName));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
+                null, newMethodName, oldPlace, oldMethodName));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
+                newPlace, null, oldPlace, oldMethodName));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
+                newPlace, newMethodName, null, oldMethodName));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
+                newPlace, newMethodName, oldPlace, null));
     }
 
     @Test
     void testCompareToPlace() throws Exception {
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
-        final ServiceProviderPlace newPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
+        final ServiceProviderPlace newPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String newMethodName = "processHeavyDuty";
-        final ServiceProviderPlace oldPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
+        final ServiceProviderPlace oldPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "processHeavyDuty";
 
         assertNull(PlaceComparisonHelper.compareToPlace(
@@ -85,15 +86,15 @@ class PlaceComparisonHelperTest extends UnitTest {
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final String identifier = "identifier";
 
-        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
                 null, ibdoForNewPlace, oldResults, newResults, identifier));
-        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, null, oldResults, newResults, identifier));
-        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, null, newResults, identifier));
-        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, null, identifier));
-        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, null));
     }
 
