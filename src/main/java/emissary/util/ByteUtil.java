@@ -127,15 +127,15 @@ public class ByteUtil {
 
         // Check if the current pos is the first byte in a UTF-8 C1
         // control character (U+0080..U+009f).
-        final int curr = ((int) b[pos]) & 0xff;
-        final int next = (pos < (b.length - 1)) ? (((int) b[pos + 1]) & 0xff) : -1;
+        final int curr = b[pos] & 0xff;
+        final int next = (pos < (b.length - 1)) ? (b[pos + 1] & 0xff) : -1;
         if ((curr == 0xc2) && (next >= 0x80) && (next <= 0x9f)) {
             return true;
         }
 
         // Check if the current pos is the second byte in a UTF-8 C1
         // control character (U+0080..U+009f).
-        final int prev = (pos > 0) ? (((int) b[pos - 1]) & 0xff) : -1;
+        final int prev = (pos > 0) ? (b[pos - 1] & 0xff) : -1;
         return (prev == 0xc2) && (curr >= 0x80) && (curr <= 0x9f);
     }
 
@@ -231,7 +231,7 @@ public class ByteUtil {
      * @param pos the split position (a[pos] goes to the second part)
      */
     public static List<byte[]> split(@Nullable byte[] a, int pos) {
-        List<byte[]> list = new ArrayList<byte[]>();
+        List<byte[]> list = new ArrayList<>();
         if (a != null && pos > 0 && pos <= a.length) {
             byte[] part1 = new byte[pos];
             byte[] part2 = new byte[a.length - pos];

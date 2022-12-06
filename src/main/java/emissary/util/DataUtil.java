@@ -104,7 +104,7 @@ public class DataUtil {
         }
 
         if ((s != null) && (s.contains(SEP) || s.indexOf('"') > -1)) {
-            s = "\"" + s.replaceAll("\"", "\"\"") + "\""; // escape quotes
+            s = "\"" + s.replace("\"", "\"\"") + "\""; // escape quotes
         }
 
         return s;

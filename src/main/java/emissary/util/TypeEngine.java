@@ -3,6 +3,7 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class TypeEngine {
      */
     public TypeEngine(Configurator configG) {
         List<String> l = configG.findEntries("TYPE_ENGINE_FILE");
-        if (l.size() > 0) {
+        if (CollectionUtils.isNotEmpty(l)) {
             configure(l);
         }
     }

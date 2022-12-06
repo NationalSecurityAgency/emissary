@@ -16,19 +16,19 @@ public class Entropy {
 
     public static boolean checkText(final byte[] data, int length) {
         int bytes = 0;
-        int[] histogram_array;
+        int[] histogramArray;
         double entropy = 0;
-        double relative_freq;
+        double relativeFreq;
         int size = Math.min(length, data.length);
 
-        histogram_array = new int[256];
+        histogramArray = new int[256];
 
 
         // ******************************************************************
         // ****************** scan the document ******************
         // ******************************************************************
         for (int cur_pos = 0; cur_pos < size; ++cur_pos) {
-            ++histogram_array[(int) data[cur_pos] & 0xff];
+            ++histogramArray[data[cur_pos] & 0xff];
             ++bytes;
         }
 
@@ -37,9 +37,9 @@ public class Entropy {
         // ***********************************************************************
 
         for (int i = 0; i < 256; ++i) {
-            if (histogram_array[i] != 0) {
-                relative_freq = (double) histogram_array[i] / (double) bytes;
-                entropy = entropy + (relative_freq * Math.log(1 / relative_freq));
+            if (histogramArray[i] != 0 && bytes > 0) {
+                relativeFreq = (double) histogramArray[i] / (double) bytes;
+                entropy = entropy + (relativeFreq * Math.log(1 / relativeFreq));
             }
         }
 
