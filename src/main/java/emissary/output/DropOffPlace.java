@@ -8,6 +8,7 @@ import emissary.core.IBaseDataObject;
 import emissary.output.filter.IDropOffFilter;
 import emissary.place.ServiceProviderPlace;
 import emissary.util.DataUtil;
+import emissary.util.DisposeHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,11 +189,11 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
     }
 
     /**
-     * "HD" agent calls this method when visiting the place. If you use emissary.core.MobileAgent this method is never
-     * called. This method overrides ServiceProviderPlace and allows this processing place to have access to all payloads
-     * wanting to be dropped off in a single list.
+     * "HD" agent calls this method when visiting the place. If you use {@link emissary.core.MobileAgent} this method is
+     * never called. This method overrides {@link ServiceProviderPlace} and allows this processing place to have access to
+     * all payloads wanting to be dropped off in a single list.
      * 
-     * @param payloadList list of IBaseDataObject from an HDMobileAgent
+     * @param payloadList list of IBaseDataObject from an {@link emissary.core.HDMobileAgent}
      */
     @Override
     public List<IBaseDataObject> agentProcessHeavyDuty(final List<IBaseDataObject> payloadList) throws Exception {
@@ -246,6 +247,9 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
                     tld.getFileType());
         }
 
+        // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
+        DisposeHelper.execute(payloadList);
+
         // This place does not sprout, return an empty list
         return Collections.emptyList();
     }
@@ -268,7 +272,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
             return;
         }
 
-        // syncronization can be set by config file entry
+        // synchronization can be set by config file entry
         if (this.doSynchronized) {
             synchronized (this) {
                 processData(tData, false);
@@ -276,6 +280,9 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
         } else {
             processData(tData, false);
         }
+
+        // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
+        DisposeHelper.execute(tData);
     }
 
     /**
