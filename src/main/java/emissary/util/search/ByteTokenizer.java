@@ -94,8 +94,6 @@ public class ByteTokenizer implements Enumeration<String> {
      */
     public ByteTokenizer(byte[] bytes, int start, int len, String delim, boolean returnDelims, String encoding) throws UnsupportedEncodingException {
         this(bytes, start, len, delim, returnDelims);
-        // call this to ensure the encoding is supported
-        // CharToByteConverter.getConverter(encoding);
         try {
             Charset c = Charset.forName(encoding);
             logger.debug("Loaded charset {}", c);
@@ -221,7 +219,7 @@ public class ByteTokenizer implements Enumeration<String> {
 
         int position = startPos;
         while (!retDelims && position < maxPosition) {
-            char c = (char) (0xFF & (int) (data[position]));
+            char c = (char) (0xFF & data[position]);
             if ((c > maxDelimChar) || (delimiters.indexOf(c) < 0)) {
                 break;
             }
@@ -237,14 +235,14 @@ public class ByteTokenizer implements Enumeration<String> {
     private int scanToken(int startPos) {
         int position = startPos;
         while (position < maxPosition) {
-            char c = (char) (0xFF & (int) (data[position]));
+            char c = (char) (0xFF & data[position]);
             if ((c <= maxDelimChar) && (delimiters.indexOf(c) >= 0)) {
                 break;
             }
             position++;
         }
         if (retDelims && (startPos == position)) {
-            char c = (char) (0xFF & (int) (data[position]));
+            char c = (char) (0xFF & data[position]);
             if ((c <= maxDelimChar) && (delimiters.indexOf(c) >= 0)) {
                 position++;
             }
