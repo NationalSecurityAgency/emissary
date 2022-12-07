@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: nsa/emissary
   IMAGE_TAG: PR-${{ github.event.number }}
 
 jobs:
