@@ -4,9 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,6 +55,8 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     protected String resource;
+
+    protected ArrayList<String> filterList = new ArrayList<>();
 
     /**
      * Called by the Parameterized Runner
@@ -214,6 +219,16 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals("Broken status in " + tname, broke, payload.isBroken() ? "true" : "false");
         }
 
+        // Check for Filter to validate against and see if it exists
+        Element filters = el.getChild("filters");
+        if (filters != null && !filters.getChildren().isEmpty()) {
+            int filtersCount = filters.getChildren().size();
+            for (int i = 1; i <= filtersCount; i++) {
+                String filterPath = filters.getChildText("filter" + i);
+                assertTrue(filterPath + " could not be found. Make sure path and filter exist.", findFilter(filterPath));
+            }
+        }
+
         // Check specified metadata
         for (Element meta : el.getChildren("meta")) {
             String key = meta.getChildTextTrim("name");
@@ -290,7 +305,20 @@ public abstract class ExtractionTest extends UnitTest {
         String key = meta.getChildTextTrim("name");
         String value = meta.getChildText("value");
         String matchMode = "equals";
+        boolean validateField = false;
         Attribute mm = meta.getAttribute("matchMode");
+        Attribute vf = meta.getAttribute("validateField");
+
+        if (vf != null) {
+            validateField = Boolean.parseBoolean(vf.getValue());
+        }
+
+        // meta validateField must be set to true to validate against LogFilter
+        // this is currently set to false unless explicitly set to true in .xml
+        // see method validateFieldInLogFilter() below for more info
+        if (validateField) {
+            validateFieldInFilter(key, tname);
+        }
 
         if (value == null) {
             return; // checking the value is optional
@@ -327,6 +355,131 @@ public abstract class ExtractionTest extends UnitTest {
 
         } else {
             fail("Problematic matchMode specified for test '" + matchMode + "' on " + key + " in element " + meta.getName());
+        }
+    }
+
+    /**
+     * Method to validate a meta key name against fields/params within Filter .cfg files. Currently, this is set to NOT RUN
+     * unless the meta field specifies it in the .xml file like: meta validateField="true"
+     *
+     * Along with this, filter paths must be passed through the .xml within the answers section. This is demonstrated within
+     * the TestValidateFieldExtractionTest.xml file within resources/emissary/test/core
+     *
+     * @param key the current meta key name to validate against LogFilter
+     * @param tname the current test name
+     */
+    protected void validateFieldInFilter(String key, String tname) {
+        // config properties to check
+        String blacklistField = "BLACKLIST_FIELD";
+        String extraParam = "EXTRA_PARAM";
+        String extraTldParam = "EXTRA_TLD_PARAM";
+        // config prefix properties to check
+        String extraPrefix = "EXTRA_PREFIX";
+        String extraTldPrefix = "EXTRA_TLD_PREFIX";
+        // prefix initialization
+        String prefix;
+
+        // check all files in filterList to validate field against
+        for (int i = 0; i < filterList.size(); i++) {
+            try {
+                // initialize current filter variables
+                String filterPath = filterList.get(i);
+                int shortenToName = filterPath.lastIndexOf(".");
+                String filterName = filterPath.substring(shortenToName + 1);
+
+                // set-up stream and readers for current filter file
+                InputStream is = Class.forName(filterPath).getResourceAsStream(filterName + ".cfg");
+                assert is != null;
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader reader = new BufferedReader(isr);
+
+                // Run through current filter with reader
+                while (reader.ready()) {
+                    String currentLine = reader.readLine();
+                    // if line is commented out, go to next line without check
+                    if (!currentLine.startsWith("#")) {
+                        // check if EXTRA_PARAM = "*" is defined
+                        // if yes, pass validation
+                        if (currentLine.equals("EXTRA_PARAM = \"*\"")) {
+                            logger.debug("In {}: {} validated by EXTRA_PARAM = \"*\".", filterName, key);
+                            reader.close();
+                            isr.close();
+                            is.close();
+                            return;
+                        }
+                        // check if BLACKLIST_FIELD, EXTRA_PARAM, or EXTRA_TLD_PARAM = passed key (meta name)
+                        else if (currentLine.contains(blacklistField) || currentLine.contains(extraParam)
+                                || currentLine.contains(extraTldParam)) {
+                            if (currentLine.contains(key)) {
+                                logger.debug("In {}: {} is found and validated.", filterName, key);
+                                reader.close();
+                                isr.close();
+                                is.close();
+                                return;
+                            }
+                        }
+                        // check if a prefix is defined in either EXTRA_PREFIX or EXTRA_TLD_PREFIX
+                        // if prefix is defined and key has matching prefix, pass validation
+                        else if (currentLine.contains(extraPrefix) || currentLine.contains(extraTldPrefix)) {
+                            // cut string down to be just the prefix in quotations
+                            int preStart = currentLine.indexOf("\"") + 1;
+                            int preEnd = currentLine.length() - 1;
+                            prefix = currentLine.substring(preStart, preEnd);
+                            if (key.startsWith(prefix)) {
+                                logger.debug("In {}: Parameter Prefix is found. {} validated", filterName, key);
+                                reader.close();
+                                isr.close();
+                                is.close();
+                                return;
+                            }
+                        }
+                    }
+                }
+                // meta name not validated by current filter, log this information
+                if ((i + 1) == filterList.size()) {
+                    logger.debug("{} not found in {}.", key, filterName);
+                } else {
+                    logger.debug("{} not found in {}. Moving to next file.", key, filterName);
+                }
+                // close InputSteam, InputStreamReader, and BufferedReader
+                reader.close();
+                isr.close();
+                is.close();
+            } catch (Exception e) {
+                // if NullPointerException is thrown, it is b/c end of file is reached
+                // this should result in nothing happening.
+                // however, if another error occurred, it should be output to the log
+                if (!e.toString().contains("NullPointerException")) {
+                    if ((i + 1) < filterList.size()) {
+                        logger.warn("Error while validating {}", key, e);
+                    } else {
+                        logger.warn("Error while validating {}. Moving to next file.", key, e);
+                    }
+                }
+            }
+        }
+        // if loops through all files and cannot find matching field/param for key, then validation fails
+        if (filterList.isEmpty()) {
+            fail("No filters were passed to validate against from " + tname);
+        } else {
+            fail(tname + " - Field \"" + key + "\" not found in Filter: " + filterList);
+        }
+
+    }
+
+    /**
+     * Find filter by seeing if resource for class can be found. If filter cannot be found, error will be thrown from
+     * checkAnswers. If filter is found, add filterPath to filterList
+     *
+     * @param filterPath - filter path passed from xml
+     * @return boolean for if filter is found
+     */
+    protected boolean findFilter(String filterPath) {
+        try (InputStream ignored = Class.forName(filterPath).getResourceAsStream(filterPath + ".cfg")) {
+            filterList.add(filterPath);
+            return true;
+        } catch (ClassNotFoundException | IOException e) {
+            return false;
         }
     }
 
