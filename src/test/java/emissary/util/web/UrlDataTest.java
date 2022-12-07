@@ -1,10 +1,11 @@
 package emissary.util.web;
 
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
 
 class UrlDataTest extends UnitTest {
 

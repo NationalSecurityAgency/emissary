@@ -1,15 +1,16 @@
 package emissary.kff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Set;
 
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ChecksumResultsTest extends UnitTest {
 

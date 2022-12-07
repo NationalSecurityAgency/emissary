@@ -1,11 +1,12 @@
 package emissary.core;
 
-import java.util.concurrent.locks.ReentrantLock;
+import emissary.place.IServiceProviderPlace;
 
 import com.codahale.metrics.Timer;
-import emissary.place.IServiceProviderPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Class to help track the things we are interested in monitoring

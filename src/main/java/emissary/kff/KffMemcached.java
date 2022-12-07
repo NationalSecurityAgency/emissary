@@ -1,5 +1,16 @@
 package emissary.kff;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.util.Hexl;
+
+import net.spy.memcached.ConnectionFactoryBuilder;
+import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
+import net.spy.memcached.FailureMode;
+import net.spy.memcached.MemcachedClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.LinkedList;
@@ -7,18 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Nullable;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.util.Hexl;
-import net.spy.memcached.ConnectionFactoryBuilder;
-import net.spy.memcached.ConnectionFactoryBuilder.Protocol;
-import net.spy.memcached.FailureMode;
-import net.spy.memcached.MemcachedClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * KffMemcached checks Emissary hashes against a set of external memcached servers. If a given Emissary hash does not

@@ -1,18 +1,9 @@
 package emissary.output.filter;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.directory.DirectoryEntry;
+import emissary.util.TimeUtil;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,11 +23,20 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.directory.DirectoryEntry;
-import emissary.util.TimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import javax.annotation.Nullable;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 /**
  * JSON Output filter using Jackson

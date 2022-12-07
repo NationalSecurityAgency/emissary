@@ -1,5 +1,14 @@
 package emissary.output.filter;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.output.DropOffUtil;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -10,16 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.Nullable;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.output.DropOffUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides the base mechanism for a drop off filter

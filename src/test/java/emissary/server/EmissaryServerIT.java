@@ -1,19 +1,20 @@
 package emissary.server;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 import emissary.command.ServerCommand;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.Version;
+
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EmissaryServerIT extends UnitTest {
 

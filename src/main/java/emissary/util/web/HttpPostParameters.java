@@ -1,5 +1,8 @@
 package emissary.util.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  $Id$
  */
@@ -13,11 +16,7 @@ package emissary.util.web;
  */
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
 import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HttpPostParameters {
 

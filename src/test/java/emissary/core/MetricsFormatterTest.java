@@ -1,12 +1,13 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.test.core.junit5.UnitTest;
+
+import com.codahale.metrics.Timer;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import com.codahale.metrics.Timer;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetricsFormatterTest extends UnitTest {
     @Test

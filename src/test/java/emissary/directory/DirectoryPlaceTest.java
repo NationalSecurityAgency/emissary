@@ -1,11 +1,15 @@
 package emissary.directory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.spy;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.ResourceReader;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,15 +18,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.EmissaryException;
-import emissary.core.Namespace;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 
 class DirectoryPlaceTest extends UnitTest {
 

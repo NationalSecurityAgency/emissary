@@ -1,9 +1,9 @@
 package emissary.output.roller;
 
-import java.io.IOException;
-
 import emissary.output.roller.journal.KeyedOutput;
 import emissary.roll.Rollable;
+
+import java.io.IOException;
 
 /**
  * A {@link Rollable} implementation that uses a journal to record offsets of completed writes to a pool of outputs. The

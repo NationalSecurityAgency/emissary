@@ -1,5 +1,17 @@
 package emissary.admin;
 
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.KeyManipulator;
+import emissary.pickup.PickUpPlace;
+import emissary.place.IServiceProviderPlace;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,19 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import javax.annotation.Nullable;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.EmissaryException;
-import emissary.core.Namespace;
-import emissary.directory.EmissaryNode;
-import emissary.directory.KeyManipulator;
-import emissary.pickup.PickUpPlace;
-import emissary.place.IServiceProviderPlace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Startup {
 

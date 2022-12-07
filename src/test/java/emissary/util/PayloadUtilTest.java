@@ -1,8 +1,14 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.core.DataObjectFactory;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,14 +17,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.Family;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PayloadUtilTest extends UnitTest {
 

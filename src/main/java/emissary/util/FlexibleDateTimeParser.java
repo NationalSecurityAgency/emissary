@@ -1,6 +1,13 @@
 package emissary.util;
 
-import static java.util.stream.Collectors.toList;
+import emissary.config.ConfigEntry;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -17,13 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import emissary.config.ConfigEntry;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Attempt to parse a date in an unknown format. This will loop through a set of configured formats and convert it into

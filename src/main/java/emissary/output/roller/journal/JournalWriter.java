@@ -1,7 +1,5 @@
 package emissary.output.roller.journal;
 
-import static emissary.output.roller.journal.Journal.SEP;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -10,6 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.ReentrantLock;
+
+import static emissary.output.roller.journal.Journal.SEP;
 
 /**
  * BG Write ahead log to track progress, often files, that have been successfully flushed to disk. The file itself

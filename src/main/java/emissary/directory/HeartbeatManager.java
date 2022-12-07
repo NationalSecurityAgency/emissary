@@ -1,5 +1,18 @@
 package emissary.directory;
 
+import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.server.mvc.adapters.HeartbeatAdapter;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,20 +20,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.annotation.Nullable;
-
-import emissary.client.EmissaryClient;
-import emissary.client.EmissaryResponse;
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import emissary.server.mvc.adapters.HeartbeatAdapter;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Facility for directory instances to check up on each other by sending a heartbeat message

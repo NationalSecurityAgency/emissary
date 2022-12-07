@@ -1,14 +1,15 @@
 package emissary.kff;
 
+import emissary.core.Factory;
+import emissary.kff.KffFilter.FilterType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-
-import emissary.core.Factory;
-import emissary.kff.KffFilter.FilterType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Loads a chain of file filter specified by the configuration subsystem Expects to find a configuration file with a

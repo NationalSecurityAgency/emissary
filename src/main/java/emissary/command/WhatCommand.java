@@ -1,19 +1,5 @@
 package emissary.command;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import emissary.command.converter.PathExistsReadableConverter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -32,8 +18,22 @@ import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.shell.Executrix;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 @Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")

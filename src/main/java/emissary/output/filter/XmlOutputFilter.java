@@ -1,16 +1,15 @@
 package emissary.output.filter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.util.PayloadUtil;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as utf-8.

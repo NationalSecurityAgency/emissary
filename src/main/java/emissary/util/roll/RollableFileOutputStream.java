@@ -1,5 +1,11 @@
 package emissary.util.roll;
 
+import emissary.roll.Rollable;
+import emissary.util.io.FileNameGenerator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,13 +15,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
-
 import javax.annotation.Nullable;
-
-import emissary.roll.Rollable;
-import emissary.util.io.FileNameGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Allows for use within the Emissary Rolling framework. Keeps track of bytes written and is thread safe.

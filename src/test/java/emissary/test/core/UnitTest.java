@@ -1,19 +1,10 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ThreadInfo;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
 import emissary.util.io.ResourceReader;
+
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.junit.After;
@@ -31,6 +22,16 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ThreadInfo;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Base class of all the unit tests

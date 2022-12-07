@@ -1,17 +1,11 @@
 package emissary.test.core.junit5;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.stream.Stream;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,6 +13,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class IdentificationTest extends UnitTest {
 

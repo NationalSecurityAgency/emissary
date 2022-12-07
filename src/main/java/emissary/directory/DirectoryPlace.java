@@ -1,5 +1,15 @@
 package emissary.directory;
 
+import emissary.config.Configurator;
+import emissary.core.EmissaryException;
+import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
+import emissary.log.MDCConstants;
+import emissary.place.ServiceProviderPlace;
+import emissary.server.mvc.adapters.DirectoryAdapter;
+
+import org.slf4j.MDC;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,17 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArraySet;
-
 import javax.annotation.Nullable;
-
-import emissary.config.Configurator;
-import emissary.core.EmissaryException;
-import emissary.core.IBaseDataObject;
-import emissary.core.Namespace;
-import emissary.log.MDCConstants;
-import emissary.place.ServiceProviderPlace;
-import emissary.server.mvc.adapters.DirectoryAdapter;
-import org.slf4j.MDC;
 
 /**
  * The DirectoryPlace class is used to store information relating to Places/Services in the Emissary Agent-Based

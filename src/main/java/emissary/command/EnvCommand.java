@@ -1,5 +1,7 @@
 package emissary.command;
 
+import emissary.client.EmissaryClient;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -8,7 +10,6 @@ import ch.qos.logback.core.ConsoleAppender;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import emissary.client.EmissaryClient;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

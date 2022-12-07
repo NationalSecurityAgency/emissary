@@ -1,16 +1,16 @@
 package emissary.pool;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.stream.Stream;
-
-import javax.annotation.Nullable;
-
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AgentPoolTest extends UnitTest {
 

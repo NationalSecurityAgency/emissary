@@ -1,5 +1,14 @@
 package emissary.parser;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Factory;
+import emissary.util.WindowedSeekableByteChannel;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -7,16 +16,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.Factory;
-import emissary.util.WindowedSeekableByteChannel;
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the

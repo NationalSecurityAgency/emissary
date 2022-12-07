@@ -1,13 +1,12 @@
 package emissary.kff;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Keep a list of hash algorithm names and compute them and compare the results to the ordered chain of KFF filter when

@@ -1,5 +1,7 @@
 package emissary.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -9,10 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
-
 import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class TimeUtil {
 

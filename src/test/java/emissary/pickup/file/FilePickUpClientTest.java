@@ -1,7 +1,15 @@
 package emissary.pickup.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.admin.PlaceStarter;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.pickup.WorkBundle;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.ResourceReader;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,15 +18,8 @@ import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
 
-import emissary.admin.PlaceStarter;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.pickup.WorkBundle;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FilePickUpClientTest extends UnitTest {
     private static final String CLIENT_KEY = "http://localhost:8005/FilePickUpClient";

@@ -2,7 +2,6 @@ package emissary.util;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 /**

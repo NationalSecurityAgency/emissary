@@ -1,15 +1,16 @@
 package emissary.util.search;
 
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.nio.charset.UnsupportedCharsetException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.nio.charset.UnsupportedCharsetException;
-
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class KeywordScannerTest extends UnitTest {
     private final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();

@@ -1,12 +1,12 @@
 package emissary.analyze;
 
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-
-import emissary.core.IBaseDataObject;
-import emissary.place.ServiceProviderPlace;
 
 /**
  * Base class for analyzers

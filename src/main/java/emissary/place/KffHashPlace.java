@@ -1,11 +1,11 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import emissary.core.IBaseDataObject;
 import emissary.core.ResourceException;
 import emissary.kff.KffDataObjectHandler;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Hashing place to hash payload unless hashes are set or skip flag is set. This place is intended to execute in the

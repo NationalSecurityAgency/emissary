@@ -1,9 +1,13 @@
 package emissary.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.config.ConfigUtil;
+import emissary.test.core.junit5.UnitTest;
+
+import com.beust.jcommander.JCommander;
+import com.google.common.net.HostAndPort;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -13,13 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import com.beust.jcommander.JCommander;
-import com.google.common.net.HostAndPort;
-import emissary.config.ConfigUtil;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PeersCommandIT extends UnitTest {
 

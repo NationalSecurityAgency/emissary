@@ -1,11 +1,12 @@
 package emissary.server;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
 import emissary.directory.EmissaryNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 /**
  * Initialize the application from inside the webapp context This initializer performs the following actions

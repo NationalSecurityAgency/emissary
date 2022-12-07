@@ -1,11 +1,16 @@
 package emissary.output;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.BaseDataObject;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.TimeUtil;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,16 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.BaseDataObject;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.TimeUtil;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for DropOffUtil

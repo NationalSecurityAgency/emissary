@@ -1,8 +1,15 @@
 package emissary.output.filter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -15,15 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import emissary.config.ServiceConfigGuide;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JsonOutputFilterTest extends UnitTest {
 

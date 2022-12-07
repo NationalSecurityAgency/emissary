@@ -2,7 +2,6 @@ package emissary.util;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
 
 /**

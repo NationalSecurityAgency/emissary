@@ -1,13 +1,13 @@
 package emissary.parser;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
 
 /**
  * This class takes a SessionParser and produces data objects from the sessions coming out of the session parser.

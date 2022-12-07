@@ -5,13 +5,14 @@
 
 package emissary.transform;
 
-import java.io.IOException;
-
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JsonEscape;
 import emissary.util.DataUtil;
+
 import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.IOException;
 
 public class JsonEscapePlace extends ServiceProviderPlace {
 

@@ -1,15 +1,16 @@
 package emissary.config;
 
+import emissary.util.io.ResourceReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
-import emissary.util.io.ResourceReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class assists users and integrators by extracting the named resource and putting it into the config directory

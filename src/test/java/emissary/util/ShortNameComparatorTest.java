@@ -1,17 +1,18 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ShortNameComparatorTest extends UnitTest {
     private final byte[] nobytes = new byte[0];

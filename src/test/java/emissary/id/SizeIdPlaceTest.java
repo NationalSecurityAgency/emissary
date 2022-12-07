@@ -1,15 +1,16 @@
 package emissary.id;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SizeIdPlaceTest extends UnitTest {
 

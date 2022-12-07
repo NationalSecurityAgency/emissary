@@ -1,23 +1,5 @@
 package emissary;
 
-import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
-import javax.annotation.Nullable;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.MissingCommandException;
-import com.google.common.annotations.VisibleForTesting;
 import emissary.command.AgentsCommand;
 import emissary.command.Banner;
 import emissary.command.EmissaryCommand;
@@ -33,8 +15,26 @@ import emissary.command.TopologyCommand;
 import emissary.command.VersionCommand;
 import emissary.command.WhatCommand;
 import emissary.util.GitRepositoryState;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.MissingCommandException;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 /**
  * Main entry point of the jar file

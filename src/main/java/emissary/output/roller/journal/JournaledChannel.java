@@ -1,5 +1,8 @@
 package emissary.output.roller.journal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -7,9 +10,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Wrapper class to allow for use of underlying channel in either OutputStream code or WritableChannel.

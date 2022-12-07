@@ -1,17 +1,18 @@
 package emissary.util;
 
+import emissary.core.MetadataDictionary;
+import emissary.core.NamespaceException;
+
+import com.google.common.collect.TreeMultimap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import com.google.common.collect.TreeMultimap;
-import emissary.core.MetadataDictionary;
-import emissary.core.NamespaceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the

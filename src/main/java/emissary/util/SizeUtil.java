@@ -1,12 +1,11 @@
 package emissary.util;
 
+import emissary.core.IBaseDataObject;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import emissary.core.IBaseDataObject;
 
 /**
  * This class provides routines for approximating the RAM size of Emissary objects - primarily the

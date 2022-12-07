@@ -1,16 +1,16 @@
 package emissary.util.io;
 
+import emissary.util.web.HtmlEscaper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Nullable;
-
-import emissary.util.web.HtmlEscaper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to

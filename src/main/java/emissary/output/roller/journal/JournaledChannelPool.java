@@ -1,5 +1,8 @@
 package emissary.output.roller.journal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.file.Path;
@@ -9,9 +12,6 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Pool implementation that utilizes a Journal to durably track state out written data. The implementation will create

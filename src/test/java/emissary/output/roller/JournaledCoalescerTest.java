@@ -1,12 +1,20 @@
 package emissary.output.roller;
 
-import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.output.io.SimpleFileNameGenerator;
+import emissary.output.roller.journal.Journal;
+import emissary.output.roller.journal.JournalEntry;
+import emissary.output.roller.journal.JournalReader;
+import emissary.output.roller.journal.JournalWriter;
+import emissary.output.roller.journal.JournaledChannelPool;
+import emissary.output.roller.journal.KeyedOutput;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.FileNameGenerator;
+import emissary.util.io.UnitTestFileUtils;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -26,20 +34,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import emissary.output.io.SimpleFileNameGenerator;
-import emissary.output.roller.journal.Journal;
-import emissary.output.roller.journal.JournalEntry;
-import emissary.output.roller.journal.JournalReader;
-import emissary.output.roller.journal.JournalWriter;
-import emissary.output.roller.journal.JournaledChannelPool;
-import emissary.output.roller.journal.KeyedOutput;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.FileNameGenerator;
-import emissary.util.io.UnitTestFileUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JournaledCoalescerTest extends UnitTest {
 

@@ -1,16 +1,16 @@
 package emissary.util;
 
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.InvocationInterceptor;
+import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
+import org.junit.platform.commons.util.ReflectionUtils;
+
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.Arrays;
-
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.InvocationInterceptor;
-import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
-import org.junit.platform.commons.util.ReflectionUtils;
 
 public class EmissaryIsolatedClassLoaderExtension implements InvocationInterceptor {
 

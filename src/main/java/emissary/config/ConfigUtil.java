@@ -1,5 +1,11 @@
 package emissary.config;
 
+import emissary.core.EmissaryException;
+import emissary.util.io.ResourceReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,11 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
-import emissary.core.EmissaryException;
-import emissary.util.io.ResourceReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This configuration utility collection helps to find configuration for various classes and objects. It responds to

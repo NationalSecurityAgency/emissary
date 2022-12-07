@@ -1,13 +1,13 @@
 package emissary.directory;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import emissary.core.Namespace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Interface for inter-directory operations over http These methods are designed to only be called by the remote

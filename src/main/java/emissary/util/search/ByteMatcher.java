@@ -1,7 +1,6 @@
 package emissary.util.search;
 
 import java.nio.charset.Charset;
-
 import javax.annotation.Nullable;
 
 /**

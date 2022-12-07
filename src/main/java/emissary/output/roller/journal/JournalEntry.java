@@ -2,7 +2,6 @@ package emissary.output.roller.journal;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
-
 import javax.annotation.Nullable;
 
 /**

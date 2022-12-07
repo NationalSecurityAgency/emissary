@@ -1,19 +1,20 @@
 package emissary.command;
 
-import java.nio.file.Path;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
+
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Path;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Parameters(commandDescription = "Start an Emissary jetty server")
 public class ServerCommand extends ServiceCommand {

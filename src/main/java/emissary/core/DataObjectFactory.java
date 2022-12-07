@@ -1,11 +1,12 @@
 package emissary.core;
 
-import java.io.IOException;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 /**
  * Factory implementation to provide an instance of whichever BaseDataObject implementation is configured for the system

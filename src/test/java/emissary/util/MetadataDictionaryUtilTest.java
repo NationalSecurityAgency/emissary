@@ -1,22 +1,23 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.MetadataDictionary;
+import emissary.core.MetadataDictionaryTest;
+import emissary.test.core.junit5.UnitTest;
+
+import com.google.common.collect.TreeMultimap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import com.google.common.collect.TreeMultimap;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.MetadataDictionary;
-import emissary.core.MetadataDictionaryTest;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class MetadataDictionaryUtilTest extends UnitTest {
 

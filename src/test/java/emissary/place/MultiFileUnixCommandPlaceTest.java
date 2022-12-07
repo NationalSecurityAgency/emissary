@@ -1,13 +1,18 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.validateMockitoUsage;
-import static org.mockito.Mockito.verify;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.ResourceReader;
+import emissary.util.io.UnitTestFileUtils;
+import emissary.util.shell.Executrix;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,18 +22,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
-import emissary.util.io.UnitTestFileUtils;
-import emissary.util.shell.Executrix;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.validateMockitoUsage;
+import static org.mockito.Mockito.verify;
 
 class MultiFileUnixCommandPlaceTest extends UnitTest {
     private MultiFileUnixCommandPlace place;

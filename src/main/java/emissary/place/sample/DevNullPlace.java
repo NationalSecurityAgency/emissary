@@ -1,9 +1,9 @@
 package emissary.place.sample;
 
-import java.io.IOException;
-
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
+
+import java.io.IOException;
 
 /**
  * This place is a sink hole for everything it registers for

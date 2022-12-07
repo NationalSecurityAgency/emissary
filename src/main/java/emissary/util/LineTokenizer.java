@@ -1,7 +1,6 @@
 package emissary.util;
 
 import java.nio.charset.Charset;
-
 import javax.annotation.Nullable;
 
 /**

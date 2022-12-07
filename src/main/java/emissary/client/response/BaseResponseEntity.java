@@ -3,7 +3,6 @@ package emissary.client.response;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;

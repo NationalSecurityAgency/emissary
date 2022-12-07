@@ -1,12 +1,12 @@
 package emissary.core;
 
+import emissary.directory.KeyManipulator;
+import emissary.place.IServiceProviderPlace;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import emissary.directory.KeyManipulator;
-import emissary.place.IServiceProviderPlace;
 
 public class TransformHistory {
 

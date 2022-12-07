@@ -1,15 +1,5 @@
 package emissary.pickup.file;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.MessageDigest;
-import java.util.Collection;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
 import emissary.core.IBaseDataObject;
 import emissary.pickup.IPickUp;
 import emissary.pickup.IPickUpSpace;
@@ -17,6 +7,15 @@ import emissary.pickup.PickupQueue;
 import emissary.pickup.QueServer;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkUnit;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.util.Collection;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a

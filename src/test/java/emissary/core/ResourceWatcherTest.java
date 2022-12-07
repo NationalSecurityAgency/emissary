@@ -1,22 +1,23 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.directory.DirectoryEntry;
+import emissary.place.IServiceProviderPlace;
+import emissary.place.sample.DevNullPlace;
+import emissary.test.core.junit5.UnitTest;
+
+import com.codahale.metrics.Timer;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
-import com.codahale.metrics.Timer;
-import emissary.directory.DirectoryEntry;
-import emissary.place.IServiceProviderPlace;
-import emissary.place.sample.DevNullPlace;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceWatcherTest extends UnitTest {
 

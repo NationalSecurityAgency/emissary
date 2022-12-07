@@ -1,13 +1,14 @@
 package emissary.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import emissary.config.ConfigUtil;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 
-import emissary.config.ConfigUtil;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ServerCommandIT extends UnitTest {
     private static final String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);

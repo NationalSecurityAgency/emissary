@@ -1,5 +1,17 @@
 package emissary.client;
 
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.PkiUtil;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+import javax.net.ssl.SSLContext;
+
 import static emissary.client.HTTPConnectionFactory.CFG_KEY_STORE;
 import static emissary.client.HTTPConnectionFactory.CFG_KEY_STORE_PW;
 import static emissary.client.HTTPConnectionFactory.CFG_KEY_STORE_TYPE;
@@ -10,17 +22,6 @@ import static emissary.client.HTTPConnectionFactory.DFLT_STORE_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
-
-import javax.net.ssl.SSLContext;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.PkiUtil;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class HTTPConnectionFactoryTest extends UnitTest {
 

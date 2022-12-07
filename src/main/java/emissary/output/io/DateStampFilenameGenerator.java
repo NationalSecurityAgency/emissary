@@ -1,12 +1,13 @@
 package emissary.output.io;
 
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-
 import emissary.directory.EmissaryNode;
 import emissary.util.TimeUtil;
 import emissary.util.io.FileNameGenerator;
+
 import org.apache.commons.lang3.StringUtils;
+
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Create a filename generator that uses a datestamp as the name

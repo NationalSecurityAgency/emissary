@@ -1,5 +1,24 @@
 package emissary.server.mvc.internal;
 
+import emissary.core.Namespace;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.server.mvc.EndpointTestBase;
+import emissary.util.io.ResourceReader;
+
+import com.google.common.collect.Sets;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.Collections;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.Response;
+
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
 import static emissary.server.mvc.adapters.DirectoryAdapter.FAILED_DIRECTORY_NAME;
@@ -8,25 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-
-import java.util.Collections;
-
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
-
-import com.google.common.collect.Sets;
-import emissary.core.Namespace;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.EmissaryNode;
-import emissary.server.mvc.EndpointTestBase;
-import emissary.util.io.ResourceReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 class FailDirectoryActionTest extends EndpointTestBase {
 

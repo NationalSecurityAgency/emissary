@@ -1,16 +1,15 @@
 package emissary.client.response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @XmlRootElement(name = "places")
 @XmlAccessorType(XmlAccessType.NONE)

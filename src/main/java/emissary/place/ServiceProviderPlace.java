@@ -1,17 +1,5 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import javax.annotation.Nullable;
-
-import com.codahale.metrics.Timer;
 import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -32,10 +20,22 @@ import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
+
+import com.codahale.metrics.Timer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 /**
  * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the

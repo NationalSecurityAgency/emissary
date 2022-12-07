@@ -1,11 +1,10 @@
 package emissary.pickup;
 
-import java.util.LinkedList;
-
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.LinkedList;
+import javax.annotation.Nullable;
 
 /**
  * A size limited queue for holding data to process.

@@ -1,8 +1,9 @@
 package emissary.core;
 
-import com.codahale.metrics.health.HealthCheck;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
+
+import com.codahale.metrics.health.HealthCheck;
 
 public class AgentPoolHealthCheck extends HealthCheck {
 

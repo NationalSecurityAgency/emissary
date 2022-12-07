@@ -1,12 +1,5 @@
 package emissary.core;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
@@ -18,9 +11,16 @@ import emissary.pool.AgentPool;
 import emissary.pool.AgentThreadGroup;
 import emissary.util.JMXUtil;
 import emissary.util.PayloadUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * An autonomous hunk of software

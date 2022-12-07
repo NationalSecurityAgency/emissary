@@ -1,5 +1,8 @@
 package emissary.jni;
 
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,9 +11,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-
-import emissary.core.IBaseDataObject;
-import emissary.place.ServiceProviderPlace;
 
 public class JniRepositoryPlace extends ServiceProviderPlace {
 

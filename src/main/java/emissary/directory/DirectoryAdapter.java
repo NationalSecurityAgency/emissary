@@ -1,10 +1,11 @@
 package emissary.directory;
 
-import java.util.Set;
-
 import emissary.core.EmissaryException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 /**
  * This class implements all of the emissary.directory.DirectoryPlace observer interfaces with null implementations so

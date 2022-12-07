@@ -1,15 +1,16 @@
 package emissary.command;
 
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
+import emissary.util.Version;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import emissary.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 @Parameters(commandDescription = "Dump the Emissary version")
 public class VersionCommand implements EmissaryCommand {

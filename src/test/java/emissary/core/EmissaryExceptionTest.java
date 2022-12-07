@@ -1,9 +1,10 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EmissaryExceptionTest extends UnitTest {
     @Test

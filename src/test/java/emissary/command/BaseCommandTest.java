@@ -1,14 +1,15 @@
 package emissary.command;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import emissary.config.ConfigUtil;
+import emissary.test.core.junit5.UnitTest;
+
+import com.beust.jcommander.JCommander;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.beust.jcommander.JCommander;
-import emissary.config.ConfigUtil;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BaseCommandTest extends UnitTest {
 
