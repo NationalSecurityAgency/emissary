@@ -1,0 +1,48 @@
+name: Publish Docker Image for Pull Request
+
+on:
+  pull_request:
+    branches: [ master]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: PR-${{ github.event.number }}
+
+jobs:
+  build:
+    name: Build Emissary for Distribution and Push Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Configure Java & Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          cache: 'maven'
+          distribution: 'corretto'
+
+      - name: Build with Maven
+        run: mvn -B --no-transfer-progress install -Pdist -DskipTest -DskipFormat --file pom.xml
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+          file: contrib/docker/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+  
