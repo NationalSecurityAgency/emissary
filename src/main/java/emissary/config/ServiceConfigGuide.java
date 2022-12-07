@@ -205,9 +205,6 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         int nextToken = StreamTokenizer.TT_WORD;
         String parmName;
         String sval;
-        int nval;
-        @SuppressWarnings("unused")
-        boolean paramTypeIsNumber;
 
         in.commentChar('#');
         in.wordChars(33, 33);
@@ -216,18 +213,13 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         in.wordChars(91, 96);
         in.wordChars(123, 65536);
 
-        parsing: while (nextToken != StreamTokenizer.TT_EOF) {
-            sval = "";
-            parmName = "";
-            nval = -1;
-            paramTypeIsNumber = false;
-
+        while (nextToken != StreamTokenizer.TT_EOF) {
             // Read three tokens at a time (X = Y)
             nextToken = in.nextToken();
 
             // Make sure the first token in the tuple is a word
             if (nextToken == StreamTokenizer.TT_EOF) {
-                break parsing;
+                break;
             }
             if (nextToken == StreamTokenizer.TT_NUMBER) {
                 throw new ConfigSyntaxException("Illegal token " + in.sval + ", missing quote on line " + in.lineno() + "?");
@@ -236,14 +228,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             parmName = in.sval;
 
             nextToken = in.nextToken();
-            // logger.debug("operator = [" + in.sval + "]");
             this.operator = in.sval;
 
             nextToken = in.nextToken();
             if (nextToken == StreamTokenizer.TT_NUMBER) {
-                paramTypeIsNumber = true;
-                nval = (int) in.nval;
-                sval = Integer.toString(nval);
+                sval = Integer.toString((int) in.nval);
             } else {
                 sval = in.sval;
             }
