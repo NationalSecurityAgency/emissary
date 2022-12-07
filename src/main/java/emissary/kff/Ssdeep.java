@@ -1,12 +1,17 @@
 package emissary.kff;
 
+import emissary.core.channels.SeekableByteChannelFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
+import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -109,6 +114,24 @@ public final class Ssdeep {
          */
         public SsContext(@Nullable final byte[] data) {
             final long expectedInputLength = (data != null) ? data.length : 0;
+            this.blockSize = estimateBlockSize(expectedInputLength);
+        }
+
+        /**
+         * Construct a spam sum context to process a {@link SeekableByteChannel}
+         *
+         * @param sbcf The channel that will be processed, if known. If non-{@code null}, the length of the channel is used to
+         *        guess the hash block size to use.
+         */
+        public SsContext(final SeekableByteChannelFactory sbcf) {
+            long expectedInputLength = 0;
+
+            try (final SeekableByteChannel sbc = sbcf.create();) {
+                expectedInputLength = sbc.size();
+            } catch (final IOException ioe) {
+                // Ignore
+            }
+
             this.blockSize = estimateBlockSize(expectedInputLength);
         }
 
@@ -254,6 +277,24 @@ public final class Ssdeep {
             return finishHashing(rollState);
         }
 
+        public SpamSumSignature generateHash(final SeekableByteChannelFactory sbcf) {
+            beginHashing();
+            final RollingState rollState = new RollingState();
+
+            try (final InputStream is = Channels.newInputStream(sbcf.create());) {
+                final byte[] b = new byte[1024];
+
+                int bytesRead;
+                while ((bytesRead = is.read(b)) != -1) {
+                    applyBytes(rollState, b, 0, bytesRead);
+                }
+            } catch (final IOException e) {
+                // Ignore
+            }
+
+            return finishHashing(rollState);
+        }
+
         /**
          * Generate the hash for some input.
          *
@@ -361,6 +402,21 @@ public final class Ssdeep {
         final SsContext ctx = new SsContext(data);
         while (true) {
             final SpamSumSignature signature = ctx.generateHash(data);
+
+            // Our blocksize guess may have been way off, repeat with
+            // a smaller block size if necessary.
+            if ((ctx.blockSize > MIN_BLOCKSIZE) && (ctx.fuzzLen1 < (SPAMSUM_LENGTH / 2))) {
+                ctx.blockSize = ctx.blockSize / 2;
+            } else {
+                return signature.toString();
+            }
+        }
+    }
+
+    public String fuzzy_hash(final SeekableByteChannelFactory sbcf) {
+        final SsContext ctx = new SsContext(sbcf);
+        while (true) {
+            final SpamSumSignature signature = ctx.generateHash(sbcf);
 
             // Our blocksize guess may have been way off, repeat with
             // a smaller block size if necessary.

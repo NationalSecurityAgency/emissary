@@ -2,6 +2,7 @@ package emissary.output.filter;
 
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
+import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 import emissary.util.TimeUtil;
 
@@ -257,6 +258,9 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         @JsonProperty("members")
         @JsonInclude(NON_EMPTY)
         abstract List<IBaseDataObject> getExtractedRecords();
+
+        @JsonIgnore
+        abstract SeekableByteChannelFactory getChannelFactory();
 
         @JsonIgnore
         abstract int dataLength();
