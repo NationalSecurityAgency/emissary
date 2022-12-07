@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: $(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+  IMAGE_NAME: nationalsecurityagency/emissary
   IMAGE_TAG: PR-${{ github.event.number }}
 
 jobs:
