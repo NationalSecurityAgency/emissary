@@ -1,6 +1,7 @@
 package emissary.core;
 
 import emissary.core.channels.InMemoryChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 
@@ -317,7 +318,8 @@ class IBaseDataObjectHelperTest {
         final IBaseDataObject childIbdo1 = new BaseDataObject();
 
         childIbdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
-        Mockito.doThrow(NoSuchAlgorithmException.class).when(mockKffDataObjectHandler1).hash(Mockito.any(BaseDataObject.class), Mockito.anyBoolean());
+        Mockito.doThrow(NoSuchAlgorithmException.class).when(mockKffDataObjectHandler1).hashData(Mockito.any(SeekableByteChannelFactory.class),
+                Mockito.anyString());
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo1,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler1);
         assertFalse(KffDataObjectHandler.hashPresent(childIbdo1));
