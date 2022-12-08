@@ -2,6 +2,7 @@ package emissary.kff;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.core.channels.AbstractSeekableByteChannel;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.test.core.junit5.UnitTest;
@@ -13,12 +14,17 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -173,6 +179,69 @@ class KffDataObjectHandlerTest extends UnitTest {
 
     @Test
     void testNullPayload() {
-        kff.hash(null);
+        assertDoesNotThrow(() -> kff.hash(null));
+    }
+
+    @Test
+    void testRemovingHash() {
+        final SeekableByteChannelFactory exceptionSbcf = new SeekableByteChannelFactory() {
+
+            @Override
+            public SeekableByteChannel create() {
+                return new AbstractSeekableByteChannel() {
+
+                    @Override
+                    protected void closeImpl() throws IOException {
+                        // Do nothing
+                    }
+
+                    @Override
+                    protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
+                        throw new IOException("Test exception");
+                    }
+
+                    @Override
+                    protected long sizeImpl() throws IOException {
+                        throw new IOException("Test exception");
+                    }
+
+                };
+            }
+
+        };
+
+        payload.setChannelFactory(exceptionSbcf);
+        kff.hash(payload);
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertFalse(KffDataObjectHandler.hashPresent(payload));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertNotEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+
+        payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
+        payload.setChannelFactory(DATA);
+        kff.hash(payload);
+        assertEquals("test.filter", payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "FILTERED_BY"));
+        assertTrue(KffDataObjectHandler.hashPresent(payload));
+        assertEquals(DATA_MD5, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5));
+        assertEquals(DATA_CRC32, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_BASE + "CRC32"));
+        assertEquals(DATA_SSDEEP, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SSDEEP));
+        assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
+        assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
+        assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+
+    }
+
+    @Test
+    void testNullHashData() throws NoSuchAlgorithmException, IOException {
+        assertEquals(new HashMap<>(), kff.hashData(null, null));
+    }
+
+    @Test
+    void testEmptySbcf() throws NoSuchAlgorithmException, IOException {
+        assertEquals(new HashMap<>(), kff.hashData(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY, null));
     }
 }
