@@ -19,6 +19,9 @@ import java.nio.file.Path;
 public final class SeekableByteChannelHelper {
     private static final Logger logger = LoggerFactory.getLogger(SeekableByteChannelHelper.class);
 
+    /** Empty in-memory channel factory. */
+    public static final SeekableByteChannelFactory EMPTY_CHANNEL_FACTORY = memory(new byte[0]);
+
     private SeekableByteChannelHelper() {}
 
     /**

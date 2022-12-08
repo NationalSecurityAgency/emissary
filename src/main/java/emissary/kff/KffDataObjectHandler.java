@@ -2,6 +2,7 @@ package emissary.kff;
 
 import emissary.core.IBaseDataObject;
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,51 +71,14 @@ public class KffDataObjectHandler {
      * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
      * status if so configured
      * 
-     * @param data the bytes to hash
-     * @param name th name of the data (for reporting)
+     * @param sbcf the data to hash
+     * @param name the name of the data (for reporting)
      * @return parameter entries suitable for a BaseDataObject
+     * @throws IOException if the data can't be read
+     * @throws NoSuchAlgorithmException if the checksum can't be computed
      */
-    public Map<String, String> hashData(byte[] data, String name) {
-        return hashData(data, name, "");
-    }
-
-    /**
-     * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
-     * status if so configured
-     * 
-     * @param data the bytes to hash
-     * @param name th name of the data (for reporting)
-     * @param prefix prepended to hash name entries
-     * @return parameter entries suitable for a BaseDataObject
-     */
-    public Map<String, String> hashData(@Nullable byte[] data, String name, @Nullable String prefix) {
-        Map<String, String> results = new HashMap<String, String>();
-
-        if (prefix == null) {
-            prefix = "";
-        }
-
-        if (data != null && data.length > 0) {
-            try {
-                KffResult kffCheck = kff.check(name, data);
-
-                // Store all computed results in data object params
-                for (String alg : kffCheck.getResultNames()) {
-                    results.put(prefix + KFF_PARAM_BASE + alg, kffCheck.getResultString(alg));
-                }
-
-                // Set params if we have a hit
-                if (kffCheck.isKnown()) {
-                    results.put(prefix + KFF_PARAM_KNOWN_FILTER_NAME, kffCheck.getFilterName());
-                }
-                if (kffCheck.isDupe()) {
-                    results.put(prefix + KFF_PARAM_DUPE_FILTER_NAME, kffCheck.getFilterName());
-                }
-            } catch (Exception kffex) {
-                logger.warn("Unable to compute kff on " + name, kffex);
-            }
-        }
-        return results;
+    public Map<String, String> hashData(final SeekableByteChannelFactory sbcf, final String name) throws NoSuchAlgorithmException, IOException {
+        return hashData(sbcf, name, "");
     }
 
     /**
@@ -122,7 +86,7 @@ public class KffDataObjectHandler {
      * status if so configured
      * 
      * @param sbcf the data to hash
-     * @param name th name of the data (for reporting)
+     * @param name the name of the data (for reporting)
      * @param prefix prepended to hash name entries
      * @return parameter entries suitable for a BaseDataObject
      * @throws IOException if the data can't be read
@@ -166,22 +130,6 @@ public class KffDataObjectHandler {
      * @param d the data object
      */
     public void hash(@Nullable final IBaseDataObject d) {
-        try {
-            hash(d, false);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // Do nothing
-        }
-    }
-
-    /**
-     * Compute the hash of a data object's data
-     * 
-     * @param d the data object
-     * @param useSbc use the {@link SeekableByteChannel} interface
-     * @throws IOException if the data can't be read
-     * @throws NoSuchAlgorithmException if the checksum can't be computed
-     */
-    public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) throws NoSuchAlgorithmException, IOException {
         if (d != null) {
             removeHash(d);
         }
@@ -190,13 +138,15 @@ public class KffDataObjectHandler {
             return;
         }
 
-        // Compute and add the hashes
-        if (useSbc && d.getChannelSize() > 0) {
-            d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""));
-        } else if (!useSbc && d.dataLength() > 0) {
-            d.putParameters(hashData(d.data(), d.shortName()));
-        } else {
-            return;
+        try {
+            // Compute and add the hashes
+            if (d.getChannelSize() > 0) {
+                d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""));
+            } else {
+                return;
+            }
+        } catch (NoSuchAlgorithmException | IOException e) {
+            logger.error("Couldn't hash data {}", d.shortName());
         }
 
         // Set params if we have a hit
@@ -208,7 +158,7 @@ public class KffDataObjectHandler {
                 d.replaceCurrentForm(KFF_DUPE_CURRENT_FORM);
             }
             if (truncateKnownData) {
-                d.setData(null);
+                d.setChannelFactory(SeekableByteChannelHelper.EMPTY_CHANNEL_FACTORY);
             }
         }
     }

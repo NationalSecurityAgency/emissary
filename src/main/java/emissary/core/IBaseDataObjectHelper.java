@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.channels.Channels;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -371,11 +370,7 @@ public final class IBaseDataObjectHelper {
         KffDataObjectHandler.parentToChild(childIBaseDataObject);
 
         // Hash the new child data, overwrites parent hashes if any
-        try {
-            kffDataObjectHandler.hash(childIBaseDataObject, true);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // Do not add the hash parameters
-        }
+        kffDataObjectHandler.hash(childIBaseDataObject);
     }
 
     /**
