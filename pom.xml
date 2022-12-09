@@ -22,7 +22,20 @@
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
   </issueManagement>
   <ciManagement />
-  <distributionManagement />
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>multipass-release</id>
+      <name>Multipass Release</name>
+      <url>https://multipass.revelc.net/nexus/releases/emissary</url>
+    </repository>
+    <snapshotRepository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>multipass-snapshot</id>
+      <name>Multipass Snapshots</name>
+      <url>https://multipass.revelc.net/nexus/snapshots/emissary</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
