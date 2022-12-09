@@ -2,17 +2,22 @@ package emissary.pickup;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.EmissaryException;
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.IMobileAgent;
 import emissary.core.NamespaceException;
 import emissary.log.MDCConstants;
+import emissary.parser.ParserEOFException;
 import emissary.parser.ParserException;
 import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
+import emissary.place.AgentsNotSupportedPlace;
 import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
+import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
 import org.slf4j.MDC;
@@ -33,7 +38,7 @@ import javax.annotation.Nullable;
  * knows nothing about where the data comes from, though. The method of input, either a directory or set of directories
  * to monitor, a socket, a WorkSpace provider, or something else, comes from classes that extend this one.
  */
-public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace implements IPickUpPlace, emissary.place.AgentsNotSupportedPlace {
+public abstract class PickUpPlace extends ServiceProviderPlace implements IPickUpPlace, AgentsNotSupportedPlace {
 
     // Any data picked up with less/more bytes than this will be
     // set to ERROR initially, can be overridden in config files
@@ -161,7 +166,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
 
         initialFormValues = configG.findEntries("INITIAL_FORM");
         if (initialFormValues.size() < 1) {
-            initialFormValues.add(emissary.core.Form.UNKNOWN);
+            initialFormValues.add(Form.UNKNOWN);
         }
 
         // Grab the default pool
@@ -242,7 +247,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param f the file it came from
      */
     protected void dataObjectCreated(IBaseDataObject d, File f) {
-        d.putParameter("FILE_DATE", emissary.util.TimeUtil.getDateAsISO8601(f.lastModified()));
+        d.putParameter("FILE_DATE", TimeUtil.getDateAsISO8601(f.lastModified()));
         d.putParameter("FILE_NAME", f.getName());
     }
 
@@ -587,7 +592,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
                     logger.info("sessionParseMetric:{},{},{},{},{},{}", sessionEnd - sessionStart, sp.getClass().getName(), theFile, sessionName,
                             sessionNum, dataObject.data().length);
                     processDataObject(dataObject, sessionName, theFile, false);
-                } catch (emissary.parser.ParserEOFException eof) {
+                } catch (ParserEOFException eof) {
                     // expected at end of file
                     long fileEnd = System.currentTimeMillis();
                     logger.info("fileParseMetric:{},{},{},{},{}", fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
@@ -634,7 +639,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
                 IBaseDataObject dataObject = dof.getNextSession(sessionName);
                 sessionNum++;
                 processDataObject(dataObject, sessionName, theFile, false);
-            } catch (emissary.parser.ParserEOFException eof) {
+            } catch (ParserEOFException eof) {
                 // expected at end of file
                 break;
             } catch (emissary.core.EmissaryException ex) {

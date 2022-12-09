@@ -1,6 +1,7 @@
 package emissary.core;
 
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.directory.DirectoryEntry;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -754,14 +755,14 @@ public interface IBaseDataObject {
      * 
      * @return last item in history
      */
-    emissary.directory.DirectoryEntry getLastPlaceVisited();
+    DirectoryEntry getLastPlaceVisited();
 
     /**
      * Return an SDE based on the penultimate item in the transform history or null if empty
      * 
      * @return penultimate item in history
      */
-    emissary.directory.DirectoryEntry getPenultimatePlaceVisited();
+    DirectoryEntry getPenultimatePlaceVisited();
 
     /**
      * Return true if the payload has been to a place matching the key passed in.

@@ -1,9 +1,11 @@
 package emissary.place;
 
 import emissary.admin.PlaceStarter;
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.core.ResourceException;
 import emissary.core.ResourceWatcher;
 import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
@@ -200,7 +202,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                     // Do the normal Non-HD processing
                     p.agentProcessCall(d);
                 }
-                errorOccurred = d.currentForm().equals(emissary.core.Form.ERROR);
+                errorOccurred = d.currentForm().equals(Form.ERROR);
             } catch (Exception ex) {
                 logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
                 errorOccurred = true;
@@ -254,7 +256,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @param d the payload to process
      */
     @Override
-    public void process(IBaseDataObject d) throws emissary.core.ResourceException {
+    public void process(IBaseDataObject d) throws ResourceException {
         List<IBaseDataObject> l = coordinate(d, false);
         if (l != null && l.size() > 0) {
             logger.error("Non-sprouted documents are being lost {}", l.size());
@@ -268,7 +270,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @return the list of sprouted data objects
      */
     @Override
-    public List<IBaseDataObject> processHeavyDuty(IBaseDataObject d) throws emissary.core.ResourceException {
+    public List<IBaseDataObject> processHeavyDuty(IBaseDataObject d) throws ResourceException {
         return coordinate(d, true);
     }
 

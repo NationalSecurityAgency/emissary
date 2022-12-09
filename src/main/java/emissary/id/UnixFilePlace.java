@@ -1,5 +1,6 @@
 package emissary.id;
 
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.util.UnixFile;
 
@@ -87,8 +88,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
         // Bail out on empty data
         if (bytes == null || bytes.length == 0) {
-            d.setCurrentForm(emissary.core.Form.EMPTY);
-            d.setFileType(emissary.core.Form.EMPTY);
+            d.setCurrentForm(Form.EMPTY);
+            d.setFileType(Form.EMPTY);
             return;
         }
 

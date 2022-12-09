@@ -5,10 +5,13 @@ import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.directory.DirectoryEntry;
 import emissary.output.filter.IDropOffFilter;
+import emissary.place.EmptyFormPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.util.DataUtil;
 import emissary.util.DisposeHelper;
+import emissary.util.ShortNameComparator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +34,7 @@ import static net.logstash.logback.marker.Markers.appendEntries;
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
  * that controls which types of output are desired and called the appropriate output helper for the desired output.
  **/
-public class DropOffPlace extends ServiceProviderPlace implements emissary.place.EmptyFormPlace {
+public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace {
 
     private static Logger objectMetricsLog = null;
     protected boolean doSynchronized = false;
@@ -293,7 +296,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
      */
     public void preFilterHook(final List<IBaseDataObject> payloadList, final Map<String, Object> filterParams) {
         // Sort the list of records
-        Collections.sort(payloadList, new emissary.util.ShortNameComparator());
+        Collections.sort(payloadList, new ShortNameComparator());
         filterParams.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
         filterParams.put(IDropOffFilter.TLD_PARAM, payloadList.get(0));
 
@@ -369,7 +372,7 @@ public class DropOffPlace extends ServiceProviderPlace implements emissary.place
 
                 if (!prevBin.equals(cf) && (i > 0) && !cfSet.contains(cf) && !("UNKNOWN".equals(cf) || cf.endsWith("-PROCESSED"))) {
                     // e.g.: [dataType].DROP_OFF.IO.host.dom:port/DropOffPlace
-                    final emissary.directory.DirectoryEntry de = getDirectoryEntry();
+                    final DirectoryEntry de = getDirectoryEntry();
                     de.setDataType("[" + cf + "]");
                     tData.appendTransformHistory(de.getKey());
                 }

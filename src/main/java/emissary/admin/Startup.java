@@ -1,5 +1,6 @@
 package emissary.admin;
 
+import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
@@ -101,7 +102,7 @@ public class Startup {
         if (file.startsWith("/") && new File(file).exists()) {
             return file;
         }
-        return emissary.config.ConfigUtil.getConfigFile(path, file);
+        return ConfigUtil.getConfigFile(path, file);
     }
 
     /**
@@ -125,7 +126,7 @@ public class Startup {
             if (args[0].startsWith("/") || args[0].toUpperCase().startsWith("HTTP")) {
                 startupConfigFile = args[0];
             } else {
-                startupConfigFile = emissary.config.ConfigUtil.getConfigFile(args[0]);
+                startupConfigFile = ConfigUtil.getConfigFile(args[0]);
             }
         } else if (args.length == 2) {
             directoryAction = setAction(ACTIONSTART);

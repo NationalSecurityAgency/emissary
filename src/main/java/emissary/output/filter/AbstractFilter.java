@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
+import emissary.util.JavaCharSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -382,7 +383,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         if (lang == null) {
             return defaultCharset;
         } else {
-            return emissary.util.JavaCharSet.get(lang);
+            return JavaCharSet.get(lang);
         }
     }
 

@@ -1,6 +1,7 @@
 package emissary.pickup.file;
 
 import emissary.pickup.IPickUp;
+import emissary.pickup.PickUpPlace;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Monitor one or more directories and pickup files for the system
  */
-public class FilePickUpPlace extends emissary.pickup.PickUpPlace implements IPickUp {
+public class FilePickUpPlace extends PickUpPlace implements IPickUp {
 
     // How often to check directories in millis
     protected int pollingInterval = 30000;

@@ -1,9 +1,11 @@
 package emissary.config;
 
+import emissary.core.EmissaryException;
+
 /**
  * This exceptionis used for tracking internal configuration errors
  */
-public class ConfigSyntaxException extends emissary.core.EmissaryException {
+public class ConfigSyntaxException extends EmissaryException {
 
     /**
      * provide uid for serialization

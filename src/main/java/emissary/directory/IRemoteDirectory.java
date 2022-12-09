@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
                 } else {
                     dir = DirectoryPlace.lookup();
                 }
-            } catch (emissary.core.EmissaryException ex) {
+            } catch (EmissaryException ex) {
                 this.logger.debug("Could not find local directory " + name);
             }
 

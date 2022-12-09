@@ -1,5 +1,6 @@
 package emissary.transform.decode;
 
+import emissary.util.ByteUtil;
 import emissary.util.CharacterCounterSet;
 import emissary.util.HtmlEntityMap;
 import emissary.util.shell.Executrix;
@@ -74,7 +75,7 @@ public class HtmlEscape {
                     int startPos = j;
 
                     // Jump to end of digits, find a semi-colon
-                    while (j < data.length && emissary.util.ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
+                    while (j < data.length && ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
                         j++;
 
                     if (j < data.length && data[j] == ';') {
