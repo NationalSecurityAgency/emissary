@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import static emissary.core.Form.HTML;
+import static emissary.core.Form.TEXT;
+
 @Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
 public class WhatCommand extends BaseCommand {
@@ -304,6 +307,6 @@ public class WhatCommand extends BaseCommand {
         }
 
         final String t = i.getFirstType();
-        return "HTML".equals(t) || t.endsWith("TEXT");
+        return HTML.equals(t) || t.endsWith(TEXT);
     }
 }

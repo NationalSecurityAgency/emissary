@@ -22,7 +22,7 @@ class LineTokenizerTest extends UnitTest {
 
     @Test
     void testStringCharset() {
-        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(), "UTF-8");
+        LineTokenizer lt = new LineTokenizer((W + "\n").getBytes(), StandardCharsets.UTF_8);
         assertEquals(W, lt.nextToken(), "UTF-8 passed through clean");
     }
 

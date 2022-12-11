@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+
+import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
@@ -45,7 +48,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected String contentFile = null;
     protected Executrix executrix;
     protected String logfilename;
-    protected String charset = "UTF-8";
+    protected String charset = StandardCharsets.UTF_8.name();
     protected boolean singleOutputAsChild = false;
     protected boolean preserveParentData = false;
 
@@ -344,7 +347,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
             Map<String, Object> metaData = new HashMap<>();
             if (setTitleToFile) {
-                metaData.put("DocumentTitle", f.getName());
+                metaData.put(DOCUMENT_TITLE, f.getName());
             }
 
             List<String> tmpForms = getFormsFromFile(f);
@@ -485,7 +488,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         String filename = f.getName();
         d.setData(theData);
         if (setTitleToFile) {
-            d.putParameter("DocumentTitle", filename);
+            d.putParameter(DOCUMENT_TITLE, filename);
         }
         List<String> tmpForms = getFormsFromFile(f);
         for (String tmpForm : tmpForms) {

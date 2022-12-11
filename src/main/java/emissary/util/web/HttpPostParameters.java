@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
  */
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 public class HttpPostParameters {
@@ -54,7 +55,7 @@ public class HttpPostParameters {
 
         this.thePostData.append(s).append("=");
         try {
-            this.thePostDataEncoded.append(URLEncoder.encode(s, "UTF-8")).append("=");
+            this.thePostDataEncoded.append(URLEncoder.encode(s, StandardCharsets.UTF_8.name())).append("=");
         } catch (NullPointerException e) {
             logger.error("Null first parameter to add method.", e);
         } catch (UnsupportedEncodingException e) {

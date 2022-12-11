@@ -5,6 +5,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
+import emissary.core.constants.Parameters;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.TimeUtil;
 
@@ -20,6 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static emissary.core.Form.TEXT;
+import static emissary.core.Form.UNKNOWN;
+import static emissary.core.constants.Parameters.EVENT_DATE;
+import static emissary.core.constants.Parameters.FILE_DATE;
+import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -38,8 +44,8 @@ class DropOffUtilTest extends UnitTest {
     public void createUtil() {
         final Configurator cfg = new ServiceConfigGuide();
         final List<String> dates = new ArrayList<>();
-        dates.add("EventDate");
-        dates.add("FILE_DATE");
+        dates.add(EVENT_DATE);
+        dates.add(FILE_DATE);
         cfg.addEntries("DATE_PARAMETER", dates);
 
         final List<String> ids = new ArrayList<>();
@@ -79,8 +85,8 @@ class DropOffUtilTest extends UnitTest {
         final IBaseDataObject tld = DataObjectFactory.getInstance("This is another test".getBytes(), "/eat/prefix/anotherTestPath", "UNKNOWN");
         Configurator cfg = new ServiceConfigGuide();
         final List<String> dates = new ArrayList<>();
-        dates.add("EventDate");
-        dates.add("FILE_DATE");
+        dates.add(EVENT_DATE);
+        dates.add(FILE_DATE);
         cfg.addEntries("DATE_FORMAT", dates);
 
         List<String> ids = new ArrayList<>();
@@ -184,8 +190,8 @@ class DropOffUtilTest extends UnitTest {
         // Test auto gen //////////////////////////////
         Configurator cfg = new ServiceConfigGuide();
         final List<String> dates = new ArrayList<>();
-        dates.add("EventDate");
-        dates.add("FILE_DATE");
+        dates.add(EVENT_DATE);
+        dates.add(FILE_DATE);
         cfg.addEntries("DATE_FORMAT", dates);
 
         List<String> ids = new ArrayList<>();
@@ -347,10 +353,10 @@ class DropOffUtilTest extends UnitTest {
 
         final IBaseDataObject parent = DataObjectFactory.getInstance("This is a test".getBytes(), "item1", "PARENT_FORM", "PARENT_FTYPE");
         parent.putParameter("FOO", "PARENT_FOO");
-        parent.putParameter("Original-Filename", "parent.tar.gz");
+        parent.putParameter(ORIGINAL_FILENAME, "parent.tar.gz");
 
         final IBaseDataObject child = DataObjectFactory.getInstance("This is a test".getBytes(), "item1-att-1", "CHILD_FORM", "CHILD_FTYPE");
-        child.putParameter("Original-Filename", "child.docx");
+        child.putParameter(ORIGINAL_FILENAME, "child.docx");
         child.putParameter("FOO_FILETYPE", "myFoo");
         child.putParameter("BAR_FILETYPE", "myBar1");
         child.appendParameter("BAR_FILETYPE", "myBar2");
@@ -430,13 +436,13 @@ class DropOffUtilTest extends UnitTest {
     void testGetEventDate() {
         // populate the tld with all the event date options (note: year of 2016)
         IBaseDataObject tld = new BaseDataObject();
-        tld.setParameter("EventDate", "2016-02-13 23:13:03");
-        tld.setParameter("FILE_DATE", "2016-01-05 17:45:53");
+        tld.setParameter(EVENT_DATE, "2016-02-13 23:13:03");
+        tld.setParameter(FILE_DATE, "2016-01-05 17:45:53");
 
         // populate the child with all the event date options (note: year of 2015)
         IBaseDataObject d = new BaseDataObject();
-        d.setParameter("EventDate", "2015-02-13 23:13:03");
-        d.setParameter("FILE_DATE", "2015-01-05 17:45:53");
+        d.setParameter(EVENT_DATE, "2015-02-13 23:13:03");
+        d.setParameter(FILE_DATE, "2015-01-05 17:45:53");
 
         Date start = new Date(); // use this for relative comparison
 
@@ -444,27 +450,27 @@ class DropOffUtilTest extends UnitTest {
         assertEquals("2015-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing child EventDate should hit on child FILE_DATE
-        d.deleteParameter("EventDate");
+        d.deleteParameter(EVENT_DATE);
         assertEquals("2015-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing child FILE_DATE should hit on tld EventDate
-        d.deleteParameter("FILE_DATE");
+        d.deleteParameter(FILE_DATE);
         assertEquals("2016-02-13 23:13:03", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing tld EventDate should hit on tld FILE_DATE
-        tld.deleteParameter("EventDate");
+        tld.deleteParameter(EVENT_DATE);
         assertEquals("2016-01-05 17:45:53", TimeUtil.getDateAsISO8601(this.util.getEventDate(d, tld).toInstant()));
 
         // removing tld FILE_DATE should default to now as configured by default
-        tld.deleteParameter("FILE_DATE");
+        tld.deleteParameter(FILE_DATE);
         assertNotNull(this.util.getEventDate(d, tld));
         assertNotEquals(-1, this.util.getEventDate(d, tld).compareTo(start));
 
         // changing the configuration to not default to now should return null
         Configurator cfg = new ServiceConfigGuide();
         final List<String> dates = new ArrayList<>();
-        dates.add("EventDate");
-        dates.add("FILE_DATE");
+        dates.add(EVENT_DATE);
+        dates.add(FILE_DATE);
         cfg.addEntries("DATE_PARAMETER", dates);
         cfg.addEntry("DEFAULT_EVENT_DATE_TO_NOW", "false");
         this.util = new DropOffUtil(cfg);
@@ -476,7 +482,7 @@ class DropOffUtilTest extends UnitTest {
     @Test
     void testDeprecatedGetFileType() {
         Map<String, String> metadata = new HashMap<>();
-        testDeprecatedFileType(metadata, "UNKNOWN", null);
+        testDeprecatedFileType(metadata, UNKNOWN, null);
 
         String poppedForms = "myPoppedForms";
         setupDeprecatedMetadata(metadata, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
@@ -500,7 +506,7 @@ class DropOffUtilTest extends UnitTest {
         formsArg = "";
         String fontEncoding = "fontEncoding";
         setupDeprecatedMetadata(metadata, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
-        testDeprecatedFileType(metadata, "TEXT", formsArg);
+        testDeprecatedFileType(metadata, TEXT, formsArg);
 
         metadata.clear();
         formsArg = " MSWORD";
@@ -508,7 +514,7 @@ class DropOffUtilTest extends UnitTest {
 
         metadata.clear();
         formsArg = "QUOTED-PRINTABLE";
-        testDeprecatedFileType(metadata, "TEXT", formsArg);
+        testDeprecatedFileType(metadata, TEXT, formsArg);
     }
 
     private void setupDeprecatedMetadata(Map<String, String> metadata, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
@@ -556,7 +562,7 @@ class DropOffUtilTest extends UnitTest {
         formsArg = "";
         String fontEncoding = "fontEncoding";
         setupMetadata(bdo, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
-        testFileType(bdo, metadata, "TEXT", formsArg);
+        testFileType(bdo, metadata, TEXT, formsArg);
 
         bdo.clearParameters();
         metadata.clear();
@@ -565,14 +571,14 @@ class DropOffUtilTest extends UnitTest {
 
         metadata.clear();
         formsArg = "QUOTED-PRINTABLE";
-        testFileType(bdo, metadata, "TEXT", formsArg);
+        testFileType(bdo, metadata, TEXT, formsArg);
     }
 
     @Test
     void testExtractUniqueFileExtensions() {
         // these should be constants
         final String FILEXT = "FILEXT";
-        final String ORIGINAL_FILENAME = "Original-Filename";
+        final String ORIGINAL_FILENAME = Parameters.ORIGINAL_FILENAME;
         DropOffUtil util = new DropOffUtil();
 
         final IBaseDataObject bdo = new BaseDataObject();

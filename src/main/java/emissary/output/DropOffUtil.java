@@ -31,6 +31,11 @@ import java.util.SimpleTimeZone;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
+import static emissary.core.Form.PREFIXES_LANG;
+import static emissary.core.Form.TEXT;
+import static emissary.core.Form.UNKNOWN;
+import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
@@ -725,21 +730,21 @@ public class DropOffUtil {
             }
             if (StringUtils.isEmpty(fileType)) {
                 if (metaData.containsKey(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
-                    fileType = "TEXT";
+                    fileType = TEXT;
                 } else {
-                    fileType = "UNKNOWN";
+                    fileType = UNKNOWN;
                 }
             }
 
             metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
         }
 
-        if ("UNKNOWN".equals(fileType) && forms.contains("MSWORD")) {
+        if (UNKNOWN.equals(fileType) && forms.contains("MSWORD")) {
             fileType = "MSWORD_FRAGMENT";
         }
 
-        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith("LANG-") || fileType.startsWith("ENCODING(")) {
-            fileType = "TEXT";
+        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith(PREFIXES_LANG) || fileType.startsWith("ENCODING(")) {
+            fileType = TEXT;
         }
 
         return fileType;
@@ -792,9 +797,9 @@ public class DropOffUtil {
             }
             if (StringUtils.isEmpty(fileType)) {
                 if (bdo.hasParameter(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
-                    fileType = "TEXT";
+                    fileType = TEXT;
                 } else {
-                    fileType = "UNKNOWN";
+                    fileType = UNKNOWN;
                 }
             }
 
@@ -803,12 +808,12 @@ public class DropOffUtil {
             }
         }
 
-        if ("UNKNOWN".equals(fileType) && forms.contains("MSWORD")) {
+        if (UNKNOWN.equals(fileType) && forms.contains("MSWORD")) {
             fileType = "MSWORD_FRAGMENT";
         }
 
-        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith("LANG-") || fileType.startsWith("ENCODING(")) {
-            fileType = "TEXT";
+        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith(PREFIXES_LANG) || fileType.startsWith("ENCODING(")) {
+            fileType = TEXT;
         }
 
         return fileType;
@@ -1046,9 +1051,9 @@ public class DropOffUtil {
      *
      */
     void extractUniqueFileExtensions(IBaseDataObject p) {
-        if (p.hasParameter("Original-Filename")) {
+        if (p.hasParameter(ORIGINAL_FILENAME)) {
             final Set<String> extensions = new HashSet<>();
-            for (Object filename : p.getParameter("Original-Filename")) {
+            for (Object filename : p.getParameter(ORIGINAL_FILENAME)) {
                 final String fn = (String) filename;
                 if (StringUtils.isNotEmpty(fn) && fn.lastIndexOf('.') > -1) {
                     final int pos = fn.lastIndexOf('.') + 1;

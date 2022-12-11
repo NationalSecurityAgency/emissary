@@ -15,6 +15,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.IOException;
 
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
+
 public class JsonEscapePlace extends ServiceProviderPlace {
 
     /**
@@ -56,7 +58,7 @@ public class JsonEscapePlace extends ServiceProviderPlace {
      * Take care of special place configuration
      */
     protected void configurePlace() {
-        outputForm = configG.findStringEntry("OUTPUT_FORM", outputForm);
+        outputForm = configG.findStringEntry(OUTPUT_FORM, outputForm);
     }
 
     /**

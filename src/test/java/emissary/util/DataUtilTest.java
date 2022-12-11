@@ -13,6 +13,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
+import static emissary.core.constants.Parameters.EVENT_DATE;
+import static emissary.core.constants.Parameters.FILE_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -98,15 +100,15 @@ class DataUtilTest extends UnitTest {
         Calendar dcal = DataUtil.getEventDate(d);
         assertEquals(TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()), "Default eventDate is now");
 
-        d.putParameter("FILE_DATE", "2013-01-01 12:34:56");
+        d.putParameter(FILE_DATE, "2013-01-01 12:34:56");
         dcal = DataUtil.getEventDate(d);
         assertEquals("2013-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()), "FILE_DATE is used when present");
 
-        d.putParameter("EventDate", "2012-01-01 12:34:56");
+        d.putParameter(EVENT_DATE, "2012-01-01 12:34:56");
         dcal = DataUtil.getEventDate(d);
         assertEquals("2012-01-01/12/30", TimeUtil.getDateAsPath(dcal.getTime()), "EventDate is used when present");
 
-        d.setParameter("EventDate", "ArmyBoots");
+        d.setParameter(EVENT_DATE, "ArmyBoots");
         dcal = DataUtil.getEventDate(d);
         assertEquals(TimeUtil.getDateAsPath(now.getTime()), TimeUtil.getDateAsPath(dcal.getTime()), "Now is used when field is invalid");
     }

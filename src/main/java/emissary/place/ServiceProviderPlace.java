@@ -43,6 +43,16 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Configurations.PLACE_NAME;
+import static emissary.core.constants.Configurations.PLACE_RESOURCE_LIMIT_MILLIS;
+import static emissary.core.constants.Configurations.SERVICE_COST;
+import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
+import static emissary.core.constants.Configurations.SERVICE_KEY;
+import static emissary.core.constants.Configurations.SERVICE_NAME;
+import static emissary.core.constants.Configurations.SERVICE_PROXY;
+import static emissary.core.constants.Configurations.SERVICE_QUALITY;
+import static emissary.core.constants.Configurations.SERVICE_TYPE;
+
 /**
  * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
  * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
@@ -384,7 +394,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param placeLocation the specified placeLocation or a full four part key to register with
      */
     protected void configureServicePlace(@Nullable String placeLocation) throws IOException {
-        serviceDescription = configG.findStringEntry("SERVICE_DESCRIPTION");
+        serviceDescription = configG.findStringEntry(SERVICE_DESCRIPTION);
         if (serviceDescription == null || serviceDescription.length() == 0) {
             serviceDescription = "Description not available";
         }
@@ -404,11 +414,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
 
         // Build keys the old fashioned way from parts specified in the config
-        String placeName = configG.findStringEntry("PLACE_NAME");
-        String serviceName = configG.findStringEntry("SERVICE_NAME");
-        String serviceType = configG.findStringEntry("SERVICE_TYPE");
-        int serviceCost = configG.findIntEntry("SERVICE_COST", -1);
-        int serviceQuality = configG.findIntEntry("SERVICE_QUALITY", -1);
+        String placeName = configG.findStringEntry(PLACE_NAME);
+        String serviceName = configG.findStringEntry(SERVICE_NAME);
+        String serviceType = configG.findStringEntry(SERVICE_TYPE);
+        int serviceCost = configG.findIntEntry(SERVICE_COST, -1);
+        int serviceQuality = configG.findIntEntry(SERVICE_QUALITY, -1);
 
         // Bah.
         if (placeName != null && placeName.length() == 0) {
@@ -423,7 +433,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         if (placeName != null && serviceName != null && serviceType != null && serviceCost > -1 && serviceQuality > -1) {
             // pick up the proxies(save full 4-tuple keys!)
-            for (String sp : configG.findEntries("SERVICE_PROXY")) {
+            for (String sp : configG.findEntries(SERVICE_PROXY)) {
                 DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
                 keys.add(de.getFullKey());
             }
@@ -456,7 +466,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         }
 
         // Now build any keys the new way
-        for (String k : configG.findEntries("SERVICE_KEY")) {
+        for (String k : configG.findEntries(SERVICE_KEY)) {
             if (KeyManipulator.isKeyComplete(k)) {
                 keys.add(k);
             } else {
@@ -998,7 +1008,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      */
     @Override
     public long getResourceLimitMillis() {
-        return configG.findLongEntry("PLACE_RESOURCE_LIMIT_MILLIS", -2L);
+        return configG.findLongEntry(PLACE_RESOURCE_LIMIT_MILLIS, -2L);
     }
 
     /**

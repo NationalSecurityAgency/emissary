@@ -5,6 +5,9 @@ import emissary.place.ServiceProviderPlace;
 
 import java.io.IOException;
 
+import static emissary.core.constants.Configurations.END_FORM;
+import static emissary.core.constants.Configurations.NEW_FORM;
+
 /**
  * This is the ToUpper program.
  *
@@ -37,8 +40,8 @@ public class ToUpperPlace extends ServiceProviderPlace {
      */
     private void configurePlace() {
         // Set configuration items from ToUpperPlace.cfg
-        newForm = configG.findStringEntry("NEW_FORM", newForm);
-        endForm = configG.findStringEntry("END_FORM", endForm);
+        newForm = configG.findStringEntry(NEW_FORM, newForm);
+        endForm = configG.findStringEntry(END_FORM, endForm);
     }
 
     /**

@@ -9,6 +9,7 @@ import emissary.output.DropOffUtil;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -53,7 +54,7 @@ public class DataFilter extends AbstractFilter {
         final String baseFileName = dropOffUtil.getPathFromSpec(outputSpec, d, tld);
         final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
-        getCharset(d, "UTF-8");
+        getCharset(d, StandardCharsets.UTF_8.name());
         final String lang = dropOffUtil.getLanguage(d);
 
         int writeCount = 0;
