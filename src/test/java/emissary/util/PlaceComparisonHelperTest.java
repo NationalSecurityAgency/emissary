@@ -1,10 +1,12 @@
 package emissary.util;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
+import emissary.test.core.junit5.UnitTest;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -13,17 +15,33 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-class PlaceComparisonHelperTest {
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class PlaceComparisonHelperTest extends UnitTest {
+
+    private static final Class<NullPointerException> NPE = NullPointerException.class;
+
+    private static final byte[] configurationBytes = new StringBuilder()
+            .append("PLACE_NAME = \"TesterPlace\"")
+            .append("SERVICE_NAME = \"TESTER\"")
+            .append("SERVICE_TYPE = \"TRANSFORM\"")
+            .append("SERVICE_DESCRIPTION = \"Place defined for testing\"")
+            .append("SERVICE_COST = 50")
+            .append("SERVICE_QUALITY = 50")
+            .append("SERVICE_PROXY = \"UNKNOWN\"").toString().getBytes(StandardCharsets.UTF_8);
+
+    @Test
+    void testGetPlaceToCompareArguments() throws Exception {
+        assertNull(PlaceComparisonHelper.getPlaceToCompare(null));
+
+        final Configurator configurator1 = ConfigUtil.getConfigInfo(new ByteArrayInputStream(configurationBytes));
+        assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1));
+    }
+
     @Test
     void testCompareToPlaceArguments() throws IOException {
-        final byte[] configurationBytes = new StringBuilder()
-                .append("PLACE_NAME = \"TesterPlace\"")
-                .append("SERVICE_NAME = \"TESTER\"")
-                .append("SERVICE_TYPE = \"TRANSFORM\"")
-                .append("SERVICE_DESCRIPTION = \"Place defined for testing\"")
-                .append("SERVICE_COST = 50")
-                .append("SERVICE_QUALITY = 50")
-                .append("SERVICE_PROXY = \"UNKNOWN\"").toString().getBytes(StandardCharsets.UTF_8);
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
         final ServiceProviderPlace newPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
@@ -31,30 +49,23 @@ class PlaceComparisonHelperTest {
         final ServiceProviderPlace oldPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "oldMethodName";
 
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 null, ibdoForNewPlace, newPlace, newMethodName, oldPlace, oldMethodName));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 newResults, null, newPlace, newMethodName, oldPlace, oldMethodName));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 newResults, ibdoForNewPlace, null, newMethodName, oldPlace, oldMethodName));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 newResults, ibdoForNewPlace, newPlace, null, oldPlace, oldMethodName));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 newResults, ibdoForNewPlace, newPlace, newMethodName, null, oldMethodName));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.compareToPlace(
+        assertThrows(NPE, () -> PlaceComparisonHelper.compareToPlace(
                 newResults, ibdoForNewPlace, newPlace, newMethodName, oldPlace, null));
     }
 
     @Test
     void testCompareToPlace() throws Exception {
-        final byte[] configurationBytes = new StringBuilder()
-                .append("PLACE_NAME = \"TesterPlace\"")
-                .append("SERVICE_NAME = \"TESTER\"")
-                .append("SERVICE_TYPE = \"TRANSFORM\"")
-                .append("SERVICE_DESCRIPTION = \"Place defined for testing\"")
-                .append("SERVICE_COST = 50")
-                .append("SERVICE_QUALITY = 50")
-                .append("SERVICE_PROXY = \"UNKNOWN\"").toString().getBytes(StandardCharsets.UTF_8);
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
         final ServiceProviderPlace newPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
@@ -62,7 +73,7 @@ class PlaceComparisonHelperTest {
         final ServiceProviderPlace oldPlace = new PlaceComparisonHelperTestPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "processHeavyDuty";
 
-        Assertions.assertNull(PlaceComparisonHelper.compareToPlace(
+        assertNull(PlaceComparisonHelper.compareToPlace(
                 newResults, ibdoForNewPlace, newPlace, newMethodName, oldPlace, oldMethodName));
     }
 
@@ -74,15 +85,15 @@ class PlaceComparisonHelperTest {
         final List<IBaseDataObject> newResults = new ArrayList<>();
         final String identifier = "identifier";
 
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.checkDifferences(
+        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
                 null, ibdoForNewPlace, oldResults, newResults, identifier));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.checkDifferences(
+        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, null, oldResults, newResults, identifier));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.checkDifferences(
+        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, null, newResults, identifier));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.checkDifferences(
+        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, null, identifier));
-        Assertions.assertThrows(NullPointerException.class, () -> PlaceComparisonHelper.checkDifferences(
+        assertThrows(NPE, () -> PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, null));
     }
 
@@ -111,15 +122,15 @@ class PlaceComparisonHelperTest {
         oldResultsTwoChanges.get(0).setData(new byte[3]);
         oldResultsTwoChanges.get(0).addAlternateView("alternateView3", new byte[3]);
 
-        Assertions.assertNull(PlaceComparisonHelper.checkDifferences(
+        assertNull(PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, identifier));
-        Assertions.assertNotNull(PlaceComparisonHelper.checkDifferences(
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlaceOneChange, oldResults, newResults, identifier));
-        Assertions.assertNotNull(PlaceComparisonHelper.checkDifferences(
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlace, oldResults, newResultsOneChange, identifier));
-        Assertions.assertNotNull(PlaceComparisonHelper.checkDifferences(
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlaceOneChange, oldResults, newResultsOneChange, identifier));
-        Assertions.assertNotNull(PlaceComparisonHelper.checkDifferences(
+        assertNotNull(PlaceComparisonHelper.checkDifferences(
                 ibdoForOldPlace, ibdoForNewPlaceTwoChanges, oldResultsTwoChanges, newResultsTwoChanges, identifier));
     }
 }
