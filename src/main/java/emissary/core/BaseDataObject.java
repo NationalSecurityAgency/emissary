@@ -34,10 +34,13 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 /**
- * Class to hold byte array of data, header, footer, and attributes
+ * Class to hold data, header, footer, and attributes
  */
 public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDataObject {
     protected static final Logger logger = LoggerFactory.getLogger(BaseDataObject.class);
+
+    /* Used to limit the size of a returned byte array to avoid certain edge case scenarios */
+    public static final int MAX_BYTE_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /* Including this here make serialization of this object faster. */
     private static final long serialVersionUID = 7362181964652092657L;
@@ -174,14 +177,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     protected String transactionId;
 
-    /** A factory to create channels for the referenced data. */
+    /**
+     * A factory to create channels for the referenced data.
+     */
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
     }
 
-    protected static final String invalidStateMessage = "Can't have both theData and seekableByteChannelFactory set. Object is %s";
+    protected static final String INVALID_STATE_MSG = "Can't have both theData and seekableByteChannelFactory set. Object is %s";
 
     /**
      * <p>
@@ -334,7 +339,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public SeekableByteChannelFactory getChannelFactory() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(invalidStateMessage, shortName()));
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case CHANNEL_ONLY:
                 return seekableByteChannelFactory;
             case BYTE_ARRAY_ONLY:
@@ -347,12 +352,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * <p>
-     * Return BaseDataObjects byte array OR as much as we can from the reference to the data up to int's max size.
+     * Return BaseDataObjects byte array OR as much as we can from the reference to the data up to MAX_BYTE_ARRAY_SIZE.
      * </p>
      * 
      * <p>
-     * Data returned from a backing Channel will be truncated at Integer.MAX_VALUE bytes. Using channel-related methods is
-     * now preferred to allow handling of larger objects
+     * Data returned from a backing Channel will be truncated at {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}. Using
+     * channel-related methods is now preferred to allow handling of larger objects
      * </p>
      * 
      * <p>
@@ -362,19 +367,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * </p>
      * 
      * @see #getChannelFactory()
-     * @return byte array copy of the data
+     * @return the data as a byte array
      */
     @Override
     public byte[] data() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(invalidStateMessage, shortName()));
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
                 return theData;
             case CHANNEL_ONLY:
                 // Max size here is slightly less than the true max size to avoid memory issues
-                final int maxSize = Integer.MAX_VALUE - 8;
-                return SeekableByteChannelHelper.getByteArrayFromChannel(this, maxSize);
+                return SeekableByteChannelHelper.getByteArrayFromChannel(this, MAX_BYTE_ARRAY_SIZE);
             case NO_DATA:
             default:
                 return null; // NOSONAR maintains backwards compatibility
@@ -396,8 +400,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * <p>
-     * Set new data on the BDO, using a range of the provided byte array. This will null out any byte channel that backs
-     * this BDO so be careful!
+     * Set new data on the BDO, using a range of the provided byte array. This will remove the reference to any byte channel
+     * factory that backs this BDO so be careful!
      * </p>
      * 
      * <p>
@@ -429,7 +433,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public long getChannelSize() throws IOException {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(invalidStateMessage, shortName()));
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
                 return theData.length;
             case CHANNEL_ONLY:
@@ -445,18 +449,19 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Fetch the size of the payload. Prefer to use: {@link #getChannelSize}
      * 
-     * @return the length of theData, or the size of the seekable byte channel up to Integer.MAX_VALUE.
+     * @return the length of theData, or the size of the seekable byte channel up to
+     *         {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}.
      */
     @Override
     public int dataLength() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
-                throw new IllegalStateException(String.format(invalidStateMessage, shortName()));
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
                 return theData.length;
             case CHANNEL_ONLY:
                 try {
-                    return (int) Math.min(getChannelSize(), Integer.MAX_VALUE);
+                    return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
                 } catch (final IOException ioe) {
                     logger.error("Couldn't get size of channel on object {}", shortName(), ioe);
                     return 0;

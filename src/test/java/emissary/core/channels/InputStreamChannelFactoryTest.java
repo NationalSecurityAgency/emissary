@@ -1,7 +1,6 @@
 package emissary.core.channels;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -11,7 +10,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InputStreamChannelFactoryTest {
     private static class TestInputStreamFactory implements InputStreamFactory {
@@ -27,7 +29,25 @@ class InputStreamChannelFactoryTest {
         }
     }
 
-    private static final byte[] testBytes = "0123456789".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] testBytes = "0123456789".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] emojiBytes = "😃0123456789".getBytes(StandardCharsets.UTF_16);
+
+
+    @Test
+    void testReadNonUtf8() throws IOException {
+        try (SeekableByteChannel sbc = InputStreamChannelFactory.create(emojiBytes.length, new TestInputStreamFactory(emojiBytes)).create()) {
+            final ByteBuffer byteBuffer = ByteBuffer.allocate(8);
+
+            sbc.position(8);
+            assertEquals(8, IOUtils.read(sbc, byteBuffer));
+            assertEquals("1234", new String(byteBuffer.array(), StandardCharsets.UTF_16));
+
+            byteBuffer.position(0);
+            sbc.position(0);
+            assertEquals(8, IOUtils.read(sbc, byteBuffer));
+            assertEquals("😃0", new String(byteBuffer.array(), StandardCharsets.UTF_16));
+        }
+    }
 
     @Test
     void testExhaustively() throws IOException {
@@ -38,9 +58,11 @@ class InputStreamChannelFactoryTest {
     @Test
     void testClose() throws IOException {
         try (SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, new TestInputStreamFactory(testBytes)).create()) {
+            // Call close twice - should not do or throw anything beyond the first time.
             sbc.close();
-            sbc.close();
-            Assertions.assertFalse(sbc.isOpen());
+            assertFalse(sbc.isOpen());
+            assertDoesNotThrow(() -> sbc.close());
+            assertFalse(sbc.isOpen());
         }
     }
 
@@ -49,14 +71,15 @@ class InputStreamChannelFactoryTest {
         try (SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, new TestInputStreamFactory(testBytes)).create()) {
             final ByteBuffer byteBuffer = ByteBuffer.allocate(1);
 
+            // Read an arbitrary position
             sbc.position(5);
-            Assertions.assertEquals(1, IOUtils.read(sbc, byteBuffer));
-            Assertions.assertEquals('5', byteBuffer.get(0));
+            assertEquals(1, IOUtils.read(sbc, byteBuffer));
+            assertEquals('5', byteBuffer.get(0));
 
             byteBuffer.position(0);
             sbc.position(0);
-            Assertions.assertEquals(1, IOUtils.read(sbc, byteBuffer));
-            Assertions.assertEquals('0', byteBuffer.get(0));
+            assertEquals(1, IOUtils.read(sbc, byteBuffer));
+            assertEquals('0', byteBuffer.get(0));
         }
     }
 
@@ -85,9 +108,10 @@ class InputStreamChannelFactoryTest {
     @Test
     void testReadWithIncorrectSize() throws IOException {
         // You can set the size incorrectly, but this is still 'valid'
-        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(20, new TestInputStreamFactory(testBytes)).create()) {
+        final int sbcLength = testBytes.length + 8;
+        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
             ByteBuffer buff = ByteBuffer.allocate(32);
-            assertEquals(20, sbc.size());
+            assertEquals(sbcLength, sbc.size());
             assertEquals(testBytes.length, sbc.read(buff));
             assertEquals(testBytes.length, buff.position());
         }
@@ -97,11 +121,36 @@ class InputStreamChannelFactoryTest {
     void testReadWithZeroSize() throws IOException {
         // Zero length channel - will always be EOS, not reading anything into the buffer
         try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(0, new TestInputStreamFactory(testBytes)).create()) {
-            assertEquals(0, sbc.size());
             ByteBuffer buff = ByteBuffer.allocate(1);
             assertEquals(0, sbc.size());
             assertEquals(-1, sbc.read(buff));
             assertEquals(0, buff.position());
+        }
+    }
+
+    @Test
+    void testStartReadBeyondActualData() throws IOException {
+        // Set an SBC that is larger than the data we have, ensure an IOException occurs when reading
+        final int sbcLength = testBytes.length + 8;
+        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
+            ByteBuffer buff = ByteBuffer.allocate(32);
+            assertEquals(sbcLength, sbc.size());
+            // Set position beyond length
+            sbc.position(testBytes.length + 2);
+            assertThrows(IOException.class, () -> sbc.read(buff));
+            assertEquals(0, buff.position());
+        }
+    }
+
+    @Test
+    void testReadWithLargerThanDefinedSize() throws IOException {
+        final int sbcLength = testBytes.length / 2;
+        // Set an SBC that is smaller than the amount of data we have, ensure that we can't read more than the defined size
+        try (final SeekableByteChannel sbc = InputStreamChannelFactory.create(sbcLength, new TestInputStreamFactory(testBytes)).create()) {
+            ByteBuffer buff = ByteBuffer.allocate(32);
+            assertEquals(sbcLength, sbc.size());
+            sbc.read(buff);
+            assertEquals(sbcLength, buff.position());
         }
     }
 }

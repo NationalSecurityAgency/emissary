@@ -50,11 +50,11 @@ public final class FileChannelFactory {
          */
         @Override
         public SeekableByteChannel create() {
-            return new LazyFileChannelFactoryImpl(path);
+            return new LazyFileChannelImpl(path);
         }
     }
 
-    private static final class LazyFileChannelFactoryImpl extends AbstractSeekableByteChannel {
+    private static final class LazyFileChannelImpl extends AbstractSeekableByteChannel {
 
         private static final Set<StandardOpenOption> OPTIONS = Collections.singleton(StandardOpenOption.READ);
 
@@ -62,7 +62,7 @@ public final class FileChannelFactory {
 
         private FileChannel channel;
 
-        private LazyFileChannelFactoryImpl(final Path path) {
+        private LazyFileChannelImpl(final Path path) {
             this.path = path;
         }
 
@@ -80,7 +80,7 @@ public final class FileChannelFactory {
         }
 
         @Override
-        protected int readImpl(ByteBuffer byteBuffer) throws IOException {
+        protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
             initialiseChannel();
             return channel.read(byteBuffer);
         }

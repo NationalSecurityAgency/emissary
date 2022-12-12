@@ -2,17 +2,20 @@ package emissary.core.channels;
 
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.Arrays;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
-public class FillChannelFactoryTest {
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class FillChannelFactoryTest {
     @Test
     void testCreate() throws IOException {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.create(-1, (byte) 0));
+        assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.create(-1, (byte) 0));
     }
 
     @Test
@@ -36,12 +39,12 @@ public class FillChannelFactoryTest {
         final byte[] byteBufferBytes = new byte[bytes.length];
 
         try (SeekableByteChannel sbc = FillChannelFactory.create(bytes.length, bytes[0]).create()) {
-            Assertions.assertEquals(15, IOUtils.read(sbc, byteBuffer));
+            assertEquals(15, IOUtils.read(sbc, byteBuffer));
 
             byteBuffer.position(0);
             byteBuffer.get(byteBufferBytes);
 
-            Assertions.assertArrayEquals(bytes, byteBufferBytes);
+            assertArrayEquals(bytes, byteBufferBytes);
         }
     }
 }

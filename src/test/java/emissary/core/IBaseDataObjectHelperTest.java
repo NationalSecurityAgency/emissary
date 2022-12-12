@@ -6,9 +6,9 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -27,7 +27,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 
 class IBaseDataObjectHelperTest {
@@ -55,20 +65,49 @@ class IBaseDataObjectHelperTest {
         differences = new ArrayList<>();
     }
 
+    private void verifyDiff(final int expectedDifferences) {
+        verifyDiff(expectedDifferences, false, false, false, false);
+    }
+
+    private void verifyDiff(final int expectedDifferences, final boolean checkData, final boolean checkTimestamp, final boolean checkInternalId,
+            final boolean checkTransformHistory) {
+        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
+        assertEquals(0, differences.size());
+        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
+        assertEquals(expectedDifferences, differences.size());
+        differences.clear();
+        IBaseDataObjectHelper.diff(ibdo2, ibdo1, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
+        assertEquals(expectedDifferences, differences.size());
+        differences.clear();
+    }
+
+    private void verifyDiffList(final int expectedDifferences, final List<IBaseDataObject> list1, final List<IBaseDataObject> list2) {
+        IBaseDataObjectHelper.diff(list1, list1, "test", differences, false, false, false, false);
+        assertEquals(0, differences.size());
+        IBaseDataObjectHelper.diff(list1, list2, "test", differences, false, false, false, false);
+        assertEquals(expectedDifferences, differences.size());
+        differences.clear();
+    }
+
     private void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
             final Boolean switchWithFullClone) {
         try {
             final Method method = IBaseDataObject.class.getMethod(methodName);
+            final boolean isArrayType = method.getReturnType().getName().equals("[B");
             final IBaseDataObject cloneFalseObj = IBaseDataObjectHelper.clone(origObj, false);
             final IBaseDataObject cloneTrueObj = IBaseDataObjectHelper.clone(origObj, true);
             verifyCloneAssertions(method, origObj, cloneFalseObj, isSame, isEquals);
             if (switchWithFullClone) {
-                verifyCloneAssertions(method, origObj, cloneTrueObj, isSame == null ? null : !isSame, isEquals == null ? null : !isEquals);
+                if (isArrayType) {
+                    verifyCloneAssertions(method, origObj, cloneTrueObj, isSame, isEquals == null ? null : !isEquals);
+                } else {
+                    verifyCloneAssertions(method, origObj, cloneTrueObj, isSame == null ? null : !isSame, isEquals == null ? null : !isEquals);
+                }
             } else {
                 verifyCloneAssertions(method, origObj, cloneTrueObj, isSame, isEquals);
             }
         } catch (final NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            Assertions.fail("Test error - couldn't invoke specified method", e);
+            fail("Test error - couldn't invoke specified method", e);
         }
     }
 
@@ -79,17 +118,21 @@ class IBaseDataObjectHelperTest {
 
         if (isSame != null) {
             if (isSame) {
-                Assertions.assertSame(o1, o2);
+                assertSame(o1, o2);
             } else {
-                Assertions.assertNotSame(o1, o2);
+                assertNotSame(o1, o2);
             }
         }
 
         if (isEquals != null) {
             if (isEquals) {
-                Assertions.assertEquals(o1, o2);
+                if (method.getReturnType().getName().equals("[B")) {
+                    assertArrayEquals((byte[]) o1, (byte[]) o2);
+                } else {
+                    assertEquals(o1, o2);
+                }
             } else {
-                Assertions.assertNotEquals(o1, o2);
+                assertNotEquals(o1, o2);
             }
         }
 
@@ -97,8 +140,8 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testCloneArguments() {
-        Assertions.assertNotNull(IBaseDataObjectHelper.clone(new BaseDataObject(), false));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.clone(null, false));
+        assertNotNull(IBaseDataObjectHelper.clone(new BaseDataObject(), false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.clone(null, false));
     }
 
     @Test
@@ -119,16 +162,13 @@ class IBaseDataObjectHelperTest {
     void testCloneTransformHistory() {
         ibdo1.appendTransformHistory("AAA", false);
         ibdo1.appendTransformHistory("BBB", true);
+        verifyClone("getTransformHistory", ibdo1, IS_NOT_SAME, DONT_CHECK, EQUAL_WITHOUT_FULL_CLONE);
 
         final IBaseDataObject cloneFalseIbdo = IBaseDataObjectHelper.clone(ibdo1, false);
-
-        Assertions.assertNotSame(ibdo1.getTransformHistory(), cloneFalseIbdo.getTransformHistory());
-        Assertions.assertEquals(ibdo1.getTransformHistory().getHistory(), cloneFalseIbdo.getTransformHistory().getHistory());
+        assertEquals(ibdo1.getTransformHistory().getHistory(), cloneFalseIbdo.getTransformHistory().getHistory());
 
         final IBaseDataObject cloneTrueIbdo = IBaseDataObjectHelper.clone(ibdo1, true);
-
-        Assertions.assertNotSame(ibdo1.getTransformHistory(), cloneTrueIbdo.getTransformHistory());
-        Assertions.assertEquals(ibdo1.getTransformHistory().getHistory(), cloneTrueIbdo.getTransformHistory().getHistory());
+        assertEquals(ibdo1.getTransformHistory().getHistory(), cloneTrueIbdo.getTransformHistory().getHistory());
     }
 
     @Test
@@ -163,7 +203,6 @@ class IBaseDataObjectHelperTest {
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
-
         verifyClone("getExtractedRecords", ibdo1, IS_NOT_SAME, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
     }
 
@@ -178,7 +217,7 @@ class IBaseDataObjectHelperTest {
         verifyClone("getInternalId", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
         // Now assert that if an exception occurs, the IDs will differ
         try (final MockedStatic<IBaseDataObjectHelper> helper = Mockito.mockStatic(IBaseDataObjectHelper.class, Mockito.CALLS_REAL_METHODS)) {
-            helper.when(() -> IBaseDataObjectHelper.setPrivateField(any(), any(), any()))
+            helper.when(() -> IBaseDataObjectHelper.setPrivateFieldValue(any(), any(), any()))
                     .thenThrow(IllegalAccessException.class);
 
             final IBaseDataObject cloneExceptionIbdo = IBaseDataObjectHelper.clone(ibdo1, EQUAL_AFTER_FULL_CLONE);
@@ -220,31 +259,13 @@ class IBaseDataObjectHelperTest {
     @Test
     void testCloneHeader() {
         ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
-
-        final IBaseDataObject cloneFalseIbdo = IBaseDataObjectHelper.clone(ibdo1, false);
-
-        Assertions.assertNotSame(ibdo1.header(), cloneFalseIbdo.header());
-        Assertions.assertNotEquals(ibdo1.header(), cloneFalseIbdo.header());
-
-        final IBaseDataObject cloneTrueIbdo = IBaseDataObjectHelper.clone(ibdo1, true);
-
-        Assertions.assertNotSame(ibdo1.header(), cloneTrueIbdo.header());
-        Assertions.assertArrayEquals(ibdo1.header(), cloneTrueIbdo.header());
+        verifyClone("header", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
     }
 
     @Test
     void testCloneFooter() {
         ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
-
-        final IBaseDataObject cloneFalseIbdo = IBaseDataObjectHelper.clone(ibdo1, false);
-
-        Assertions.assertNotSame(ibdo1.footer(), cloneFalseIbdo.footer());
-        Assertions.assertNotEquals(ibdo1.footer(), cloneFalseIbdo.footer());
-
-        final IBaseDataObject cloneTrueIbdo = IBaseDataObjectHelper.clone(ibdo1, true);
-
-        Assertions.assertNotSame(ibdo1.footer(), cloneTrueIbdo.footer());
-        Assertions.assertArrayEquals(ibdo1.footer(), cloneTrueIbdo.footer());
+        verifyClone("footer", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
     }
 
     @Test
@@ -286,89 +307,49 @@ class IBaseDataObjectHelperTest {
     @Test
     void testCloneTransactionId() {
         ibdo1.setTransactionId("transaction_id");
+        verifyClone("getTransactionId", ibdo1, DONT_CHECK, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
+    }
 
-        final IBaseDataObject cloneFalseIbdo = IBaseDataObjectHelper.clone(ibdo1, false);
-
-        Assertions.assertNotEquals(ibdo1.getTransactionId(), cloneFalseIbdo.getTransactionId());
-
-        final IBaseDataObject cloneTrueIbdo = IBaseDataObjectHelper.clone(ibdo1, true);
-
-        Assertions.assertEquals(ibdo1.getTransactionId(), cloneTrueIbdo.getTransactionId());
+    private void checkThrowsNull(final Executable e) {
+        assertThrows(NullPointerException.class, e);
     }
 
     @Test
     void testDiffArguments() {
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(null, ibdo2, differences, false, false, false, false));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(ibdo1, null, differences, false, false, false, false));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(ibdo1, ibdo2, null, false, false, false, false));
+        // Objects
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(null, ibdo2, differences, false, false, false, false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdo1, null, differences, false, false, false, false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdo1, ibdo2, null, false, false, false, false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, null, differences, false, false, false, false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, "id", null, false, false, false, false));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new Object(), new Object(), null, differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new Object(), new Object(), "id", null));
 
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, null, differences, false, false, false, false));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, "id", null, false, false, false, false));
+        // Integers
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(0, 0, null, differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(0, 0, "id", null));
 
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(new Object(), new Object(), null, differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(new Object(), new Object(), "id", null));
+        // Booleans
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(false, false, null, differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(false, false, "id", null));
 
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(0, 0, null, differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(0, 0, "id", null));
-
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(false, false, null, differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(false, false, "id", null));
-
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(null, new HashMap<>(), "id", differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(new HashMap<>(), null, "id", differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), null, differences));
-        Assertions.assertThrows(NullPointerException.class,
-                () -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), "id", null));
+        // Maps
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(null, new HashMap<>(), "id", differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), null, "id", differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), null, differences));
+        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), "id", null));
     }
 
     @Test
     void testDiffChannelFactory() {
-        final IBaseDataObject noDataIbdo = new BaseDataObject();
-        final IBaseDataObject dataIbdo = new BaseDataObject();
+        ibdo2.setData(new byte[1]);
+        verifyDiff(1, true, false, false, false);
 
-        dataIbdo.setData(new byte[1]);
+        ibdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
+        ibdo2.setChannelFactory(InMemoryChannelFactory.create("9876543210".getBytes(StandardCharsets.US_ASCII)));
+        verifyDiff(1, true, false, false, false);
 
-        IBaseDataObjectHelper.diff(noDataIbdo, noDataIbdo, differences, true, false, false, false);
-        Assertions.assertEquals(0, differences.size());
-        differences.clear();
-
-        IBaseDataObjectHelper.diff(noDataIbdo, dataIbdo, differences, true, false, false, false);
-        Assertions.assertEquals(1, differences.size());
-        differences.clear();
-
-        IBaseDataObjectHelper.diff(dataIbdo, noDataIbdo, differences, true, false, false, false);
-        Assertions.assertEquals(1, differences.size());
-        differences.clear();
-
-        final SeekableByteChannelFactory sbcf1 = InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII));
-        final SeekableByteChannelFactory sbcf2 = InMemoryChannelFactory.create("9876543210".getBytes(StandardCharsets.US_ASCII));
-
-        ibdo1.setChannelFactory(sbcf1);
-        ibdo2.setChannelFactory(sbcf2);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, true, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, true, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
-
-        ibdo1.setChannelFactory(new SeekableByteChannelFactory() {
+        ibdo2.setChannelFactory(new SeekableByteChannelFactory() {
             @Override
             public SeekableByteChannel create() {
                 return new AbstractSeekableByteChannel() {
@@ -378,7 +359,7 @@ class IBaseDataObjectHelperTest {
                     }
 
                     @Override
-                    protected int readImpl(ByteBuffer byteBuffer) throws IOException {
+                    protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
                         throw new IOException("Test SBC that always throws IOException!");
                     }
 
@@ -390,11 +371,7 @@ class IBaseDataObjectHelperTest {
             }
         });
 
-        differences.clear();
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, true, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1, true, false, false, false);
     }
 
     @Test
@@ -402,42 +379,21 @@ class IBaseDataObjectHelperTest {
         ibdo1.pushCurrentForm("AAA");
         ibdo1.pushCurrentForm("BBB");
         ibdo1.pushCurrentForm("CCC");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffHistory() {
         ibdo1.appendTransformHistory("AAA", false);
         ibdo1.appendTransformHistory("BBB", true);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, true);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, true);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1, false, false, false, true);
     }
 
     @Test
     void testDiffParameters() {
         ibdo1.putParameter("STRING", "string");
         ibdo1.putParameter("LIST", Arrays.asList("first", "second", "third"));
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
@@ -445,50 +401,24 @@ class IBaseDataObjectHelperTest {
         ibdo1.addAlternateView("AAA", "AAA".getBytes(StandardCharsets.US_ASCII));
         ibdo1.addAlternateView("BBB", "BBB".getBytes(StandardCharsets.US_ASCII));
         ibdo1.addAlternateView("CCC", "CCC".getBytes(StandardCharsets.US_ASCII));
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
 
         ibdo2.addAlternateView("DDD", "DDD".getBytes(StandardCharsets.US_ASCII));
         ibdo2.addAlternateView("EEE", "EEE".getBytes(StandardCharsets.US_ASCII));
         ibdo2.addAlternateView("FFF", "FFF".getBytes(StandardCharsets.US_ASCII));
-
-        differences.clear();
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffPriority() {
         ibdo1.setPriority(13);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffCreationTimestamp() {
         ibdo1.setCreationTimestamp(new Date(1234567890));
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, true, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, true, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1, false, true, false, false);
     }
 
     @Test
@@ -496,256 +426,116 @@ class IBaseDataObjectHelperTest {
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
         ibdo1.addExtractedRecord(new BaseDataObject());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffFilename() {
         ibdo1.setFilename("filename");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(2, differences.size());
+        verifyDiff(2);
     }
 
     @Test
     void testDiffInternalId() {
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, true, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, true, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1, false, false, true, false);
     }
 
     @Test
     void testDiffProcessingError() {
         ibdo1.addProcessingError("processing_error");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffFontEncoding() {
         ibdo1.setFontEncoding("font_encoding");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffNumChildren() {
         ibdo1.setNumChildren(13);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffNumSiblings() {
         ibdo1.setNumSiblings(13);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffBirthOrder() {
         ibdo1.setBirthOrder(13);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffHeader() {
         ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffFooter() {
         ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffHeaderEncoding() {
         ibdo1.setHeaderEncoding("header_encoding");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffClassification() {
         ibdo1.setClassification("classification");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffBroken() {
         ibdo1.setBroken("broken");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffOutputable() {
         ibdo1.setOutputable(false);
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffId() {
         ibdo1.setId("id");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffWorkBundleId() {
         ibdo1.setWorkBundleId("workbundle_id");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffTransactionId() {
         ibdo1.setTransactionId("transaction_id");
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiff(1);
     }
 
     @Test
     void testDiffList() {
         final List<IBaseDataObject> ibdoList3 = Arrays.asList(ibdo1, ibdo2);
-        IBaseDataObjectHelper.diff(null, null, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(new ArrayList<>(), null, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(null, new ArrayList<>(), "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdoList1, ibdoList1, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(0, differences.size());
-
-        IBaseDataObjectHelper.diff(ibdoList3, ibdoList2, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
-        differences.clear();
-
-        IBaseDataObjectHelper.diff(ibdoList1, ibdoList3, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
-        differences.clear();
+        verifyDiffList(0, null, null);
+        verifyDiffList(0, new ArrayList<>(), null);
+        verifyDiffList(0, null, new ArrayList<>());
+        verifyDiffList(0, ibdoList1, ibdoList1);
+        verifyDiffList(1, ibdoList3, ibdoList2);
+        verifyDiffList(1, ibdoList1, ibdoList3);
 
         ibdo2.setClassification("classification");
-
-        IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, "id", differences, false, false, false, false);
-
-        Assertions.assertEquals(1, differences.size());
+        verifyDiffList(1, ibdoList1, ibdoList2);
     }
 
     @Test
@@ -759,28 +549,28 @@ class IBaseDataObjectHelperTest {
 
         alwaysCopyMetadataKeys.add("key_not_in_parent");
 
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChild(null, childIbdo, nullifyFileType,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChild(null, childIbdo, nullifyFileType,
                 alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, null, nullifyFileType,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, null, nullifyFileType,
                 alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
                 nullifyFileType, null, placeKey, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
                 nullifyFileType, alwaysCopyMetadataKeys, null, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
                 nullifyFileType, alwaysCopyMetadataKeys, placeKey, null));
 
         childIbdo.setFileType("filetype");
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler);
-        Assertions.assertNull(childIbdo.getFileType());
+        assertNull(childIbdo.getFileType());
 
         final IBaseDataObject spyChildIbdo = Mockito.spy(new BaseDataObject());
 
         Mockito.when(spyChildIbdo.getChannelSize()).thenThrow(IOException.class);
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, spyChildIbdo,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler);
-        Assertions.assertNull(spyChildIbdo.getParameter(SessionParser.ORIG_DOC_SIZE_KEY));
+        assertNull(spyChildIbdo.getParameter(SessionParser.ORIG_DOC_SIZE_KEY));
 
         final KffDataObjectHandler mockKffDataObjectHandler1 = Mockito.mock(KffDataObjectHandler.class);
         final IBaseDataObject childIbdo1 = new BaseDataObject();
@@ -789,7 +579,7 @@ class IBaseDataObjectHelperTest {
         Mockito.doThrow(NoSuchAlgorithmException.class).when(mockKffDataObjectHandler1).hash(Mockito.any(BaseDataObject.class), Mockito.anyBoolean());
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo1,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler1);
-        Assertions.assertFalse(KffDataObjectHandler.hashPresent(childIbdo1));
+        assertFalse(KffDataObjectHandler.hashPresent(childIbdo1));
     }
 
     @Test
@@ -800,13 +590,13 @@ class IBaseDataObjectHelperTest {
         final String placeKey = "place";
         final KffDataObjectHandler mockKffDataObjectHandler = Mockito.mock(KffDataObjectHandler.class);
 
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChildren(null, null, nullifyFileType,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildren(null, null, nullifyFileType,
                 alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
                 nullifyFileType, null, placeKey, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
                 nullifyFileType, alwaysCopyMetadataKeys, null, mockKffDataObjectHandler));
-        Assertions.assertThrows(NullPointerException.class, () -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null,
                 nullifyFileType, alwaysCopyMetadataKeys, placeKey, null));
 
         IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, null, nullifyFileType, alwaysCopyMetadataKeys, placeKey,
@@ -819,6 +609,6 @@ class IBaseDataObjectHelperTest {
         IBaseDataObjectHelper.addParentInformationToChildren(parentIbdo, children, nullifyFileType, alwaysCopyMetadataKeys, placeKey,
                 mockKffDataObjectHandler);
 
-        Assertions.assertTrue(true);
+        assertTrue(true);
     }
 }

@@ -75,8 +75,7 @@ public final class SeekableByteChannelHelper {
     }
 
     /**
-     * Given a BDO, create a byte array with as much data as possible. The size is limited to (Integer.MAX_VALUE - 8) for
-     * safety.
+     * Given a BDO, create a byte array with as much data as possible.
      * 
      * @param bdo to get the data from
      * @param maxSize to limit the byte array to
@@ -85,7 +84,7 @@ public final class SeekableByteChannelHelper {
     public static byte[] getByteArrayFromChannel(final BaseDataObject bdo, final int maxSize) {
         try (final SeekableByteChannel sbc = bdo.getChannelFactory().create()) {
             final long truncatedBy = sbc.size() - maxSize;
-            if (truncatedBy > 0) {
+            if (truncatedBy > 0 && logger.isWarnEnabled()) {
                 logger.warn("Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays", bdo.shortName(),
                         truncatedBy);
             }
@@ -100,7 +99,10 @@ public final class SeekableByteChannelHelper {
     }
 
     /**
-     * Provided with an input stream, check how far we can read into it.
+     * Provided with an existing input stream, check how far we can read into it.
+     * 
+     * Note that the inputStream is read as-is, so if the stream is not at the start, this method won't take that into
+     * account. If we can successfully read the stream, the position of the provided stream will of course change.
      * 
      * Don't wrap the provided stream with anything such as BufferedInputStream as this will cause read errors prematurely,
      * unless this is acceptable.
@@ -108,7 +110,7 @@ public final class SeekableByteChannelHelper {
      * @param inputStream to read - caller must handle closing this object
      * @return position of last successful read (which could be the size of the stream)
      */
-    public static long length(final InputStream inputStream) {
+    public static long available(final InputStream inputStream) {
         long totalBytesRead = 0;
         try {
             for (; inputStream.read() != -1; totalBytesRead++) {
@@ -127,9 +129,11 @@ public final class SeekableByteChannelHelper {
      * @param inputStream to read from
      * @param byteBuffer to read into
      * @param bytesToSkip within the {@code is} to get to the next read location
+     * @param maxBytesToRead to limit the amount of data returned from the inputStream
      * @throws IOException if an error occurs
      */
-    public static int getFromInputStream(final InputStream inputStream, final ByteBuffer byteBuffer, final long bytesToSkip) throws IOException {
+    public static int getFromInputStream(final InputStream inputStream, final ByteBuffer byteBuffer, final long bytesToSkip,
+            final int maxBytesToRead) throws IOException {
         Validate.notNull(inputStream, "Required: inputStream");
         Validate.notNull(byteBuffer, "Required: byteBuffer");
         Validate.isTrue(bytesToSkip > -1, "Required: bytesToSkip > -1");
@@ -138,7 +142,7 @@ public final class SeekableByteChannelHelper {
         IOUtils.skipFully(inputStream, bytesToSkip);
 
         // Read direct into buffer's array if possible, otherwise copy through an internal buffer
-        final int bytesToRead = byteBuffer.remaining();
+        final int bytesToRead = Math.min(maxBytesToRead, byteBuffer.remaining());
         if (byteBuffer.hasArray()) {
             final int bytesRead = inputStream.read(byteBuffer.array(), byteBuffer.position(), bytesToRead);
             if (bytesRead > 0) {

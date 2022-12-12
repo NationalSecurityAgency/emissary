@@ -93,7 +93,7 @@ public final class DisposeHelper {
         for (final Object possibleRunnable : existingRunnables) {
             if (possibleRunnable instanceof Runnable) {
                 validatedAsRunnables.add((Runnable) possibleRunnable);
-            } else {
+            } else if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("Not a valid Runnable on object {}", ibdo.shortName());
             }
         }

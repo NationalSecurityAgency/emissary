@@ -1,7 +1,7 @@
 package emissary.kff;
 
+import emissary.core.channels.FillChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
-import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
@@ -151,11 +151,14 @@ class ChecksumCalculatorTest extends UnitTest {
 
     @Test
     void testCompareByteArrayAndSbcDigests() throws Exception {
-        ChecksumCalculator cc = new ChecksumCalculator(new String[] {"CRC32", "SHA-1", "SHA-256", "SSDEEP"});
+        final ChecksumCalculator cc = new ChecksumCalculator(new String[] {"CRC32", "SHA-1", "SHA-256", "SSDEEP"});
 
         for (int i = 0; i < 1000; i++) {
-            final byte[] b = new byte[0];
-            final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(b);
+            final byte[] b = new byte[i];
+            for (int j = 0; j < i; j++) {
+                b[j] = (byte) 'a';
+            }
+            final SeekableByteChannelFactory sbcf = FillChannelFactory.create((long) i, (byte) 'a');
             final ChecksumResults crByte = cc.digest(b);
             final ChecksumResults crSbcf = cc.digest(sbcf);
 

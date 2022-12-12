@@ -35,16 +35,12 @@ public class PlaceComparisonHelper {
      * @throws SecurityException if we can't access the String constructor for the other place
      * @throws NoSuchMethodException if there isn't an accessible constructor for the other place
      * @throws InvocationTargetException if the underlying constructor throws an exception
-     * @throws IllegalArgumentException if the number of actual and formal parameters differ; if an unwrapping conversion
-     *         for primitive arguments fails; or if, after possible unwrapping, a parameter value cannot be converted to the
-     *         corresponding formal parameter type by a method invocation conversion; if this constructor pertains to an
-     *         enum class
      * @throws IllegalAccessException if the Constructor object is enforcing Java language access control and the underlying
      *         constructor is inaccessible.
      * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
      */
     public static ServiceProviderPlace getPlaceToCompare(final Configurator configG) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+            InstantiationException, IllegalAccessException, InvocationTargetException,
             NoSuchMethodException, SecurityException {
         if (configG == null) {
             return null;
