@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: "Package Branch"
+        description: "Branch To Publish"
         default: "master"
 jobs:
   publish:
@@ -14,11 +14,19 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v3
+      - uses: s4u/maven-settings-action@v2.8.0
+        with:
+          servers: | 
+            [{
+              "id": "multipass-release"
+              "username": "${{ secrets.multipass.username }}"
+              "password": "${{ secrets.multipass.password }}"
+            }]
       - uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'corretto'
       - name: Publish package
-        run: mvn -B deploy --file pom.xml
+        run: mvn -B deploy -DskipFormat -Duser.timezone=GMT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -27,13 +27,13 @@
       <uniqueVersion>false</uniqueVersion>
       <id>multipass-release</id>
       <name>Multipass Release</name>
-      <url>https://multipass.revelc.net/nexus/releases/emissary</url>
+      <url>https://multipass.revelc.net/nexus/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>multipass-snapshot</id>
       <name>Multipass Snapshots</name>
-      <url>https://multipass.revelc.net/nexus/snapshots/emissary</url>
+      <url>https://multipass.revelc.net/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
   <properties>
