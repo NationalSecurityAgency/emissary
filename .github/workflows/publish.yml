@@ -19,7 +19,7 @@ jobs:
           servers: | 
             [{
               "id": "multipass-release"
-              "username": "${{ secrets.multipass_username }}"
+              "username": "${{ secrets.multipass_username }}",
               "password": "${{ secrets.multipass_password }}"
             }]
       - uses: actions/setup-java@v3
