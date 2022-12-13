@@ -141,7 +141,7 @@ public class KffDataObjectHandler {
         try {
             // Compute and add the hashes
             if (d.getChannelSize() > 0) {
-                d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""));
+                d.putParameters(hashData(d.getChannelFactory(), d.shortName()));
             } else {
                 return;
             }
