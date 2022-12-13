@@ -5,7 +5,6 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.BaseDataObject;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.core.constants.Parameters;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.TimeUtil;
 
@@ -578,7 +577,6 @@ class DropOffUtilTest extends UnitTest {
     void testExtractUniqueFileExtensions() {
         // these should be constants
         final String FILEXT = "FILEXT";
-        final String ORIGINAL_FILENAME = Parameters.ORIGINAL_FILENAME;
         DropOffUtil util = new DropOffUtil();
 
         final IBaseDataObject bdo = new BaseDataObject();
