@@ -18,7 +18,7 @@ jobs:
         with:
           servers: | 
             [{
-              "id": "multipass-release",
+              "id": "multipass",
               "username": "${{ secrets.multipass_username }}",
               "password": "${{ secrets.multipass_password }}"
             }]
