@@ -31,7 +31,7 @@ public class DecomposedSession {
     protected byte[] footer = null;
     protected byte[] data = null;
     protected String classification = null;
-    protected List<String> initialForms = new ArrayList<String>();
+    protected List<String> initialForms = new ArrayList<>();
     protected ArrayListMultimap<String, Object> metadata = ArrayListMultimap.create(100, 1);
 
     /**
@@ -136,7 +136,7 @@ public class DecomposedSession {
      *
      * @param m the map of metadata to set
      */
-    public void setMetaData(Map<String, ? extends Object> m) {
+    public void setMetaData(Map<String, ?> m) {
         metadata.clear();
         addMetaData(m);
     }
@@ -217,9 +217,9 @@ public class DecomposedSession {
      *
      * @param m map of items to add
      */
-    public void addMetaData(@Nullable Map<String, ? extends Object> m) {
+    public void addMetaData(@Nullable Map<String, ?> m) {
         if (m != null && m.size() > 0) {
-            for (Map.Entry<String, ? extends Object> entry : m.entrySet()) {
+            for (Map.Entry<String, ?> entry : m.entrySet()) {
                 String key = entry.getKey();
                 Object v = entry.getValue();
                 if (v instanceof Iterable) {
@@ -257,7 +257,7 @@ public class DecomposedSession {
      */
     public String getStringMetadataItem(String key, String sep) {
         List<Object> o = metadata.get(key);
-        if (o.size() == 0) {
+        if (o.isEmpty()) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
@@ -286,7 +286,7 @@ public class DecomposedSession {
      */
     public void setInitialForms(@Nullable List<String> forms) {
         if (forms != null) {
-            initialForms = new ArrayList<String>(forms);
+            initialForms = new ArrayList<>(forms);
         }
     }
 

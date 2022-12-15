@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
  */
 public class JavaCharSet {
 
-    private static Map<String, String> charsets = new HashMap<String, String>();
+    private static Map<String, String> charsets = new HashMap<>();
 
     private static boolean initialized = false;
 
@@ -59,7 +59,7 @@ public class JavaCharSet {
         // any encoding. It doesn't change the base value
         // of the characters to strip it out since we should
         // be processing those out anyway
-        while (s.indexOf("-") != -1 && charSet == null) {
+        while (s.contains("-") && charSet == null) {
             s = s.substring(0, s.lastIndexOf("-"));
             charSet = charsets.get(s);
         }

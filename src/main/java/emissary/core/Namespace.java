@@ -28,7 +28,7 @@ public class Namespace {
     private static final Logger logger = LoggerFactory.getLogger(Namespace.class);
 
     /** We will hold registerd class names in here */
-    private static Map<String, Object> map = new ConcurrentHashMap<String, Object>();
+    private static Map<String, Object> map = new ConcurrentHashMap<>();
 
     /**
      * Hide the creation a new instance of NameSpace
@@ -49,9 +49,9 @@ public class Namespace {
             return obj;
         }
 
-        for (final String key : map.keySet()) {
-            if (key.endsWith("/" + arg)) {
-                obj = map.get(key);
+        for (final Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().endsWith("/" + arg)) {
+                obj = entry.getValue();
                 break;
             }
         }
@@ -114,7 +114,7 @@ public class Namespace {
      * @param arg2 the instance to bind
      */
     public static void bind(final String arg, final Object arg2) {
-        logger.debug("Namespace.bind(" + arg + "," + arg2 + ")");
+        logger.debug("Namespace.bind({},{})", arg, arg2);
         map.put(arg, arg2);
     }
 
@@ -124,7 +124,7 @@ public class Namespace {
      * @param arg the name of the object that was used when it was bound
      */
     public static void unbind(final String arg) {
-        logger.debug("Namespace.unbind(" + arg + ")");
+        logger.debug("Namespace.unbind({})", arg);
         map.remove(arg);
     }
 
@@ -134,9 +134,7 @@ public class Namespace {
      * @return Set copy of the keys bound in this namespace
      */
     public static Set<String> keySet() {
-        final Set<String> newSet = new TreeSet<String>();
-        newSet.addAll(map.keySet());
-        return newSet;
+        return new TreeSet<>(map.keySet());
     }
 
     public static void dump() {
