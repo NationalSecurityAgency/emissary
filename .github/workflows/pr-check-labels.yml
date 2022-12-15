@@ -1,0 +1,23 @@
+name: Check Pull Request Labels
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+jobs:
+  label-Version:
+    name: Check Version Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mheap/github-action-required-labels@v2
+        with:
+          mode: exactly
+          count: 1
+          labels: "patch, minor, major"
+  label-Type:
+    name: Check Type Label
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mheap/github-action-required-labels@v2
+        with:
+          mode: exactly
+          count: 1
+          labels: "bug, feature, tech-debt"
