@@ -172,7 +172,7 @@ public class Emissary {
      * 
      * Reinit with a config file if running something like a server where you want the expanded format,
      */
-    static void setupLogbackForConsole() {
+    public static LoggerContext setupLogbackForConsole() {
         // So it looks better when commands are run
         ch.qos.logback.classic.Logger root =
                 (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -193,6 +193,7 @@ public class Emissary {
         root.addAppender(consoleAppender);
         root.setLevel(Level.INFO);
         root.setAdditive(false);
+        return lc;
     }
 
     static void redirectStdOutStdErr() {
