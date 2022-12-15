@@ -1,8 +1,10 @@
 package emissary.jni;
 
+import emissary.place.IServiceProviderPlace;
+
 import java.rmi.RemoteException;
 
-public interface IJniRepositoryPlace extends emissary.place.IServiceProviderPlace {
+public interface IJniRepositoryPlace extends IServiceProviderPlace {
 
     public boolean nativeLibraryQuery(String query);
 

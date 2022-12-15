@@ -7,6 +7,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
@@ -35,9 +36,9 @@ public abstract class AbstractJDOMUtil {
     protected static SAXBuilder createSAXBuilder(final boolean validate) {
         SAXBuilder builder;
         if (validate) {
-            builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.DTDVALIDATING);
+            builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
         } else {
-            builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+            builder = new SAXBuilder(XMLReaders.NONVALIDATING);
             builder.setFeature("http://xml.org/sax/features/validation", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);

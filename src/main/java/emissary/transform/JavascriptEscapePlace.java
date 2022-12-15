@@ -5,6 +5,7 @@
 
 package emissary.transform;
 
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.JavascriptEscape;
@@ -19,7 +20,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
     /**
      * Can be overridden from config file
      */
-    private String outputForm = emissary.core.Form.UNKNOWN;
+    private String outputForm = Form.UNKNOWN;
 
     /**
      * Configure one with specified location
@@ -81,7 +82,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
             }
         } else {
             logger.warn("error doing JavascriptEscape, unable to decode");
-            d.pushCurrentForm(emissary.core.Form.ERROR);
+            d.pushCurrentForm(Form.ERROR);
         }
     }
 

@@ -2,6 +2,7 @@ package emissary.util;
 
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
+import emissary.id.WorkUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class DataUtil {
     /**
      * Return true if the data slot is empty or just one whitespace character
      */
-    public static boolean isEmpty(final emissary.id.WorkUnit u) {
+    public static boolean isEmpty(final WorkUnit u) {
         final byte[] data = u.getData();
         return isEmpty(data);
     }

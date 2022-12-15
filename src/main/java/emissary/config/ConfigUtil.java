@@ -21,7 +21,7 @@ import java.util.Set;
 
 /**
  * This configuration utility collection helps to find configuration for various classes and objects. It responds to
- * -Demissary.config.dir=value and treats is as a local directory in which to find configuration files. Failing to find
+ * -Demissary.config.dir=value and treats it as a local directory in which to find configuration files. Failing to find
  * a local file, many of these methods will try to retrieve config data from a resource stream (i.e. the classpath). The
  * package name to use can be prefixed with some package of your choosing by setting -Demissary.config.pkg=value.
  */
@@ -40,6 +40,9 @@ public class ConfigUtil {
 
     /** Constant string for files that end with {@value} */
     public static final String JS_FILE_ENDING = ResourceReader.JS_SUFFIX;
+
+    /** Constant string for master files name prefix */
+    public static final String MASTER_FILE_PREFIX = "emissary.admin.MasterClassNames";
 
     /**
      * This property specifies the config override directory. When present, we look here first for config info. If not
@@ -559,21 +562,21 @@ public class ConfigUtil {
      *
      * @return Configurator with all emissary.admin.MasterClassNames
      * @throws IOException If there is some I/O problem.
+     * @throws EmissaryException If no config files are found.
      */
     public static Configurator getMasterClassNames() throws IOException, EmissaryException {
         final List<File> masterClassNames = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith("emissary.admin.MasterClassNames") && name.endsWith(".cfg"));
-            // sort the files, to put emissary.admin.MasterClassNames.cfg before emssary.admin.MasterClassNames-blah.cfg
+            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(MASTER_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
+            // sort the files, to put emissary.admin.MasterClassNames.cfg before emissary.admin.MasterClassNames-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
                 masterClassNames.addAll(Arrays.asList(files));
             }
         }
         // check to make sure we have at least one
-        // TODO make a test for this
         if (masterClassNames.isEmpty()) {
-            throw new EmissaryException("No emissary.admin.MasterClassNames.cfg files found.  No places to start");
+            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", MASTER_FILE_PREFIX, CONFIG_FILE_ENDING));
         }
 
         ServiceConfigGuide scg = null;

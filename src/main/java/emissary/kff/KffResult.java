@@ -1,6 +1,7 @@
 package emissary.kff;
 
 import emissary.kff.KffFilter.FilterType;
+import emissary.util.Hexl;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -225,7 +226,7 @@ public class KffResult implements Serializable {
             return null;
         }
 
-        return emissary.util.Hexl.toUnformattedHexString(digest);
+        return Hexl.toUnformattedHexString(digest);
     }
 
     /**

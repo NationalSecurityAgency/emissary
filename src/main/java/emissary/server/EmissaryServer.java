@@ -48,6 +48,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -540,7 +541,7 @@ public class EmissaryServer {
         application.packages("emissary.server.api").register(JacksonFeature.class);
         csrfFilter(application);
 
-        ServletHolder apiHolder = new ServletHolder(new org.glassfish.jersey.servlet.ServletContainer(application));
+        ServletHolder apiHolder = new ServletHolder(new ServletContainer(application));
         // apiHolder.setInitOrder(0);
         // apiHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "resource");
 
@@ -560,7 +561,7 @@ public class EmissaryServer {
         application.register(MustacheMvcFeature.class).packages("emissary.server.mvc");
         csrfFilter(application);
 
-        ServletHolder mvcHolder = new ServletHolder(new org.glassfish.jersey.servlet.ServletContainer(application));
+        ServletHolder mvcHolder = new ServletHolder(new ServletContainer(application));
         // mvcHolder.setInitOrder(1);
 
         ServletContextHandler mvcHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);

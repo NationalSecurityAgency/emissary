@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.11.0-SNAPSHOT</version>
+  <version>7.12.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -416,6 +416,12 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>${dep.mockito-junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${dep.mockito-junit.version}</version>
         <scope>test</scope>
@@ -606,6 +612,11 @@
     <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

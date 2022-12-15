@@ -1,5 +1,7 @@
 package emissary.server.mvc;
 
+import emissary.util.Version;
+
 import org.glassfish.jersey.server.mvc.Template;
 
 import java.lang.management.ManagementFactory;
@@ -27,7 +29,7 @@ public class ThreadDumpAction {
         ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
         Map<String, Object> model = new HashMap<>();
-        model.put("emissary.version", new emissary.util.Version());
+        model.put("emissary.version", new Version());
         model.put("java.version", System.getProperty("java.vm.version"));
         model.put("java.name", System.getProperty("java.vm.name"));
         Map<String, Object> threadcount = new HashMap<>();

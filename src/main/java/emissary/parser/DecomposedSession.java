@@ -1,5 +1,7 @@
 package emissary.parser;
 
+import emissary.core.IBaseDataObject;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -244,7 +246,7 @@ public class DecomposedSession {
      * @param key the name
      */
     public String getStringMetadataItem(String key) {
-        return getStringMetadataItem(key, emissary.core.IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
+        return getStringMetadataItem(key, IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
     }
 
     /**
