@@ -1,9 +1,11 @@
 package emissary.parser;
 
+import emissary.core.EmissaryException;
+
 /**
  * Exceptions thrown during input parsing
  */
-public class ParserException extends emissary.core.EmissaryException {
+public class ParserException extends EmissaryException {
 
     // Serializable
     static final long serialVersionUID = 2829172862630282553L;

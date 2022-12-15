@@ -1,5 +1,7 @@
 package emissary.spi;
 
+import emissary.core.MetadataDictionary;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +12,6 @@ public class MetadataDictionaryInitializationProvider implements InitializationP
     @Override
     public void initialize() {
         // / Initialize the metadata dictionary
-        emissary.core.MetadataDictionary.initialize();
+        MetadataDictionary.initialize();
     }
 }

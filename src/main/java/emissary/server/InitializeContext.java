@@ -1,5 +1,6 @@
 package emissary.server;
 
+import emissary.core.EmissaryException;
 import emissary.directory.EmissaryNode;
 
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class InitializeContext implements ServletContextListener {
         logger.info("Emissary Node services starting for " + node);
         try {
             node.configureEmissaryServer();
-        } catch (emissary.core.EmissaryException ex) {
+        } catch (EmissaryException ex) {
             logger.error("Unable to start Emissary Node services", ex);
         }
     }

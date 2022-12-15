@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.kff.KffFilter.FilterType;
 
@@ -40,7 +42,7 @@ public class KffChainLoader {
         if (theInstance == null) {
             KffChain chain = new KffChain();
             try {
-                emissary.config.Configurator configG = emissary.config.ConfigUtil.getConfigInfo(KffChain.class);
+                Configurator configG = ConfigUtil.getConfigInfo(KffChain.class);
                 classes = configG.findStringMatchMap("KFF_IMPL_");
                 loadFrom(chain, configG.findStringMatchMap("KFF_FILE_KNOWN_"), FILE_TYPE, FilterType.Ignore);
                 loadFrom(chain, configG.findStringMatchMap("KFF_DB_KNOWN_"), DB_TYPE, FilterType.Ignore);

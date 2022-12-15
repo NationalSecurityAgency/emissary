@@ -1,8 +1,11 @@
 package emissary.output;
 
+import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+import emissary.util.ShortNameComparator;
+import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
 import org.apache.commons.lang3.StringUtils;
@@ -106,7 +109,7 @@ public class DropOffUtil {
         Configurator actualConfigG = configG;
         if (actualConfigG == null) {
             try {
-                actualConfigG = emissary.config.ConfigUtil.getConfigInfo(DropOffUtil.class);
+                actualConfigG = ConfigUtil.getConfigInfo(DropOffUtil.class);
             } catch (IOException e) {
                 logger.error("Cannot open default config file", e);
             }
@@ -422,16 +425,16 @@ public class DropOffUtil {
                             }
                             break;
                         case 'Y':
-                            sb.append(emissary.util.TimeUtil.getDate("yyyy", "GMT"));
+                            sb.append(TimeUtil.getDate("yyyy", "GMT"));
                             break;
                         case 'M':
-                            sb.append(emissary.util.TimeUtil.getDate("MM", "GMT"));
+                            sb.append(TimeUtil.getDate("MM", "GMT"));
                             break;
                         case 'D':
-                            sb.append(emissary.util.TimeUtil.getDate("dd", "GMT"));
+                            sb.append(TimeUtil.getDate("dd", "GMT"));
                             break;
                         case 'J':
-                            sb.append(emissary.util.TimeUtil.getDate("DDD", "GMT"));
+                            sb.append(TimeUtil.getDate("DDD", "GMT"));
                             break;
                         default:
                             sb.append(c).append(t).append(x);
@@ -652,7 +655,7 @@ public class DropOffUtil {
      */
     protected String datePath(@Nullable final String dtg) {
         if (dtg == null) {
-            return emissary.util.TimeUtil.getDateAsPath(Instant.now());
+            return TimeUtil.getDateAsPath(Instant.now());
         } else {
             return dtg.substring(0, 4) + "-" + // yyyy
                     dtg.substring(4, 6) + "-" + // mm
@@ -980,7 +983,7 @@ public class DropOffUtil {
             final String value = d.getStringParameter(paramName);
             if (value != null) {
                 try {
-                    date = emissary.util.TimeUtil.getDateFromISO8601(value);
+                    date = TimeUtil.getDateFromISO8601(value);
                     return date;
                 } catch (DateTimeParseException ex) {
                     logger.debug("Cannot parse EventDate", ex);
@@ -1148,7 +1151,7 @@ public class DropOffUtil {
 
             if (p.hasExtractedRecords()) {
                 final List<IBaseDataObject> childObjList = p.getExtractedRecords();
-                Collections.sort(childObjList, new emissary.util.ShortNameComparator());
+                Collections.sort(childObjList, new ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
                     final int parentLevel = StringUtils.countMatches(child.shortName(), emissary.core.Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);

@@ -1,5 +1,6 @@
 package emissary.directory;
 
+import emissary.core.Form;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.xml.JDOMUtil;
 
@@ -53,7 +54,7 @@ class DirectoryEntryTest extends UnitTest {
         assertEquals("FOOPLACE", this.d.getServiceName(), "Service name");
         assertEquals(5050, this.d.getExpense(), "Calculate expense");
         assertEquals("UNKNOWN::ID", this.d.getDataID(), "DataId");
-        assertEquals(emissary.core.Form.UNKNOWN, this.d.getDataType(), "Data Type");
+        assertEquals(Form.UNKNOWN, this.d.getDataType(), "Data Type");
         assertEquals("http://host.domain.com:8001/", this.d.getServiceHostURL(), "ServiceHostURL");
         assertNull(this.d.getLocalPlace(), "Local place");
     }

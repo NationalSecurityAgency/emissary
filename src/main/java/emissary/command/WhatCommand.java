@@ -8,10 +8,12 @@ import emissary.core.Factory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
+import emissary.core.ResourceException;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.id.Identification;
 import emissary.parser.DecomposedSession;
+import emissary.parser.ParserEOFException;
 import emissary.parser.ParserException;
 import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
@@ -183,7 +185,7 @@ public class WhatCommand extends BaseCommand {
                     final Identification id = identify(payload, this.headerIdentification);
 
                     LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.dataLength() + "]");
-                } catch (emissary.parser.ParserEOFException eof) {
+                } catch (ParserEOFException eof) {
                     LOG.debug("Parser reached end of file: ", eof);
                     // Expected EOF
                     break;
@@ -241,7 +243,7 @@ public class WhatCommand extends BaseCommand {
                 try {
                     place.process(b);
                     ident.setType(b.currentForm());
-                } catch (emissary.core.ResourceException rex) {
+                } catch (ResourceException rex) {
                     // Ignore.
                     LOG.debug("Error processing object", rex);
                 }

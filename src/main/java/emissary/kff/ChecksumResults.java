@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import emissary.util.Hexl;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -90,7 +92,7 @@ public class ChecksumResults implements Serializable {
             return null;
         }
 
-        return emissary.util.Hexl.toUnformattedHexString(comp);
+        return Hexl.toUnformattedHexString(comp);
     }
 
     /**
