@@ -1,5 +1,6 @@
 package emissary.parser;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class DataByteArraySlicer {
     public static byte[] makeDataSlice(byte[] data, @Nullable List<PositionRecord> list) {
 
         // Nothing to do
-        if (list == null || list.size() == 0) {
+        if (CollectionUtils.isEmpty(list)) {
             return null;
         }
 
