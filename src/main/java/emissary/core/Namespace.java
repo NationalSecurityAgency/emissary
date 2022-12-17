@@ -81,7 +81,7 @@ public class Namespace {
      */
     public static <T> Set<T> lookup(Class<T> arg, boolean silent) throws NamespaceException {
         Set<T> lookups = Sets.newHashSet();
-        map.values().stream().filter(arg::isInstance).forEach(o -> lookups.add((T) o));
+        map.values().stream().filter(arg::isInstance).forEach(o -> lookups.add(arg.cast(o)));
         if (!silent && CollectionUtils.isEmpty(lookups)) {
             throw new NamespaceException("Not found: " + arg.getName());
         }
