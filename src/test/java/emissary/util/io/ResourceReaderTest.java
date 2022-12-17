@@ -1,6 +1,7 @@
 package emissary.util.io;
 
 import emissary.test.core.junit5.UnitTest;
+import emissary.util.Version;
 
 import org.junit.jupiter.api.Test;
 
@@ -59,7 +60,7 @@ class ResourceReaderTest extends UnitTest {
         assertNotNull(resources, "Resources must not be null");
         assertEquals(0, resources.size(), "All config resources not found");
 
-        resources = rr.findConfigResourcesFor(emissary.util.Version.class);
+        resources = rr.findConfigResourcesFor(Version.class);
         assertNotNull(resources, "Resources must not be null");
         assertEquals(1, resources.size(), "All config resources not found");
     }
@@ -67,9 +68,9 @@ class ResourceReaderTest extends UnitTest {
     @Test
     void testNaming() {
         ResourceReader rr = new ResourceReader();
-        assertEquals("emissary/util/Version", rr.getResourceName(emissary.util.Version.class), "Resource naming");
-        assertEquals("emissary/util/Version.xml", rr.getXmlName(emissary.util.Version.class), "Resource xml naming");
-        assertEquals("emissary/util/Version.cfg", rr.getConfigDataName(emissary.util.Version.class), "Resource config naming");
+        assertEquals("emissary/util/Version", rr.getResourceName(Version.class), "Resource naming");
+        assertEquals("emissary/util/Version.xml", rr.getXmlName(Version.class), "Resource xml naming");
+        assertEquals("emissary/util/Version.cfg", rr.getConfigDataName(Version.class), "Resource config naming");
         assertEquals("emissary/util/io/foo", rr.getResourceName(this.getClass().getPackage(), "foo"), "Resource package naming");
         assertEquals("emissary/util/io/foo.xml", rr.getXmlName(this.getClass().getPackage(), "foo"), "Resource package naming");
     }

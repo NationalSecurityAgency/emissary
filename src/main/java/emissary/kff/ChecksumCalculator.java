@@ -1,5 +1,12 @@
 package emissary.kff;
 
+import emissary.core.channels.SeekableByteChannelFactory;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -21,7 +28,7 @@ public class ChecksumCalculator {
     private Ssdeep ssdeep = null;
 
     /** Used for hash calculations */
-    private List<MessageDigest> digest = new ArrayList<MessageDigest>();
+    private List<MessageDigest> digest = new ArrayList<>();
 
     /**
      * Constructor initializes SHA-1 generator and turns on the CRC32 processing as well
@@ -71,7 +78,7 @@ public class ChecksumCalculator {
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
     public ChecksumCalculator(@Nullable Collection<String> algs) throws NoSuchAlgorithmException {
-        if (algs != null && algs.size() > 0) {
+        if (CollectionUtils.isNotEmpty(algs)) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
                     setUseCRC(true);
@@ -152,6 +159,53 @@ public class ChecksumCalculator {
         // Only use ssdeep if non-null
         if (ssdeep != null) {
             res.setSsdeep(ssdeep.fuzzy_hash(buffer));
+        }
+
+        return res;
+    }
+
+    /**
+     * Calculates a CRC32 and a digest on a {@link java.nio.channels.SeekableByteChannel} of data.
+     *
+     * @param sbcf Provider of data to compute results for
+     * @return results of computing the requested hashes on the data
+     */
+    public ChecksumResults digest(final SeekableByteChannelFactory sbcf) {
+        final ChecksumResults res = new ChecksumResults();
+        final byte[] b = new byte[1024];
+
+        for (final MessageDigest d : digest) {
+            try (final InputStream is = Channels.newInputStream(sbcf.create());) {
+                d.reset();
+
+                int bytesRead;
+                while ((bytesRead = is.read(b)) != -1) {
+                    d.update(b, 0, bytesRead);
+                }
+
+                res.setHash(d.getAlgorithm(), d.digest());
+            } catch (final IOException ioe) {
+                // Ignore
+            }
+        }
+
+        if (crc != null) {
+            try (final InputStream is = Channels.newInputStream(sbcf.create());) {
+                crc.reset();
+
+                int bytesRead;
+                while ((bytesRead = is.read(b)) != -1) {
+                    crc.update(b, 0, bytesRead);
+                }
+
+                res.setCrc(crc.getValue());
+            } catch (final IOException ioe) {
+                // Ignore
+            }
+        }
+
+        if (ssdeep != null) {
+            res.setSsdeep(ssdeep.fuzzy_hash(sbcf));
         }
 
         return res;

@@ -5,6 +5,7 @@ import emissary.command.BaseCommand;
 import emissary.command.FeedCommand;
 import emissary.command.ServerCommand;
 import emissary.core.EmissaryException;
+import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryAdapter;
 import emissary.directory.DirectoryEntry;
@@ -15,6 +16,7 @@ import emissary.directory.KeyManipulator;
 import emissary.pool.AgentPool;
 import emissary.server.EmissaryServer;
 import emissary.server.mvc.adapters.WorkSpaceAdapter;
+import emissary.util.Version;
 import emissary.util.io.FileFind;
 
 import org.apache.http.HttpStatus;
@@ -556,7 +558,7 @@ public class WorkSpace implements Runnable {
 
         // Need to bind so WorkSpaceTakeWorker can find us on the callback
         // The url we use to bind is in the advertisement to clients
-        emissary.core.Namespace.bind(this.workSpaceUrl, this);
+        Namespace.bind(this.workSpaceUrl, this);
     }
 
 
@@ -1075,7 +1077,7 @@ public class WorkSpace implements Runnable {
      * @return the version info
      */
     protected String getVersionString() {
-        return "Emissary version: " + new emissary.util.Version();
+        return "Emissary version: " + new Version();
     }
 
     public class ClientNotifier implements Runnable {

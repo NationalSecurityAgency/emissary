@@ -1,6 +1,9 @@
 package emissary.core;
 
+import emissary.admin.Startup;
+import emissary.place.EmptyFormPlace;
 import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.FunctionalTest;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +22,7 @@ class FTestMobileAgent extends FunctionalTest {
     public void testSetUp() throws Exception {
         @SuppressWarnings("unused")
         final Logger[] testLoggers =
-                new Logger[] {LoggerFactory.getLogger(emissary.admin.Startup.class), LoggerFactory.getLogger(emissary.core.MobileAgent.class)};
+                new Logger[] {LoggerFactory.getLogger(Startup.class), LoggerFactory.getLogger(emissary.core.MobileAgent.class)};
 
 
     }
@@ -82,7 +85,7 @@ class FTestMobileAgent extends FunctionalTest {
         }
     }
 
-    public static class FakePlace extends emissary.place.ServiceProviderPlace {
+    public static class FakePlace extends ServiceProviderPlace {
         private boolean forcedException = false;
 
         public FakePlace(final String a, final String b, final String c) throws IOException {}
@@ -100,7 +103,7 @@ class FTestMobileAgent extends FunctionalTest {
         }
     }
 
-    public static class FakeEmptyPlace extends emissary.place.ServiceProviderPlace implements emissary.place.EmptyFormPlace {
+    public static class FakeEmptyPlace extends ServiceProviderPlace implements EmptyFormPlace {
         public FakeEmptyPlace(final String a, final String b, final String c) throws IOException {}
 
         @Override

@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -112,7 +113,7 @@ public class ResourceReader {
      * Get the url of the specified resource
      * 
      * @param name name of the resource
-     * @return a url to the resource
+     * @return url to the resource
      */
     public URL getResource(@Nullable String name) {
         if (name != null && name.length() > 1 && name.charAt(1) == ':') {
@@ -277,10 +278,10 @@ public class ResourceReader {
         String classNamePart = cmatch.substring(cmatch.lastIndexOf('/') + 1);
         if (base.exists() && base.isDirectory()) {
             String[] list = base.list();
-            for (String s : list) {
-                if (s.startsWith(classNamePart) && s.endsWith(suffix)) {
-                    results.add(pkgNamePart + "/" + s);
-                }
+            if (list != null) {
+                Arrays.stream(list)
+                        .filter(s -> s.startsWith(classNamePart) && s.endsWith(suffix))
+                        .forEach(s -> results.add(pkgNamePart + "/" + s));
             }
         }
 
@@ -288,10 +289,10 @@ public class ResourceReader {
         File dir = new File(path);
         if (dir.isDirectory()) {
             String[] list = dir.list();
-            for (String s : list) {
-                if (s.endsWith(suffix)) {
-                    results.add(cmatch + '/' + s);
-                }
+            if (list != null) {
+                Arrays.stream(list)
+                        .filter(s -> s.endsWith(suffix))
+                        .forEach(s -> results.add(cmatch + '/' + s));
             }
         }
 

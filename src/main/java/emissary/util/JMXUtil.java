@@ -31,7 +31,7 @@ public class JMXUtil {
         }
 
         if (obj != null) {
-            logger.debug("Regisering MBean for Class --> " + obj.getClass().getName());
+            logger.debug("Regisering MBean for Class --> {}", obj.getClass().getName());
 
             final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             try {

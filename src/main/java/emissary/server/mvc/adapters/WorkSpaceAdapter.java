@@ -14,6 +14,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,10 +41,10 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(place);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientOpenWorkSpace.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
         // set a timeout in case a node is unresponsive
         method.setConfig(RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build());
 
@@ -61,11 +62,11 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkSpaceClientSpaceTake.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
 
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
         final EmissaryResponse status = send(method);
 
         WorkBundle path = null;
@@ -91,12 +92,12 @@ public class WorkSpaceAdapter extends EmissaryClient {
         final String placeUrl = KeyManipulator.getServiceHostURL(space);
         final HttpPost method = createHttpPost(placeUrl, CONTEXT, "/WorkBundleCompleted.action");
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(CLIENT_NAME, place));
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
         nvps.add(new BasicNameValuePair(WORK_BUNDLE_ID, bundleId));
         nvps.add(new BasicNameValuePair(WORK_BUNDLE_STATUS, Boolean.toString(itWorked)));
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
         final EmissaryResponse status = send(method);
         // TODO Look at putting this method in the EmissaryResponse
         return (status.getStatus() == HttpStatus.SC_OK);
