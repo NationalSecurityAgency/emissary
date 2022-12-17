@@ -1,5 +1,9 @@
 package emissary.config;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,10 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * This class implements the Configurator interface for services within the Emissary framework.
@@ -799,7 +800,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @return map where key is remainder after match and value is the config value, or an empty map if none found
      */
     @Override
-    public Map<String, String> findStringMatchMap(final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
+    public Map<String, String> findStringMatchMap(@Nullable final String theParameter, final boolean preserveCase, final boolean preserveOrder) {
         if (theParameter == null) {
             return Collections.emptyMap();
         }
@@ -841,7 +842,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      *         found
      */
     @Override
-    public Map<String, Set<String>> findStringMatchMultiMap(final String param) {
+    public Map<String, Set<String>> findStringMatchMultiMap(@Nullable final String param) {
 
         if (param == null) {
             return Collections.emptyMap();

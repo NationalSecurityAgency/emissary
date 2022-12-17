@@ -2,6 +2,7 @@ package emissary.output.roller.journal;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * Journal Entry containing a value, generally a file name, and an offset.
@@ -56,7 +57,7 @@ public final class JournalEntry {
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(@Nullable final Object obj) {
         if (this == obj) {
             return true;
         }

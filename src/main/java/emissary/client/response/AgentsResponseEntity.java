@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -28,7 +28,7 @@ public class AgentsResponseEntity extends BaseResponseEntity {
         this.local = local;
     }
 
-    public void addClusterAgents(AgentList pl) {
+    public void addClusterAgents(@Nullable AgentList pl) {
         if (pl != null) {
             this.cluster.add(pl);
         }

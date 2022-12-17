@@ -1,19 +1,21 @@
 package emissary.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
 import emissary.place.EmptyFormPlace;
 import emissary.place.IServiceProviderPlace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * This mobile agent carries around an ArrayList of payload that can be added onto instead of sprouting. The agent is
@@ -71,7 +73,7 @@ public class HDMobileAgent extends MobileAgent {
      * @param p the payload, clear list if null to retain previous behavior
      */
     @Override
-    protected synchronized void setPayload(final IBaseDataObject p) {
+    protected synchronized void setPayload(@Nullable final IBaseDataObject p) {
         if (p == null) {
             this.payloadList.clear();
             super.setPayload(null);

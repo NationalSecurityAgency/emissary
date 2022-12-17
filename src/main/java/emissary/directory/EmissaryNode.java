@@ -1,24 +1,27 @@
 package emissary.directory;
 
+import emissary.admin.Startup;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.EmissaryException;
+import emissary.core.MetricsManager;
+import emissary.core.ResourceWatcher;
+import emissary.pool.AgentPool;
+import emissary.pool.MobileAgentFactory;
+import emissary.pool.MoveSpool;
+import emissary.roll.RollManager;
+import emissary.spi.SPILoader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import emissary.admin.Startup;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.EmissaryException;
-import emissary.pool.AgentPool;
-import emissary.pool.MobileAgentFactory;
-import emissary.pool.MoveSpool;
-import emissary.roll.RollManager;
-import emissary.spi.SPILoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node
@@ -232,11 +235,11 @@ public class EmissaryNode {
         logger.debug("Started MoveSpool..." + spool.toString());
 
         // The metrics manager
-        emissary.core.MetricsManager metricsManager = new emissary.core.MetricsManager();
+        MetricsManager metricsManager = new MetricsManager();
         logger.debug("Started metrics manager..." + metricsManager.toString());
 
         // The resource watcher
-        emissary.core.ResourceWatcher watcher = new emissary.core.ResourceWatcher(metricsManager);
+        ResourceWatcher watcher = new ResourceWatcher(metricsManager);
         logger.debug("Started resource watcher..." + watcher.toString());
 
         // Initialize list of configured spi classes

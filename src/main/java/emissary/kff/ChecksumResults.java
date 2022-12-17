@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import emissary.util.Hexl;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +18,7 @@ public class ChecksumResults implements Serializable {
 
     private long crc = -1L;
     private String ssdeep = null;
-    Map<String, byte[]> hashComp = new TreeMap<String, byte[]>();
+    Map<String, byte[]> hashComp = new TreeMap<>();
 
     /**
      * Gets the value of crc
@@ -90,7 +92,7 @@ public class ChecksumResults implements Serializable {
             return null;
         }
 
-        return emissary.util.Hexl.toUnformattedHexString(comp);
+        return Hexl.toUnformattedHexString(comp);
     }
 
     /**
@@ -109,7 +111,7 @@ public class ChecksumResults implements Serializable {
      * @return Set of string algorithm names
      */
     public Set<String> getResultsPresent() {
-        Set<String> set = new TreeSet<String>(hashComp.keySet());
+        Set<String> set = new TreeSet<>(hashComp.keySet());
         if (crc > -1L) {
             set.add("CRC32");
         }

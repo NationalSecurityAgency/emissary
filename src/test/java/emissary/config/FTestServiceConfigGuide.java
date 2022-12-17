@@ -1,7 +1,13 @@
 package emissary.config;
 
-import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import emissary.core.EmissaryException;
+import emissary.test.core.junit5.FunctionalTest;
+
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,13 +16,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import emissary.core.EmissaryException;
-import emissary.test.core.junit5.FunctionalTest;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class FTestServiceConfigGuide extends FunctionalTest {
 

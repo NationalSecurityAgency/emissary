@@ -1,12 +1,13 @@
 package emissary.parser;
 
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 // TODO: either remove these tests or test the new Parser

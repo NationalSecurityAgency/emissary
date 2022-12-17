@@ -1,5 +1,9 @@
 package emissary.core;
 
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.directory.DirectoryEntry;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Date;
@@ -23,9 +27,11 @@ public interface IBaseDataObject {
     String DEFAULT_PARAM_SEPARATOR = ";";
 
     /**
-     * Return BaseDataObjects byte array.
+     * Return the data as a byte array. If using a channel to the data, calling this method will only return up to
+     * Integer.MAX_VALUE bytes of the original data.
      * 
      * @return byte array of the data
+     * @see #getChannelFactory() as the preferred data accessor for larger data
      */
     byte[] data();
 
@@ -46,7 +52,31 @@ public interface IBaseDataObject {
     void setData(final byte[] newData, int offset, int length);
 
     /**
-     * Return length of BaseDataObjects byte array.
+     * Set the byte channel factory using whichever implementation is providing access to the data.
+     * 
+     * @param sbcf the new channel factory to set on this object
+     */
+    void setChannelFactory(final SeekableByteChannelFactory sbcf);
+
+    /**
+     * Returns the seekable byte channel factory containing a reference to the data
+     * 
+     * @return the factory containing the data reference
+     */
+    SeekableByteChannelFactory getChannelFactory();
+
+    /**
+     * Get the size of the channel referenced by this object
+     * 
+     * @return the channel size
+     * @throws IOException if an error occurs with the underlying channel
+     */
+    long getChannelSize() throws IOException;
+
+    /**
+     * Return length of the data, up to Integer.MAX_VALUE if the data is in a channel.
+     * 
+     * Prefer use of {@link #getChannelSize()} going forwards
      * 
      * @return length in bytes of the data
      */
@@ -652,8 +682,25 @@ public interface IBaseDataObject {
      * Replace history with the new history
      * 
      * @param list of new history strings to use
+     * @deprecated See {@link #setHistory(TransformHistory)}
      */
+    @Deprecated
     void setHistory(List<String> list);
+
+
+    /**
+     * Replace history with the new history
+     *
+     * @param history of new history strings to use
+     */
+    void setHistory(TransformHistory history);
+
+    /**
+     * Get the transform history
+     *
+     * @return history of places visited
+     */
+    TransformHistory getTransformHistory();
 
     /**
      * List of places the data object was carried to.
@@ -661,6 +708,14 @@ public interface IBaseDataObject {
      * @return List of strings making up the history
      */
     List<String> transformHistory();
+
+    /**
+     * List of places the data object was carried to.
+     *
+     * @param includeCoordinated include the places that were coordinated
+     * @return List of strings making up the history
+     */
+    List<String> transformHistory(boolean includeCoordinated);
 
     /**
      * Clear the transformation history
@@ -677,6 +732,18 @@ public interface IBaseDataObject {
     void appendTransformHistory(String key);
 
     /**
+     * Appends the new key to the transform history. This is called by MobileAgent before moving to the new place. It
+     * usually adds the four-tuple of a place's key. Coordinated history keys are meant for informational purposes and have
+     * no bearing on the routing algorithm. It is important to list the places visited in coordination, but should not
+     * report as the last place visited.
+     *
+     * @see emissary.core.MobileAgent#agentControl
+     * @param key the new value to append
+     * @param coordinated true if history entries are for informational purposes only
+     */
+    void appendTransformHistory(String key, boolean coordinated);
+
+    /**
      * Return what machine we are located on
      * 
      * @return string local host name
@@ -688,14 +755,14 @@ public interface IBaseDataObject {
      * 
      * @return last item in history
      */
-    emissary.directory.DirectoryEntry getLastPlaceVisited();
+    DirectoryEntry getLastPlaceVisited();
 
     /**
      * Return an SDE based on the penultimate item in the transform history or null if empty
      * 
      * @return penultimate item in history
      */
-    emissary.directory.DirectoryEntry getPenultimatePlaceVisited();
+    DirectoryEntry getPenultimatePlaceVisited();
 
     /**
      * Return true if the payload has been to a place matching the key passed in.

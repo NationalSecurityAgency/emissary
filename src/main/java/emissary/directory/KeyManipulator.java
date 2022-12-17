@@ -1,8 +1,9 @@
 package emissary.directory;
 
-import java.io.Serializable;
-
 import emissary.place.IServiceProviderPlace;
+
+import java.io.Serializable;
+import javax.annotation.Nullable;
 
 /**
  * A class of utility methods for manipulating dictionary keys. Keys are stored in the dictionary with the following
@@ -212,7 +213,7 @@ public class KeyManipulator implements Serializable {
      * @param key the putative key
      * @return true if key is valid
      */
-    public static boolean isValid(final String key) {
+    public static boolean isValid(@Nullable final String key) {
         return (key != null) && (numTuplesInKey(key) == 4);
     }
 

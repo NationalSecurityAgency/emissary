@@ -1,5 +1,15 @@
 package emissary.output.filter;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.output.DropOffUtil;
+import emissary.util.JavaCharSet;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -10,14 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.output.DropOffUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * Provides the base mechanism for a drop off filter
@@ -98,7 +101,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName,
+    public void initialize(final emissary.config.Configurator theConfigG, @Nullable final String filterName,
             final emissary.config.Configurator theFilterConfig) {
         this.configG = theConfigG;
         if (filterName != null) {
@@ -160,7 +163,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * 
      * @param config the filter specific configurator
      */
-    protected void initializeOutputTypes(final Configurator config) {
+    protected void initializeOutputTypes(@Nullable final Configurator config) {
         if (config != null) {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
@@ -202,7 +205,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * 
      * @param suppliedFilterConfig configuration to use when not null
      */
-    protected void loadFilterConfiguration(final Configurator suppliedFilterConfig) {
+    protected void loadFilterConfiguration(@Nullable final Configurator suppliedFilterConfig) {
         if (suppliedFilterConfig != null) {
             this.filterConfig = suppliedFilterConfig;
             return;
@@ -234,10 +237,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params) {
         // Important to process them in order, if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
-            params.put(PRE_SORTED, Boolean.TRUE);
-        }
 
         int status = 0;
         for (final IBaseDataObject d : list) {
@@ -256,11 +255,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
      */
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
-        // Important to process them in order, if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            Collections.sort(list, new emissary.util.ShortNameComparator()); // unsafe?
-            params.put(PRE_SORTED, Boolean.TRUE);
-        }
 
         int status = 0;
         for (final IBaseDataObject d : list) {
@@ -268,16 +262,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         return status;
     }
-
-    /**
-     * The method that all filter have to provide
-     * 
-     * @param payload the payload to run the filter on
-     * @param params map of params
-     * @return status value
-     */
-    @Override
-    public abstract int filter(IBaseDataObject payload, Map<String, Object> params);
 
     /**
      * The method that all filter have to provide for stream based output
@@ -356,7 +340,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param len length of subarray
      * @param charset the charset of the bytes in value
      */
-    protected String normalizeBytes(final byte[] value, final int start, final int len, final String charset) {
+    protected String normalizeBytes(final byte[] value, final int start, final int len, @Nullable final String charset) {
         String s = null;
 
         if (charset != null) {
@@ -399,7 +383,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         if (lang == null) {
             return defaultCharset;
         } else {
-            return emissary.util.JavaCharSet.get(lang);
+            return JavaCharSet.get(lang);
         }
     }
 

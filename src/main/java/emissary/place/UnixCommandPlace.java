@@ -1,15 +1,17 @@
 package emissary.place;
 
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.util.shell.Executrix;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-
-import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
-import emissary.directory.KeyManipulator;
-import emissary.util.shell.Executrix;
+import javax.annotation.Nullable;
 
 /**
  * Run a command external to the Emissary JVM to process data
@@ -91,14 +93,14 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     protected void configurePlace() {
         doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
-        newForm = configG.findStringEntry("NEW_FORM", emissary.core.Form.UNKNOWN);
+        newForm = configG.findStringEntry("NEW_FORM", Form.UNKNOWN);
         if (newForm == null && keys.get(0).indexOf(".ID.") > -1) {
-            newForm = emissary.core.Form.UNKNOWN;
+            newForm = Form.UNKNOWN;
         }
         if ("<null>".equals(newForm)) {
             newForm = null;
         }
-        newFormOnError = configG.findStringEntry("NEW_FORM_ON_ERROR", emissary.core.Form.ERROR);
+        newFormOnError = configG.findStringEntry("NEW_FORM_ON_ERROR", Form.ERROR);
         alternateView = configG.findStringEntry("ADD_AS_ALTERNATE_VIEW", null);
         metaDataTag = configG.findStringEntry("ADD_AS_META_DATA", null);
         if (metaDataTag != null) {
@@ -217,7 +219,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     /**
      * Validate that we should process this data
      */
-    protected boolean validDataHook(IBaseDataObject d) {
+    protected boolean validDataHook(@Nullable IBaseDataObject d) {
         return d != null;
     }
 

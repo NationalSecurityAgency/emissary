@@ -1,13 +1,14 @@
 package emissary.command.converter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PriorityDirectoryConverterTest extends UnitTest {
     private PriorityDirectoryConverter converter;

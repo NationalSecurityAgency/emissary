@@ -1,23 +1,24 @@
 package emissary.kff;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.io.ResourceReader;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class KffDataObjectHandlerTest extends UnitTest {
     static final byte[] DATA = "This is a test".getBytes();
@@ -89,7 +90,7 @@ class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Test
-    public void testHashMethod() {
+    void testHashMethod() {
         kff = new KffDataObjectHandler(true, true, true);
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
@@ -105,14 +106,14 @@ class KffDataObjectHandlerTest extends UnitTest {
     }
 
     @Test
-    public void testParentToChildMethod() {
+    void testParentToChildMethod() {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT, payload);
         KffDataObjectHandler.parentToChild(payload);
         assertNull(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_DUPE_HIT));
     }
 
     @Test
-    public void testSetAndGetHash() {
+    void testSetAndGetHash() {
         KffDataObjectHandler.setHashValue(payload, DATA_MD5);
         assertEquals(DATA_MD5, KffDataObjectHandler.getMd5Value(payload));
         KffDataObjectHandler.setHashValue(payload, DATA_SHA1);

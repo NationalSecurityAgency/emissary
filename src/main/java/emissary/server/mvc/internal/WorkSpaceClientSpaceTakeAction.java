@@ -1,5 +1,15 @@
 package emissary.server.mvc.internal;
 
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.pickup.WorkBundle;
+import emissary.pickup.WorkSpace;
+import emissary.util.web.HtmlEscaper;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -7,15 +17,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import emissary.core.EmissaryException;
-import emissary.core.Namespace;
-import emissary.pickup.WorkBundle;
-import emissary.pickup.WorkSpace;
-import emissary.util.web.HtmlEscaper;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is /emissary, set in EmissaryServer

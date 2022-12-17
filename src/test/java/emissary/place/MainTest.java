@@ -1,13 +1,18 @@
 package emissary.place;
 
-import static emissary.place.Main.filePathIsWithinBaseDirectory;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.core.DataObjectFactory;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
+import emissary.core.ResourceException;
+import emissary.test.core.junit5.UnitTest;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,17 +24,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.core.DataObjectFactory;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.core.Namespace;
-import emissary.test.core.junit5.UnitTest;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.Options;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static emissary.place.Main.filePathIsWithinBaseDirectory;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 final class MainTest extends UnitTest {
     private final String className = "emissary.place.sample.DevNullPlace";
@@ -346,7 +348,7 @@ final class MainTest extends UnitTest {
         }
 
         @Override
-        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws emissary.core.ResourceException {
+        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException {
             IBaseDataObject extr = DataObjectFactory.getInstance("cde".getBytes(), "test-att-2", "UNKNOWN");
             extr.putParameter("RECORD_KEY", "record value");
             payload.addExtractedRecord(extr);
@@ -361,6 +363,6 @@ final class MainTest extends UnitTest {
         }
 
         @Override
-        public void process(IBaseDataObject payload) throws emissary.core.ResourceException {}
+        public void process(IBaseDataObject payload) throws ResourceException {}
     }
 }

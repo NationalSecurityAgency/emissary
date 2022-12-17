@@ -1,17 +1,5 @@
 package emissary.output.filter;
 
-import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
@@ -23,7 +11,20 @@ import emissary.pool.AgentPool;
 import emissary.roll.RollManager;
 import emissary.roll.Roller;
 import emissary.util.io.FileNameGenerator;
+
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
 
@@ -157,13 +158,11 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params);
     }
 
     @Override
     public int filter(final IBaseDataObject payload, final Map<String, Object> params, final OutputStream output) {
-        params.put(PRE_SORTED, "true");
         return filter(Collections.singletonList(payload), params, output);
     }
 
@@ -186,11 +185,6 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
 
     @Override
     public int filter(final List<IBaseDataObject> list, final Map<String, Object> params, final OutputStream output) {
-        // Important to process them in order if not already sorted
-        if (params.get(PRE_SORTED) == null) {
-            list.sort(new emissary.util.ShortNameComparator());
-            params.put(IDropOffFilter.PRE_SORTED, Boolean.TRUE);
-        }
 
         // We subtract 1 from the list because the first element is currently assumed to be the TLD
         list.get(0).putParameter("DESCENDANT_COUNT", list.size() - 1);

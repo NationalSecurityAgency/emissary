@@ -1,5 +1,10 @@
 package emissary.server.api;
 
+import emissary.server.EmissaryServer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -7,10 +12,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import emissary.server.EmissaryServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("")
 // context is api

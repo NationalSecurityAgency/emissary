@@ -1,11 +1,5 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
@@ -13,8 +7,15 @@ import emissary.core.IMobileAgent;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ServiceProviderPlaceGetTLDTest extends UnitTest {
 

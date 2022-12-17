@@ -1,18 +1,20 @@
 package emissary.directory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import emissary.core.Form;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.xml.JDOMUtil;
+
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DirectoryEntryTest extends UnitTest {
 
@@ -52,7 +54,7 @@ class DirectoryEntryTest extends UnitTest {
         assertEquals("FOOPLACE", this.d.getServiceName(), "Service name");
         assertEquals(5050, this.d.getExpense(), "Calculate expense");
         assertEquals("UNKNOWN::ID", this.d.getDataID(), "DataId");
-        assertEquals(emissary.core.Form.UNKNOWN, this.d.getDataType(), "Data Type");
+        assertEquals(Form.UNKNOWN, this.d.getDataType(), "Data Type");
         assertEquals("http://host.domain.com:8001/", this.d.getServiceHostURL(), "ServiceHostURL");
         assertNull(this.d.getLocalPlace(), "Local place");
     }

@@ -1,16 +1,16 @@
 package emissary.place;
 
+import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectHelper;
+import emissary.pickup.PickUpPlace;
+import emissary.util.DataUtil;
+import emissary.util.TypeEngine;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-
-import emissary.core.IBaseDataObject;
-import emissary.directory.KeyManipulator;
-import emissary.kff.KffDataObjectHandler;
-import emissary.pickup.PickUpPlace;
-import emissary.util.DataUtil;
-import emissary.util.TypeEngine;
+import javax.annotation.Nullable;
 
 /**
  * A hybrid of the MultiFileServerPlace and the FilePickupPlace. Knows how to sprout agents using the MoveSpool
@@ -88,7 +88,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param children the destination for parameters to be copied
      */
     protected void addParentInformation(IBaseDataObject parent, List<IBaseDataObject> children) {
-        addParentInformation(parent, children, false);
+        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, false, ALWAYS_COPY_METADATA_VALS, myKey, kff);
     }
 
     /**
@@ -98,20 +98,8 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param children the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
-    protected void addParentInformation(IBaseDataObject parent, List<IBaseDataObject> children, boolean nullifyFileType) {
-        int birthOrder = 1;
-        if (children != null) {
-            int totalNumSiblings = children.size();
-            for (IBaseDataObject child : children) {
-                if (child == null) {
-                    logger.warn("addParentInformation with null child!");
-                    continue;
-                }
-                addParentInformation(parent, child, nullifyFileType);
-                child.setBirthOrder(birthOrder++);
-                child.setNumSiblings(totalNumSiblings);
-            }
-        }
+    protected void addParentInformation(IBaseDataObject parent, @Nullable List<IBaseDataObject> children, boolean nullifyFileType) {
+        IBaseDataObjectHelper.addParentInformationToChildren(parent, children, nullifyFileType, ALWAYS_COPY_METADATA_VALS, myKey, kff);
     }
 
     /**
@@ -121,7 +109,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param child the destination for parameters to be copied
      */
     protected void addParentInformation(IBaseDataObject parent, IBaseDataObject child) {
-        addParentInformation(parent, child, false);
+        IBaseDataObjectHelper.addParentInformationToChild(parent, child, false, ALWAYS_COPY_METADATA_VALS, myKey, kff);
     }
 
     /**
@@ -131,58 +119,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * @param child the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
      */
-    protected void addParentInformation(IBaseDataObject parent, IBaseDataObject child, boolean nullifyFileType) {
-        if (parent == null) {
-            logger.warn("addParentInformation with null parent!");
-            return;
-        }
-
-        if (child == null) {
-            logger.warn("addParentInformation with null child!");
-            return;
-        }
-
-        // Copy over the classification
-        if (parent.getClassification() != null) {
-            child.setClassification(parent.getClassification());
-        }
-
-        // And some other things we configure to be always copied
-        for (String meta : ALWAYS_COPY_METADATA_VALS) {
-            List<Object> parentVals = parent.getParameter(meta);
-            if (parentVals != null && parentVals.size() > 0) {
-                child.putParameter(meta, parentVals);
-            }
-        }
-
-
-        // Copy over the transform history up to this point
-        if (parent.transformHistory() != null) {
-            child.setHistory(parent.transformHistory());
-        }
-        child.appendTransformHistory(KeyManipulator.makeSproutKey(myKey));
-        child.putParameter(emissary.parser.SessionParser.ORIG_DOC_SIZE_KEY, Integer.toString(child.data().length));
-
-        // start over with no FILETYPE if so directed
-        if (nullifyFileType) {
-            child.setFileType(null);
-        }
-
-        // Set up the proper KFF/HASH information for the child
-        setKffDetails(child);
-    }
-
-    /**
-     * Set up the new child's kff details
-     * 
-     * @param child the new data object, with it's parent parameters copied in
-     */
-    protected void setKffDetails(IBaseDataObject child) {
-
-        // Change parent hit so it doesn't look like hit on the child
-        KffDataObjectHandler.parentToChild(child);
-
-        // Hash the the new child data, overwrites parent hashes if any
-        kff.hash(child);
+    protected void addParentInformation(@Nullable IBaseDataObject parent, @Nullable IBaseDataObject child, boolean nullifyFileType) {
+        IBaseDataObjectHelper.addParentInformationToChild(parent, child, nullifyFileType, ALWAYS_COPY_METADATA_VALS, myKey, kff);
     }
 }

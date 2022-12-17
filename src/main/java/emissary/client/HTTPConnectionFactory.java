@@ -1,19 +1,10 @@
 package emissary.client;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.util.PkiUtil;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.ConnectionReuseStrategy;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -28,6 +19,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+import javax.annotation.Nullable;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Emissary HTTP Connection Factory. This is a singleton class that allows for the central configuration of an Apache
@@ -89,7 +90,7 @@ public class HTTPConnectionFactory {
     }
 
     @VisibleForTesting
-    HTTPConnectionFactory(final Configurator config) {
+    HTTPConnectionFactory(@Nullable final Configurator config) {
         Registry<ConnectionSocketFactory> registry = null;
         try {
             final Configurator cfg = config == null ? ConfigUtil.getConfigInfo(HTTPConnectionFactory.class) : config;

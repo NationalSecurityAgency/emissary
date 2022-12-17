@@ -1,9 +1,9 @@
 package emissary.core;
 
-import java.util.concurrent.TimeUnit;
-
 import com.codahale.metrics.Snapshot;
 import com.codahale.metrics.Timer;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Formatter for metrics data, following the existing format emissary format, established previously. Employs the

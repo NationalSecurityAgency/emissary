@@ -1,12 +1,19 @@
 package emissary.kff;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.validateMockitoUsage;
-import static org.mockito.Mockito.when;
+import emissary.kff.KffFilter.FilterType;
+import emissary.test.core.junit5.UnitTest;
+
+import net.spy.memcached.MemcachedClient;
+import net.spy.memcached.internal.GetFuture;
+import net.spy.memcached.internal.OperationFuture;
+import net.spy.memcached.ops.Operation;
+import net.spy.memcached.ops.OperationStatus;
+import org.apache.commons.lang3.NotImplementedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -19,20 +26,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.annotation.Nullable;
 
-import emissary.kff.KffFilter.FilterType;
-import emissary.test.core.junit5.UnitTest;
-import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.internal.GetFuture;
-import net.spy.memcached.internal.OperationFuture;
-import net.spy.memcached.ops.Operation;
-import net.spy.memcached.ops.OperationStatus;
-import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.stubbing.Answer;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.validateMockitoUsage;
+import static org.mockito.Mockito.when;
 
 class KffMemcachedTest extends UnitTest {
 
@@ -59,7 +61,7 @@ class KffMemcachedTest extends UnitTest {
     }
 
     @Test
-    public void testKffMemcachedCreation() throws Exception {
+    void testKffMemcachedCreation() throws Exception {
         KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
         mcdFilter.setPreferredAlgorithm("SHA-256");
         assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
@@ -68,10 +70,11 @@ class KffMemcachedTest extends UnitTest {
     }
 
     @Test
-    void testThrowsWithNonAsciiAndDups() {
+    void testThrowsWithNonAsciiAndDups() throws Exception {
+        KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
+        ChecksumResults results = createSums(mcdFilter);
         assertThrows(IllegalArgumentException.class, () -> {
-            KffMemcached mcdFilter = createTestFilter(Boolean.TRUE, Boolean.TRUE, testIdWithSpaces);
-            mcdFilter.check(testIdWithSpaces, createSums(mcdFilter));
+            mcdFilter.check(testIdWithSpaces, results);
         });
     }
 
@@ -129,7 +132,8 @@ class KffMemcachedTest extends UnitTest {
         }
     }
 
-    private void setPrivateMembersForTesting(KffMemcached cacheFilter, Boolean storeIdDupe) throws NoSuchFieldException, IllegalAccessException {
+    private void setPrivateMembersForTesting(KffMemcached cacheFilter, @Nullable Boolean storeIdDupe)
+            throws NoSuchFieldException, IllegalAccessException {
 
         // Overriding the protected attribute of the field for testing
         if (storeIdDupe != null) {

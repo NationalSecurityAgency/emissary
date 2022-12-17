@@ -1,9 +1,13 @@
 package emissary;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.command.BaseCommand;
+import emissary.command.EmissaryCommand;
+import emissary.test.core.junit5.UnitTest;
+
+import com.beust.jcommander.JCommander;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -12,13 +16,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.beust.jcommander.JCommander;
-import emissary.command.BaseCommand;
-import emissary.command.EmissaryCommand;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EmissaryTest extends UnitTest {
 

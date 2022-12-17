@@ -1,5 +1,27 @@
 package emissary.pickup;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryException;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.IMobileAgent;
+import emissary.core.NamespaceException;
+import emissary.log.MDCConstants;
+import emissary.parser.ParserEOFException;
+import emissary.parser.ParserException;
+import emissary.parser.ParserFactory;
+import emissary.parser.SessionParser;
+import emissary.parser.SessionProducer;
+import emissary.place.AgentsNotSupportedPlace;
+import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderPlace;
+import emissary.pool.AgentPool;
+import emissary.util.ClassComparator;
+import emissary.util.TimeUtil;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.MDC;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,22 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import emissary.core.DataObjectFactory;
-import emissary.core.EmissaryException;
-import emissary.core.IBaseDataObject;
-import emissary.core.IMobileAgent;
-import emissary.core.NamespaceException;
-import emissary.log.MDCConstants;
-import emissary.parser.ParserException;
-import emissary.parser.ParserFactory;
-import emissary.parser.SessionParser;
-import emissary.parser.SessionProducer;
-import emissary.place.IServiceProviderPlace;
-import emissary.pool.AgentPool;
-import emissary.util.ClassComparator;
-import emissary.util.shell.Executrix;
-import org.slf4j.MDC;
+import javax.annotation.Nullable;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
@@ -31,7 +38,7 @@ import org.slf4j.MDC;
  * knows nothing about where the data comes from, though. The method of input, either a directory or set of directories
  * to monitor, a socket, a WorkSpace provider, or something else, comes from classes that extend this one.
  */
-public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace implements IPickUpPlace, emissary.place.AgentsNotSupportedPlace {
+public abstract class PickUpPlace extends ServiceProviderPlace implements IPickUpPlace, AgentsNotSupportedPlace {
 
     // Any data picked up with less/more bytes than this will be
     // set to ERROR initially, can be overridden in config files
@@ -159,7 +166,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
 
         initialFormValues = configG.findEntries("INITIAL_FORM");
         if (initialFormValues.size() < 1) {
-            initialFormValues.add(emissary.core.Form.UNKNOWN);
+            initialFormValues.add(Form.UNKNOWN);
         }
 
         // Grab the default pool
@@ -240,7 +247,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param f the file it came from
      */
     protected void dataObjectCreated(IBaseDataObject d, File f) {
-        d.putParameter("FILE_DATE", emissary.util.TimeUtil.getDateAsISO8601(f.lastModified()));
+        d.putParameter("FILE_DATE", TimeUtil.getDateAsISO8601(f.lastModified()));
         d.putParameter("FILE_NAME", f.getName());
     }
 
@@ -315,7 +322,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param outputRoot a specified output root
      * @return true if the file was renamed
      */
-    protected boolean renameFileToDoneArea(File theFile, String outputRoot) {
+    protected boolean renameFileToDoneArea(File theFile, @Nullable String outputRoot) {
         String base = theFile.getPath();
         boolean renamed = false;
         if (holdingArea != null) {
@@ -342,7 +349,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param eatPrefix optional prefix strip from the work bundle
      * @return null if no holdingArea, else the new File endpoint
      */
-    protected File getInProcessFileNameFor(File theFile, String eatPrefix) {
+    protected File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
         String base = theFile.getPath();
         if (eatPrefix != null) {
             base = base.substring(eatPrefix.length());
@@ -362,7 +369,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param dest where it should end up, or use the holdingArea if nil
      * @return true if renamed, false if not
      */
-    protected boolean renameToInProcessAreaAs(File source, File dest) {
+    protected boolean renameToInProcessAreaAs(File source, @Nullable File dest) {
         if (holdingArea == null && dest == null) {
             logger.warn("Holding area not configured, cannot rename {}", source);
             return false;
@@ -429,7 +436,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @param theFile the file that was processed
      * @param outputRoot the specified output done area
      */
-    protected void handleFileSuccess(File theFile, String outputRoot) {
+    protected void handleFileSuccess(File theFile, @Nullable String outputRoot) {
         if (outputRoot != null) {
             logger.debug("Handling file success by moving to doneArea {}", theFile);
             renameFileToDoneArea(theFile, outputRoot);
@@ -585,7 +592,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
                     logger.info("sessionParseMetric:{},{},{},{},{},{}", sessionEnd - sessionStart, sp.getClass().getName(), theFile, sessionName,
                             sessionNum, dataObject.data().length);
                     processDataObject(dataObject, sessionName, theFile, false);
-                } catch (emissary.parser.ParserEOFException eof) {
+                } catch (ParserEOFException eof) {
                     // expected at end of file
                     long fileEnd = System.currentTimeMillis();
                     logger.info("fileParseMetric:{},{},{},{},{}", fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
@@ -632,7 +639,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
                 IBaseDataObject dataObject = dof.getNextSession(sessionName);
                 sessionNum++;
                 processDataObject(dataObject, sessionName, theFile, false);
-            } catch (emissary.parser.ParserEOFException eof) {
+            } catch (ParserEOFException eof) {
                 // expected at end of file
                 break;
             } catch (emissary.core.EmissaryException ex) {
@@ -650,7 +657,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * 
      * @return fixed filename
      */
-    protected String fixFileName(String v) {
+    protected String fixFileName(@Nullable String v) {
         if (v == null) {
             return null;
         }
@@ -706,7 +713,7 @@ public abstract class PickUpPlace extends emissary.place.ServiceProviderPlace im
      * @return mobile agent assigned to pool
      * @throws EmissaryException when an agent cannot be obtained
      */
-    public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, AgentPool agentPool, IServiceProviderPlace startingLocation,
+    public static IMobileAgent assignToPooledAgent(IBaseDataObject payload, @Nullable AgentPool agentPool, IServiceProviderPlace startingLocation,
             long timeoutMs) throws EmissaryException {
         IMobileAgent agent = null;
         long startTime = System.currentTimeMillis();

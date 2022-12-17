@@ -1,17 +1,18 @@
 package emissary.directory;
 
-import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
-import static emissary.directory.KeyManipulator.DOLLAR;
-
-import java.io.Serializable;
-
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.xml.JDOMUtil;
+
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+
+import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
+import static emissary.directory.KeyManipulator.DOLLAR;
 
 /**
  * This class is container object for storing directory entry information such as the service name and type, the

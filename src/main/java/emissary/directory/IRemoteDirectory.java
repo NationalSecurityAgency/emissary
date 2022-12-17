@@ -1,11 +1,14 @@
 package emissary.directory;
 
-import java.util.List;
-import java.util.Set;
-
+import emissary.core.EmissaryException;
 import emissary.core.Namespace;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Interface for inter-directory operations over http These methods are designed to only be called by the remote
@@ -48,7 +51,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     void irdAddPeerDirectories(Set<String> keys);
 
     /**
-     * Helper class to lookup an instance of the local directory cast to this interface if possible
+     * Helper class to look up an instance of the local directory cast to this interface if possible
      */
     class Lookup {
         private final Logger logger = LoggerFactory.getLogger(Lookup.class);
@@ -56,11 +59,12 @@ public interface IRemoteDirectory extends IDirectoryPlace {
         /**
          * Look up the local directory using one of two methods. The easier method almost always works, the case where it
          * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
-         * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
+         * multiple Listeners. This is a testing scenario, but it is helpful to keep supporting it, so we have good test
+         * coverage.
          * 
          * @param name name of the local directory or null for default
          */
-        public IRemoteDirectory getLocalDirectory(final String name) {
+        public IRemoteDirectory getLocalDirectory(@Nullable final String name) {
             IDirectoryPlace dir = null;
             try {
                 if (name != null) {
@@ -68,7 +72,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
                 } else {
                     dir = DirectoryPlace.lookup();
                 }
-            } catch (emissary.core.EmissaryException ex) {
+            } catch (EmissaryException ex) {
                 this.logger.debug("Could not find local directory " + name);
             }
 

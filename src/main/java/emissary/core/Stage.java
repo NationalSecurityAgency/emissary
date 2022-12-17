@@ -16,8 +16,8 @@ public class Stage {
     public Stage() {}
 
     static {
-        stages = new ArrayList<String>();
-        parallel = new ArrayList<Boolean>();
+        stages = new ArrayList<>();
+        parallel = new ArrayList<>();
         stages.add("STUDY"); // prepare, coordinate idents
         parallel.add(Boolean.FALSE);
 
@@ -57,7 +57,7 @@ public class Stage {
      */
     public boolean isParallelStage(final int i) {
         if (i >= 0 && i < parallel.size()) {
-            return parallel.get(i).booleanValue();
+            return parallel.get(i);
         }
         return false;
     }
@@ -70,7 +70,7 @@ public class Stage {
     public boolean isParallelStage(final String stage) {
         for (int i = 0; i < stages.size(); i++) {
             if (stages.get(i).equals(stage)) {
-                return parallel.get(i).booleanValue();
+                return parallel.get(i);
             }
         }
         return false;
@@ -108,7 +108,7 @@ public class Stage {
      * Return a list of stages
      */
     public List<String> getStages() {
-        return new ArrayList<String>(stages);
+        return new ArrayList<>(stages);
     }
 
     /**
@@ -118,10 +118,8 @@ public class Stage {
      */
     public String nextStageAfter(final String stage) {
         for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                if (i < stages.size() - 1) {
-                    return stages.get(i + 1);
-                }
+            if (stages.get(i).equals(stage) && (i < stages.size() - 1)) {
+                return stages.get(i + 1);
             }
         }
         return null;

@@ -1,12 +1,12 @@
 package emissary.util;
 
-import java.lang.management.ManagementFactory;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.management.ManagementFactory;
+import javax.annotation.Nullable;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 /**
  * Utility class for JMX operations.
@@ -24,14 +24,14 @@ public class JMXUtil {
         registerMBean(obj, obj.getClass().getName());
     }
 
-    public static void registerMBean(final Object obj, final String name) {
+    public static void registerMBean(@Nullable final Object obj, final String name) {
         if (Boolean.parseBoolean(System.getProperty("emissary.jmx.disabled"))) {
             logger.info("Emissary JMX is disabled via emissary.jmx.disabled property");
             return;
         }
 
         if (obj != null) {
-            logger.debug("Regisering MBean for Class --> " + obj.getClass().getName());
+            logger.debug("Regisering MBean for Class --> {}", obj.getClass().getName());
 
             final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
             try {

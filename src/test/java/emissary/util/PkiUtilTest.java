@@ -1,5 +1,11 @@
 package emissary.util;
 
+import emissary.test.core.junit5.UnitTest;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,16 +17,11 @@ import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
-import emissary.test.core.junit5.UnitTest;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-public class PkiUtilTest extends UnitTest {
+class PkiUtilTest extends UnitTest {
     private static final String projectBase = System.getenv("PROJECT_BASE"); // set in surefire config
 
     @Test
-    public void testIsPemCertificate() throws IOException {
+    void testIsPemCertificate() throws IOException {
         String data = getAsciiString("/certs/testcertwithcomments.pem");
         boolean isPem = PkiUtil.isPemCertificate(data);
         Assertions.assertTrue(isPem, "Expected a PEM file");
@@ -36,7 +37,7 @@ public class PkiUtilTest extends UnitTest {
     }
 
     @Test
-    public void testbuildStoreWithPem() throws IOException, GeneralSecurityException {
+    void testbuildStoreWithPem() throws IOException, GeneralSecurityException {
         String path = getAbsoluteFilePath("/certs/testcertwithcomments.pem");
         KeyStore keyStore = PkiUtil.buildStore(path, null, "JKS");
 
@@ -54,7 +55,7 @@ public class PkiUtilTest extends UnitTest {
     }
 
     @Test
-    public void testbuildStoreWithJks() throws IOException, GeneralSecurityException {
+    void testbuildStoreWithJks() throws IOException, GeneralSecurityException {
         char[] pazz = "password".toCharArray();
         String alias = "emissary-test";
 

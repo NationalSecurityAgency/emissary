@@ -140,12 +140,16 @@
     </module>
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="VariableDeclarationUsageDistance"/>
-    <module name="CustomImportOrder">
-      <property name="severity" value="ignore"/>
-      <property name="customImportOrderRules" value="STATIC###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE###STANDARD_JAVA_PACKAGE"/>
-      <property name="specialImportsRegExp" value="com.google"/>
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    <module name="ImportOrder">
+      <!-- entering an invalid value for severity essential disables this check -->
+      <!-- valid values are ignore, info, warning, error -->
+      <property name="severity" value="error"/>
+      <property name="option" value="bottom"/> <!-- static imports at bottom-->
+      <property name="groups" value="emissary,*,/java.*/"/>
+      <property name="ordered" value="true"/>
+      <property name="separated" value="true"/>
+      <property name="separatedStaticGroups" value="false"/>
+      <property name="sortStaticImportsAlphabetically" value="true"/>
     </module>
     <module name="MethodParamPad"/>
     <module name="OperatorWrap">

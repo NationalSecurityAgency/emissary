@@ -1,15 +1,17 @@
 package emissary.parser;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Map;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * A simple base class for doing data type identification This simple implementation can only match constant strings
@@ -42,7 +44,7 @@ public class DataIdentifier {
         configure(config);
     }
 
-    protected void configure(Configurator config) {
+    protected void configure(@Nullable Configurator config) {
         try {
             if (config == null) {
                 config = ConfigUtil.getConfigInfo(this.getClass());

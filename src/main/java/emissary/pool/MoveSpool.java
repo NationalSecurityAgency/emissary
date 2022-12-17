@@ -1,20 +1,22 @@
 package emissary.pool;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.IDirectoryPlace;
+import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.PayloadUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provide a storage area for incoming "moveTo(here)" payloads so that the http transfer can become more asnychronous.
@@ -425,7 +427,7 @@ public class MoveSpool implements Runnable {
          */
         public String getServiceName() {
             if (place != null) {
-                return emissary.directory.KeyManipulator.getServiceName(place.getKey());
+                return KeyManipulator.getServiceName(place.getKey());
             }
             return "sprout";
         }

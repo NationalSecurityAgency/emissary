@@ -1,10 +1,11 @@
 package emissary.util;
 
+import emissary.core.IBaseDataObject;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import emissary.core.IBaseDataObject;
+import javax.annotation.Nullable;
 
 /**
  * This class provides routines for approximating the RAM size of Emissary objects - primarily the
@@ -45,7 +46,7 @@ public class SizeUtil {
      * @param str - the String to approximate
      * @return The approximate size, in bytes, in RAM for str
      */
-    public static long sizeof(String str) {
+    public static long sizeof(@Nullable String str) {
         if (str == null) {
             return 0L;
         }
@@ -65,7 +66,7 @@ public class SizeUtil {
      * @param ibdo - The IBaseDataObject to approximate
      * @return - The approximate size, in bytes, in RAM for extracted records of an IBaseDataObject
      */
-    public static long getExtractedRecordRAMSize(IBaseDataObject ibdo) {
+    public static long getExtractedRecordRAMSize(@Nullable IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;
         }
@@ -96,7 +97,7 @@ public class SizeUtil {
      * @param ibdo - The IBaseDataObject to approximate
      * @return - The approximate size, in bytes, in RAM for the IBaseDataObject
      */
-    public static long getPayloadRAMSize(IBaseDataObject ibdo) {
+    public static long getPayloadRAMSize(@Nullable IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;
         }
@@ -138,7 +139,7 @@ public class SizeUtil {
      * @param ibdo The IBaseDataObject to approximate the size of
      * @return The approximate size, in bytes, in RAM for the IBaseDataObject
      */
-    public static long sizeof(IBaseDataObject ibdo) {
+    public static long sizeof(@Nullable IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;
         }
@@ -194,7 +195,7 @@ public class SizeUtil {
      * @param familyTree - {@code List<IBaseDataObject>} representing the family tree for a document object
      * @return - the approximate size, in bytes, in RAM for the familyTree
      */
-    public static long sizeof(List<IBaseDataObject> familyTree) {
+    public static long sizeof(@Nullable List<IBaseDataObject> familyTree) {
         if (familyTree == null) {
             return 0L;
         }

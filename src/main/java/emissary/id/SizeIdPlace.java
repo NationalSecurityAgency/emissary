@@ -1,10 +1,10 @@
 package emissary.id;
 
+import emissary.core.IBaseDataObject;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
-import emissary.core.IBaseDataObject;
 
 /**
  * Id place that sets the current form based on size of the data

@@ -1,10 +1,11 @@
 package emissary.roll;
 
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import emissary.config.Configurator;
 import emissary.core.Factory;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * Util class to grab known parameters from configs to help configure Rollable objects.
@@ -50,12 +51,12 @@ public class RollUtil {
     }
 
     // convert a long from a string or return 0
-    private static long getLong(String l) {
+    private static long getLong(@Nullable String l) {
         return l == null ? 0L : Long.parseLong(l);
     }
 
     // attempt to parse time unit.
-    private static TimeUnit getUnit(String unit) {
+    private static TimeUnit getUnit(@Nullable String unit) {
         return unit == null ? null : TimeUnit.valueOf(unit);
     }
 

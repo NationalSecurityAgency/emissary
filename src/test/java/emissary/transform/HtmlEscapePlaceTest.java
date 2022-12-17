@@ -1,23 +1,24 @@
 package emissary.transform;
 
-import static emissary.transform.HtmlEscapePlace.DOCUMENT_TITLE;
-import static emissary.transform.HtmlEscapePlace.HTMLESC;
-import static emissary.transform.HtmlEscapePlace.SUMMARY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Stream;
-
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.ExtractionTest;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
+
+import static emissary.transform.HtmlEscapePlace.DOCUMENT_TITLE;
+import static emissary.transform.HtmlEscapePlace.HTMLESC;
+import static emissary.transform.HtmlEscapePlace.SUMMARY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HtmlEscapePlaceTest extends ExtractionTest {
 

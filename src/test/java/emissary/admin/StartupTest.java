@@ -1,12 +1,5 @@
 package emissary.admin;
 
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import emissary.directory.EmissaryNode;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.pickup.file.FilePickUpPlace;
@@ -14,7 +7,15 @@ import emissary.place.CoordinationPlace;
 import emissary.place.sample.DelayPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 class StartupTest extends UnitTest {
 

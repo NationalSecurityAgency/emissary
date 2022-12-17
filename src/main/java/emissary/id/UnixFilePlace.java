@@ -1,11 +1,12 @@
 package emissary.id;
 
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.util.UnixFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-
-import emissary.core.IBaseDataObject;
-import emissary.util.UnixFile;
 
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile
@@ -87,8 +88,8 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
         // Bail out on empty data
         if (bytes == null || bytes.length == 0) {
-            d.setCurrentForm(emissary.core.Form.EMPTY);
-            d.setFileType(emissary.core.Form.EMPTY);
+            d.setCurrentForm(Form.EMPTY);
+            d.setFileType(Form.EMPTY);
             return;
         }
 

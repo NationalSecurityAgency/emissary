@@ -1,5 +1,14 @@
 package emissary.place;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
+import emissary.directory.KeyManipulator;
+import emissary.kff.KffDataObjectHandler;
+import emissary.util.shell.Executrix;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import emissary.core.DataObjectFactory;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
-import emissary.directory.KeyManipulator;
-import emissary.kff.KffDataObjectHandler;
-import emissary.util.shell.Executrix;
+import javax.annotation.Nullable;
 
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
@@ -32,12 +34,12 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected List<String> binFiles = null;
     protected List<String> binFileExt = null;
     protected List<String> outDirs = null;
-    protected String SINGLE_CHILD_FILETYPE = emissary.core.Form.UNKNOWN;
+    protected String SINGLE_CHILD_FILETYPE = Form.UNKNOWN;
     protected boolean KEEP_PARENT_HASHES_FOR_SINGLE_CHILD = false;
     protected boolean KEEP_PARENT_FILETYPE_FOR_SINGLE_CHILD = false;
     protected static final String DEFAULT_NEW_PARENT_FORM = "SAFE_HTML";
-    protected static final String DEFAULT_NEW_CHILD_FORM = emissary.core.Form.UNKNOWN;
-    protected static final String DEFAULT_NEW_ERROR_FORM = emissary.core.Form.ERROR;
+    protected static final String DEFAULT_NEW_CHILD_FORM = Form.UNKNOWN;
+    protected static final String DEFAULT_NEW_ERROR_FORM = Form.ERROR;
     protected boolean setTitleToFile = true;
     protected Map<String, String> fileTypesByExtension = new HashMap<>();
     protected String contentFile = null;
@@ -286,7 +288,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
 
     protected static class FileNameComparator implements Comparator<File> {
         @Override
-        public int compare(File o1, File o2) {
+        public int compare(@Nullable File o1, @Nullable File o2) {
             if (o1 == null) {
                 return o2 != null ? 1 : 0;
             }
@@ -580,7 +582,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
      * @param len length of data to use
      * @return attachments
      */
-    protected List<IBaseDataObject> processData(IBaseDataObject tData, int start, int len) throws ResourceException {
+    protected List<IBaseDataObject> processData(@Nullable IBaseDataObject tData, int start, int len) throws ResourceException {
         List<IBaseDataObject> sprouts = new ArrayList<>();
 
         // Validate parameters

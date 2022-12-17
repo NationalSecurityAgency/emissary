@@ -5,16 +5,18 @@
 
 package emissary.transform;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.transform.decode.HtmlEscape;
 import emissary.util.CharacterCounterSet;
 import emissary.util.DataUtil;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {
 
@@ -96,7 +98,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
 
         } else {
             logger.warn("error doing HtmlEscape, unable to decode");
-            d.pushCurrentForm(emissary.core.Form.ERROR);
+            d.pushCurrentForm(Form.ERROR);
         }
 
         unescapeAltViews(d);

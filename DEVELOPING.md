@@ -582,14 +582,14 @@ has been turned off. We'll need to add the docker profile, along with the dist p
 project root, run the following maven command:
 
 ```
-mvn clean package -Pdist,docker
+mvn clean install -Pdist,docker
 ```
 
 Alternatively, we can use Docker directly. First run a full maven build and then run the ```docker build``` command:
 
 ```
-mvn clean package -Pdist
-docker build -f contrib/docker/Dockerfile . -t emissary:latest
+mvn clean install -Pdist
+docker build -f contrib/docker/Dockerfile . -t emissary
 ```
 
 ### Run Emissary with Docker
@@ -683,6 +683,51 @@ Once the build succeeds, we can start a container:
 ```
 docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
 ```
+
+### Running Emissary with Kubernetes
+
+A sample standalone instance of Emissary running in Kubernetes
+
+Requirements
+- [Kubernetes](https://kubernetes.io/) >= 1.14
+- [Helm](https://helm.sh/) >= 3+
+
+#### Install using Helm
+
+Dry-run/debug before installation:
+```shell
+helm install contrib/helm/emissary --generate-name --dry-run --debug
+```
+
+Start Emissary using Helm:
+```shell
+helm install contrib/helm/emissary --generate-name
+```
+
+Get a list of releases:
+```shell
+helm list
+```
+
+See the historical revisions for an Emissary release:
+```shell
+helm history $(helm list | grep emissary | awk '{print $1}')
+```
+
+See the running services/pods/containers using kubectl and docker commands:
+```shell
+kubectl get services
+kubectl get pods
+docker ps
+```
+
+#### Uninstall
+
+To remove the Emissary release, run the uninstall helm command:
+```shell
+helm uninstall $(helm list | grep emissary | awk '{print $1}')
+```
+
 
 ## Troubleshooting
 

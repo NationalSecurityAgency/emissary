@@ -1,15 +1,16 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.test.core.junit5.UnitTest;
+
+import com.codahale.metrics.Timer;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codahale.metrics.Timer;
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class MetricsManagerTest extends UnitTest {
     @Test

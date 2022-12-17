@@ -1,22 +1,24 @@
 package emissary.directory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.core.DataObjectFactory;
+import emissary.core.Form;
 import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RoutingAlgorithmTest extends UnitTest {
     private MyDirectoryPlace dir;
@@ -168,6 +170,26 @@ class RoutingAlgorithmTest extends UnitTest {
     }
 
     @Test
+    void testBackToIdPhaseAfterCoordinate() {
+        final DirectoryEntry lastPlace = new DirectoryEntry("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.dir.addTestEntry(lastPlace);
+        this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s3.ID.http://example.com:8001/A$3030"));
+        this.dir.addTestEntry(new DirectoryEntry("UNKNOWN.s4.ANALYZE.http://example.com:8001/A$4040"));
+
+        // after appending a key w/ coordinated=true to the transform history, we should be in the ID phase
+        this.payload.pushCurrentForm("UNKNOWN");
+        this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", true);
+        assertEquals("ID", this.agent.getNextKeyAccess(this.dir, this.payload).getServiceType(), "Should go to ID place after coordinate");
+
+        // after appending a key w/ coordinated=false to the transform history, we should be in the ANALYZE phase
+        this.payload.clearTransformHistory();
+        this.payload.appendTransformHistory("UNKNOWN.s1.ID.http://example.com:8001/I$1010");
+        this.payload.appendTransformHistory("UNKNOWN.s2.ANALYZE.http://example.com:8001/T$2020", false);
+        assertEquals("ANALYZE", this.agent.getNextKeyAccess(this.dir, this.payload).getServiceType(), "Should not return to ID place after analyze");
+    }
+
+    @Test
     void testCheckTransformProxyWithTwoFormsDoesNotRepeat() {
         loadAllTestEntries();
 
@@ -236,7 +258,7 @@ class RoutingAlgorithmTest extends UnitTest {
     void testPayloadWithDoneForm() {
         loadAllTestEntries();
         this.dir.addTestEntry(new DirectoryEntry("DONE.d1.IO.http://example.com:8001/D$5050"));
-        this.payload.pushCurrentForm(emissary.core.Form.DONE);
+        this.payload.pushCurrentForm(Form.DONE);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertNull(result, "Must not return result when payload has DONE form");
     }
@@ -249,7 +271,7 @@ class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm("FOO");
         this.payload.pushCurrentForm("BAR");
         this.payload.pushCurrentForm("BAZ");
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(eplace.getKey(), result.getKey(), "Routing to error handling place should occur");
         assertEquals(1, this.payload.currentFormSize(), "Routing to error handling place removes other forms");
@@ -260,9 +282,9 @@ class RoutingAlgorithmTest extends UnitTest {
         loadAllTestEntries();
         final DirectoryEntry eplace = new DirectoryEntry("ERROR.e1.IO.http://example.com:8001/E$5050");
         this.dir.addTestEntry(eplace);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
-        this.payload.pushCurrentForm(emissary.core.Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
+        this.payload.pushCurrentForm(Form.ERROR);
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(0, this.payload.currentFormSize(), "Error in error handling place removes all forms");
         assertNull(result, "Error in Error handling must not re-route to error handler but we got " + result);

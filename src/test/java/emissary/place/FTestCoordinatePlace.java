@@ -1,13 +1,5 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.InputStream;
-import java.util.Map;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -16,9 +8,19 @@ import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
+
+import com.codahale.metrics.Timer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.InputStream;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FTestCoordinatePlace extends FunctionalTest {
 
@@ -62,7 +64,7 @@ class FTestCoordinatePlace extends FunctionalTest {
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
         assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
-        Map<String, com.codahale.metrics.Timer> resourcesUsed = rw.getStats();
+        Map<String, Timer> resourcesUsed = rw.getStats();
         rw.quit();
         assertTrue(resourcesUsed.containsKey("ToLowerPlace"), "Resource must be tracked for coordinated place");
         assertTrue(resourcesUsed.containsKey("ToUpperPlace"), "Resource must be tracked for coordinated place");

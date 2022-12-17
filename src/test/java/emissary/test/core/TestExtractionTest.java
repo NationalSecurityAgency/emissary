@@ -1,23 +1,25 @@
 package emissary.test.core;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import emissary.place.IServiceProviderPlace;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TestExtractionTest extends UnitTest {
 
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
-        SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
         Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);
@@ -35,7 +37,7 @@ class TestExtractionTest extends UnitTest {
 
     @Test
     void testCheckStringValueForCollectionFailure() throws JDOMException, IOException {
-        SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         String resourceName = "/emissary/test/core/TestExtractionTest.xml";
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
         Assertions.assertNotNull(inputStream, "Could not locate: " + resourceName);

@@ -1,12 +1,13 @@
 package emissary.kff;
 
+import emissary.kff.KffFilter.FilterType;
+import emissary.util.Hexl;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import emissary.kff.KffFilter.FilterType;
 
 /**
  * Provide results of a KFF check including the details of the hash or cryptographic sum or sums that were used.
@@ -225,7 +226,7 @@ public class KffResult implements Serializable {
             return null;
         }
 
-        return emissary.util.Hexl.toUnformattedHexString(digest);
+        return Hexl.toUnformattedHexString(digest);
     }
 
     /**

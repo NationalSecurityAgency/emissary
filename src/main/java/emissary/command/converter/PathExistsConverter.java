@@ -1,12 +1,12 @@
 package emissary.command.converter;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import com.beust.jcommander.converters.BaseConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class PathExistsConverter extends BaseConverter<Path> {
 
@@ -28,7 +28,7 @@ public class PathExistsConverter extends BaseConverter<Path> {
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", getOptionName(), p);
             LOG.error(msg);
-            throw new RuntimeException(msg);
+            throw new IllegalArgumentException(msg);
         }
         return p;
     }

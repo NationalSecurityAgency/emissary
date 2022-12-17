@@ -1,12 +1,13 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * A very simple minded parser implementation that assumes each input set of data bytes is one session This parser has
@@ -46,7 +47,7 @@ public class SimpleParser extends SessionParser {
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements.
      */
-    protected DecomposedSession decomposeSession(InputSession session) {
+    protected DecomposedSession decomposeSession(@Nullable InputSession session) {
         DecomposedSession d = new DecomposedSession();
         if (session != null) {
             List<PositionRecord> header = session.getHeader();

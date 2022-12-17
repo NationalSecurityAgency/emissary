@@ -1,12 +1,14 @@
 package emissary.config;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.shell.Executrix;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,12 +22,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.shell.Executrix;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceConfigGuideTest extends UnitTest {
 
@@ -41,72 +46,27 @@ class ServiceConfigGuideTest extends UnitTest {
         assertTrue(s instanceof Configurator, "Meets interface");
     }
 
-    @Test
-    void testSingleReplacement() throws IOException {
-        final byte[] configData = "FOO = \"a @ENV{'file.separator'} b\"\n".getBytes();
-        final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        final Configurator c = ConfigUtil.getConfigInfo(str);
-        String entry = c.findStringEntry("FOO");
-        assertNotNull(entry, "Parsed config data");
-        assertEquals(5, entry.length(), "Replace single ENV entry");
-        entry = entry.replace('\\', '/'); // make it look the same on all platforms
-        assertEquals("a / b", entry, "Entry replacement value");
+    static Stream<Arguments> arguments() {
+        return Stream.of(
+                Arguments.of("FOO = \"a @ENV{'file.separator'} b\"\n", "FOO", 5, "a / b"),
+                Arguments.of("FOO = \"@ENV{'file.separator'} b\"\n", "FOO", 3, "/ b"),
+                Arguments.of("FOO = \"a @ENV{'file.separator'}\"\n", "FOO", 3, "a /"),
+                Arguments.of("FOO = \"a @ENV{'file.separator'}@ENV{'file.separator'} b\"\n", "FOO", 6, "a // b"),
+                Arguments.of("FOO = \"a @ENV{'file.separator'} b @{file.separator} c\"\n", "FOO", 9, "a / b / c"),
+                Arguments.of("FOO = \"BAR\"\nQUUZ = \"@{FOO}\"\n", "QUUZ", 3, "BAR"));
     }
 
-    @Test
-    void testSingleReplacementAtBOL() throws IOException {
-        final byte[] configData = "FOO = \"@ENV{'file.separator'} b\"\n".getBytes();
+    @ParameterizedTest
+    @MethodSource("arguments")
+    void testReplacement(String cfg, String cfgEntry, int expectedLength, String expected) throws IOException {
+        final byte[] configData = cfg.getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
-        String entry = c.findStringEntry("FOO");
+        String entry = c.findStringEntry(cfgEntry);
         assertNotNull(entry, "Parsed config data");
-        assertEquals(3, entry.length(), "Replace single ENV entry");
+        assertEquals(expectedLength, entry.length(), "Replace single ENV entry");
         entry = entry.replace('\\', '/'); // make it look the same on all platforms
-        assertEquals("/ b", entry, "Entry replacement value");
-    }
-
-    @Test
-    void testSingleReplacementAtEOL() throws IOException {
-        final byte[] configData = "FOO = \"a @ENV{'file.separator'}\"\n".getBytes();
-        final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        final Configurator c = ConfigUtil.getConfigInfo(str);
-        String entry = c.findStringEntry("FOO");
-        assertNotNull(entry, "Parsed config data");
-        assertEquals(3, entry.length(), "Replace single ENV entry");
-        entry = entry.replace('\\', '/'); // make it look the same on all platforms
-        assertEquals("a /", entry, "Entry replacement value");
-    }
-
-    @Test
-    void testDoubleReplacement() throws IOException {
-        final byte[] configData = "FOO = \"a @ENV{'file.separator'}@ENV{'file.separator'} b\"\n".getBytes();
-        final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        final Configurator c = ConfigUtil.getConfigInfo(str);
-        String entry = c.findStringEntry("FOO");
-        assertNotNull(entry, "Parsed config data");
-        entry = entry.replace('\\', '/'); // make it look the same on all platforms
-        assertEquals("a // b", entry, "Entry replacement value");
-    }
-
-    @Test
-    void testAutomaticEnv() throws IOException {
-        final byte[] configData = "FOO = \"a @ENV{'file.separator'} b @{file.separator} c\"\n".getBytes();
-        final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        final Configurator c = ConfigUtil.getConfigInfo(str);
-        String entry = c.findStringEntry("FOO");
-        assertNotNull(entry, "Parsed config data");
-        entry = entry.replace('\\', '/'); // make it look the same on all platforms
-        assertEquals("a / b / c", entry, "Entry replacement value");
-    }
-
-    @Test
-    void testDynamicReplacement() throws IOException {
-        final byte[] configData = "FOO = \"BAR\"\nQUUZ = \"@{FOO}\"\n".getBytes();
-        final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-        final Configurator c = ConfigUtil.getConfigInfo(str);
-        final String entry = c.findStringEntry("QUUZ");
-        assertNotNull(entry, "Parsed config data");
-        assertEquals("BAR", entry, "All RHS values must be replaced");
+        assertEquals(expected, entry, "Entry replacement value");
     }
 
     @Test
@@ -615,8 +575,6 @@ class ServiceConfigGuideTest extends UnitTest {
     }
 
     /**
-     * This test case validates the patch for Emissary #201: https://github.com/NationalSecurityAgency/emissary/issues/201.
-     * <p>
      * It verifies that findStringEntry() returns the first non-null configured value or the provided default value if no
      * non-null values are configured for a property.
      */

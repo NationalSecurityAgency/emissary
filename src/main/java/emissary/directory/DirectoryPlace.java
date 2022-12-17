@@ -1,16 +1,5 @@
 package emissary.directory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.IBaseDataObject;
@@ -18,18 +7,30 @@ import emissary.core.Namespace;
 import emissary.log.MDCConstants;
 import emissary.place.ServiceProviderPlace;
 import emissary.server.mvc.adapters.DirectoryAdapter;
+
 import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArraySet;
+import javax.annotation.Nullable;
 
 /**
  * The DirectoryPlace class is used to store information relating to Places/Services in the Emissary Agent-Based
- * architecture. When a Place comes up it calls the method addPlace passing in all of the relevant information to store
- * in the Directory. Agents query the directory by calling the method nextKeys which requires a query String search
+ * architecture. When a Place comes up it calls the method addPlace passing in all the relevant information to store in
+ * the Directory. Agents query the directory by calling the method nextKeys which requires a query String search
  * pattern.
  *
  * <p>
  * We try to support some network topographic constructions by providing a set of peer directories. Peers are monitored
  * and checked automatically by HeartbeatManager and the peer network is assumed to be fully connected. Peer directories
- * are a, fairly static, list of peer directories read from a config file. At least one host must be listed in order to
+ * are a fairly-static list of peer directories read from a config file. At least one host must be listed in order to
  * bootstrap the network.
  *
  * <p>
@@ -48,10 +49,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     protected DirectoryEntryMap entryMap = new DirectoryEntryMap();
 
     /** Peer directories to this one */
-    protected Set<DirectoryEntry> peerDirectories = new CopyOnWriteArraySet<DirectoryEntry>();
+    protected Set<DirectoryEntry> peerDirectories = new CopyOnWriteArraySet<>();
 
     /**
-     * Statically configured peers. Remember them even when they shutdown. A subset of peerDirectories
+     * Statically configured peers. Remember them even when they shut down. A subset of peerDirectories
      */
     protected Set<String> staticPeers = new HashSet<>();
 
@@ -71,7 +72,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     protected boolean running = false;
 
     /** Emissary node configuration for network topology */
-    protected EmissaryNode emissaryNode = null;
+    protected EmissaryNode emissaryNode;
 
     /**
      * Window of slop between asking for a zone and purging "stale" entries from the entry map. Since there is a window of
@@ -87,6 +88,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      *
      * @param placeLoc string key to register this directory
      * @throws IOException when configuration fails
+     * @deprecated use {@link #DirectoryPlace(String, EmissaryNode)}
      */
     @Deprecated
     // need to pass in EmissaryNode
@@ -116,6 +118,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param configInfo our config file to read
      * @param placeLoc string key to register this directory
      * @throws IOException when configuration fails
+     * @deprecated use {@link #DirectoryPlace(String, String, EmissaryNode)}
      */
     @Deprecated
     // need to pass in EmissaryNode
@@ -130,6 +133,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param parentDir string key of the parent directory
      * @param placeLoc string key to register this directory
      * @throws IOException when configuration fails
+     * @deprecated use {@link #DirectoryPlace(String, String, EmissaryNode)}
      */
     @Deprecated
     // need to pass in EmissaryNode
@@ -146,6 +150,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param parentDir the parent directory or null if none
      * @param placeLoc key for this place
      * @throws IOException when configuration fails
+     * @deprecated use {@link #DirectoryPlace(InputStream, String, String, EmissaryNode)}
      */
     @Deprecated
     // need to pass in EmissaryNode
@@ -247,7 +252,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // of other non-Place code to function well and trigger
         // the peer discovery mechanism when they zone transfer
         // this entry
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
         list.add(keys.get(0));
         addPlaces(list);
         this.running = true;
@@ -255,8 +260,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
     /**
      * Find an optional peer config stream or file and initialize tracking of the peers found there.
-     *
-     * We don't actually contact any of the remote directories here so we can get the heck out of the constructor code and
+     * <p>
+     * We don't actually contact any of the remote directories here, so we can get the heck out of the constructor code and
      * get this place registered in the namespace quick! so other directories can find us in a timely fashion.
      */
     private void configureNetworkTopology() {
@@ -269,7 +274,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             return;
         }
 
-        logger.debug("Emissary node info: " + this.emissaryNode);
+        logger.debug("Emissary node info: {}", this.emissaryNode);
 
         try {
             // Peer network configuration is from peer.cfg
@@ -278,8 +283,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             this.staticPeers.addAll(peers);
             addPeerDirectories(peers, true);
 
-            logger.debug("Configured " + this.peerDirectories.size() + " rendezvous peers from " + peers.size() + " config entries.");
-            logger.debug("This directory is " + (this.rdvPeer ? "" : "NOT (yet) ") + "a rendezvous peer.");
+            logger.debug("Configured {} rendezvous peers from {} config entries.", this.peerDirectories.size(), peers.size());
+            logger.debug("This directory is {}a rendezvous peer.", (this.rdvPeer ? "" : "NOT (yet) "));
         } catch (IOException iox) {
             logger.debug("There is no peer.cfg data available");
         }
@@ -311,7 +316,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param keys set of string key for peer directories
      */
     @Override
-    public void irdAddPeerDirectories(final Set<String> keys) {
+    public void irdAddPeerDirectories(@Nullable final Set<String> keys) {
         // Validate contract
         if ((keys == null) || keys.isEmpty()) {
             logger.warn("Ignoring irdAddPeerDirectories called with null or no keys");
@@ -321,7 +326,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // Validate remote parameters
         for (final String key : keys) {
             if (!KeyManipulator.isValid(key)) {
-                logger.warn("Ignoring irdAddPeerDirectories called with " + keys.size() + " keys, invalid key " + key);
+                logger.warn("Ignoring irdAddPeerDirectories called with {} keys, invalid key {}", keys.size(), key);
                 return;
             }
         }
@@ -363,7 +368,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
             if (!isKnownPeer(key)) {
                 this.peerDirectories.add(new DirectoryEntry(key));
-                logger.debug("Added peer directory " + key);
+                logger.debug("Added peer directory {}", key);
 
                 // Setup heartbeat to new peer directory
                 if (initPhase) {
@@ -381,9 +386,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
                 changeMade = true;
             } else {
-                logger.debug("We already knew about peer " + key);
+                logger.debug("We already knew about peer {}", key);
                 if (!this.heartbeat.isAlive(key)) {
-                    logger.debug("Forcing peer " + key + " alive due to arriving registration");
+                    logger.debug("Forcing peer {} alive due to arriving registration", key);
                     this.heartbeat.setHealthStatus(key, HeartbeatManager.IS_ALIVE, "Received peer registration");
                     loadPeerEntries(key);
                 }
@@ -392,7 +397,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         // Notify all observers
         if (changeMade) {
-            this.observerManager.peerUpdate(new HashSet<DirectoryEntry>(this.peerDirectories));
+            this.observerManager.peerUpdate(new HashSet<>(this.peerDirectories));
         }
     }
 
@@ -409,7 +414,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             return;
         }
 
-        logger.debug("Doing zone transfer with peer " + peerKey);
+        logger.debug("Doing zone transfer with peer {}", peerKey);
         // TODO See DirectoryPlace for spy example which needs to be addressed
         final DirectoryEntryMap newEntries = loadRemoteEntries(peerKey, this.entryMap);
         if ((newEntries == null) || newEntries.isEmpty()) {
@@ -425,18 +430,18 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         // Make note of any possible new peer directory
         // We should only be seeing peers here
-        final Set<String> newPeers = new HashSet<String>();
+        final Set<String> newPeers = new HashSet<>();
         for (final DirectoryEntry newEntry : newEntries.allEntries()) {
             if (!isLocal(newEntry)) {
                 final String possiblePeer = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());
                 if (!isKnownPeer(possiblePeer) && !newPeers.contains(possiblePeer)) {
-                    logger.debug("Discovered new peer " + possiblePeer + " from " + newEntry.getKey() + " during zt with " + peerKey);
+                    logger.debug("Discovered new peer {} from {} during zt with {}", possiblePeer, newEntry.getKey(), peerKey);
                     newPeers.add(possiblePeer);
                 }
             }
         }
         if (!newPeers.isEmpty()) {
-            logger.debug("Adding " + newPeers.size() + " new peers from zt with " + peerKey);
+            logger.debug("Adding {} new peers from zt with {}", newPeers.size(), peerKey);
             addPeerDirectories(newPeers, false);
         }
     }
@@ -450,7 +455,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
      * @return the new entries
      */
-    private DirectoryEntryMap loadRemoteEntries(final String key, final DirectoryEntryMap loadMap) {
+    private DirectoryEntryMap loadRemoteEntries(final String key, @Nullable final DirectoryEntryMap loadMap) {
 
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot load remote entries in standalone nodes");
@@ -475,12 +480,12 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             map = da.outboundRegisterPeer(key, myKey);
 
             if (logger.isDebugEnabled()) {
-                logger.debug("Retrieved " + map.entryCount() + " entries in zone transfer from " + key + " in "
-                        + (System.currentTimeMillis() - startZone) + " millis");
+                logger.debug("Retrieved {} entries in zone transfer from {} in {} millis", map.entryCount(), key,
+                        (System.currentTimeMillis() - startZone));
             }
 
-            // No entries means we got the remote message
-            // and they just dont have any places registered yet
+            // No entries mean we got the remote message,
+            // and they just don't have any places registered yet
             if (map.isEmpty()) {
                 return map;
             }
@@ -495,13 +500,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                 // do the load and notify all observers
                 cleanLoadNotifyEntries(map, loadMap, myKey, REMOTE_COST_OVERHEAD);
             } else {
-                logger.debug("Skipping load of " + map.entryCount() + " new entries from " + key + " returning list to caller");
+                logger.debug("Skipping load of {} new entries from {} returning list to caller", map.entryCount(), key);
             }
         } catch (Exception ex) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Unable to zone transfer with " + key, ex);
+                logger.debug("Unable to zone transfer with {}", key, ex);
             } else {
-                logger.info("Unable to zone transfer with " + key);
+                logger.info("Unable to zone transfer with {}", key);
             }
             // Failure condition. Trigger state change in heartbeat manager
             this.heartbeat.setHealthStatus(key, HeartbeatManager.NO_CONTACT, "Remote directory failed zone transfer");
@@ -514,8 +519,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * Remove stale entries from the specified map and notify any observers Nothing older than checkpoint time can be
      * considered stale and nothing that is on the incming newEntries list can be considered stale since we would just be
      * adding it back again. Duplicates (non-stale entries) are removed from the newEntries map to avoid further confusion
-     * but only if the cost is the same. Otherwise we leave it so that a cost-change event can propagete from later code but
-     * still avoid triggering a place removed event.
+     * but only if the cost is the same. Otherwise, we leave it so that a cost-change event can propagete from later code
+     * but still avoid triggering a place removed event.
      *
      * @param loadMap the map we are removing from
      * @param key the key of the directory whose entries might be stale
@@ -525,9 +530,9 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @return list of entries that were removed
      */
     private List<DirectoryEntry> removeStaleEntries(final DirectoryEntryMap loadMap, final String key, final long checkpoint,
-            final DirectoryEntryMap newEntries, final boolean performNotification) {
+            @Nullable final DirectoryEntryMap newEntries, final boolean performNotification) {
 
-        final List<DirectoryEntry> staleEntries = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> staleEntries = new ArrayList<>();
 
         // Nothing newer than the checkpoint time can be stale
         // Nothing that is in teh loadMap but also duplicated in
@@ -541,19 +546,19 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                 if (newEntries != null) {
                     final List<DirectoryEntry> matches = newEntries.collectAllMatching(d.getKey());
                     if (matches.isEmpty()) {
-                        logger.debug("Marking stale entry " + d.getKey());
+                        logger.debug("Marking stale entry {}", d.getKey());
                         staleEntries.add(d);
                     } else if (matches.size() == 1) {
                         // remove from newEntries if exact dup
                         final DirectoryEntry me = matches.get(0);
                         if (me.getFullKey().equals(d.getFullKey())) {
-                            logger.debug("Removing duplcate key from incoming map " + me.getKey());
+                            logger.debug("Removing duplcate key from incoming map {}", me.getKey());
                             newEntries.removeEntry(me.getKey());
                         }
                     }
                 } else {
                     // must be stale if no newEntries
-                    logger.debug("Marking stale entry (no new entries)" + d.getKey());
+                    logger.debug("Marking stale entry (no new entries){}", d.getKey());
                     staleEntries.add(d);
                 }
             }
@@ -562,12 +567,12 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // Remove and notify
         if (!staleEntries.isEmpty()) {
             for (final DirectoryEntry stale : staleEntries) {
-                logger.debug("Removing stale entry " + stale.getKey());
+                logger.debug("Removing stale entry {}", stale.getKey());
                 loadMap.removeEntry(stale.getKey());
             }
 
             if (performNotification) {
-                logger.debug("Notifying observers of " + staleEntries.size() + " stale entry removals");
+                logger.debug("Notifying observers of {} stale entry removals", staleEntries.size());
                 this.observerManager.placeRemoveEntries(staleEntries);
             }
         } else {
@@ -586,18 +591,19 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param purgeKey remove any keys matching
      * @param costBump add cost to incoming
      */
-    private void cleanLoadNotifyEntries(final DirectoryEntryMap map, final DirectoryEntryMap loadMap, final String purgeKey, final int costBump) {
+    private void cleanLoadNotifyEntries(final DirectoryEntryMap map, @Nullable final DirectoryEntryMap loadMap, @Nullable final String purgeKey,
+            final int costBump) {
         // Remove local entries from the new map
         // We already know about our local stuff.
         if (purgeKey != null) {
             final List<DirectoryEntry> removed = map.removeAllOnDirectory(purgeKey);
-            logger.debug("Clean/load removed " + removed.size() + " entries based on " + purgeKey + " remaining = " + map.entryCount());
+            logger.debug("Clean/load removed {} entries based on {} remaining = {}", removed.size(), purgeKey, map.entryCount());
         }
 
         // Add remote overhead to remaining
         if (costBump > 0) {
             map.addCostToMatching("*.*.*.*", costBump);
-            logger.debug("Clean/load did cost-bump of " + costBump + " on " + map.entryCount() + " entries");
+            logger.debug("Clean/load did cost-bump of {} on {} entries", costBump, map.entryCount());
         }
 
         if (loadMap != null) {
@@ -616,20 +622,20 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             final int newCount = newEntries.entryCount();
             final int cceCount = costChangeEntries.entryCount();
             if (newCount > 0) {
-                logger.debug("Loading " + newCount + " new entries");
+                logger.debug("Loading {} new entries", newCount);
                 loadMap.addEntries(newEntries);
                 this.observerManager.placeAdd(newEntries.allEntryKeys());
             } else {
-                logger.debug("Nothing truly new from " + map.entryCount() + " entries");
+                logger.debug("Nothing truly new from {} entries", map.entryCount());
             }
 
             // .. and cost change entries
             if (cceCount > 0) {
-                logger.debug("Loading " + cceCount + " better cost entries");
+                logger.debug("Loading {} better cost entries", cceCount);
                 loadMap.addEntries(costChangeEntries);
                 this.observerManager.placeCostChange(costChangeEntries.allEntryKeys());
             } else {
-                logger.debug("No cost change entries from " + map.entryCount() + " entries");
+                logger.debug("No cost change entries from {} entries", map.entryCount());
             }
 
             // Now let the map that gets returned have just the new
@@ -641,7 +647,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
                 map.sort();
             }
         } else {
-            logger.debug("Clean/load got a null loadMap so skipping the load for " + map.entryCount() + " entries");
+            logger.debug("Clean/load got a null loadMap so skipping the load for {} entries", map.entryCount());
         }
     }
 
@@ -653,7 +659,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      */
     @Override
     public Set<String> getPeerDirectories() {
-        final Set<String> l = new TreeSet<String>();
+        final Set<String> l = new TreeSet<>();
         for (final DirectoryEntry sde : this.peerDirectories) {
             l.add(sde.getKey());
         }
@@ -667,7 +673,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param entryList the new entries to add
      */
     protected void addEntries(final List<DirectoryEntry> entryList) {
-        logger.debug("Adding " + entryList.size() + " new entries");
+        logger.debug("Adding {} new entries", entryList.size());
 
         // add them
         this.entryMap.addEntries(entryList);
@@ -675,22 +681,22 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // notify all observers
         this.observerManager.placeAddEntries(entryList);
 
-        final Set<String> peerSet = new HashSet<String>();
+        final Set<String> peerSet = new HashSet<>();
         for (final DirectoryEntry newEntry : entryList) {
             // Make a note of any possible new peer directory
             if (!isLocal(newEntry)) {
                 final String peerKey = KeyManipulator.getDefaultDirectoryKey(newEntry.getKey());
                 if (!isKnownPeer(peerKey) && !peerSet.contains(peerKey)) {
-                    logger.debug("Discovered new peer " + peerKey + " from  addEntries " + newEntry.getKey());
+                    logger.debug("Discovered new peer {} from  addEntries {}", peerKey, newEntry.getKey());
                     peerSet.add(peerKey);
                 } else {
-                    logger.debug("No new peer implications to " + peerKey + " from " + newEntry.getKey());
+                    logger.debug("No new peer implications to {} from {}", peerKey, newEntry.getKey());
                 }
             }
         }
 
         if (!peerSet.isEmpty()) {
-            logger.debug("Adding " + peerSet.size() + " newly discovered peer entries");
+            logger.debug("Adding {} newly discovered peer entries", peerSet.size());
             addPeerDirectories(peerSet, false);
         }
     }
@@ -702,8 +708,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param newEntry the new entry to add
      */
     protected void addEntry(final DirectoryEntry newEntry) {
-        logger.debug("Adding single new entry " + newEntry.getKey());
-        final List<DirectoryEntry> entryList = new ArrayList<DirectoryEntry>();
+        logger.debug("Adding single new entry {}", newEntry.getKey());
+        final List<DirectoryEntry> entryList = new ArrayList<>();
         entryList.add(newEntry);
         addEntries(entryList);
     }
@@ -759,10 +765,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
             // Notify all observers, but don't give them
             // access to our own Set object
-            this.observerManager.peerUpdate(new HashSet<DirectoryEntry>(this.peerDirectories));
+            this.observerManager.peerUpdate(new HashSet<>(this.peerDirectories));
 
             // Remove the entries if any remain
-            removePlaces(Arrays.asList(new String[] {KeyManipulator.getHostMatchKey(expeer.getKey())}));
+            removePlaces(Collections.singletonList(KeyManipulator.getHostMatchKey(expeer.getKey())));
         }
 
         return expeer;
@@ -790,14 +796,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         }
 
         if (this.shutdownInitiated) {
-            logger.debug("Remote " + key + " reported as failed, in shutdown");
+            logger.debug("Remote {} reported as failed, in shutdown", key);
             return 0;
         }
 
         // Reports of my demise are premature...
         if (isLocal(key)) {
-            logger.warn("Someone reported me as failed, but I appear to " + "be still running. Refusing to remove my own entries and "
-                    + "propagate this filthy lie.");
+            logger.warn(
+                    "Someone reported me as failed, but I appear to be still running. Refusing to remove my own entries and propagate this filthy lie.");
             return 0;
         }
 
@@ -805,14 +811,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String hmKey = KeyManipulator.getHostMatchKey(key);
         int count = 0;
 
-        logger.debug("irdFailDirectory " + key + (permanent ? "is" : "is not") + " permanent");
+        logger.debug("irdFailDirectory {} {} permanent", key, (permanent ? "is" : "is not"));
 
         // Modify local entries for the failed remote directory
         // Permanent failure removes entries on failed directory.
         // Transient failure adjusts weight of entries on failed directory.
         if (permanent) {
-            logger.debug("Permanent failure of remote " + key);
-            count += removePlaces(Arrays.asList(new String[] {hmKey}));
+            logger.debug("Permanent failure of remote {}", key);
+            count += removePlaces(Collections.singletonList(hmKey));
         } else {
             // Change the weight of the paths for all places matching the
             // failed directory. This has the effect of causing them
@@ -834,10 +840,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             // Remove from peer list
             if (isKnownPeer(dirKey)) {
                 if (!isStaticPeer(dirKey)) {
-                    logger.debug("Removing non-static peer " + dirKey);
+                    logger.debug("Removing non-static peer {}", dirKey);
                     removePeer(dirKey);
                 } else {
-                    logger.debug("Static peer " + dirKey + " is deregistered but monitoring continues");
+                    logger.debug("Static peer {} is deregistered but monitoring continues", dirKey);
                 }
             } else {
                 logger.warn("Directory {} failed but it isn't a peer??", dirKey);
@@ -876,7 +882,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      */
     void contactedRemoteDirectory(final String key) {
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(myKey));
-        logger.debug("Established contact with " + key);
+        logger.debug("Established contact with {}", key);
 
         if (isStaticPeer(key) && isKnownPeer(key)) {
             loadPeerEntries(key);
@@ -892,7 +898,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param keys list of complete keys with expense
      */
     @Override
-    public void addPlaces(final List<String> keys) {
+    public void addPlaces(@Nullable final List<String> keys) {
         // Validate contract
         if ((keys == null) || keys.isEmpty() || (keys.get(0) == null)) {
             logger.error("addPlaces skipping place with no keys");
@@ -900,7 +906,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         }
 
         // Build a list of DirectoryEntry out of these
-        final List<DirectoryEntry> del = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> del = new ArrayList<>();
         for (final String key : keys) {
             final DirectoryEntry d = new DirectoryEntry(key);
             del.add(d);
@@ -917,7 +923,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param propagating true if going back down the directory chain
      */
     @Override
-    public void irdAddPlaces(final List<DirectoryEntry> entryList, final boolean propagating) {
+    public void irdAddPlaces(@Nullable final List<DirectoryEntry> entryList, final boolean propagating) {
 
         if ((entryList == null) || entryList.isEmpty()) {
             logger.debug("irdAddPlaces called with null or empty entryList!");
@@ -927,7 +933,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // Validate remote input
         for (final DirectoryEntry d : entryList) {
             if (d == null || !d.isValid()) {
-                logger.warn("Ignoring irdAddPlaces called with " + entryList.size() + " DirectoryEntry objects due to invalid key in " + d);
+                logger.warn("Ignoring irdAddPlaces called with {} DirectoryEntry objects due to invalid key in {}", entryList.size(), d);
                 return;
             }
         }
@@ -938,13 +944,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final boolean isLocal = isLocal(place);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Starting irdAddPlaces with " + entryList.size() + " entries for " + (isLocal ? "local" : "non-local") + " place "
-                    + " - place=" + place + ", myKey=" + myKey);
+            logger.debug("Starting irdAddPlaces with {} entries for {} place  - place={}, myKey={}", entryList.size(),
+                    (isLocal ? "local" : "non-local"), place, myKey);
         }
 
-        // make a defensive deep copy of the incoming list so we
+        // make a defensive deep copy of the incoming list, so we
         // can safely proxy and adjust cost as needed
-        final List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> entries = new ArrayList<>();
         for (final DirectoryEntry d : entryList) {
             entries.add(new DirectoryEntry(d, DirectoryEntry.PRESERVE_TIME));
         }
@@ -958,7 +964,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             }
         }
 
-        logger.debug("Doing addEntries for " + entries.size() + " new entries");
+        logger.debug("Doing addEntries for {} new entries", entries.size());
         addEntries(entries);
 
         // Notify peers if entries are being added locally
@@ -967,8 +973,8 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             for (final DirectoryEntry peer : this.peerDirectories) {
                 if (this.heartbeat.isAlive(peer.getKey())) {
                     registerWith(peer, entries, false);
-                } else {
-                    logger.debug("Not registering " + entries.size() + " with peer " + peer.getKey() + ", not alive right now");
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug("Not registering {} with peer {}, not alive right now", entries.size(), peer.getKey());
                 }
             }
         }
@@ -984,16 +990,14 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      */
     protected void registerWith(final DirectoryEntry dir, final List<DirectoryEntry> entryList, final boolean propagating) {
         if (logger.isDebugEnabled()) {
-            logger.debug("registerWith(" + dir.getKey() + "," + entryList + "," + propagating + ")");
+            logger.debug("registerWith({},{},{})", dir.getKey(), entryList, propagating);
         }
 
         try {
             new DirectoryAdapter().outboundAddPlaces(dir.getKey(), entryList, propagating);
             logger.debug("registration succeeded");
         } catch (Exception ex) {
-            logger.warn(
-                    "DirectoryPlace.registerWith: " + "Problem talking to directory " + dir.getKey() + " to add " + entryList.size() + " entries",
-                    ex);
+            logger.warn("DirectoryPlace.registerWith: Problem talking to directory {} to add {} entries", dir.getKey(), entryList.size(), ex);
         }
     }
 
@@ -1008,13 +1012,11 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastPlace) {
         // Normal lookup in public entry map
-        logger.debug("nextKey called with dataID='" + dataID + "', and lastPlace=" + (lastPlace == null ? "null" : lastPlace.getFullKey()));
+        logger.debug("nextKey called with dataID='{}', and lastPlace={}", dataID, (lastPlace == null ? "null" : lastPlace.getFullKey()));
 
         List<DirectoryEntry> entries = nextKeys(dataID, payload, lastPlace, this.entryMap);
-        if ((entries != null) && !entries.isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("nextKey produced " + entries.size() + " entries from main map " + entries);
-            }
+        if (logger.isDebugEnabled() && (entries != null) && !entries.isEmpty()) {
+            logger.debug("nextKey produced {} entries from main map {}", entries.size(), entries);
         }
         return entries;
     }
@@ -1028,26 +1030,26 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param entries map of DirectoryEntry stored in this directory
      * @return List of DirectoryEntry with next place to go or empty list if none
      */
-    protected List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastPlace,
+    protected List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
             final DirectoryEntryMap entries) {
         // Find the entry list for the type being requested
         final DirectoryEntryList currentList = getWildcardedEntryList(dataID, entries);
 
         // Nothing for the dataID or any wildcarded versions, we are done
         if ((currentList == null) || currentList.isEmpty()) {
-            logger.debug("nextKey - nothing found here for " + dataID);
+            logger.debug("nextKey - nothing found here for {}", dataID);
             return Collections.emptyList();
         }
 
         // The list we are building for return to the caller
-        final List<DirectoryEntry> keyList = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> keyList = new ArrayList<>();
 
         // The dataID this time is different from the last place
-        // visited, so we can just choose from the list of lowest
+        // visited, so we can just choose from the list of the lowest
         // expense places and get on with it
         DirectoryEntry trialEntry = currentList.getEntry(0);
         if (lastPlace == null || (!lastPlace.getDataID().equals(dataID) && !trialEntry.getServiceLocation().equals(lastPlace.getServiceLocation()))) {
-            logger.debug("doing first in list for " + trialEntry);
+            logger.debug("doing first in list for {}", trialEntry);
             keyList.add(currentList.pickOneOf(trialEntry.getExpense()));
         } else {
             // Trying a particular "dataType::serviceType" pair again
@@ -1064,20 +1066,20 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
                 // Always skip service cheaper than what we already did
                 if (te < le) {
-                    logger.debug("nextKey skip lower cost " + trialEntry.getFullKey());
+                    logger.debug("nextKey skip lower cost {}", trialEntry.getFullKey());
                     continue;
                 }
 
                 // If relaying, we want to be hopping closer to the target
                 if ((te == le) && (trialEntry.getExpense() >= lastPlace.getExpense())
                         && !trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
-                    logger.debug("nextKey skip equal cost " + trialEntry.getFullKey());
+                    logger.debug("nextKey skip equal cost {}", trialEntry.getFullKey());
                     continue;
                 }
 
                 // If equal or lower cost, no point in using the entry
                 if ((trialEntry.getExpense() <= lastPlace.getExpense()) && trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
-                    logger.debug("nextKey skip lower cost not relaying " + trialEntry.getFullKey());
+                    logger.debug("nextKey skip lower cost not relaying {}", trialEntry.getFullKey());
                     continue;
                 }
 
@@ -1106,13 +1108,12 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // FOO-BAR(*)-*
         // FOO-*
         // See WildcardEntry for a more thorough example
-        final DirectoryEntryList found = WildcardEntry.getWildcardedEntry(dataID, entries);
-        return found;
+        return WildcardEntry.getWildcardedEntry(dataID, entries);
     }
 
     /**
      * Payloads that need to traverse the relay gateway can visit here to be forwarded on to the correct destination
-     *
+     * <p>
      * The payload will have the simple current form that caused this relay point to be selected replace with the full
      * four-tupled key of the place matching the request on the proper side of this relay point.
      *
@@ -1154,16 +1155,16 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String dataId = thisEntry.getDataID();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Relay payload '" + d.shortName() + "' arrived" + " with form " + d.currentForm() + " coming from " + sourceEntry.getKey()
-                    + " arrival entry " + thisEntry.getKey() + " arrival dataID=" + dataId);
+            logger.debug("Relay payload '{}' arrived with form {} coming from {} arrival entry {} arrival dataID={}", d.shortName(), d.currentForm(),
+                    sourceEntry.getKey(), thisEntry.getKey(), dataId);
         }
 
         // Where we want to go from here
         List<DirectoryEntry> destination = nextKeys(dataId, d, sourceEntry);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Selected " + destination.size() + " entries " + destination + " from incoming " + sourceEntry.getKey()
-                    + " and data id " + dataId + " current form=" + d.currentForm());
+            logger.debug("Selected {} entries {} from incoming {} and data id {} current form={}", destination.size(), destination,
+                    sourceEntry.getKey(), dataId, d.currentForm());
         }
 
         // Replace the current form with the full key version of same
@@ -1173,7 +1174,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Leaving relay gateway with current form " + d.getAllCurrentForms());
+            logger.debug("Leaving relay gateway with current form {}", d.getAllCurrentForms());
         }
     }
 
@@ -1207,7 +1208,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      */
     @Override
     public Set<String> getEntryKeys() {
-        return new TreeSet<String>(this.entryMap.keySet());
+        return new TreeSet<>(this.entryMap.keySet());
     }
 
     /**
@@ -1242,7 +1243,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @return count of how many keys removed
      */
     @Override
-    public int irdRemovePlaces(final List<String> keys, final boolean propagating) {
+    public int irdRemovePlaces(@Nullable final List<String> keys, final boolean propagating) {
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot remove remote places in standalone nodes");
             return 0;
@@ -1256,7 +1257,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // Validate remote input
         for (final String key : keys) {
             if (!KeyManipulator.isValid(key)) {
-                logger.warn("Ignoring irdRemovePlaces called with " + keys.size() + " keys due to invalid key " + key);
+                logger.warn("Ignoring irdRemovePlaces called with {} keys due to invalid key {}", keys.size(), key);
                 return 0;
             }
         }
@@ -1265,7 +1266,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // because we anticipate the incoming keys will be
         // wildcarded as places go away rather than individual
         // service proxy keys
-        final List<DirectoryEntry> matches = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> matches = new ArrayList<>();
         for (final String key : keys) {
             final List<DirectoryEntry> m = this.entryMap.removeAllMatching(key);
             matches.addAll(m);
@@ -1273,7 +1274,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
         final int count = matches.size();
         if (logger.isDebugEnabled()) {
-            logger.debug("Found " + count + " entries for removal matching " + keys.size() + " keys=" + keys);
+            logger.debug("Found {} entries for removal matching {} keys={}", count, keys.size(), keys);
         }
 
         // Nothing do to, nothing to propagate
@@ -1297,7 +1298,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             // This may fail if the peer is not up. That is normal.
             for (final DirectoryEntry peer : this.peerDirectories) {
                 if (this.heartbeat.isAlive(peer.getKey())) {
-                    logger.debug("Deregistering " + keys.size() + " keys from peer " + peer);
+                    logger.debug("Deregistering {} keys from peer {}", keys.size(), peer);
                     deregisterFrom(peer, keys, false);
                 }
             }
@@ -1307,7 +1308,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         for (final DirectoryEntry match : matches) {
             final String key = match.getKey();
             if (isLocal(key)) {
-                logger.debug("Removed " + key + " putting in local bucket");
+                logger.debug("Removed {} putting in local bucket", key);
                 localKeys.add(key);
             }
         }
@@ -1352,7 +1353,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
             // Notify peers of my demise
             for (final DirectoryEntry peer : this.peerDirectories) {
-                logger.debug("Sending fail msg to peer " + peer);
+                logger.debug("Sending fail msg to peer {}", peer);
                 sendFailMessage(peer, myKey, true);
             }
         }
@@ -1383,7 +1384,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public void addObserver(final DirectoryObserver observer) {
         this.observerManager.addObserver(observer);
-        logger.debug("We now have " + this.observerManager.getObserverCount() + " observers registered");
+        logger.debug("We now have {} observers registered", this.observerManager.getObserverCount());
     }
 
     /**
@@ -1395,7 +1396,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     @Override
     public boolean deleteObserver(final DirectoryObserver observer) {
         final boolean removed = this.observerManager.deleteObserver(observer);
-        logger.debug("We now have " + this.observerManager.getObserverCount() + " observers registered");
+        logger.debug("We now have {} observers registered", this.observerManager.getObserverCount());
         return removed;
     }
 
@@ -1410,7 +1411,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         final String name = "DirectoryPlace";
 
         final Object nsval = Namespace.lookup(name);
-        if (nsval != null && nsval instanceof IDirectoryPlace) {
+        if (nsval instanceof IDirectoryPlace) {
             return (IDirectoryPlace) nsval;
         }
 
@@ -1430,12 +1431,12 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
-     * Force a heartbeat with a particular directory Directory represented by key does not necessarily need to be one that
-     * the HeartbeatManager is already tracking and calling this method will not add it permanently to any list to be
-     * tracked. This is a one time event and can be used at the callers discretion. Note however,that if the key is not a
-     * peer of this directory, a warning will be issued here when the success or failure action is taken by the heartbeat
-     * manager. It can be ignored in this case. Note also, that a true return from this method merely means that the remote
-     * directory responded to the heartbeat method, not that the remote directory is in sync yet with this one.
+     * Force a heartbeat with a particular directory represented by key does not necessarily need to be one that the
+     * HeartbeatManager is already tracking and calling this method will not add it permanently to any list to be tracked.
+     * This is a one time event and can be used at the caller's discretion. Note however,that if the key is not a peer of
+     * this directory, a warning will be issued here when the success or failure action is taken by the heartbeat manager.
+     * It can be ignored in this case. Note also, that a true return from this method merely means that the remote directory
+     * responded to the heartbeat method, not that the remote directory is in sync yet with this one.
      *
      * @see #isRemoteDirectoryAvailable(String)
      * @param key the key of the remote directory

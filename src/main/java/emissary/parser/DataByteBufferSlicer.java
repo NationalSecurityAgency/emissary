@@ -1,13 +1,14 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class DataByteBufferSlicer {
     private static final Logger logger = LoggerFactory.getLogger(DataByteBufferSlicer.class);
@@ -28,7 +29,7 @@ public class DataByteBufferSlicer {
             data.position((int) r.getPosition());
             data.get(n);
         } catch (BufferUnderflowException ex) {
-            logger.warn("Underflow getting " + n.length + " bytes at " + r.getPosition());
+            logger.warn("Underflow getting {} bytes at {}", n.length, r.getPosition());
         }
         return n;
     }
@@ -39,7 +40,7 @@ public class DataByteBufferSlicer {
      * @param data the data to pull from
      * @param list the list of position records indicating absolute offsets
      */
-    public static byte[] makeDataSlice(ByteBuffer data, List<PositionRecord> list) {
+    public static byte[] makeDataSlice(ByteBuffer data, @Nullable List<PositionRecord> list) {
         // Nothing to do
         if (list == null || list.isEmpty()) {
             return null;
@@ -70,7 +71,7 @@ public class DataByteBufferSlicer {
                     data.get(n);
                     out.write(n);
                 } catch (BufferUnderflowException ex) {
-                    logger.error("Underflow getting " + len + " bytes at " + start);
+                    logger.error("Underflow getting {} bytes at {}", len, start);
                 }
             }
             ret = out.toByteArray();

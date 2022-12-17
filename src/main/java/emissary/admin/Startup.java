@@ -1,5 +1,18 @@
 package emissary.admin;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.config.ServiceConfigGuide;
+import emissary.core.EmissaryException;
+import emissary.core.Namespace;
+import emissary.directory.EmissaryNode;
+import emissary.directory.KeyManipulator;
+import emissary.pickup.PickUpPlace;
+import emissary.place.IServiceProviderPlace;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,17 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import emissary.config.Configurator;
-import emissary.config.ServiceConfigGuide;
-import emissary.core.EmissaryException;
-import emissary.core.Namespace;
-import emissary.directory.EmissaryNode;
-import emissary.directory.KeyManipulator;
-import emissary.pickup.PickUpPlace;
-import emissary.place.IServiceProviderPlace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class Startup {
 
@@ -99,7 +102,7 @@ public class Startup {
         if (file.startsWith("/") && new File(file).exists()) {
             return file;
         }
-        return emissary.config.ConfigUtil.getConfigFile(path, file);
+        return ConfigUtil.getConfigFile(path, file);
     }
 
     /**
@@ -123,7 +126,7 @@ public class Startup {
             if (args[0].startsWith("/") || args[0].toUpperCase().startsWith("HTTP")) {
                 startupConfigFile = args[0];
             } else {
-                startupConfigFile = emissary.config.ConfigUtil.getConfigFile(args[0]);
+                startupConfigFile = ConfigUtil.getConfigFile(args[0]);
             }
         } else if (args.length == 2) {
             directoryAction = setAction(ACTIONSTART);
@@ -251,7 +254,7 @@ public class Startup {
     /**
      * Count all entries in lists of a map
      */
-    private int hashListSize(final Map<String, List<String>> m) {
+    private int hashListSize(@Nullable final Map<String, List<String>> m) {
         int total = 0;
         if (m != null) {
             for (final List<String> l : m.values()) {

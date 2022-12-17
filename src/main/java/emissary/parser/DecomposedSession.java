@@ -1,12 +1,15 @@
 package emissary.parser;
 
+import emissary.core.IBaseDataObject;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import javax.annotation.Nullable;
 
 /**
  * Representation of a fully built session with metadata, header, footer, classification, initial forms, and data
@@ -28,7 +31,7 @@ public class DecomposedSession {
     protected byte[] footer = null;
     protected byte[] data = null;
     protected String classification = null;
-    protected List<String> initialForms = new ArrayList<String>();
+    protected List<String> initialForms = new ArrayList<>();
     protected ArrayListMultimap<String, Object> metadata = ArrayListMultimap.create(100, 1);
 
     /**
@@ -83,7 +86,7 @@ public class DecomposedSession {
      * @param d bytes to set
      * @param copy make a copy when true
      */
-    public void setData(byte[] d, boolean copy) {
+    public void setData(@Nullable byte[] d, boolean copy) {
         if (d == null || !copy) {
             data = d;
         } else {
@@ -133,7 +136,7 @@ public class DecomposedSession {
      *
      * @param m the map of metadata to set
      */
-    public void setMetaData(Map<String, ? extends Object> m) {
+    public void setMetaData(Map<String, ?> m) {
         metadata.clear();
         addMetaData(m);
     }
@@ -203,7 +206,7 @@ public class DecomposedSession {
      * @param name the name of the meta record to add
      * @param value the value to add
      */
-    public void addMetaData(String name, Object value) {
+    public void addMetaData(@Nullable String name, @Nullable Object value) {
         if (name != null && value != null) {
             metadata.put(name, value);
         }
@@ -214,9 +217,9 @@ public class DecomposedSession {
      *
      * @param m map of items to add
      */
-    public void addMetaData(Map<String, ? extends Object> m) {
+    public void addMetaData(@Nullable Map<String, ?> m) {
         if (m != null && m.size() > 0) {
-            for (Map.Entry<String, ? extends Object> entry : m.entrySet()) {
+            for (Map.Entry<String, ?> entry : m.entrySet()) {
                 String key = entry.getKey();
                 Object v = entry.getValue();
                 if (v instanceof Iterable) {
@@ -243,7 +246,7 @@ public class DecomposedSession {
      * @param key the name
      */
     public String getStringMetadataItem(String key) {
-        return getStringMetadataItem(key, emissary.core.IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
+        return getStringMetadataItem(key, IBaseDataObject.DEFAULT_PARAM_SEPARATOR);
     }
 
     /**
@@ -254,7 +257,7 @@ public class DecomposedSession {
      */
     public String getStringMetadataItem(String key, String sep) {
         List<Object> o = metadata.get(key);
-        if (o.size() == 0) {
+        if (o.isEmpty()) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
@@ -272,7 +275,7 @@ public class DecomposedSession {
      *
      * @param form initial form to add
      */
-    public void addInitialForm(String form) {
+    public void addInitialForm(@Nullable String form) {
         if (form != null) {
             initialForms.add(form);
         }
@@ -281,9 +284,9 @@ public class DecomposedSession {
     /**
      * Set the list of initial forms to use This will overwrite existing initial forms
      */
-    public void setInitialForms(List<String> forms) {
+    public void setInitialForms(@Nullable List<String> forms) {
         if (forms != null) {
-            initialForms = new ArrayList<String>(forms);
+            initialForms = new ArrayList<>(forms);
         }
     }
 

@@ -1,6 +1,8 @@
 package emissary.util;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -19,12 +21,10 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.annotation.Nullable;
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public class PkiUtil {
 
@@ -40,7 +40,8 @@ public class PkiUtil {
     private static final Logger log = LoggerFactory.getLogger(PkiUtil.class);
 
     /* build the key/trust store from props */
-    public static KeyStore buildStore(final String path, final char[] pazz, final String type) throws IOException, GeneralSecurityException {
+    public static KeyStore buildStore(@Nullable final String path, final char[] pazz, final String type)
+            throws IOException, GeneralSecurityException {
         if ((path == null) || path.isEmpty()) {
             return null;
         }
@@ -80,7 +81,7 @@ public class PkiUtil {
     /*
      * Build char array from password, load from file or read from environment variable.
      */
-    public static char[] loadPW(final String pazz) throws IOException {
+    public static char[] loadPW(@Nullable final String pazz) throws IOException {
         if (pazz == null) {
             return null;
         }

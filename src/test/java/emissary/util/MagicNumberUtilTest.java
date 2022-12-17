@@ -1,14 +1,15 @@
 package emissary.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MagicNumberUtilTest extends UnitTest {
     @Test

@@ -1,19 +1,5 @@
 package emissary.server.mvc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -22,9 +8,24 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
+
 import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 @Path("")
 // context is emissary
@@ -36,7 +37,7 @@ public class DumpDirectoryAction {
     @Path("/DumpDirectory.action")
     @Produces(MediaType.TEXT_HTML)
     @Template(name = "/dump_directory")
-    public Map<String, Object> dumpDirectory(@Context HttpServletRequest request, @QueryParam("targetDir") String targetDir) {
+    public Map<String, Object> dumpDirectory(@Context HttpServletRequest request, @Nullable @QueryParam("targetDir") String targetDir) {
         Map<String, Object> map = new HashMap<>();
         IDirectoryPlace dir = null;
         List<String> errors = new ArrayList<>();

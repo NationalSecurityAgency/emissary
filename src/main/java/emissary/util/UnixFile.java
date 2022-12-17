@@ -1,13 +1,16 @@
 package emissary.util;
 
+import emissary.core.Form;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class UnixFile {
 
@@ -26,7 +29,7 @@ public class UnixFile {
     public static final String FILETYPE_ASCII = "ASCII File";
 
     /** The empty file type description */
-    public static final String FILETYPE_EMPTY = emissary.core.Form.EMPTY;
+    public static final String FILETYPE_EMPTY = Form.EMPTY;
 
     /**
      * Constructor to load instance using the specified File. If the specified file is invalid, an exception will be thrown
@@ -91,7 +94,7 @@ public class UnixFile {
      * byte[])</code> and then calling <code>evaluateBinaryProperty
      * (bytes : byte[])</code>
      */
-    public String execute(byte[] bytes) throws IOException {
+    public String execute(@Nullable byte[] bytes) throws IOException {
         if (bytes == null || bytes.length < 1) {
             return FILETYPE_EMPTY;
         }
@@ -109,7 +112,7 @@ public class UnixFile {
      * Statically tests a byte array to determine if the file representation can be of type ASCII or is binary. Simply
      * checks each byte value to be less then greater/equal then 127.
      */
-    public static String evaluateBinaryProperty(byte[] bytes) {
+    public static String evaluateBinaryProperty(@Nullable byte[] bytes) {
         if (bytes == null || bytes.length < 1) {
             return FILETYPE_EMPTY;
         }

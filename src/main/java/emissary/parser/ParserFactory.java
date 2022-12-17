@@ -1,5 +1,14 @@
 package emissary.parser;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Factory;
+import emissary.util.WindowedSeekableByteChannel;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -7,14 +16,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.core.Factory;
-import emissary.util.WindowedSeekableByteChannel;
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
@@ -80,7 +82,7 @@ public class ParserFactory {
      * @param config the configuration to use or null for the default
      * @since 3.7.1
      */
-    public void reconfigure(Configurator config) {
+    public void reconfigure(@Nullable Configurator config) {
         try {
             if (config == null) {
                 config = ConfigUtil.getConfigInfo(ParserFactory.class);
@@ -209,7 +211,7 @@ public class ParserFactory {
      * @param args arguments to the parser constructor
      * @return SessionParser implementation
      */
-    protected SessionParser makeSessionParserClass(String clazz, Object... args) {
+    protected SessionParser makeSessionParserClass(@Nullable String clazz, Object... args) {
         // Choose implementation class based on data type
         if (clazz == null) {
             logger.warn("Cannot make a session parser for a null class");

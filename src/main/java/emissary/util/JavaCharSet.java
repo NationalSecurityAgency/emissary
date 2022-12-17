@@ -2,6 +2,7 @@ package emissary.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Convert any charset to a Java Charset name that a JDK 1.1 and up will understand. Just returns ones that need
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class JavaCharSet {
 
-    private static Map<String, String> charsets = new HashMap<String, String>();
+    private static Map<String, String> charsets = new HashMap<>();
 
     private static boolean initialized = false;
 
@@ -32,7 +33,7 @@ public class JavaCharSet {
     /**
      * Look up the encoding and return the Java CharSet for it if different from the string passed in
      */
-    public static String get(final String cs) {
+    public static String get(@Nullable final String cs) {
         if (cs == null) {
             return null;
         }
@@ -58,7 +59,7 @@ public class JavaCharSet {
         // any encoding. It doesn't change the base value
         // of the characters to strip it out since we should
         // be processing those out anyway
-        while (s.indexOf("-") != -1 && charSet == null) {
+        while (s.contains("-") && charSet == null) {
             s = s.substring(0, s.lastIndexOf("-"));
             charSet = charsets.get(s);
         }

@@ -1,12 +1,12 @@
 package emissary.place.sample;
 
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-
-import emissary.core.IBaseDataObject;
-import emissary.place.ServiceProviderPlace;
 
 /**
  * This is the main Xxx program. It consists of ...

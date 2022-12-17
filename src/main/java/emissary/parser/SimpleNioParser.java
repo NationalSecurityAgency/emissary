@@ -1,5 +1,8 @@
 package emissary.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -7,9 +10,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * A very simple minded parser implementation that assumes each input channel is one session. This parser has no idea
@@ -35,7 +36,7 @@ public class SimpleNioParser extends NIOSessionParser {
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements
      */
-    protected DecomposedSession decomposeSession(InputSession session) throws ParserException {
+    protected DecomposedSession decomposeSession(@Nullable InputSession session) throws ParserException {
         try {
             DecomposedSession d = new DecomposedSession();
             if (session != null) {
@@ -172,7 +173,7 @@ public class SimpleNioParser extends NIOSessionParser {
      *
      * @param records the list of position records indicating absolute offsets
      */
-    byte[] makeDataSlice(List<PositionRecord> records) throws IOException {
+    byte[] makeDataSlice(@Nullable List<PositionRecord> records) throws IOException {
         if (records == null || records.isEmpty()) {
             return null;
         }

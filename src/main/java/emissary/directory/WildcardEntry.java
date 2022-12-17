@@ -1,13 +1,13 @@
 package emissary.directory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handle the details of a wildcard directory entry including iterating through the possible directory match strings A
@@ -72,7 +72,7 @@ public class WildcardEntry {
     }
 
     /**
-     * Iterator over the wilcard entries in order
+     * Iterator over the wildcard entries in order
      */
     public Iterator<String> iterator() {
         load();
@@ -84,9 +84,7 @@ public class WildcardEntry {
      */
     public Set<String> asSet() {
         load();
-        final Set<String> set = new HashSet<String>();
-        set.addAll(this.wc);
-        return set;
+        return new HashSet<>(this.wc);
     }
 
     /**
@@ -94,7 +92,7 @@ public class WildcardEntry {
      */
     private synchronized void load() {
         if (this.wc == null) {
-            this.wc = new ArrayList<String>();
+            this.wc = new ArrayList<>();
 
             // Put the original on the list first
             if (this.serviceType != null) {
@@ -162,15 +160,15 @@ public class WildcardEntry {
         final DirectoryEntryList matches = new DirectoryEntryList();
 
         final WildcardEntry we = new WildcardEntry(dataID);
-        logger.debug("Got a set of size " + we.size() + " from " + dataID);
+        logger.debug("Got a set of size {} from {}", we.size(), dataID);
 
         for (final String w : we.asSet()) {
             final DirectoryEntryList found = map.get(w);
             if (found != null) {
-                logger.debug("Found a wildcard match on " + w + " size=" + found.size());
+                logger.debug("Found a wildcard match on {} size={}", w, found.size());
                 matches.addAll(found);
             } else {
-                logger.debug("SKipping  " + w + " nothing in map");
+                logger.debug("SKipping {} nothing in map", w);
             }
         }
         return matches;

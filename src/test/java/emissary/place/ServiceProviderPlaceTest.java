@@ -1,11 +1,17 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.config.ConfigUtil;
+import emissary.core.BaseDataObject;
+import emissary.core.EmissaryException;
+import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.KeyManipulator;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,17 +23,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
-import emissary.config.ConfigUtil;
-import emissary.core.BaseDataObject;
-import emissary.core.EmissaryException;
-import emissary.core.IBaseDataObject;
-import emissary.core.Namespace;
-import emissary.directory.DirectoryEntry;
-import emissary.directory.KeyManipulator;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceProviderPlaceTest extends UnitTest {
     private IServiceProviderPlace place = null;

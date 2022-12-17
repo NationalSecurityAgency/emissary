@@ -1,7 +1,20 @@
 package emissary.output;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.Family;
+import emissary.core.IBaseDataObject;
+import emissary.util.ShortNameComparator;
+import emissary.util.TimeUtil;
+import emissary.util.shell.Executrix;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
@@ -13,18 +26,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
-
-import emissary.config.Configurator;
-import emissary.core.Family;
-import emissary.core.IBaseDataObject;
-import emissary.util.shell.Executrix;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -57,7 +62,7 @@ public class DropOffUtil {
     protected Executrix executrix;
 
     // Items for generating random filenames
-    protected static Random prng = new Random();
+    protected static SecureRandom prng = new SecureRandom();
     protected static final SimpleDateFormat DATE_PATTERN = new SimpleDateFormat("yyyyDDDHHmmss");
     protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
     protected static String prefix = "TXT";
@@ -104,7 +109,7 @@ public class DropOffUtil {
         Configurator actualConfigG = configG;
         if (actualConfigG == null) {
             try {
-                actualConfigG = emissary.config.ConfigUtil.getConfigInfo(DropOffUtil.class);
+                actualConfigG = ConfigUtil.getConfigInfo(DropOffUtil.class);
             } catch (IOException e) {
                 logger.error("Cannot open default config file", e);
             }
@@ -334,7 +339,7 @@ public class DropOffUtil {
      * @param tld the top level document in the d family, possibly null
      * @return string path name with correct separators for this OS
      */
-    public String getPathFromSpec(final String specArg, final IBaseDataObject d, final IBaseDataObject tld) {
+    public String getPathFromSpec(final String specArg, @Nullable final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
         final StringBuffer sb = new StringBuffer(128);
 
         // Provide a default spec, just like the old days...
@@ -396,9 +401,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(tld.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
                             } else if (d != null) {
-                                sb.append(datePath(d.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
                             }
                             break;
                         case 'R':
@@ -406,13 +411,13 @@ public class DropOffUtil {
                             break;
                         case 'B':
                             if (tld != null) {
-                                sb.append(getBestIdFrom(tld));
+                                sb.append(cleanSpecPath(getBestIdFrom(tld)));
                             } else if (d != null) {
-                                sb.append(getBestIdFrom(d));
+                                sb.append(cleanSpecPath(getBestIdFrom(d)));
                             }
                             break;
                         case 'b':
-                            sb.append((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d));
+                            sb.append(cleanSpecPath((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d)));
                             final String sn = d.shortName();
                             final int pos = sn.indexOf(emissary.core.Family.SEP);
                             if (pos > 0) {
@@ -420,16 +425,16 @@ public class DropOffUtil {
                             }
                             break;
                         case 'Y':
-                            sb.append(emissary.util.TimeUtil.getDate("yyyy", "GMT"));
+                            sb.append(TimeUtil.getDate("yyyy", "GMT"));
                             break;
                         case 'M':
-                            sb.append(emissary.util.TimeUtil.getDate("MM", "GMT"));
+                            sb.append(TimeUtil.getDate("MM", "GMT"));
                             break;
                         case 'D':
-                            sb.append(emissary.util.TimeUtil.getDate("dd", "GMT"));
+                            sb.append(TimeUtil.getDate("dd", "GMT"));
                             break;
                         case 'J':
-                            sb.append(emissary.util.TimeUtil.getDate("DDD", "GMT"));
+                            sb.append(TimeUtil.getDate("DDD", "GMT"));
                             break;
                         default:
                             sb.append(c).append(t).append(x);
@@ -446,7 +451,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 7);
                 if (endpos > i + 7) {
                     final String token = spec.substring(i + 7, endpos);
-                    final String value = d.getStringParameter(token);
+                    final String value = cleanSpecPath(d.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 8 + token.length(); // META{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -457,7 +462,7 @@ public class DropOffUtil {
                 final int endpos = spec.indexOf("'", i + 6);
                 if (endpos > i + 6) {
                     final String token = spec.substring(i + 6, endpos);
-                    final String value = tld.getStringParameter(token);
+                    final String value = cleanSpecPath(tld.getStringParameter(token));
                     sb.append(nvl(value, "NO-" + token));
                     i += 7 + token.length(); // TLD{'token'} SUPPRESS CHECKSTYLE ModifiedControlVariable
                 } else {
@@ -477,10 +482,14 @@ public class DropOffUtil {
         } else {
             answer = answer.replace('\\', '/');
         }
+
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
         return answer;
+    }
 
+    protected String cleanSpecPath(@Nullable String token) {
+        return token == null ? null : token.replaceAll("[.]+", ".");
     }
 
     /**
@@ -546,7 +555,7 @@ public class DropOffUtil {
         return getSubDirName(d, null, null);
     }
 
-    public String getSubDirName(final IBaseDataObject d, final String spec, final IBaseDataObject tld) {
+    public String getSubDirName(final IBaseDataObject d, @Nullable final String spec, final IBaseDataObject tld) {
         String fileName = null;
 
         if (spec != null && spec.length() > 0) {
@@ -633,7 +642,7 @@ public class DropOffUtil {
         return ret.toString();
     }
 
-    protected Object nvl(final Object a, final Object b) {
+    protected Object nvl(@Nullable final Object a, final Object b) {
         if (a != null) {
             return a;
         }
@@ -644,9 +653,9 @@ public class DropOffUtil {
      * @param dtg expected format yyyymmddhhmmss
      * @return yyyy-mm-dd/hh/(mm%10)
      */
-    protected String datePath(final String dtg) {
+    protected String datePath(@Nullable final String dtg) {
         if (dtg == null) {
-            return emissary.util.TimeUtil.getDateAsPath(Instant.now());
+            return TimeUtil.getDateAsPath(Instant.now());
         } else {
             return dtg.substring(0, 4) + "-" + // yyyy
                     dtg.substring(4, 6) + "-" + // mm
@@ -754,7 +763,7 @@ public class DropOffUtil {
      * @param formsArg Optional space separated string of current forms
      * @return the file type
      */
-    public static String getAndPutFileType(final IBaseDataObject bdo, final Map<String, String> metaData, final String formsArg) {
+    public static String getAndPutFileType(final IBaseDataObject bdo, @Nullable final Map<String, String> metaData, final String formsArg) {
         String forms = formsArg;
         if (forms == null) {
             forms = bdo.getStringParameter(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
@@ -832,7 +841,7 @@ public class DropOffUtil {
      * @param tld if a param is specified and cannot be found in the d method parameter, tries to get param from tld.
      * @return the id based the best ID available, shortname or auto gen id. If no id is found, defaults to auto gen.
      */
-    public String getBestId(final IBaseDataObject d, final IBaseDataObject tld) {
+    public String getBestId(final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
 
         for (final String s : this.idTokens) {
             if (AUTO_GENERATED_ID.equals(s)) {
@@ -959,7 +968,7 @@ public class DropOffUtil {
      * @param d the data object in question
      * @return the Date when the event occurred
      */
-    public Date getEventDate(final IBaseDataObject d, final IBaseDataObject tld) {
+    public Date getEventDate(final IBaseDataObject d, @Nullable final IBaseDataObject tld) {
         Date eventDate = extractEventDateFrom(d, false);
         if (eventDate == null && tld != null) {
             eventDate = extractEventDateFrom(tld, this.defaultEventDateToNow);
@@ -974,7 +983,7 @@ public class DropOffUtil {
             final String value = d.getStringParameter(paramName);
             if (value != null) {
                 try {
-                    date = emissary.util.TimeUtil.getDateFromISO8601(value);
+                    date = TimeUtil.getDateFromISO8601(value);
                     return date;
                 } catch (DateTimeParseException ex) {
                     logger.debug("Cannot parse EventDate", ex);
@@ -995,7 +1004,7 @@ public class DropOffUtil {
      * @return the GMT time of the event or NOW if unparseable, or null if supplyDefaultOnBad is false
      */
     @Deprecated
-    public Date parseEventDate(final String dateString, final boolean supplyDefaultOnBad) {
+    public Date parseEventDate(@Nullable final String dateString, final boolean supplyDefaultOnBad) {
         Date date = null;
 
         if (dateString != null && dateString.length() > 0) {
@@ -1142,7 +1151,7 @@ public class DropOffUtil {
 
             if (p.hasExtractedRecords()) {
                 final List<IBaseDataObject> childObjList = p.getExtractedRecords();
-                Collections.sort(childObjList, new emissary.util.ShortNameComparator());
+                Collections.sort(childObjList, new ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
                     final int parentLevel = StringUtils.countMatches(child.shortName(), emissary.core.Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);

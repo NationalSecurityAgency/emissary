@@ -1,10 +1,5 @@
 package emissary.admin;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -16,9 +11,16 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Static methods to start places in the system.
@@ -82,7 +84,7 @@ public class PlaceStarter {
      * @param theClassStr string name of the class to instantiate
      * @return the place that was found or created, or null if it can't be done
      */
-    public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, final String theClassStr) {
+    public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, @Nullable final String theClassStr) {
         logger.debug("Ready to createPlace {} as {}", theLocation, theClassStr);
 
         final long t1 = System.currentTimeMillis();
@@ -121,7 +123,7 @@ public class PlaceStarter {
         return thePlace;
     }
 
-    public static void shutdownFailedPlace(final String loc, final IServiceProviderPlace place) {
+    public static void shutdownFailedPlace(final String loc, @Nullable final IServiceProviderPlace place) {
         try {
             logger.warn("shutting down the failed place: {}", loc);
             if (place != null) {

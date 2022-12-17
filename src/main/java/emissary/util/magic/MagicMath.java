@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
+import javax.annotation.Nullable;
 
 public class MagicMath {
 
@@ -195,7 +196,7 @@ public class MagicMath {
             return Long.parseLong(stringValue, 10);
     }
 
-    public static byte[] stringToByteArray(int arraySize, String stringValue) {
+    public static byte[] stringToByteArray(int arraySize, @Nullable String stringValue) {
         if (stringValue == null || stringValue.length() == 0)
             return null;
         if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2)))

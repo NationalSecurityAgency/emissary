@@ -1,16 +1,30 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+import emissary.core.channels.FillChannelFactory;
+import emissary.core.channels.InMemoryChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
+import emissary.directory.DirectoryEntry;
+import emissary.pickup.Priority;
+import emissary.test.core.junit5.UnitTest;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,17 +35,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import emissary.directory.DirectoryEntry;
-import emissary.pickup.Priority;
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class BaseDataObjectTest extends UnitTest {
 
@@ -80,6 +95,105 @@ class BaseDataObjectTest extends UnitTest {
     void testNullDataLength() {
         this.b.setData(null);
         assertEquals(0, this.b.dataLength(), "Null data length");
+    }
+
+    @Test
+    void testDataLengthWithChannel() {
+        this.b.setData(null);
+        assertEquals(0, this.b.dataLength());
+        this.b.setChannelFactory(InMemoryChannelFactory.create(new byte[10]));
+        assertEquals(10, this.b.dataLength());
+        this.b.setData(new byte[10]);
+        assertEquals(10, this.b.dataLength());
+    }
+
+
+    @Test
+    void testLargestFile() throws IOException {
+        final BaseDataObject bdo = new BaseDataObject();
+        final long fileSize = Long.MAX_VALUE;
+        final SeekableByteChannelFactory sbcf = FillChannelFactory.create(fileSize, (byte) 0);
+        bdo.setChannelFactory(sbcf);
+        assertEquals(fileSize, bdo.getChannelSize());
+        assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
+
+        final SeekableByteChannel sbc = sbcf.create();
+        final long newPosition = ThreadLocalRandom.current().nextLong(Integer.MAX_VALUE, Long.MAX_VALUE);
+        sbc.position(newPosition);
+        assertEquals(newPosition, sbc.position());
+        final ByteBuffer buff = ByteBuffer.allocate(16);
+        final int bytesRead = sbc.read(buff);
+        assertEquals(16, bytesRead);
+        final byte[] zeroByteArray = new byte[16];
+        Arrays.fill(zeroByteArray, (byte) 0);
+        assertArrayEquals(zeroByteArray, buff.array());
+    }
+
+    @Test
+    void testDataLengthWhenLargerThanMaxInt() throws IOException {
+        final Long higherLength = Long.valueOf(Integer.MAX_VALUE + 100l);
+        final String testString = "test data";
+        BaseDataObject bdo = Mockito.spy(this.b);
+        Mockito.when(bdo.getChannelSize()).thenReturn(higherLength);
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        assertEquals(higherLength.longValue(), bdo.getChannelSize());
+        assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
+    }
+
+    @Test
+    void testExceptionWhenGettingDataLengthWithChannel() throws IOException {
+        BaseDataObject bdo = Mockito.spy(this.b);
+        final String testString = "test data";
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        Mockito.when(bdo.getChannelSize()).thenThrow(IOException.class);
+        assertEquals(0, bdo.dataLength());
+    }
+
+    @Test
+    void testGetDataWhenSmallerThanMaxInt() throws IOException {
+        final String testString = "test data";
+        this.b.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        assertEquals(testString.getBytes().length, this.b.dataLength());
+    }
+
+    @Test
+    void testExceptionWhenGettingChannelFactory() throws IOException {
+        // Mock up a BDO with an SBCF and SBC instance that we control
+        // Create an SBCF that we can work with
+        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes()));
+        // Hook into the SBCF
+        this.b.setChannelFactory(sbcf);
+        // Hook into an SBC
+        try (final SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
+            // Always return this spied SBC
+            Mockito.when(sbcf.create()).thenReturn(sbc);
+            // Kick an exception when calling size()
+            Mockito.when(sbc.size()).thenThrow(IOException.class);
+            // We return an empty byte array in an IOException case
+            assertArrayEquals(new byte[0], this.b.data());
+        }
+    }
+
+    @Test
+    void testExceptionWhenGettingChannelSize() throws IOException {
+        // Hook into the SBCF
+        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes()));
+        this.b.setChannelFactory(sbcf);
+        // Hook into an SBC
+        try (final SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
+            // Always return this spied SBC
+            Mockito.when(sbcf.create()).thenReturn(sbc);
+            // Kick an exception when asking for the size
+            Mockito.when(sbc.size()).thenThrow(IOException.class);
+            // Throw an exception
+            assertThrows(IOException.class, () -> this.b.getChannelSize(), "Should throw the IOException up to the caller");
+        }
+    }
+
+    @Test
+    void testDataLengthBothNull() {
+        BaseDataObject bdo = new BaseDataObject();
+        assertEquals(0, bdo.dataLength());
     }
 
     @Test
@@ -515,35 +629,20 @@ class BaseDataObjectTest extends UnitTest {
         assertThrows(IllegalArgumentException.class, () -> this.b.addCurrentFormAt(0, null));
     }
 
-    @Test
-    void testPullToTopFromMiddle() {
-        this.b.pullFormToTop("TWO");
-        assertEquals("TWO", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
+    static Stream<Arguments> arguments() {
+        return Stream.of(
+                Arguments.of("TWO", "TWO", "ONE", "pull to top from middle"),
+                Arguments.of("ONE", "ONE", "TWO", "pull to top from bottom"),
+                Arguments.of("THREE", "THREE", "ONE", "pull to top from top"),
+                Arguments.of("SEVENTEEN", "THREE", "ONE", "pull non existent to top"));
     }
 
-    @Test
-    void testPullToTopFromBottom() {
-        this.b.pullFormToTop("ONE");
-        assertEquals("ONE", this.b.currentForm(), "Form on top");
-        assertEquals("TWO", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
-    }
-
-    @Test
-    void testPullToTopFromTop() {
-        this.b.pullFormToTop("THREE");
-        assertEquals("THREE", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
-        assertEquals(3, this.b.currentFormSize(), "Stack size after set");
-    }
-
-    @Test
-    void testPullNonExistentToTop() {
-        this.b.pullFormToTop("SEVENTEEN");
-        assertEquals("THREE", this.b.currentForm(), "Form on top");
-        assertEquals("ONE", this.b.currentFormAt(2), "Form on bottom");
+    @ParameterizedTest
+    @MethodSource("arguments")
+    void testPullToTop(String pullToTop, String expected, String expectedAt, String msg) {
+        this.b.pullFormToTop(pullToTop);
+        assertEquals(expected, this.b.currentForm(), msg);
+        assertEquals(expectedAt, this.b.currentFormAt(2), "Form on bottom");
         assertEquals(3, this.b.currentFormSize(), "Stack size after set");
     }
 
@@ -939,6 +1038,34 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    void testVisitHistoryCoordinated() {
+        assertNull(this.b.getLastPlaceVisited(), "Transform history should be empty");
+        assertNull(this.b.getPenultimatePlaceVisited(), "Transform history should be empty");
+
+        this.b.appendTransformHistory("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010");
+        this.b.appendTransformHistory("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020");
+        this.b.appendTransformHistory("UNKNOWN.BAZ.ID.http://host:1234/BazPlace$3030", true);
+        this.b.appendTransformHistory("UNKNOWN.BAM.ID.http://host:1234/BamPlace$4040", true);
+
+        final DirectoryEntry sde = this.b.getLastPlaceVisited();
+        assertNotNull(sde, "Last place directory entry should exist");
+        assertEquals("UNKNOWN.BAR_COORDINATION.ID.http://host:1234/BarPlace$2020", sde.getFullKey(), "Last place returned the wrong key");
+
+        final DirectoryEntry pen = this.b.getPenultimatePlaceVisited();
+        assertNotNull(pen, "Penultimate place directory entry should exist");
+        assertEquals("UNKNOWN.FOO.ID.http://host:1234/FooPlace$1010", pen.getFullKey(), "Penultimate place returned the wrong key");
+
+        assertTrue(this.b.hasVisited("*.FOO.*.*"), "Has visited should have matched for pattern");
+        assertTrue(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited should have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAZ.*.*"), "Has visited should not have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAM.*.*"), "Has visited should not have matched for pattern");
+
+        this.b.clearTransformHistory();
+        assertFalse(this.b.hasVisited("*.FOO.*.*"), "Has visited should not have matched for pattern");
+        assertFalse(this.b.hasVisited("*.BAR_COORDINATION.*.*"), "Has visited should not have matched for pattern");
+    }
+
+    @Test
     void testFiletype() {
         this.b.setFileType(emissary.core.Form.UNKNOWN);
         assertEquals(emissary.core.Form.UNKNOWN, this.b.getFileType(), "Filetype saved");
@@ -956,7 +1083,7 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
-    void testClone() {
+    void testClone() throws IOException {
         try {
             this.b.setParameter("FOOBAR", "JOEBLOGGS");
             final IBaseDataObject clone = this.b.clone();
@@ -968,6 +1095,14 @@ class BaseDataObjectTest extends UnitTest {
             assertEquals(this.b.currentFormSize(), clone.currentFormSize(), "Current form size must match");
             this.b.popCurrentForm();
             assertEquals(this.b.currentFormSize(), clone.currentFormSize() - 1, "Current form stack must be detached after clone");
+            final String newData = "some new data";
+            final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(newData.getBytes());
+            this.b.setChannelFactory(sbcf);
+            final IBaseDataObject cloneSbc = this.b.clone();
+            assertEquals(13, cloneSbc.getChannelFactory().create().read(ByteBuffer.allocate(newData.length())));
+
+            assertEquals(newData, new String(cloneSbc.data()));
+
         } catch (CloneNotSupportedException ex) {
             fail("Clone must be supported on BaseDataObject", ex);
         }
@@ -1014,6 +1149,81 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testNullTimestampSettingThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> this.b.setCreationTimestamp(null));
+    }
+
+    @Test
+    void testNullDataAndChannel() {
+        final BaseDataObject bdo = new BaseDataObject();
+        assertNull(bdo.getChannelFactory());
+    }
+
+    @Test
+    void testSettingChannelFactoryWhenCurrentlyNull() throws IOException {
+        final String testData = "This is a test";
+        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(testData.getBytes());
+        final BaseDataObject bdo = new BaseDataObject();
+        bdo.setChannelFactory(sbcf);
+        assertEquals(sbcf, bdo.getChannelFactory());
+    }
+
+    @Test
+    void testCanRetrieveChannelFactoryFromByteArray() throws IOException {
+        final String testData = "This is a test";
+        this.b.setData(testData.getBytes()); // nulls out channelFactory
+        final ByteBuffer buff = ByteBuffer.allocate(testData.length());
+        final SeekableByteChannelFactory sbcf = this.b.getChannelFactory();
+        sbcf.create().read(buff);
+        assertArrayEquals(testData.getBytes(), buff.array());
+    }
+
+    @Test
+    void testBothDataFieldsHaveValue()
+            throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        final BaseDataObject bdo = new BaseDataObject();
+        final String testData = "This is a test";
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes()));
+        Field theData = bdo.getClass().getDeclaredField("theData");
+        theData.set(bdo, testData.getBytes());
+
+        final String msg = "Should throw an error when trying to access data on a BDO where we have a byte array and a channel";
+
+        assertThrows(IllegalStateException.class, () -> bdo.data(), msg);
+        assertThrows(IllegalStateException.class, () -> bdo.getChannelFactory(), msg);
+        assertThrows(IllegalStateException.class, () -> bdo.getChannelSize(), msg);
+        assertThrows(IllegalStateException.class, () -> bdo.dataLength(), msg);
+    }
+
+    @Test
+    void testBasicDataMethods() throws IOException {
+        final String testData = "This is a test";
+        final byte[] testArray = testData.getBytes();
+        final int testLength = testArray.length;
+
+        // data() check with byte[]
+        byte[] existingData = this.b.data();
+        assertEquals("This is a test", new String(existingData));
+
+        // getSeekableByteChannelFactory() check with byte[]
+        ByteBuffer buff = ByteBuffer.allocate(testLength);
+        this.b.getChannelFactory().create().read(buff);
+        assertEquals(testData, new String(buff.array()));
+
+        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testArray);
+        this.b.setChannelFactory(sbcf);
+
+        // data() check with sbcf
+        existingData = this.b.data();
+        assertEquals("This is a test", new String(existingData));
+
+        // getSeekableByteChannelFactory() check with sbcf
+        buff = ByteBuffer.allocate(testLength);
+        this.b.getChannelFactory().create().read(buff);
+        assertEquals(testData, new String(buff.array()));
+    }
+
+    @Test
+    void testSeekableByteChannelFactoryWithInvalidData() {
+        assertThrows(NullPointerException.class, () -> this.b.setChannelFactory(null));
     }
 
     @Test

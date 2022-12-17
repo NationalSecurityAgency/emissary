@@ -1,16 +1,10 @@
 package emissary.output.filter;
 
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import emissary.config.Configurator;
+import emissary.core.IBaseDataObject;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.directory.DirectoryEntry;
+import emissary.util.TimeUtil;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,11 +24,20 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
-import emissary.config.Configurator;
-import emissary.core.IBaseDataObject;
-import emissary.directory.DirectoryEntry;
-import emissary.util.TimeUtil;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import javax.annotation.Nullable;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 /**
  * JSON Output filter using Jackson
@@ -53,7 +56,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected ObjectMapper jsonMapper;
 
     @Override
-    public void initialize(final Configurator theConfigG, final String filterName, final Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, @Nullable final String filterName, final Configurator theFilterConfig) {
         if (filterName == null) {
             setFilterName("JSON");
         }
@@ -255,6 +258,9 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         @JsonProperty("members")
         @JsonInclude(NON_EMPTY)
         abstract List<IBaseDataObject> getExtractedRecords();
+
+        @JsonIgnore
+        abstract SeekableByteChannelFactory getChannelFactory();
 
         @JsonIgnore
         abstract int dataLength();

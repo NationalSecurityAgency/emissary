@@ -1,19 +1,12 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import com.codahale.metrics.Timer;
 import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.core.MobileAgent;
 import emissary.core.Namespace;
@@ -21,6 +14,7 @@ import emissary.core.NamespaceException;
 import emissary.core.ResourceException;
 import emissary.core.ResourceWatcher;
 import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
@@ -28,12 +22,26 @@ import emissary.directory.WildcardEntry;
 import emissary.kff.KffDataObjectHandler;
 import emissary.log.MDCConstants;
 import emissary.parser.SessionParser;
+import emissary.server.EmissaryServer;
 import emissary.server.mvc.adapters.DirectoryAdapter;
 import emissary.util.JMXUtil;
+
+import com.codahale.metrics.Timer;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 /**
  * Concrete instances of ServiceProviderPlace can be created by the emissary.admin.PlaceStarter and registered with the
@@ -170,7 +178,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param configStream the stream to use or null to auto configure
      */
-    protected Configurator loadConfigurator(InputStream configStream, String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable InputStream configStream, String placeLocation) throws IOException {
         // Read the configuration stream
         if (configStream != null) {
             // Use supplied stream
@@ -184,7 +192,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param configFileName the file name to use or null to auto configure
      */
-    protected Configurator loadConfigurator(String configFileName, String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable String configFileName, String placeLocation) throws IOException {
         // Read the configuration stream
         if (configFileName != null) {
             // Use supplied stream
@@ -197,7 +205,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     /**
      * Load the configurator, figuring out whence automatically
      */
-    protected Configurator loadConfigurator(String placeLocation) throws IOException {
+    protected Configurator loadConfigurator(@Nullable String placeLocation) throws IOException {
         if (placeLocation == null) {
             placeLocation = this.getClass().getSimpleName();
         }
@@ -240,7 +248,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
 
         // configure directory references
-        if (!(this instanceof emissary.directory.DirectoryPlace)) {
+        if (!(this instanceof DirectoryPlace)) {
             localizeDirectory(theDir);
             logger.debug("Our localizedDirectory is {}", dirPlace);
         } else {
@@ -279,15 +287,15 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param theDir key for the directory to use, if null will look up default name
      * @return true if it worked
      */
-    private boolean localizeDirectory(String theDir) {
+    private boolean localizeDirectory(@Nullable String theDir) {
         // Get a local (non proxy) copy of the directory if possible!
         // Looking up both if nothing is provided
         if (theDir == null) {
             try {
-                localDirPlace = emissary.directory.DirectoryPlace.lookup();
+                localDirPlace = DirectoryPlace.lookup();
                 dirPlace = localDirPlace.toString();
             } catch (EmissaryException ex) {
-                if (emissary.server.EmissaryServer.exists() && !(this instanceof emissary.directory.DirectoryPlace)) {
+                if (EmissaryServer.exists() && !(this instanceof DirectoryPlace)) {
                     logger.warn("Unable to find DirectoryPlace in local namespace", ex);
                     return false;
                 }
@@ -375,7 +383,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param placeLocation the specified placeLocation or a full four part key to register with
      */
-    protected void configureServicePlace(String placeLocation) throws IOException {
+    protected void configureServicePlace(@Nullable String placeLocation) throws IOException {
         serviceDescription = configG.findStringEntry("SERVICE_DESCRIPTION");
         if (serviceDescription == null || serviceDescription.length() == 0) {
             serviceDescription = "Description not available";
@@ -525,7 +533,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             } catch (Exception e) {
                 logger.error("Place.process exception", e);
                 dataObject.addProcessingError("agentProcessHD(" + keys.get(0) + "): " + e);
-                dataObject.replaceCurrentForm(emissary.core.Form.ERROR);
+                dataObject.replaceCurrentForm(Form.ERROR);
             }
         }
 
@@ -564,7 +572,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param payload the payload to evaluate and rehash
      */
-    protected void rehash(IBaseDataObject payload) {
+    protected void rehash(@Nullable IBaseDataObject payload) {
         // Recompute hash if marker interface is enabled
         if (this instanceof RehashingPlace && kff != null && payload != null) {
             kff.hash(payload);
@@ -615,7 +623,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         Class<?> c = this.getClass();
         while (!c.getName().equals(ServiceProviderPlace.class.getName())) {
-            for (java.lang.reflect.Method m : c.getDeclaredMethods()) {
+            for (Method m : c.getDeclaredMethods()) {
                 String mname = m.getName();
                 String rname = m.getReturnType().getName();
                 Class<?>[] params = m.getParameterTypes();
@@ -1084,14 +1092,14 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         try {
             MobileAgent agent = getAgent();
 
-            if (agent instanceof emissary.core.HDMobileAgent) {
-                Object payload = ((emissary.core.HDMobileAgent) agent).getPayloadForTransport();
+            if (agent instanceof HDMobileAgent) {
+                Object payload = ((HDMobileAgent) agent).getPayloadForTransport();
                 if (payload instanceof List) {
                     List<?> familyTree = (List<?>) payload;
                     for (Object familyMember : familyTree) {
                         if (familyMember instanceof IBaseDataObject) {
                             IBaseDataObject member = (IBaseDataObject) familyMember;
-                            if (!member.shortName().contains(emissary.core.Family.SEP)) {
+                            if (!member.shortName().contains(Family.SEP)) {
                                 return member;
                             }
                         } else {

@@ -1,11 +1,7 @@
 package emissary.output.roller.journal;
 
-import static emissary.output.roller.journal.Journal.CURRENT_VERSION;
-import static emissary.output.roller.journal.Journal.ENTRY_LENGTH;
-import static emissary.output.roller.journal.Journal.EXT;
-import static emissary.output.roller.journal.Journal.MAGIC;
-import static emissary.output.roller.journal.Journal.NINE;
-import static emissary.output.roller.journal.Journal.SEP;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -22,8 +18,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static emissary.output.roller.journal.Journal.CURRENT_VERSION;
+import static emissary.output.roller.journal.Journal.ENTRY_LENGTH;
+import static emissary.output.roller.journal.Journal.EXT;
+import static emissary.output.roller.journal.Journal.MAGIC;
+import static emissary.output.roller.journal.Journal.NINE;
+import static emissary.output.roller.journal.Journal.SEP;
 
 /**
  * Encapsulates logic to read/deserialize a BG Journal file.

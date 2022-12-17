@@ -1,11 +1,13 @@
 package emissary.parser;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class DataByteArraySlicer {
 
@@ -29,10 +31,10 @@ public class DataByteArraySlicer {
      * @param data the data to pull from
      * @param list the list of position records indicating offsets
      */
-    public static byte[] makeDataSlice(byte[] data, List<PositionRecord> list) {
+    public static byte[] makeDataSlice(byte[] data, @Nullable List<PositionRecord> list) {
 
         // Nothing to do
-        if (list == null || list.size() == 0) {
+        if (CollectionUtils.isEmpty(list)) {
             return null;
         }
 

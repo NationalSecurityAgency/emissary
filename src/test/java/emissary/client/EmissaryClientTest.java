@@ -1,6 +1,12 @@
 package emissary.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import emissary.config.ConfigUtil;
+import emissary.test.core.junit5.UnitTest;
+
+import org.apache.http.client.config.RequestConfig;
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,12 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
-import emissary.config.ConfigUtil;
-import emissary.test.core.junit5.UnitTest;
-import org.apache.http.client.config.RequestConfig;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EmissaryClientTest extends UnitTest {
 

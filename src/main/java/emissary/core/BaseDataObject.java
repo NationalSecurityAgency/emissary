@@ -1,9 +1,24 @@
 package emissary.core;
 
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.channels.SeekableByteChannelHelper;
+import emissary.directory.DirectoryEntry;
+import emissary.pickup.Priority;
+import emissary.util.ByteUtil;
+import emissary.util.PayloadUtil;
+
+import com.google.common.collect.LinkedListMultimap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.rmi.Remote;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,28 +31,21 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
-
-import com.google.common.collect.LinkedListMultimap;
-import emissary.directory.DirectoryEntry;
-import emissary.directory.KeyManipulator;
-import emissary.pickup.Priority;
-import emissary.place.IServiceProviderPlace;
-import emissary.util.ByteUtil;
-import emissary.util.PayloadUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
- * Class to hold byte array of data, header, footer, and attributes
+ * Class to hold data, header, footer, and attributes
  */
 public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDataObject {
     protected static final Logger logger = LoggerFactory.getLogger(BaseDataObject.class);
 
+    /* Used to limit the size of a returned byte array to avoid certain edge case scenarios */
+    public static final int MAX_BYTE_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
     /* Including this here make serialization of this object faster. */
     private static final long serialVersionUID = 7362181964652092657L;
 
-    /* Our payload */
+    /* Actual data - migrate away from this towards byte channels. */
     protected byte[] theData;
 
     /**
@@ -70,7 +78,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * A travelogue built up as the agent moves about. Appended to by the agent as it goes from place to place.
      */
-    protected List<String> history = new ArrayList<>();
+    protected TransformHistory history = new TransformHistory();
 
     /**
      * The last determined language(characterset) of the data.
@@ -170,6 +178,50 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected String transactionId;
 
     /**
+     * A factory to create channels for the referenced data.
+     */
+    protected SeekableByteChannelFactory seekableByteChannelFactory;
+
+    protected enum DataState {
+        NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
+    }
+
+    protected static final String INVALID_STATE_MSG = "Can't have both theData and seekableByteChannelFactory set. Object is %s";
+
+    /**
+     * <p>
+     * Determine what state we're in with respect to the byte[] of data vs a channel.
+     * </p>
+     * 
+     * <p>
+     * Not exposed publicly as consumers should be moving to channels, meaning ultimately the states will be simply either a
+     * channel factory exists or does not exist.
+     * </p>
+     * 
+     * <p>
+     * Consumers should not modify their behaviour based on the state of the BDO, if they're being modified to handle
+     * channels, they should only handle channels, not both channels and byte[].
+     * </p>
+     * 
+     * @return the {@link DataState} of this BDO
+     */
+    protected DataState getDataState() {
+        if (theData == null) {
+            if (seekableByteChannelFactory == null) {
+                return DataState.NO_DATA;
+            } else {
+                return DataState.CHANNEL_ONLY;
+            }
+        } else {
+            if (seekableByteChannelFactory == null) {
+                return DataState.BYTE_ARRAY_ONLY;
+            } else {
+                return DataState.BYTE_ARRAY_AND_CHANNEL;
+            }
+        }
+    }
+
+    /**
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
@@ -198,14 +250,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param name the name of the data item
      * @param form the initial form of the data
      */
-    public BaseDataObject(final byte[] newData, final String name, final String form) {
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form) {
         this(newData, name);
         if (form != null) {
             pushCurrentForm(form);
         }
     }
 
-    public BaseDataObject(final byte[] newData, final String name, final String form, final String fileType) {
+    public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType) {
         this(newData, name, form);
         if (fileType != null) {
             this.setFileType(fileType);
@@ -266,24 +318,79 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Return BaseDataObjects byte array. WARNING: this implementation returns the actual array directly, no copy is made so
-     * the caller must be aware that modifications to the returned array are live.
-     *
-     * @return byte array of the data
+     * Set the byte channel factory using whichever implementation is providing access to the data.
+     * 
+     * Setting this will null out {@link #theData}
      */
     @Override
-    public byte[] data() {
-        return this.theData;
+    public void setChannelFactory(final SeekableByteChannelFactory sbcf) {
+        Validate.notNull(sbcf, "Required: SeekableByteChannelFactory not null");
+        this.theData = null;
+        this.seekableByteChannelFactory = sbcf;
     }
 
     /**
-     * Set BaseDataObjects data to byte array passed in. WARNING: this implementation uses the passed in array directly, no
-     * copy is made so the caller should not reuse the array.
-     *
-     * @param newData byte array to set replacing any existing data
+     * Returns the seekable byte channel factory containing a reference to the data, or wraps the in-memory data on the BDO
+     * in a new factory.
+     * 
+     * @return the factory containing the data reference or the data wrapped in a new factory
      */
     @Override
-    public void setData(final byte[] newData) {
+    public SeekableByteChannelFactory getChannelFactory() {
+        switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL:
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case CHANNEL_ONLY:
+                return seekableByteChannelFactory;
+            case BYTE_ARRAY_ONLY:
+                return SeekableByteChannelHelper.memory(this.theData);
+            case NO_DATA:
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * <p>
+     * Return BaseDataObjects byte array OR as much as we can from the reference to the data up to MAX_BYTE_ARRAY_SIZE.
+     * </p>
+     * 
+     * <p>
+     * Data returned from a backing Channel will be truncated at {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}. Using
+     * channel-related methods is now preferred to allow handling of larger objects
+     * </p>
+     * 
+     * <p>
+     * <b>WARNING</b>: There is no way for the caller to know whether the data being returned is the direct array held in
+     * memory, or a copy of the data from a byte channel factory, so the returned byte array should be treated as live and
+     * not be modified.
+     * </p>
+     * 
+     * @see #getChannelFactory()
+     * @return the data as a byte array
+     */
+    @Override
+    public byte[] data() {
+        switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL:
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY:
+                return theData;
+            case CHANNEL_ONLY:
+                // Max size here is slightly less than the true max size to avoid memory issues
+                return SeekableByteChannelHelper.getByteArrayFromChannel(this, MAX_BYTE_ARRAY_SIZE);
+            case NO_DATA:
+            default:
+                return null; // NOSONAR maintains backwards compatibility
+        }
+    }
+
+    /**
+     * @see #setData(byte[], int, int)
+     */
+    @Override
+    public void setData(@Nullable final byte[] newData) {
+        this.seekableByteChannelFactory = null;
         if (newData == null) {
             this.theData = new byte[0];
         } else {
@@ -291,8 +398,24 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    /**
+     * <p>
+     * Set new data on the BDO, using a range of the provided byte array. This will remove the reference to any byte channel
+     * factory that backs this BDO so be careful!
+     * </p>
+     * 
+     * <p>
+     * Limited in size to 2^31. Use channel-based methods for larger data.
+     * </p>
+     * 
+     * @param newData containing the source of the new data
+     * @param offset where to start copying from
+     * @param length how much to copy
+     * @see #setChannelFactory(SeekableByteChannelFactory)
+     */
     @Override
-    public void setData(final byte[] newData, final int offset, final int length) {
+    public void setData(@Nullable final byte[] newData, final int offset, final int length) {
+        this.seekableByteChannelFactory = null;
         if (length <= 0 || newData == null) {
             this.theData = new byte[0];
         } else {
@@ -301,9 +424,52 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    /**
+     * Convenience method to get the size of the channel or byte array providing access to the data.
+     * 
+     * @return the channel size
+     */
+    @Override
+    public long getChannelSize() throws IOException {
+        switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL:
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY:
+                return theData.length;
+            case CHANNEL_ONLY:
+                try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
+                    return sbc.size();
+                }
+            case NO_DATA:
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Fetch the size of the payload. Prefer to use: {@link #getChannelSize}
+     * 
+     * @return the length of theData, or the size of the seekable byte channel up to
+     *         {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}.
+     */
     @Override
     public int dataLength() {
-        return this.theData == null ? 0 : this.theData.length;
+        switch (getDataState()) {
+            case BYTE_ARRAY_AND_CHANNEL:
+                throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
+            case BYTE_ARRAY_ONLY:
+                return theData.length;
+            case CHANNEL_ONLY:
+                try {
+                    return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
+                } catch (final IOException ioe) {
+                    logger.error("Couldn't get size of channel on object {}", shortName(), ioe);
+                    return 0;
+                }
+            case NO_DATA:
+            default:
+                return 0;
+        }
     }
 
     @Override
@@ -374,7 +540,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void replaceCurrentForm(final String form) {
+    public void replaceCurrentForm(@Nullable final String form) {
         this.currentForm.clear();
         if (form != null) {
             pushCurrentForm(form);
@@ -513,11 +679,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         myOutput.append(ls);
         myOutput.append("   currentForms: ").append(getAllCurrentForms()).append(ls);
-        myOutput.append("   transform history (").append(this.history.size()).append(") :").append(ls);
-
-        for (final String historyValue : this.history) {
-            myOutput.append("        -> ").append(historyValue).append(ls);
-        }
+        myOutput.append("   ").append(history);
 
         return myOutput.toString();
     }
@@ -545,8 +707,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    public TransformHistory getTransformHistory() {
+        return new TransformHistory(history);
+    }
+
+    @Override
     public List<String> transformHistory() {
-        return new ArrayList<>(this.history);
+        return transformHistory(false);
+    }
+
+    @Override
+    public List<String> transformHistory(boolean includeCoordinated) {
+        return history.get(includeCoordinated);
     }
 
     @Override
@@ -556,18 +728,23 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void appendTransformHistory(final String key) {
-        this.history.add(key);
+        appendTransformHistory(key, false);
     }
 
-    /**
-     * Replace history with the new history. Is this historic revisionism? Maybe, but it is needed to support sprouting
-     *
-     * @param newHistory list of new history strings to use
-     */
     @Override
+    public void appendTransformHistory(final String key, boolean coordinated) {
+        this.history.append(key, coordinated);
+    }
+
+    @Override
+    @Deprecated
     public void setHistory(final List<String> newHistory) {
-        this.history.clear();
-        this.history.addAll(newHistory);
+        this.history.set(newHistory);
+    }
+
+    @Override
+    public void setHistory(TransformHistory newHistory) {
+        this.history.set(newHistory);
     }
 
     @Override
@@ -583,39 +760,24 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public DirectoryEntry getLastPlaceVisited() {
-        final int sz = this.history.size();
-        if (sz == 0) {
-            return null;
-        }
-        return new DirectoryEntry(this.history.get(sz - 1));
+        String entry = history.lastVisit();
+        return entry == null ? null : new DirectoryEntry(entry);
     }
 
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
-        final int sz = this.history.size();
-        if (sz < 2) {
-            return null;
-        }
-        return new DirectoryEntry(this.history.get(sz - 2));
+        String entry = history.penultimateVisit();
+        return entry == null ? null : new DirectoryEntry(entry);
     }
 
     @Override
     public boolean hasVisited(final String pattern) {
-        for (final String historyValue : this.history) {
-            if (KeyManipulator.gmatch(historyValue, pattern)) {
-                return true;
-            }
-        }
-        return false;
+        return history.hasVisited(pattern);
     }
 
     @Override
     public boolean beforeStart() {
-        if (this.history.isEmpty()) {
-            return true;
-        }
-        final String s = this.history.get(this.history.size() - 1);
-        return s.indexOf(IServiceProviderPlace.SPROUT_KEY) > -1;
+        return history.beforeStart();
     }
 
     @Override
@@ -979,7 +1141,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param v the value to store or null
      */
     @Override
-    public void setFileType(final String v) {
+    public void setFileType(@Nullable final String v) {
         deleteParameter(FILETYPE);
         if (v != null) {
             setParameter(FILETYPE, v);
@@ -1005,7 +1167,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      *
      * @param empties a list of types that count as empty
      */
-    protected boolean isFileTypeEmpty(final String[] empties) {
+    protected boolean isFileTypeEmpty(@Nullable final String[] empties) {
         final String s = getFileType();
 
         if (StringUtils.isEmpty(s)) {
@@ -1094,7 +1256,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param data the byte array of data for the view
      */
     @Override
-    public void addAlternateView(final String name, final byte[] data) {
+    public void addAlternateView(final String name, @Nullable final byte[] data) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
@@ -1111,7 +1273,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void addAlternateView(final String name, final byte[] data, final int offset, final int length) {
+    public void addAlternateView(final String name, @Nullable final byte[] data, final int offset, final int length) {
         String mappedName = name;
         try {
             final MetadataDictionary dict = MetadataDictionary.lookup();
@@ -1156,7 +1318,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void setBroken(final String v) {
+    public void setBroken(@Nullable final String v) {
         if (v == null) {
             this.brokenDocument = null;
             return;
@@ -1207,8 +1369,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         if ((this.theData != null) && (this.theData.length > 0)) {
             c.setData(this.theData, 0, this.theData.length);
         }
+
+        if (this.seekableByteChannelFactory != null) {
+            c.setChannelFactory(this.seekableByteChannelFactory);
+        }
+
         c.currentForm = new ArrayList<>(this.currentForm);
-        c.history = new ArrayList<>(this.history);
+        c.history = new TransformHistory(this.history);
         c.multipartAlternative = new HashMap<>(this.multipartAlternative);
         c.priority = this.priority;
         c.creationTimestamp = this.creationTimestamp;

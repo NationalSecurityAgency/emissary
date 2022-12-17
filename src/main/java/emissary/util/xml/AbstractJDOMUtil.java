@@ -1,13 +1,5 @@
 package emissary.util.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 import org.jdom2.CDATA;
@@ -15,12 +7,22 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with JDOM documents
@@ -34,9 +36,9 @@ public abstract class AbstractJDOMUtil {
     protected static SAXBuilder createSAXBuilder(final boolean validate) {
         SAXBuilder builder;
         if (validate) {
-            builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.DTDVALIDATING);
+            builder = new SAXBuilder(XMLReaders.DTDVALIDATING);
         } else {
-            builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+            builder = new SAXBuilder(XMLReaders.NONVALIDATING);
             builder.setFeature("http://xml.org/sax/features/validation", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
             builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
@@ -51,7 +53,7 @@ public abstract class AbstractJDOMUtil {
         return builder;
     }
 
-    protected static Document createDocument(final String xml, final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
+    protected static Document createDocument(final String xml, @Nullable final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }
@@ -63,7 +65,8 @@ public abstract class AbstractJDOMUtil {
         }
     }
 
-    protected static Document createDocument(final byte[] xml, final XMLFilter filter, final String charset, final SAXBuilder builder)
+    protected static Document createDocument(final byte[] xml, @Nullable final XMLFilter filter, @Nullable final String charset,
+            final SAXBuilder builder)
             throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
@@ -88,7 +91,7 @@ public abstract class AbstractJDOMUtil {
         }
     }
 
-    protected static Document createDocument(final InputSource is, final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
+    protected static Document createDocument(final InputSource is, @Nullable final XMLFilter filter, final SAXBuilder builder) throws JDOMException {
         if (filter != null) {
             builder.setXMLFilter(filter);
         }

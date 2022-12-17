@@ -1,5 +1,33 @@
 package emissary.place;
 
+import emissary.config.ConfigUtil;
+import emissary.core.Factory;
+import emissary.core.Family;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
+import emissary.kff.KffDataObjectHandler;
+import emissary.log.MDCConstants;
+import emissary.parser.ParserEOFException;
+import emissary.parser.ParserException;
+import emissary.parser.SessionParser;
+import emissary.parser.SessionProducer;
+import emissary.parser.SimpleParser;
+import emissary.util.Version;
+import emissary.util.shell.Executrix;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -15,32 +43,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import emissary.config.ConfigUtil;
-import emissary.core.Factory;
-import emissary.core.Family;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.EmissaryNode;
-import emissary.kff.KffDataObjectHandler;
-import emissary.log.MDCConstants;
-import emissary.parser.ParserEOFException;
-import emissary.parser.ParserException;
-import emissary.parser.SessionParser;
-import emissary.parser.SessionProducer;
-import emissary.parser.SimpleParser;
-import emissary.util.shell.Executrix;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+import javax.annotation.Nullable;
 
 /**
  * This class handles running a the main method from a ServiceProviderPlace instance in a well defined but extensible
@@ -180,7 +183,7 @@ public class Main {
      */
     public void printUsage() {
         // automatically generate the help statement
-        System.out.println("Emissary Version: " + new emissary.util.Version().toString());
+        System.out.println("Emissary Version: " + new Version().toString());
         HelpFormatter formatter = new HelpFormatter();
         String header = null;
         String footer = "    [file1 [ file2 ... fileN]]";
@@ -817,7 +820,7 @@ public class Main {
      * @param args the remaining (non-option) arguments
      * @param path the path we are operating in, for appending when doing file recursion
      */
-    public void processMainData(String[] args, String path) {
+    public void processMainData(String[] args, @Nullable String path) {
         for (int i = 0; i < args.length; i++) {
             String spath = (path != null ? (path + "/") : "") + args[i];
             File f = new File(spath);
@@ -982,7 +985,7 @@ public class Main {
      *
      * @param payload the processed object
      */
-    public void printPayload(IBaseDataObject payload) {
+    public void printPayload(@Nullable IBaseDataObject payload) {
         if (payload == null) {
             return;
         }

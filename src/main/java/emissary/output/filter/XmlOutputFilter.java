@@ -1,14 +1,15 @@
 package emissary.output.filter;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.util.PayloadUtil;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as utf-8.
@@ -23,7 +24,7 @@ public class XmlOutputFilter extends AbstractRollableFilter {
      * @param filterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(Configurator configG, String filterName, Configurator filterConfig) {
+    public void initialize(Configurator configG, @Nullable String filterName, Configurator filterConfig) {
         if (filterName == null) {
             setFilterName("XML");
         }

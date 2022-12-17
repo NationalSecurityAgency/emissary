@@ -1,19 +1,22 @@
 package emissary.util.roll;
 
+import emissary.roll.Rollable;
+import emissary.util.io.FileNameGenerator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
-
-import emissary.roll.Rollable;
-import emissary.util.io.FileNameGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * Allows for use within the Emissary Rolling framework. Keeps track of bytes written and is thread safe.
@@ -57,12 +60,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     private void handleOrphanedFiles() {
         // Create FilenameFilter
-        FilenameFilter filter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.startsWith(".");
-            }
-        };
+        FilenameFilter filter = (directory, name) -> name.startsWith(".");
 
         // Look for any dot files in directory
         for (File file : this.dir.listFiles(filter)) {
@@ -101,8 +99,12 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     private void rename(File f) {
         if (f.length() == 0L && deleteZeroByteFiles) {
-            LOG.debug("Deleting Zero Byte File {}", f.getAbsolutePath());
-            f.delete();
+            try {
+                LOG.debug("Deleting Zero Byte File {}", f.getAbsolutePath());
+                Files.delete(f.toPath());
+            } catch (IOException e) {
+                LOG.error("Failed to delete zero byte file {}", f.getAbsolutePath(), e);
+            }
             return;
         }
         // drop the dot...
@@ -111,7 +113,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         // This shouldn't happen
         if (nd.exists()) {
             LOG.error("Non dot file {} already exists. Forcing unique name.", nd.getAbsolutePath());
-            nd = new File(dir, nonDot + UUID.randomUUID().toString());
+            nd = new File(dir, nonDot + UUID.randomUUID());
         }
         if (!f.renameTo(nd)) {
             LOG.error("Rename from {} to {} failed.", f.getAbsolutePath(), nd.getAbsolutePath());
@@ -148,7 +150,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
         return rolling;
     }
 
-    private static boolean internalClose(Closeable c) {
+    private static boolean internalClose(@Nullable Closeable c) {
         try {
             if (c != null) {
                 c.close();

@@ -1,14 +1,5 @@
 package emissary.place;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -18,9 +9,20 @@ import emissary.core.ResourceWatcher;
 import emissary.place.sample.ToLowerPlace;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.io.ResourceReader;
+
+import com.codahale.metrics.Timer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FTestSkippingCoordinationPlace extends FunctionalTest {
     private CoordinationPlace place;
@@ -62,7 +64,7 @@ class FTestSkippingCoordinationPlace extends FunctionalTest {
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
         assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
-        Map<String, com.codahale.metrics.Timer> resourcesUsed = rw.getStats();
+        Map<String, Timer> resourcesUsed = rw.getStats();
         rw.quit();
         assertFalse(resourcesUsed.containsKey("ToLowerPlace"), "Resource must not be tracked for coordinated place which should be skipped");
         assertTrue(resourcesUsed.containsKey("ToUpperPlace"), "Resource must be tracked for coordinated place");

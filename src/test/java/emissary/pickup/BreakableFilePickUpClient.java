@@ -1,13 +1,13 @@
 package emissary.pickup;
 
+import emissary.pickup.file.FilePickUpClient;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import emissary.pickup.file.FilePickUpClient;
 
 public class BreakableFilePickUpClient extends FilePickUpClient {
 

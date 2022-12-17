@@ -1,5 +1,7 @@
 package emissary.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -9,8 +11,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.Nullable;
 
 public class TimeUtil {
 
@@ -38,7 +39,7 @@ public class TimeUtil {
      * @throws ZoneRulesException if checking availability and the zone ID cannot be found
      * @throws IllegalArgumentException if the pattern is invalid
      */
-    public static String getDate(final String format, final String timeZone) {
+    public static String getDate(final String format, @Nullable final String timeZone) {
         ZoneId zoneId = timeZone == null ? GMT : ZoneId.of(timeZone);
         return getDate(ZonedDateTime.now(zoneId), format, zoneId);
     }
@@ -54,7 +55,7 @@ public class TimeUtil {
      * @throws ZoneRulesException if checking availability and the zone ID cannot be found
      * @throws IllegalArgumentException if the pattern is invalid
      */
-    public static String getDate(final TemporalAccessor date, final String format, final ZoneId timeZone) {
+    public static String getDate(@Nullable final TemporalAccessor date, final String format, @Nullable final ZoneId timeZone) {
         if (date == null) {
             return null;
         }
@@ -95,7 +96,7 @@ public class TimeUtil {
      * @return the formatted date in the form yyyy-MM-dd/HH/mm
      * @throws DateTimeException if an error occurs during formatting
      */
-    public static String getDateAsPath(final TemporalAccessor date) {
+    public static String getDateAsPath(@Nullable final TemporalAccessor date) {
         if (date == null) {
             return null;
         }
@@ -119,7 +120,7 @@ public class TimeUtil {
      * @deprecated replaced by {@link #getDateOrdinal(TemporalAccessor)}
      */
     @Deprecated
-    public static String getDateOrdinal(Date date) {
+    public static String getDateOrdinal(@Nullable Date date) {
         return date == null ? null : getDateOrdinal(date.toInstant());
     }
 
@@ -130,7 +131,7 @@ public class TimeUtil {
      * @return the formatted date in the form yyyyjjj
      * @throws DateTimeException if an error occurs during formatting
      */
-    public static String getDateOrdinal(TemporalAccessor date) {
+    public static String getDateOrdinal(@Nullable TemporalAccessor date) {
         return date == null ? null : DATE_ORDINAL.format(date);
     }
 
@@ -160,7 +161,7 @@ public class TimeUtil {
      * @deprecated replaced by {@link #getDateAsISO8601(TemporalAccessor)}
      */
     @Deprecated
-    public static String getDateAsISO8601(final Date date) {
+    public static String getDateAsISO8601(@Nullable final Date date) {
         return date == null ? null : getDateAsISO8601(date.toInstant());
     }
 
@@ -171,7 +172,7 @@ public class TimeUtil {
      * @return String in the format yyyy-MM-dd HH:mm:ss
      * @throws DateTimeException if an error occurs during formatting
      */
-    public static String getDateAsISO8601(final TemporalAccessor date) {
+    public static String getDateAsISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_ISO_8601.format(date);
     }
 
@@ -191,7 +192,7 @@ public class TimeUtil {
      * @deprecated replaced by {@link #getDateAsFullISO8601(TemporalAccessor)}
      */
     @Deprecated
-    public static String getDateAsFullISO8601(final Date date) {
+    public static String getDateAsFullISO8601(@Nullable final Date date) {
         return date == null ? null : getDateAsFullISO8601(date.toInstant());
     }
 
@@ -202,7 +203,7 @@ public class TimeUtil {
      * @return the formatted date in yyyy-MM-dd'T'HH:mm:ss'Z'
      * @throws DateTimeException if an error occurs during formatting
      */
-    public static String getDateAsFullISO8601(final TemporalAccessor date) {
+    public static String getDateAsFullISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_FULL_ISO_8601.format(date);
     }
 
@@ -212,7 +213,7 @@ public class TimeUtil {
      * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
      */
     @Deprecated
-    public static Date getDateFromISO8601(final String dateString) throws DateTimeParseException {
+    public static Date getDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : Date.from(getZonedDateFromISO8601(dateString).toInstant());
     }
 
@@ -226,7 +227,7 @@ public class TimeUtil {
      * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
      */
     @Deprecated
-    public static ZonedDateTime getZonedDateFromISO8601(final String dateString) throws DateTimeParseException {
+    public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
     }
 

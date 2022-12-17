@@ -1,16 +1,17 @@
 package emissary.output.filter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.Set;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffPlace;
 import emissary.output.DropOffUtil;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Filter that writes unadorned data as raw bytes
@@ -25,7 +26,7 @@ public class DataFilter extends AbstractFilter {
      * @param filterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final Configurator configG, final String filterName, final Configurator filterConfig) {
+    public void initialize(final Configurator configG, @Nullable final String filterName, final Configurator filterConfig) {
         if (filterName == null) {
             setFilterName("DATA");
         }
@@ -43,7 +44,7 @@ public class DataFilter extends AbstractFilter {
         final Set<String> checkTypes = getTypesToCheck(d);
         final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);
         if (!isOutputtable(checkTypes)) {
-            logger.debug("Skipping " + d.shortName() + " is not outputtable by this filter on types " + checkTypes);
+            logger.debug("Skipping {} is not outputtable by this filter on types {}", d.shortName(), checkTypes);
             return IDropOffFilter.STATUS_SUCCESS;
         }
 
@@ -87,7 +88,7 @@ public class DataFilter extends AbstractFilter {
         final Set<String> checkTypes = getTypesToCheck(d);
         final IBaseDataObject tld = (IBaseDataObject) params.get(IDropOffFilter.TLD_PARAM);
         if (!isOutputtable(checkTypes)) {
-            logger.debug("Skipping " + d.shortName() + " is not outputtable by this filter on types " + checkTypes);
+            logger.debug("Skipping {} is not outputtable by this filter on types {}", d.shortName(), checkTypes);
             return IDropOffFilter.STATUS_SUCCESS;
         }
 
@@ -144,19 +145,19 @@ public class DataFilter extends AbstractFilter {
      * @param type of data
      */
     protected boolean writeDataFile(final IBaseDataObject d, final IBaseDataObject tld, final String baseFileName, final byte[] data,
-            final String type) {
+            @Nullable final String type) {
         String fileName = baseFileName;
         if (type != null) {
             fileName += "." + type;
         }
 
         if (!dropOffUtil.setupPath(fileName)) {
-            logger.error("Cannot setup path for " + fileName);
+            logger.error("Cannot setup path for {}", fileName);
             return false;
         }
 
         if (!dropOffUtil.removeExistingFile(fileName)) {
-            logger.error("Cannot remove existing file at " + fileName);
+            logger.error("Cannot remove existing file at {}", fileName);
             return false;
         }
 
@@ -164,7 +165,7 @@ public class DataFilter extends AbstractFilter {
         try (FileOutputStream fos = new FileOutputStream(fileName)) {
             fos.write(data, 0, data.length);
         } catch (IOException ex) {
-            logger.error("Cannot write output to " + fileName, ex);
+            logger.error("Cannot write output to {}", fileName, ex);
             return false;
         }
 

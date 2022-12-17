@@ -1,18 +1,22 @@
 package emissary.kff;
 
+import emissary.core.channels.FillChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.Set;
-
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
 
 class ChecksumCalculatorTest extends UnitTest {
 
@@ -142,6 +146,26 @@ class ChecksumCalculatorTest extends UnitTest {
             assertEquals(-1L, cr.getCrc(), "CRC not computed");
         } catch (NoSuchAlgorithmException ex) {
             fail("Unable to get SHA-1 or SHA-256 algorithm", ex);
+        }
+    }
+
+    @Test
+    void testCompareByteArrayAndSbcDigests() throws Exception {
+        final ChecksumCalculator cc = new ChecksumCalculator(new String[] {"CRC32", "SHA-1", "SHA-256", "SSDEEP"});
+
+        for (int i = 0; i < 1000; i++) {
+            final byte[] b = new byte[i];
+            for (int j = 0; j < i; j++) {
+                b[j] = (byte) 'a';
+            }
+            final SeekableByteChannelFactory sbcf = FillChannelFactory.create((long) i, (byte) 'a');
+            final ChecksumResults crByte = cc.digest(b);
+            final ChecksumResults crSbcf = cc.digest(sbcf);
+
+            assertEquals(crByte.getCrc(), crSbcf.getCrc(), "CRC's do not match!");
+            assertEquals(crByte.getSsdeep(), crSbcf.getSsdeep(), "SSDEEP's do not match!");
+            assertArrayEquals(crByte.getHash("SHA-1"), crSbcf.getHash("SHA-1"), "SHA-1's do not match!");
+            assertArrayEquals(crByte.getHash("SHA-256"), crSbcf.getHash("SHA-256"), "SHA-256's do not match!");
         }
     }
 }

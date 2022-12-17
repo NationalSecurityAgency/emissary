@@ -1,5 +1,12 @@
 package emissary.core;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+
+import org.apache.commons.collections4.map.LRUMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,12 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import org.apache.commons.collections4.map.LRUMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * This class provides metadata renaming and remapping based on values in its configuration file. There are a set of
@@ -96,7 +98,7 @@ public class MetadataDictionary {
      * @param confArg the config stream to use or null for default
      */
     @SuppressWarnings("unchecked")
-    protected void reconfigure(final Configurator confArg) {
+    protected void reconfigure(@Nullable final Configurator confArg) {
         try {
             final Configurator conf;
             if (confArg == null) {

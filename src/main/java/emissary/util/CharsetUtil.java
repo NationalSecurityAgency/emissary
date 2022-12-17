@@ -1,9 +1,10 @@
 package emissary.util;
 
-import java.io.UnsupportedEncodingException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.UnsupportedEncodingException;
+import javax.annotation.Nullable;
 
 /**
  * A collection of utilities for dealing with different character sets in Java. Mainly with the aim of getting to UTF-8.
@@ -84,7 +85,7 @@ public class CharsetUtil {
      * @param end byte index into input array to stop copying
      * @return array of UTF8 char
      */
-    public static char[] jGetUTFCharArray(final byte[] byteArray, final String charSet, final int start, final int end) {
+    public static char[] jGetUTFCharArray(final byte[] byteArray, @Nullable final String charSet, final int start, final int end) {
         char[] cbuffer = null;
 
         if (byteArray != null) {
@@ -316,7 +317,7 @@ public class CharsetUtil {
      * @param value string to test
      * @return true if string has at least one multibyte char
      */
-    public static boolean hasMultibyte(final String value) {
+    public static boolean hasMultibyte(@Nullable final String value) {
         if (value == null) {
             return false;
         }

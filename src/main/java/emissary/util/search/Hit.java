@@ -1,5 +1,7 @@
 package emissary.util.search;
 
+import javax.annotation.Nullable;
+
 /**
  * Reportable result from MultiKeywordScanner
  */
@@ -16,7 +18,7 @@ public class Hit {
         this.hit[ID] = id;
     }
 
-    public Hit(final int[] vals) {
+    public Hit(@Nullable final int[] vals) {
         if ((vals != null) && (vals.length == 2)) {
             this.hit[OFFSET] = vals[OFFSET];
             this.hit[ID] = vals[ID];

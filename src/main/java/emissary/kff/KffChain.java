@@ -1,11 +1,17 @@
 package emissary.kff;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import emissary.core.channels.SeekableByteChannelFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.channels.SeekableByteChannel;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Keep a list of hash algorithm names and compute them and compare the results to the ordered chain of KFF filter when
@@ -30,7 +36,7 @@ public class KffChain {
     /**
      * Add a new filter to our list
      */
-    public void addFilter(KffFilter f) {
+    public void addFilter(@Nullable KffFilter f) {
         if (f != null) {
             list.add(f);
         }
@@ -113,10 +119,10 @@ public class KffChain {
      *
      * @return result of check
      */
-    public KffResult check(String itemName, byte[] content) throws Exception {
-        ChecksumResults sums = computeSums(content);
+    public KffResult check(final String itemName, final byte[] content) throws Exception {
+        final ChecksumResults sums = computeSums(content);
         KffResult answer = null;
-        if (content.length < KFF_MIN_DATA_SIZE || list.size() == 0) {
+        if (content.length < KFF_MIN_DATA_SIZE || list.isEmpty()) {
             answer = new KffResult(sums);
             answer.setItemName(itemName);
         } else {
@@ -126,8 +132,42 @@ public class KffChain {
             // and nulled out in the output
             try {
                 answer = checkAgainst(list, itemName, sums);
-            } catch (Exception ee) {
-                logger.debug("Problem running KffFilter list.  Using only Checksums", ee);
+            } catch (final Exception e) {
+                logger.debug("Problem running KffFilter list.  Using only Checksums", e);
+                answer = new KffResult(sums);
+                answer.setItemName(itemName);
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * Check content on our chain in the order loaded Data smaller than minDataSize will get hashes computed but can never
+     * be reported as KNOWN data.
+     *
+     * @return result of check
+     * @throws NoSuchAlgorithmException if the checksum can't be calculated
+     * @throws IOException if an error occurred reading the data
+     */
+    public KffResult check(final String itemName, final SeekableByteChannelFactory sbcf) throws NoSuchAlgorithmException, IOException {
+        final ChecksumResults sums = computeSums(sbcf);
+        KffResult answer = null;
+        long sbcSize = 0;
+        try (final SeekableByteChannel sbc = sbcf.create()) {
+            sbcSize = sbc.size();
+        }
+        if (sbcSize < KFF_MIN_DATA_SIZE || list.isEmpty()) {
+            answer = new KffResult(sums);
+            answer.setItemName(itemName);
+        } else {
+            // Surround checkAgainst with a try/catch to handle the
+            // case where one of the KffFilter throws an Exception.
+            // Without the try/catch, the original checksums are lost
+            // and nulled out in the output
+            try {
+                answer = checkAgainst(list, itemName, sums);
+            } catch (final Exception e) {
+                logger.debug("Problem running KffFilter list.  Using only Checksums", e);
                 answer = new KffResult(sums);
                 answer.setItemName(itemName);
             }
@@ -164,8 +204,19 @@ public class KffChain {
      * @param fileContents data to hash
      * @return results of all requested computations
      */
-    public ChecksumResults computeSums(byte[] fileContents) throws Exception {
-        ChecksumCalculator calc = new ChecksumCalculator(algorithms);
+    public ChecksumResults computeSums(byte[] fileContents) throws NoSuchAlgorithmException {
+        final ChecksumCalculator calc = new ChecksumCalculator(algorithms);
         return calc.digest(fileContents);
+    }
+
+    /**
+     * Compute the sums once for the whole chain
+     *
+     * @param sbcf data to hash
+     * @return results of all requested computations
+     */
+    public ChecksumResults computeSums(final SeekableByteChannelFactory sbcf) throws NoSuchAlgorithmException {
+        final ChecksumCalculator calc = new ChecksumCalculator(algorithms);
+        return calc.digest(sbcf);
     }
 }

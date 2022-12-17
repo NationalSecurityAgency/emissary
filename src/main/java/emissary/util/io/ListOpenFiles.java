@@ -1,10 +1,10 @@
 package emissary.util.io;
 
+import emissary.util.shell.Executrix;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import emissary.util.shell.Executrix;
 
 public class ListOpenFiles {
 

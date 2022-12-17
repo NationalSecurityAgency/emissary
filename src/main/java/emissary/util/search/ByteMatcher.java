@@ -1,6 +1,7 @@
 package emissary.util.search;
 
 import java.nio.charset.Charset;
+import javax.annotation.Nullable;
 
 /**
  * This class provides some simple string matching functions on byte arrays
@@ -86,7 +87,7 @@ public class ByteMatcher {
     /**
      * Sort of like libc's strcmp, find if pattern matches this at offset
      */
-    public boolean strcmp(int offset, String pattern) {
+    public boolean strcmp(int offset, @Nullable String pattern) {
 
         if (pattern == null) {
             return false;

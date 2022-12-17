@@ -4,6 +4,9 @@
 
 package emissary.util.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,9 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class Url {
 
@@ -114,7 +115,7 @@ public class Url {
      * @param props array of properties to use
      * @param parms the POST data
      */
-    public static UrlData postUrl(final String urlString, final UrlRequestProperty[] props, final HttpPostParameters parms) {
+    public static UrlData postUrl(final String urlString, @Nullable final UrlRequestProperty[] props, @Nullable final HttpPostParameters parms) {
 
         // props.addProp(new UrlRequestProperty("Content-length",parms.length()));
 
@@ -138,7 +139,8 @@ public class Url {
      * @param parms parameters to use when POSTing
      * @param method GET, HEAD, POST
      */
-    private static UrlData processUrl(final String urlString, final UrlRequestProperty[] props, final HttpPostParameters parms, final int method) {
+    private static UrlData processUrl(final String urlString, @Nullable final UrlRequestProperty[] props, @Nullable final HttpPostParameters parms,
+            final int method) {
         final UrlData response = new UrlData(urlString);
 
         final StringBuilder theOutput = new StringBuilder();

@@ -1,14 +1,20 @@
 package emissary.parser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Arrays;
-
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import static emissary.parser.DataIdentifier.UNKNOWN_TYPE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataIdentifierTest extends UnitTest {
 
@@ -24,47 +30,29 @@ class DataIdentifierTest extends UnitTest {
     @Test
     void testId() throws Exception {
         DataIdentifier id = new DataIdentifier();
-        assertEquals(DataIdentifier.UNKNOWN_TYPE, id.identify(DATA), "Unknown default id");
+        assertEquals(UNKNOWN_TYPE, id.identify(DATA), "Unknown default id");
         assertTrue(id.getTestStringMaxSize() > 0, "Test string size");
 
-        assertEquals(DataIdentifier.UNKNOWN_TYPE, id.identify(DATA), "Unknown raf id");
+        assertEquals(UNKNOWN_TYPE, id.identify(DATA), "Unknown raf id");
         super.tearDown();
     }
 
-    @Test
-    void testDataShorterThanPattern() {
-        ServiceConfigGuide config = new ServiceConfigGuide();
-        config.addEntry("TYPE_FOO", "aaa===aaa");
-        DataIdentifier id = new DataIdentifier(config);
-        String result = id.identify("aaa".getBytes());
-        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Unknown id on data shorter than pattern");
+    static Stream<Arguments> arguments() {
+        return Stream.of(
+                Arguments.of("aaa", UNKNOWN_TYPE, "Unknown id on data shorter than pattern"),
+                Arguments.of("aaa===aaa\n\nbbb===bb", "FOO", "Valid id on data longer than pattern"),
+                Arguments.of("ccc===ccc\n\nbbb===bbb", UNKNOWN_TYPE, "Valid id on data longer than pattern"),
+                Arguments.of("", UNKNOWN_TYPE, "Unknown id on empty byte array"));
     }
 
-    @Test
-    void testDataLongerThanPatternThatMatches() {
+    @ParameterizedTest
+    @MethodSource("arguments")
+    void testIdentify(String identify, String expected, String msg) {
         ServiceConfigGuide config = new ServiceConfigGuide();
         config.addEntry("TYPE_FOO", "aaa===aaa");
         DataIdentifier id = new DataIdentifier(config);
-        String result = id.identify("aaa===aaa\n\nbbb===bbb".getBytes());
-        assertEquals("FOO", result, "Valid id on data longer than pattern");
-    }
-
-    @Test
-    void testDataLongerThanPatternThatDoesntMatch() {
-        ServiceConfigGuide config = new ServiceConfigGuide();
-        config.addEntry("TYPE_FOO", "aaa===aaa");
-        DataIdentifier id = new DataIdentifier(config);
-        String result = id.identify("ccc===ccc\n\nbbb===bbb".getBytes());
-        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Valid id on data longer than pattern");
-    }
-
-    @Test
-    void testIdentificationOfEmptyByteArray() {
-        ServiceConfigGuide config = new ServiceConfigGuide();
-        config.addEntry("TYPE_FOO", "aaa===aaa");
-        DataIdentifier id = new DataIdentifier(config);
-        String result = id.identify("".getBytes());
-        assertEquals(DataIdentifier.UNKNOWN_TYPE, result, "Unknown id on empty byte array");
+        String result = id.identify(identify.getBytes());
+        assertEquals(expected, result, msg);
     }
 
     @Test

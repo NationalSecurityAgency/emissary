@@ -1,10 +1,10 @@
 package emissary.util;
 
-import java.io.Serializable;
-import java.util.Comparator;
-
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+
+import java.io.Serializable;
+import java.util.Comparator;
 
 /**
  * Allow a Collection or Array of IBaseDataObject to be sorted by shortName such that all attachments come in order and

@@ -1,17 +1,18 @@
 package emissary.core;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import com.codahale.metrics.Timer;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.sample.DevNullPlace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.test.core.junit5.extensions.TestAttempts;
+
+import com.codahale.metrics.Timer;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TimedResourceTest extends UnitTest {
     private IServiceProviderPlace tp;

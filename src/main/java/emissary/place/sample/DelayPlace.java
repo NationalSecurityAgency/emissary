@@ -1,9 +1,10 @@
 package emissary.place.sample;
 
-import java.io.IOException;
-
 import emissary.core.IBaseDataObject;
+import emissary.core.ResourceException;
 import emissary.place.ServiceProviderPlace;
+
+import java.io.IOException;
 
 /**
  * This place is a sink hole for everything it registers for
@@ -36,14 +37,14 @@ public class DelayPlace extends ServiceProviderPlace {
      * Consume the data object
      */
     @Override
-    public void process(IBaseDataObject tData) throws emissary.core.ResourceException {
+    public void process(IBaseDataObject tData) throws ResourceException {
         if (logger.isDebugEnabled()) {
             logger.debug("Delay starting {}", tData.getAllCurrentForms());
         }
         try {
             Thread.sleep(delayTimeMillis);
         } catch (InterruptedException e) {
-            throw new emissary.core.ResourceException("Timed out before delay expired", e);
+            throw new ResourceException("Timed out before delay expired", e);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Delay ended {}", tData.getAllCurrentForms());

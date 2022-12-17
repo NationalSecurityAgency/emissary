@@ -1,14 +1,16 @@
 package emissary.util.io;
 
+import emissary.util.web.HtmlEscaper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-
-import emissary.util.web.HtmlEscaper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * This buffer implementation attempts to improve file creation performance by preventing conversion from byte array to
@@ -70,7 +72,7 @@ public class FastStringBuffer extends OutputStream {
         return this;
     }
 
-    public FastStringBuffer append(final String s, final String charset) throws IOException {
+    public FastStringBuffer append(@Nullable final String s, final String charset) throws IOException {
         if (s == null) {
             return this;
         }
@@ -89,7 +91,7 @@ public class FastStringBuffer extends OutputStream {
         return appendEscaped(s, "ISO8859_1");
     }
 
-    public FastStringBuffer appendEscaped(final String s, final String charset) throws IOException {
+    public FastStringBuffer appendEscaped(@Nullable final String s, final String charset) throws IOException {
         if (s == null) {
             return this;
         }
@@ -112,7 +114,7 @@ public class FastStringBuffer extends OutputStream {
     }
 
     /** Appends constant string literals only!!!!! */
-    public FastStringBuffer appendCLS(final String s, final String charset) throws IOException {
+    public FastStringBuffer appendCLS(@Nullable final String s, final String charset) throws IOException {
         if (s == null) {
             return this;
         }
@@ -162,7 +164,7 @@ public class FastStringBuffer extends OutputStream {
     }
 
     @Override
-    public void write(final byte[] a) throws IOException {
+    public void write(@Nullable final byte[] a) throws IOException {
         if (a != null) {
             write(a, 0, a.length);
         }
@@ -259,7 +261,7 @@ public class FastStringBuffer extends OutputStream {
     /**
      * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing
      */
-    public FastStringBuffer appendUTF8(final byte[] data, final String charset, final int start, final int end) throws IOException {
+    public FastStringBuffer appendUTF8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
         final int actualEnd;
         if (end < 0) {
             actualEnd = data.length;
@@ -294,7 +296,7 @@ public class FastStringBuffer extends OutputStream {
         return append(data, actualStart, actualEnd - actualStart);
     }
 
-    public FastStringBuffer appendEscapedUTF8(final byte[] data, final String charset, final int start, final int end) throws IOException {
+    public FastStringBuffer appendEscapedUTF8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
         final int actualEnd;
         if (end < 0) {
             actualEnd = data.length;

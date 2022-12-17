@@ -5,13 +5,13 @@
 
 package emissary.util.search;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The byte tokenizer class allows an application to break a byte buffer into tokens. This was modified from the

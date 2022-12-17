@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>7.10.0-SNAPSHOT</version>
+  <version>7.12.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description />
@@ -42,7 +42,7 @@
     <dep.guava.version>30.1.1-jre</dep.guava.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.15</dep.httpcore.version>
-    <dep.jackson.version>2.12.6</dep.jackson.version>
+    <dep.jackson.version>2.13.4</dep.jackson.version>
     <!-- jersey and tika provide; converge on latest -->
     <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
     <!-- jersey and tika-parsers provide; converge on latest -->
@@ -110,7 +110,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}.1</version>
+        <version>${dep.jackson.version}.2</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
@@ -416,6 +416,12 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>${dep.mockito-junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
         <version>${dep.mockito-junit.version}</version>
         <scope>test</scope>
@@ -521,6 +527,11 @@
       <artifactId>xmlbeans</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.codehaus.janino</groupId>
+      <artifactId>janino</artifactId>
+      <version>3.1.7</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-plus</artifactId>
     </dependency>
@@ -605,6 +616,11 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
@@ -673,35 +689,6 @@
           <version>1.5.3</version>
         </plugin>
         <plugin>
-          <groupId>com.spotify</groupId>
-          <artifactId>dockerfile-maven-plugin</artifactId>
-          <version>1.4.13</version>
-          <configuration>
-            <skipPush>true</skipPush>
-          </configuration>
-          <executions>
-            <execution>
-              <id>tag-version</id>
-              <goals>
-                <goal>build</goal>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>${project.version}</tag>
-              </configuration>
-            </execution>
-            <execution>
-              <id>tag-latest</id>
-              <goals>
-                <goal>tag</goal>
-              </goals>
-              <configuration>
-                <tag>latest</tag>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
           <version>1.6.2</version>
@@ -711,10 +698,11 @@
           </configuration>
           <executions>
             <execution>
-              <id>sort-imports</id>
+              <id>sort-java-imports</id>
               <goals>
                 <goal>sort</goal>
               </goals>
+              <phase>generate-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -741,7 +729,14 @@
               <goals>
                 <goal>format</goal>
               </goals>
-              <phase>process-sources</phase>
+              <phase>generate-sources</phase>
+            </execution>
+            <execution>
+              <id>format-java-test-sources</id>
+              <goals>
+                <goal>format</goal>
+              </goals>
+              <phase>generate-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -756,8 +751,14 @@
           <version>3.1.1</version>
           <configuration>
             <configLocation>${checkstyleFormatter}</configLocation>
-            <!-- TODO change this to warning when the build is cleaned up and stable, to catch new problems -->
-            <violationSeverity>warn</violationSeverity>
+            <!-- this combination of these two configurations
+              (failOnViolation=true and violationSeverity=error) means
+              any checks with severity=error will fail the build -->
+            <!-- TODO enforce more checkstyle categories as the build gets cleaned up -->
+            <!-- As you fix checkstyle warning categories, change the severity of that category
+              to "error" so it will fail the build if new violations of that category get introduced. -->
+            <failOnViolation>true</failOnViolation>
+            <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
             <excludes />
           </configuration>
@@ -770,10 +771,18 @@
           </dependencies>
           <executions>
             <execution>
-              <id>check-style</id>
+              <id>checkstyle-sources</id>
               <goals>
                 <goal>check</goal>
               </goals>
+              <phase>process-sources</phase>
+            </execution>
+            <execution>
+              <id>checkstyle-test-sources</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>process-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -1277,7 +1286,8 @@
       <id>checkstyle</id>
       <activation>
         <property>
-          <name>code-quality</name>
+          <!-- skip with -DskipCheckstyle -->
+          <name>!skipCheckstyle</name>
         </property>
       </activation>
       <build>
@@ -1365,8 +1375,33 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
+            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
+            <version>1.6.2</version>
+            <!--TODO update to latest once we move past JDK11 -->
+            <configuration>
+              <groups>emissary,*,java</groups>
+              <staticGroups>*</staticGroups>
+              <staticAfter>true</staticAfter>
+              <removeUnused>true</removeUnused>
+            </configuration>
+            <executions>
+              <execution>
+                <id>impsort-sources</id>
+                <goals>
+                  <goal>sort</goal>
+                </goals>
+                <phase>generate-sources</phase>
+              </execution>
+              <execution>
+                <id>impsort-test-sources</id>
+                <goals>
+                  <goal>sort</goal>
+                </goals>
+                <phase>generate-test-sources</phase>
+              </execution>
+            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>
@@ -1536,12 +1571,32 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <configuration>
-              <repository>emissary</repository>
-              <dockerfile>contrib/docker/Dockerfile</dockerfile>
-            </configuration>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>docker-build</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <executable>docker</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <arguments>
+                    <argument>build</argument>
+                    <argument>-f</argument>
+                    <argument>contrib/docker/Dockerfile</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:${project.version}</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:latest</argument>
+                    <argument>.</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

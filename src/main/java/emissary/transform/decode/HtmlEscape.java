@@ -1,15 +1,18 @@
 package emissary.transform.decode;
 
+import emissary.util.ByteUtil;
+import emissary.util.CharacterCounterSet;
+import emissary.util.HtmlEntityMap;
+import emissary.util.shell.Executrix;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import emissary.util.CharacterCounterSet;
-import emissary.util.HtmlEntityMap;
-import emissary.util.shell.Executrix;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class HtmlEscape {
 
@@ -48,7 +51,7 @@ public class HtmlEscape {
      * @param counters to measure what is changed
      * @return modified byte array
      */
-    public static byte[] unescapeHtml(byte[] data, CharacterCounterSet counters) {
+    public static byte[] unescapeHtml(@Nullable byte[] data, @Nullable CharacterCounterSet counters) {
 
         ByteArrayOutputStream baos = null;
         byte[] returnBytes = null;
@@ -72,7 +75,7 @@ public class HtmlEscape {
                     int startPos = j;
 
                     // Jump to end of digits, find a semi-colon
-                    while (j < data.length && emissary.util.ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
+                    while (j < data.length && ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
                         j++;
 
                     if (j < data.length && data[j] == ';') {
@@ -122,7 +125,7 @@ public class HtmlEscape {
      * @param counters to measure what is changed
      * @return the new String without escaped HTML
      */
-    public static String unescapeHtml(String s, CharacterCounterSet counters) {
+    public static String unescapeHtml(@Nullable String s, @Nullable CharacterCounterSet counters) {
         if (s == null || s.length() == 0)
             return "";
 
@@ -197,7 +200,7 @@ public class HtmlEscape {
      * @param s the string to find entities in
      * @param counters to measure what was changed
      */
-    public static String unescapeEntities(String s, CharacterCounterSet counters) {
+    public static String unescapeEntities(String s, @Nullable CharacterCounterSet counters) {
         int slen = s.length();
         StringBuilder sb = new StringBuilder(s.length());
 
@@ -276,7 +279,7 @@ public class HtmlEscape {
      * Unescape HTML Entities like &amp;nbsp; into normal characters Also handle broken entities like &amp;;nbsp; and
      * &amp;nbsp (extra semi-colon and missing semi-colon respectively)
      */
-    public static byte[] unescapeEntities(byte[] s, CharacterCounterSet counters) {
+    public static byte[] unescapeEntities(byte[] s, @Nullable CharacterCounterSet counters) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int slen = s.length;
 

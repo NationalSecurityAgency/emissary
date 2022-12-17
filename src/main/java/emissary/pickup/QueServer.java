@@ -1,10 +1,11 @@
 package emissary.pickup;
 
-import java.util.Iterator;
-
 import emissary.core.Pausable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 
 /**
  * Monitor thread for a PickupQueue and return items for processing. Operates in pull mode from a PickupSpace or push

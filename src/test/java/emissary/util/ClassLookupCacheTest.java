@@ -1,10 +1,11 @@
 package emissary.util;
 
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for {@link ClassLookupCache}.

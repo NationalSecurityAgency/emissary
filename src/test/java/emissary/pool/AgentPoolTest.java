@@ -1,14 +1,16 @@
 package emissary.pool;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.stream.Stream;
-
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AgentPoolTest extends UnitTest {
 
@@ -30,7 +32,7 @@ public class AgentPoolTest extends UnitTest {
     void testComputePoolSize(long maxMemoryInBytes,
             Integer propertyOverride,
             int expectedPoolSize,
-            Class<? extends Exception> expectedException,
+            @Nullable Class<? extends Exception> expectedException,
             String expectedExceptionMsg) throws IllegalArgumentException {
         // setup expected exception
         if (expectedException != null) {

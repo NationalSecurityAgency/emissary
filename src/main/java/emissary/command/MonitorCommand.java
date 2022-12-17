@@ -1,15 +1,16 @@
 package emissary.command;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import emissary.client.EmissaryClient;
+import emissary.client.response.BaseResponseEntity;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import emissary.client.EmissaryClient;
-import emissary.client.response.BaseResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpCommand {
 

@@ -1,5 +1,12 @@
 package emissary.pickup;
 
+import emissary.util.xml.SaferJDOMUtil;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,16 +14,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-
-import emissary.util.xml.SaferJDOMUtil;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * Used to communicate between the TreePickUpPlace and TreeSpace about a set of files to process.
- * 
+ * <p>
  * Two times are tracked for the files in each work bundle - the "youngest" modification time and the "oldest"
  * modification time, both initially entered as time from the epoch. However, the concept of "youngest" and "oldest" is
  * relative to the construction time, so that:
@@ -105,7 +107,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         this.oldestFileModificationTime = that.oldestFileModificationTime;
         this.youngestFileModificationTime = that.youngestFileModificationTime;
         this.totalFileSize = that.totalFileSize;
-        if (that.getWorkUnitList().size() > 0) {
+        if (!that.getWorkUnitList().isEmpty()) {
             this.addWorkUnits(that.getWorkUnitList());
         }
         resetBundleId();
@@ -178,7 +180,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         return null;
     }
 
-    static void writeUTFOrNull(String s, DataOutputStream out) throws IOException {
+    static void writeUTFOrNull(@Nullable String s, DataOutputStream out) throws IOException {
         out.writeBoolean(s != null);
         if (s != null) {
             out.writeUTF(s);
@@ -665,8 +667,8 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         for (Element wu : root.getChildren("workUnit")) {
             String filename = wu.getChildTextTrim("workFileName");
             String transactionId = wu.getChildTextTrim("transactionId");
-            boolean failedToParse = Boolean.valueOf(wu.getChildTextTrim("failedToParse"));
-            boolean failedToProcess = Boolean.valueOf(wu.getChildTextTrim("failedToProcess"));
+            boolean failedToParse = Boolean.parseBoolean(wu.getChildTextTrim("failedToParse"));
+            boolean failedToProcess = Boolean.parseBoolean(wu.getChildTextTrim("failedToProcess"));
             wb.addWorkUnit(new WorkUnit(filename, transactionId, failedToParse, failedToProcess));
         }
 

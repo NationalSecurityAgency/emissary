@@ -1,12 +1,13 @@
 package emissary.command;
 
-import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
+import emissary.client.EmissaryResponse;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameters;
-import emissary.client.EmissaryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
 
 /**
  * Use the {@link ServiceCommand} --stop flag to stop a running server

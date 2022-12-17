@@ -1,7 +1,17 @@
 package emissary.pickup.file;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import emissary.admin.PlaceStarter;
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
+import emissary.pickup.WorkBundle;
+import emissary.test.core.junit5.UnitTest;
+import emissary.util.Hexl;
+import emissary.util.TimeUtil;
+import emissary.util.io.ResourceReader;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,15 +20,8 @@ import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
 
-import emissary.admin.PlaceStarter;
-import emissary.core.DataObjectFactory;
-import emissary.core.IBaseDataObject;
-import emissary.pickup.WorkBundle;
-import emissary.test.core.junit5.UnitTest;
-import emissary.util.io.ResourceReader;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FilePickUpClientTest extends UnitTest {
     private static final String CLIENT_KEY = "http://localhost:8005/FilePickUpClient";
@@ -88,7 +91,7 @@ class FilePickUpClientTest extends UnitTest {
         bundle.setCaseId("PETERPAN");
         client.nullifyCaseIdInHook = true;
         client.dataObjectCreated(payload, new File("/eat/prefix/foo/bar"));
-        assertEquals(emissary.util.TimeUtil.getCurrentDateOrdinal(),
+        assertEquals(TimeUtil.getCurrentDateOrdinal(),
                 payload.getStringParameter("DATABASE_CASE_ID"),
                 "Current oridina date must be used when hook nullifies simple case name");
     }
@@ -97,10 +100,10 @@ class FilePickUpClientTest extends UnitTest {
     void testCreateFileName() throws Exception {
         // Perform the default filename creation strategy
         String filePath = "/foo/bar";
-        MessageDigest digest = MessageDigest.getInstance("MD5");
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
         byte[] resultHash = digest.digest(filePath.getBytes());
-        String resultString = emissary.util.Hexl.toUnformattedHexString(resultHash);
+        String resultString = Hexl.toUnformattedHexString(resultHash);
 
         // Compare with the output of the createFilename() method
         assertEquals("PETERPAN-" + resultString, client.createFilename(filePath, "PETERPAN"), "File names do not match");

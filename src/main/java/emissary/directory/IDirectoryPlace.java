@@ -1,9 +1,9 @@
 package emissary.directory;
 
+import emissary.place.IServiceProviderPlace;
+
 import java.util.List;
 import java.util.Set;
-
-import emissary.place.IServiceProviderPlace;
 
 /**
  * Interface for normal directory operations

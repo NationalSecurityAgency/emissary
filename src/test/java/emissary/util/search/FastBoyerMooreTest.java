@@ -1,13 +1,14 @@
 package emissary.util.search;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import emissary.test.core.junit5.UnitTest;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import emissary.test.core.junit5.UnitTest;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class FastBoyerMooreTest extends UnitTest {
     private final String[][] keywords = {{"one", "two", "three", "four", "five"}, {"uno", "dos", "tres", "quatro", "cinco"},

@@ -1,5 +1,8 @@
 package emissary.util.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  $Id$
  */
@@ -13,9 +16,7 @@ package emissary.util.web;
  */
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class HttpPostParameters {
 
@@ -45,7 +46,7 @@ public class HttpPostParameters {
      * @param s the field name
      * @param v the value (can be null)
      */
-    public void add(final String s, final String v) {
+    public void add(final String s, @Nullable final String v) {
         if (this.thePostDataEncoded.length() != 0) {
             this.thePostData.append("&");
             this.thePostDataEncoded.append("&");

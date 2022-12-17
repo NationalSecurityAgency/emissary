@@ -25,6 +25,7 @@ nbactions*.xml
 *.ipr
 *.iws
 .idea/
+.run/
 .project
 .classpath
 .settings/

@@ -1,5 +1,8 @@
 package emissary.util.magic;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -9,9 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 public class MagicNumberFactory {
 
@@ -56,8 +57,8 @@ public class MagicNumberFactory {
      * @param swallowParseException boolean whether to swallow or propogate ParseExceptions that are IGNORABLE_DATATYPE_MSGS
      * @return a {@link List}.
      */
-    public static List<MagicNumber> buildMagicNumberList(byte[] configData, List<String> zeroDepthErrorList,
-            Map<String, List<String>> continuationErrorMap, boolean swallowParseException) {
+    public static List<MagicNumber> buildMagicNumberList(byte[] configData, @Nullable List<String> zeroDepthErrorList,
+            @Nullable Map<String, List<String>> continuationErrorMap, boolean swallowParseException) {
 
         List<MagicNumber> magicNumberList = new ArrayList<MagicNumber>();
         MagicNumber finger = null;
@@ -426,7 +427,7 @@ public class MagicNumberFactory {
         return valueArray;
     }
 
-    private static int unaryPrefixLength(String s) {
+    private static int unaryPrefixLength(@Nullable String s) {
 
         if (s == null || s.length() == 0)
             return 0;

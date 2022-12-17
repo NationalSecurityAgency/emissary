@@ -1,14 +1,5 @@
 package emissary.jni;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
@@ -18,8 +9,19 @@ import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Provide methods for retrieving native libraries from the repository The main entry point is loadLibrary. Places
@@ -73,7 +75,7 @@ public class JNI implements Serializable {
     /**
      * Public constructor args are easy when called from ServiceProviderPlace
      */
-    public JNI(final String theDir, final Configurator configG) {
+    public JNI(@Nullable final String theDir, final Configurator configG) {
         if (theDir != null) {
             try {
                 this.theDir = (IDirectoryPlace) Namespace.lookup(theDir);

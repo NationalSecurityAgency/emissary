@@ -1,5 +1,7 @@
 package emissary.util.web;
 
+import javax.annotation.Nullable;
+
 /*
  $Id$
  */
@@ -206,7 +208,7 @@ public class UrlData {
      * 
      * @param v the new UrlRequestProperty to add
      */
-    public void addProp(final UrlRequestProperty v) {
+    public void addProp(@Nullable final UrlRequestProperty v) {
 
         if (v == null) {
             return;
@@ -229,7 +231,7 @@ public class UrlData {
      * 
      * @param v array of new UrlRequestProperty to add
      */
-    public void addProps(final UrlRequestProperty[] v) {
+    public void addProps(@Nullable final UrlRequestProperty[] v) {
         if (v == null) {
             return;
         }

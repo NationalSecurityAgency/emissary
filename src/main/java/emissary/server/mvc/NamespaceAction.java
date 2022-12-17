@@ -1,20 +1,20 @@
 package emissary.server.mvc;
 
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+
+import org.glassfish.jersey.server.mvc.Template;
+
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import org.glassfish.jersey.server.mvc.Template;
 
 @Path("")
 // context is emissary

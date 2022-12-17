@@ -1,12 +1,13 @@
 package emissary.core;
 
+import emissary.pickup.file.FilePickUpPlace;
+
+import com.codahale.metrics.health.HealthCheck;
+import org.apache.commons.io.filefilter.HiddenFileFilter;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Field;
-
-import com.codahale.metrics.health.HealthCheck;
-import emissary.pickup.file.FilePickUpPlace;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
 
 /**
  * A health check that warns if the input data queue is larger than a given threshold or if the aggregate file size is

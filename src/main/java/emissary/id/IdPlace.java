@@ -1,15 +1,16 @@
 package emissary.id;
 
+import emissary.config.Configurator;
+import emissary.core.Form;
+import emissary.core.IBaseDataObject;
+import emissary.place.ServiceProviderPlace;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import emissary.config.Configurator;
-import emissary.core.Form;
-import emissary.core.IBaseDataObject;
-import emissary.place.ServiceProviderPlace;
+import javax.annotation.Nullable;
 
 /**
  * Abstract class that is the parent of all places that operate in the ID phase of the workflow.
@@ -106,7 +107,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * Before setting a non-final current form, pop everything this place is s proxy for, then push the new form onto the
      * currentForm() stack, then push UNKNOWN on right after it (unless the newForm itself is UNKNOWN).
      */
-    public int setNonFinalCurrentForm(final IBaseDataObject d, final String newForm) {
+    public int setNonFinalCurrentForm(final IBaseDataObject d, @Nullable final String newForm) {
 
         if (this.ignores.contains(newForm)) {
             return d.currentFormSize();
@@ -163,7 +164,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
     /**
      * Set the current form after deciding if it's a FINAL_ID or not
      */
-    public int setCurrentForm(final IBaseDataObject d, final String newForm) {
+    public int setCurrentForm(final IBaseDataObject d, @Nullable final String newForm) {
 
         if (this.ignores.contains(newForm)) {
             return d.currentFormSize();
@@ -183,7 +184,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
      * Set a whole bunch of new forms. The top one may or may not be a FINAL_ID, all others are FINAL_ID de facto so that
      * extraneous UNKNOWNs are not put on the stack
      */
-    public int setCurrentForm(final IBaseDataObject d, final Collection<String> newForms) {
+    public int setCurrentForm(final IBaseDataObject d, @Nullable final Collection<String> newForms) {
 
         final int sz;
         if (newForms == null || newForms.isEmpty()) {

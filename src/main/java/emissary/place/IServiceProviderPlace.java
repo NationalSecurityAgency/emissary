@@ -1,9 +1,13 @@
 package emissary.place;
 
+import emissary.core.IBaseDataObject;
+import emissary.core.MobileAgent;
+import emissary.core.NamespaceException;
+import emissary.core.ResourceException;
+import emissary.directory.DirectoryEntry;
+
 import java.util.List;
 import java.util.Set;
-
-import emissary.directory.DirectoryEntry;
 
 /**
  * IServiceProviderPlace. IServiceProviderPlaces can be created by the emissary.admin.PlaceStarter and registered with
@@ -25,7 +29,7 @@ public interface IServiceProviderPlace {
      * @param lastPlace last place visited
      * @return list of DirectoryEntry
      */
-    List<DirectoryEntry> nextKeys(String dataID, emissary.core.IBaseDataObject payload, DirectoryEntry lastPlace);
+    List<DirectoryEntry> nextKeys(String dataID, IBaseDataObject payload, DirectoryEntry lastPlace);
 
     /**
      * Add a service proxy to a running place. Duplicates are ignored.
@@ -65,7 +69,7 @@ public interface IServiceProviderPlace {
      * 
      * @param payload the payload to be processed
      */
-    void agentProcessCall(emissary.core.IBaseDataObject payload) throws emissary.core.ResourceException;
+    void agentProcessCall(IBaseDataObject payload) throws ResourceException;
 
     /**
      * Return an entry representing this place in the directory
@@ -78,7 +82,7 @@ public interface IServiceProviderPlace {
      * @param payload the payload to be processed
      * @return list of IBaseDataObject result attachments
      */
-    List<emissary.core.IBaseDataObject> agentProcessHeavyDuty(emissary.core.IBaseDataObject payload) throws Exception;
+    List<IBaseDataObject> agentProcessHeavyDuty(IBaseDataObject payload) throws Exception;
 
     /**
      * Method called by the HD Agents for bulk processing of payloads
@@ -86,7 +90,7 @@ public interface IServiceProviderPlace {
      * @param payloadList list of payloads to be processed
      * @return list of IBaseDataObject result attachments
      */
-    List<emissary.core.IBaseDataObject> agentProcessHeavyDuty(List<emissary.core.IBaseDataObject> payloadList) throws Exception;
+    List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadList) throws Exception;
 
     /**
      * Override point for HD Agent calls
@@ -94,14 +98,14 @@ public interface IServiceProviderPlace {
      * @param payload the payload to be processed
      * @return list of IBaseDataObject result attachments
      */
-    List<emissary.core.IBaseDataObject> processHeavyDuty(emissary.core.IBaseDataObject payload) throws emissary.core.ResourceException;
+    List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException;
 
     /**
      * Override point for non-HD agent calls
      * 
      * @param payload the payload to be processed
      */
-    void process(emissary.core.IBaseDataObject payload) throws emissary.core.ResourceException;
+    void process(IBaseDataObject payload) throws ResourceException;
 
     /**
      * Get key for place, first one on list with '*' as service proxy if there are multiple entries
@@ -149,6 +153,6 @@ public interface IServiceProviderPlace {
     /**
      * Get the agent that is currently responsible for this thread
      */
-    emissary.core.MobileAgent getAgent() throws emissary.core.NamespaceException;
+    MobileAgent getAgent() throws NamespaceException;
 
 }

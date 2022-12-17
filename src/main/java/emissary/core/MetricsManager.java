@@ -1,11 +1,7 @@
 package emissary.core;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
@@ -24,10 +20,15 @@ import com.codahale.metrics.jvm.FileDescriptorRatioGauge;
 import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Manages the interactions with CodaHale's Metrics package, including configuration

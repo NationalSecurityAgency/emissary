@@ -1,13 +1,5 @@
 package emissary.server.mvc.adapters;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
-
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.config.ConfigUtil;
@@ -19,6 +11,7 @@ import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -30,6 +23,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Stuff for adapting the Directory calls to HTTP All of the outbound methods supply the TARGET_DIRECTORY parameter that
@@ -242,7 +243,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @return DirectoryEntryList map from the remote side
      * @throws EmissaryException if remote returns an error
      */
-    private DirectoryEntryMap zoneTransfer(final String key, final String myKey, final String action) throws EmissaryException {
+    private DirectoryEntryMap zoneTransfer(final String key, @Nullable final String myKey, final String action) throws EmissaryException {
         final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(key), CONTEXT, action);
 
         final String parentLoc = KeyManipulator.getServiceLocation(key);

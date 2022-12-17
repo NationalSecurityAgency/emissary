@@ -1,5 +1,19 @@
 package emissary.directory;
 
+import emissary.client.EmissaryClient;
+import emissary.client.EmissaryResponse;
+import emissary.core.Namespace;
+import emissary.core.NamespaceException;
+import emissary.server.mvc.adapters.HeartbeatAdapter;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,18 +21,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
-
-import emissary.client.EmissaryClient;
-import emissary.client.EmissaryResponse;
-import emissary.core.Namespace;
-import emissary.core.NamespaceException;
-import emissary.server.mvc.adapters.HeartbeatAdapter;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.annotation.Nullable;
 
 /**
  * Facility for directory instances to check up on each other by sending a heartbeat message
@@ -98,7 +101,8 @@ public class HeartbeatManager {
      * @param initialDelaySeconds seconds to wait before initial timer task
      * @param intervalSeconds how often the timeer task kicks off
      */
-    public HeartbeatManager(final String directoryKey, final List<String> dirList, final int initialDelaySeconds, final int intervalSeconds) {
+    public HeartbeatManager(final String directoryKey, @Nullable final List<String> dirList, final int initialDelaySeconds,
+            final int intervalSeconds) {
         this.initialDelaySeconds = initialDelaySeconds;
         this.intervalSeconds = intervalSeconds;
 
@@ -365,7 +369,7 @@ public class HeartbeatManager {
         final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.FROM_PLACE_NAME, fromPlace));
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.TO_PLACE_NAME, loc));
-        method.setEntity(new UrlEncodedFormEntity(nvps, java.nio.charset.Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
 
         return client.send(method);
     }

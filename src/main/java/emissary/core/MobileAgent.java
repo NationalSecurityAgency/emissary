@@ -1,10 +1,5 @@
 package emissary.core;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.KeyManipulator;
@@ -16,9 +11,16 @@ import emissary.pool.AgentPool;
 import emissary.pool.AgentThreadGroup;
 import emissary.util.JMXUtil;
 import emissary.util.PayloadUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * An autonomous hunk of software
@@ -411,7 +413,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the current payload we care about
      * @return the SDE answer from the directory
      */
-    protected DirectoryEntry getNextKey(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+    protected DirectoryEntry getNextKey(@Nullable final IServiceProviderPlace place, @Nullable final IBaseDataObject payloadArg) {
 
         logger.debug("start getNextKey");
 
@@ -537,8 +539,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                                 lastEntry.setDataType(cform);
                                 formID = lastEntry.getDataID();
                                 parallelEntryRejected = true;
-                                logger.debug("rejecting curEntry due to parallel check in {}, new formID={}, new lastEntry={}", this.visitedPlaces,
-                                        formID, lastEntry.getFullKey());
+                                logger.debug("Rejecting parallel entry found for {}: visitedPlaces={}", lastEntry.getFullKey(), this.visitedPlaces);
                                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
                             } else {
                                 addParallelTrackingInfo(curEntry.getServiceName());
@@ -622,7 +623,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param theID usually comes from the shortName of the payload
      */
-    protected void setAgentID(final String theID) {
+    protected void setAgentID(@Nullable final String theID) {
         final long t = (System.currentTimeMillis() % 10000);
         final String id = "Agent-" + t;
         this.agentID = id + "-" + ((theID != null) ? theID : "blah");
@@ -690,7 +691,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param arrivalPlaceArg the place we start at
      * @param processAtFirstPlace true if we should call process on arrivalPlaceArg
      */
-    protected synchronized void go(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final boolean processAtFirstPlace) {
+    protected synchronized void go(@Nullable final Object dataObject, @Nullable final IServiceProviderPlace arrivalPlaceArg,
+            final boolean processAtFirstPlace) {
         // Check conditions
         if (dataObject != null && !(dataObject instanceof IBaseDataObject)) {
             throw new IllegalArgumentException("Illegal payload sent to MobileAgent, " + "cannot handle " + dataObject.getClass().getName());

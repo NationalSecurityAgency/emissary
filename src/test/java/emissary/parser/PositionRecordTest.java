@@ -1,9 +1,10 @@
 package emissary.parser;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * PositionRecord is pretty stupid so this shouldn't take much effort to test...

@@ -1,13 +1,13 @@
 package emissary.command.converter;
 
+import com.beust.jcommander.converters.BaseConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import com.beust.jcommander.converters.BaseConverter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FileExistsConverter extends BaseConverter<File> {
 
@@ -23,7 +23,7 @@ public class FileExistsConverter extends BaseConverter<File> {
         if (!Files.exists(p)) {
             String msg = String.format("The option '%s' was configured with path '%s' which does not exist", getOptionName(), p);
             LOG.error(msg);
-            throw new RuntimeException(msg);
+            throw new IllegalArgumentException(msg);
         }
         return p.toFile();
     }

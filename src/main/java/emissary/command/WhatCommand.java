@@ -1,17 +1,5 @@
 package emissary.command;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import emissary.command.converter.PathExistsReadableConverter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
@@ -20,18 +8,34 @@ import emissary.core.Factory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
+import emissary.core.ResourceException;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.id.Identification;
 import emissary.parser.DecomposedSession;
+import emissary.parser.ParserEOFException;
 import emissary.parser.ParserException;
 import emissary.parser.ParserFactory;
 import emissary.parser.SessionParser;
 import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.shell.Executrix;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 @Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
@@ -181,7 +185,7 @@ public class WhatCommand extends BaseCommand {
                     final Identification id = identify(payload, this.headerIdentification);
 
                     LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.dataLength() + "]");
-                } catch (emissary.parser.ParserEOFException eof) {
+                } catch (ParserEOFException eof) {
                     LOG.debug("Parser reached end of file: ", eof);
                     // Expected EOF
                     break;
@@ -194,7 +198,7 @@ public class WhatCommand extends BaseCommand {
         }
     }
 
-    protected Identification identify(final IBaseDataObject b, final boolean useHeaderArg) {
+    protected Identification identify(@Nullable final IBaseDataObject b, final boolean useHeaderArg) {
         Identification ident = null;
         if (b == null || b.data() == null) {
             ident = new Identification("BAD_SESSION");
@@ -209,7 +213,7 @@ public class WhatCommand extends BaseCommand {
         return ident;
     }
 
-    private Identification runEngines(final IBaseDataObject b) {
+    private Identification runEngines(@Nullable final IBaseDataObject b) {
 
         final Identification ident = new Identification();
         final List<String> typesFound = new ArrayList<String>();
@@ -239,7 +243,7 @@ public class WhatCommand extends BaseCommand {
                 try {
                     place.process(b);
                     ident.setType(b.currentForm());
-                } catch (emissary.core.ResourceException rex) {
+                } catch (ResourceException rex) {
                     // Ignore.
                     LOG.debug("Error processing object", rex);
                 }

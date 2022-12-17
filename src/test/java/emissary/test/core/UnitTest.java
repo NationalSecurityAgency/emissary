@@ -1,21 +1,14 @@
 package emissary.test.core;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.management.ThreadInfo;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
+import emissary.util.ThreadDump;
 import emissary.util.io.ResourceReader;
+
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,6 +24,16 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.management.ThreadInfo;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Base class of all the unit tests
@@ -178,7 +181,7 @@ public class UnitTest {
     }
 
     public void assertMaxNonSystemThreadCount(int max) {
-        emissary.util.ThreadDump td = new emissary.util.ThreadDump();
+        ThreadDump td = new ThreadDump();
         ThreadInfo[] ti = td.getThreadInfo(true);
         if (ti.length > max) {
             StringBuilder sb = new StringBuilder();
@@ -278,7 +281,7 @@ public class UnitTest {
         }
 
         String aname = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
-        SAXBuilder builder = new SAXBuilder(org.jdom2.input.sax.XMLReaders.NONVALIDATING);
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         Document answerDoc = null;
         try (InputStream is = new ResourceReader().getResourceAsStream(aname)) {
             answerDoc = builder.build(is);

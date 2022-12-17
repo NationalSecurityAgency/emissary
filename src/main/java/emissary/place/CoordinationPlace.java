@@ -1,18 +1,22 @@
 package emissary.place;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import emissary.admin.PlaceStarter;
+import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
+import emissary.core.ResourceException;
 import emissary.core.ResourceWatcher;
 import emissary.core.TimedResource;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This place will coordinate service to several lower level service places. We have a list and will execute each place
@@ -36,7 +40,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected String outputForm = null; // What we call it when we are finished
     protected boolean pushForm = true; // push or set on the form
     protected boolean updateTransformHistory = false;
-    protected String transformHistoryIndent = "";
 
     /**
      * Create the place using the supplied configuration and location
@@ -93,7 +96,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
         outputForm = configG.findStringEntry("OUTPUT_FORM", null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);
         updateTransformHistory = configG.findBooleanEntry("UPDATE_TRANSFORM_HISTORY", false);
-        transformHistoryIndent = configG.findStringEntry("TRANSFORM_HISTORY_INDENT", "");
 
         placeKeys = configG.findEntries("SERVICE_COORDINATION");
         logger.debug("We got {} entries to coordinate", placeKeys.size());
@@ -186,7 +188,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
             if (updateTransformHistory) {
                 DirectoryEntry de = p.getDirectoryEntry();
                 de.setDataType(d.currentForm());
-                d.appendTransformHistory(transformHistoryIndent + de.getKey());
+                // append to the transform history, with flag indicating that the visit was coordinated
+                d.appendTransformHistory(de.getKey(), true);
             }
 
             // Collect attachments for hd processing
@@ -201,7 +204,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                     // Do the normal Non-HD processing
                     p.agentProcessCall(d);
                 }
-                errorOccurred = d.currentForm().equals(emissary.core.Form.ERROR);
+                errorOccurred = d.currentForm().equals(Form.ERROR);
             } catch (Exception ex) {
                 logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
                 errorOccurred = true;
@@ -217,7 +220,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             }
 
             // Track any new attachments
-            if (sprouts != null && sprouts.size() > 0) {
+            if (CollectionUtils.isNotEmpty(sprouts)) {
                 sproutCollection.addAll(sprouts);
             }
         }
@@ -255,9 +258,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @param d the payload to process
      */
     @Override
-    public void process(IBaseDataObject d) throws emissary.core.ResourceException {
+    public void process(IBaseDataObject d) throws ResourceException {
         List<IBaseDataObject> l = coordinate(d, false);
-        if (l != null && l.size() > 0) {
+        if (CollectionUtils.isNotEmpty(l)) {
             logger.error("Non-sprouted documents are being lost {}", l.size());
         }
     }
@@ -269,7 +272,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @return the list of sprouted data objects
      */
     @Override
-    public List<IBaseDataObject> processHeavyDuty(IBaseDataObject d) throws emissary.core.ResourceException {
+    public List<IBaseDataObject> processHeavyDuty(IBaseDataObject d) throws ResourceException {
         return coordinate(d, true);
     }
 

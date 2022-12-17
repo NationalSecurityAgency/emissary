@@ -1,14 +1,15 @@
 package emissary.util;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Map;
 import java.util.TreeMap;
-
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Map HTML entities

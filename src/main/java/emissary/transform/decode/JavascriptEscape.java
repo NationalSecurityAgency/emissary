@@ -1,11 +1,12 @@
 package emissary.transform.decode;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import emissary.util.shell.Executrix;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class JavascriptEscape {
 

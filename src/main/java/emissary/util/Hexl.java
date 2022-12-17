@@ -4,11 +4,11 @@
 
 package emissary.util;
 
+import org.apache.commons.codec.binary.Hex;
+
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import org.apache.commons.codec.binary.Hex;
 
 public class Hexl {
 
