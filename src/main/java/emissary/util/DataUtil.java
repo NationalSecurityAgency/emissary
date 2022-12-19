@@ -20,6 +20,9 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Parameters.EVENT_DATE;
+import static emissary.core.constants.Parameters.FILE_DATE;
+
 public class DataUtil {
     private static final Logger logger = LoggerFactory.getLogger(DataUtil.class);
     private static final Pattern NL_REPL = Pattern.compile("[\n\r]+");
@@ -120,9 +123,9 @@ public class DataUtil {
      */
     @Deprecated
     public static Calendar getEventDate(final IBaseDataObject payload) {
-        String evDate = payload.getStringParameter("EventDate");
+        String evDate = payload.getStringParameter(EVENT_DATE);
         if (evDate == null) {
-            evDate = payload.getStringParameter("FILE_DATE");
+            evDate = payload.getStringParameter(FILE_DATE);
         }
         Date eventDate = null;
         if (evDate != null) {

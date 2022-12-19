@@ -13,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Configurations.NEW_FORM;
+
 /**
  * Run a command external to the Emissary JVM to process data
  */
@@ -93,7 +95,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     protected void configurePlace() {
         doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
-        newForm = configG.findStringEntry("NEW_FORM", Form.UNKNOWN);
+        newForm = configG.findStringEntry(NEW_FORM, Form.UNKNOWN);
         if (newForm == null && keys.get(0).indexOf(".ID.") > -1) {
             newForm = Form.UNKNOWN;
         }

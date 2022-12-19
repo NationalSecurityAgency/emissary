@@ -27,6 +27,9 @@ import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Configurations.PLACE_NAME;
+import static emissary.core.constants.Configurations.SERVICE_KEY;
+
 /**
  * This class wraps up things related to exec-ing of external processes and reading and writing disk files.
  */
@@ -117,9 +120,9 @@ public class Executrix {
         this.tmpDirFile = new File(this.tmpDir);
         this.minimumDataSize = configG.findIntEntry("MINIMUM_DATA_SIZE", 0);
         this.maximumDataSize = configG.findIntEntry("MAXIMUM_DATA_SIZE", 64 * 1024);
-        this.placeName = configG.findStringEntry("PLACE_NAME", null);
+        this.placeName = configG.findStringEntry(PLACE_NAME, null);
         if (this.placeName == null) {
-            final String key = configG.findStringEntry("SERVICE_KEY", null);
+            final String key = configG.findStringEntry(SERVICE_KEY, null);
             this.placeName = key == null ? "UNKNOWN" : KeyManipulator.getServiceName(key);
         }
         this.placeName = this.placeName.replace(' ', '_');

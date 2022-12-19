@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +31,7 @@ public class MetadataDictionaryUtil {
     private Logger logger = LoggerFactory.getLogger(MetadataDictionaryUtil.class);
 
     // The charset of the data
-    private String charset = "UTF-8";
+    private String charset = StandardCharsets.UTF_8.name();
 
     // separator for key and value
     private static final char SEP = ' ';

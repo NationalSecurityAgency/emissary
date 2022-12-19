@@ -15,9 +15,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import static emissary.transform.HtmlEscapePlace.DOCUMENT_TITLE;
-import static emissary.transform.HtmlEscapePlace.HTMLESC;
-import static emissary.transform.HtmlEscapePlace.SUMMARY;
+import static emissary.core.Form.PREFIXES_LANG;
+import static emissary.core.Form.SUFFIXES_HTMLESC;
+import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
+import static emissary.core.constants.Parameters.SUMMARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HtmlEscapePlaceTest extends ExtractionTest {
@@ -70,16 +71,16 @@ public class HtmlEscapePlaceTest extends ExtractionTest {
 
         @Test
         void processEncoding() {
-            String expected = "LANG-" + EXPECTED;
-            d.setFontEncoding(expected + HTMLESC);
+            String expected = PREFIXES_LANG + EXPECTED;
+            d.setFontEncoding(expected + SUFFIXES_HTMLESC);
             place.processEncoding(d);
             assertEquals(expected, d.getFontEncoding());
         }
 
         @Test
         void processCurrentForms() {
-            String expected = "LANG-" + EXPECTED;
-            d.setCurrentForm(expected + HTMLESC);
+            String expected = PREFIXES_LANG + EXPECTED;
+            d.setCurrentForm(expected + SUFFIXES_HTMLESC);
             place.processCurrentForms(d);
             assertEquals(expected, d.currentForm());
         }

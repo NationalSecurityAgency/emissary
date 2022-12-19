@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -55,7 +56,7 @@ class FTestSkippingCoordinationPlace extends FunctionalTest {
     void testProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
         place.processHeavyDuty(payload);
-        assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
+        assertEquals(config.findStringEntry(OUTPUT_FORM), payload.currentForm(), "Current form must be set by coordinate place");
     }
 
     @Test
@@ -63,7 +64,7 @@ class FTestSkippingCoordinationPlace extends FunctionalTest {
         IBaseDataObject payload = DataObjectFactory.getInstance("test data".getBytes(), "test.dat", place.getPrimaryProxy());
         ResourceWatcher rw = new ResourceWatcher();
         place.processHeavyDuty(payload);
-        assertEquals(config.findStringEntry("OUTPUT_FORM"), payload.currentForm(), "Current form must be set by coordinate place");
+        assertEquals(config.findStringEntry(OUTPUT_FORM), payload.currentForm(), "Current form must be set by coordinate place");
         Map<String, Timer> resourcesUsed = rw.getStats();
         rw.quit();
         assertFalse(resourcesUsed.containsKey("ToLowerPlace"), "Resource must not be tracked for coordinated place which should be skipped");

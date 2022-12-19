@@ -21,6 +21,10 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Parameters.INPUT_FILEDATE;
+import static emissary.core.constants.Parameters.INPUT_FILENAME;
+import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
  * directory, but reads files from disk as specified in the received WorkBundle objects. Whether workBundles are
@@ -410,11 +414,11 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
         }
 
         if (simpleParam) {
-            d.putParameter("Original-Filename", fn);
+            d.putParameter(ORIGINAL_FILENAME, fn);
         }
 
-        d.putParameter("INPUT_FILEDATE", TimeUtil.getDateAsISO8601(f.lastModified()));
-        d.putParameter("INPUT_FILENAME", f.getName());
+        d.putParameter(INPUT_FILEDATE, TimeUtil.getDateAsISO8601(f.lastModified()));
+        d.putParameter(INPUT_FILENAME, f.getName());
 
         // Fix up the case/project metadata, e.g. PROJECT:GERONIMO22
         String cid = currentBundle.getCaseId();

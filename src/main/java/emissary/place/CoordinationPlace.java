@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
+
 /**
  * This place will coordinate service to several lower level service places. We have a list and will execute each place
  * in turn. This is good for service orchestration and there is an override point for derived classed to determine
@@ -93,7 +95,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * </ul>
      */
     protected void configurePlace() {
-        outputForm = configG.findStringEntry("OUTPUT_FORM", null);
+        outputForm = configG.findStringEntry(OUTPUT_FORM, null);
         pushForm = configG.findBooleanEntry("PUSH_OUTPUT_FORM", true);
         updateTransformHistory = configG.findBooleanEntry("UPDATE_TRANSFORM_HISTORY", false);
 

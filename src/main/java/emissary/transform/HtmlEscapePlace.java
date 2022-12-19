@@ -18,11 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class HtmlEscapePlace extends ServiceProviderPlace {
+import static emissary.core.Form.HTML;
+import static emissary.core.Form.PREFIXES_LANG;
+import static emissary.core.Form.SUFFIXES_HTMLESC;
+import static emissary.core.Form.TEXT;
+import static emissary.core.constants.Configurations.OUTPUT_FORM;
+import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
+import static emissary.core.constants.Parameters.SUFFIXES_HTML_ESCAPE;
+import static emissary.core.constants.Parameters.SUMMARY;
 
-    protected static final String HTMLESC = "-HTMLESC";
-    protected static final String SUMMARY = "Summary";
-    protected static final String DOCUMENT_TITLE = "DocumentTitle";
+public class HtmlEscapePlace extends ServiceProviderPlace {
 
     /**
      * Can be overridden from config file
@@ -57,7 +62,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
      * Take care of special place configuration
      */
     protected void configurePlace() {
-        outputForm = configG.findStringEntry("OUTPUT_FORM", null);
+        outputForm = configG.findStringEntry(OUTPUT_FORM, null);
 
         // Force statics to load
         HtmlEscape.unescapeHtml(new byte[0]);
@@ -90,10 +95,10 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
                 variance *= -1;
             d.setParameter("HTML_Entity_Decode_Variance", Integer.toString(variance));
             d.setData(newData);
-            d.setFileTypeIfEmpty("HTML");
+            d.setFileTypeIfEmpty(HTML);
 
             for (String key : counters.getKeys()) {
-                d.putParameter(key + "_HTML_ESCAPE", Integer.toString(counters.get(key)));
+                d.putParameter(key + SUFFIXES_HTML_ESCAPE, Integer.toString(counters.get(key)));
             }
 
         } else {
@@ -111,7 +116,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
 
     protected void unescapeAltViews(IBaseDataObject d) {
         // Unescape any TEXT alt views we may have
-        d.getAlternateViewNames().stream().filter(v -> v.startsWith("TEXT")).forEach(viewName -> {
+        d.getAlternateViewNames().stream().filter(v -> v.startsWith(TEXT)).forEach(viewName -> {
             byte[] textView = d.getAlternateView(viewName);
             if (ArrayUtils.isNotEmpty(textView)) {
                 byte[] s = HtmlEscape.unescapeHtml(textView);
@@ -151,24 +156,24 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
                 d.putParameter(DOCUMENT_TITLE, s);
             }
         }
-        logger.debug("Retrieved new title "/* + d.getParameter("DocumentTitle") */);
+        logger.debug("Retrieved new title ");
     }
 
     protected void processEncoding(IBaseDataObject d) {
-        // If the encoding or the LANG- form has -HTMLESC from hotspot remove it
+        // If the encoding or the LANG- form has -HTMLESC remove it
         String enc = d.getFontEncoding();
-        if (StringUtils.contains(enc, HTMLESC)) {
-            d.setFontEncoding(enc.replaceFirst(HTMLESC, ""));
+        if (StringUtils.contains(enc, SUFFIXES_HTMLESC)) {
+            d.setFontEncoding(enc.replaceFirst(SUFFIXES_HTMLESC, ""));
         }
     }
 
     protected void processCurrentForms(IBaseDataObject d) {
         for (String cf : d.getAllCurrentForms()) {
-            if (cf.contains("LANG-") && cf.contains(HTMLESC)) {
+            if (cf.contains(PREFIXES_LANG) && cf.contains(SUFFIXES_HTMLESC)) {
                 // Get the old pos
                 int pos = d.searchCurrentForm(cf);
                 d.deleteCurrentForm(cf);
-                cf = cf.replaceFirst(HTMLESC, "");
+                cf = cf.replaceFirst(SUFFIXES_HTMLESC, "");
                 d.addCurrentFormAt(pos, cf);
                 break;
             }

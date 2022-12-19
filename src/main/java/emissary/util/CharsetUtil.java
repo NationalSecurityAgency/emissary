@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 /**
@@ -210,14 +211,7 @@ public class CharsetUtil {
      * @return true if string is utf8
      */
     public static boolean isUTF8(final String s) {
-        try {
-            final byte[] b = s.getBytes("UTF-8");
-            return isUTF8(b);
-        } catch (UnsupportedEncodingException uue) {
-            // World must end.
-            logger.warn("JVM must support UTF-8 but doesn't?");
-            return false;
-        }
+        return isUTF8(s.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

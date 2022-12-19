@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import static emissary.core.constants.Parameters.FILE_DATE;
+import static emissary.core.constants.Parameters.FILE_NAME;
+
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
  * processing files of input, including files of sessions that must be identified and parsed using a ParserFactory. It
@@ -247,8 +250,8 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param f the file it came from
      */
     protected void dataObjectCreated(IBaseDataObject d, File f) {
-        d.putParameter("FILE_DATE", TimeUtil.getDateAsISO8601(f.lastModified()));
-        d.putParameter("FILE_NAME", f.getName());
+        d.putParameter(FILE_DATE, TimeUtil.getDateAsISO8601(f.lastModified()));
+        d.putParameter(FILE_NAME, f.getName());
     }
 
     /**
