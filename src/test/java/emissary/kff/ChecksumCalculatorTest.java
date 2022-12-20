@@ -158,7 +158,7 @@ class ChecksumCalculatorTest extends UnitTest {
             for (int j = 0; j < i; j++) {
                 b[j] = (byte) 'a';
             }
-            final SeekableByteChannelFactory sbcf = FillChannelFactory.create((long) i, (byte) 'a');
+            final SeekableByteChannelFactory sbcf = FillChannelFactory.createFactory((long) i, (byte) 'a');
             final ChecksumResults crByte = cc.digest(b);
             final ChecksumResults crSbcf = cc.digest(sbcf);
 

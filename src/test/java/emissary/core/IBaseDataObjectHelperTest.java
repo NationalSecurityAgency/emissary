@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -146,7 +146,7 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testCloneChannelFactory() {
-        ibdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
+        ibdo1.setChannelFactory(InMemoryChannelFactory.createFactory("0123456789".getBytes(US_ASCII)));
         verifyClone("getChannelFactory", ibdo1, IS_SAME, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
     }
 
@@ -180,9 +180,9 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testCloneAlternateViews() {
-        ibdo1.addAlternateView("AAA", "AAA".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("BBB", "BBB".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("CCC", "CCC".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.addAlternateView("AAA", "AAA".getBytes(US_ASCII));
+        ibdo1.addAlternateView("BBB", "BBB".getBytes(US_ASCII));
+        ibdo1.addAlternateView("CCC", "CCC".getBytes(US_ASCII));
         verifyClone("getAlternateViews", ibdo1, IS_NOT_SAME, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
     }
 
@@ -258,13 +258,13 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testCloneHeader() {
-        ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.setHeader("header".getBytes(US_ASCII));
         verifyClone("header", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
     }
 
     @Test
     void testCloneFooter() {
-        ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.setFooter("footer".getBytes(US_ASCII));
         verifyClone("footer", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
     }
 
@@ -345,8 +345,8 @@ class IBaseDataObjectHelperTest {
         ibdo2.setData(new byte[1]);
         verifyDiff(1, true, false, false, false);
 
-        ibdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
-        ibdo2.setChannelFactory(InMemoryChannelFactory.create("9876543210".getBytes(StandardCharsets.US_ASCII)));
+        ibdo1.setChannelFactory(InMemoryChannelFactory.createFactory("0123456789".getBytes(US_ASCII)));
+        ibdo2.setChannelFactory(InMemoryChannelFactory.createFactory("9876543210".getBytes(US_ASCII)));
         verifyDiff(1, true, false, false, false);
 
         ibdo2.setChannelFactory(new SeekableByteChannelFactory() {
@@ -398,14 +398,14 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testDiffAlternateViews() {
-        ibdo1.addAlternateView("AAA", "AAA".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("BBB", "BBB".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("CCC", "CCC".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.addAlternateView("AAA", "AAA".getBytes(US_ASCII));
+        ibdo1.addAlternateView("BBB", "BBB".getBytes(US_ASCII));
+        ibdo1.addAlternateView("CCC", "CCC".getBytes(US_ASCII));
         verifyDiff(1);
 
-        ibdo2.addAlternateView("DDD", "DDD".getBytes(StandardCharsets.US_ASCII));
-        ibdo2.addAlternateView("EEE", "EEE".getBytes(StandardCharsets.US_ASCII));
-        ibdo2.addAlternateView("FFF", "FFF".getBytes(StandardCharsets.US_ASCII));
+        ibdo2.addAlternateView("DDD", "DDD".getBytes(US_ASCII));
+        ibdo2.addAlternateView("EEE", "EEE".getBytes(US_ASCII));
+        ibdo2.addAlternateView("FFF", "FFF".getBytes(US_ASCII));
         verifyDiff(1);
     }
 
@@ -472,13 +472,13 @@ class IBaseDataObjectHelperTest {
 
     @Test
     void testDiffHeader() {
-        ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.setHeader("header".getBytes(US_ASCII));
         verifyDiff(1);
     }
 
     @Test
     void testDiffFooter() {
-        ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
+        ibdo1.setFooter("footer".getBytes(US_ASCII));
         verifyDiff(1);
     }
 
@@ -575,7 +575,7 @@ class IBaseDataObjectHelperTest {
         final KffDataObjectHandler mockKffDataObjectHandler1 = Mockito.mock(KffDataObjectHandler.class);
         final IBaseDataObject childIbdo1 = new BaseDataObject();
 
-        childIbdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
+        childIbdo1.setChannelFactory(InMemoryChannelFactory.createFactory("0123456789".getBytes(US_ASCII)));
         Mockito.doThrow(NoSuchAlgorithmException.class).when(mockKffDataObjectHandler1).hash(Mockito.any(BaseDataObject.class), Mockito.anyBoolean());
         IBaseDataObjectHelper.addParentInformationToChild(parentIbdo, childIbdo1,
                 true, alwaysCopyMetadataKeys, placeKey, mockKffDataObjectHandler1);

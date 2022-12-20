@@ -5,7 +5,6 @@ import emissary.core.BaseDataObject;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.google.common.io.Files;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.LoggerFactory;
@@ -18,6 +17,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -32,17 +32,17 @@ class SeekableByteChannelHelperTest {
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);
 
     @Test
-    void testImmutable() throws IOException {
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.immutable(SeekableByteChannelHelper.memory(TEST_BYTES));
+    void testImmutable() {
+        final ImmutableChannelFactory<?> sbcf = SeekableByteChannelHelper.memory(TEST_BYTES);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer someTestBytes = ByteBuffer.wrap(TEST_BYTES);
-        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(2l));
+        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(2L));
         assertThrows(NonWritableChannelException.class, () -> sbc.write(someTestBytes));
     }
 
     @Test
     void testMemory() throws IOException {
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(TEST_BYTES);
+        final ImmutableChannelFactory<?> sbcf = SeekableByteChannelHelper.memory(TEST_BYTES);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer buff = ByteBuffer.allocate(4);
         sbc.read(buff);
@@ -56,9 +56,9 @@ class SeekableByteChannelHelperTest {
     void testFile(@TempDir Path tempDir) throws IOException {
         final Path path = tempDir.resolve("testBytes");
 
-        Files.write(TEST_BYTES, path.toFile());
+        Files.write(path, TEST_BYTES);
 
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.file(path);
+        final SeekableByteChannelFactory<?> sbcf = SeekableByteChannelHelper.file(path);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer byteBuffer = ByteBuffer.allocate(TEST_BYTES.length);
 
@@ -69,7 +69,7 @@ class SeekableByteChannelHelperTest {
     @Test
     void testFill() throws IOException {
         final byte[] bytes = "0000000000".getBytes(StandardCharsets.US_ASCII);
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.fill(bytes.length, bytes[0]);
+        final SeekableByteChannelFactory<?> sbcf = SeekableByteChannelHelper.fill(bytes.length, bytes[0]);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
 
@@ -80,13 +80,8 @@ class SeekableByteChannelHelperTest {
     @Test
     void testInputStream() throws IOException {
         final byte[] bytes = "0123456789".getBytes(StandardCharsets.US_ASCII);
-        final InputStreamFactory inputStreamFactory = new InputStreamFactory() {
-            @Override
-            public InputStream create() {
-                return new ByteArrayInputStream(bytes);
-            }
-        };
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.inputStream(bytes.length, inputStreamFactory);
+        final InputStreamFactory<InputStream> inputStreamFactory = () -> new ByteArrayInputStream(bytes);
+        final SeekableByteChannelFactory<?> sbcf = SeekableByteChannelHelper.inputStream(bytes.length, inputStreamFactory);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
 
@@ -141,7 +136,7 @@ class SeekableByteChannelHelperTest {
     }
 
     @Test
-    void testGetDataWhenLargerThanMaxInt() throws IOException {
+    void testGetDataWhenLargerThanMaxInt() {
         final BaseDataObject bdo = new BaseDataObject();
         bdo.setFilename("filename.txt");
 

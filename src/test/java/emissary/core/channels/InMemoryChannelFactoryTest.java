@@ -15,22 +15,22 @@ class InMemoryChannelFactoryTest {
 
     @Test
     void testCannotCreateFactoryWithNullByteArray() {
-        assertThrows(NullPointerException.class, () -> InMemoryChannelFactory.create(null),
+        assertThrows(NullPointerException.class, () -> InMemoryChannelFactory.createFactory(null),
                 "Factory allowed null to be set, which would fail when getting an instance later");
     }
 
     @Test
     void testNormalPath() throws IOException {
         final String testString = "Test data";
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testString.getBytes());
+        final SeekableByteChannelFactory<?> sbcf = InMemoryChannelFactory.createFactory(testString.getBytes());
         final ByteBuffer buff = ByteBuffer.allocate(testString.length());
         sbcf.create().read(buff);
         assertEquals(testString, new String(buff.array()));
     }
 
     @Test
-    void testImmutability() throws IOException {
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create("Test data".getBytes());
+    void testImmutability() {
+        final SeekableByteChannelFactory<?> sbcf = InMemoryChannelFactory.createFactory("Test data".getBytes());
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
@@ -41,7 +41,7 @@ class InMemoryChannelFactoryTest {
 
     @Test
     void testCanCreateAndRetrieveEmptyByteArray() throws IOException {
-        final SeekableByteChannelFactory simbcf = InMemoryChannelFactory.create(new byte[0]);
+        final SeekableByteChannelFactory<?> simbcf = InMemoryChannelFactory.createFactory(new byte[0]);
         assertEquals(0L, simbcf.create().size());
     }
 }

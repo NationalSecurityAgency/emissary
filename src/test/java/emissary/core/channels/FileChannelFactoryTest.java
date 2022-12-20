@@ -26,8 +26,8 @@ class FileChannelFactoryTest {
 
         Files.write(TEST_BYTES, path.toFile());
 
-        final SeekableByteChannel sbc = FileChannelFactory.create(path).create();
-        final SeekableByteChannel sbc2 = FileChannelFactory.create(path).create();
+        final SeekableByteChannel sbc = FileChannelFactory.createFactory(path).create();
+        final SeekableByteChannel sbc2 = FileChannelFactory.createFactory(path).create();
 
         final ByteBuffer buff = ByteBuffer.allocate(4);
         sbc.read(buff);
@@ -38,7 +38,7 @@ class FileChannelFactoryTest {
 
     @Test
     void testCannotCreateFactoryWithNullByteArray() {
-        assertThrows(NullPointerException.class, () -> FileChannelFactory.create(null),
+        assertThrows(NullPointerException.class, () -> FileChannelFactory.createFactory(null),
                 "Factory allowed null to be set, which would fail when getting an instance later");
     }
 
@@ -48,7 +48,7 @@ class FileChannelFactoryTest {
 
         Files.write(TEST_BYTES, path.toFile());
 
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+        final SeekableByteChannelFactory<?> sbcf = FileChannelFactory.createFactory(path);
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length());
         sbcf.create().read(buff);
         assertEquals(TEST_STRING, new String(buff.array()));
@@ -58,7 +58,7 @@ class FileChannelFactoryTest {
     void testClose(@TempDir Path tempDir) throws IOException {
         final Path path = tempDir.resolve("testBytes");
         Files.write(TEST_BYTES, path.toFile());
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+        final SeekableByteChannelFactory<?> sbcf = FileChannelFactory.createFactory(path);
         try (final SeekableByteChannel sbc = sbcf.create()) {
             assertTrue(sbc.isOpen());
             sbc.close();
@@ -79,7 +79,7 @@ class FileChannelFactoryTest {
 
         Files.write(TEST_BYTES, path.toFile());
 
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+        final SeekableByteChannelFactory<?> sbcf = FileChannelFactory.createFactory(path);
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
@@ -92,7 +92,7 @@ class FileChannelFactoryTest {
 
         Files.write(new byte[0], path.toFile());
 
-        final SeekableByteChannelFactory simbcf = FileChannelFactory.create(path);
+        final SeekableByteChannelFactory<?> simbcf = FileChannelFactory.createFactory(path);
         assertEquals(0L, simbcf.create().size());
     }
 
@@ -102,8 +102,8 @@ class FileChannelFactoryTest {
 
         Files.write(TEST_BYTES, path.toFile());
 
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+        final SeekableByteChannelFactory<?> sbcf = FileChannelFactory.createFactory(path);
         assertEquals(9, sbcf.create().size());
-        assertThrows(NullPointerException.class, () -> FileChannelFactory.create(null), "Can't create a FCF with nulls");
+        assertThrows(NullPointerException.class, () -> FileChannelFactory.createFactory(null), "Can't create a FCF with nulls");
     }
 }

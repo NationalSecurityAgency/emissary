@@ -17,14 +17,14 @@ public final class InMemoryChannelFactory {
      * @param bytes containing the data to provide to consumers in an immutable manner
      * @return a new instance
      */
-    public static SeekableByteChannelFactory create(final byte[] bytes) {
-        return ImmutableChannelFactory.create(new InMemoryChannelFactoryImpl(bytes));
+    public static ImmutableChannelFactory<?> createFactory(final byte[] bytes) {
+        return ImmutableChannelFactory.createFactory(new InMemoryChannelFactoryImpl(bytes));
     }
 
     /**
      * Private class to hide implementation details from callers
      */
-    private static final class InMemoryChannelFactoryImpl implements SeekableByteChannelFactory {
+    private static final class InMemoryChannelFactoryImpl implements SeekableByteChannelFactory<SeekableByteChannel> {
         /**
          * The byte array this SeekableByteChannel is to represent.
          */

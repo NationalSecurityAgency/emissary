@@ -101,7 +101,7 @@ class BaseDataObjectTest extends UnitTest {
     void testDataLengthWithChannel() {
         this.b.setData(null);
         assertEquals(0, this.b.dataLength());
-        this.b.setChannelFactory(InMemoryChannelFactory.create(new byte[10]));
+        this.b.setChannelFactory(InMemoryChannelFactory.createFactory(new byte[10]));
         assertEquals(10, this.b.dataLength());
         this.b.setData(new byte[10]);
         assertEquals(10, this.b.dataLength());
@@ -112,7 +112,7 @@ class BaseDataObjectTest extends UnitTest {
     void testLargestFile() throws IOException {
         final BaseDataObject bdo = new BaseDataObject();
         final long fileSize = Long.MAX_VALUE;
-        final SeekableByteChannelFactory sbcf = FillChannelFactory.create(fileSize, (byte) 0);
+        final SeekableByteChannelFactory sbcf = FillChannelFactory.createFactory(fileSize, (byte) 0);
         bdo.setChannelFactory(sbcf);
         assertEquals(fileSize, bdo.getChannelSize());
         assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
@@ -1096,7 +1096,7 @@ class BaseDataObjectTest extends UnitTest {
             this.b.popCurrentForm();
             assertEquals(this.b.currentFormSize(), clone.currentFormSize() - 1, "Current form stack must be detached after clone");
             final String newData = "some new data";
-            final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(newData.getBytes());
+            final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.createFactory(newData.getBytes());
             this.b.setChannelFactory(sbcf);
             final IBaseDataObject cloneSbc = this.b.clone();
             assertEquals(13, cloneSbc.getChannelFactory().create().read(ByteBuffer.allocate(newData.length())));
@@ -1208,7 +1208,7 @@ class BaseDataObjectTest extends UnitTest {
         this.b.getChannelFactory().create().read(buff);
         assertEquals(testData, new String(buff.array()));
 
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testArray);
+        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.createFactory(testArray);
         this.b.setChannelFactory(sbcf);
 
         // data() check with sbcf

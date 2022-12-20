@@ -180,7 +180,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * A factory to create channels for the referenced data.
      */
-    protected SeekableByteChannelFactory seekableByteChannelFactory;
+    protected SeekableByteChannelFactory<?> seekableByteChannelFactory;
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -319,11 +319,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
-     * 
+     *
      * Setting this will null out {@link #theData}
+     * 
+     * @param sbcf the new channel factory to set on this object
      */
     @Override
-    public void setChannelFactory(final SeekableByteChannelFactory sbcf) {
+    public void setChannelFactory(final SeekableByteChannelFactory<?> sbcf) {
         Validate.notNull(sbcf, "Required: SeekableByteChannelFactory not null");
         this.theData = null;
         this.seekableByteChannelFactory = sbcf;
@@ -336,7 +338,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return the factory containing the data reference or the data wrapped in a new factory
      */
     @Override
-    public SeekableByteChannelFactory getChannelFactory() {
+    public SeekableByteChannelFactory<?> getChannelFactory() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
                 throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));

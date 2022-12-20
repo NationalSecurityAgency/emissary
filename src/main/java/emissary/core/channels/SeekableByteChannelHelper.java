@@ -12,9 +12,10 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
+import java.util.function.BiFunction;
 
 /**
- * Helper methods to handle {@link java.nio.channels.SeekableByteChannel} objects
+ * Helper methods to handle {@link SeekableByteChannel} objects
  */
 public final class SeekableByteChannelHelper {
     private static final Logger logger = LoggerFactory.getLogger(SeekableByteChannelHelper.class);
@@ -27,8 +28,8 @@ public final class SeekableByteChannelHelper {
      * @param sbcf to make immutable
      * @return the wrapped factory
      */
-    public static SeekableByteChannelFactory immutable(final SeekableByteChannelFactory sbcf) {
-        return ImmutableChannelFactory.create(sbcf);
+    public static ImmutableChannelFactory<?> immutable(final SeekableByteChannelFactory<?> sbcf) {
+        return ImmutableChannelFactory.createFactory(sbcf);
     }
 
     /**
@@ -38,18 +39,18 @@ public final class SeekableByteChannelHelper {
      * @param bytes to use with the channel
      * @return the factory
      */
-    public static SeekableByteChannelFactory memory(final byte[] bytes) {
-        return InMemoryChannelFactory.create(bytes);
+    public static ImmutableChannelFactory<?> memory(final byte[] bytes) {
+        return InMemoryChannelFactory.createFactory(bytes);
     }
 
     /**
      * Create a file SBC factory.
      * 
-     * @param path to the file.
+     * @param path path to the file.
      * @return the factory
      */
-    public static SeekableByteChannelFactory file(final Path path) {
-        return FileChannelFactory.create(path);
+    public static ImmutableChannelFactory<?> file(final Path path) {
+        return FileChannelFactory.createFactory(path);
     }
 
     /**
@@ -59,20 +60,41 @@ public final class SeekableByteChannelHelper {
      * @param value of each element in the SeekableByteChannel.
      * @return the factory
      */
-    public static SeekableByteChannelFactory fill(final long size, final byte value) {
-        return FillChannelFactory.create(size, value);
+    public static ImmutableChannelFactory<?> fill(final long size, final byte value) {
+        return FillChannelFactory.createFactory(size, value);
     }
 
     /**
-     * Create an InputStream SBC factory.
+     * Convenience method to create a {@link InputStreamChannelFactory} instance
      * 
      * @param size of the SeekableByteChannel
-     * @param inputStreamFactory creates the needed InputStreams.
-     * @return the factory
+     * @param inputStreamFactory {@link InputStreamFactory} used to create the needed InputStreams.
+     * @return a channel factory instance enabling channel-like access to the underlying input stream data
      */
-    public static SeekableByteChannelFactory inputStream(final long size, final InputStreamFactory inputStreamFactory) {
-        return InputStreamChannelFactory.create(size, inputStreamFactory);
+    public static <T extends InputStream> ImmutableChannelFactory<InputStreamChannel<?>> inputStream(
+            final long size, final InputStreamFactory<T> inputStreamFactory) {
+
+        return InputStreamChannelFactory.createFactory(size, inputStreamFactory);
     }
+
+
+    /**
+     * Convenience method to create a {@link InputStreamChannelFactory} instance. This overload allows the use of a custom
+     * {@link InputStreamChannel} subtype so that explicit {@link InputStream} subtypes can be returned by the factory.
+     *
+     * @param size of the SeekableByteChannel
+     * @param inputStreamFactory {@link InputStreamFactory} used to create the needed InputStreams.
+     * @param channelProvider function reference used to create the specific type of {@link InputStreamChannel}.
+     * @param <T> Type of InputStream subtype for which this factory will provide channel-like access
+     * @param <U> Type of InputStreamChannel that works with these specific InputStream subtypes
+     * @return a channel factory instance enabling channel-like access to the underlying input stream data
+     */
+    public static <T extends InputStream, U extends InputStreamChannel<T>> ImmutableChannelFactory<U> inputStream(
+            final long size, final InputStreamFactory<T> inputStreamFactory, BiFunction<Long, InputStreamFactory<T>, U> channelProvider) {
+
+        return InputStreamChannelFactory.createFactory(size, inputStreamFactory, channelProvider);
+    }
+
 
     /**
      * Given a BDO, create a byte array with as much data as possible.
@@ -113,8 +135,8 @@ public final class SeekableByteChannelHelper {
     public static long available(final InputStream inputStream) {
         long totalBytesRead = 0;
         try {
-            for (; inputStream.read() != -1; totalBytesRead++) {
-                // Do nothing.
+            while (inputStream.read() != -1) {
+                totalBytesRead++;
             }
         } catch (final IOException ioe) {
             // Do nothing.

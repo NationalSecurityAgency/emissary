@@ -4,7 +4,6 @@ import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 
 /**
@@ -20,14 +19,14 @@ public class FillChannelFactory {
      * @param value of each element in the seekable byte channel.
      * @return an immutable version of the seekable byte channel with the designated value.
      */
-    public static SeekableByteChannelFactory create(final long size, final byte value) {
+    public static ImmutableChannelFactory<?> createFactory(final long size, final byte value) {
         return SeekableByteChannelHelper.immutable(new FillChannelFactoryImpl(size, value));
     }
 
     /**
      * The SeekableByteChannelFactory implementation that returns a "fill" SeekableByteChannel.
      */
-    private static final class FillChannelFactoryImpl implements SeekableByteChannelFactory {
+    private static final class FillChannelFactoryImpl implements SeekableByteChannelFactory<ImmutableChannel<?>> {
 
         /**
          * The size of the SeekableByteChannel that is returned.
@@ -47,8 +46,8 @@ public class FillChannelFactory {
         }
 
         @Override
-        public SeekableByteChannel create() {
-            return new FillChannel(size, value);
+        public ImmutableChannel<?> create() {
+            return new ImmutableChannel<>(new FillChannel(size, value));
         }
     }
 
@@ -70,18 +69,18 @@ public class FillChannelFactory {
         }
 
         @Override
-        protected long sizeImpl() throws IOException {
+        protected long sizeImpl() {
             return size;
         }
 
         @Override
-        protected void closeImpl() throws IOException {
+        protected void closeImpl() {
             // Nothing to do.
         }
 
         @Override
         protected int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
-            final int bytesToFill = Math.min(maxBytesToRead, Integer.MAX_VALUE);
+            final int bytesToFill = Math.min(maxBytesToRead, byteBuffer.remaining());
 
             if (byteBuffer.hasArray()) {
                 Arrays.fill(byteBuffer.array(), byteBuffer.position(), byteBuffer.position() + bytesToFill, value);

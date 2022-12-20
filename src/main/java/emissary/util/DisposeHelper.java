@@ -1,6 +1,7 @@
 package emissary.util;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.channels.SeekableByteChannelFactory;
 
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -13,8 +14,7 @@ import java.util.List;
 /**
  * Helper methods to ease handling of Dispose objects
  * 
- * Dispose objects are added to BDOs to handle clean-up after a
- * {@link emissary.core.channels.SeekableByteChannelFactory} is finished with
+ * Dispose objects are added to BDOs to handle clean-up after a {@link SeekableByteChannelFactory} is finished with
  */
 public final class DisposeHelper {
     private DisposeHelper() {}

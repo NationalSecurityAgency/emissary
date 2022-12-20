@@ -56,14 +56,14 @@ public interface IBaseDataObject {
      * 
      * @param sbcf the new channel factory to set on this object
      */
-    void setChannelFactory(final SeekableByteChannelFactory sbcf);
+    void setChannelFactory(final SeekableByteChannelFactory<?> sbcf);
 
     /**
      * Returns the seekable byte channel factory containing a reference to the data
      * 
      * @return the factory containing the data reference
      */
-    SeekableByteChannelFactory getChannelFactory();
+    SeekableByteChannelFactory<?> getChannelFactory();
 
     /**
      * Get the size of the channel referenced by this object

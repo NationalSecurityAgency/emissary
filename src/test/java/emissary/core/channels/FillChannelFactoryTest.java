@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FillChannelFactoryTest {
     @Test
-    void testCreate() throws IOException {
-        assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.create(-1, (byte) 0));
+    void testCreateFactory() {
+        assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.createFactory(-1, (byte) 0));
     }
 
     @Test
@@ -25,7 +25,7 @@ class FillChannelFactoryTest {
         for (byte b = -100; b < 100; b++) {
             Arrays.fill(bytes, b);
 
-            ChannelTestHelper.checkByteArrayAgainstSbc(bytes, FillChannelFactory.create(bytes.length, b));
+            ChannelTestHelper.checkByteArrayAgainstSbc(bytes, FillChannelFactory.createFactory(bytes.length, b));
         }
     }
 
@@ -38,7 +38,7 @@ class FillChannelFactoryTest {
         final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(bytes.length);
         final byte[] byteBufferBytes = new byte[bytes.length];
 
-        try (SeekableByteChannel sbc = FillChannelFactory.create(bytes.length, bytes[0]).create()) {
+        try (SeekableByteChannel sbc = FillChannelFactory.createFactory(bytes.length, bytes[0]).create()) {
             assertEquals(15, IOUtils.read(sbc, byteBuffer));
 
             byteBuffer.position(0);

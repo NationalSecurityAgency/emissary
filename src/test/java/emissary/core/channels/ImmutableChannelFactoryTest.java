@@ -18,13 +18,8 @@ class ImmutableChannelFactoryTest {
 
     @Test
     void testNormalPath() throws IOException {
-        final SeekableByteChannelFactory simbcf = new SeekableByteChannelFactory() {
-            @Override
-            public SeekableByteChannel create() {
-                return new SeekableInMemoryByteChannel(TEST_STRING.getBytes());
-            }
-        };
-        final SeekableByteChannelFactory sbcf = ImmutableChannelFactory.create(simbcf);
+        final SeekableByteChannelFactory<?> simbcf = () -> new SeekableInMemoryByteChannel(TEST_STRING.getBytes());
+        final SeekableByteChannelFactory<?> sbcf = ImmutableChannelFactory.createFactory(simbcf);
         final ByteBuffer buff = ByteBuffer.wrap(TEST_STRING.concat(TEST_STRING).getBytes());
         try (final SeekableByteChannel sbc = sbcf.create()) {
             assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Writes aren't allowed to immutable channels");
@@ -33,17 +28,17 @@ class ImmutableChannelFactoryTest {
 
     @Test
     void testCanCreateAndRetrieveEmptyByteArray() throws IOException {
-        assertThrows(NullPointerException.class, () -> ImmutableChannelFactory.create(null),
+        assertThrows(NullPointerException.class, () -> ImmutableChannelFactory.createFactory(null),
                 "Must provide a channel to make unmodifiable");
-        SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(new byte[0]);
-        SeekableByteChannel sbc = ImmutableChannelFactory.create(sbcf).create();
+        SeekableByteChannelFactory<?> sbcf = InMemoryChannelFactory.createFactory(new byte[0]);
+        SeekableByteChannel sbc = ImmutableChannelFactory.createFactory(sbcf).create();
         assertEquals(0, sbc.size());
     }
 
     @Test
     void testOverrides() throws IOException {
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(TEST_STRING.getBytes());
-        final SeekableByteChannel sbc = ImmutableChannelFactory.create(sbcf).create();
+        final SeekableByteChannelFactory<?> sbcf = InMemoryChannelFactory.createFactory(TEST_STRING.getBytes());
+        final SeekableByteChannel sbc = ImmutableChannelFactory.createFactory(sbcf).create();
         assertTrue(sbc.isOpen());
         sbc.position(3);
         assertEquals(3, sbc.position());
