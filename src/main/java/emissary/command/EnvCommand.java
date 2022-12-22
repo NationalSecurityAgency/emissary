@@ -4,15 +4,14 @@ import emissary.client.EmissaryClient;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.ConsoleAppender;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static emissary.Emissary.setupLogbackForConsole;
 
 @Parameters(commandDescription = "Output the configured values for certain properties")
 public class EnvCommand extends HttpCommand {
@@ -52,25 +51,8 @@ public class EnvCommand extends HttpCommand {
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/env";
 
         if (getBashable()) {
-            ch.qos.logback.classic.Logger root =
-                    (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-            root.detachAndStopAllAppenders();
             setup();
-            LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-            PatternLayoutEncoder ple = new PatternLayoutEncoder();
-
-            ple.setPattern("%msg%n");
-            ple.setContext(lc);
-            ple.start();
-
-            ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
-            consoleAppender.setEncoder(ple);
-            consoleAppender.setContext(lc);
-            consoleAppender.start();
-
-            root.addAppender(consoleAppender);
-            root.setLevel(Level.INFO);
-            root.setAdditive(false);
+            LoggerContext lc = setupLogbackForConsole();
 
             // still gotta hide org.eclipse.jetty.util.log INFO
             ch.qos.logback.classic.Logger jettyUtilLogger = lc.getLogger("org.eclipse.jetty.util.log");
