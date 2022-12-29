@@ -592,7 +592,7 @@ mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . -t emissary
 ```
 
-For a lightweight emissary darker image the Dockerfile.alpine can be used. 
+For a lightweight emissary docker image the Dockerfile.alpine can be used. 
 This image is 1/3 of the size of the normal centOS 7 based image
 ```
 mvn clean install -Pdist
