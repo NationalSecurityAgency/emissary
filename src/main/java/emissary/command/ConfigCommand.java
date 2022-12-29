@@ -6,6 +6,7 @@ import emissary.server.api.Configs;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
@@ -21,7 +22,7 @@ public class ConfigCommand extends HttpCommand {
     public static int DEFAULT_PORT = 8001;
     public static String COMMAND_NAME = "config";
 
-    @Parameter(names = {"--place"}, description = "fully-qualified place", arity = 1)
+    @Parameter(names = {"--place"}, description = "fully-qualified place", arity = 1, required = true)
     private String place;
 
     @Parameter(names = {"--detailed"}, description = "get verbose output when parsing the configs")
@@ -43,6 +44,11 @@ public class ConfigCommand extends HttpCommand {
     @Override
     public void setupCommand() {
         setupHttp();
+
+        if (!offline && StringUtils.isNotBlank(getFlavor())) {
+            throw new ParameterException("--flavor can only be specified in offline mode");
+        }
+
         if (offline && StringUtils.isBlank(getFlavor())) {
             // default to standalone mode like servercommand
             overrideFlavor("STANDALONE");

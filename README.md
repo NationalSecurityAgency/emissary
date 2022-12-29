@@ -168,19 +168,26 @@ and then have those variable available without having to worry with configuring 
 
 #### Config
 
-The config commands allows you to see the configuration of a specified class. This command can 
-be used to connect to a running Emissary node, or can be used in an offline mode that is useful 
-for local testing. Since Emissary uses flavors, this command will show the resulting configuration
-of a class after all flavors have been applied. To connect to a locally running Emissary on port 
-8001, any of the following commands will work:
+The config command allows you to see the effective configuration for a specified place/service/class. Since Emissary uses 
+flavors, this command will show the resulting configuration of a class after all flavors have been applied. This command can
+be used to connect to a running Emissary node by specifying the ```-h``` for host (default is localhost) and ```-p``` for
+the port (default is 8001). To connect to a locally running Emissary on port 8001, any of the following commands will work:
 ```
 ./emissary config --place emissary.place.sample.ToLowerPlace
 ./emissary config --place emissary.place.sample.ToLowerPlace -h localhost -p 8001
 ```
+
+Optionally, you can specify offline mode using ```--offline``` to use the configuration files specified in your local 
+CONFIG_DIR:
+```
+./emissary config --place emissary.place.sample.ToLowerPlace --offline
+```
+
 In offline mode, you can provide flavors to see the differences in configurations:
 ```
 ./emissary config --place emissary.place.sample.ToLowerPlace --offline --flavor STANDALONE,TESTING
 ```
+
 These are useful to see the effective configuration, but we can also run in a verbose mode to 
 see all the configuration files along with the final output. This is controlled with the 
 `--detailed` flag:
