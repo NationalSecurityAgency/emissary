@@ -151,19 +151,15 @@ public class Url {
             final HttpURLConnection conn = (HttpURLConnection) theUrl.openConnection();
 
             // Set up for POST or other
-            if (method == Url.POST) {
-                conn.setDoOutput(true);
-            } else {
-                conn.setDoOutput(false);
-            }
+            conn.setDoOutput(method == Url.POST);
             conn.setDoInput(true);
             conn.setUseCaches(false);
 
 
             // Set user requested properties
             if (props != null) {
-                for (int i = 0; i < props.length; i++) {
-                    conn.setRequestProperty(props[i].getKey(), props[i].getValue());
+                for (UrlRequestProperty prop : props) {
+                    conn.setRequestProperty(prop.getKey(), prop.getValue());
                 }
             }
 
@@ -179,7 +175,7 @@ public class Url {
             response.setResponseCode(conn.getResponseCode());
 
             // Get the headers
-            final Map<String, String> headers = new HashMap<String, String>();
+            final Map<String, String> headers = new HashMap<>();
             String s;
             int hdr = 0;
             while ((s = conn.getHeaderField(hdr)) != null) {

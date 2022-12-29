@@ -27,13 +27,13 @@ public class UrlData {
      * The request properties array sent into this constructor is copied. Note that a deep copy is not performed. If the
      * properties inside the list are changed, this class will see the changes.
      */
-    public UrlData(final String theUrl, final byte[] theContent, final int responseCode, final UrlRequestProperty[] _props) {
+    public UrlData(final String theUrl, final byte[] theContent, final int responseCode, final UrlRequestProperty[] props) {
         this.theUrl = theUrl;
         this.theContent = theContent;
         this.responseCode = responseCode;
         this.theMethod = Url.GET;
-        this.props = new UrlRequestProperty[_props.length];
-        System.arraycopy(_props, 0, this.props, 0, _props.length);
+        this.props = new UrlRequestProperty[props.length];
+        System.arraycopy(props, 0, this.props, 0, props.length);
     }
 
     public UrlData() {}
