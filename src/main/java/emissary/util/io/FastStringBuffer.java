@@ -28,7 +28,6 @@ public class FastStringBuffer extends OutputStream {
     public static final int MAX_CACHE_SIZE = 256;
     private static final byte[] CRBYTES = "\n".getBytes();
     private static final byte[] CRLFBYTES = "\r\n".getBytes();
-    private static final String UNSUPPORTED_ERR = "Unsupported encoding:{}";
 
     static Map<String, byte[]> strings = new HashMap<>(MAX_CACHE_SIZE * 3);
 
@@ -82,7 +81,7 @@ public class FastStringBuffer extends OutputStream {
         try {
             tmp = s.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
-            logger.warn(UNSUPPORTED_ERR, e.toString());
+            logger.warn("Unsupported encoding:{}", e.getMessage());
             tmp = s.getBytes();
         }
         return append(tmp);
@@ -103,7 +102,7 @@ public class FastStringBuffer extends OutputStream {
         try {
             tmp = escapedS.getBytes(charset);
         } catch (UnsupportedEncodingException e) {
-            logger.warn(UNSUPPORTED_ERR, e.toString());
+            logger.warn("Unsupported encoding:{}", e.getMessage());
             tmp = escapedS.getBytes();
         }
         return append(tmp);
@@ -125,7 +124,7 @@ public class FastStringBuffer extends OutputStream {
             try {
                 tmp = s.getBytes(charset);
             } catch (UnsupportedEncodingException e) {
-                logger.warn(UNSUPPORTED_ERR, e.toString());
+                logger.warn("Unsupported encoding:{}", e.getMessage());
                 tmp = s.getBytes();
             }
             if (strings.size() < MAX_CACHE_SIZE) {
