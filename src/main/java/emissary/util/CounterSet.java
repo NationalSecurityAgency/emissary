@@ -69,7 +69,7 @@ public class CounterSet extends HashMap<String, Integer> {
      * Get the names of the current counters
      */
     public Set<String> getKeys() {
-        return new HashSet<String>(this.keySet());
+        return new HashSet<>(this.keySet());
     }
 
     /**

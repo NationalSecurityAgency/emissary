@@ -3,6 +3,7 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,17 +22,17 @@ public class TypeEngine {
     private static final Logger logger = LoggerFactory.getLogger(TypeEngine.class);
 
     // Map of name to Configurator
-    protected Map<String, Configurator> contextMapping = new HashMap<String, Configurator>();
+    protected Map<String, Configurator> contextMapping = new HashMap<>();
 
     // Map of name to Map for extra mappings
-    protected Map<String, Map<String, String>> extraMapping = new HashMap<String, Map<String, String>>();
+    protected Map<String, Map<String, String>> extraMapping = new HashMap<>();
 
     /**
      * Configure from a Configurator of the delegating class
      */
     public TypeEngine(Configurator configG) {
         List<String> l = configG.findEntries("TYPE_ENGINE_FILE");
-        if (l.size() > 0) {
+        if (CollectionUtils.isNotEmpty(l)) {
             configure(l);
         }
     }
@@ -79,13 +80,13 @@ public class TypeEngine {
      */
     public String getForm(@Nullable String engine, @Nullable String label) {
 
-        String ret = null;
-
         // check params
         if (engine == null || label == null) {
             logger.debug("Cannot process null arg engine={}, label={}", engine, label);
-            return ret;
+            return null;
         }
+
+        String ret = null;
 
         // Look up an override mapping
         Map<String, String> extra = extraMapping.get(engine);
@@ -111,11 +112,7 @@ public class TypeEngine {
      * Add an extra mapping into the specified engine
      */
     public void addType(String engine, String label, String value) {
-        Map<String, String> extra = extraMapping.get(engine);
-        if (extra == null) {
-            extra = new HashMap<String, String>();
-            extraMapping.put(engine, extra);
-        }
+        Map<String, String> extra = extraMapping.computeIfAbsent(engine, k -> new HashMap<>());
         extra.put(label, value);
     }
 

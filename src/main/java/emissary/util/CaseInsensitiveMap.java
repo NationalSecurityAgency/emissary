@@ -11,7 +11,7 @@ public class CaseInsensitiveMap<K, V> extends HashMap<K, V> {
     static final long serialVersionUID = -8692638820306464417L;
 
     // For remapping string keys to through a case-insensitive layer
-    private Map<String, String> remap = new HashMap<String, String>();
+    private Map<String, String> remap = new HashMap<>();
 
     /**
      * Create one

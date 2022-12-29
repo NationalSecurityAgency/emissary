@@ -103,12 +103,12 @@ public class DataUtil {
     public static String csvescape(final String field) {
         final String SEP = ",";
         String s = field;
-        if ((s != null) && (s.indexOf("\n") > -1 || s.indexOf("\r") > -1)) {
+        if ((s != null) && (s.contains("\n") || s.contains("\r"))) {
             s = NL_REPL.matcher(s).replaceAll(" ");
         }
 
-        if ((s != null) && (s.indexOf(SEP) > -1 || s.indexOf('"') > -1)) {
-            s = "\"" + s.replaceAll("\"", "\"\"") + "\""; // escape quotes
+        if ((s != null) && (s.contains(SEP) || s.indexOf('"') > -1)) {
+            s = "\"" + s.replace("\"", "\"\"") + "\""; // escape quotes
         }
 
         return s;
@@ -192,7 +192,7 @@ public class DataUtil {
      */
     @Deprecated
     public static Set<String> split(final String values) {
-        final Set<String> valuesSet = new HashSet<String>();
+        final Set<String> valuesSet = new HashSet<>();
         final String[] items = SEMICOLON_SPLIT.split(values);
         valuesSet.addAll(Arrays.asList(items));
         return valuesSet;
@@ -209,7 +209,7 @@ public class DataUtil {
     public static String join(final Collection<String> values, final String delim, final boolean sort) {
         final Collection<String> tojoin;
         if (sort) {
-            tojoin = new TreeSet<String>();
+            tojoin = new TreeSet<>();
             tojoin.addAll(values);
         } else {
             tojoin = values;
