@@ -5,9 +5,10 @@ import emissary.place.ServiceProviderPlace;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
             return null;
         }
 
-        try (final FileInputStream theFile = new FileInputStream(nativeLib);
+        try (final InputStream theFile = Files.newInputStream(nativeLib.toPath());
                 final DataInputStream theStream = new DataInputStream(theFile)) {
             final byte[] theContent = new byte[theStream.available()];
             theStream.readFully(theContent);

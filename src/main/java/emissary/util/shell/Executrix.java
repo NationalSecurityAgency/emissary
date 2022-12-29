@@ -14,7 +14,6 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +22,8 @@ import java.io.RandomAccessFile;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -170,7 +171,7 @@ public class Executrix {
     public static byte[] readFile(final String theFileName, final int length) throws IOException {
         byte[] theContent;
 
-        try (InputStream theStream = new FileInputStream(theFileName)) {
+        try (InputStream theStream = Files.newInputStream(Paths.get(theFileName))) {
             final int avail = theStream.available();
             if ((length == -1) || (length >= avail)) {
                 theContent = new byte[avail];
@@ -479,7 +480,8 @@ public class Executrix {
      */
     public static void copyFile(final File frm, final File to) throws IOException {
         final byte[] buf = new byte[1024];
-        try (InputStream fis = new FileInputStream(frm); OutputStream fos = new BufferedOutputStream(new FileOutputStream(to))) {
+        try (InputStream fis = Files.newInputStream(frm.toPath());
+                OutputStream fos = new BufferedOutputStream(Files.newOutputStream(to.toPath()))) {
             int len;
             while ((len = fis.read(buf)) != -1) {
                 fos.write(buf, 0, len);
