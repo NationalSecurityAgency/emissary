@@ -25,7 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import static emissary.config.ConfigUtil.CONFIG_FILE_ENDING;
-import static emissary.place.ServiceProviderPlace.RESERVED_PROPS;
+import static emissary.core.constants.Configurations.RESERVED_SERVICE_CONFIG_KEYS;
 
 @Path("")
 // context is /api
@@ -149,7 +149,7 @@ public class Configs {
      */
     protected static List<ConfigEntry> normalizeEntries(Configurator cfg) {
         return cfg.getEntries().stream()
-                .sorted(Comparator.comparingInt((ConfigEntry ce) -> RESERVED_PROPS.contains(ce.getKey()) ? 0 : 1)
+                .sorted(Comparator.comparingInt((ConfigEntry ce) -> RESERVED_SERVICE_CONFIG_KEYS.contains(ce.getKey()) ? 0 : 1)
                         .thenComparing(ConfigEntry::getKey)
                         .thenComparing(ConfigEntry::getValue))
                 .distinct()
