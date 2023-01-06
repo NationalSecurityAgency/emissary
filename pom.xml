@@ -903,7 +903,6 @@
           <version>3.3.0</version>
           <configuration>
             <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
           </configuration>
         </plugin>
         <plugin>
