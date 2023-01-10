@@ -31,6 +31,10 @@
     <data matchMode="index">
       <value>This Is A Test</value>
     </data>
+
+    <data matchMode="contains">
+      <value>This Is A Test</value>
+    </data>
     
     <data matchMode="index">
       <value>You can have it one way &amp;&amp; Not the other way, || both ways</value>

@@ -296,9 +296,12 @@ public abstract class ExtractionTest extends UnitTest {
         if (matchMode.equals("equals")) {
             assertEquals(value, data,
                     String.format("%s element '%s' problem in %s value '%s' does not equal '%s'", meta.getName(), key, tname, data, value));
-        } else if (matchMode.equals("index")) {
+        } else if (matchMode.equals("index") || matchMode.equals("contains")) {
             assertTrue(data.contains(value),
                     String.format("%s element '%s' problem in %s value '%s' does not index '%s'", meta.getName(), key, tname, data, value));
+        } else if (matchMode.equals("!index") || matchMode.equals("!contains")) {
+            assertFalse(data.contains(value),
+                    String.format("%s element '%s' problem in %s value '%s' should not be indexed in '%s'", meta.getName(), key, tname, value, data));
         } else if (matchMode.equals("match")) {
             assertTrue(data.matches(value),
                     String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));

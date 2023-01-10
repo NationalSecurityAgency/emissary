@@ -1,4 +1,4 @@
-package emissary.test.core;
+package emissary.test.core.junit5;
 
 import emissary.place.IServiceProviderPlace;
 
@@ -20,16 +20,17 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class TestExtractionTest extends UnitTest {
 
+    private final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
+
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
-        String resourceName = "/emissary/test/core/TestExtractionTest.xml";
-        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        assertNotNull(inputStream, "Could not locate: " + resourceName);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(RESOURCE_NAME);
+        assertNotNull(inputStream, "Could not locate: " + RESOURCE_NAME);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
         test.checkStringValue(meta, "1;2;3;4;5;6;7", "testCheckStringValueForCollection");
@@ -41,13 +42,12 @@ class TestExtractionTest extends UnitTest {
     @Test
     void testCheckStringValueForCollectionFailure() throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
-        String resourceName = "/emissary/test/core/TestExtractionTest.xml";
-        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        assertNotNull(inputStream, "Could not locate: " + resourceName);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(RESOURCE_NAME);
+        assertNotNull(inputStream, "Could not locate: " + RESOURCE_NAME);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
 
@@ -57,14 +57,13 @@ class TestExtractionTest extends UnitTest {
     @Test
     void testCheckStringValueBangIndex() throws IOException, JDOMException {
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
-        String resourceName = "/emissary/test/core/TestExtractionTest.xml";
-        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(resourceName);
-        assertNotNull(inputStream, "Could not locate: " + resourceName);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(RESOURCE_NAME);
+        assertNotNull(inputStream, "Could not locate: " + RESOURCE_NAME);
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
         String matchMode = "!index";
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest("nonsense");
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
 
         List<Element> dataList = answerDoc.getRootElement().getChild("answers").getChildren("data");
         Element bangIndexData = getAttributeFromDataChild(dataList, matchMode);
@@ -78,13 +77,12 @@ class TestExtractionTest extends UnitTest {
 
         test.checkStringValue(bangContainsData, "time:20221229", "testCheckStringValue!ContainsTrue");
         assertThrows(AssertionError.class, () -> test.checkStringValue(bangContainsData, "timestamp:20221229", "testCheckStringValue!ContainsFalse"));
-
     }
 
     private Element getAttributeFromDataChild(List<Element> dataList, String matchMode) {
         Element data = null;
-        // Having different matchModes in the same data necessitates having to go through each child and filter for the correct
-        // one
+        // Having different matchModes in the same data necessitates having to go through each child and
+        // filter for the correct one
         try {
             data = dataList.stream().filter(item -> item.getAttribute("matchMode").getValue().equals(matchMode)).findFirst().get();
         } catch (NoSuchElementException e) {
@@ -93,10 +91,10 @@ class TestExtractionTest extends UnitTest {
         return data;
     }
 
-    public static class WhyDoYouMakeMeDoThisExtractionTest extends ExtractionTest {
+    public static class WhyDoYouMakeMeDoThisExtractionTest extends emissary.test.core.junit5.ExtractionTest {
 
-        public WhyDoYouMakeMeDoThisExtractionTest(String crazy) throws IOException {
-            super(crazy);
+        public WhyDoYouMakeMeDoThisExtractionTest() {
+            super();
         }
 
         @Override

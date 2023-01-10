@@ -32,6 +32,7 @@ import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -303,9 +304,13 @@ public abstract class ExtractionTest extends UnitTest {
         if (matchMode.equals("equals")) {
             assertEquals(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not equal '" + value + "'",
                     value, data);
-        } else if (matchMode.equals("index")) {
+        } else if (matchMode.equals("index") || matchMode.equals("contains")) {
             assertTrue(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not index '" + value + "'",
                     data.indexOf(value) > -1);
+        } else if (matchMode.equals("!index") || matchMode.equals("!contains")) {
+            assertFalse(
+                    meta.getName() + " element '" + key + "' problem in " + tname + " value '" + value + "' should not be indexed in '" + data + "'",
+                    data.contains(value));
         } else if (matchMode.equals("match")) {
             assertTrue(meta.getName() + " element '" + key + "' problem in " + tname + " value '" + data + "' does not match '" + value + "'",
                     data.matches(value));
