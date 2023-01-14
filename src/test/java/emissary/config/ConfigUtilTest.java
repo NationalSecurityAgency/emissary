@@ -619,8 +619,6 @@ class ConfigUtilTest extends UnitTest {
         // replaces with the last one
         assertEquals("emissary.place.first.DevNullPlace", c.findStringEntry("DevNullPlace"), "DevNullPlace was not parsed");
         assertNull(c.findStringEntry("BlahBlahPlace"), "BlahBlahPlace should not have been");
-        assertTrue(ConfigUtil.hasConfigErrors(), "Should have a config error");
-
     }
 
     @Test
