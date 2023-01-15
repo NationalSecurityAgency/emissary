@@ -70,26 +70,25 @@ class RegisterPeerActionTest extends EndpointTestBase {
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badValue));
 
         // test
-        Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad Params: "));
+        try (Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad Params: "));
+        }
     }
 
     @Test
     void registerPeerSuccessfully() {
         // test
-
-        Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals(SUCCESS_RESULT, result);
+        try (Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals(SUCCESS_RESULT, result);
+        }
     }
 
     @Test
@@ -99,13 +98,13 @@ class RegisterPeerActionTest extends EndpointTestBase {
         newFormParams.put(TARGET_DIRECTORY, Collections.singletonList(DIRNAME));
 
         // test
-        Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(newFormParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Registration failed"));
+        try (Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(newFormParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Registration failed"));
+        }
     }
 
     @Test
@@ -114,12 +113,12 @@ class RegisterPeerActionTest extends EndpointTestBase {
         Namespace.unbind(DIRNAME);
 
         // test
-        Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("Remote directory lookup failed for dirName: " + DIRNAME, result);
+        try (Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("Remote directory lookup failed for dirName: " + DIRNAME, result);
+        }
     }
 }

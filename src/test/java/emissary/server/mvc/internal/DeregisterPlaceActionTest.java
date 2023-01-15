@@ -60,13 +60,13 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
-        final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
@@ -75,25 +75,25 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList("CantFindThis"));
 
         // test
-        final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("No directory found using name CantFindThis", result);
+        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("No directory found using name CantFindThis", result);
+        }
     }
 
     @Test
     void removeSingleDirectory() {
         // test
-        final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]", result);
+        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + "]", result);
+        }
     }
 
     @Test
@@ -101,14 +101,14 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, "ThisOneWontHit"));
         // test
-        final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        // Notice that ALL keys must be well formed or none of them get processed
-        assertEquals("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]", result);
+        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            // Notice that ALL keys must be well formed or none of them get processed
+            assertEquals("Successfully removed 0 place(s) with keys: [" + ADD_KEY_DIR + ", ThisOneWontHit]", result);
+        }
     }
 
     @Test
@@ -116,13 +116,13 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
         // setup
         formParams.replace(ADD_KEY, Arrays.asList(ADD_KEY_DIR, ADD_KEY_DIR + "MissingMe"));
         // test
-        final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]", result);
+        try (final Response response = target(DEREGISTER_PLACE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("Successfully removed 1 place(s) with keys: [" + ADD_KEY_DIR + ", " + ADD_KEY_DIR + "MissingMe]", result);
+        }
     }
 
     // TODO can we clean this up and just use an EmissaryNode?

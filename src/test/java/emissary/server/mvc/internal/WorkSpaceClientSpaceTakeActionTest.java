@@ -59,13 +59,13 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList(badValue));
 
         // test
-        Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
@@ -74,13 +74,13 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList("WONT.CHOP.THIS.http://localhost:7001/WorkSpace"));
 
         // test
-        Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("There was an exception in the WorkSpaceClientSpaceTake", result);
+        try (Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("There was an exception in the WorkSpaceClientSpaceTake", result);
+        }
     }
 
 
@@ -88,14 +88,14 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
     void nothingToTakeFromWorkSpace() {
         // TODO Investigate this case, seems like we shouldn't be returning empty WorkBundles in this case
         // test
-        Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
-        assertNotNull(resultWb);
+        try (Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
+            assertNotNull(resultWb);
+        }
     }
 
     @Test
@@ -109,14 +109,15 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
         Namespace.bind(WORKSPACE_BIND_KEY, spy);
 
         // test
-        Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams));
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
-        assertNotNull(resultWb);
-        assertEquals(resultWb.getFileNameList(), wb.getFileNameList());
-        assertEquals(resultWb.getBundleId(), wb.getBundleId());
+        try (Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams))) {
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            final WorkBundle resultWb = WorkBundle.buildWorkBundle(result);
+            assertNotNull(resultWb);
+            assertEquals(resultWb.getFileNameList(), wb.getFileNameList());
+            assertEquals(resultWb.getBundleId(), wb.getBundleId());
+        }
     }
 
 

@@ -66,26 +66,26 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.replace(ADD_KEY, Collections.singletonList(badParam));
 
         // test
-        final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
     void failDirectoryNonPropagating() {
         // test
-        final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("Modified 0 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
-                + "$5050[1] due to failure of remote " + FAIL_DIR, result);
+        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("Modified 0 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
+                    + "$5050[1] due to failure of remote " + FAIL_DIR, result);
+        }
     }
 
     @Test
@@ -100,15 +100,15 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.put(ADD_PROPAGATION_FLAG, Collections.singletonList("true"));
 
         // test
-        final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams));
+        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
 
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-
-        assertEquals("Modified 1 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
-                + "$5050[1] due to failure of remote " + FAIL_DIR, result);
+            assertEquals("Modified 1 entries from EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY." + TARGET_DIR
+                    + "$5050[1] due to failure of remote " + FAIL_DIR, result);
+        }
     }
 
     @Test
@@ -117,13 +117,13 @@ class FailDirectoryActionTest extends EndpointTestBase {
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList("WontFindThis"));
 
         // test
-        final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("No local directory found using name WontFindThis", result);
+        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("No local directory found using name WontFindThis", result);
+        }
     }
 
 
