@@ -1,6 +1,6 @@
 package emissary.core.channels;
 
-import emissary.core.BaseDataObject;
+import emissary.core.IBaseDataObject;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -77,24 +77,40 @@ public final class SeekableByteChannelHelper {
     /**
      * Given a BDO, create a byte array with as much data as possible.
      * 
-     * @param bdo to get the data from
+     * @param ibdo to get the data from
      * @param maxSize to limit the byte array to
      * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)
      */
-    public static byte[] getByteArrayFromChannel(final BaseDataObject bdo, final int maxSize) {
-        try (final SeekableByteChannel sbc = bdo.getChannelFactory().create()) {
+    public static byte[] getByteArrayFromBdo(final IBaseDataObject ibdo, final int maxSize) {
+        try (final SeekableByteChannel sbc = ibdo.getChannelFactory().create()) {
             final long truncatedBy = sbc.size() - maxSize;
             if (truncatedBy > 0 && logger.isWarnEnabled()) {
-                logger.warn("Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays", bdo.shortName(),
+                logger.warn("Returned data for [{}] will be truncated by {} bytes due to size constraints of byte arrays", ibdo.shortName(),
                         truncatedBy);
             }
-            final ByteBuffer buff = ByteBuffer.allocate((int) Math.min(sbc.size(), maxSize));
+            return getByteArrayFromChannel(ibdo.getChannelFactory(), maxSize);
+        } catch (final IOException ioe) {
+            logger.error("Error when fetching from byte channel factory on object {}", ibdo.shortName(), ioe);
+            ibdo.setData(new byte[0]);
+            return new byte[0];
+        }
+    }
+
+    /**
+     * Given a channel factory, create a byte array with as much data as possible.
+     * 
+     * @param sbcf to get the data from
+     * @param maxSize to limit the byte array to
+     * @return a byte array of the data from the factory sized up to maxSize (so could truncate data)
+     * @throws IOException if we couldn't read all the data
+     */
+    public static byte[] getByteArrayFromChannel(final SeekableByteChannelFactory sbcf, final int maxSize) throws IOException {
+        try (final SeekableByteChannel sbc = sbcf.create()) {
+            final int byteArraySize = (int) Math.min(sbc.size(), maxSize);
+            final ByteBuffer buff = ByteBuffer.allocate(byteArraySize);
+
             IOUtils.readFully(sbc, buff);
             return buff.array();
-        } catch (final IOException ioe) {
-            logger.error("Error when fetching from byte channel factory on object {}", bdo.shortName(), ioe);
-            bdo.setData(new byte[0]);
-            return new byte[0];
         }
     }
 
