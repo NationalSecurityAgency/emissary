@@ -1,7 +1,9 @@
 package emissary.util;
 
 import emissary.config.Configurator;
+import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectDiffHelper;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.place.ServiceProviderPlace;
 
@@ -67,6 +69,7 @@ public class PlaceComparisonHelper {
      * @param newMethodName to use when comparing (e.g. processHeavyDuty)
      * @param oldPlace to compare against
      * @param oldMethodName to use when comparing (e.g. processHeavyDuty)
+     * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return a readable string of differences to log or use elsewhere.
      * @throws SecurityException if we can't access the String constructor for the other place
      * @throws NoSuchMethodException if there isn't an accessible constructor for the other place
@@ -80,8 +83,8 @@ public class PlaceComparisonHelper {
      */
     @SuppressWarnings("unchecked")
     public static String compareToPlace(final List<IBaseDataObject> newResults, final IBaseDataObject ibdoForNewPlace,
-            final ServiceProviderPlace newPlace,
-            final String newMethodName, final ServiceProviderPlace oldPlace, final String oldMethodName) throws NoSuchMethodException,
+            final ServiceProviderPlace newPlace, final String newMethodName, final ServiceProviderPlace oldPlace, final String oldMethodName,
+            final DiffCheckConfiguration options) throws NoSuchMethodException,
             SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         Validate.notNull(newResults, "Required: newResults not null");
@@ -90,6 +93,7 @@ public class PlaceComparisonHelper {
         Validate.notNull(newMethodName, "newMethodName: newResults not null");
         Validate.notNull(oldPlace, "Required: oldPlace not null");
         Validate.notNull(oldMethodName, "Required: oldMethodName not null");
+        Validate.notNull(options, "Required: options not null");
 
         // Generate an identifier from the simple class names, e.g. Comparison[ColorPlace==ColourPlace]
         final String oldPlaceName = oldPlace.getClass().getSimpleName();
@@ -108,7 +112,7 @@ public class PlaceComparisonHelper {
         newResults.addAll((List<IBaseDataObject>) newProcess.invoke(newPlace, ibdoForNewPlace));
 
         // Now generate the 'diff' for the results
-        return checkDifferences(ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, identifier);
+        return checkDifferences(ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, identifier, options);
     }
 
     /**
@@ -119,21 +123,19 @@ public class PlaceComparisonHelper {
      * @param oldResults from the 'old' run with the 'ibdoForOldPlace' object
      * @param newResults from the 'new' run with the 'ibdoForNewPlace' object
      * @param identifier to highlight any differences in logs
+     * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return the string of differences, or null if there aren't any
      */
     public static String checkDifferences(final IBaseDataObject ibdoForOldPlace, final IBaseDataObject ibdoForNewPlace,
-            final List<IBaseDataObject> oldResults, final List<IBaseDataObject> newResults, final String identifier) {
+            final List<IBaseDataObject> oldResults, final List<IBaseDataObject> newResults, final String identifier,
+            final DiffCheckConfiguration options) {
         Validate.notNull(ibdoForOldPlace, "Required: ibdoForOldPlace not null");
         Validate.notNull(ibdoForNewPlace, "Required: ibdoForNewPlace not null");
         Validate.notNull(oldResults, "Required: oldResults not null");
         Validate.notNull(newResults, "Required: newResults not null");
         Validate.notNull(identifier, "Required: identifier not null");
+        Validate.notNull(options, "Required: options not null");
 
-        // Options for diff
-        final boolean checkData = true;
-        final boolean checkTimestamp = false;
-        final boolean checkInternalId = false;
-        final boolean checkTransformHistory = false;
         final List<String> parentDifferences = new ArrayList<>();
         final List<String> childDifferences = new ArrayList<>();
 
@@ -144,10 +146,10 @@ public class PlaceComparisonHelper {
         try {
             ibdoForOldPlace.deleteParameter(DisposeHelper.KEY);
             ibdoForNewPlace.deleteParameter(DisposeHelper.KEY);
-            IBaseDataObjectHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences,
-                    checkData, checkTimestamp, checkInternalId, checkTransformHistory);
-            IBaseDataObjectHelper.diff(newResults, oldResults, identifier, childDifferences,
-                    checkData, checkTimestamp, checkInternalId, checkTransformHistory);
+            IBaseDataObjectDiffHelper.diff(ibdoForNewPlace, ibdoForOldPlace, parentDifferences,
+                    options);
+            IBaseDataObjectDiffHelper.diff(newResults, oldResults, identifier, childDifferences,
+                    options);
         } finally {
             // Make sure we put the runnables back on if an error occurs during the diff
             ibdoForOldPlace.setParameter(DisposeHelper.KEY, oldRunnables);

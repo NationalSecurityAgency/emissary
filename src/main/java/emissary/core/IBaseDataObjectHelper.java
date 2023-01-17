@@ -5,22 +5,16 @@ import emissary.directory.KeyManipulator;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.channels.Channels;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -32,10 +26,6 @@ public final class IBaseDataObjectHelper {
      * A logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectHelper.class);
-
-    private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
-    private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
-    private static final String ARE_NOT_EQUAL = " are not equal";
 
     private IBaseDataObjectHelper() {}
 
@@ -126,194 +116,6 @@ public final class IBaseDataObjectHelper {
 
         field.setAccessible(true); // NOSONAR intentional visibility change
         field.set(bdo, object); // NOSONAR intentional visibility change
-    }
-
-    /**
-     * This method compares two IBaseDataObject's and adds any differences to the provided string list.
-     * 
-     * @param ibdo1 the first IBaseDataObject to compare.
-     * @param ibdo2 the second IBaseDataObject to compare.
-     * @param differences the string list differences are to be added to.
-     * @param checkData says whether the data in the two IBaseDataObjects should be compared.
-     * @param checkTimestamp says whether the timestamps in the two IBaseDataObjects should be compared.
-     * @param checkInternalId says whether the internalIds of the two IBaseDataObjects should be compared.
-     * @param checkTransformHistory whether to check the transform history - usually false if comparing two places.
-     */
-    public static final void diff(final IBaseDataObject ibdo1, final IBaseDataObject ibdo2,
-            final List<String> differences, final boolean checkData, final boolean checkTimestamp,
-            final boolean checkInternalId, final boolean checkTransformHistory) {
-        Validate.notNull(ibdo1, "Required: ibdo1 not null");
-        Validate.notNull(ibdo2, "Required: ibdo2 not null");
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        if (checkData) {
-            final SeekableByteChannelFactory sbcf1 = ibdo1.getChannelFactory();
-            final SeekableByteChannelFactory sbcf2 = ibdo2.getChannelFactory();
-
-            if (sbcf1 != null && sbcf2 != null) {
-                try (InputStream is1 = Channels.newInputStream(sbcf1.create());
-                        InputStream is2 = Channels.newInputStream(sbcf2.create())) {
-                    if (!IOUtils.contentEquals(is1, is2)) {
-                        differences.add(String.format("Data not equal. 1.cs=%s 2.cs=%s",
-                                ibdo1.getChannelSize(), ibdo2.getChannelSize()));
-                    }
-                } catch (IOException e) {
-                    differences.add("Failed to compare data: " + e.getMessage());
-                }
-            } else if (sbcf1 == null && sbcf2 == null) {
-                // Do nothing as they are considered equal.
-            } else {
-                differences.add(String.format("Data not equal. sbcf1=%s sbcf2=%s", sbcf1, sbcf2));
-            }
-        }
-
-        diff(ibdo1.getFilename(), ibdo2.getFilename(), "filename", differences);
-        diff(ibdo1.shortName(), ibdo2.shortName(), "shortName", differences);
-        if (checkInternalId) {
-            diff(ibdo1.getInternalId(), ibdo2.getInternalId(), "internalId", differences);
-        }
-        diff(ibdo1.currentForm(), ibdo2.currentForm(), "currentForm", differences);
-        diff(ibdo1.getProcessingError(), ibdo2.getProcessingError(), "processingError", differences);
-
-        if (checkTransformHistory) {
-            diff(ibdo1.transformHistory(), ibdo2.transformHistory(), "transformHistory", differences);
-        }
-
-        diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
-        diff(ibdo1.getParameters(), ibdo2.getParameters(), "parameters", differences);
-        diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
-        diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
-        diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
-        diff(ibdo1.getAlternateViews(), ibdo2.getAlternateViews(), "alternateViews", differences);
-        diff(ibdo1.header(), ibdo2.header(), "header", differences);
-        diff(ibdo1.footer(), ibdo2.footer(), "footer", differences);
-        diff(ibdo1.getHeaderEncoding(), ibdo2.getHeaderEncoding(), "headerEncoding", differences);
-        diff(ibdo1.getClassification(), ibdo2.getClassification(), "classification", differences);
-        diff(ibdo1.isBroken(), ibdo2.isBroken(), "broken", differences);
-        diff(ibdo1.isFileTypeEmpty(), ibdo2.isFileTypeEmpty(), "fileTypeEmpty", differences);
-        diff(ibdo1.getPriority(), ibdo2.getPriority(), "priority", differences);
-        if (checkTimestamp) {
-            diff(ibdo1.getCreationTimestamp(), ibdo2.getCreationTimestamp(), "creationTimestamp", differences);
-        }
-        diff(ibdo1.getExtractedRecords(), ibdo2.getExtractedRecords(), "extractedRecords", differences);
-        diff(ibdo1.isOutputable(), ibdo2.isOutputable(), "outputable", differences);
-        diff(ibdo1.getId(), ibdo2.getId(), "id", differences);
-        diff(ibdo1.getWorkBundleId(), ibdo2.getWorkBundleId(), "workBundleId", differences);
-        diff(ibdo1.getTransactionId(), ibdo2.getTransactionId(), "transactionId", differences);
-    }
-
-    /**
-     * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
-     * 
-     * @param ibdoList1 the first list of IBaseDataObjects to compare.
-     * @param ibdoList2 the second list of IBaseDataObjects to compare.
-     * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
-     * @param differences the string list differences are to be added to.
-     * @param checkData says whether the data in the two IBaseDataObjects should be compared.
-     * @param checkTimestamp says whether the timestamps in the two IBaseDataObjects should be compared.
-     * @param checkInternalId says whether the internalIds of the two IBaseDataObjects should be compared.
-     * @param checkTransformHistory whether to check the transform history - usually false if comparing two places
-     */
-    public static void diff(final List<IBaseDataObject> ibdoList1, final List<IBaseDataObject> ibdoList2,
-            final String identifier, final List<String> differences, final boolean checkData,
-            final boolean checkTimestamp, final boolean checkInternalId, final boolean checkTransformHistory) {
-        Validate.notNull(identifier, ID_NOT_NULL_MSG);
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        final int ibdoList1Size = (ibdoList1 == null) ? 0 : ibdoList1.size();
-        final int ibdoList2Size = (ibdoList2 == null) ? 0 : ibdoList2.size();
-
-        if (ibdoList1Size != ibdoList2Size) {
-            differences.add(String.format("%s%s: 1.s=%s 2.s=%s", identifier, ARE_NOT_EQUAL, ibdoList1Size, ibdoList2Size));
-        } else if (ibdoList1 != null && ibdoList2 != null) {
-            final List<String> childDifferences = new ArrayList<>();
-            for (int i = 0; i < ibdoList1.size(); i++) {
-                childDifferences.clear();
-
-                diff(ibdoList1.get(i), ibdoList2.get(i), childDifferences, checkData, checkTimestamp, checkInternalId,
-                        checkTransformHistory);
-
-                final String prefix = identifier + " : " + i + " : ";
-                while (!childDifferences.isEmpty()) {
-                    differences.add(prefix + childDifferences.remove(0)); // NOSONAR Used correctly
-                }
-            }
-        }
-    }
-
-    /**
-     * This method compares two Objects and adds any differences to the provided string list.
-     * 
-     * @param object1 the first Object to compare.
-     * @param object2 the second Object to compare.
-     * @param identifier an identifier to describe the context of this Object comparison.
-     * @param differences the string list differences are to be added to.
-     */
-    public static void diff(final Object object1, final Object object2, final String identifier,
-            final List<String> differences) {
-        Validate.notNull(identifier, ID_NOT_NULL_MSG);
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        if (!Objects.deepEquals(object1, object2)) {
-            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL, object1, object2));
-        }
-    }
-
-    /**
-     * This method compares two integers and adds any differences to the provided string list.
-     * 
-     * @param integer1 the first integer to compare.
-     * @param integer2 the second integer to compare.
-     * @param identifier an identifier to describe the context of this integer comparison.
-     * @param differences the string list differences are to be added to.
-     */
-    public static void diff(final int integer1, final int integer2, final String identifier,
-            final List<String> differences) {
-        Validate.notNull(identifier, ID_NOT_NULL_MSG);
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        if (integer1 != integer2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
-        }
-    }
-
-    /**
-     * This method compares two booleans and adds any differences to the provided string list.
-     * 
-     * @param boolean1 the first boolean to compare.
-     * @param boolean2 the second boolean to compare.
-     * @param identifier an identifier to describe the context of this boolean comparison.
-     * @param differences the string list differences are to be added to.
-     */
-    public static void diff(final boolean boolean1, final boolean boolean2, final String identifier,
-            final List<String> differences) {
-        Validate.notNull(identifier, ID_NOT_NULL_MSG);
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        if (boolean1 != boolean2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
-        }
-    }
-
-    /**
-     * This method compares two maps and adds any differences to the provided string list.
-     * 
-     * @param map1 the first map to compare.
-     * @param map2 the second map to compare.
-     * @param identifier an identifier to describe the context of this map comparison.
-     * @param differences the string list differences are to be added to.
-     */
-    public static void diff(final Map<String, byte[]> map1, final Map<String, byte[]> map2, final String identifier,
-            final List<String> differences) {
-        Validate.notNull(map1, "Required: map1 not null!");
-        Validate.notNull(map2, "Required: map2 not null!");
-        Validate.notNull(identifier, ID_NOT_NULL_MSG);
-        Validate.notNull(differences, DIFF_NOT_NULL_MSG);
-
-        if (map1.size() != map2.size() ||
-                !map1.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), map2.get(e.getKey())))) {
-            differences.add(identifier + ARE_NOT_EQUAL);
-        }
     }
 
     /**
