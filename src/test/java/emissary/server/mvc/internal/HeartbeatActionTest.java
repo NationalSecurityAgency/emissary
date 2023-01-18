@@ -62,25 +62,25 @@ class HeartbeatActionTest extends EndpointTestBase {
         formParams.put(HeartbeatAdapter.TO_PLACE_NAME, Collections.singletonList(badValue));
 
         // test
-        final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Heartbeat failed"));
+        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Heartbeat failed"));
+        }
     }
 
     @Test
     void heartbeat() {
         // test
-        final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals(dp.toString(), result);
+        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals(dp.toString(), result);
+        }
     }
 
     @Test
@@ -91,13 +91,13 @@ class HeartbeatActionTest extends EndpointTestBase {
         Namespace.bind(TO_PLACE, dp);
 
         // test
-        final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals(dp.toString(), result);
+        try (final Response response = target(HEARTBEAT_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals(dp.toString(), result);
+        }
     }
 
 }

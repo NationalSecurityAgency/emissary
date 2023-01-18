@@ -63,13 +63,13 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(WORK_BUNDLE_STATUS, Collections.singletonList(badValue));
 
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
@@ -78,13 +78,13 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList("ThisShouldCauseAnException"));
 
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
@@ -93,15 +93,15 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(SPACE_NAME, Collections.singletonList(WORKSPACE_NAME + "ThisWillMiss"));
 
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertEquals(
-                "There was a problem while processing the WorkBundle: Not found: http://workBundleCompletedActionTest:7001/WorkSpaceThisWillMiss",
-                result);
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertEquals(
+                    "There was a problem while processing the WorkBundle: Not found: http://workBundleCompletedActionTest:7001/WorkSpaceThisWillMiss",
+                    result);
+        }
     }
 
     @Test
@@ -110,25 +110,25 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         formParams.replace(CLIENT_NAME, Collections.singletonList("ThisIsBad"));
 
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith("Bad params:"));
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Bad params:"));
+        }
     }
 
     @Test
     void itemNotPresentInPending() {
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(500, status);
-        final String result = response.readEntity(String.class);
-        assertTrue(result.startsWith(""));
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith(""));
+        }
     }
 
     @Test
@@ -141,12 +141,12 @@ class WorkBundleCompletedActionTest extends EndpointTestBase {
         Namespace.bind(WORKSPACE_BIND_KEY, spyWs);
 
         // test
-        final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams));
-
-        // verify
-        final int status = response.getStatus();
-        assertEquals(200, status);
-        final String result = response.readEntity(String.class);
-        assertEquals("Work Bundle Completed", result);
+        try (final Response response = target(WORK_BUNDLE_COMPLETED_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(200, status);
+            final String result = response.readEntity(String.class);
+            assertEquals("Work Bundle Completed", result);
+        }
     }
 }
