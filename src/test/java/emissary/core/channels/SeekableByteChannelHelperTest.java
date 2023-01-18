@@ -155,7 +155,7 @@ class SeekableByteChannelHelperTest {
             // Wrap the actual call with a way to read the logs
             appender.start();
             channelLogger.addAppender(appender);
-            final byte[] trimmedArray = SeekableByteChannelHelper.getByteArrayFromChannel(bdo, 5);
+            final byte[] trimmedArray = SeekableByteChannelHelper.getByteArrayFromBdo(bdo, 5);
             assertEquals(5, trimmedArray.length);
             assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().equals(
                     "Returned data for [filename.txt] will be truncated by 4 bytes due to size constraints of byte arrays")));

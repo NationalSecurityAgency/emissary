@@ -378,7 +378,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 return theData;
             case CHANNEL_ONLY:
                 // Max size here is slightly less than the true max size to avoid memory issues
-                return SeekableByteChannelHelper.getByteArrayFromChannel(this, MAX_BYTE_ARRAY_SIZE);
+                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
             case NO_DATA:
             default:
                 return null; // NOSONAR maintains backwards compatibility
