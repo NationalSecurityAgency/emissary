@@ -101,21 +101,6 @@ public class ConfigUtil {
      */
     private static String configFlavors = null;
 
-    private static boolean configErrors = false;
-
-    /**
-     * XML bean configuration with Jetty 6 does a poor job of propagating exceptions during configure. Once we update to
-     * Jetty 9, evaluate removing this. Otherwise, there is no way I could find to stop the server from starting if there is
-     * a configuration error.
-     * <p>
-     * TODO: evaluate whether we can change this now that we are on jetty 9
-     * <p>
-     * This method is used in JettyServer to determine whether to fail startup.
-     */
-    public static boolean hasConfigErrors() {
-        return configErrors;
-    }
-
     /*
      * Perform initialization
      */
@@ -608,8 +593,6 @@ public class ConfigUtil {
                 // only merge if there are no errors
                 if (noErrorsForFile) {
                     scg.merge(scgToMerge);
-                } else {
-                    configErrors = true;
                 }
             }
         }
