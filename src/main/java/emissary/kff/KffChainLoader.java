@@ -24,9 +24,6 @@ public class KffChainLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(KffChainLoader.class);
 
-    private static int FILE_TYPE = 1;
-    private static int DB_TYPE = 2;
-
     private static KffChain theInstance = null;
     private static Map<String, String> classes;
 
@@ -44,10 +41,8 @@ public class KffChainLoader {
             try {
                 Configurator configG = ConfigUtil.getConfigInfo(KffChain.class);
                 classes = configG.findStringMatchMap("KFF_IMPL_");
-                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_KNOWN_"), FILE_TYPE, FilterType.Ignore);
-                loadFrom(chain, configG.findStringMatchMap("KFF_DB_KNOWN_"), DB_TYPE, FilterType.Ignore);
-                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_DUPE_"), FILE_TYPE, FilterType.Duplicate);
-                loadFrom(chain, configG.findStringMatchMap("KFF_DB_DUPE_"), DB_TYPE, FilterType.Duplicate);
+                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_KNOWN_"), FilterType.Ignore);
+                loadFrom(chain, configG.findStringMatchMap("KFF_FILE_DUPE_"), FilterType.Duplicate);
 
                 chain.setMinDataSize(configG.findIntEntry("KFF_MIN_SIZE", 0));
                 Set<String> algs = configG.findEntriesAsSet("KFF_ALG");
@@ -64,14 +59,13 @@ public class KffChainLoader {
 
     /**
      * Load a set from one of the keys into the chain
-     * 
+     *
      * @param chain the chain we are loading
      * @param m map of config entries items
-     * @param kffType either FILE or DB type
      * @param filterType either IGNORE, KNOWN, or DUPE filter
      * @return number of filter loaded onto chain
      */
-    private static int loadFrom(KffChain chain, Map<String, String> m, int kffType, KffFilter.FilterType filterType) {
+    private static int loadFrom(KffChain chain, Map<String, String> m, KffFilter.FilterType filterType) {
         int countLoaded = 0;
 
         // Load KFF File filter
@@ -79,7 +73,6 @@ public class KffChainLoader {
             String key = entry.getKey();
             String name = entry.getValue();
             try {
-                KffFilter k = null;
                 String clazz = classes.get(key);
                 if (clazz == null || clazz.length() == 0) {
                     // cannot construct a null class for key
@@ -87,21 +80,16 @@ public class KffChainLoader {
                 }
 
                 // see if known KffType
-                if (kffType == FILE_TYPE) {
-                    try {
-                        k = (KffFilter) Factory.create(clazz, new Object[] {name, key, filterType});
-                    } catch (Exception x) {
-                        logger.warn("Cannot create KffFilter, using default", x);
-                        k = new KffFile(name, key, filterType);
-                    }
-                } else {
-                    logger.error("Unknown kff type {}", kffType);
+                KffFilter k;
+                try {
+                    k = (KffFilter) Factory.create(clazz, name, key, filterType);
+                } catch (Exception x) {
+                    logger.warn("Cannot create KffFilter, using default", x);
+                    k = new KffFile(name, key, filterType);
                 }
 
-                if (k != null) {
-                    chain.addFilter(k);
-                    countLoaded++;
-                }
+                chain.addFilter(k);
+                countLoaded++;
             } catch (IOException e) {
                 logger.error("Exception creating KFF chain element", e);
             }
