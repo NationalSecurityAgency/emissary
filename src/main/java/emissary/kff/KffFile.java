@@ -164,7 +164,7 @@ public class KffFile implements KffFilter {
             // mappedBuf.position(record.length * mid);
             // mappedBuf.get(record);
             try {
-                knownFile.seek(record.length * mid);
+                knownFile.seek(record.length * (long) mid);
                 int count = knownFile.read(record);
                 if (count != record.length) {
                     logger.warn("Short read on KffFile at " + (record.length * mid) + " read " + count + " expected " + record.length);

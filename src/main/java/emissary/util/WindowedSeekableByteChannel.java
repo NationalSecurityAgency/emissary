@@ -91,7 +91,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
             return;
         }
         // keep track of our position
-        final int offset = this.buff1.position() + this.buff2.position();
+        final long offset = (long) this.buff1.position() + this.buff2.position();
         this.buff1.position(qtr);
         // push them forward
         this.buff1.compact();

@@ -43,7 +43,7 @@ public class ParserFactory {
 
     // For channel sizes larger than this no fallback to a byte[]
     // parser is attempted.
-    protected long nioFallbackMax = 1024 * 1024 * 100; // 100 Mb
+    protected long nioFallbackMax = 1024L * 1024L * 100L; // 100 Mb
 
     protected String DEFAULT_NIO_PARSER = "emissary.parser.SimpleNioParser";
 
