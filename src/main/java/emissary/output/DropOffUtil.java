@@ -249,7 +249,7 @@ public class DropOffUtil {
                 thePath.mkdirs();
                 if (!thePath.exists()) {
                     try {
-                        Thread.sleep(50 * tryCount);
+                        Thread.sleep(50L * tryCount);
                     } catch (InterruptedException e) {
                         // Ignored.
                     }
