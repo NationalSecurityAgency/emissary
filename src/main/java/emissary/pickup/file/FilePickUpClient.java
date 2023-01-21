@@ -24,6 +24,7 @@ import javax.annotation.Nullable;
 import static emissary.core.constants.Parameters.INPUT_FILEDATE;
 import static emissary.core.constants.Parameters.INPUT_FILENAME;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Pull bundles of file info from a WorkSpace and process as a normal FilePickUp. Monitors a queue rather than a
@@ -432,7 +433,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
                 final MessageDigest theDigest = this.digest;
                 synchronized (theDigest) {
                     theDigest.reset();
-                    byte[] hash = theDigest.digest(fn.getBytes());
+                    byte[] hash = theDigest.digest(fn.getBytes(UTF_8));
                     d.setFilename(parts[1] + "-" + Hexl.toUnformattedHexString(hash));
                 }
             }
@@ -458,7 +459,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
         final MessageDigest theDigest = this.digest;
         synchronized (theDigest) {
             theDigest.reset();
-            byte[] hash = theDigest.digest(filePath.getBytes());
+            byte[] hash = theDigest.digest(filePath.getBytes(UTF_8));
             return new File(prefix + "-" + Hexl.toUnformattedHexString(hash)).getName();
         }
     }

@@ -5,6 +5,7 @@ import emissary.util.CharacterCounterSet;
 
 import org.junit.jupiter.api.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -25,8 +26,8 @@ class HtmlEscapeTest extends UnitTest {
         for (int i = 0; i < t.length; i++) {
             String s = HtmlEscape.unescapeEntities(t[i]);
             assertEquals(ans[i], s, "Entities must be escaped in string '" + t[i] + "'");
-            byte[] b = HtmlEscape.unescapeEntities(t[i].getBytes());
-            assertEquals(ans[i], new String(b), "Entity bytes must be escaped in '" + t[i] + "'");
+            byte[] b = HtmlEscape.unescapeEntities(t[i].getBytes(UTF_8));
+            assertEquals(ans[i], new String(b, UTF_8), "Entity bytes must be escaped in '" + t[i] + "'");
         }
     }
 
@@ -39,8 +40,8 @@ class HtmlEscapeTest extends UnitTest {
         for (int i = 0; i < t.length; i++) {
             String s = HtmlEscape.unescapeEntities(t[i]);
             assertEquals(ans[i], s, "Entities must be escaped in string '" + t[i] + "'");
-            byte[] b = HtmlEscape.unescapeEntities(t[i].getBytes());
-            assertEquals(ans[i], new String(b), "Entity bytes must be escaped in '" + t[i] + "'");
+            byte[] b = HtmlEscape.unescapeEntities(t[i].getBytes(UTF_8));
+            assertEquals(ans[i], new String(b, UTF_8), "Entity bytes must be escaped in '" + t[i] + "'");
         }
     }
 
@@ -55,7 +56,7 @@ class HtmlEscapeTest extends UnitTest {
     void testEntityRemovalInBytes() {
         String t = "anti&shy;dis&shy;estab&shy;lish&shy;ment&shy;ary";
         String s = "antidisestablishmentary";
-        assertEquals(s, new String(HtmlEscape.unescapeEntities(t.getBytes())), "Entities should have been removed in bytes");
+        assertEquals(s, new String(HtmlEscape.unescapeEntities(t.getBytes(UTF_8)), UTF_8), "Entities should have been removed in bytes");
     }
 
     @Test
@@ -71,7 +72,7 @@ class HtmlEscapeTest extends UnitTest {
         String t = "Test &#x1D4A5; Script J";
         StringBuilder sb = new StringBuilder();
         sb.append("Test ").appendCodePoint(0x1D4A5).append(" Script J");
-        assertEquals(sb.toString(), new String(HtmlEscape.unescapeHtml(t.getBytes())), "Hex char beyond BMP must be escaped in bytes");
+        assertEquals(sb.toString(), new String(HtmlEscape.unescapeHtml(t.getBytes(UTF_8)), UTF_8), "Hex char beyond BMP must be escaped in bytes");
     }
 
     @Test
@@ -87,7 +88,7 @@ class HtmlEscapeTest extends UnitTest {
         String t = "Test &Jscr; Script J";
         StringBuilder sb = new StringBuilder();
         sb.append("Test ").appendCodePoint(0x1D4A5).append(" Script J");
-        assertEquals(sb.toString(), new String(HtmlEscape.unescapeEntities(t.getBytes())), "Entity beyond BMP must be escaped in bytes");
+        assertEquals(sb.toString(), new String(HtmlEscape.unescapeEntities(t.getBytes(UTF_8)), UTF_8), "Entity beyond BMP must be escaped in bytes");
     }
 
     @Test
@@ -99,8 +100,8 @@ class HtmlEscapeTest extends UnitTest {
         for (int i = 0; i < t.length; i++) {
             String s = HtmlEscape.unescapeHtml(t[i]);
             assertEquals(ans[i], s, "Characters must be escaped in " + t[i]);
-            byte[] b = HtmlEscape.unescapeHtml(t[i].getBytes());
-            assertEquals(ans[i], new String(b), "Character bytes must be escaped in " + t[i]);
+            byte[] b = HtmlEscape.unescapeHtml(t[i].getBytes(UTF_8));
+            assertEquals(ans[i], new String(b, UTF_8), "Character bytes must be escaped in " + t[i]);
         }
     }
 
@@ -109,7 +110,7 @@ class HtmlEscapeTest extends UnitTest {
         String t = "&#x41F;&#x440;&#x435;&#x437;&#x438;&#x434;&#x435;&#x43D;&#x442; &#x411;&#x443;&#x448;";
         String s = W;
         assertEquals(s, HtmlEscape.unescapeHtml(t), "Hex characters must be escaped");
-        assertEquals(s, new String(HtmlEscape.unescapeHtml(t.getBytes())), "Hex characters must be escaped");
+        assertEquals(s, new String(HtmlEscape.unescapeHtml(t.getBytes(UTF_8)), UTF_8), "Hex characters must be escaped");
     }
 
     @Test
@@ -121,8 +122,8 @@ class HtmlEscapeTest extends UnitTest {
         for (int i = 0; i < t.length; i++) {
             String s = HtmlEscape.unescapeHtml(t[i]);
             assertEquals(ans[i], s, "Hex Characters must be escaped in " + t[i]);
-            byte[] b = HtmlEscape.unescapeHtml(t[i].getBytes());
-            assertEquals(ans[i], new String(b), "Hex Character bytes must be escaped in " + t[i]);
+            byte[] b = HtmlEscape.unescapeHtml(t[i].getBytes(UTF_8));
+            assertEquals(ans[i], new String(b, UTF_8), "Hex Character bytes must be escaped in " + t[i]);
         }
     }
 
@@ -161,7 +162,7 @@ class HtmlEscapeTest extends UnitTest {
     void testNonterminatedEntityMarkerInByteArray() {
         String s = "alors le r&eacute";
         String t = "alors le ré";
-        assertEquals(t, new String(HtmlEscape.unescapeEntities(s.getBytes())), "Non terminating entity case");
+        assertEquals(t, new String(HtmlEscape.unescapeEntities(s.getBytes(UTF_8)), UTF_8), "Non terminating entity case");
     }
 
     @Test
@@ -174,7 +175,7 @@ class HtmlEscapeTest extends UnitTest {
     @Test
     void testNonterminatedEntityMarkerWithSpaceInByteArray() {
         String s = "&;foobarb ";
-        assertEquals(s, new String(HtmlEscape.unescapeEntities(s.getBytes())), "Non terminating entity case");
+        assertEquals(s, new String(HtmlEscape.unescapeEntities(s.getBytes(UTF_8)), UTF_8), "Non terminating entity case");
     }
 
     @Test
@@ -186,7 +187,7 @@ class HtmlEscapeTest extends UnitTest {
     @Test
     void testNonterminatedEntityMarkerWithExtraSemicolonInByteArray() {
         String s = "&;foobarb";
-        assertEquals(s, new String(HtmlEscape.unescapeEntities(s.getBytes())), "Non terminating entity case");
+        assertEquals(s, new String(HtmlEscape.unescapeEntities(s.getBytes(UTF_8)), UTF_8), "Non terminating entity case");
     }
 
     @Test
@@ -202,7 +203,7 @@ class HtmlEscapeTest extends UnitTest {
 
     @Test
     void testMissingSemicolonInByteArray() {
-        assertEquals("a  b", new String(HtmlEscape.unescapeEntities("a&nbsp b".getBytes())), "Missing semi-colon must be handled");
+        assertEquals("a  b", new String(HtmlEscape.unescapeEntities("a&nbsp b".getBytes(UTF_8)), UTF_8), "Missing semi-colon must be handled");
     }
 
     @Test
@@ -212,12 +213,12 @@ class HtmlEscapeTest extends UnitTest {
 
     @Test
     void testExtraSemicolonInByteArray() {
-        assertEquals("a b", new String(HtmlEscape.unescapeEntities("a&;nbsp;b".getBytes())), "Extra semi-colon must be handled");
+        assertEquals("a b", new String(HtmlEscape.unescapeEntities("a&;nbsp;b".getBytes(UTF_8)), UTF_8), "Extra semi-colon must be handled");
     }
 
     @Test
     void testHandlingOf160AndNbspAreIdentical() {
-        assertEquals("a  b", new String(HtmlEscape.unescapeEntities("a&#160;&nbsp;b".getBytes())), "Entity 160 is an nbsp");
+        assertEquals("a  b", new String(HtmlEscape.unescapeEntities("a&#160;&nbsp;b".getBytes(UTF_8)), UTF_8), "Entity 160 is an nbsp");
     }
 
     @Test
@@ -230,7 +231,7 @@ class HtmlEscapeTest extends UnitTest {
     @Test
     void testCountingOfWhitespaceEscapesAsBytes() {
         CharacterCounterSet c = new CharacterCounterSet();
-        HtmlEscape.unescapeEntities("a&nbsp;b&#160;".getBytes(), c);
+        HtmlEscape.unescapeEntities("a&nbsp;b&#160;".getBytes(UTF_8), c);
         assertEquals(2, c.getWhitespaceCount(), "Counted nbsp as whitespace");
     }
 
@@ -246,7 +247,7 @@ class HtmlEscapeTest extends UnitTest {
     void testCountingEncodedLettersAsBytes() {
         CharacterCounterSet c = new CharacterCounterSet();
         String s = "alors le r&eacute;";
-        HtmlEscape.unescapeEntities(s.getBytes(), c);
+        HtmlEscape.unescapeEntities(s.getBytes(UTF_8), c);
         assertEquals(1, c.getLetterCount(), "Counted eacute as letter");
     }
 
@@ -257,7 +258,7 @@ class HtmlEscapeTest extends UnitTest {
 
     @Test
     void testTwoDigitNumericByteArray() {
-        assertEquals(",", new String(HtmlEscape.unescapeHtml("&#44;".getBytes())), "Short numeric encoded byte array");
+        assertEquals(",", new String(HtmlEscape.unescapeHtml("&#44;".getBytes(UTF_8)), UTF_8), "Short numeric encoded byte array");
     }
 
     @Test
@@ -267,6 +268,6 @@ class HtmlEscapeTest extends UnitTest {
 
     @Test
     void testTwoDigitNumericHexByteArray() {
-        assertEquals(",", new String(HtmlEscape.unescapeHtml("&#x2c;".getBytes())), "Short numeric encoded hex byte array");
+        assertEquals(",", new String(HtmlEscape.unescapeHtml("&#x2c;".getBytes(UTF_8)), UTF_8), "Short numeric encoded hex byte array");
     }
 }

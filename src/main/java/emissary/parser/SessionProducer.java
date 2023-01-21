@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class takes a SessionParser and produces data objects from the sessions coming out of the session parser.
  */
@@ -111,7 +113,7 @@ public class SessionProducer {
                         if (valueItem instanceof byte[]) {
                             dataObject.addAlternateView(viewName, (byte[]) valueItem);
                         } else {
-                            dataObject.addAlternateView(viewName, valueItem.toString().getBytes());
+                            dataObject.addAlternateView(viewName, valueItem.toString().getBytes(UTF_8));
                         }
                         viewCounter++;
                     }

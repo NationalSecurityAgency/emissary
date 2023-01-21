@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -55,7 +56,7 @@ class UnixCommandPlaceTest extends UnitTest {
             logger.error("Cannot create UnixCommandPlace", ex);
         }
 
-        payload = DataObjectFactory.getInstance(new Object[] {"abcdefg".getBytes(), "myPayload", FORM});
+        payload = DataObjectFactory.getInstance(new Object[] {"abcdefg".getBytes(UTF_8), "myPayload", FORM});
     }
 
     @Override
@@ -78,7 +79,7 @@ class UnixCommandPlaceTest extends UnitTest {
         byte[] altView = payload.getAlternateView("TEST_VIEW");
         assertNotNull(altView, "Alt view should have been created");
         assertEquals(FORM, payload.currentForm(), "Payload should have same current form");
-        assertEquals(W, new String(altView).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(W, new String(altView, UTF_8).trim(), "Clean UTF-8 coming from the script must be maintained");
     }
 
     @Test
@@ -91,7 +92,7 @@ class UnixCommandPlaceTest extends UnitTest {
         byte[] altView = payload.getAlternateView("TEST_VIEW");
         assertNotNull(altView, "Alt view should have been created");
         assertEquals(FORM, payload.currentForm(), "Payload should have same current form");
-        assertEquals(W, new String(altView).trim(), "Clean UTF-8 coming from the script must be maintained");
+        assertEquals(W, new String(altView, UTF_8).trim(), "Clean UTF-8 coming from the script must be maintained");
     }
 
     @Test
@@ -127,7 +128,7 @@ class UnixCommandPlaceTest extends UnitTest {
             assertNull(place.fileProcess(new String[] {"positive"}, outputFile.toAbsolutePath().toString()));
 
             // a successful execution will return the bytes of the specified output file
-            assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString())));
+            assertEquals(DATA, new String(place.fileProcess(new String[] {"zero"}, outputFile.toAbsolutePath().toString()), UTF_8));
         } finally {
             Files.deleteIfExists(outputFile);
         }
@@ -149,7 +150,7 @@ class UnixCommandPlaceTest extends UnitTest {
         assertNull(place.stdOutProcess(new String[] {"positive"}, false));
 
         // we didn't actually execute anything, so the result is empty
-        assertEquals("", new String(place.stdOutProcess(new String[] {"zero"}, false)));
+        assertEquals("", new String(place.stdOutProcess(new String[] {"zero"}, false), UTF_8));
     }
 
     private static final String[] LOG_MSGS = {"ERROR script error message", "WARN script warn message", "INFO script info message",
@@ -160,11 +161,11 @@ class UnixCommandPlaceTest extends UnitTest {
 
             // Add messages to the log file, name matched to serviceName from place key
             for (String msg : LOG_MSGS) {
-                fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes());
+                fos.write(("echo '" + msg + "' >> UCP.log\n").getBytes(UTF_8));
             }
 
             // Make some output
-            fos.write("cat ${1} > ${2}\n".getBytes());
+            fos.write("cat ${1} > ${2}\n".getBytes(UTF_8));
             scriptFile.toFile().setExecutable(true); // jdk 1.6+ only
         }
     }
@@ -172,15 +173,15 @@ class UnixCommandPlaceTest extends UnitTest {
     private OutputStream startScript() throws IOException {
         Files.deleteIfExists(scriptFile);
         OutputStream fos = Files.newOutputStream(scriptFile);
-        fos.write("#!/bin/bash\n".getBytes());
+        fos.write("#!/bin/bash\n".getBytes(UTF_8));
         return fos;
     }
 
     private void createScript(Executrix.OUTPUT_TYPE ot) throws IOException {
         try (OutputStream fos = startScript()) {
-            fos.write(("echo '" + W + "'").getBytes());
+            fos.write(("echo '" + W + "'").getBytes(UTF_8));
             if (ot == Executrix.OUTPUT_TYPE.FILE) {
-                fos.write(" > ${2}".getBytes());
+                fos.write(" > ${2}".getBytes(UTF_8));
             }
             fos.write('\n');
             scriptFile.toFile().setExecutable(true); // jdk 1.6+ only

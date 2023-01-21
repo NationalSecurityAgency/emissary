@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  *
  * @author ce
@@ -32,7 +34,7 @@ public class ReadOutputBuffer extends ProcessReader {
 
     public ReadOutputBuffer(final InputStream is, final long maxSize) {
         this.maxSize = maxSize;
-        this.br = new BufferedReader(new InputStreamReader(is));
+        this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
     }
 
     public ReadOutputBuffer(final InputStream is, final long maxSize, final String charset) {
@@ -41,20 +43,20 @@ public class ReadOutputBuffer extends ProcessReader {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
+            this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
         }
     }
 
     public ReadOutputBuffer(final InputStream is, final StringBuffer buf) {
         this.buf = buf;
         this.maxSize = -1;
-        this.br = new BufferedReader(new InputStreamReader(is));
+        this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
     }
 
     public ReadOutputBuffer(final InputStream is, final StringBuilder bld) {
         this.bld = bld;
         this.maxSize = -1;
-        this.br = new BufferedReader(new InputStreamReader(is));
+        this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
     }
 
     public ReadOutputBuffer(final InputStream is, final StringBuffer buf, final String charset) {
@@ -64,7 +66,7 @@ public class ReadOutputBuffer extends ProcessReader {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
+            this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
         }
     }
 
@@ -75,7 +77,7 @@ public class ReadOutputBuffer extends ProcessReader {
             this.br = new BufferedReader(new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
+            this.br = new BufferedReader(new InputStreamReader(is, UTF_8));
         }
     }
 

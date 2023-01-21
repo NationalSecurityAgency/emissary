@@ -2,6 +2,8 @@ package emissary.util.web;
 
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /*
  $Id$
  */
@@ -270,7 +272,7 @@ public class UrlData {
                 sb.append(this.props[i].toString());
             }
         }
-        sb.append("\n\n").append(new String(this.theContent)).append("\n");
+        sb.append("\n\n").append(new String(this.theContent, UTF_8)).append("\n");
         return sb;
     }
 

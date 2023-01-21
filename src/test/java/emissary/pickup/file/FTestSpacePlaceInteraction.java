@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,10 +55,10 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
         File testfile2 = File.createTempFile("temp", ".dat", inareadir);
         testfile2.deleteOnExit();
         FileOutputStream os = new FileOutputStream(testfile);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile2);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
 
         // start jetty
@@ -194,7 +195,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
             logger.debug("Created new input file at " + extrafile.getPath());
             FileOutputStream os = new FileOutputStream(extrafile);
             String extramsg = "This is an extra test file";
-            os.write(extramsg.getBytes());
+            os.write(extramsg.getBytes(UTF_8));
             os.close();
             pause(t4);
 

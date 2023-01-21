@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
@@ -77,7 +78,7 @@ public abstract class FunctionalTest extends UnitTest {
         // Set up a password file
         File realmFile = new File(PROJECT_BASE + "/config", "jetty-users.properties");
         try (FileOutputStream ros = new FileOutputStream(realmFile)) {
-            ros.write("emissary: test123, emissary".getBytes());
+            ros.write("emissary: test123, emissary".getBytes(UTF_8));
         }
 
         String nodeName = "localhost";

@@ -13,6 +13,8 @@ import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * The byte tokenizer class allows an application to break a byte buffer into tokens. This was modified from the
  * java.util.StringTokenizer implementation. Note that all characters in the deliminter set are considered to be
@@ -295,7 +297,7 @@ public class ByteTokenizer implements Enumeration<String> {
             if (encoding != null) {
                 token = new String(data, start, currentPosition - start, encoding);
             } else {
-                token = new String(data, start, currentPosition - start);
+                token = new String(data, start, currentPosition - start, UTF_8);
             }
         } catch (UnsupportedEncodingException uee) {
             // cannot happen...we already verified in constructer

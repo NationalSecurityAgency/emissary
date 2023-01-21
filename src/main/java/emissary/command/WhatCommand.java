@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 
 import static emissary.core.Form.HTML;
 import static emissary.core.Form.TEXT;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
@@ -233,7 +234,7 @@ public class WhatCommand extends BaseCommand {
         final byte[] data = b.data();
 
         if (LOG.isDebugEnabled()) {
-            final String ds = (data.length > 10 ? new String(data, 0, 9) : new String(data));
+            final String ds = (data.length > 10 ? new String(data, 0, 9, UTF_8) : new String(data, UTF_8));
             LOG.debug("Running engines with data=" + ds + "...");
         }
 

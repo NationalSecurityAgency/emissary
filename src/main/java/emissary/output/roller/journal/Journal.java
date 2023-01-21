@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Tracks written progress of a corresponding file. Some formats within the framework don't lend themselves to knowing
  * length of output prior to writing as in many journaled formats. Our model allows us to track successful or complete
@@ -17,7 +19,7 @@ public final class Journal {
 
     static final byte SEP = 0x00;
     // 6 byte magic
-    static final byte[] MAGIC = "BGJRNL".getBytes();
+    static final byte[] MAGIC = "BGJRNL".getBytes(UTF_8);
     static final byte CURRENT_VERSION = 1;
     static final int ENTRY_LENGTH = 1024;
     // eight bytes and a null separator

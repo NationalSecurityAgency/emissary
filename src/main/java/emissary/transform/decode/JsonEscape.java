@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class JsonEscape {
     /* our logger */
     private final static Logger logger = LoggerFactory.getLogger(JsonEscape.class);
@@ -24,10 +26,10 @@ public class JsonEscape {
             if (data[i] == '\\' && (i + 5) < data.length && (data[i + 1] == 'u' || data[i + 1] == 'U')) {
                 // process unicode escape
                 try {
-                    String s = new String(data, i + 2, 4);
+                    String s = new String(data, i + 2, 4, UTF_8);
                     char[] c = HtmlEscape.unescapeHtmlChar(s, true);
                     if (c != null && c.length > 0) {
-                        out.write(new String(c).getBytes());
+                        out.write(new String(c).getBytes(UTF_8));
                         // logger.debug("Unicode '{}' ==> '{}'", s, new String(c));
                         i += 5;
                     } else {
@@ -43,11 +45,11 @@ public class JsonEscape {
                     end++;
                 if ((i + 3) < data.length && isOctalDigit(data[i + 3]))
                     end++;
-                String s = new String(data, i + 1, (end - i));
+                String s = new String(data, i + 1, (end - i), UTF_8);
                 try {
                     int num = Integer.parseInt(s, 8);
                     char[] ch = Character.toChars(num);
-                    out.write(new String(ch).getBytes());
+                    out.write(new String(ch).getBytes(UTF_8));
                     // logger.debug("Octal '{}' ==> '{}'", s, new String(ch));
                     i += s.length();
                 } catch (Exception ex) {

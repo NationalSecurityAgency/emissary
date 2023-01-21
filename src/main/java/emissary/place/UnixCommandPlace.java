@@ -14,6 +14,7 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.NEW_FORM;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Run a command external to the Emissary JVM to process data
@@ -214,7 +215,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
             return (outbuf.toString().getBytes(charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("UnixCommandPlace.stdOutProcess charset problem", e);
-            return (outbuf.toString().getBytes());
+            return (outbuf.toString().getBytes(UTF_8));
         }
     }
 
@@ -334,7 +335,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the result of running the command
      */
     protected void asMetaDataHook(IBaseDataObject tData, String tag, byte[] outputData) {
-        tData.putParameter(metaDataTag, new String(outputData));
+        tData.putParameter(metaDataTag, new String(outputData, UTF_8));
         if (keys.get(0).indexOf(".TRANSFORM.") == -1 && newForm != null) {
             tData.setCurrentForm(newForm);
         }
@@ -347,7 +348,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param outputData the results of running the command
      */
     protected void asCurrentFormHook(IBaseDataObject tData, byte[] outputData) {
-        tData.setCurrentForm(new String(outputData));
+        tData.setCurrentForm(new String(outputData, UTF_8));
     }
 
     /**

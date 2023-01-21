@@ -19,6 +19,7 @@ import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.SUFFIXES_HTMLESC;
 import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 import static emissary.core.constants.Parameters.SUMMARY;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HtmlEscapePlaceTest extends ExtractionTest {
@@ -44,7 +45,7 @@ public class HtmlEscapePlaceTest extends ExtractionTest {
         public void setUp() throws Exception {
             super.setUp();
             place = new HtmlEscapePlace();
-            d = DataObjectFactory.getInstance("X".getBytes(), "Y", "Z");
+            d = DataObjectFactory.getInstance("X".getBytes(UTF_8), "Y", "Z");
         }
 
         @Test
@@ -52,7 +53,7 @@ public class HtmlEscapePlaceTest extends ExtractionTest {
             String view = "TEXT-" + EXPECTED;
             d.addAlternateView(view, (EXPECTED + "&#39;").getBytes(StandardCharsets.UTF_8));
             place.unescapeAltViews(d);
-            assertEquals(EXPECTED + "'", new String(d.getAlternateView(view)));
+            assertEquals(EXPECTED + "'", new String(d.getAlternateView(view), UTF_8));
         }
 
         @Test

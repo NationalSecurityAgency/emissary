@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,50 +16,51 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testGlue() {
-        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes())), "Glue two whole arrays");
+        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(UTF_8), "def".getBytes(UTF_8)), UTF_8), "Glue two whole arrays");
     }
 
     @Test
     void testGlueThree() {
-        assertEquals("abcdefghi", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), "ghi".getBytes())), "Glue three whole arrays");
+        assertEquals("abcdefghi", new String(ByteUtil.glue("abc".getBytes(UTF_8), "def".getBytes(UTF_8), "ghi".getBytes(UTF_8)), UTF_8),
+                "Glue three whole arrays");
     }
 
 
     @Test
     void testGlueNull() {
-        assertEquals("def", new String(ByteUtil.glue(null, "def".getBytes())), "Glue with first as null");
-        assertEquals("abc", new String(ByteUtil.glue("abc".getBytes(), null)), "Glue with second as null");
+        assertEquals("def", new String(ByteUtil.glue(null, "def".getBytes(UTF_8)), UTF_8), "Glue with first as null");
+        assertEquals("abc", new String(ByteUtil.glue("abc".getBytes(UTF_8), null), UTF_8), "Glue with second as null");
     }
 
     @Test
     void testGlueNullThree() {
-        assertEquals("defghi", new String(ByteUtil.glue(null, "def".getBytes(), "ghi".getBytes())), "Glue with first as null");
+        assertEquals("defghi", new String(ByteUtil.glue(null, "def".getBytes(UTF_8), "ghi".getBytes(UTF_8)), UTF_8), "Glue with first as null");
 
-        assertEquals("abcghi", new String(ByteUtil.glue("abc".getBytes(), null, "ghi".getBytes())), "Glue with second as null");
+        assertEquals("abcghi", new String(ByteUtil.glue("abc".getBytes(UTF_8), null, "ghi".getBytes(UTF_8)), UTF_8), "Glue with second as null");
 
-        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(), "def".getBytes(), null)), "Glue with third as null");
+        assertEquals("abcdef", new String(ByteUtil.glue("abc".getBytes(UTF_8), "def".getBytes(UTF_8), null), UTF_8), "Glue with third as null");
     }
 
     @Test
     void testGlueSections() {
-        assertEquals("bcfg", new String(ByteUtil.glue("abcd".getBytes(), 1, 2, "efgh".getBytes(), 1, 2)), "Glue sections");
+        assertEquals("bcfg", new String(ByteUtil.glue("abcd".getBytes(UTF_8), 1, 2, "efgh".getBytes(UTF_8), 1, 2), UTF_8), "Glue sections");
     }
 
     @Test
     void testGlueSectionsThree() {
-        byte[] res = ByteUtil.glue("abcd".getBytes(), 1, 2, "efgh".getBytes(), 1, 2, "ijklm".getBytes(), 0, 2);
+        byte[] res = ByteUtil.glue("abcd".getBytes(UTF_8), 1, 2, "efgh".getBytes(UTF_8), 1, 2, "ijklm".getBytes(UTF_8), 0, 2);
 
-        assertEquals("bcfgijk", new String(res), "Glue sections");
+        assertEquals("bcfgijk", new String(res, UTF_8), "Glue sections");
     }
 
     @Test
     void testSplit() {
-        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
+        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8);
         List<byte[]> parts = ByteUtil.split(input, 5);
         assertEquals(2, parts.size(), "Two parts after split");
         assertEquals(5, parts.get(0).length, "Length of part 1 after split");
         assertEquals(21, parts.get(1).length, "Length of part 2 after split");
-        assertEquals("abcde", new String(parts.get(0)), "Data in part 1 after split");
+        assertEquals("abcde", new String(parts.get(0), UTF_8), "Data in part 1 after split");
         assertEquals('f', parts.get(1)[0], "Data in part 2 after split");
     }
 
@@ -71,7 +73,7 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testSplitNegativePos() {
-        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
+        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8);
         List<byte[]> parts = ByteUtil.split(input, -1);
         assertEquals(1, parts.size(), "Two parts after split");
         assertEquals(input.length, parts.get(0).length, "Whole array on list");
@@ -79,7 +81,7 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testSplitOutOfBoundsPos() {
-        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes();
+        byte[] input = "abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8);
         List<byte[]> parts = ByteUtil.split(input, 55);
         assertEquals(1, parts.size(), "Two parts after split");
         assertEquals(input.length, parts.get(0).length, "Whole array on list");
@@ -101,9 +103,9 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testIsDigitByteArray() {
-        assertTrue(ByteUtil.isDigit("01234".getBytes()), "Should be a digit");
-        assertFalse(ByteUtil.isDigit("01234a".getBytes()), "Should not be a digit");
-        assertFalse(ByteUtil.isDigit("a01234".getBytes()), "Should not be a digit");
+        assertTrue(ByteUtil.isDigit("01234".getBytes(UTF_8)), "Should be a digit");
+        assertFalse(ByteUtil.isDigit("01234a".getBytes(UTF_8)), "Should not be a digit");
+        assertFalse(ByteUtil.isDigit("a01234".getBytes(UTF_8)), "Should not be a digit");
     }
 
     @Test
@@ -145,11 +147,11 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testIsHexadecimalArray() {
-        assertTrue(ByteUtil.isHexadecimal("cafebabe".getBytes()), "Should be hex");
-        assertTrue(ByteUtil.isHexadecimal("CAFEBABE".getBytes()), "Should be hex");
-        assertFalse(ByteUtil.isHexadecimal("MR. GOODBAR".getBytes()), "Should not be hex");
-        assertFalse(ByteUtil.isHexadecimal("Mr. Goodbar".getBytes()), "Should not be hex");
-        assertFalse(ByteUtil.isHexadecimal("deadbeef0123ggg".getBytes()), "Should not be hex");
+        assertTrue(ByteUtil.isHexadecimal("cafebabe".getBytes(UTF_8)), "Should be hex");
+        assertTrue(ByteUtil.isHexadecimal("CAFEBABE".getBytes(UTF_8)), "Should be hex");
+        assertFalse(ByteUtil.isHexadecimal("MR. GOODBAR".getBytes(UTF_8)), "Should not be hex");
+        assertFalse(ByteUtil.isHexadecimal("Mr. Goodbar".getBytes(UTF_8)), "Should not be hex");
+        assertFalse(ByteUtil.isHexadecimal("deadbeef0123ggg".getBytes(UTF_8)), "Should not be hex");
     }
 
     @Test
@@ -171,10 +173,10 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testIsAlphaArray() {
-        assertTrue(ByteUtil.isAlpha("abcABC".getBytes()), "Should be alpha");
-        assertFalse(ByteUtil.isAlpha("abcABC1".getBytes()), "Should not be alpha");
-        assertFalse(ByteUtil.isAlpha("1abcABC".getBytes()), "Should not be alpha");
-        assertFalse(ByteUtil.isAlpha(" abcABC".getBytes()), "Should not be alpha");
+        assertTrue(ByteUtil.isAlpha("abcABC".getBytes(UTF_8)), "Should be alpha");
+        assertFalse(ByteUtil.isAlpha("abcABC1".getBytes(UTF_8)), "Should not be alpha");
+        assertFalse(ByteUtil.isAlpha("1abcABC".getBytes(UTF_8)), "Should not be alpha");
+        assertFalse(ByteUtil.isAlpha(" abcABC".getBytes(UTF_8)), "Should not be alpha");
     }
 
     @Test
@@ -202,7 +204,7 @@ class ByteUtilTest extends UnitTest {
 
     @Test
     void testGrabLine() {
-        byte[] data = "This is line one\r\nThis is line two\nThis is line three".getBytes();
+        byte[] data = "This is line one\r\nThis is line two\nThis is line three".getBytes(UTF_8);
         assertEquals("This is line one\r\n", ByteUtil.grabLine(data, 0), "First line extraction");
         assertEquals("This is line two\n", ByteUtil.grabLine(data, 18), "Middle line extraction");
         assertEquals("This is line three", ByteUtil.grabLine(data, 35), "Last line extraction");

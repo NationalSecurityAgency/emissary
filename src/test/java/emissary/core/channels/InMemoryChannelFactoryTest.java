@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,17 +23,17 @@ class InMemoryChannelFactoryTest {
     @Test
     void testNormalPath() throws IOException {
         final String testString = "Test data";
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testString.getBytes());
+        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testString.getBytes(UTF_8));
         final ByteBuffer buff = ByteBuffer.allocate(testString.length());
         sbcf.create().read(buff);
-        assertEquals(testString, new String(buff.array()));
+        assertEquals(testString, new String(buff.array(), UTF_8));
     }
 
     @Test
     void testImmutability() throws IOException {
-        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create("Test data".getBytes());
+        final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create("Test data".getBytes(UTF_8));
         final SeekableByteChannel sbc = sbcf.create();
-        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
+        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes(UTF_8));
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
         assertThrows(NonWritableChannelException.class, () -> sbc.truncate(5l), "Can't truncate byte channel as it's immutable");
         assertThrows(ClassCastException.class, () -> ((SeekableInMemoryByteChannel) sbc).array(),

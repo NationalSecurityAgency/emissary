@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class assists users and integrators by extracting the named resource and putting it into the config directory
  */
@@ -64,7 +66,7 @@ public class ExtractResource {
         final String outputPath = this.outputDirectory + "/" + resource.replaceAll("/", ".");
         logger.debug("Writing " + outputPath);
         try (final BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(Paths.get(outputPath)))) {
-            os.write(rezdata.getBytes());
+            os.write(rezdata.getBytes(UTF_8));
         }
     }
 

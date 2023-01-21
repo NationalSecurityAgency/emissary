@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -163,12 +164,12 @@ class ConfigUtilTest extends UnitTest {
 
         final Path baseFile = Paths.get(configDir, "emissary.blubber.Whale.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
-            ros.write("FOO = \"BAR\"\n".getBytes());
+            ros.write("FOO = \"BAR\"\n".getBytes(UTF_8));
         }
 
         final Path flavFile = Paths.get(configDir, "emissary.blubber.Whale-TESTFLAVOR.cfg");
         try (OutputStream ros = Files.newOutputStream(flavFile)) {
-            ros.write("FOO = \"BAR2\"\n".getBytes());
+            ros.write("FOO = \"BAR2\"\n".getBytes(UTF_8));
         }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Whale.cfg");
@@ -194,12 +195,12 @@ class ConfigUtilTest extends UnitTest {
 
         final Path baseFile = Paths.get(configDir, "emissary.blubber.Shark.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
-            ros.write("FOO = \"BAR\"\n".getBytes());
+            ros.write("FOO = \"BAR\"\n".getBytes(UTF_8));
         }
 
         final Path flavFile = Paths.get(configDir, "emissary.blubber.Shark-TESTFLAVOR.cfg");
         try (OutputStream ros = Files.newOutputStream(flavFile)) {
-            ros.write("QUUZ = \"@{FOO}\"\n".getBytes());
+            ros.write("QUUZ = \"@{FOO}\"\n".getBytes(UTF_8));
         }
 
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
@@ -625,7 +626,7 @@ class ConfigUtilTest extends UnitTest {
     void testMissingImportFileInConfig(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
         final String impname = dir + "/import.cfg";
-        final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"").getBytes();
+        final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"").getBytes(UTF_8);
 
         // Initialize String[] for files for getConfigInfo(final String[] preferences)
         final String[] files = new String[] {priname};
@@ -660,7 +661,7 @@ class ConfigUtilTest extends UnitTest {
         final Path file = Paths.get(dir.toString(), name);
         testFilesAndDirectories.add(file);
         try (OutputStream ros = Files.newOutputStream(file)) {
-            ros.write(contents.getBytes());
+            ros.write(contents.getBytes(UTF_8));
         } catch (IOException ex) {
             logger.error("Problem making {}", file, ex);
             throw new RuntimeException(ex);

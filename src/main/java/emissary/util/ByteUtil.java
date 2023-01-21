@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Common place for the logic to glue byte arrays back together This is error prone and shouldn't be thought about any
  * more than necessary
@@ -265,10 +267,10 @@ public class ByteUtil {
         }
         if (eolnPos != -1) {
             // String up to the found \n pos
-            ret = new String(data, pos, eolnPos - pos + 1);
+            ret = new String(data, pos, eolnPos - pos + 1, UTF_8);
         } else {
             // String to end of buffer
-            ret = new String(data, pos, data.length - pos);
+            ret = new String(data, pos, data.length - pos, UTF_8);
         }
         return ret;
     }

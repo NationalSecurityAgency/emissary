@@ -21,6 +21,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import static emissary.core.Form.TEXT;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -113,7 +114,8 @@ class FTestMovingAgent extends FunctionalTest {
         }
 
         // Create a payload and send it to the spool for UpperPlace
-        IBaseDataObject payload = DataObjectFactory.getInstance(new Object[] {"abcdefghijklmnopqrstuvwxyz".getBytes(), "test_load", "LOWER_CASE"});
+        IBaseDataObject payload =
+                DataObjectFactory.getInstance(new Object[] {"abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8), "test_load", "LOWER_CASE"});
         payload.setFileType(TEXT);
 
         spool.send(payload);

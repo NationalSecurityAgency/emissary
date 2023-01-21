@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A very simple minded parser implementation that assumes each input set of data bytes is one session This parser has
  * no idea about headers and footers, just the basic session, and not much of an idea about that.
@@ -102,7 +104,7 @@ public class SimpleParser extends SessionParser {
             if (tmp != null) {
                 String value = null;
                 if (tmp instanceof PositionRecord) {
-                    value = new String(DataByteArraySlicer.makeDataSlice(data, (PositionRecord) tmp)).trim();
+                    value = new String(DataByteArraySlicer.makeDataSlice(data, (PositionRecord) tmp), UTF_8).trim();
                 } else {
                     value = tmp.toString();
                 }

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class Banner {
 
     static String DEFAULT_TEXT = " ________  ________ _____ _____  ___  ________   __\n"
@@ -21,7 +23,7 @@ public class Banner {
         } else {
             String bText = DEFAULT_TEXT;
             try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, UTF_8));
                 StringBuilder result = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {

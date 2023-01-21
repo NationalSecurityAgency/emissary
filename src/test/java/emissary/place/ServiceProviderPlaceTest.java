@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -35,39 +36,39 @@ class ServiceProviderPlaceTest extends UnitTest {
 
     private static final byte[] configData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
             + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_COST = 60\n" + "SERVICE_QUALITY = 90\n"
-            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes();
+            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes(UTF_8);
 
     private static final byte[] configDataWithResourceLimit = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
             + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_COST = 60\n" + "SERVICE_QUALITY = 90\n"
-            + "PLACE_RESOURCE_LIMIT_MILLIS = 10\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes();
+            + "PLACE_RESOURCE_LIMIT_MILLIS = 10\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes(UTF_8);
 
     private static final byte[] configDataMissingCost = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
             + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_QUALITY = 90\n"
-            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes();
+            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes(UTF_8);
 
     private static final byte[] configDataMissingType = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
             + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_COST = 60\n" + "SERVICE_QUALITY = 90\n"
-            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes();
+            + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n").getBytes(UTF_8);
 
     private static final byte[] configDataMissingProxy = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
-            + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_COST = 60\n" + "SERVICE_QUALITY = 90\n").getBytes();
+            + "SERVICE_DESCRIPTION = \"test place\"\n" + "SERVICE_COST = 60\n" + "SERVICE_QUALITY = 90\n").getBytes(UTF_8);
 
     private static final byte[] configKeyData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
             + "SERVICE_KEY = \"TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-                    .getBytes();
+                    .getBytes(UTF_8);
 
     private static final byte[] configKeysData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
             + "SERVICE_KEY = \"TPROXY.TNAME.ID.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n"
             + "SERVICE_KEY = \"TP2.TNAME.TRANSFORM.http://@{TGT_HOST}:@{TGT_PORT}/TP2PlaceName$6050\"\n"
             + "SERVICE_KEY = \"TP3.TNAME.ANALYZE.http://@{TGT_HOST}:@{TGT_PORT}/TP3PlaceName$7050\"\n"
             + "SERVICE_KEY = \"TP4.TNAME.IO.http://@{TGT_HOST}:@{TGT_PORT}/TP4PlaceName$8050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-                    .getBytes();
+                    .getBytes(UTF_8);
 
     private static final byte[] configNoKeysData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n" + "SERVICE_DESCRIPTION = \"bogus\"\n")
-            .getBytes();
+            .getBytes(UTF_8);
 
     private static final byte[] configBadKeyData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
-            + "SERVICE_KEY = \"TP4.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$8050\"\n" + "SERVICE_DESCRIPTION = \"bogus\"\n").getBytes();
+            + "SERVICE_KEY = \"TP4.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$8050\"\n" + "SERVICE_DESCRIPTION = \"bogus\"\n").getBytes(UTF_8);
 
     String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 

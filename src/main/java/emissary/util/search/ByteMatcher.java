@@ -3,6 +3,8 @@ package emissary.util.search;
 import java.nio.charset.Charset;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class provides some simple string matching functions on byte arrays
  */
@@ -19,7 +21,7 @@ public class ByteMatcher {
     }
 
     public ByteMatcher(String data) {
-        this(data.getBytes());
+        this(data.getBytes(UTF_8));
     }
 
     public ByteMatcher(byte[] data) {
@@ -93,7 +95,7 @@ public class ByteMatcher {
             return false;
         }
 
-        byte[] patternBytes = pattern.getBytes();
+        byte[] patternBytes = pattern.getBytes(UTF_8);
 
         for (int i = 0; i < patternBytes.length; i++) {
 
@@ -198,7 +200,7 @@ public class ByteMatcher {
      */
     public int indexOf(String pattern, int startOfs) {
 
-        return indexOf(pattern.getBytes(), startOfs);
+        return indexOf(pattern.getBytes(UTF_8), startOfs);
 
     }
 
@@ -207,19 +209,19 @@ public class ByteMatcher {
      */
     public int indexOf(String pattern) {
 
-        return indexOf(pattern.getBytes(), 0);
+        return indexOf(pattern.getBytes(UTF_8), 0);
 
     }
 
     public int indexIgnoreCase(String pattern) {
 
-        return indexIgnoreCase(pattern.getBytes(), 0);
+        return indexIgnoreCase(pattern.getBytes(UTF_8), 0);
 
     }
 
     public int indexIgnoreCase(String pattern, int startOfs) {
 
-        return indexIgnoreCase(pattern.getBytes(), startOfs);
+        return indexIgnoreCase(pattern.getBytes(UTF_8), startOfs);
 
     }
 
@@ -248,7 +250,7 @@ public class ByteMatcher {
         int delimpos = this.indexOf(delim, keypos + key.length());
         int eodpos = delimpos + delim.length();
         if (delimpos > -1 && eodpos < eolpos) {
-            return new String(mydata, eodpos, eolpos - eodpos);
+            return new String(mydata, eodpos, eolpos - eodpos, UTF_8);
         } else if (eodpos == eolpos) {
             return "";
         } else {
@@ -335,7 +337,7 @@ public class ByteMatcher {
         sb.append("[");
         sb.append(this.length());
         sb.append("] : ");
-        sb.append(new String(this.mydata));
+        sb.append(new String(this.mydata, UTF_8));
         return sb.toString();
     }
 }

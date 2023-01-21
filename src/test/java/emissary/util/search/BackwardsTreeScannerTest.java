@@ -2,6 +2,7 @@ package emissary.util.search;
 
 import org.junit.jupiter.api.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -15,12 +16,12 @@ class BackwardsTreeScannerTest {
         HitList hits = new HitList();
         BackwardsTreeScanner first = new BackwardsTreeScanner();
         first.resetKeywords(defaultKeywords);
-        int result = first.scan(defaultData.getBytes(), defaultData.length() - 1, hits);
+        int result = first.scan(defaultData.getBytes(UTF_8), defaultData.length() - 1, hits);
         assertEquals(39, result);
 
         hits = new HitList();
         BackwardsTreeScanner second = new BackwardsTreeScanner(defaultKeywords);
-        result = second.scan(defaultData.getBytes(), defaultData.length() - 1, hits);
+        result = second.scan(defaultData.getBytes(UTF_8), defaultData.length() - 1, hits);
         assertEquals(39, result);
     }
 

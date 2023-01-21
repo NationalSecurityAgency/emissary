@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IdPlaceTest extends UnitTest {
@@ -38,7 +39,7 @@ class IdPlaceTest extends UnitTest {
     @Test
     void testUnknownFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.setData("This is a test".getBytes(UTF_8));
         payload.setCurrentForm("UNKNOWN");
         place.process(payload);
         assertEquals("UNKNOWN", payload.currentForm(), "Form is unknown when it is not know or remapped or ignored");
@@ -48,7 +49,7 @@ class IdPlaceTest extends UnitTest {
     @Test
     void testIgnoredFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.setData("This is a test".getBytes(UTF_8));
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "SHOVEL");
         place.process(payload);
@@ -59,7 +60,7 @@ class IdPlaceTest extends UnitTest {
     @Test
     void testRemappedFinalFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.setData("This is a test".getBytes(UTF_8));
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "OUT_WITH_THE_OLD");
         place.process(payload);
@@ -70,7 +71,7 @@ class IdPlaceTest extends UnitTest {
     @Test
     void testRemappedNonFinalFormProcessing() throws Exception {
         IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is a test".getBytes());
+        payload.setData("This is a test".getBytes(UTF_8));
         payload.setCurrentForm("UNKNOWN");
         payload.setParameter("THE_ANSWER", "SOMETHING_BORROWED");
         place.process(payload);

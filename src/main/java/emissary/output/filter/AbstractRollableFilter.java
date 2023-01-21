@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static emissary.roll.Roller.CFG_ROLL_INTERVAL;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public abstract class AbstractRollableFilter extends AbstractFilter {
 
@@ -192,7 +193,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
         try {
             output.write(convert(list, params));
             if (appendNewLine) {
-                output.write("\n".getBytes());
+                output.write("\n".getBytes(UTF_8));
             }
         } catch (IOException iox) {
             logger.warn("Could not write to log filter", iox);

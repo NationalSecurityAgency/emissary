@@ -35,6 +35,7 @@ import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -65,7 +66,7 @@ public class DropOffUtil {
     // Items for generating random filenames
     protected static SecureRandom prng = new SecureRandom();
     protected static final SimpleDateFormat DATE_PATTERN = new SimpleDateFormat("yyyyDDDHHmmss");
-    protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
+    protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes(UTF_8);
     protected static String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;
     protected int maxFilextLen = Integer.MAX_VALUE;

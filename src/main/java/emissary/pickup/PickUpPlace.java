@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.FILE_NAME;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
@@ -286,7 +287,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     protected boolean handleOversizePayload(File theFile, String fixedName, boolean simpleMode) throws EmissaryException {
         // Send it away, blocks until an agent is ready
         IBaseDataObject dataObject =
-                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(), fixedName,
+                DataObjectFactory.getInstance(new Object[] {("The file is oversize at " + theFile.length() + " bytes").getBytes(UTF_8), fixedName,
                         "OVERSIZE"});
         dataObject.setParameter("SIMPLE_MODE", Boolean.toString(simpleMode));
         dataObjectCreated(dataObject, theFile);

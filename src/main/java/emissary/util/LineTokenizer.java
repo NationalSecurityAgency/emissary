@@ -3,6 +3,8 @@ package emissary.util;
 import java.nio.charset.Charset;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Used the default way, this is equivalent to StringTokenizer st = new StringTokenizer(new String(theData),"\n",false);
  * except that a token is returned for blank lines as well. There seems no way to tell the StringTokenizer to do that.
@@ -160,7 +162,7 @@ public class LineTokenizer {
             if (charset != null) {
                 tok = new String(btok, charset);
             } else {
-                tok = new String(btok);
+                tok = new String(btok, UTF_8);
             }
         }
         return tok;

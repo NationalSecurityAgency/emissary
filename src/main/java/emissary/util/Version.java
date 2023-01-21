@@ -6,6 +6,8 @@ import emissary.util.io.ResourceReader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public final class Version {
     private String version = "missing version";
     private String timestamp = "missing timestamp";
@@ -41,7 +43,7 @@ public final class Version {
             if (rstream != null) {
                 byte[] data = new byte[rstream.available()];
                 rstream.read(data, 0, data.length);
-                String sdata = new String(data);
+                String sdata = new String(data, UTF_8);
                 String[] lines = sdata.split("[\r\n]+");
                 if (lines != null) {
                     // System.out.println(" Got " + lines.length + " lines");

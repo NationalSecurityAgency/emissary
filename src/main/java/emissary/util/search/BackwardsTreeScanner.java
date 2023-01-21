@@ -8,6 +8,8 @@ package emissary.util.search;
 
 import java.io.PrintStream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of
  * strings is provided as the keywords to be searched. This class is useful for a relatively small set of keywords.
@@ -56,8 +58,8 @@ public class BackwardsTreeScanner {
         root = new State((byte) 0); // reset state
         // and learn them
         for (int i = 0; i < keywords.length; i++) {
-            keywords[i] = keywordStrings[i].getBytes();
-            root.learn(keywordStrings[i].getBytes(), i);
+            keywords[i] = keywordStrings[i].getBytes(UTF_8);
+            root.learn(keywordStrings[i].getBytes(UTF_8), i);
         }
         // root.print(System.out);
     }

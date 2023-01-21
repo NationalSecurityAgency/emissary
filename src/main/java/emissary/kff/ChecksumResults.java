@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class is a value object to store the results of both a CRC32 and a message digest computation.
  */
@@ -66,10 +68,10 @@ public class ChecksumResults implements Serializable {
      */
     public byte[] getHash(String alg) {
         if ("CRC32".equals(alg) && crc > -1L) {
-            return Long.toString(crc).getBytes();
+            return Long.toString(crc).getBytes(UTF_8);
         }
         if ("SSDEEP".equals(alg) && ssdeep != null) {
-            return ssdeep.getBytes();
+            return ssdeep.getBytes(UTF_8);
         }
         return hashComp.get(alg);
     }

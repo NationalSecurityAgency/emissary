@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the
  * MetadataDictionary
@@ -93,9 +95,9 @@ public class MetadataDictionaryUtil {
             final String key = entry.getKey();
 
             for (final String v : entry.getValue()) {
-                output.write(key.getBytes());
+                output.write(key.getBytes(UTF_8));
                 output.write(SEP);
-                output.write(v.getBytes());
+                output.write(v.getBytes(UTF_8));
                 output.write('\n');
             }
         }
@@ -121,7 +123,7 @@ public class MetadataDictionaryUtil {
             final String line = ltok.nextToken();
             final int pos = line.indexOf(SEP);
             if (pos == -1) {
-                output.write(line.getBytes());
+                output.write(line.getBytes(UTF_8));
                 output.write('\n');
                 this.logger.debug("Found no key/value pair on line " + line);
             } else {

@@ -5,6 +5,8 @@ import emissary.place.IServiceProviderPlace;
 import java.io.Serializable;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * A class of utility methods for manipulating dictionary keys. Keys are stored in the dictionary with the following
  * format:
@@ -191,7 +193,7 @@ public class KeyManipulator implements Serializable {
      */
     public static int numTuplesInKey(final String key) {
         int count = 0;
-        final byte[] keyBytes = key.getBytes();
+        final byte[] keyBytes = key.getBytes(UTF_8);
 
         for (int i = 0; i < keyBytes.length; i++) {
             if (keyBytes[i] == KeyManipulator.SEPARATOR) {

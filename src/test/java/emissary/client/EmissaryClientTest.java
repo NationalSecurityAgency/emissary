@@ -17,6 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EmissaryClientTest extends UnitTest {
@@ -76,7 +77,7 @@ class EmissaryClientTest extends UnitTest {
             String cfg =
                     "connectionTimeout = " + newConnectionTimeout + "\n" + "connectionManagerTimeout = " + newConnectionManagerTimeout + "\n"
                             + "soTimeout = " + newSocketTimeout;
-            byte[] data = cfg.getBytes();
+            byte[] data = cfg.getBytes(UTF_8);
             out.write(data, 0, data.length);
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();

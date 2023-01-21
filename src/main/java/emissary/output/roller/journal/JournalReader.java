@@ -24,6 +24,7 @@ import static emissary.output.roller.journal.Journal.EXT;
 import static emissary.output.roller.journal.Journal.MAGIC;
 import static emissary.output.roller.journal.Journal.NINE;
 import static emissary.output.roller.journal.Journal.SEP;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Encapsulates logic to read/deserialize a BG Journal file.
@@ -141,7 +142,7 @@ public class JournalReader implements Closeable {
         byte[] keyBytes = new byte[len];
         read(len);
         b.get(keyBytes);
-        return new String(keyBytes);
+        return new String(keyBytes, UTF_8);
     }
 
     // attempts to read limit bytes from buffer

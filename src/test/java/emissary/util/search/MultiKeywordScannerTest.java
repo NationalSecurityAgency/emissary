@@ -2,6 +2,7 @@ package emissary.util.search;
 
 import org.junit.jupiter.api.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,7 +15,7 @@ class MultiKeywordScannerTest {
     void testFindAll() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes());
+        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(UTF_8));
         assertEquals(2, hits.size());
         assertEquals(0, hits.get(0).getID());
         assertEquals(16, hits.get(0).getOffset());
@@ -29,7 +30,7 @@ class MultiKeywordScannerTest {
     void testFindAllStart() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 28);
+        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(UTF_8), 28);
         assertEquals(1, hits.size());
         assertEquals(1, hits.get(0).getID());
         assertEquals(41, hits.get(0).getOffset());
@@ -42,7 +43,7 @@ class MultiKeywordScannerTest {
     void testFindAllStartStop() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 0, 24);
+        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(UTF_8), 0, 24);
         assertEquals(1, hits.size());
         assertEquals(0, hits.get(0).getID());
         assertEquals(16, hits.get(0).getOffset());
@@ -55,12 +56,12 @@ class MultiKeywordScannerTest {
     void testFindNext() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes());
+        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(UTF_8));
         assertEquals(1, hits.size());
         assertEquals(0, hits.get(0).getID());
         assertEquals(16, hits.get(0).getOffset());
 
-        hits = multiKeywordScanner.findNext(defaultData.getBytes());
+        hits = multiKeywordScanner.findNext(defaultData.getBytes(UTF_8));
         assertEquals(1, hits.size());
         assertEquals(1, hits.get(0).getID());
         assertEquals(41, hits.get(0).getOffset());
@@ -73,7 +74,7 @@ class MultiKeywordScannerTest {
     void testFindNextStart() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 28);
+        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(UTF_8), 28);
         assertEquals(1, hits.size());
         assertEquals(1, hits.get(0).getID());
         assertEquals(41, hits.get(0).getOffset());
@@ -86,7 +87,7 @@ class MultiKeywordScannerTest {
     void testFindNextStartStop() {
         MultiKeywordScanner multiKeywordScanner = new MultiKeywordScanner();
         multiKeywordScanner.loadKeywords(defaultKeywords);
-        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 0, 24);
+        HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(UTF_8), 0, 24);
         assertEquals(1, hits.size());
         assertEquals(0, hits.get(0).getID());
         assertEquals(16, hits.get(0).getOffset());
@@ -104,7 +105,7 @@ class MultiKeywordScannerTest {
         // instead of re-instantiating the whole object.
         String[] keywords = {"quick", "brown", "lazy"};
         multiKeywordScanner.loadKeywords(keywords);
-        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes());
+        HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(UTF_8));
 
         assertEquals(3, hits.size());
         assertEquals(0, hits.get(0).getID());

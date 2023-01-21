@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Provides the base mechanism for a drop off filter
  */
@@ -353,7 +355,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         if (s == null) {
             // from exception or no charset
-            s = new String(value, start, len);
+            s = new String(value, start, len, UTF_8);
         }
 
         return s;

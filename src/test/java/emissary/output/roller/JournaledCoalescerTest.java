@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static emissary.output.roller.JournaledCoalescer.ROLLING_EXT;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -332,7 +333,7 @@ class JournaledCoalescerTest extends UnitTest {
             ArrayList<String> strings = new ArrayList<>(BUD1_LINES);
             strings.addAll(BUD2_LINES);
             for (String line : strings) {
-                c.write(ByteBuffer.wrap(line.getBytes()));
+                c.write(ByteBuffer.wrap(line.getBytes(UTF_8)));
                 jw.write(new JournalEntry(key, c.position()));
             }
             // phony write

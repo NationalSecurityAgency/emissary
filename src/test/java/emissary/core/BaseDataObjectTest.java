@@ -38,6 +38,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,7 +56,7 @@ class BaseDataObjectTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        this.b = new BaseDataObject("This is a test".getBytes(), "filename.txt");
+        this.b = new BaseDataObject("This is a test".getBytes(UTF_8), "filename.txt");
         this.b.pushCurrentForm("ONE");
         this.b.pushCurrentForm("TWO");
         this.b.pushCurrentForm("THREE");
@@ -77,11 +78,11 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testConstructors() {
-        final BaseDataObject b2 = new BaseDataObject("This is a test".getBytes(), "filename.txt", "ONE");
+        final BaseDataObject b2 = new BaseDataObject("This is a test".getBytes(UTF_8), "filename.txt", "ONE");
         assertEquals("ONE", b2.currentForm(), "Current form in ctor");
         assertNotNull(b2.getCreationTimestamp());
 
-        final BaseDataObject b3 = new BaseDataObject("test".getBytes(), "filename.txt", null);
+        final BaseDataObject b3 = new BaseDataObject("test".getBytes(UTF_8), "filename.txt", null);
         assertEquals("", b3.currentForm(), "Current form with null in ctor");
         assertNotNull(b3.getCreationTimestamp());
     }
@@ -135,7 +136,7 @@ class BaseDataObjectTest extends UnitTest {
         final String testString = "test data";
         BaseDataObject bdo = Mockito.spy(this.b);
         Mockito.when(bdo.getChannelSize()).thenReturn(higherLength);
-        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes(UTF_8)));
         assertEquals(higherLength.longValue(), bdo.getChannelSize());
         assertEquals(BaseDataObject.MAX_BYTE_ARRAY_SIZE, bdo.dataLength());
     }
@@ -144,7 +145,7 @@ class BaseDataObjectTest extends UnitTest {
     void testExceptionWhenGettingDataLengthWithChannel() throws IOException {
         BaseDataObject bdo = Mockito.spy(this.b);
         final String testString = "test data";
-        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes(UTF_8)));
         Mockito.when(bdo.getChannelSize()).thenThrow(IOException.class);
         assertEquals(0, bdo.dataLength());
     }
@@ -152,15 +153,15 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testGetDataWhenSmallerThanMaxInt() throws IOException {
         final String testString = "test data";
-        this.b.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
-        assertEquals(testString.getBytes().length, this.b.dataLength());
+        this.b.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes(UTF_8)));
+        assertEquals(testString.getBytes(UTF_8).length, this.b.dataLength());
     }
 
     @Test
     void testExceptionWhenGettingChannelFactory() throws IOException {
         // Mock up a BDO with an SBCF and SBC instance that we control
         // Create an SBCF that we can work with
-        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes()));
+        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes(UTF_8)));
         // Hook into the SBCF
         this.b.setChannelFactory(sbcf);
         // Hook into an SBC
@@ -177,7 +178,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testExceptionWhenGettingChannelSize() throws IOException {
         // Hook into the SBCF
-        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes()));
+        final SeekableByteChannelFactory sbcf = Mockito.spy(SeekableByteChannelHelper.memory("Test data".getBytes(UTF_8)));
         this.b.setChannelFactory(sbcf);
         // Hook into an SBC
         try (final SeekableByteChannel sbc = Mockito.spy(this.b.getChannelFactory().create())) {
@@ -205,16 +206,16 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testDataSliceLength() {
-        final byte[] ary = "abcdefghijk".getBytes();
+        final byte[] ary = "abcdefghijk".getBytes(UTF_8);
         this.b.setData(ary, 3, 4);
         assertEquals(4, this.b.dataLength(), "Array slice must use length");
     }
 
     @Test
     void testDataSliceData() {
-        final byte[] ary = "abcdefghijk".getBytes();
+        final byte[] ary = "abcdefghijk".getBytes(UTF_8);
         this.b.setData(ary, 3, 4);
-        assertEquals("defg", new String(this.b.data()), "Array slice must use proper data");
+        assertEquals("defg", new String(this.b.data(), UTF_8), "Array slice must use proper data");
     }
 
     @Test
@@ -237,13 +238,13 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testByteArrays() {
-        this.b.setHeader("A fine header".getBytes());
-        this.b.setFooter("A good footer".getBytes());
-        this.b.addAlternateView("TESTVIEW", "alternate view".getBytes());
-        assertEquals("This is a test", new String(this.b.data()), "Data bytes retrieved");
-        assertEquals("A fine header", new String(this.b.header()), "Header bytes");
-        assertEquals("A good footer", new String(this.b.footer()), "Footer bytes");
-        assertEquals("alternate view", new String(this.b.getAlternateView("TESTVIEW")), "Alt view bytes");
+        this.b.setHeader("A fine header".getBytes(UTF_8));
+        this.b.setFooter("A good footer".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW", "alternate view".getBytes(UTF_8));
+        assertEquals("This is a test", new String(this.b.data(), UTF_8), "Data bytes retrieved");
+        assertEquals("A fine header", new String(this.b.header(), UTF_8), "Header bytes");
+        assertEquals("A good footer", new String(this.b.footer(), UTF_8), "Footer bytes");
+        assertEquals("alternate view", new String(this.b.getAlternateView("TESTVIEW"), UTF_8), "Alt view bytes");
 
         final ByteBuffer hb = this.b.headerBuffer();
         final ByteBuffer fb = this.b.footerBuffer();
@@ -271,9 +272,9 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testAltViews() {
-        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
 
         this.b.addAlternateView("TESTVIEW2", null);
         assertNull(this.b.getAlternateView("TESTVIEW2"), "Null view after removal");
@@ -282,15 +283,15 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testAltViewSlice() {
-        this.b.addAlternateView("TESTVIEW1", "abcdefghij".getBytes(), 3, 4);
-        assertEquals("defg", new String(this.b.getAlternateView("TESTVIEW1")), "Alt view slice must use proper data");
+        this.b.addAlternateView("TESTVIEW1", "abcdefghij".getBytes(UTF_8), 3, 4);
+        assertEquals("defg", new String(this.b.getAlternateView("TESTVIEW1"), UTF_8), "Alt view slice must use proper data");
     }
 
     @Test
     void testSetOfAltViewNames() {
-        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
         final Set<String> vnames = this.b.getAlternateViewNames();
         assertEquals(3, vnames.size(), "Count of view names");
 
@@ -302,9 +303,9 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testMapOfAltViews() {
-        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes());
-        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes());
+        this.b.addAlternateView("TESTVIEW1", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW2", "alternate view".getBytes(UTF_8));
+        this.b.addAlternateView("TESTVIEW3", "alternate view".getBytes(UTF_8));
         final Map<String, byte[]> v = this.b.getAlternateViews();
         assertEquals(3, v.size(), "Count of views");
 
@@ -316,28 +317,28 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testAppendAltView() {
-        this.b.addAlternateView("T1", "alternate view".getBytes());
-        this.b.appendAlternateView("T1", " more stuff".getBytes());
-        assertEquals("alternate view more stuff", new String(this.b.getAlternateView("T1")), "Appended alternate view contents");
+        this.b.addAlternateView("T1", "alternate view".getBytes(UTF_8));
+        this.b.appendAlternateView("T1", " more stuff".getBytes(UTF_8));
+        assertEquals("alternate view more stuff", new String(this.b.getAlternateView("T1"), UTF_8), "Appended alternate view contents");
     }
 
     @Test
     void testAppendAltViewOnEmpty() {
-        this.b.appendAlternateView("T1", "more stuff".getBytes());
-        assertEquals("more stuff", new String(this.b.getAlternateView("T1")), "Appended alternate view contents");
+        this.b.appendAlternateView("T1", "more stuff".getBytes(UTF_8));
+        assertEquals("more stuff", new String(this.b.getAlternateView("T1"), UTF_8), "Appended alternate view contents");
     }
 
     @Test
     void testAppendAltViewSlice() {
-        this.b.addAlternateView("T1", "alternate view".getBytes());
-        this.b.appendAlternateView("T1", "xx more stuff xx".getBytes(), 2, 11);
-        assertEquals("alternate view more stuff", new String(this.b.getAlternateView("T1")), "Appended alternate view contents");
+        this.b.addAlternateView("T1", "alternate view".getBytes(UTF_8));
+        this.b.appendAlternateView("T1", "xx more stuff xx".getBytes(UTF_8), 2, 11);
+        assertEquals("alternate view more stuff", new String(this.b.getAlternateView("T1"), UTF_8), "Appended alternate view contents");
     }
 
     @Test
     void testAppendAltViewSliceOnEmpty() {
-        this.b.appendAlternateView("T1", "xx more stuff xx".getBytes(), 3, 10);
-        assertEquals("more stuff", new String(this.b.getAlternateView("T1")), "Appended alternate view contents");
+        this.b.appendAlternateView("T1", "xx more stuff xx".getBytes(UTF_8), 3, 10);
+        assertEquals("more stuff", new String(this.b.getAlternateView("T1"), UTF_8), "Appended alternate view contents");
     }
 
     @Test
@@ -529,9 +530,9 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testAlternateViewCount() {
-        this.b.addAlternateView("FOO", "abcd".getBytes());
+        this.b.addAlternateView("FOO", "abcd".getBytes(UTF_8));
         assertEquals(1, this.b.getNumAlternateViews(), "Number of alternate views failed");
-        this.b.addAlternateView("BAR", "abcd".getBytes());
+        this.b.addAlternateView("BAR", "abcd".getBytes(UTF_8));
         assertEquals(2, this.b.getNumAlternateViews(), "Number of alternate views failed to increment");
     }
 
@@ -680,7 +681,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testAltViewRemapping() {
         try {
-            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes();
+            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes(UTF_8);
 
             final ByteArrayInputStream str = new ByteArrayInputStream(configData);
             final Configurator conf = ConfigUtil.getConfigInfo(str);
@@ -1096,12 +1097,12 @@ class BaseDataObjectTest extends UnitTest {
             this.b.popCurrentForm();
             assertEquals(this.b.currentFormSize(), clone.currentFormSize() - 1, "Current form stack must be detached after clone");
             final String newData = "some new data";
-            final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(newData.getBytes());
+            final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(newData.getBytes(UTF_8));
             this.b.setChannelFactory(sbcf);
             final IBaseDataObject cloneSbc = this.b.clone();
             assertEquals(13, cloneSbc.getChannelFactory().create().read(ByteBuffer.allocate(newData.length())));
 
-            assertEquals(newData, new String(cloneSbc.data()));
+            assertEquals(newData, new String(cloneSbc.data(), UTF_8));
 
         } catch (CloneNotSupportedException ex) {
             fail("Clone must be supported on BaseDataObject", ex);
@@ -1160,7 +1161,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testSettingChannelFactoryWhenCurrentlyNull() throws IOException {
         final String testData = "This is a test";
-        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(testData.getBytes());
+        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(testData.getBytes(UTF_8));
         final BaseDataObject bdo = new BaseDataObject();
         bdo.setChannelFactory(sbcf);
         assertEquals(sbcf, bdo.getChannelFactory());
@@ -1169,11 +1170,11 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testCanRetrieveChannelFactoryFromByteArray() throws IOException {
         final String testData = "This is a test";
-        this.b.setData(testData.getBytes()); // nulls out channelFactory
+        this.b.setData(testData.getBytes(UTF_8)); // nulls out channelFactory
         final ByteBuffer buff = ByteBuffer.allocate(testData.length());
         final SeekableByteChannelFactory sbcf = this.b.getChannelFactory();
         sbcf.create().read(buff);
-        assertArrayEquals(testData.getBytes(), buff.array());
+        assertArrayEquals(testData.getBytes(UTF_8), buff.array());
     }
 
     @Test
@@ -1181,9 +1182,9 @@ class BaseDataObjectTest extends UnitTest {
             throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         final BaseDataObject bdo = new BaseDataObject();
         final String testData = "This is a test";
-        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes()));
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes(UTF_8)));
         Field theData = bdo.getClass().getDeclaredField("theData");
-        theData.set(bdo, testData.getBytes());
+        theData.set(bdo, testData.getBytes(UTF_8));
 
         final String msg = "Should throw an error when trying to access data on a BDO where we have a byte array and a channel";
 
@@ -1196,29 +1197,29 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testBasicDataMethods() throws IOException {
         final String testData = "This is a test";
-        final byte[] testArray = testData.getBytes();
+        final byte[] testArray = testData.getBytes(UTF_8);
         final int testLength = testArray.length;
 
         // data() check with byte[]
         byte[] existingData = this.b.data();
-        assertEquals("This is a test", new String(existingData));
+        assertEquals("This is a test", new String(existingData, UTF_8));
 
         // getSeekableByteChannelFactory() check with byte[]
         ByteBuffer buff = ByteBuffer.allocate(testLength);
         this.b.getChannelFactory().create().read(buff);
-        assertEquals(testData, new String(buff.array()));
+        assertEquals(testData, new String(buff.array(), UTF_8));
 
         final SeekableByteChannelFactory sbcf = InMemoryChannelFactory.create(testArray);
         this.b.setChannelFactory(sbcf);
 
         // data() check with sbcf
         existingData = this.b.data();
-        assertEquals("This is a test", new String(existingData));
+        assertEquals("This is a test", new String(existingData, UTF_8));
 
         // getSeekableByteChannelFactory() check with sbcf
         buff = ByteBuffer.allocate(testLength);
         this.b.getChannelFactory().create().read(buff);
-        assertEquals(testData, new String(buff.array()));
+        assertEquals(testData, new String(buff.array(), UTF_8));
     }
 
     @Test

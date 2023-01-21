@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,8 +19,8 @@ class HtmlEscaperTest extends UnitTest {
 
     @Test
     void testEscaoesInByteArray() {
-        final byte[] expected = "(&lt;)(&amp;)(&gt;)1234567890".getBytes();
-        final byte[] actual = HtmlEscaper.escapeHtml("(<)(&)(>)1234567890".getBytes());
+        final byte[] expected = "(&lt;)(&amp;)(&gt;)1234567890".getBytes(UTF_8);
+        final byte[] actual = HtmlEscaper.escapeHtml("(<)(&)(>)1234567890".getBytes(UTF_8));
         assertArrayEquals(expected, actual);
     }
 }

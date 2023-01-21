@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ServiceProviderPlaceGetTLDTest extends UnitTest {
@@ -34,9 +35,9 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
         IMobileAgent agent = pool.borrowAgent();
 
         // Build family tree
-        IBaseDataObject payload = DataObjectFactory.getInstance("test".getBytes(), "test.1", "PARENT");
+        IBaseDataObject payload = DataObjectFactory.getInstance("test".getBytes(UTF_8), "test.1", "PARENT");
         payload.putParameter("PARENT_INFO", "this is a secret held by the parent");
-        IBaseDataObject child = DataObjectFactory.getInstance("test child".getBytes(), "test.1" + Family.SEP + "1", "CHILD");
+        IBaseDataObject child = DataObjectFactory.getInstance("test child".getBytes(UTF_8), "test.1" + Family.SEP + "1", "CHILD");
         List<IBaseDataObject> payloadList = new ArrayList<>();
         payloadList.add(child);
         payloadList.add(payload);

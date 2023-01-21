@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static emissary.place.Main.filePathIsWithinBaseDirectory;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -45,7 +46,7 @@ final class MainTest extends UnitTest {
     public void setUp() throws Exception {
         Path dataFile = Paths.get(TMPDIR, "testmain.dat");
         try (OutputStream ros = Files.newOutputStream(dataFile)) {
-            ros.write("abcdefghijklmnopqrstuvwxyz".getBytes());
+            ros.write("abcdefghijklmnopqrstuvwxyz".getBytes(UTF_8));
         } catch (IOException ex) {
             fail("Unable to create test file", ex);
         }
@@ -122,7 +123,7 @@ final class MainTest extends UnitTest {
         String[] newArgs = {"-p", "FOO=BAR"};
         Main m = new Main(className, newArgs);
         m.parseArguments();
-        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
+        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(UTF_8), "test", "UNKNOWN");
         payload.setParameters(m.getParameters());
         assertEquals("BAR", payload.getStringParameter("FOO"), "Specified parameter should stick");
     }
@@ -199,7 +200,7 @@ final class MainTest extends UnitTest {
         m.setOutputStream(new PrintStream(baos));
         m.run();
 
-        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
+        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(UTF_8), "test", "UNKNOWN");
         payload.putParameter("PARENT_KEY", "parent value");
         m.processPayload(payload);
 
@@ -220,14 +221,14 @@ final class MainTest extends UnitTest {
         } catch (Throwable t) {
             fail("Main runner allowed exception to escape", t);
         }
-        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(), "test", "UNKNOWN");
+        IBaseDataObject payload = DataObjectFactory.getInstance("aaa".getBytes(UTF_8), "test", "UNKNOWN");
         List<IBaseDataObject> atts = new ArrayList<>();
-        IBaseDataObject att1 = DataObjectFactory.getInstance("bbb".getBytes(), "safe_attempt", "SAFE_ATTEMPT");
+        IBaseDataObject att1 = DataObjectFactory.getInstance("bbb".getBytes(UTF_8), "safe_attempt", "SAFE_ATTEMPT");
         atts.add(att1);
-        IBaseDataObject att2 = DataObjectFactory.getInstance("ccc".getBytes(), "escape_attempt", "./../../pwned/ESCAPE_ATTEMPT");
+        IBaseDataObject att2 = DataObjectFactory.getInstance("ccc".getBytes(UTF_8), "escape_attempt", "./../../pwned/ESCAPE_ATTEMPT");
         atts.add(att2);
 
-        IBaseDataObject att3 = DataObjectFactory.getInstance("ccc".getBytes(), "attempt", "./../../testmain.dat_sibling/ESCAPE_ATTEMPT");
+        IBaseDataObject att3 = DataObjectFactory.getInstance("ccc".getBytes(UTF_8), "attempt", "./../../testmain.dat_sibling/ESCAPE_ATTEMPT");
         atts.add(att3);
 
         m.handleSplitOutput(payload, atts);
@@ -349,11 +350,11 @@ final class MainTest extends UnitTest {
 
         @Override
         public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) throws ResourceException {
-            IBaseDataObject extr = DataObjectFactory.getInstance("cde".getBytes(), "test-att-2", "UNKNOWN");
+            IBaseDataObject extr = DataObjectFactory.getInstance("cde".getBytes(UTF_8), "test-att-2", "UNKNOWN");
             extr.putParameter("RECORD_KEY", "record value");
             payload.addExtractedRecord(extr);
 
-            IBaseDataObject child = DataObjectFactory.getInstance("cde".getBytes(), "test-att-1", "UNKNOWN");
+            IBaseDataObject child = DataObjectFactory.getInstance("cde".getBytes(UTF_8), "test-att-1", "UNKNOWN");
             payload.putParameter("CHILD_KEY", "child value");
 
             List<IBaseDataObject> children = new ArrayList<>();

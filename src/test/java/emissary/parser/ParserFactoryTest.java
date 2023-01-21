@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ParserFactoryTest extends UnitTest {
@@ -22,7 +23,7 @@ class ParserFactoryTest extends UnitTest {
         cfg.addEntry("PARSER_NIO_IMPL_FOO", "emissary.parser.TestParserFactory$SampleParser");
         cfg.addEntry("DEFAULT_NIO_PARSER", "emissary.parser.TestParserFactory$DefaultNioParser");
         ParserFactory pf = new ParserFactory(cfg);
-        ReadableByteChannel c = Channels.newChannel(new ByteArrayInputStream("aaa".getBytes()));
+        ReadableByteChannel c = Channels.newChannel(new ByteArrayInputStream("aaa".getBytes(UTF_8)));
         assertEquals(DataIdentifier.UNKNOWN_TYPE, pf.identify(new WindowedSeekableByteChannel(c, 24)), "Default parser used with null ID Engine");
     }
 

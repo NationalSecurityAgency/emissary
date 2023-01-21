@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 public class JavascriptEscape {
 
     /* our logger */
@@ -24,10 +26,10 @@ public class JavascriptEscape {
             if (data[i] == '\\' && (i + 5) < data.length && data[i + 1] == 'u') {
                 // process unicode escape
                 try {
-                    String s = new String(data, i + 2, 4);
+                    String s = new String(data, i + 2, 4, UTF_8);
                     char[] c = HtmlEscape.unescapeHtmlChar(s, true);
                     if (c != null && c.length > 0) {
-                        out.write(new String(c).getBytes());
+                        out.write(new String(c).getBytes(UTF_8));
                         // logger.debug("Unicode '{}' ==> '{}'", s, new String(c));
                         i += 5;
                     } else {

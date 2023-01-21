@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -66,7 +67,7 @@ class DropOffPlaceTest extends UnitTest {
     @Test
     void testWithNoValidOutputTypes() throws Exception {
         final IBaseDataObject payload = DataObjectFactory.getInstance();
-        payload.setData("This is the data".getBytes());
+        payload.setData("This is the data".getBytes(UTF_8));
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
         final List<IBaseDataObject> payloadList = new ArrayList<>();

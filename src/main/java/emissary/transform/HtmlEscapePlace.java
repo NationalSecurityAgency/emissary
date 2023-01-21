@@ -26,6 +26,7 @@ import static emissary.core.constants.Configurations.OUTPUT_FORM;
 import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 import static emissary.core.constants.Parameters.SUFFIXES_HTML_ESCAPE;
 import static emissary.core.constants.Parameters.SUMMARY;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HtmlEscapePlace extends ServiceProviderPlace {
 
@@ -135,7 +136,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         String summary = d.getStringParameter(SUMMARY);
         if (StringUtils.contains(summary, "&#")) {
             logger.debug("Working on summary "/* + summary */);
-            String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes()));
+            String s = makeString(HtmlEscape.unescapeHtml(summary.getBytes(UTF_8)));
             if (StringUtils.isNotBlank(s)) {
                 s = HtmlEscape.unescapeEntities(s);
                 d.deleteParameter(SUMMARY);
@@ -149,7 +150,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
         String title = d.getStringParameter(DOCUMENT_TITLE);
         if (StringUtils.contains(title, "&#")) {
             logger.debug("Working on title "/* + title */);
-            String s = makeString(HtmlEscape.unescapeHtml(title.getBytes()));
+            String s = makeString(HtmlEscape.unescapeHtml(title.getBytes(UTF_8)));
             if (StringUtils.isNotBlank(s)) {
                 d.deleteParameter(DOCUMENT_TITLE);
                 s = HtmlEscape.unescapeEntities(s);

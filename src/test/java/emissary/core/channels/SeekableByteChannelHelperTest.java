@@ -20,6 +20,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,7 +50,7 @@ class SeekableByteChannelHelperTest {
         buff.flip();
         byte[] bytes = new byte[4];
         buff.get(bytes);
-        assertArrayEquals("test".getBytes(), bytes);
+        assertArrayEquals("test".getBytes(UTF_8), bytes);
     }
 
     @Test
@@ -94,7 +95,7 @@ class SeekableByteChannelHelperTest {
         assertArrayEquals(bytes, byteBuffer.array());
     }
 
-    private static final InputStream IS = new ByteArrayInputStream("Test data".getBytes());
+    private static final InputStream IS = new ByteArrayInputStream("Test data".getBytes(UTF_8));
 
     @Test
     void testGetFromInputStreamWithArrayByteBuffer() throws IOException {
@@ -149,7 +150,7 @@ class SeekableByteChannelHelperTest {
         final Logger channelLogger = (Logger) LoggerFactory.getLogger(SeekableByteChannelHelper.class);
 
         final String testString = "test data"; // length 9
-        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes()));
+        bdo.setChannelFactory(SeekableByteChannelHelper.memory(testString.getBytes(UTF_8)));
 
         try {
             // Wrap the actual call with a way to read the logs

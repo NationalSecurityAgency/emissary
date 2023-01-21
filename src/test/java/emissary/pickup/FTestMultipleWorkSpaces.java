@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -70,10 +71,10 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
         workingFilePaths.add("subdir1/" + testfile2.getName());
         testfile2.deleteOnExit();
         FileOutputStream os = new FileOutputStream(testfile);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile2);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
 
         inarea2 = new File(TMPDIR + "/multipicktest/space2/in");
@@ -95,10 +96,10 @@ class FTestMultipleWorkSpaces extends FunctionalTest {
         workingFilePaths.add("subdir2/" + testfile4.getName());
         testfile4.deleteOnExit();
         os = new FileOutputStream(testfile3);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
         os = new FileOutputStream(testfile4);
-        os.write("This is a test".getBytes());
+        os.write("This is a test".getBytes(UTF_8));
         os.close();
 
 

@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.xml.bind.DatatypeConverter;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -44,7 +45,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected static Logger logger = LoggerFactory.getLogger(ExtractionTest.class);
 
     private static final List<IBaseDataObject> NO_ATTACHMENTS = Collections.emptyList();
-    private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();
+    private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes(UTF_8);
 
     protected KffDataObjectHandler kff =
             new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
@@ -227,7 +228,7 @@ public abstract class ExtractionTest extends UnitTest {
         // with differing matchMode operators
         for (Element dataEl : el.getChildren("data")) {
             byte[] payloadData = payload.data();
-            checkStringValue(dataEl, new String(payloadData), tname);
+            checkStringValue(dataEl, new String(payloadData, UTF_8), tname);
         }
 
         // Check each alternate view
@@ -240,7 +241,7 @@ public abstract class ExtractionTest extends UnitTest {
                 assertEquals(Integer.parseInt(lengthStr), viewData.length,
                         String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname));
             }
-            checkStringValue(view, new String(viewData), tname);
+            checkStringValue(view, new String(viewData, UTF_8), tname);
         }
 
         // Check for noview items
@@ -305,7 +306,7 @@ public abstract class ExtractionTest extends UnitTest {
         } else if (matchMode.equals("base64")) {
             // decode value as a base64 encoded byte[] array and use the string
             // representation of the byte array for comparison to the incoming value
-            value = new String(DatatypeConverter.parseBase64Binary(value));
+            value = new String(DatatypeConverter.parseBase64Binary(value), UTF_8);
             assertEquals(value, data,
                     String.format("%s element '%s' problem in %s value '%s' does not match '%s'", meta.getName(), key, tname, data, value));
         } else if ("collection".equalsIgnoreCase(matchMode)) {

@@ -11,6 +11,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,9 +32,9 @@ class FileChannelFactoryTest {
 
         final ByteBuffer buff = ByteBuffer.allocate(4);
         sbc.read(buff);
-        assertEquals("test", new String(buff.array()));
+        assertEquals("test", new String(buff.array(), UTF_8));
         sbc2.read(buff);
-        assertEquals("test", new String(buff.array()));
+        assertEquals("test", new String(buff.array(), UTF_8));
     }
 
     @Test
@@ -51,7 +52,7 @@ class FileChannelFactoryTest {
         final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length());
         sbcf.create().read(buff);
-        assertEquals(TEST_STRING, new String(buff.array()));
+        assertEquals(TEST_STRING, new String(buff.array(), UTF_8));
     }
 
     @Test
@@ -81,7 +82,7 @@ class FileChannelFactoryTest {
 
         final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
         final SeekableByteChannel sbc = sbcf.create();
-        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
+        final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes(UTF_8));
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
         assertThrows(NonWritableChannelException.class, () -> sbc.truncate(5l), "Can't truncate byte channel as it's immutable");
     }

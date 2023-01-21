@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -20,7 +21,8 @@ class FastBoyerMooreTest extends UnitTest {
             final FastBoyerMoore scanner = new FastBoyerMoore(this.keywords);
             final byte[] data =
                     ("Hi, this is a one-two-cinco test of the emergency alpha five gamma\nbroadcasting system. \n\n"
-                            + "If this were a real emergency epsilon (delta) alpha you would four dos tres get the heck out of here.").getBytes();
+                            + "If this were a real emergency epsilon (delta) alpha you would four dos tres get the heck out of here.")
+                                    .getBytes(UTF_8);
 
             int pos = 0;
             final List<int[]> result = new ArrayList<>();
