@@ -33,7 +33,7 @@ jobs:
           # Enable Linters to run
           # VALIDATE_GITHUB_ACTIONS: false
           VALIDATE_GOOGLE_JAVA_FORMAT: true
-          JAVA_FILE_NAME: checkstyle.xml
+          JAVA_FILE_NAME: ../../contrib/checkstyle.xml
           VALIDATE_DOCKERFILE_HADOLINT: true
           #VALIDATE_MARKDOWN: false
           #VALIDATE_XML: false
