@@ -3,6 +3,8 @@ package emissary.server.mvc.adapters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletRequest;
 
 /**
@@ -23,7 +25,7 @@ public class RequestUtil {
     public static String getParameter(final ServletRequest request, final String param, final String defaultVal) {
         Object o = request.getAttribute(param);
         if (o == null) {
-            o = request.getParameter(param);
+            o = sanitizeParameter(request.getParameter(param));
         }
 
         if (o == null) {
@@ -50,7 +52,7 @@ public class RequestUtil {
         Object o = request.getAttribute(param);
 
         if (o == null) {
-            o = request.getParameterValues(param);
+            o = sanitizeParameters(request.getParameterValues(param));
         }
 
         try {
@@ -223,5 +225,31 @@ public class RequestUtil {
         logger.debug("RequestUtil.getFloatParam for {}: {}.", param, retval);
 
         return retval;
+    }
+
+    /**
+     * Sanitize request parameter to remove CR/LF values
+     *
+     * @param parameter the String to sanitize
+     * @return a new String object with any CR/LF characters removed or null when the provided argument is null
+     */
+    protected static String sanitizeParameter(String parameter) {
+        return (null == parameter ? null : parameter.replaceAll("[\n\r]", "_"));
+    }
+
+    /**
+     * Sanitize request parameters to remove CR/LF values
+     *
+     * @param parameters the String[] to sanitize
+     * @return a new String[] object with any CR/LF characters removed
+     */
+    protected static String[] sanitizeParameters(String[] parameters) {
+        List<String> sanitizedParameters = new ArrayList<>();
+        if (null != parameters) {
+            for (String parameter : parameters) {
+                sanitizedParameters.add(sanitizeParameter(parameter));
+            }
+        }
+        return sanitizedParameters.toArray(new String[0]);
     }
 }
