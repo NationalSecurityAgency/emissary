@@ -204,6 +204,7 @@ public abstract class UnitTest {
             logger.debug("No answer document provided for {}", aname, ex);
             return null;
         }
+        AnswersXMLValidator.validate(answerDoc);
         return answerDoc;
     }
 

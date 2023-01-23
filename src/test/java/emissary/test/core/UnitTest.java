@@ -3,6 +3,7 @@ package emissary.test.core;
 import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
+import emissary.test.core.junit5.AnswersXMLValidator;
 import emissary.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
@@ -289,6 +290,7 @@ public class UnitTest {
             logger.debug("No answer document provided for {}", aname, ex);
             return null;
         }
+        AnswersXMLValidator.validate(answerDoc);
         return answerDoc;
     }
 }
