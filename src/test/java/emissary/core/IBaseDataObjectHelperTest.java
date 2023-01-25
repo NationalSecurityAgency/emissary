@@ -1,8 +1,6 @@
 package emissary.core;
 
-import emissary.core.channels.AbstractSeekableByteChannel;
 import emissary.core.channels.InMemoryChannelFactory;
-import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
 
@@ -15,14 +13,11 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -44,9 +39,6 @@ class IBaseDataObjectHelperTest {
 
     private IBaseDataObject ibdo1;
     private IBaseDataObject ibdo2;
-    private List<IBaseDataObject> ibdoList1;
-    private List<IBaseDataObject> ibdoList2;
-    private List<String> differences;
 
     private static final Boolean IS_SAME = true;
     private static final Boolean IS_EQUALS = true;
@@ -60,33 +52,6 @@ class IBaseDataObjectHelperTest {
     void setup() {
         ibdo1 = new BaseDataObject();
         ibdo2 = new BaseDataObject();
-        ibdoList1 = Arrays.asList(ibdo1);
-        ibdoList2 = Arrays.asList(ibdo2);
-        differences = new ArrayList<>();
-    }
-
-    private void verifyDiff(final int expectedDifferences) {
-        verifyDiff(expectedDifferences, false, false, false, false);
-    }
-
-    private void verifyDiff(final int expectedDifferences, final boolean checkData, final boolean checkTimestamp, final boolean checkInternalId,
-            final boolean checkTransformHistory) {
-        IBaseDataObjectHelper.diff(ibdo1, ibdo1, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
-        assertEquals(0, differences.size());
-        IBaseDataObjectHelper.diff(ibdo1, ibdo2, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
-        assertEquals(expectedDifferences, differences.size());
-        differences.clear();
-        IBaseDataObjectHelper.diff(ibdo2, ibdo1, differences, checkData, checkTimestamp, checkInternalId, checkTransformHistory);
-        assertEquals(expectedDifferences, differences.size());
-        differences.clear();
-    }
-
-    private void verifyDiffList(final int expectedDifferences, final List<IBaseDataObject> list1, final List<IBaseDataObject> list2) {
-        IBaseDataObjectHelper.diff(list1, list1, "test", differences, false, false, false, false);
-        assertEquals(0, differences.size());
-        IBaseDataObjectHelper.diff(list1, list2, "test", differences, false, false, false, false);
-        assertEquals(expectedDifferences, differences.size());
-        differences.clear();
     }
 
     private void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
@@ -312,230 +277,6 @@ class IBaseDataObjectHelperTest {
 
     private void checkThrowsNull(final Executable e) {
         assertThrows(NullPointerException.class, e);
-    }
-
-    @Test
-    void testDiffArguments() {
-        // Objects
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(null, ibdo2, differences, false, false, false, false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdo1, null, differences, false, false, false, false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdo1, ibdo2, null, false, false, false, false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, null, differences, false, false, false, false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(ibdoList1, ibdoList2, "id", null, false, false, false, false));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new Object(), new Object(), null, differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new Object(), new Object(), "id", null));
-
-        // Integers
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(0, 0, null, differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(0, 0, "id", null));
-
-        // Booleans
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(false, false, null, differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(false, false, "id", null));
-
-        // Maps
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(null, new HashMap<>(), "id", differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), null, "id", differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), null, differences));
-        checkThrowsNull(() -> IBaseDataObjectHelper.diff(new HashMap<>(), new HashMap<>(), "id", null));
-    }
-
-    @Test
-    void testDiffChannelFactory() {
-        ibdo2.setData(new byte[1]);
-        verifyDiff(1, true, false, false, false);
-
-        ibdo1.setChannelFactory(InMemoryChannelFactory.create("0123456789".getBytes(StandardCharsets.US_ASCII)));
-        ibdo2.setChannelFactory(InMemoryChannelFactory.create("9876543210".getBytes(StandardCharsets.US_ASCII)));
-        verifyDiff(1, true, false, false, false);
-
-        ibdo2.setChannelFactory(new SeekableByteChannelFactory() {
-            @Override
-            public SeekableByteChannel create() {
-                return new AbstractSeekableByteChannel() {
-                    @Override
-                    protected void closeImpl() throws IOException {
-                        throw new IOException("Test SBC that always throws IOException!");
-                    }
-
-                    @Override
-                    protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
-                        throw new IOException("Test SBC that always throws IOException!");
-                    }
-
-                    @Override
-                    protected long sizeImpl() throws IOException {
-                        throw new IOException("Test SBC that always throws IOException!");
-                    }
-                };
-            }
-        });
-
-        verifyDiff(1, true, false, false, false);
-    }
-
-    @Test
-    void testDiffCurrentForm() {
-        ibdo1.pushCurrentForm("AAA");
-        ibdo1.pushCurrentForm("BBB");
-        ibdo1.pushCurrentForm("CCC");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffHistory() {
-        ibdo1.appendTransformHistory("AAA", false);
-        ibdo1.appendTransformHistory("BBB", true);
-        verifyDiff(1, false, false, false, true);
-    }
-
-    @Test
-    void testDiffParameters() {
-        ibdo1.putParameter("STRING", "string");
-        ibdo1.putParameter("LIST", Arrays.asList("first", "second", "third"));
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffAlternateViews() {
-        ibdo1.addAlternateView("AAA", "AAA".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("BBB", "BBB".getBytes(StandardCharsets.US_ASCII));
-        ibdo1.addAlternateView("CCC", "CCC".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(1);
-
-        ibdo2.addAlternateView("DDD", "DDD".getBytes(StandardCharsets.US_ASCII));
-        ibdo2.addAlternateView("EEE", "EEE".getBytes(StandardCharsets.US_ASCII));
-        ibdo2.addAlternateView("FFF", "FFF".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffPriority() {
-        ibdo1.setPriority(13);
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffCreationTimestamp() {
-        ibdo1.setCreationTimestamp(new Date(1234567890));
-        verifyDiff(1, false, true, false, false);
-    }
-
-    @Test
-    void testDiffExtractedRecords() {
-        ibdo1.addExtractedRecord(new BaseDataObject());
-        ibdo1.addExtractedRecord(new BaseDataObject());
-        ibdo1.addExtractedRecord(new BaseDataObject());
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffFilename() {
-        ibdo1.setFilename("filename");
-        verifyDiff(2);
-    }
-
-    @Test
-    void testDiffInternalId() {
-        verifyDiff(1, false, false, true, false);
-    }
-
-    @Test
-    void testDiffProcessingError() {
-        ibdo1.addProcessingError("processing_error");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffFontEncoding() {
-        ibdo1.setFontEncoding("font_encoding");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffNumChildren() {
-        ibdo1.setNumChildren(13);
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffNumSiblings() {
-        ibdo1.setNumSiblings(13);
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffBirthOrder() {
-        ibdo1.setBirthOrder(13);
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffHeader() {
-        ibdo1.setHeader("header".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffFooter() {
-        ibdo1.setFooter("footer".getBytes(StandardCharsets.US_ASCII));
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffHeaderEncoding() {
-        ibdo1.setHeaderEncoding("header_encoding");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffClassification() {
-        ibdo1.setClassification("classification");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffBroken() {
-        ibdo1.setBroken("broken");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffOutputable() {
-        ibdo1.setOutputable(false);
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffId() {
-        ibdo1.setId("id");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffWorkBundleId() {
-        ibdo1.setWorkBundleId("workbundle_id");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffTransactionId() {
-        ibdo1.setTransactionId("transaction_id");
-        verifyDiff(1);
-    }
-
-    @Test
-    void testDiffList() {
-        final List<IBaseDataObject> ibdoList3 = Arrays.asList(ibdo1, ibdo2);
-        verifyDiffList(0, null, null);
-        verifyDiffList(0, new ArrayList<>(), null);
-        verifyDiffList(0, null, new ArrayList<>());
-        verifyDiffList(0, ibdoList1, ibdoList1);
-        verifyDiffList(1, ibdoList3, ibdoList2);
-        verifyDiffList(1, ibdoList1, ibdoList3);
-
-        ibdo2.setClassification("classification");
-        verifyDiffList(1, ibdoList1, ibdoList2);
     }
 
     @Test

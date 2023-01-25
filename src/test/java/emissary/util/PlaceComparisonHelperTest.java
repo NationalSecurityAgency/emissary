@@ -3,10 +3,12 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.BaseDataObject;
+import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
 import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -22,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PlaceComparisonHelperTest extends UnitTest {
 
+    private static final DiffCheckConfiguration DIFF_OPTIONS = DiffCheckConfiguration.onlyCheckData();
+
     private static final byte[] configurationBytes = new StringBuilder()
             .append("PLACE_NAME = \"TesterPlace\"")
             .append("SERVICE_NAME = \"TESTER\"")
@@ -30,6 +34,20 @@ class PlaceComparisonHelperTest extends UnitTest {
             .append("SERVICE_COST = 50")
             .append("SERVICE_QUALITY = 50")
             .append("SERVICE_PROXY = \"UNKNOWN\"").toString().getBytes(StandardCharsets.UTF_8);
+
+    private IBaseDataObject ibdoNewPlace;
+    private IBaseDataObject ibdoOldPlace;
+    private List<IBaseDataObject> resultsNewPlace;
+    private List<IBaseDataObject> resultsOldPlace;
+    private static final String identifier = "identifier";
+
+    @BeforeEach
+    void setup() {
+        ibdoNewPlace = new BaseDataObject();
+        ibdoOldPlace = new BaseDataObject();
+        resultsNewPlace = new ArrayList<>();
+        resultsOldPlace = new ArrayList<>();
+    }
 
     @Test
     void testGetPlaceToCompareArguments() throws Exception {
@@ -45,71 +63,60 @@ class PlaceComparisonHelperTest extends UnitTest {
 
     @Test
     void testCompareToPlaceArguments() throws IOException {
-        final List<IBaseDataObject> newResults = new ArrayList<>();
-        final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
         final ServiceProviderPlace newPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String newMethodName = "newMethodName";
         final ServiceProviderPlace oldPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "oldMethodName";
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(null, ibdoForNewPlace,
-                newPlace, newMethodName, oldPlace, oldMethodName));
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, null,
-                newPlace, newMethodName, oldPlace, oldMethodName));
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
-                null, newMethodName, oldPlace, oldMethodName));
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
-                newPlace, null, oldPlace, oldMethodName));
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
-                newPlace, newMethodName, null, oldMethodName));
-        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(newResults, ibdoForNewPlace,
-                newPlace, newMethodName, oldPlace, null));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(null, ibdoNewPlace,
+                newPlace, newMethodName, oldPlace, oldMethodName, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, null,
+                newPlace, newMethodName, oldPlace, oldMethodName, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, ibdoNewPlace,
+                null, newMethodName, oldPlace, oldMethodName, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, ibdoNewPlace,
+                newPlace, null, oldPlace, oldMethodName, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, ibdoNewPlace,
+                newPlace, newMethodName, null, oldMethodName, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, ibdoNewPlace,
+                newPlace, newMethodName, oldPlace, null, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.compareToPlace(resultsNewPlace, ibdoNewPlace,
+                newPlace, newMethodName, oldPlace, oldMethodName, null));
     }
 
     @Test
     void testCompareToPlace() throws Exception {
-        final List<IBaseDataObject> newResults = new ArrayList<>();
-        final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
         final ServiceProviderPlace newPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String newMethodName = "processHeavyDuty";
         final ServiceProviderPlace oldPlace = new TestMinimalServiceProviderPlace(new ByteArrayInputStream(configurationBytes));
         final String oldMethodName = "processHeavyDuty";
 
         assertNull(PlaceComparisonHelper.compareToPlace(
-                newResults, ibdoForNewPlace, newPlace, newMethodName, oldPlace, oldMethodName));
+                resultsNewPlace, ibdoNewPlace, newPlace, newMethodName, oldPlace, oldMethodName, DIFF_OPTIONS));
     }
 
     @Test
     void testCheckDifferencesArguments() {
-        final IBaseDataObject ibdoForOldPlace = new BaseDataObject();
-        final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
-        final List<IBaseDataObject> oldResults = new ArrayList<>();
-        final List<IBaseDataObject> newResults = new ArrayList<>();
-        final String identifier = "identifier";
-
         checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
-                null, ibdoForNewPlace, oldResults, newResults, identifier));
+                null, ibdoNewPlace, resultsOldPlace, resultsNewPlace, identifier, DIFF_OPTIONS));
         checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, null, oldResults, newResults, identifier));
+                ibdoOldPlace, null, resultsOldPlace, resultsNewPlace, identifier, DIFF_OPTIONS));
         checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlace, null, newResults, identifier));
+                ibdoOldPlace, ibdoNewPlace, null, resultsNewPlace, identifier, DIFF_OPTIONS));
         checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlace, oldResults, null, identifier));
+                ibdoOldPlace, ibdoNewPlace, resultsOldPlace, null, identifier, DIFF_OPTIONS));
         checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, null));
+                ibdoOldPlace, ibdoNewPlace, resultsOldPlace, resultsNewPlace, null, DIFF_OPTIONS));
+        checkThrowsNull(() -> PlaceComparisonHelper.checkDifferences(
+                ibdoOldPlace, ibdoNewPlace, resultsOldPlace, resultsNewPlace, identifier, null));
     }
 
     @Test
     void testCheckDifferences() {
-        final IBaseDataObject ibdoForOldPlace = new BaseDataObject();
-        final IBaseDataObject ibdoForNewPlace = new BaseDataObject();
         final IBaseDataObject ibdoForNewPlaceOneChange = new BaseDataObject();
         final IBaseDataObject ibdoForNewPlaceTwoChanges = new BaseDataObject();
-        final List<IBaseDataObject> oldResults = new ArrayList<>();
         final List<IBaseDataObject> oldResultsTwoChanges = new ArrayList<>();
-        final List<IBaseDataObject> newResults = new ArrayList<>();
         final List<IBaseDataObject> newResultsOneChange = new ArrayList<>();
         final List<IBaseDataObject> newResultsTwoChanges = new ArrayList<>();
-        final String identifier = "identifier";
 
         ibdoForNewPlaceOneChange.setData(new byte[1]);
         newResultsOneChange.add(new BaseDataObject());
@@ -124,14 +131,14 @@ class PlaceComparisonHelperTest extends UnitTest {
         oldResultsTwoChanges.get(0).addAlternateView("alternateView3", new byte[3]);
 
         assertNull(PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlace, oldResults, newResults, identifier));
+                ibdoOldPlace, ibdoNewPlace, resultsOldPlace, resultsNewPlace, identifier, DIFF_OPTIONS));
         assertNotNull(PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlaceOneChange, oldResults, newResults, identifier));
+                ibdoOldPlace, ibdoForNewPlaceOneChange, resultsOldPlace, resultsNewPlace, identifier, DIFF_OPTIONS));
         assertNotNull(PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlace, oldResults, newResultsOneChange, identifier));
+                ibdoOldPlace, ibdoNewPlace, resultsOldPlace, newResultsOneChange, identifier, DIFF_OPTIONS));
         assertNotNull(PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlaceOneChange, oldResults, newResultsOneChange, identifier));
+                ibdoOldPlace, ibdoForNewPlaceOneChange, resultsOldPlace, newResultsOneChange, identifier, DIFF_OPTIONS));
         assertNotNull(PlaceComparisonHelper.checkDifferences(
-                ibdoForOldPlace, ibdoForNewPlaceTwoChanges, oldResultsTwoChanges, newResultsTwoChanges, identifier));
+                ibdoOldPlace, ibdoForNewPlaceTwoChanges, oldResultsTwoChanges, newResultsTwoChanges, identifier, DIFF_OPTIONS));
     }
 }
