@@ -32,7 +32,6 @@ class AbstractSeekableByteChannelTest {
         @Override
         protected int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
             byteBuffer.position(byteBuffer.capacity());
-            position(position() + maxBytesToRead);
 
             return maxBytesToRead;
         }

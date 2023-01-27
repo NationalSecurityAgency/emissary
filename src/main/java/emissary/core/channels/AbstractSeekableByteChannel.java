@@ -121,7 +121,10 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
             return -1;
         }
         final int maxBytesToRead = (int) Math.min(size() - position(), byteBuffer.remaining());
-        return readImpl(byteBuffer, maxBytesToRead);
+        final int bytesRead = readImpl(byteBuffer, maxBytesToRead);
+        // Update position of channel
+        position(position() + bytesRead);
+        return bytesRead;
     }
 
     /**

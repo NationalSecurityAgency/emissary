@@ -84,9 +84,8 @@ public class InputStreamChannelFactory {
             final int bytesRead = SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer,
                     position() - streamPosition, maxBytesToRead);
 
-            // Update positioning
-            position(position() + bytesRead);
-            streamPosition = position();
+            // Update stream position
+            streamPosition = position() + bytesRead;
 
             return bytesRead;
         }
