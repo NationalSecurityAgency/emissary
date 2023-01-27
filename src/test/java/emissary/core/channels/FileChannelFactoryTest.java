@@ -1,7 +1,6 @@
 package emissary.core.channels;
 
 import com.google.common.io.Files;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -56,6 +55,13 @@ class FileChannelFactoryTest {
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length());
         sbcf.create().read(buff);
         assertEquals(TEST_STRING, new String(buff.array()));
+    }
+
+    @Test
+    void testPositioning() throws IOException {
+        final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length() - 2);
+        sbcf.create().position(2).read(buff);
+        assertEquals(TEST_STRING.substring(2), new String(buff.array()));
     }
 
     @Test
