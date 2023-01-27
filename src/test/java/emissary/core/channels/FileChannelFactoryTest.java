@@ -1,6 +1,8 @@
 package emissary.core.channels;
 
 import com.google.common.io.Files;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -20,14 +22,21 @@ class FileChannelFactoryTest {
     private static final String TEST_STRING = "test data";
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);
 
-    @Test
-    void testCanCreateMultipleIndependentChannelsForTheSameFile(@TempDir Path tempDir) throws IOException {
+    private static SeekableByteChannelFactory sbcf;
+
+    @BeforeAll
+    static void setup(final @TempDir Path tempDir) throws IOException {
         final Path path = tempDir.resolve("testBytes");
 
         Files.write(TEST_BYTES, path.toFile());
 
-        final SeekableByteChannel sbc = FileChannelFactory.create(path).create();
-        final SeekableByteChannel sbc2 = FileChannelFactory.create(path).create();
+        sbcf = FileChannelFactory.create(path);
+    }
+
+    @Test
+    void testCanCreateMultipleIndependentChannelsForTheSameFile() throws IOException {
+        final SeekableByteChannel sbc = sbcf.create();
+        final SeekableByteChannel sbc2 = sbcf.create();
 
         final ByteBuffer buff = ByteBuffer.allocate(4);
         sbc.read(buff);
@@ -43,22 +52,14 @@ class FileChannelFactoryTest {
     }
 
     @Test
-    void testNormalPath(@TempDir Path tempDir) throws IOException {
-        final Path path = tempDir.resolve("testBytes");
-
-        Files.write(TEST_BYTES, path.toFile());
-
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+    void testNormalPath() throws IOException {
         final ByteBuffer buff = ByteBuffer.allocate(TEST_STRING.length());
         sbcf.create().read(buff);
         assertEquals(TEST_STRING, new String(buff.array()));
     }
 
     @Test
-    void testClose(@TempDir Path tempDir) throws IOException {
-        final Path path = tempDir.resolve("testBytes");
-        Files.write(TEST_BYTES, path.toFile());
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+    void testClose() throws IOException {
         try (final SeekableByteChannel sbc = sbcf.create()) {
             assertTrue(sbc.isOpen());
             sbc.close();
@@ -74,12 +75,7 @@ class FileChannelFactoryTest {
     }
 
     @Test
-    void testImmutability(@TempDir Path tempDir) throws IOException {
-        final Path path = tempDir.resolve("testBytes");
-
-        Files.write(TEST_BYTES, path.toFile());
-
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+    void testImmutability() throws IOException {
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
@@ -87,22 +83,15 @@ class FileChannelFactoryTest {
     }
 
     @Test
-    void testCanCreateAndRetrieveEmptyFile(@TempDir Path tempDir) throws IOException {
-        final Path path = tempDir.resolve("testBytes");
-
+    void testCanCreateAndRetrieveEmptyFile(final @TempDir Path tempDir) throws IOException {
+        final Path path = tempDir.resolve("emptyBytes");
         Files.write(new byte[0], path.toFile());
-
         final SeekableByteChannelFactory simbcf = FileChannelFactory.create(path);
         assertEquals(0L, simbcf.create().size());
     }
 
     @Test
-    void testConstructors(@TempDir Path tempDir) throws IOException {
-        final Path path = tempDir.resolve("testBytes");
-
-        Files.write(TEST_BYTES, path.toFile());
-
-        final SeekableByteChannelFactory sbcf = FileChannelFactory.create(path);
+    void testConstructors() throws IOException {
         assertEquals(9, sbcf.create().size());
         assertThrows(NullPointerException.class, () -> FileChannelFactory.create(null), "Can't create a FCF with nulls");
     }
