@@ -25,13 +25,14 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter/slim@v4.10.0
         env:
+          LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # setting this to false means that only changed files will be scanned in each commit
           VALIDATE_ALL_CODEBASE: ${{ !contains(github.event_name, 'pull_request') }}
           # Enable Linters to run
           VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_GOOGLE_JAVA_FORMAT: true
-          JAVA_FILE_NAME: checkstyle.xml
+          JAVA_FILE_NAME: ../../contrib/checkstyle.xml
           VALIDATE_DOCKERFILE_HADOLINT: true
           VALIDATE_MARKDOWN: true
           VALIDATE_XML: true
