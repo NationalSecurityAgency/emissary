@@ -1,5 +1,11 @@
 ![Emissary Dark Knight - some code just wants to watch the core burn](emissary-knight.png) 
 
+
+| Github Actions Status: |
+| --- |
+| [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven.yml/badge.svg?branch=master)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven.yml) |
+| [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml) |
+
 Table of Contents
 =================
 
