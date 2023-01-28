@@ -73,7 +73,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
                     dir = DirectoryPlace.lookup();
                 }
             } catch (EmissaryException ex) {
-                this.logger.debug("Could not find local directory " + name);
+                this.logger.debug("Could not find local directory {}", name);
             }
 
             IRemoteDirectory remoteDirectory = null;

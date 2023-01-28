@@ -139,16 +139,16 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
             if (newKey.equals(currEntry.getKey())) {
                 if (newEntry.isBetterThan(currEntry)) {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Duplicate keyed entry existing discarded " + currEntry.getKey() + "$" + currEntry.getExpense()
-                                + " more costly than incoming " + newEntry.getExpense());
+                        logger.debug("Duplicate keyed entry existing discarded {}${} more costly than incoming {}", currEntry.getKey(),
+                                currEntry.getExpense(), newEntry.getExpense());
                     }
                     this.remove(i);
                     break;
                 }
                 // Current entry is better or just as good
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Duplicate keyed incoming entry discarded " + newKey + "$" + newEntry.getExpense() + " is not as good as current "
-                            + currEntry.getExpense());
+                    logger.debug("Duplicate keyed incoming entry discarded {}${} is not as good as current {}", newKey, newEntry.getExpense(),
+                            currEntry.getExpense());
                 }
                 return true;
             }
@@ -233,7 +233,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
         }
 
         // we have more than one (which we really should prevent at start-up)
-        List<String> serviceList = new ArrayList<String>();
+        List<String> serviceList = new ArrayList<>();
         for (DirectoryEntry entry : this) {
             serviceList.add(entry.getKey());
         }
@@ -274,7 +274,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
      * @return the new list
      */
     public static List<DirectoryEntry> deepCopy(@Nullable final List<DirectoryEntry> that, final boolean sort) {
-        final List<DirectoryEntry> copies = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> copies = new ArrayList<>();
         if (that != null) {
             for (final DirectoryEntry e : that) {
                 copies.add(new DirectoryEntry(e));

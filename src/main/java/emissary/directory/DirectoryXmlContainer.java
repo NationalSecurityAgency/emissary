@@ -40,8 +40,7 @@ public class DirectoryXmlContainer {
             }
         }
 
-        final Document jdom = new Document(root);
-        return jdom;
+        return new Document(root);
     }
 
     /**
@@ -56,12 +55,12 @@ public class DirectoryXmlContainer {
         final Element root = new Element(DIRECTORY);
         root.setAttribute(LOC_ATTR, proxyKey);
 
-        logger.debug("Building proxy view of dir contents for " + requester);
+        logger.debug("Building proxy view of dir contents for {}", requester);
 
         // Each directory entry
         for (final String dataId : dir.getEntryKeys()) {
             final DirectoryEntryList list = dir.getEntryList(dataId);
-            logger.debug("List of " + dataId + " for " + requester + " has " + list.size() + " entries");
+            logger.debug("List of {} for {} has {} entries", dataId, requester, list.size());
             // set up proxy for each entry
             for (final DirectoryEntry e : list) {
                 e.proxyFor(proxyKey);
@@ -74,8 +73,7 @@ public class DirectoryXmlContainer {
                 root.addContent(listEl);
             }
         }
-        final Document jdom = new Document(root);
-        return jdom;
+        return new Document(root);
     }
 
     /**
@@ -99,8 +97,7 @@ public class DirectoryXmlContainer {
             }
         }
 
-        final Document jdom = new Document(root);
-        return jdom;
+        return new Document(root);
     }
 
     /**
@@ -111,8 +108,7 @@ public class DirectoryXmlContainer {
      */
     public static String toXmlString(final IDirectoryPlace dir) {
         final Document jdom = buildDocument(dir);
-        final String xml = SaferJDOMUtil.toString(jdom);
-        return xml;
+        return SaferJDOMUtil.toString(jdom);
     }
 
     /**
@@ -125,7 +121,7 @@ public class DirectoryXmlContainer {
      * @return xml string representing the proxied keys
      */
     public static String toXmlString(final IDirectoryPlace dir, @Nullable final String proxyKey, final String requester) {
-        logger.debug("Building xml string for " + requester);
+        logger.debug("Building xml string for {}", requester);
         final String xml;
         if ((proxyKey == null) || !(dir instanceof IRemoteDirectory)) {
             xml = toXmlString(dir);
@@ -163,7 +159,7 @@ public class DirectoryXmlContainer {
             final String dataId = listElement.getAttributeValue(DATAID_ATTR);
             map.put(dataId, d);
         }
-        logger.debug("Constructed map of " + map.size() + " directory entry lists from xml");
+        logger.debug("Constructed map of {} directory entry lists from xml", map.size());
 
         return map;
     }

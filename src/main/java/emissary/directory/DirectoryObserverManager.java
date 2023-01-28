@@ -19,10 +19,10 @@ public class DirectoryObserverManager {
     String directoryKey;
 
     /** The observers that are registered */
-    List<DirectoryObserver> observers = new CopyOnWriteArrayList<DirectoryObserver>();
+    List<DirectoryObserver> observers = new CopyOnWriteArrayList<>();
 
     /** The types of actions that observers can register for */
-    public static enum Action {
+    public enum Action {
         PEER_GROUP_CHANGE, PLACE_ADD, PLACE_REMOVE, PLACE_COST_CHANGE
     }
 
@@ -106,7 +106,7 @@ public class DirectoryObserverManager {
                 count++;
             }
         }
-        logger.debug("Notified " + count + " PeerObserver instances");
+        logger.debug("Notified {} PeerObserver instances", count);
     }
 
     /**
@@ -115,7 +115,7 @@ public class DirectoryObserverManager {
      * @param placeKey the key that was added
      */
     public void placeAdd(final String placeKey) {
-        logger.debug("Received notice of " + placeKey + " added");
+        logger.debug("Received notice of {} added", placeKey);
         placeUpdate(Action.PLACE_ADD, placeKey);
     }
 
@@ -125,7 +125,7 @@ public class DirectoryObserverManager {
      * @param placeKeys the list of keys added
      */
     public void placeAdd(final List<String> placeKeys) {
-        logger.debug("Received notice of " + placeKeys.size() + " added");
+        logger.debug("Received notice of {} added", placeKeys.size());
 
         for (final String key : placeKeys) {
             placeUpdate(Action.PLACE_ADD, key);
@@ -138,7 +138,7 @@ public class DirectoryObserverManager {
      * @param placeEntries the list of entries added
      */
     public void placeAddEntries(final List<DirectoryEntry> placeEntries) {
-        logger.debug("Received notice of " + placeEntries.size() + " added");
+        logger.debug("Received notice of {} added", placeEntries.size());
 
         for (final DirectoryEntry entry : placeEntries) {
             placeUpdate(Action.PLACE_ADD, entry.getFullKey());
@@ -151,7 +151,7 @@ public class DirectoryObserverManager {
      * @param placeKey the key what was removed
      */
     public void placeRemove(final String placeKey) {
-        logger.debug("Received notice of " + placeKey + " removed");
+        logger.debug("Received notice of {} removed", placeKey);
         placeUpdate(Action.PLACE_REMOVE, placeKey);
     }
 
@@ -161,7 +161,7 @@ public class DirectoryObserverManager {
      * @param placeKeys the list of keys removed
      */
     public void placeRemove(final List<String> placeKeys) {
-        logger.debug("Received notice of " + placeKeys.size() + " removed");
+        logger.debug("Received notice of {} removed", placeKeys.size());
 
         for (final String key : placeKeys) {
             placeUpdate(Action.PLACE_REMOVE, key);
@@ -174,7 +174,7 @@ public class DirectoryObserverManager {
      * @param placeEntries the list of entries removed
      */
     public void placeRemoveEntries(final List<DirectoryEntry> placeEntries) {
-        logger.debug("Received notice of " + placeEntries.size() + " removed");
+        logger.debug("Received notice of {} removed", placeEntries.size());
 
         for (final DirectoryEntry entry : placeEntries) {
             placeUpdate(Action.PLACE_REMOVE, entry.getFullKey());
@@ -196,7 +196,7 @@ public class DirectoryObserverManager {
      * @param placeKeys the list of keys with changed cost
      */
     public void placeCostChange(final List<String> placeKeys) {
-        logger.debug("Received notice of " + placeKeys.size() + " cost changes");
+        logger.debug("Received notice of {} cost changes", placeKeys.size());
         for (final String key : placeKeys) {
             placeUpdate(Action.PLACE_COST_CHANGE, key);
         }
@@ -208,7 +208,7 @@ public class DirectoryObserverManager {
      * @param placeEntries the list of entries with changed cost
      */
     public void placeCostChangeEntries(final List<DirectoryEntry> placeEntries) {
-        logger.debug("Received notice of " + placeEntries.size() + " cost changes");
+        logger.debug("Received notice of {} cost changes", placeEntries.size());
         for (final DirectoryEntry entry : placeEntries) {
             placeUpdate(Action.PLACE_COST_CHANGE, entry.getFullKey());
         }
@@ -230,7 +230,7 @@ public class DirectoryObserverManager {
                 obcount++;
                 if (KeyManipulator.gmatch(placeKey, p.getPattern())) {
                     matchcount++;
-                    logger.debug("Match! Doing " + action + " for " + placeKey);
+                    logger.debug("Match! Doing {} for {}", action, placeKey);
                     if (action == Action.PLACE_ADD) {
                         p.placeRegistered(this.directoryKey, placeKey);
                     } else if (action == Action.PLACE_REMOVE) {
@@ -239,13 +239,12 @@ public class DirectoryObserverManager {
                         p.placeCostChanged(this.directoryKey, placeKey);
                     }
                 } else {
-                    logger.debug("No match for " + placeKey + " using pattern " + p.getPattern());
+                    logger.debug("No match for {} using pattern {}", placeKey, p.getPattern());
                 }
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Notified " + matchcount + " of " + obcount + " place observers " + " of place " + placeKey + " -- " + action + " #all="
-                    + this.observers.size());
+            logger.debug("Notified {} of {} place observers of place {} -- {} #all={}", matchcount, obcount, placeKey, action, this.observers.size());
         }
     }
 }
