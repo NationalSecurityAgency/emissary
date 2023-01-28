@@ -24,12 +24,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static emissary.place.Main.filePathIsWithinBaseDirectory;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -245,31 +243,6 @@ final class MainTest extends UnitTest {
 
         normalizedPath = outputFolder + "/" + att3.shortName() + "." + att3.currentForm();
         assertFalse(Files.exists(Paths.get(normalizedPath).normalize()), "File \"" + normalizedPath + "\" should have NOT been created");
-    }
-
-    @Test
-    void testFilePathIsWithinBaseDirectory() {
-
-        String basePath = testOutputFolder.resolve("foo").toString();
-        assertEquals(basePath + "/somefile", filePathIsWithinBaseDirectory(basePath, basePath + "/somefile"));
-        assertEquals(basePath + "/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "//otherfile"));
-        assertEquals(basePath + "/foo/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/./foo/otherfile"));
-        assertEquals(basePath + "/sub/otherfile", filePathIsWithinBaseDirectory(basePath, basePath + "/sub/././otherfile"));
-
-        // Each of these should thrown an Exception
-        assertThrows(IllegalArgumentException.class, () -> filePathIsWithinBaseDirectory(basePath, "/var/log/somelog"));
-
-        assertThrows(IllegalArgumentException.class,
-                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../foo2/otherfile"),
-                "Expected an IllegalArgumentException from input " + basePath + "/../foo2/otherfile");
-
-        assertThrows(IllegalArgumentException.class,
-                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/../../somefile"),
-                "Expected an IllegalArgumentException from input " + basePath + "/../../somefile");
-
-        assertThrows(IllegalArgumentException.class,
-                () -> filePathIsWithinBaseDirectory(basePath, basePath + "/path/../../../otherpath"),
-                "Expected an IllegalArgumentException from input " + basePath + "/path/../../../otherpath");
     }
 
     // Override the hooks. The calls to super in these

@@ -23,7 +23,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -31,8 +30,6 @@ import org.slf4j.MDC;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +41,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+
+import static emissary.util.io.FileIoUtils.filePathIsWithinBaseDirectory;
 
 /**
  * This class handles running a the main method from a ServiceProviderPlace instance in a well defined but extensible
@@ -1077,40 +1076,6 @@ public class Main {
                 logger.error("Could not write output to {}", fn, e);
             }
         }
-    }
-
-    /**
-     * Normalizes the provided paths and tests to see whether the file path is within the required base directory.
-     *
-     * @param requiredBase required base directory
-     * @param filePath file path to be tested
-     * @return the normalized file path
-     * @throws IllegalArgumentException if the filePath contains illegal characters or is outside the required base
-     *         directory
-     */
-    static String filePathIsWithinBaseDirectory(final String requiredBase, final String filePath) throws IllegalArgumentException {
-
-        if (StringUtils.isBlank(requiredBase)) {
-            throw new IllegalArgumentException("requiredBase must not be blank");
-        }
-
-        if (StringUtils.isBlank(filePath)) {
-            throw new IllegalArgumentException("filePath must not be blank");
-        }
-
-        // probably an overly simplistic test
-        if (filePath.contains("..")) {
-            throw new IllegalArgumentException("filePath contains illegal character sequence \"..\"");
-        }
-        Path normalizedBasePath = Paths.get(requiredBase).normalize().toAbsolutePath();
-        Path normalizedFilePath = Paths.get(filePath).normalize().toAbsolutePath();
-
-        // append path separator to defeat traversal via a sibling directory with a similar name
-        if (!normalizedFilePath.startsWith(normalizedBasePath.toString() + "/")) {
-            throw new IllegalArgumentException("Normalized file path (\"" + filePath + "\") is outside the required base path (\""
-                    + requiredBase + "\")");
-        }
-        return normalizedFilePath.toString();
     }
 
     /**

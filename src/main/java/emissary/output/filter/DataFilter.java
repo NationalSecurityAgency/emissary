@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import static emissary.util.io.FileIoUtils.cleanSpecPath;
+
 /**
  * Filter that writes unadorned data as raw bytes
  */
@@ -163,7 +165,7 @@ public class DataFilter extends AbstractFilter {
         }
 
         // Write it out
-        try (FileOutputStream fos = new FileOutputStream(fileName)) {
+        try (FileOutputStream fos = new FileOutputStream(cleanSpecPath(fileName))) {
             fos.write(data, 0, data.length);
         } catch (IOException ex) {
             logger.error("Cannot write output to {}", fileName, ex);

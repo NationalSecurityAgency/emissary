@@ -35,6 +35,7 @@ import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static emissary.util.io.FileIoUtils.cleanSpecPath;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -223,7 +224,7 @@ public class DropOffUtil {
         // If a file already exists under this name, we're going
         // go have to move it aside. This is going to break the link
         // if it is an attachment to another parent document.
-        final File theFile = new File(fileName);
+        final File theFile = new File(cleanSpecPath(fileName));
 
         if (theFile.exists()) {
             theFile.delete();
@@ -240,7 +241,7 @@ public class DropOffUtil {
      */
     public boolean setupPath(final String fileName) {
         final String pathName = fileName.substring(0, fileName.lastIndexOf(SEPARATOR));
-        final File thePath = new File(pathName);
+        final File thePath = new File(cleanSpecPath(pathName));
 
         // If the specified output directory doesn't exist try creating it
         if (!thePath.exists()) {
@@ -478,10 +479,6 @@ public class DropOffUtil {
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
         return answer;
-    }
-
-    protected String cleanSpecPath(@Nullable String token) {
-        return token == null ? null : token.replaceAll("[.]+", ".");
     }
 
     /**
