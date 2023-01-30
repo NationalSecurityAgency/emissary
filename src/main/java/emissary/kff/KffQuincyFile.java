@@ -1,7 +1,9 @@
 package emissary.kff;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * KffQuincyFile compares files against the Quincy KFF dataset. The dataset only contains MD5 sums to that's our
@@ -30,7 +32,7 @@ public class KffQuincyFile extends KffFile {
         kff.addAlgorithm("SHA-256");
 
         for (int i = 1; i < args.length; i++) {
-            try (FileInputStream is = new FileInputStream(args[i])) {
+            try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
                 byte[] buffer = new byte[is.available()];
                 is.read(buffer);
 
