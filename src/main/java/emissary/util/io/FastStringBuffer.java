@@ -77,14 +77,7 @@ public class FastStringBuffer extends OutputStream {
             return this;
         }
 
-        byte[] tmp;
-        try {
-            tmp = s.getBytes(charset);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding:{}", e.getMessage());
-            tmp = s.getBytes();
-        }
-        return append(tmp);
+        return append(stringToBytes(s, charset));
     }
 
     public FastStringBuffer appendEscaped(final String s) throws IOException {
@@ -96,16 +89,7 @@ public class FastStringBuffer extends OutputStream {
             return this;
         }
 
-        final String escapedS = HtmlEscaper.escapeHtml(s);
-
-        byte[] tmp;
-        try {
-            tmp = escapedS.getBytes(charset);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Unsupported encoding:{}", e.getMessage());
-            tmp = escapedS.getBytes();
-        }
-        return append(tmp);
+        return append(stringToBytes(HtmlEscaper.escapeHtml(s), charset));
     }
 
     /** Appends constant string literals only!!!!! */
@@ -121,12 +105,7 @@ public class FastStringBuffer extends OutputStream {
 
         byte[] tmp = strings.get(s);
         if (tmp == null) {
-            try {
-                tmp = s.getBytes(charset);
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("Unsupported encoding:{}", e.getMessage());
-                tmp = s.getBytes();
-            }
+            tmp = stringToBytes(s, charset);
             if (strings.size() < MAX_CACHE_SIZE) {
                 strings.put(s, tmp);
             } else {
@@ -327,5 +306,16 @@ public class FastStringBuffer extends OutputStream {
         // Escape the HTML in the converted string
         converted = HtmlEscaper.escapeHtml(converted);
         return append(converted, "UTF8");
+    }
+
+    protected byte[] stringToBytes(String s, String charset) {
+        byte[] tmp;
+        try {
+            tmp = s.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            logger.warn("Unsupported encoding:{}", e.getMessage());
+            tmp = s.getBytes();
+        }
+        return tmp;
     }
 }
