@@ -26,44 +26,44 @@ import java.util.Set;
 public abstract class HttpCommand extends BaseCommand {
     static final Logger LOG = LoggerFactory.getLogger(HttpCommand.class);
 
-    public static String COMMAND_NAME = "HttpCommand";
+    public static final String COMMAND_NAME = "HttpCommand";
 
-    public static int DEFAULT_PORT = 9001;
+    public static final int DEFAULT_PORT = 9001;
+
+    @Parameter(names = {"-p", "--port"}, description = "http port")
+    private int port = getDefaultPort();
+
+    @Parameter(names = {"-h", "--host"}, description = "http host")
+    private String host = "localhost";
+
+    @Parameter(names = {"-s", "--scheme"}, description = "http scheme")
+    private String scheme = "http";
+
+    @Parameter(names = {"-j", "--jettyuserfile"}, description = "jetty-users file to load", converter = FileExistsConverter.class)
+    private File jettyUserFile;
+
+    @Parameter(names = {"--ssl"}, description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg")
+    private boolean sslEnabled = false;
 
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }
 
-    @Parameter(names = {"-p", "--port"}, description = "http port")
-    private int port = getDefaultPort();
-
     public int getPort() {
         return port;
     }
-
-    @Parameter(names = {"-h", "--host"}, description = "http host")
-    private String host = "localhost";
 
     public String getHost() {
         return host;
     }
 
-    @Parameter(names = {"-s", "--scheme"}, description = "http scheme")
-    private String scheme = "http";
-
     public String getScheme() {
         return scheme;
     }
 
-    @Parameter(names = {"-j", "--jettyuserfile"}, description = "jetty-users file to load", converter = FileExistsConverter.class)
-    private File jettyUserFile;
-
     public File getJettyUserFile() {
         return jettyUserFile;
     }
-
-    @Parameter(names = {"--ssl"}, description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg")
-    private boolean sslEnabled = false;
 
     public boolean isSslEnabled() {
         return sslEnabled;
@@ -105,12 +105,9 @@ public abstract class HttpCommand extends BaseCommand {
             // TODO: also check that keystore and keystorepass are set
         }
 
-        logInfo("Setting {} to {} ", EmissaryNode.NODE_NAME_PROPERTY, host);
-        System.setProperty(EmissaryNode.NODE_NAME_PROPERTY, host);
-        logInfo("Setting {} to {} ", EmissaryNode.NODE_PORT_PROPERTY, Integer.toString(port));
-        System.setProperty(EmissaryNode.NODE_PORT_PROPERTY, Integer.toString(port));
-        logInfo("Setting {} to {} ", EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
-        System.setProperty(EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
+        setSystemProperty(EmissaryNode.NODE_NAME_PROPERTY, host);
+        setSystemProperty(EmissaryNode.NODE_PORT_PROPERTY, Integer.toString(port));
+        setSystemProperty(EmissaryNode.NODE_SCHEME_PROPERTY, scheme);
     }
 
 
