@@ -6,9 +6,9 @@ import java.rmi.RemoteException;
 
 public interface IJniRepositoryPlace extends IServiceProviderPlace {
 
-    public boolean nativeLibraryQuery(String query);
+    boolean nativeLibraryQuery(String query);
 
-    public byte[] nativeLibraryDeliver(String query) throws RemoteException;
+    byte[] nativeLibraryDeliver(String query) throws RemoteException;
 
-    public long lastModified(String query);
+    long lastModified(String query);
 }

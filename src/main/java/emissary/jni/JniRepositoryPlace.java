@@ -5,7 +5,6 @@ import emissary.place.ServiceProviderPlace;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -15,8 +14,8 @@ import java.util.List;
 
 public class JniRepositoryPlace extends ServiceProviderPlace {
 
-    protected List<String> libraryDirectoryString = new ArrayList<String>();
-    protected List<File> libraryDirectoryFile = new ArrayList<File>();
+    protected List<String> libraryDirectoryString = new ArrayList<>();
+    protected List<File> libraryDirectoryFile = new ArrayList<>();
 
     /**
      * The remote constructor
@@ -25,7 +24,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
         super(cfgInfo, dir, placeLoc);
         configurePlace();
 
-        logger.info("JniRepository: Prioritized repository list: " + this.libraryDirectoryString);
+        logger.info("JniRepository: Prioritized repository list: {}", this.libraryDirectoryString);
     }
 
     /**
@@ -51,10 +50,10 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
             this.libraryDirectoryFile.add(new File(this.libraryDirectoryString.get(i)));
 
             if (!(this.libraryDirectoryFile.get(i)).isDirectory()) {
-                logger.warn("Invalid libraryDirectory: " + this.libraryDirectoryString.get(i) + " is not a directory.");
+                logger.warn("Invalid libraryDirectory: {} is not a directory.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
             } else if (!(this.libraryDirectoryFile.get(i)).canRead()) {
-                logger.warn("Invalid libraryDirectory: " + this.libraryDirectoryString.get(i) + " is not readable.");
+                logger.warn("Invalid libraryDirectory: {} is not readable.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
             }
         }
@@ -66,20 +65,12 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
 
     public/* synchronized */boolean nativeLibraryQuery(final String query) {
 
-        // final String finalQuery = new String(query);
-
-        for (int i = 0; i < this.libraryDirectoryFile.size(); i++) {
-            final File dir = this.libraryDirectoryFile.get(i);
+        for (final File dir : this.libraryDirectoryFile) {
             if (dir == null) {
                 continue;
             }
 
-            final String[] fileList = dir.list(new FilenameFilter() {
-                @Override
-                public boolean accept(final File dir, final String name) {
-                    return name.equals(query);
-                }
-            });
+            final String[] fileList = dir.list((dir1, name) -> name.equals(query));
 
             if ((fileList != null) && (fileList.length > 0)) {
                 return true;
@@ -98,7 +89,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
         final File nativeLib = nativeLibraryLookup(query);
 
         if ((nativeLib == null) || !nativeLib.isFile() || !nativeLib.canRead()) {
-            logger.warn("NativeLibraryDeliver did not find file " + query);
+            logger.warn("NativeLibraryDeliver did not find file {}", query);
             return null;
         }
 
@@ -131,7 +122,6 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
     private File nativeLibraryLookup(final String query) {
 
         String[] fileList = null;
-        final String finalQuery = query;
         int theElement = -1;
 
         for (int i = 0; i < this.libraryDirectoryFile.size(); i++) {
@@ -141,12 +131,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
                 continue;
             }
 
-            fileList = dir.list(new FilenameFilter() {
-                @Override
-                public boolean accept(final File dir, final String name) {
-                    return name.equals(finalQuery);
-                }
-            });
+            fileList = dir.list((dir1, name) -> name.equals(query));
 
             if (fileList == null || fileList.length == 0) {
                 continue;
@@ -160,8 +145,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
             return null;
         }
 
-        final File nativeLib = new File(this.libraryDirectoryFile.get(theElement), fileList[0]);
-        return nativeLib;
+        return new File(this.libraryDirectoryFile.get(theElement), fileList[0]);
     }
 
     /**
