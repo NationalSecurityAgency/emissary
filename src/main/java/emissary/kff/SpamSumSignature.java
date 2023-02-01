@@ -4,7 +4,7 @@ package emissary.kff;
  * A java port of the ssdeep code for "fuzzy hashing". http://ssdeep.sourceforge.net There are a number of ports out
  * there that all look basically the same. This one is from
  * https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/
- * 
+ *
  * A new ssdeep hash gets calculated and saved at each level of unwrapping.
  */
 
@@ -50,7 +50,7 @@ public class SpamSumSignature {
     /**
      * <p>
      * Initializes a new instance of the {@code SpamSumSignature} class.
-     * 
+     *
      * @param signature The signature.
      */
     public SpamSumSignature(String signature) {

@@ -30,7 +30,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Create
-     * 
+     *
      * @param space the pickupspace controller
      * @param queue the queue this thread monitors
      */
@@ -40,7 +40,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Create with polling interval
-     * 
+     *
      * @param space the pickupspace controller
      * @param queue the queue this thread monitors
      * @param pollingInterval value in millis
@@ -51,7 +51,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Create with polling interval and thread name
-     * 
+     *
      * @param space the pickupspace controller
      * @param queue the queue this thread monitors
      * @param pollingInterval value in millis
@@ -150,7 +150,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Action to take when an item is removed from queue
-     * 
+     *
      * @param path the bundle from the queue
      * @return true if it worked
      */
@@ -165,7 +165,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Pass through to get size of injected queue
-     * 
+     *
      * @return size of the queue
      */
     public int getQueSize() {
@@ -174,7 +174,7 @@ public abstract class QueServer extends Pausable {
 
     /**
      * Pass through to enqueue a work bundle on the injected queue
-     * 
+     *
      * @param bundle the work bundle to enqueue
      * @return true if it was enqueued, false if we are too busy to handle it
      */

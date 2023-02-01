@@ -117,7 +117,7 @@ public class EmissaryServer {
     /**
      * Creates and starts a server that is bound into the local Namespace using DEFAULT_NAMESPACE_NAME and returned
      *
-     * 
+     *
      */
     public Server startServer() {
         // do what StartJetty and then JettyServer did to start

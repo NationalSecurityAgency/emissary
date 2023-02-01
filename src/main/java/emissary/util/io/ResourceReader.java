@@ -38,7 +38,7 @@ public class ResourceReader {
 
     /**
      * Return the config stream for the class config file Caller must close the stream
-     * 
+     *
      * @param o the object whose class name matches the resource
      */
     public InputStream getConfigDataAsStream(Object o) {
@@ -47,7 +47,7 @@ public class ResourceReader {
 
     /**
      * Return the config stream for the class config file Caller must close the stream
-     * 
+     *
      * @param c the class name matching the desired resource
      */
     public InputStream getConfigDataAsStream(Class<?> c) {
@@ -64,7 +64,7 @@ public class ResourceReader {
 
     /**
      * Return the stream for the class xml resource file Caller must close the stream
-     * 
+     *
      * @param o the object whose class name matches the resource
      */
     public InputStream getXmlStream(Object o) {
@@ -73,7 +73,7 @@ public class ResourceReader {
 
     /**
      * Return the xml stream for the class resource Caller must close the stream
-     * 
+     *
      * @param c the class name matching the desired resource
      */
     public InputStream getXmlStream(Class<?> c) {
@@ -111,7 +111,7 @@ public class ResourceReader {
 
     /**
      * Get the url of the specified resource
-     * 
+     *
      * @param name name of the resource
      * @return url to the resource
      */
@@ -124,7 +124,7 @@ public class ResourceReader {
 
     /**
      * Get the specified resource
-     * 
+     *
      * @param name name of resource
      * @return stream, caller must close
      */
@@ -137,7 +137,7 @@ public class ResourceReader {
 
     /**
      * Indicate the URL that the specified class was loaded from
-     * 
+     *
      * @param c the class
      * @return a URL indicating the jar file or file location or null if none
      */
@@ -155,7 +155,7 @@ public class ResourceReader {
 
     /**
      * Find all the config resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -165,7 +165,7 @@ public class ResourceReader {
 
     /**
      * Find all the data resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -175,7 +175,7 @@ public class ResourceReader {
 
     /**
      * Find all the xml resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -185,7 +185,7 @@ public class ResourceReader {
 
     /**
      * Find all the properties resources present for the specified class
-     * 
+     *
      * @param c the class
      * @return sorted list of resources found or an empty list if none
      */
@@ -195,7 +195,7 @@ public class ResourceReader {
 
     /**
      * Find all the resources present for the specified class that use the indicated suffix.
-     * 
+     *
      * @param c the class
      * @param suffix the resource suffix to hunt for, use "" for all
      * @return sorted list of resources found or an empty list if none
@@ -221,7 +221,7 @@ public class ResourceReader {
      * Find resources for the specified class from the Jar URL This finds resources at multiple levels at ones. For example
      * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
      * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     * 
+     *
      * @param c the class
      * @param url the jar url
      * @param suffix the ending suffix of desired resources
@@ -252,7 +252,7 @@ public class ResourceReader {
      * Find resources for the specified class from the file URL This finds resources at multiple levels at ones. For example
      * if you pass in emissary.util.Version.class with the ".cfg" suffix, you could get back resources that are located at
      * emissary/util/Version.cfg and emissary/util/Version/foo.cfg in the list.
-     * 
+     *
      * @param c the class
      * @param url the file url
      * @param suffix the ending suffix of desired resources

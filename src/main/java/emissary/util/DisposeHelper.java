@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Helper methods to ease handling of Dispose objects
- * 
+ *
  * Dispose objects are added to BDOs to handle clean-up after a
  * {@link emissary.core.channels.SeekableByteChannelFactory} is finished with
  */
@@ -28,7 +28,7 @@ public final class DisposeHelper {
 
     /**
      * Add a Dispose object to a BDO
-     * 
+     *
      * @param ibdo to add the Runnable to
      * @param newRunnable to handle disposing of the referenced object
      */
@@ -46,7 +46,7 @@ public final class DisposeHelper {
 
     /**
      * Add a list of Dispose objects to a BDO (additive to existing Dispose objects)
-     * 
+     *
      * @param ibdo to add the Runnables to
      * @param newRunnables list of Runnables to add
      */
@@ -64,7 +64,7 @@ public final class DisposeHelper {
 
     /**
      * Set a single Dispose object to a BDO (overwrites any existing Dispose objects)
-     * 
+     *
      * @param ibdo to add the Runnable to
      * @param newRunnable to handle disposing of the referenced object
      */
@@ -77,7 +77,7 @@ public final class DisposeHelper {
     /**
      * Get the list of Runnables for an object. If an object provided by the key is not a valid Runnable, it will be
      * ignored.
-     * 
+     *
      * @param ibdo to get Runnables from
      * @return the list of Runnables
      */
@@ -102,7 +102,7 @@ public final class DisposeHelper {
 
     /**
      * Execute Runnables on provided objects. Execution will be for each object in the order provided.
-     * 
+     *
      * @param ibdos to execute runnables from
      */
     public static void execute(final List<IBaseDataObject> ibdos) {
@@ -112,7 +112,7 @@ public final class DisposeHelper {
 
     /**
      * Execute Runnables for the specified object.
-     * 
+     *
      * @param ibdo to execute Runnables on
      */
     public static void execute(final IBaseDataObject ibdo) {

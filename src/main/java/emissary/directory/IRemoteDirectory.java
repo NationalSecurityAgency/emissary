@@ -18,7 +18,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     /**
      * Register a set of entries. This signature only meant to be called from within
      * emissary.server.mvc.adapters.DirectoryAdapter.
-     * 
+     *
      * @param entryList the new entries to add
      * @param propagating true if going down the line
      */
@@ -27,7 +27,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
     /**
      * Deregister places. Removes all keys for the specified places. Should only be called from
      * emissary.server.mvc.adapters.DirectoryAdapter
-     * 
+     *
      * @param keys four-tuple key for the place
      * @param propagating true if going down the line
      * @return count of keys removes
@@ -45,7 +45,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
 
     /**
      * Add a Set of peer directory to this one
-     * 
+     *
      * @param keys set of string key for peer directories
      */
     void irdAddPeerDirectories(Set<String> keys);
@@ -61,7 +61,7 @@ public interface IRemoteDirectory extends IDirectoryPlace {
          * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
          * multiple Listeners. This is a testing scenario, but it is helpful to keep supporting it, so we have good test
          * coverage.
-         * 
+         *
          * @param name name of the local directory or null for default
          */
         public IRemoteDirectory getLocalDirectory(@Nullable final String name) {

@@ -31,7 +31,7 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Create the place
-     * 
+     *
      * @param config the configuration file or resource name
      */
     public SizeIdPlace(String config) throws IOException {
@@ -61,7 +61,7 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Process a payload
-     * 
+     *
      * @param payload the payload to process
      */
     @Override
@@ -79,7 +79,7 @@ public class SizeIdPlace extends IdPlace {
 
     /**
      * Get a size label based on the size passed in
-     * 
+     *
      * @param sz the size
      * @return the corresponding label
      */

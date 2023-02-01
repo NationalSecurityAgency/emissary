@@ -23,7 +23,7 @@ public interface IMobileAgent extends Serializable, Runnable {
     /**
      * Send and agent on it's way with the specified payload The payload is not processed at sourcePlace, source is only
      * used to get directory access to figure out where to go next.
-     * 
+     *
      * @param payload the payload IBaseDataObject or list thereof
      * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but the
      *        payload will not be processed here
@@ -32,7 +32,7 @@ public interface IMobileAgent extends Serializable, Runnable {
 
     /**
      * Arriving payload assigned to an agent for process at arrivalPlace
-     * 
+     *
      * @param payload the payload IBaseDataObject or list thereof
      * @param arrivalPlace the place to begin processing the payload has already been added to the transform history by the
      *        sender
@@ -49,7 +49,7 @@ public interface IMobileAgent extends Serializable, Runnable {
 
     /**
      * Retreive the current list of stored itinerary steps
-     * 
+     *
      * @return array of DirectoryEntry
      */
     DirectoryEntry[] getItineraryQueueItems();
@@ -103,7 +103,7 @@ public interface IMobileAgent extends Serializable, Runnable {
     /**
      * Set the maximum number of move attempts that can error out before this instance will quit trying and set the workflow
      * to be an ERROR condition
-     * 
+     *
      * @param value the maximum number of move failures
      */
     void setMaxMoveErrors(int value);
@@ -115,14 +115,14 @@ public interface IMobileAgent extends Serializable, Runnable {
 
     /**
      * Set the maximum number of itinerary steps before this instance will turn the workflow into an ERROR condition
-     * 
+     *
      * @param value the new maximum number of steps
      */
     void setMaxItinerarySteps(int value);
 
     /**
      * Returns the current payload count of the agent.
-     * 
+     *
      * @return default value of 1
      */
     default public int payloadCount() {

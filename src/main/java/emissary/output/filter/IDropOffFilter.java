@@ -44,7 +44,7 @@ public interface IDropOffFilter {
 
     /**
      * Initialization phase hook for the filter using default preferences for the runtime filter configuration
-     * 
+     *
      * @param configG passed in configuration object, usually DropOff's
      * @param filterName the configured name of this filter or null for the default
      */
@@ -52,7 +52,7 @@ public interface IDropOffFilter {
 
     /**
      * Initialization phase hook for the filter
-     * 
+     *
      * @param configG passed in configuration object, usually DropOff's
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig configuration for specific runtime filter
@@ -61,7 +61,7 @@ public interface IDropOffFilter {
 
     /**
      * Run the filter for a document
-     * 
+     *
      * @param d the document
      * @param params map of params
      * @return status value
@@ -70,7 +70,7 @@ public interface IDropOffFilter {
 
     /**
      * Run the filter for a set of documents
-     * 
+     *
      * @param list collection of IBaseDataObject to run the filter on
      * @param params map of params
      * @return status value
@@ -79,7 +79,7 @@ public interface IDropOffFilter {
 
     /**
      * Run the filter for a document
-     * 
+     *
      * @param d the document
      * @param params map of params
      * @param output the output stream to log the data onto
@@ -89,7 +89,7 @@ public interface IDropOffFilter {
 
     /**
      * Run the filter for a set of documents
-     * 
+     *
      * @param list collection of IBaseDataObject to run the filter on
      * @param params map of params
      * @param output the output stream to log the data onto
@@ -99,7 +99,7 @@ public interface IDropOffFilter {
 
     /**
      * Determine if the payload is outputtable by the filter
-     * 
+     *
      * @param d the document
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
@@ -108,7 +108,7 @@ public interface IDropOffFilter {
 
     /**
      * Determine if the payload list is outputtable by the filter
-     * 
+     *
      * @param list collection of IBaseDataObject to check for outputtability
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
@@ -117,7 +117,7 @@ public interface IDropOffFilter {
 
     /**
      * Determine if the payload is outputtable by the filter
-     * 
+     *
      * @param d the IBaseDataObject to check for outputtability
      * @return true if the filter will attempt to output this payload
      */
@@ -125,7 +125,7 @@ public interface IDropOffFilter {
 
     /**
      * Determine if the payload list is outputtable by the filter
-     * 
+     *
      * @param list collection of IBaseDataObject to check for outputtability
      * @return true if the filter will attempt to output these payload
      */

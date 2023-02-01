@@ -37,7 +37,7 @@ public class Namespace {
 
     /**
      * Find a registered classname
-     * 
+     *
      * @param arg the name of the registered item
      */
     public static Object lookup(final String arg) throws NamespaceException {
@@ -90,7 +90,7 @@ public class Namespace {
 
     /**
      * Test for existence of an object named by name
-     * 
+     *
      * @param name name of object to look for
      * @return true if it exists
      */
@@ -109,7 +109,7 @@ public class Namespace {
 
     /**
      * Bind a new object into the namespace
-     * 
+     *
      * @param arg the name of the object
      * @param arg2 the instance to bind
      */
@@ -120,7 +120,7 @@ public class Namespace {
 
     /**
      * Remove a bound object
-     * 
+     *
      * @param arg the name of the object that was used when it was bound
      */
     public static void unbind(final String arg) {
@@ -130,7 +130,7 @@ public class Namespace {
 
     /**
      * List places registered here return a copy to prevent concurrent modification errors
-     * 
+     *
      * @return Set copy of the keys bound in this namespace
      */
     public static Set<String> keySet() {

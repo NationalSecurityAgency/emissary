@@ -192,17 +192,17 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * <p>
      * Determine what state we're in with respect to the byte[] of data vs a channel.
      * </p>
-     * 
+     *
      * <p>
      * Not exposed publicly as consumers should be moving to channels, meaning ultimately the states will be simply either a
      * channel factory exists or does not exist.
      * </p>
-     * 
+     *
      * <p>
      * Consumers should not modify their behaviour based on the state of the BDO, if they're being modified to handle
      * channels, they should only handle channels, not both channels and byte[].
      * </p>
-     * 
+     *
      * @return the {@link DataState} of this BDO
      */
     protected DataState getDataState() {
@@ -319,7 +319,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
-     * 
+     *
      * Setting this will null out {@link #theData}
      */
     @Override
@@ -332,7 +332,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Returns the seekable byte channel factory containing a reference to the data, or wraps the in-memory data on the BDO
      * in a new factory.
-     * 
+     *
      * @return the factory containing the data reference or the data wrapped in a new factory
      */
     @Override
@@ -354,18 +354,18 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * <p>
      * Return BaseDataObjects byte array OR as much as we can from the reference to the data up to MAX_BYTE_ARRAY_SIZE.
      * </p>
-     * 
+     *
      * <p>
      * Data returned from a backing Channel will be truncated at {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}. Using
      * channel-related methods is now preferred to allow handling of larger objects
      * </p>
-     * 
+     *
      * <p>
      * <b>WARNING</b>: There is no way for the caller to know whether the data being returned is the direct array held in
      * memory, or a copy of the data from a byte channel factory, so the returned byte array should be treated as live and
      * not be modified.
      * </p>
-     * 
+     *
      * @see #getChannelFactory()
      * @return the data as a byte array
      */
@@ -403,11 +403,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Set new data on the BDO, using a range of the provided byte array. This will remove the reference to any byte channel
      * factory that backs this BDO so be careful!
      * </p>
-     * 
+     *
      * <p>
      * Limited in size to 2^31. Use channel-based methods for larger data.
      * </p>
-     * 
+     *
      * @param newData containing the source of the new data
      * @param offset where to start copying from
      * @param length how much to copy
@@ -426,7 +426,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * Convenience method to get the size of the channel or byte array providing access to the data.
-     * 
+     *
      * @return the channel size
      */
     @Override
@@ -448,7 +448,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     /**
      * Fetch the size of the payload. Prefer to use: {@link #getChannelSize}
-     * 
+     *
      * @return the length of theData, or the size of the seekable byte channel up to
      *         {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}.
      */

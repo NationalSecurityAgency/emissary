@@ -7,7 +7,7 @@ import java.util.ServiceLoader;
 
 /**
  * Load SPI implementations to support initialization of the Emissary server.
- * 
+ *
  * <pre>
  * - Loading is delegated to the {@link java.util.ServiceLoader}.
  * - Configured via src/main/resources/META-INF/services/emissary.spi.InitializationProvider

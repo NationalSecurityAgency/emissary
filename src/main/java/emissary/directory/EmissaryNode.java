@@ -193,7 +193,7 @@ public class EmissaryNode {
 
     /**
      * Internal routine to find configuration files base on node params
-     * 
+     *
      * @param prefix the file prefix
      */
     protected Configurator internalGetConfigurator(final String prefix) throws IOException {

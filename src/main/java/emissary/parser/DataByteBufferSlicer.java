@@ -15,7 +15,7 @@ public class DataByteBufferSlicer {
 
     /**
      * Slice data from a buffer based on a single position record
-     * 
+     *
      * @param data the data to pull from
      * @param r the position record indicating absolute offsets
      */
@@ -36,7 +36,7 @@ public class DataByteBufferSlicer {
 
     /**
      * Slice a ByteBuffer based on a list of position record
-     * 
+     *
      * @param data the data to pull from
      * @param list the list of position records indicating absolute offsets
      */

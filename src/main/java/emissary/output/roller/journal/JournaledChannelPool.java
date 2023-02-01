@@ -48,7 +48,7 @@ public class JournaledChannelPool implements AutoCloseable {
 
     /**
      * Supplied key to identify the pool.
-     * 
+     *
      * @return key
      */
     public String getKey() {
@@ -58,7 +58,7 @@ public class JournaledChannelPool implements AutoCloseable {
     /**
      * Returns an available output from the pool. This method will block if there are no free objects available and the max
      * number of outputs has been created.
-     * 
+     *
      * @return an available KeyedOutput from the pool
      * @throws IOException If there is some I/O problem.
      * @throws InterruptedException If interrupted.
@@ -84,7 +84,7 @@ public class JournaledChannelPool implements AutoCloseable {
 
     /**
      * Flushes underlying channel and writes journal entry, updating current position.
-     * 
+     *
      * @param jc the JournaledChannel to flush
      */
     void free(final JournaledChannel jc) {
@@ -105,7 +105,7 @@ public class JournaledChannelPool implements AutoCloseable {
 
     /**
      * Closes the underlying pool. This method will block if any resources have not been returned.
-     * 
+     *
      * @throws InterruptedException If interrupted.
      * @throws IOException If there is some I/O problem.
      */

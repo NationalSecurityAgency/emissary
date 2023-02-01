@@ -142,7 +142,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     /**
      * True is this object is in the middle of a roll.
-     * 
+     *
      * @return true if rolling
      */
     @Override
@@ -180,7 +180,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     /**
      * Thread safe write of a byte
-     * 
+     *
      * @param b byte to write
      */
     @Override
@@ -197,7 +197,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     /**
      * Thread safe write of byte array.
-     * 
+     *
      * @param b the data
      * @param off the start offset of the data
      * @param len the number of bytes to write
@@ -215,7 +215,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     /**
      * Number of bytes written to current output file. This value is reset once roll() is called.
-     * 
+     *
      * @return the number of bytes written
      */
     public long getBytesWritten() {
@@ -224,7 +224,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
 
     /**
      * Whether zero byte files will be deleted.
-     * 
+     *
      * @return true is zero byte files will be deleted
      */
     public boolean isDeleteZeroByteFiles() {

@@ -26,7 +26,7 @@ public class Identification implements Serializable {
 
     /**
      * Create a new identification for the specified type string
-     * 
+     *
      * @param type the type string
      */
     public Identification(final String type) {
@@ -35,7 +35,7 @@ public class Identification implements Serializable {
 
     /**
      * Add a type to the list
-     * 
+     *
      * @param type the new type
      */
     public void addType(final String type) {
@@ -44,7 +44,7 @@ public class Identification implements Serializable {
 
     /**
      * Add new types to the list
-     * 
+     *
      * @param additionalTypes the new types
      */
     public void addTypes(final Collection<String> additionalTypes) {
@@ -53,7 +53,7 @@ public class Identification implements Serializable {
 
     /**
      * Remove any types and set the type to the value specified
-     * 
+     *
      * @param type the new type value
      */
     public void setType(final String type) {
@@ -63,7 +63,7 @@ public class Identification implements Serializable {
 
     /**
      * Remove any types and set theh values specified
-     * 
+     *
      * @param theTypes the new type values
      */
     public void setTypes(final Collection<String> theTypes) {
@@ -126,7 +126,7 @@ public class Identification implements Serializable {
 
     /**
      * Get the value for the specified property
-     * 
+     *
      * @param key the property name
      */
     public String getProperty(final String key) {
@@ -135,7 +135,7 @@ public class Identification implements Serializable {
 
     /**
      * Get the value of the specified property and remove it from this identification
-     * 
+     *
      * @param key the property name
      */
     public String popProperty(final String key) {
@@ -148,7 +148,7 @@ public class Identification implements Serializable {
 
     /**
      * Remove the first type from the list and return it
-     * 
+     *
      * @return the top top or null if none
      */
     public String popType() {

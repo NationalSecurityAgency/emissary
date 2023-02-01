@@ -113,7 +113,7 @@ public final class ConstructorLookupCache {
 
     /**
      * Convert a boxed type into its primitive type.
-     * 
+     *
      * @param clazz The type of interest.
      * @return If {@code clazz} is a boxed primitive, return the primitive type; otherwise just return {@code clazz}.
      */

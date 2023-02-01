@@ -32,7 +32,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
 
     /**
      * Outbound open tells a remote WorkSpace to start pulling data
-     * 
+     *
      * @param place the remote place to contact
      * @param space the location of the work distributor
      */
@@ -53,7 +53,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
 
     /**
      * Outbound take grabs a WorkBundle from remote WorkSpace
-     * 
+     *
      * @param space the remote space to contact
      * @param place the name of the requesting place
      */
@@ -81,7 +81,7 @@ public class WorkSpaceAdapter extends EmissaryClient {
 
     /**
      * Outbound notice that bundle was completed
-     * 
+     *
      * @param space the remote space to contact
      * @param place the name of the notifying place
      * @param bundleId the id of the bundle that was completed

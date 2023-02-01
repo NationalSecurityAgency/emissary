@@ -29,7 +29,7 @@ public interface IBaseDataObject {
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to
      * Integer.MAX_VALUE bytes of the original data.
-     * 
+     *
      * @return byte array of the data
      * @see #getChannelFactory() as the preferred data accessor for larger data
      */
@@ -37,14 +37,14 @@ public interface IBaseDataObject {
 
     /**
      * Set BaseDataObjects data to byte array passed in.
-     * 
+     *
      * @param newData byte array to set replacing any existing data
      */
     void setData(byte[] newData);
 
     /**
      * Set BaseDataObjects data to the portion of the byte array specified
-     * 
+     *
      * @param newData array containing desired data
      * @param offset the index of the first byte to use
      * @param length the number of bytes to use
@@ -53,21 +53,21 @@ public interface IBaseDataObject {
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
-     * 
+     *
      * @param sbcf the new channel factory to set on this object
      */
     void setChannelFactory(final SeekableByteChannelFactory sbcf);
 
     /**
      * Returns the seekable byte channel factory containing a reference to the data
-     * 
+     *
      * @return the factory containing the data reference
      */
     SeekableByteChannelFactory getChannelFactory();
 
     /**
      * Get the size of the channel referenced by this object
-     * 
+     *
      * @return the channel size
      * @throws IOException if an error occurs with the underlying channel
      */
@@ -75,37 +75,37 @@ public interface IBaseDataObject {
 
     /**
      * Return length of the data, up to Integer.MAX_VALUE if the data is in a channel.
-     * 
+     *
      * Prefer use of {@link #getChannelSize()} going forwards
-     * 
+     *
      * @return length in bytes of the data
      */
     int dataLength();
 
     /**
      * Set the header byte array
-     * 
+     *
      * @param arg1 the byte array of header data
      */
     void setHeader(byte[] arg1);
 
     /**
      * Return a reference to the header byte array.
-     * 
+     *
      * @return byte array of header information or null if none
      */
     byte[] header();
 
     /**
      * Set the footer byte array
-     * 
+     *
      * @param arg1 byte array of footer data
      */
     void setFooter(byte[] arg1);
 
     /**
      * Return a reference to the footer byte array.
-     * 
+     *
      * @return byte array of footer data or null if none
      */
     byte[] footer();
@@ -113,28 +113,28 @@ public interface IBaseDataObject {
 
     /**
      * Get the value of headerEncoding. Tells how to interpret the header information.
-     * 
+     *
      * @return Value of headerEncoding.
      */
     String getHeaderEncoding();
 
     /**
      * Set the value of headerEncoding for proper interpretation and processing later
-     * 
+     *
      * @param arg1 Value to assign to headerEncoding.
      */
     void setHeaderEncoding(String arg1);
 
     /**
      * Get the classification string for the data
-     * 
+     *
      * @return String classification value
      */
     String getClassification();
 
     /**
      * Set the classification.
-     * 
+     *
      * @param classification string classification value
      */
     void setClassification(String classification);
@@ -142,77 +142,77 @@ public interface IBaseDataObject {
 
     /**
      * Sets the number of children that the current agents spawned.
-     * 
+     *
      * @param num the number value to set
      */
     void setNumChildren(int num);
 
     /**
      * Gets the number of children that have this as a parent
-     * 
+     *
      * @return the number of children that have this parent
      */
     int getNumChildren();
 
     /**
      * Sets the number of siblings for this data object.
-     * 
+     *
      * @param num the number of siblings to set
      */
     void setNumSiblings(int num);
 
     /**
      * Get the number of siblings
-     * 
+     *
      * @return the number of siblings including this one
      */
     int getNumSiblings();
 
     /**
      * What number is this sibling in the family
-     * 
+     *
      * @param num the birthorder number value to set
      */
     void setBirthOrder(int num);
 
     /**
      * Get this sibling number, count from one.
-     * 
+     *
      * @return the birth order of this sibling
      */
     int getBirthOrder();
 
     /**
      * Return the header wrapped in a ByteBuffer class.
-     * 
+     *
      * @return buffer required by the HTML Velocity templates.
      */
     ByteBuffer headerBuffer();
 
     /**
      * Return the footer wrapped in a ByteBuffer class.
-     * 
+     *
      * @return buffer required by the HTML Velocity templates.
      */
     ByteBuffer footerBuffer();
 
     /**
      * Return theData wrapped in a ByteBuffer class.
-     * 
+     *
      * @return buffer required by the HTML Velocity templates.
      */
     ByteBuffer dataBuffer();
 
     /**
      * Get the font encoding string
-     * 
+     *
      * @return string name of font encoding for the data
      */
     String getFontEncoding();
 
     /**
      * Set the font encoding string
-     * 
+     *
      * @param arg1 string name of font encoding for the data
      */
     void setFontEncoding(String arg1);
@@ -224,21 +224,21 @@ public interface IBaseDataObject {
 
     /**
      * Determine if parameter is present
-     * 
+     *
      * @param key name of metadata element to check
      */
     boolean hasParameter(String key);
 
     /**
      * Replace all of the metadata elements with a new set
-     * 
+     *
      * @param map the new set
      */
     void setParameters(Map<? extends String, ? extends Object> map);
 
     /**
      * Set a new parameter value, deleting an old one
-     * 
+     *
      * @param key the name of the element
      * @param val the value of the element
      */
@@ -246,7 +246,7 @@ public interface IBaseDataObject {
 
     /**
      * Put a new metadata element into the map
-     * 
+     *
      * @param key the name of the element
      * @param val the value of the element
      */
@@ -254,7 +254,7 @@ public interface IBaseDataObject {
 
     /**
      * Put a collection of parameters into the metadata map
-     * 
+     *
      * @param m the map of new parameters
      */
     void putParameters(Map<? extends String, ? extends Object> m);
@@ -283,7 +283,7 @@ public interface IBaseDataObject {
 
     /**
      * Retrieve a specified metadata element
-     * 
+     *
      * @param key name of the metadata element
      * @return the value or null if no such element
      */
@@ -291,7 +291,7 @@ public interface IBaseDataObject {
 
     /**
      * Append data to the specified metadata element
-     * 
+     *
      * @param key name of the metadata element
      * @param value the value to append
      */
@@ -299,7 +299,7 @@ public interface IBaseDataObject {
 
     /**
      * Append data values to the specified metadata element
-     * 
+     *
      * @param key name of the metadata element
      * @param values the values to append
      */
@@ -327,7 +327,7 @@ public interface IBaseDataObject {
 
     /**
      * Retrieve a specified metadata element as a string value
-     * 
+     *
      * @param key name of the metadata element
      * @return the string value or null if no such element
      */
@@ -335,7 +335,7 @@ public interface IBaseDataObject {
 
     /**
      * Retrieve a specified metadata element as a string value
-     * 
+     *
      * @param key name of the metadata element
      * @param sep the separator for multivalued fields
      * @return the string value or null if no such element
@@ -344,28 +344,28 @@ public interface IBaseDataObject {
 
     /**
      * Retrieve all the metadata elements of this object
-     * 
+     *
      * @return map of metadata elements
      */
     Map<String, Collection<Object>> getParameters();
 
     /**
      * Retrieve all the metadata elements of this object in a way that is processed for use external to this instance
-     * 
+     *
      * @return map of metadata elements
      */
     Map<String, String> getCookedParameters();
 
     /**
      * Retrieve all of the current metadata keys
-     * 
+     *
      * @return set of charsequence keys
      */
     Set<String> getParameterKeys();
 
     /**
      * Delete the specified metadata element named
-     * 
+     *
      * @param key the name of the metadata item to delete
      * @return the object deleted of null if none
      */
@@ -373,14 +373,14 @@ public interface IBaseDataObject {
 
     /**
      * Put the FILETYPE parameter
-     * 
+     *
      * @param arg1 the value to store
      */
     void setFileType(String arg1);
 
     /**
      * Set FILETYPE parameter iff empty.
-     * 
+     *
      * @param arg1 the value of the filetype to set
      * @param arg2 the list of things caller considers equal to being empty
      * @return true if it was empty and set
@@ -389,7 +389,7 @@ public interface IBaseDataObject {
 
     /**
      * Set FILETYPE parameter iff empty using the built-in definition of empty
-     * 
+     *
      * @param arg1 the value of the filetype to set
      * @return true if it was empty and set
      */
@@ -397,28 +397,28 @@ public interface IBaseDataObject {
 
     /**
      * Return true if the file type is null or in one of the "don't care" set
-     * 
+     *
      * @since 3.3.3
      */
     boolean isFileTypeEmpty();
 
     /**
      * Get the FILETYPE parameter
-     * 
+     *
      * @return the string value of the FILETYPE parameter
      */
     String getFileType();
 
     /**
      * Disclose how many multipart alternative views of the data exist
-     * 
+     *
      * @return count of alternate views
      */
     int getNumAlternateViews();
 
     /**
      * Return a specified multipart alternative view of the data
-     * 
+     *
      * @param arg1 the name of the view to retrieve
      * @return byte array of alternate view data
      */
@@ -426,7 +426,7 @@ public interface IBaseDataObject {
 
     /**
      * Return a specified multipart alternative view of the data in a buffer
-     * 
+     *
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
      */
@@ -434,7 +434,7 @@ public interface IBaseDataObject {
 
     /**
      * Add a multipart alternative view of the data
-     * 
+     *
      * @param name the name of the new view
      * @param data the byte array of data for the view
      */
@@ -442,7 +442,7 @@ public interface IBaseDataObject {
 
     /**
      * Add a multipart alternative view of the data
-     * 
+     *
      * @param name the name of the new view
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
@@ -452,7 +452,7 @@ public interface IBaseDataObject {
 
     /**
      * Append the specified data to the alternate view
-     * 
+     *
      * @param name the name of the new view
      * @param data the byte array of data for the view
      */
@@ -460,7 +460,7 @@ public interface IBaseDataObject {
 
     /**
      * Append to a multipart alternative view of the data
-     * 
+     *
      * @param name the name of the view
      * @param data the byte array conatining data for the view
      * @param offset index of the first byte to use
@@ -470,63 +470,63 @@ public interface IBaseDataObject {
 
     /**
      * Get the set of alt view names for new foreach loops
-     * 
+     *
      * @return set of alternate view names
      */
     Set<String> getAlternateViewNames();
 
     /**
      * Get the alternate view map.
-     * 
+     *
      * @return map of alternate views, key = String, value = byte[]
      */
     Map<String, byte[]> getAlternateViews();
 
     /**
      * Test for broken document
-     * 
+     *
      * @return true if broken
      */
     boolean isBroken();
 
     /**
      * Set brokenness for document
-     * 
+     *
      * @param arg1 the message to record
      */
     void setBroken(String arg1);
 
     /**
      * Get brokenness indicator message
-     * 
+     *
      * @return string message of what is broken
      */
     String getBroken();
 
     /**
      * Returns the name of the file without the path with which the file will be written.
-     * 
+     *
      * @return the short name of the file (no path)
      */
     String shortName();
 
     /**
      * Returns the filename associated with the data.
-     * 
+     *
      * @return the string name with path
      */
     String getFilename();
 
     /**
      * Returns the internally generated identifier used to track the object
-     * 
+     *
      * @return a String representing the internal ID
      */
     UUID getInternalId();
 
     /**
      * Set the filename
-     * 
+     *
      * @param f the new name of the data including path
      */
     void setFilename(String f);
@@ -541,7 +541,7 @@ public interface IBaseDataObject {
 
     /**
      * Return the current form at specified position of the list
-     * 
+     *
      * @param i The specified position
      * @return String containing the form or empty string if illegal position
      */
@@ -549,7 +549,7 @@ public interface IBaseDataObject {
 
     /**
      * Check to see if this value is already on the stack of itinerary items
-     * 
+     *
      * @param val the string to look for
      * @return the position where it was found or -1
      */
@@ -557,7 +557,7 @@ public interface IBaseDataObject {
 
     /**
      * Check to see one of these values is on the stack of itinerary items
-     * 
+     *
      * @param values the List of strings to look for
      * @return the String that was found out of the list sent in or null
      */
@@ -565,14 +565,14 @@ public interface IBaseDataObject {
 
     /**
      * Get the size of the itinerary stack
-     * 
+     *
      * @return size of form stack
      */
     int currentFormSize();
 
     /**
      * Remove a form from the head of the list
-     * 
+     *
      * @return the new size of the itinerary stack
      */
     String popCurrentForm();
@@ -586,7 +586,7 @@ public interface IBaseDataObject {
 
     /**
      * Remove a form where ever it appears in the stack
-     * 
+     *
      * @param form the value to remove
      * @return the number of elements removed from the stack
      */
@@ -602,7 +602,7 @@ public interface IBaseDataObject {
 
     /**
      * Add current form newForm at idx
-     * 
+     *
      * @param i the position to do the insert
      * @param val the value to insert
      * @return size of the new stack
@@ -611,7 +611,7 @@ public interface IBaseDataObject {
 
     /**
      * Add a form to the end of the list (the bottom of the stack)
-     * 
+     *
      * @param val the new value to add to the tail of the stack
      * @return the new size of the itinerary stack
      */
@@ -619,7 +619,7 @@ public interface IBaseDataObject {
 
     /**
      * Push a form onto the head of the list
-     * 
+     *
      * @param val the new value to push on the stack
      * @return the new size of the itinerary stack
      */
@@ -628,7 +628,7 @@ public interface IBaseDataObject {
     /**
      * Replaces the current form of the data with a new form Does a pop() followed by a push(newForm) to simulate what would
      * happen in the old "one form at a time system"
-     * 
+     *
      * @param val value of the the new form of the data
      */
     void setCurrentForm(String val);
@@ -643,21 +643,21 @@ public interface IBaseDataObject {
 
     /**
      * Return a clone the whole current form list Note this is not a reference to our private store
-     * 
+     *
      * @return ordered list of current forms
      */
     List<String> getAllCurrentForms();
 
     /**
      * Move curForm to the top of the stack pushing everything above it down one slot
-     * 
+     *
      * @param curForm the form to pull to the top
      */
     void pullFormToTop(String curForm);
 
     /**
      * Return BaseDataObjects info as a String.
-     * 
+     *
      * @return string value of this object
      */
     @Override
@@ -666,21 +666,21 @@ public interface IBaseDataObject {
 
     /**
      * Record a processing error
-     * 
+     *
      * @param val the new error message to record
      */
     void addProcessingError(String val);
 
     /**
      * Retrieve the processing error(s)
-     * 
+     *
      * @return string value of processing errors
      */
     String getProcessingError();
 
     /**
      * Replace history with the new history
-     * 
+     *
      * @param list of new history strings to use
      * @deprecated See {@link #setHistory(TransformHistory)}
      */
@@ -704,7 +704,7 @@ public interface IBaseDataObject {
 
     /**
      * List of places the data object was carried to.
-     * 
+     *
      * @return List of strings making up the history
      */
     List<String> transformHistory();
@@ -725,7 +725,7 @@ public interface IBaseDataObject {
     /**
      * Appends the new key to the transform history. This is called by MobileAgent before moving to the new place. It
      * usually adds the four-tuple of a place's key
-     * 
+     *
      * @see emissary.core.MobileAgent#agentControl
      * @param key the new value to append
      */
@@ -745,35 +745,35 @@ public interface IBaseDataObject {
 
     /**
      * Return what machine we are located on
-     * 
+     *
      * @return string local host name
      */
     String whereAmI();
 
     /**
      * Return an SDE based on the last item in the transform history or null if empty
-     * 
+     *
      * @return last item in history
      */
     DirectoryEntry getLastPlaceVisited();
 
     /**
      * Return an SDE based on the penultimate item in the transform history or null if empty
-     * 
+     *
      * @return penultimate item in history
      */
     DirectoryEntry getPenultimatePlaceVisited();
 
     /**
      * Return true if the payload has been to a place matching the key passed in.
-     * 
+     *
      * @param pattern the key pattern to match
      */
     boolean hasVisited(String pattern);
 
     /**
      * True if this payload hasn't had any processing yet Does not count parent processing as being for this payload
-     * 
+     *
      * @return true if not yet started
      */
     boolean beforeStart();
@@ -790,28 +790,28 @@ public interface IBaseDataObject {
 
     /**
      * Get data object's priority.
-     * 
+     *
      * @return int priority (lower the number, higher the priority).
      */
     int getPriority();
 
     /**
      * Set the data object's priority, typically based on input dir/file priority.
-     * 
+     *
      * @param priority int (lower the number, higher the priority).
      */
     void setPriority(int priority);
 
     /**
      * Get the timestamp for when the object was created. This attribute will be used for data provenance.
-     * 
+     *
      * @return date - the timestamp the object was created
      */
     Date getCreationTimestamp();
 
     /**
      * Set the timestamp for when the object was created
-     * 
+     *
      * @param creationTimestamp - the date the object was created
      */
     void setCreationTimestamp(Date creationTimestamp);
@@ -844,7 +844,7 @@ public interface IBaseDataObject {
 
     /**
      * Determine if this object has extracted records.
-     * 
+     *
      * @return true if this object has extracted records.
      */
     boolean hasExtractedRecords();
@@ -902,7 +902,7 @@ public interface IBaseDataObject {
 
     /**
      * Set the unique identifier of the transaction
-     * 
+     *
      * @param transactionId the unique identifier of the transaction
      */
     void setTransactionId(String transactionId);

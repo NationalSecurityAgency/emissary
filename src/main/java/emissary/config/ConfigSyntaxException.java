@@ -14,7 +14,7 @@ public class ConfigSyntaxException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      */
     public ConfigSyntaxException(final String message) {
@@ -23,7 +23,7 @@ public class ConfigSyntaxException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      * @param cause the wrapped exception
      */
@@ -33,7 +33,7 @@ public class ConfigSyntaxException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param cause the wrapped exception
      */
     public ConfigSyntaxException(final Throwable cause) {

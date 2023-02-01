@@ -24,7 +24,7 @@ public interface IServiceProviderPlace {
 
     /**
      * Return list of next places to go with data. Delegation call through to our IDirectoryPlace
-     * 
+     *
      * @param dataID the SERVICE_NAME::SERVICE_TYPE
      * @param lastPlace last place visited
      * @return list of DirectoryEntry
@@ -33,28 +33,28 @@ public interface IServiceProviderPlace {
 
     /**
      * Add a service proxy to a running place. Duplicates are ignored.
-     * 
+     *
      * @param serviceProxy the new proxy string to add
      */
     void addServiceProxy(String serviceProxy);
 
     /**
      * Add a full key to the running place.
-     * 
+     *
      * @param key the new key
      */
     void addKey(String key);
 
     /**
      * Remove key
-     * 
+     *
      * @param key the key to remove
      */
     void removeKey(String key);
 
     /**
      * Remove a service proxy from the running place. Proxy strings not found registered will be ignored
-     * 
+     *
      * @param serviceProxy the proxy string to remove
      */
     void removeServiceProxy(String serviceProxy);
@@ -66,7 +66,7 @@ public interface IServiceProviderPlace {
 
     /**
      * Visiting agents call here to have a payload processed
-     * 
+     *
      * @param payload the payload to be processed
      */
     void agentProcessCall(IBaseDataObject payload) throws ResourceException;
@@ -78,7 +78,7 @@ public interface IServiceProviderPlace {
 
     /**
      * Method called by the HD Agents to process a payload
-     * 
+     *
      * @param payload the payload to be processed
      * @return list of IBaseDataObject result attachments
      */
@@ -86,7 +86,7 @@ public interface IServiceProviderPlace {
 
     /**
      * Method called by the HD Agents for bulk processing of payloads
-     * 
+     *
      * @param payloadList list of payloads to be processed
      * @return list of IBaseDataObject result attachments
      */
@@ -94,7 +94,7 @@ public interface IServiceProviderPlace {
 
     /**
      * Override point for HD Agent calls
-     * 
+     *
      * @param payload the payload to be processed
      * @return list of IBaseDataObject result attachments
      */
@@ -102,49 +102,49 @@ public interface IServiceProviderPlace {
 
     /**
      * Override point for non-HD agent calls
-     * 
+     *
      * @param payload the payload to be processed
      */
     void process(IBaseDataObject payload) throws ResourceException;
 
     /**
      * Get key for place, first one on list with '*' as service proxy if there are multiple entries
-     * 
+     *
      * @return the key of this place in the directory
      */
     String getKey();
 
     /**
      * List the keys for this place registration
-     * 
+     *
      * @return list of string complete keys
      */
     Set<String> getKeys();
 
     /**
      * Return a set of the service proxies
-     * 
+     *
      * @return set of string values
      */
     Set<String> getProxies();
 
     /**
      * Return the first service proxy on the list
-     * 
+     *
      * @return SERVICE_PROXY value or empty string if none
      */
     String getPrimaryProxy();
 
     /**
      * Get place name
-     * 
+     *
      * @return string name of the place
      */
     String getPlaceName();
 
     /**
      * Get custom resource limitation in millis if specified
-     * 
+     *
      * @return -2 if not specified, or long millis if specified
      */
     long getResourceLimitMillis();

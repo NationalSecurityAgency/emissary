@@ -45,7 +45,7 @@ public abstract class NIOSessionParser extends SessionParser {
 
     /**
      * Create the parser with the supplied data source
-     * 
+     *
      * @param raf the source of data
      */
     @Deprecated
@@ -55,7 +55,7 @@ public abstract class NIOSessionParser extends SessionParser {
 
     /**
      * Create the parser with the supplied data source
-     * 
+     *
      * @param channel the source of data
      */
     public NIOSessionParser(SeekableByteChannel channel) {

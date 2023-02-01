@@ -15,7 +15,7 @@ public class FillChannelFactory {
 
     /**
      * Creates an instance of the factory with the designated size and value.
-     * 
+     *
      * @param size of the SeekableByteChannel.
      * @param value of each element in the seekable byte channel.
      * @return an immutable version of the seekable byte channel with the designated value.

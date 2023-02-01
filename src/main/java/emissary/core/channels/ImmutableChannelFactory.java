@@ -17,11 +17,11 @@ public final class ImmutableChannelFactory {
      * <p>
      * Wrap a provided channel factory with immutability i.e. write, truncate etc are all disabled.
      * </p>
-     * 
+     *
      * <p>
      * Position *can* be changed on individual channels
      * </p>
-     * 
+     *
      * @param sbcf to wrap
      * @return the wrapped channel factory
      */
@@ -40,7 +40,7 @@ public final class ImmutableChannelFactory {
 
         /**
          * Configure an immutable factory instance with the provided factory
-         * 
+         *
          * @param sbcf to wrap
          */
         private ImmutableChannelFactoryImpl(final SeekableByteChannelFactory sbcf) {
@@ -51,7 +51,7 @@ public final class ImmutableChannelFactory {
 
         /**
          * Creates an immutable channel instance upon invocation.
-         * 
+         *
          * @return an immutable channel instance
          */
         @Override

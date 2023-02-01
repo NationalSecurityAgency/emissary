@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 
 /**
  * ChecksumCalculator is a utility class which computes checksums and message digests.
- * 
+ *
  * @see java.util.zip.CRC32 java.util.zip.CRC32
  * @see java.security.MessageDigest java.security.MessageDigest
  */
@@ -32,7 +32,7 @@ public class ChecksumCalculator {
 
     /**
      * Constructor initializes SHA-1 generator and turns on the CRC32 processing as well
-     * 
+     *
      * @throws NoSuchAlgorithmException if the SHA algorithm isn't available
      */
     public ChecksumCalculator() throws NoSuchAlgorithmException {
@@ -41,7 +41,7 @@ public class ChecksumCalculator {
 
     /**
      * Constructor initializes specified algorithm
-     * 
+     *
      * @param alg string name of algorightm, e.g. SHA
      * @param useCRC true if CRC32 should be calculated
      * @throws NoSuchAlgorithmException if the algorithm isn't available
@@ -53,7 +53,7 @@ public class ChecksumCalculator {
 
     /**
      * Constructor initializes specified set of algorithms
-     * 
+     *
      * @param algs array of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
@@ -73,7 +73,7 @@ public class ChecksumCalculator {
 
     /**
      * Constructor initializes specified set of algorithms
-     * 
+     *
      * @param algs Collection of String algorithm names, put CRC32 on list to enable
      * @throws NoSuchAlgorithmException if an algorithm isn't available
      */
@@ -101,7 +101,7 @@ public class ChecksumCalculator {
 
     /**
      * Turn on or off CRC processing
-     * 
+     *
      * @param use true if CRC processing is desired
      */
     public void setUseCRC(boolean use) {
@@ -121,7 +121,7 @@ public class ChecksumCalculator {
 
     /**
      * Turn on or off CRC processing
-     * 
+     *
      * @param use true if CRC processing is desired
      */
     public void setUseSsdeep(boolean use) {
@@ -134,7 +134,7 @@ public class ChecksumCalculator {
 
     /**
      * Calculates a CRC32 and a digest on a byte array.
-     * 
+     *
      * @param buffer Data to compute results for
      * @return results of computing the requested hashes on the data
      */

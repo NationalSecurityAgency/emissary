@@ -14,7 +14,7 @@ public class HtmlEscaper {
 
     /**
      * encode greater than, less than, and ampersand characters in a byte arroy.
-     * 
+     *
      * @param theData input bytes
      * @return a copy of the input byte array with specific characters encoded.
      */
@@ -44,7 +44,7 @@ public class HtmlEscaper {
 
     /**
      * Escape html string
-     * 
+     *
      * @param s the input string
      * @return the escaped string
      */

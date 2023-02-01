@@ -23,7 +23,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Make an existing factory immutable.
-     * 
+     *
      * @param sbcf to make immutable
      * @return the wrapped factory
      */
@@ -34,7 +34,7 @@ public final class SeekableByteChannelHelper {
     /**
      * Create an in memory SBC factory which can be used to create any number of channels based on the provided bytes
      * without storing them multiple times.
-     * 
+     *
      * @param bytes to use with the channel
      * @return the factory
      */
@@ -44,7 +44,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Create a file SBC factory.
-     * 
+     *
      * @param path to the file.
      * @return the factory
      */
@@ -54,7 +54,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Create a fill SBC factory.
-     * 
+     *
      * @param size of the SeekableByteChannel
      * @param value of each element in the SeekableByteChannel.
      * @return the factory
@@ -65,7 +65,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Create an InputStream SBC factory.
-     * 
+     *
      * @param size of the SeekableByteChannel
      * @param inputStreamFactory creates the needed InputStreams.
      * @return the factory
@@ -76,7 +76,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Given a BDO, create a byte array with as much data as possible.
-     * 
+     *
      * @param ibdo to get the data from
      * @param maxSize to limit the byte array to
      * @return a byte array of the data from the BDO sized up to maxSize (so could truncate data)
@@ -98,7 +98,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Given a channel factory, create a byte array with as much data as possible.
-     * 
+     *
      * @param sbcf to get the data from
      * @param maxSize to limit the byte array to
      * @return a byte array of the data from the factory sized up to maxSize (so could truncate data)
@@ -116,13 +116,13 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Provided with an existing input stream, check how far we can read into it.
-     * 
+     *
      * Note that the inputStream is read as-is, so if the stream is not at the start, this method won't take that into
      * account. If we can successfully read the stream, the position of the provided stream will of course change.
-     * 
+     *
      * Don't wrap the provided stream with anything such as BufferedInputStream as this will cause read errors prematurely,
      * unless this is acceptable.
-     * 
+     *
      * @param inputStream to read - caller must handle closing this object
      * @return position of last successful read (which could be the size of the stream)
      */
@@ -141,7 +141,7 @@ public final class SeekableByteChannelHelper {
 
     /**
      * Reads data from an input stream into a buffer
-     * 
+     *
      * @param inputStream to read from
      * @param byteBuffer to read into
      * @param bytesToSkip within the {@code is} to get to the next read location

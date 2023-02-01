@@ -36,7 +36,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Capacity ctor
-     * 
+     *
      * @param initialCapacity initial capacity for map
      */
     public DirectoryEntryMap(final int initialCapacity) {
@@ -45,7 +45,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Full ctor
-     * 
+     *
      * @param initialCapacity initial capacity for map
      * @param loadFactor how loaded before rehash required
      * @param concurrencyLevel how many threads can update at once
@@ -56,7 +56,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Create a new map from an old one. Makes a shallow copy
-     * 
+     *
      * @param map the map to copy
      */
     public DirectoryEntryMap(final DirectoryEntryMap map) {
@@ -65,7 +65,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Create a new map from an old one.
-     * 
+     *
      * @param map the map to copy
      * @param deepCopy true if should be a deep copy
      */
@@ -96,7 +96,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Add the directory entry to the specified list
-     * 
+     *
      * @param key the key to this map
      * @param d the entry to add
      */
@@ -124,7 +124,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Builds a super list of all the entries currently in all buckets of the map
-     * 
+     *
      * @return list of all directory entries
      */
     public List<DirectoryEntry> allEntries() {
@@ -138,7 +138,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Builds a super list of all the entry keys currently in all buckets of the map
-     * 
+     *
      * @return list of all directory entry keys
      */
     public List<String> allEntryKeys() {
@@ -154,7 +154,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Perform a super count of all the DirectoryEntry objects on all of the lists
-     * 
+     *
      * @return count of all DirectoryEntry contained in map
      */
     public int entryCount() {
@@ -167,7 +167,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Remove a directory entry from the map
-     * 
+     *
      * @param entryKey for the entry to remove, not wildcarded
      * @return the removed entry or null if not found
      */
@@ -178,7 +178,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Remove the directory entry specified by entry key from the list specified by key
-     * 
+     *
      * @param key the key to this map
      * @param entryKey the key of the DirectoryEntry to remove
      * @return the removed object
@@ -208,7 +208,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Remove all entries that match the key returning them as a list
-     * 
+     *
      * @param key the key that must be matched (can be wildcarded)
      * @return list of entries that were removed from the map
      */
@@ -218,7 +218,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Remove all entries that match the key returning them as a list
-     * 
+     *
      * @param key the key that must be matched (can be wildcarded)
      * @param checkpoint only remove entries older than this value, use Long.MAX_VALUE to have all matching entries removed
      *        without regard to their age
@@ -247,7 +247,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Find and remove all entries on a directory
-     * 
+     *
      * @param key the key of the directory
      * @return list of all entries removed
      */
@@ -259,7 +259,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Find and remove all entries on a directory
-     * 
+     *
      * @param key the key of the directory
      * @param checkpoint only remove entries older than this
      * @return list of all entries removed
@@ -272,7 +272,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Collect all entries that match the key returning them as a list
-     * 
+     *
      * @param key the key that must be matched (can be wildcarded)
      * @return list of entries that were matches, still live in the directory map
      */
@@ -303,7 +303,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Find all entries on a directory
-     * 
+     *
      * @param key the key of the directory
      * @return list of all entries matched, still live in directory map
      */
@@ -315,7 +315,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Count all entries that match the key
-     * 
+     *
      * @param key the key that must be matched (can be wildcarded)
      * @return count of entries that were matches
      */
@@ -335,7 +335,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Count all entries on a directory
-     * 
+     *
      * @param key the key of the directory
      * @return count of all entries matched
      */
@@ -360,7 +360,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Merge new non-local peer entries into our local entry map.
-     * 
+     *
      * @param that the new entries
      */
     public void addEntries(@Nullable final DirectoryEntryMap that) {
@@ -379,7 +379,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
 
     /**
      * Change cost on matching entries
-     * 
+     *
      * @param key the key to match
      * @param increment cost increment
      * @return List of string entry keys changed

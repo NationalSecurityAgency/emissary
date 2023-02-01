@@ -18,7 +18,7 @@ public class NamespaceException extends emissary.core.EmissaryException {
 
     /**
      * Creates a new instance of NameSpaceException
-     * 
+     *
      * @param s the message to go along with the exception
      */
     public NamespaceException(final String s) {

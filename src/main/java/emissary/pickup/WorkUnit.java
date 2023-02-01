@@ -17,7 +17,7 @@ public final class WorkUnit {
 
     /**
      * Constructs WorkUnit with specified filename
-     * 
+     *
      * @param fileName the associated filename
      */
     WorkUnit(String fileName) {
@@ -58,7 +58,7 @@ public final class WorkUnit {
 
     /**
      * Gets the filename for the WorkUnit
-     * 
+     *
      * @return the filename
      */
     public String getFileName() {
@@ -67,7 +67,7 @@ public final class WorkUnit {
 
     /**
      * Sets the filename for the WorkUnit
-     * 
+     *
      * @param fileName the filename
      */
     public void setFilename(String fileName) {
@@ -76,7 +76,7 @@ public final class WorkUnit {
 
     /**
      * Gets the transaction Id of the WorkUnit
-     * 
+     *
      * @return the transaction Id
      */
     public String getTransactionId() {
@@ -85,7 +85,7 @@ public final class WorkUnit {
 
     /**
      * Sets the transaction id of the WorkUnit
-     * 
+     *
      * @param transactionId the transaction id to set
      */
     public void setTransactionId(String transactionId) {
@@ -101,7 +101,7 @@ public final class WorkUnit {
 
     /**
      * Gets the status of whether the WorkUnit failed to parse
-     * 
+     *
      * @return the boolean status of failed to parse
      */
     public boolean failedToParse() {
@@ -117,7 +117,7 @@ public final class WorkUnit {
 
     /**
      * Gets the status of whether file had an error in processing.
-     * 
+     *
      * @return the boolean status of file process
      */
     public boolean failedToProcess() {

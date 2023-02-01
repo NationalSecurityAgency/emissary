@@ -73,7 +73,7 @@ public class TypeEngine {
 
     /**
      * Look up label in specified engine
-     * 
+     *
      * @param engine name of the engine to use
      * @param label LHS part of equation to lookup
      * @return RHS part of mapping or null if none found

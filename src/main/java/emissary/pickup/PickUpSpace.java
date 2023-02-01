@@ -40,7 +40,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Create one
-     * 
+     *
      * @param configInfo path to config file
      * @param dir string key of the directory to register with
      * @param placeLocation string key of this place
@@ -51,7 +51,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Create one, figuring out the directory automatically
-     * 
+     *
      * @param configInfo path to config file
      * @param placeLocation string key of this place
      */
@@ -65,7 +65,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Create one with stream config
-     * 
+     *
      * @param configStream path to config file
      * @param theDir string key of the directory to register with
      * @param thePlaceLocation string key of this place
@@ -76,7 +76,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Open a TreeSpace when told and start asking it for data
-     * 
+     *
      * @param spaceName the remote name of the space to open
      */
     @Override
@@ -133,7 +133,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
     /**
      * Take up to one item from eacho space that is active This can result in workspace instances being removed from the
      * list if we get a close message from one or if the threshold of consecutive errors is crossed
-     * 
+     *
      * @return true if we got at least one
      */
     @Override
@@ -181,7 +181,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
     /**
      * Clean up any spaces that have crosse the consecutive error message threshold and any that are specified in the
      * argument
-     * 
+     *
      * @param forceClosers additional spaces to close
      */
     protected void cleanupFailedSpaces(List<String> forceClosers) {
@@ -204,7 +204,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Notify controlling space that a bundle is completed
-     * 
+     *
      * @param bundleId the bundle that was completed
      * @param itWorked true if bundle processed normally
      */
@@ -237,7 +237,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
 
     /**
      * Put a new WorkBundle on the queue
-     * 
+     *
      * @param path the newly arrived WorkBundle object
      */
     @Override

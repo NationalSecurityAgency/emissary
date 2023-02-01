@@ -12,7 +12,7 @@ public class InputStreamChannelFactory {
 
     /**
      * Creates a factory implementation based on an {@link InputStreamFactory}
-     * 
+     *
      * @param size if known, else provide a negative value to allow the factory to work out the size upon first create
      * @param inputStreamFactory for the data
      * @return an InputStreamChannelFactory instance of the data
@@ -58,7 +58,7 @@ public class InputStreamChannelFactory {
 
         /**
          * Create a new InputStreamChannel instance with a fixed size and data source
-         * 
+         *
          * @param size of the InputStreamChannel
          * @param inputStreamFactory data source
          */

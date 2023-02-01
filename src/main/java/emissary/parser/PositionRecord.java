@@ -20,7 +20,7 @@ public class PositionRecord {
 
     /**
      * Take an array of two ints for start and length
-     * 
+     *
      * @param posAndLen Position at 0 and Length at 1
      */
     public PositionRecord(@Nullable long[] posAndLen) {
@@ -33,7 +33,7 @@ public class PositionRecord {
 
     /**
      * Starting position of data
-     * 
+     *
      * @return a long with the position
      */
     public long getPosition() {
@@ -42,7 +42,7 @@ public class PositionRecord {
 
     /**
      * Length of data
-     * 
+     *
      * @return a long with the length
      */
     public long getLength() {
@@ -51,7 +51,7 @@ public class PositionRecord {
 
     /**
      * Pseudo property
-     * 
+     *
      * @return a long that is position + length
      */
     public long getEnd() {

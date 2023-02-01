@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 /**
  * A very simple minded parser implementation that assumes each input set of data bytes is one session This parser has
  * no idea about headers and footers, just the basic session, and not much of an idea about that.
- * 
+ *
  * This class is deprecated, use {@link SimpleNioParser}
  */
 @Deprecated
@@ -43,7 +43,7 @@ public class SimpleParser extends SessionParser {
     /**
      * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
      * session data.
-     * 
+     *
      * @param session The session to be decomposed into separate elements.
      * @return A map of session elements.
      */
@@ -89,7 +89,7 @@ public class SimpleParser extends SessionParser {
 
     /**
      * Turn the metadata PositionRecord elements into real data
-     * 
+     *
      * @param raw map of PositionRecord objects
      * @return map of metadata
      */
@@ -115,7 +115,7 @@ public class SimpleParser extends SessionParser {
 
     /**
      * Allow subclasses to arbitrarily rename metadata fields This is a do nothing function in the base class.
-     * 
+     *
      * @param s the name of the field to consider renaming
      * @return the renamed field or the original name if no change
      */
@@ -135,7 +135,7 @@ public class SimpleParser extends SessionParser {
      * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
      * session data for the next session in the data. This Simple base implementation only treats the whole file as one
      * session
-     * 
+     *
      * @return the DecomposedSession
      * @throws ParserException when parsing cannot be completed
      * @throws ParserEOFException when the last session has already been parsed

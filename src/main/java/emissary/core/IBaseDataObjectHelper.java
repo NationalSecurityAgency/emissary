@@ -41,9 +41,9 @@ public final class IBaseDataObjectHelper {
 
     /**
      * Clones an IBaseDataObject equivalently to emissary.core.BaseDataObject.clone(), which duplicates some attributes.
-     * 
+     *
      * A "fullClone" duplicates all attributes.
-     * 
+     *
      * @param iBaseDataObject the IBaseDataObject to be cloned.
      * @param fullClone specifies if all fields should be cloned.
      * @return the clone of the IBaseDataObject passed in.
@@ -109,7 +109,7 @@ public final class IBaseDataObjectHelper {
      * This method reflectively sets a private method that is not normally accessible. This method should only be used when
      * the field must be set and there is no other way to do it. Ideally the class would be modified so that this method
      * call would not be necessary.
-     * 
+     *
      * @param bdo the BaseDataObject to set the field on.
      * @param fieldName the name of the field to be set.
      * @param object the object that the field is to be set to.
@@ -130,7 +130,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two IBaseDataObject's and adds any differences to the provided string list.
-     * 
+     *
      * @param ibdo1 the first IBaseDataObject to compare.
      * @param ibdo2 the second IBaseDataObject to compare.
      * @param differences the string list differences are to be added to.
@@ -204,7 +204,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
-     * 
+     *
      * @param ibdoList1 the first list of IBaseDataObjects to compare.
      * @param ibdoList2 the second list of IBaseDataObjects to compare.
      * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
@@ -243,7 +243,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two Objects and adds any differences to the provided string list.
-     * 
+     *
      * @param object1 the first Object to compare.
      * @param object2 the second Object to compare.
      * @param identifier an identifier to describe the context of this Object comparison.
@@ -261,7 +261,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two integers and adds any differences to the provided string list.
-     * 
+     *
      * @param integer1 the first integer to compare.
      * @param integer2 the second integer to compare.
      * @param identifier an identifier to describe the context of this integer comparison.
@@ -279,7 +279,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two booleans and adds any differences to the provided string list.
-     * 
+     *
      * @param boolean1 the first boolean to compare.
      * @param boolean2 the second boolean to compare.
      * @param identifier an identifier to describe the context of this boolean comparison.
@@ -297,7 +297,7 @@ public final class IBaseDataObjectHelper {
 
     /**
      * This method compares two maps and adds any differences to the provided string list.
-     * 
+     *
      * @param map1 the first map to compare.
      * @param map2 the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
@@ -319,7 +319,7 @@ public final class IBaseDataObjectHelper {
     /**
      * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
      * emissary.place.MultiFileServerPlace.
-     * 
+     *
      * @param parentIBaseDataObject the source of parameters to be copied
      * @param childIBaseDataObject the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
@@ -381,7 +381,7 @@ public final class IBaseDataObjectHelper {
     /**
      * Used to propagate needed parent information to a sprouted child. NOTE: This is taken from
      * emissary.place.MultiFileServerPlace.
-     * 
+     *
      * @param parent the source of parameters to be copied
      * @param children the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy

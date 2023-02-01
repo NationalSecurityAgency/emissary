@@ -66,7 +66,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * create a new instance of the mobile agent factory using the specified class as the implementation du jour
-     * 
+     *
      * @param clazz the class of mobile agent to use
      */
     public MobileAgentFactory(String clazz) {
@@ -78,7 +78,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * Set whether created mobile agents should be registered in the global namespace or not
-     * 
+     *
      * @param arg true if registration in namespace is desired
      */
     public void setUseNamespace(boolean arg) {
@@ -87,7 +87,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * called by the pool to get an instance of the specified implementation
-     * 
+     *
      * @return a newly Factory.create()ed instance
      */
     @Override
@@ -139,7 +139,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * called by the pool when it is configured to validate objects
-     * 
+     *
      * @param o the object to validate, should be instance of the specified implementation for this factory
      * @return IMobileAgent.isInUse() with proper checking
      */
@@ -151,7 +151,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * Called by the pool to destroy an object
-     * 
+     *
      * @param o the object to be removed from the pool and destroyed
      */
     @Override
@@ -162,7 +162,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * Set the class implementing IMobileAgent
-     * 
+     *
      * @param s the name of the implementing class
      */
     public void setClassString(String s) {
@@ -171,7 +171,7 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     /**
      * Get the current class for IMobileAgent we are using
-     * 
+     *
      * @return the current implementation class string
      */
     public String getClassString() {

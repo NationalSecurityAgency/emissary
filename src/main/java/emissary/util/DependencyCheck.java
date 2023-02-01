@@ -32,7 +32,7 @@ public class DependencyCheck {
 
     /**
      * Static method to determine if an executable is found.
-     * 
+     *
      * @param executable name (can be fully qualified path).
      * @return return true if any of the executable is found, false otherwise.
      */

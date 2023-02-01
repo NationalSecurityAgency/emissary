@@ -79,7 +79,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Public constructor with args
-     * 
+     *
      * @param outputRoot root directory for files
      * @param eatPrefix used when constructing output name
      */
@@ -92,7 +92,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
     /**
      * Build one as a copy of another, generating a new unique id for the copy. Transient fields sentTo and errorCount are
      * not copied by this constructor
-     * 
+     *
      * @param that the work bundle to copy
      */
     public WorkBundle(WorkBundle that) {
@@ -189,7 +189,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Set the work bundle id
-     * 
+     *
      * @param val the new value to set as bundle id
      */
     public void setBundleId(String val) {
@@ -198,7 +198,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Reset the unique id
-     * 
+     *
      * @return a copy of the new id
      */
     public String resetBundleId() {
@@ -215,7 +215,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Generate a new unique id
-     * 
+     *
      * @return the new id value
      */
     protected static String generateId() {
@@ -224,7 +224,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets the value of outputRoot
-     * 
+     *
      * @return the value of outputRoot
      */
     public String getOutputRoot() {
@@ -233,7 +233,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Sets the value of outputRoot
-     * 
+     *
      * @param argOutputRoot Value to assign to this.outputRoot
      */
     public void setOutputRoot(String argOutputRoot) {
@@ -242,7 +242,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets the value of eatPrefix
-     * 
+     *
      * @return the value of eatPrefix
      */
     public String getEatPrefix() {
@@ -251,7 +251,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Sets the value of eatPrefix
-     * 
+     *
      * @param argEatPrefix Value to assign to this.eatPrefix
      */
     public void setEatPrefix(String argEatPrefix) {
@@ -260,7 +260,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets the list of WorkUnits in bundle
-     * 
+     *
      * @return the list of WorkUnits
      */
     public List<WorkUnit> getWorkUnitList() {
@@ -269,7 +269,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets an iterator over work units
-     * 
+     *
      * @return iterator of WorkUnit
      */
     public Iterator<WorkUnit> getWorkUnitIterator() {
@@ -294,7 +294,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add a workunit to the list
-     * 
+     *
      * @param workUnit the workUnit to add
      * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
      * @param fileSize the size of the file added.
@@ -317,7 +317,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add from a list, without adjusting file modification time tracking.
-     * 
+     *
      * @param list a list of WorkUnits to add to this bundle
      * @return the total size of WorkUnits in this bundle
      * @throws IllegalStateException if adding the units would cause the bundle to contain more than <code>MAX_UNITS</code>
@@ -333,7 +333,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets the list of file names
-     * 
+     *
      * @return the string values of filenames
      */
     public List<String> getFileNameList() {
@@ -347,7 +347,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets an iterator over file names
-     * 
+     *
      * @return iterator of String filename values
      */
     public Iterator<String> getFileNameIterator() {
@@ -356,7 +356,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add a file to the list, without adjusting file modification time tracking.
-     * 
+     *
      * @param file string file name consistent with outputRoot
      * @return number of files in this set after update
      * @throws IllegalStateException if adding the file would cause the bundle to contain more than <code>MAX_UNITS</code>
@@ -368,7 +368,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add a file to the list
-     * 
+     *
      * @param file string file name consistent with outputRoot
      * @param fileModificationTimeInMillis the file modification time in milliseconds since epoch
      * @param fileSize the size of the file being added
@@ -382,7 +382,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add files to the list, without adjusting file modification time tracking.
-     * 
+     *
      * @param file string file names consistent with outputRoot
      * @return number of files in this set after update
      * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
@@ -397,7 +397,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Add from a list, without adjusting file modification time tracking.
-     * 
+     *
      * @param list the list of files to add
      * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
      *         work units
@@ -430,7 +430,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Gets the value of caseId
-     * 
+     *
      * @return the value of caseId
      */
     public String getCaseId() {
@@ -439,7 +439,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Sets the value of caseId
-     * 
+     *
      * @param argCaseId Value to assign to this.caseId
      */
     public void setCaseId(String argCaseId) {
@@ -469,7 +469,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Increment the error count
-     * 
+     *
      * @return the new value
      */
     public int incrementErrorCount() {
@@ -499,7 +499,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Set the value for the simple flag
-     * 
+     *
      * @param val the new value for the flag
      */
     public void setSimpleMode(boolean val) {
@@ -596,7 +596,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Build a WorkBundle object from xml
-     * 
+     *
      * @param xml the xml string representing a WorkBundle
      * @return the constructed WorkBundle or null on error
      */
@@ -613,7 +613,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
 
     /**
      * Build a WorkBundle object from a jdom document
-     * 
+     *
      * @param jdom the jdom document representing a work bundle object
      * @return the constructed WorkBundle or null on error
      */

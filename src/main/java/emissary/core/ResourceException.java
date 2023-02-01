@@ -12,7 +12,7 @@ public class ResourceException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      */
     public ResourceException(final String message) {
@@ -21,7 +21,7 @@ public class ResourceException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      * @param cause the wrapped exception
      */
@@ -31,7 +31,7 @@ public class ResourceException extends EmissaryException {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param cause the wrapped exception
      */
     public ResourceException(final Throwable cause) {

@@ -80,7 +80,7 @@ public class Executrix {
 
     /**
      * Create configuring from config source
-     * 
+     *
      * @param configG the configuration items to use
      */
     public Executrix(final Configurator configG) {
@@ -89,7 +89,7 @@ public class Executrix {
 
     /**
      * Configure all the extra command stuff along with the normal config Config Items read here are:
-     * 
+     *
      * <ul>
      * <li>EXEC_COMMAND: the command to execute</li>
      * <li>IN_FILE_ENDING: extension of input file, default is none</li>
@@ -105,7 +105,7 @@ public class Executrix {
      * <li>CPU_TIME_LIMIT: default is 300 seconds for ulimit argument</li>
      * <li>PROCESS_MAX_MILLIS: default is 300000 (5 Min) for process Watchdog. Set to 0 to disable watchdog use</li>
      * </ul>
-     * 
+     *
      * @param configGArg the configuration stream
      */
     protected void configure(@Nullable final Configurator configGArg) {
@@ -152,7 +152,7 @@ public class Executrix {
 
     /**
      * Read entire file from disk to a byte array
-     * 
+     *
      * @param theFileName the name of the file to read
      * @throws IOException on error
      * @see #readFile(String,int)
@@ -163,7 +163,7 @@ public class Executrix {
 
     /**
      * Read portion of a file from disk to a byte array
-     * 
+     *
      * @param theFileName the name of the file to read
      * @param length the max bytes to read or -1 for all
      * @throws IOException on error
@@ -186,7 +186,7 @@ public class Executrix {
 
     /**
      * Write byte array slice to a file, swallow exception
-     * 
+     *
      * @param theContent bytes to write
      * @param pos starting position in theContent byte array
      * @param len number of bytes to write
@@ -228,7 +228,7 @@ public class Executrix {
 
     /**
      * Write byte array data to a file, swallow exception
-     * 
+     *
      * @param theContent bytes to write
      * @param theFileName the file to write to
      * @return true if it worked
@@ -243,7 +243,7 @@ public class Executrix {
 
     /**
      * Write byte array data to a file, swallow exception
-     * 
+     *
      * @param theContent bytes to write
      * @param theFileName the file to write to
      * @param append if true we append to the file
@@ -259,7 +259,7 @@ public class Executrix {
 
     /**
      * Write byte array slice to file
-     * 
+     *
      * @param theContent source data
      * @param pos starting offset of slice
      * @param len length of slice
@@ -276,7 +276,7 @@ public class Executrix {
 
     /**
      * Write byte array data to file
-     * 
+     *
      * @param theContent source data
      * @param theFileName destination filename
      */
@@ -286,7 +286,7 @@ public class Executrix {
 
     /**
      * Write byte array data to file with append flag
-     * 
+     *
      * @param theContent source data
      * @param theFileName destination filename
      * @param append true if existing file should be appended to
@@ -298,7 +298,7 @@ public class Executrix {
     /**
      * Read data from file name passed in and return data read in a byte array. Just like readFile but does not throw an
      * exception
-     * 
+     *
      * @param theFileName disk location to read from
      * @return byte array containing the data or null on io exception
      * @see #readFile(String)
@@ -310,7 +310,7 @@ public class Executrix {
     /**
      * Read data from file name passed in and return data read in a byte array. Just like readFile but does not throw an
      * exception
-     * 
+     *
      * @param theFileName disk location to read from
      * @param quiet don't log any exceptions if true
      * @return byte array containing the data or null on io exception
@@ -329,7 +329,7 @@ public class Executrix {
 
     /**
      * Read data from random access file passed in and return data read in a byte array.
-     * 
+     *
      * @param raf the random access file
      * @return byte array containing the data or null on io exception
      */
@@ -339,7 +339,7 @@ public class Executrix {
 
     /**
      * Read data from random access file passed in and return data read in a byte array.
-     * 
+     *
      * @param raf the random access file
      * @param offset the offset in the channel
      * @param length the maximum byte count to read or -1 for all
@@ -385,7 +385,7 @@ public class Executrix {
 
     /**
      * Read all byte data from a channel and return in an array
-     * 
+     *
      * @param channel the channel containing the data
      * @return bytes of data or null on exception
      */
@@ -395,7 +395,7 @@ public class Executrix {
 
     /**
      * Read byte data from a channel and return in an array
-     * 
+     *
      * @param channel the channel containing the data
      * @param offset the offset in the channel
      * @param length the maximum byte count to read or -1 for all
@@ -462,7 +462,7 @@ public class Executrix {
 
     /**
      * Copy file given string names
-     * 
+     *
      * @param infile the file to copy from
      * @param outfile the file to copy to
      */
@@ -474,7 +474,7 @@ public class Executrix {
 
     /**
      * Copy file given file objects
-     * 
+     *
      * @param frm the file to copy from
      * @param to the file to copy to
      */
@@ -491,7 +491,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @return process exit status
      */
@@ -501,7 +501,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @return process exit status
@@ -512,7 +512,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @return process exit status
@@ -523,7 +523,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @param err destination for the standard error
@@ -535,7 +535,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @param err destination for the standard error
@@ -547,7 +547,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @param err destination for the standard error
@@ -560,7 +560,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the string command to execute
      * @param out destination for the standard output
      * @param err destination for the standard error
@@ -623,7 +623,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @return process exit status
      */
@@ -633,7 +633,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @return process exit status
@@ -644,7 +644,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @return process exit status
@@ -655,7 +655,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param charset character set of the output
@@ -667,7 +667,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param err the destination to capture the standard error
@@ -679,7 +679,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param err the destination to capture the standard error
@@ -691,7 +691,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param err the destination to capture the standard error
@@ -715,7 +715,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param err the destination to capture the standard error
@@ -727,7 +727,7 @@ public class Executrix {
 
     /**
      * Executes a command in a new process through Runtime Exec
-     * 
+     *
      * @param cmd the command and arguments to execute
      * @param out the destination to capture the standard output
      * @param err the destination to capture the standard error
@@ -874,7 +874,7 @@ public class Executrix {
 
     /**
      * Write data out for processing into a new subdir under our configured temp area
-     * 
+     *
      * @param data the bytes to write
      * @return the tempNames structure that was created
      */
@@ -884,7 +884,7 @@ public class Executrix {
 
     /**
      * Write data out for processing into a new subdir under our configured temp area
-     * 
+     *
      * @param data the bytes to write
      * @param start offset in array to start writing
      * @param len length of data to write
@@ -898,7 +898,7 @@ public class Executrix {
 
     /**
      * Write data out for processing into a new subdir under our configured temp area
-     * 
+     *
      * @param dirn the string name of a new tmp directory to use
      * @param data the bytes to write
      * @return the file that was created
@@ -922,7 +922,7 @@ public class Executrix {
     /**
      * Gets the value of command that this instance will execute adding configured limits and configured paths to the
      * configuration value
-     * 
+     *
      * @return the value of command
      */
     public String getCommand() {
@@ -932,7 +932,7 @@ public class Executrix {
     /**
      * Gets the value of command that this instance will execute adding configured limits and supplied paths to the
      * configuration value
-     * 
+     *
      * @param tmpNames set of input/output directory names
      * @return the value of command
      */
@@ -943,7 +943,7 @@ public class Executrix {
     /**
      * Gets the value of a command that can be executed adding configured limits and supplied paths to the configuration
      * value
-     * 
+     *
      * @param commandArg a command string to work with
      * @param tmpNames set of input/output directory names
      * @return the value of command
@@ -958,7 +958,7 @@ public class Executrix {
      * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On windows the command is wrapped in
      * <code>cmd /c %CYGWIN_HOME%/bin/bash -c 'your command'</code> while on unix systems it is wrapped more like
      * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
-     * 
+     *
      * @param commandArg a command string to work with
      * @param tmpNames set of input/output directory names
      * @param cpuLimit the cpu limit for the ulimit command
@@ -994,7 +994,7 @@ public class Executrix {
 
     /**
      * Sets the value of command that this instance will execute
-     * 
+     *
      * @param argCommand Value to assign to this.command
      */
     public void setCommand(final String argCommand) {
@@ -1003,7 +1003,7 @@ public class Executrix {
 
     /**
      * Gets the value of inFileEnding
-     * 
+     *
      * @return the value of inFileEnding
      */
     public String getInFileEnding() {
@@ -1012,7 +1012,7 @@ public class Executrix {
 
     /**
      * Sets the value of inFileEnding
-     * 
+     *
      * @param argInFileEnding Value to assign to this.inFileEnding
      */
     public void setInFileEnding(final String argInFileEnding) {
@@ -1021,7 +1021,7 @@ public class Executrix {
 
     /**
      * Gets the value of outFileEnding
-     * 
+     *
      * @return the value of outFileEnding
      */
     public String getOutFileEnding() {
@@ -1030,7 +1030,7 @@ public class Executrix {
 
     /**
      * Sets the value of outFileEnding
-     * 
+     *
      * @param argOutFileEnding Value to assign to this.outFileEnding
      */
     public void setOutFileEnding(final String argOutFileEnding) {
@@ -1039,7 +1039,7 @@ public class Executrix {
 
     /**
      * Gets the value of output type (STD or FILE)
-     * 
+     *
      * @return the value of output
      */
     public String getOutput() {
@@ -1048,7 +1048,7 @@ public class Executrix {
 
     /**
      * Sets the value of output type (STD or FILE)
-     * 
+     *
      * @param argOutput Value to assign to this.output
      */
     public void setOutput(final String argOutput) {
@@ -1075,7 +1075,7 @@ public class Executrix {
 
     /**
      * Gets the value of order of arguments method
-     * 
+     *
      * @return the value of order
      */
     public String getOrder() {
@@ -1084,7 +1084,7 @@ public class Executrix {
 
     /**
      * Sets the value of order, NORMAL or REVERSE
-     * 
+     *
      * @param argOrder Value to assign to this.order
      */
     public void setOrder(final String argOrder) {
@@ -1093,7 +1093,7 @@ public class Executrix {
 
     /**
      * Gets the value of numArgs
-     * 
+     *
      * @return the value of numArgs
      */
     public String getNumArgs() {
@@ -1102,7 +1102,7 @@ public class Executrix {
 
     /**
      * Sets the value of numArgs
-     * 
+     *
      * @param argNumArgs Value to assign to this.numArgs
      */
     public void setNumArgs(final String argNumArgs) {
@@ -1111,7 +1111,7 @@ public class Executrix {
 
     /**
      * Gets the value of tmpDir
-     * 
+     *
      * @return the value of tmpDir
      */
     public String getTmpDir() {
@@ -1120,7 +1120,7 @@ public class Executrix {
 
     /**
      * Sets the value of tmpDir
-     * 
+     *
      * @param argTmpDir Value to assign to this.tempDir
      */
     public void setTmpDir(final String argTmpDir) {
@@ -1129,7 +1129,7 @@ public class Executrix {
 
     /**
      * Gets the value of tmpDirFile
-     * 
+     *
      * @return the value of tmpDirFile
      */
     public File getTmpDirFile() {
@@ -1138,7 +1138,7 @@ public class Executrix {
 
     /**
      * Sets the value of tmpDirFile
-     * 
+     *
      * @param argTmpDirFile Value to assign to this.tmpDirFile
      */
     public void setTmpDirFile(final File argTmpDirFile) {
@@ -1147,7 +1147,7 @@ public class Executrix {
 
     /**
      * Gets the value of minimumDataSize
-     * 
+     *
      * @return the value of minimumDataSize
      */
     public int getMinimumDataSize() {
@@ -1156,7 +1156,7 @@ public class Executrix {
 
     /**
      * Sets the value of minimumDataSize
-     * 
+     *
      * @param argMinimumDataSize Value to assign to this.minimumDataSize
      */
     public void setMinimumDataSize(final int argMinimumDataSize) {
@@ -1165,7 +1165,7 @@ public class Executrix {
 
     /**
      * Gets the value of maximumDataSize
-     * 
+     *
      * @return the value of maximumDataSize
      */
     public int getMaximumDataSize() {
@@ -1174,7 +1174,7 @@ public class Executrix {
 
     /**
      * Sets the value of maximumDataSize
-     * 
+     *
      * @param argMaximumDataSize Value to assign to this.maximumDataSize
      */
     public void setMaximumDataSize(final int argMaximumDataSize) {
@@ -1183,7 +1183,7 @@ public class Executrix {
 
     /**
      * Recursively remove up all files in a directory and then remove the directory itself.
-     * 
+     *
      * @param dir the directory to remove
      * @return true if it works, false otherwise
      */
@@ -1195,7 +1195,7 @@ public class Executrix {
      * Recursively remove up all files in a directory and then remove the directory itself. If the passed directory does not
      * exist then it will return true. If the passed directory is actually a file it will try and delete that. If an IO
      * problem happens listing the files then it will return false.
-     * 
+     *
      * @param dir the directory to remove
      * @return true if it works, false otherwise
      */

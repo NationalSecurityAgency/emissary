@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 public class RollUtil {
     /**
      * returns the time period from the current Configurator using the value from ROLLABLE_TIME_PERIOD. Defaults to 10L
-     * 
+     *
      * @return the configured rollable time period
      */
     public static long getPeriod(Configurator configG) {
@@ -23,7 +23,7 @@ public class RollUtil {
     /**
      * Returns the TimeUnit by extracting the value from ROLLABLE_TIME_PERIOD. The time unit value must be one that exactly
      * matches those defined in the TimeUnit enum. Defaults to MINUTES.
-     * 
+     *
      * @return the configured rollable TimeUnit
      */
     public static TimeUnit getTimeUnit(Configurator configG) {
@@ -36,7 +36,7 @@ public class RollUtil {
      * TIME_UNIT - The time unit to roll on (MINUTES, SECONDS, etc) <br>
      * TIME_PERIOD - A long value for the TimeUnit multiplier. <br>
      * PROGRESS_MAX - A long value for progress based rolls
-     * 
+     *
      * @param config a map containing expected configuration values
      * @return a newly configured Roller
      */

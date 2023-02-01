@@ -449,7 +449,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
 
     /**
      * Generate a filename using the file's path and a prefix
-     * 
+     *
      * @param filePath the path of the file
      * @param prefix a prefix to prepend to the resultant filename
      * @return the generated filename

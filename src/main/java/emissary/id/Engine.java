@@ -10,7 +10,7 @@ import java.io.IOException;
 public interface Engine {
     /**
      * (Re)configure the engine
-     * 
+     *
      * @param config the configuration stream or resource
      */
     void reconfigure(Configurator config) throws IOException;
@@ -22,7 +22,7 @@ public interface Engine {
 
     /**
      * Identify a work unit
-     * 
+     *
      * @param u the thing to be identified
      * @return identifcation holder that tells what was found
      */

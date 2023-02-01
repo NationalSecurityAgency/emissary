@@ -66,7 +66,7 @@ public class MetricsManager {
 
     /**
      * Create manager using specified configuration
-     * 
+     *
      * @param conf the configuration to use
      */
     public MetricsManager(final Configurator conf) {

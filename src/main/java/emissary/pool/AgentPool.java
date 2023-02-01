@@ -43,7 +43,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Compute the default size for the pool
-     * 
+     *
      * @param maxMemoryInBytes System max memory used in calculating pool size
      * @param poolSizeOverride User set property for pool size
      */
@@ -79,7 +79,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Create and configure the pool using the default name and size
-     * 
+     *
      * @param factory pool object producer
      */
     public AgentPool(MobileAgentFactory factory) {
@@ -88,7 +88,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Create and configure the pool using the default name
-     * 
+     *
      * @param maxActive max pool size
      * @param factory pool object producer
      */
@@ -99,7 +99,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Create and configure the pool using the specified name
-     * 
+     *
      * @param factory pool object producer
      * @param maxActive max pool size
      * @param name name of the pool in the namespace
@@ -113,7 +113,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Configure the commons pool stuff based on our requirements
-     * 
+     *
      * @param name name of the pool in the namespace
      */
     protected void configurePool(String name) {
@@ -152,7 +152,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Reset the factory. Pool will be emptied and refilled
-     * 
+     *
      * @param factory the new factory
      */
     public void resetFactory(MobileAgentFactory factory) {
@@ -300,7 +300,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
 
     /**
      * Get the name of the class being used from the factory
-     * 
+     *
      * @return class name for the agents
      */
     public String getClassName() {

@@ -10,7 +10,7 @@ import java.io.IOException;
 public class KffQuincyFile extends KffFile {
     /**
      * Create the Quincy Filter
-     * 
+     *
      * @param filename name of fixed record length file to mmap
      * @param filterName name for this filter to report hits
      * @param ftype type of filter

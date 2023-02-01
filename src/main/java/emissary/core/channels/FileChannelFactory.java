@@ -23,7 +23,7 @@ public final class FileChannelFactory {
      * Create a new instance of the factory using the provided file reference. Ultimately, wraps a standard FileChannel with
      * immutability
      * </p>
-     * 
+     *
      * @param path containing a reference to the file
      * @return a new instance
      * @see SeekableByteChannelHelper#file(Path)
@@ -45,7 +45,7 @@ public final class FileChannelFactory {
 
         /**
          * Creates a {@link FileChannel} instance with the configured options to the configured file.
-         * 
+         *
          * @return the new channel instance
          */
         @Override

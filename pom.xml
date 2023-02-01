@@ -691,7 +691,7 @@
         <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
-          <version>1.6.2</version>
+          <version>1.8.0</version>
           <configuration>
             <groups>java.,javax.,*</groups>
             <removeUnused>true</removeUnused>
@@ -709,7 +709,7 @@
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.11.0</version>
+          <version>2.21.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>

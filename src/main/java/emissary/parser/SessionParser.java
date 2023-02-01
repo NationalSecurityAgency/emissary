@@ -12,7 +12,7 @@ public abstract class SessionParser {
 
     /**
      * Indicates if the data has been fully parsed or not.
-     * 
+     *
      * @return boolean, indicating parsing status.
      */
     public boolean isFullyParsed() {
@@ -21,7 +21,7 @@ public abstract class SessionParser {
 
     /**
      * Set the fully parsed indicator
-     * 
+     *
      * @param fullyParsed the new value
      */
     public void setFullyParsed(boolean fullyParsed) {
@@ -30,7 +30,7 @@ public abstract class SessionParser {
 
     /**
      * Get session name or null if none can be provided
-     * 
+     *
      * @param session the decomposed session to get the name for
      * @return session name or null if the parser cannot know
      */
@@ -41,7 +41,7 @@ public abstract class SessionParser {
     /**
      * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
      * session data for the next session in the data
-     * 
+     *
      * @return the next session from the input
      */
     public abstract DecomposedSession getNextSession() throws ParserException;

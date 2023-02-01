@@ -63,7 +63,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     /**
      * Setup place specific configuration information
-     * 
+     *
      * @throws IOException when there is an error loading a configuration
      */
     protected abstract void configurePlace() throws IOException;
@@ -73,7 +73,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      * MultiFileServerPlaces should invoke this method before executing {@link #process(IBaseDataObject)} or
      * {@link #processHeavyDuty(IBaseDataObject)}. Override if your Place wants to do more validation before bothering to
      * process a payload.
-     * 
+     *
      * @param d payload to validate
      * @return true if d is not null and not empty
      */
@@ -83,7 +83,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     /**
      * Used to propagate needed parent information to all children in the list without nullifying the child fileType
-     * 
+     *
      * @param parent the source of parameters to be copied
      * @param children the destination for parameters to be copied
      */
@@ -93,7 +93,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     /**
      * Used to propagate needed parent information to all children in the list
-     * 
+     *
      * @param parent the source of parameters to be copied
      * @param children the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy
@@ -104,7 +104,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     /**
      * Used to propagate needed parent information to a sprouted child without nullifying fileType
-     * 
+     *
      * @param parent the source of parameters to be copied
      * @param child the destination for parameters to be copied
      */
@@ -114,7 +114,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
 
     /**
      * Used to propagate needed parent information to a sprouted child
-     * 
+     *
      * @param parent the source of parameters to be copied
      * @param child the destination for parameters to be copied
      * @param nullifyFileType if true the child fileType is nullified after the copy

@@ -107,7 +107,7 @@ public class RequestUtil {
 
     /**
      * Retrieves boolean as a String ("true") and returns boolean.
-     * 
+     *
      * @return boolean
      */
     public static boolean getBooleanParam(final ServletRequest request, final String param) {
@@ -117,7 +117,7 @@ public class RequestUtil {
     /**
      * Retrieves boolean if the string value of the parameter equals the trueString argument. If the parameter is not
      * present, false will be returned
-     * 
+     *
      * @return boolean
      */
     public static boolean getBooleanParam(final ServletRequest request, final String param, final String trueString) {
@@ -126,7 +126,7 @@ public class RequestUtil {
 
     /**
      * Retrieves boolean if the string value of the parameter equals the trueString argument.
-     * 
+     *
      * @return boolean
      */
     public static boolean getBooleanParam(final ServletRequest request, final String param, final String trueString, final boolean defaultVal) {
@@ -140,7 +140,7 @@ public class RequestUtil {
 
     /**
      * Retrieves a list of Integers from the request
-     * 
+     *
      * @return Integer[]
      */
     public static Integer[] getIntegers(final ServletRequest request, final String param) {
@@ -149,7 +149,7 @@ public class RequestUtil {
 
     /**
      * Retrieves a list of Integers from the request
-     * 
+     *
      * @return Integer[]
      */
     public static Integer[] getIntegers(final ServletRequest request, final String param, final int defValue) {

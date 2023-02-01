@@ -15,7 +15,7 @@ public class DataByteArraySlicer {
 
     /**
      * Slice a data byte array based on a single position record
-     * 
+     *
      * @param data the data to pull from
      * @param r the position record indicating offsets
      */
@@ -27,7 +27,7 @@ public class DataByteArraySlicer {
 
     /**
      * Slice a data byte array based on a list of position record
-     * 
+     *
      * @param data the data to pull from
      * @param list the list of position records indicating offsets
      */

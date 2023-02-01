@@ -11,7 +11,7 @@ import java.util.List;
 public interface IFilterCondition {
     /**
      * Should a payload be accepted for filtering
-     * 
+     *
      * @param payload the payload to test
      * @return true if the payload should be filtered, false otherwise
      */
@@ -19,7 +19,7 @@ public interface IFilterCondition {
 
     /**
      * Should a list of payloads be accepted for filtering
-     * 
+     *
      * @param payloads the payloads to test
      * @return true if the payload should be filtered, false otherwise
      */
@@ -27,7 +27,7 @@ public interface IFilterCondition {
 
     /**
      * Initialize the IFilterCondition using the specified Configurator
-     * 
+     *
      * @param configG the Configurator to use to initialize the IFilterCondition
      */
     void initialize(Configurator configG);

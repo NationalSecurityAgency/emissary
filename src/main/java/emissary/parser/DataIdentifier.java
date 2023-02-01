@@ -58,7 +58,7 @@ public class DataIdentifier {
 
     /**
      * Return a slice as string for testing
-     * 
+     *
      * @param data the bytes to slice
      * @param limit max length to use for testing
      */
@@ -71,7 +71,7 @@ public class DataIdentifier {
 
     /**
      * Return a slice as string for testing
-     * 
+     *
      * @param data the bytes to slice
      * @return the slice
      */
@@ -81,7 +81,7 @@ public class DataIdentifier {
 
     /**
      * Identify the data in the array
-     * 
+     *
      * @param data array of data to identify
      */
     public String identify(byte[] data) {
@@ -109,7 +109,7 @@ public class DataIdentifier {
     /**
      * Get the size of data that is required for an id This is the maximum amount of data that the id algorithm will use,
      * more or less can be sent,
-     * 
+     *
      * @see #getTestString(byte[])
      */
     public int getTestStringMaxSize() {

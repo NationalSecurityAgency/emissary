@@ -52,7 +52,7 @@ public class Stage {
 
     /**
      * Indicate if a stage supports parallel processing or not
-     * 
+     *
      * @param i the index of the stage
      */
     public boolean isParallelStage(final int i) {
@@ -64,7 +64,7 @@ public class Stage {
 
     /**
      * Indicate if named stages supports parallel processing or not
-     * 
+     *
      * @param stage the name of the stage
      */
     public boolean isParallelStage(final String stage) {
@@ -90,7 +90,7 @@ public class Stage {
 
     /**
      * Return stage index for name
-     * 
+     *
      * @param stage the name of the stage
      * @return the index of the stage or -1 if no such stage
      */
@@ -113,7 +113,7 @@ public class Stage {
 
     /**
      * Return the stage following the named stage or null if the end of the list
-     * 
+     *
      * @param stage the one to find following for
      */
     public String nextStageAfter(final String stage) {

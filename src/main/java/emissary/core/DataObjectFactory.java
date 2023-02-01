@@ -64,7 +64,7 @@ public class DataObjectFactory {
 
     /**
      * Get an instance of the configured DataObject impl with pretty much arbitrary arguments to the constructor
-     * 
+     *
      * @param args the arguments to the BaseDataObject constructor
      */
     public static IBaseDataObject getInstance(final Object... args) {
@@ -74,7 +74,7 @@ public class DataObjectFactory {
 
     /**
      * Get an instance of the configured DataObject impl with filename, form, and file type set
-     * 
+     *
      * @param payload the payload data
      * @param filename the filename
      * @param fileTypeAndForm the form and filetype to set on the IBDO
@@ -86,7 +86,7 @@ public class DataObjectFactory {
 
     /**
      * Get an instance of the configured DataObject impl with filename, form, and file type set
-     * 
+     *
      * @param payload the payload data
      * @param filename the filename
      * @param form the form to set on the IBDO

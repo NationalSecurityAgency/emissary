@@ -41,7 +41,7 @@ public class Factory {
 
     /**
      * Create an object from it's classname using args for arguments
-     * 
+     *
      * @param className the string classname to get a new instance of
      * @param args the arguments to a public constructor of classname
      * @return The newly instantiated object. If it cannot instantiate, this throws some sort of Exception/Error.
@@ -87,7 +87,7 @@ public class Factory {
 
     /**
      * Create an object of the type specified using a no-arg constructor
-     * 
+     *
      * @param className the string class name to instantiate
      * @return The newly instantiated object. If it cannot instantiate, this throws some sort of Exception/Error.
      */
@@ -110,7 +110,7 @@ public class Factory {
 
     /**
      * Create an object and bind it into the namespace
-     * 
+     *
      * @param className the string classname to get a new instance of
      * @param args the arguments to a public constructor of classname
      * @param location name used to bind into the namespace
@@ -128,7 +128,7 @@ public class Factory {
     /**
      * Create an object and bind it into the namespace. This method is used to prevent the ambiguity around overloaded
      * varargs methods.
-     * 
+     *
      * @param className the string classname to get a new instance of
      * @param location name used to bind into the namespace
      * @param args the arguments to a public constructor of classname

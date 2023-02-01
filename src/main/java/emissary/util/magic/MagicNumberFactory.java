@@ -188,7 +188,7 @@ public class MagicNumberFactory {
 
     /**
      * Parses a magic number entry and prepares a magic number item
-     * 
+     *
      * @param entry line to parse
      */
     public static MagicNumber buildMagicNumber(String entry) throws ParseException {
@@ -197,7 +197,7 @@ public class MagicNumberFactory {
 
     /**
      * Parses a magic number entry and prepares a magic number item
-     * 
+     *
      * @param entry line to parse
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      */

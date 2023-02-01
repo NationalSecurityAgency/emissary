@@ -18,7 +18,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Pattern for place observer subscriptions
-     * 
+     *
      * @see emissary.directory.KeyManipulator#gmatch
      */
     protected String pattern = "*.*.*.*";
@@ -37,7 +37,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Called when a place matching the subscription is registered
-     * 
+     *
      * @param observableKey key of the directory reporting the registration
      * @param placeKey key of the place that is being registered
      */
@@ -48,7 +48,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Called when a place matching the subscription is deregistered
-     * 
+     *
      * @param observableKey key of the directory reporting the deregistration
      * @param placeKey key of the place that is being deregistered
      */
@@ -59,7 +59,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Called when the cost of a place matching the subscription is changed
-     * 
+     *
      * @param observableKey key of the directory reporting the change
      * @param placeKey key of the place that is being changed
      */
@@ -70,7 +70,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * The pattern for this observers subscription,
-     * 
+     *
      * @see emissary.directory.KeyManipulator#gmatch
      */
     @Override
@@ -80,7 +80,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Called when the peer group changes
-     * 
+     *
      * @param observableKey the key of the directory being observed
      * @param peers the list of peers currently in the group
      */
@@ -91,7 +91,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Static method to register on the local default named directory
-     * 
+     *
      * @param observer the DirectoryObserver to register
      */
     public static void register(final DirectoryObserver observer) throws EmissaryException {
@@ -103,7 +103,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
 
     /**
      * Static method to remove from the local default named directory
-     * 
+     *
      * @param observer the DirectoryObserver to remove
      */
     public static void remove(final DirectoryObserver observer) throws EmissaryException {

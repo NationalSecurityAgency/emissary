@@ -12,7 +12,7 @@ public class ParserNextChunkException extends ParserException {
 
     /**
      * An exception with a message
-     * 
+     *
      * @param msg the message
      */
     public ParserNextChunkException(String msg) {

@@ -47,7 +47,7 @@ public class DirectoryXmlContainer {
     /**
      * Build an xml document from the contents of the directory as if proxied through the place itself. Except when the
      * entries actually belong to the requester.
-     * 
+     *
      * @param dir the directory that will act as a proxy
      * @param requester the directory doing the requesting
      */
@@ -80,7 +80,7 @@ public class DirectoryXmlContainer {
 
     /**
      * Build an xml document from the map.
-     * 
+     *
      * @param map the map of entries
      * @param loc directory location key
      */
@@ -105,7 +105,7 @@ public class DirectoryXmlContainer {
 
     /**
      * Build an xml string from the contents of a directory place This method pulls the main entryMap of the directory.
-     * 
+     *
      * @param dir the directory to pull the entryMap contents from
      * @return xml string representing the keys
      */
@@ -118,7 +118,7 @@ public class DirectoryXmlContainer {
     /**
      * Build an xml string from the contents of a directory place making it appear that the place represented by proxyKey
      * acts as a proxy for all or the keys in the directory map
-     * 
+     *
      * @param dir the directory to pull the entryMap contents from
      * @param proxyKey place to appear as the proxy
      * @param requester the key of the remote directory that is requesting the local directory contents

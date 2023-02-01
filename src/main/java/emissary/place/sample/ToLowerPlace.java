@@ -12,7 +12,7 @@ import static emissary.core.constants.Configurations.NEW_FORM;
  * This is the main ToLower program.
  *
  * Creation Date: 10/06/2003
- * 
+ *
  **/
 public class ToLowerPlace extends ServiceProviderPlace {
 

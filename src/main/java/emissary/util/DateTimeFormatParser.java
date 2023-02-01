@@ -95,7 +95,7 @@ public class DateTimeFormatParser {
 
     /**
      * Cleans up the date string by removing certain characters before attempting to parse it
-     * 
+     *
      * @param dateString the date string
      * @return the cleaned date string
      */

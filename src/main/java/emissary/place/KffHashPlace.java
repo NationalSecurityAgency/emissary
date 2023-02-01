@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Hashing place to hash payload unless hashes are set or skip flag is set. This place is intended to execute in the
  * Study phase to hash all new content that hasn't been explicitly skipped.
- * 
+ *
  * <p>
  * For performance reasons, we've needed lightweight 'chunkers' that understand the parsing boundaries of input formats
  * which then delegate to a place for full parsing.

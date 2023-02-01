@@ -80,7 +80,7 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Register an agent to start tracking it
-     * 
+     *
      * @param agent the agent to track
      * @param place place executing
      * @return TimedResource for the place and agent
@@ -93,7 +93,7 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Lookup the default ResourceWatcher in the Namespace
-     * 
+     *
      * @return The registered ResourceWatcher
      */
     public static ResourceWatcher lookup() throws NamespaceException {
@@ -109,7 +109,7 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Set the default time limit in millis
-     * 
+     *
      * @param limit the new value
      */
     public void setTimeLimitMillis(final long limit) {
@@ -118,7 +118,7 @@ public class ResourceWatcher implements Runnable {
 
     /**
      * Get the default time limit in millis
-     * 
+     *
      * @return time limit
      */
     public long getTimeLimitMillis() {

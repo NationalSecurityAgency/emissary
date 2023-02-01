@@ -36,7 +36,7 @@ public class HtmlEntityMap {
 
     /**
      * Give the value for the specified entity from the configuration file
-     * 
+     *
      * @param entity can be with or without ampersand and semi-colon
      * @return the configured value or null if unknown
      */

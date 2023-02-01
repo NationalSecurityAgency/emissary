@@ -7,7 +7,7 @@ package emissary.directory;
 public interface PlaceObserver extends DirectoryObserver {
     /**
      * Called when a place matching the subscription is registered
-     * 
+     *
      * @param observableKey key of the directory reporting the registration
      * @param placeKey key of the place that is being registered
      */
@@ -15,7 +15,7 @@ public interface PlaceObserver extends DirectoryObserver {
 
     /**
      * Called when a place matching the subscription is deregistered
-     * 
+     *
      * @param observableKey key of the directory reporting the deregistration
      * @param placeKey key of the place that is being deregistered
      */
@@ -23,7 +23,7 @@ public interface PlaceObserver extends DirectoryObserver {
 
     /**
      * Called when the cost of a place matching the subscription is changed
-     * 
+     *
      * @param observableKey key of the directory reporting the change
      * @param placeKey key of the place that is being changed
      */
@@ -31,7 +31,7 @@ public interface PlaceObserver extends DirectoryObserver {
 
     /**
      * The pattern for this observers subscription,
-     * 
+     *
      * @see emissary.directory.KeyManipulator#gmatch
      */
     String getPattern();

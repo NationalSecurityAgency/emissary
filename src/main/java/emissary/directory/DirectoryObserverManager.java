@@ -28,7 +28,7 @@ public class DirectoryObserverManager {
 
     /**
      * Construct with key
-     * 
+     *
      * @param key the key of the directory we work on behalf of
      */
     public DirectoryObserverManager(final String key) {
@@ -37,7 +37,7 @@ public class DirectoryObserverManager {
 
     /**
      * Add an observer
-     * 
+     *
      * @param observer the new observer to add
      */
     public void addObserver(final DirectoryObserver observer) {
@@ -46,7 +46,7 @@ public class DirectoryObserverManager {
 
     /**
      * Remove an observer
-     * 
+     *
      * @param observer the object to remove
      * @return true if it was found on the list
      */
@@ -56,7 +56,7 @@ public class DirectoryObserverManager {
 
     /**
      * Count the observers
-     * 
+     *
      * @return count of how many observers are being managed
      */
     public int getObserverCount() {
@@ -65,7 +65,7 @@ public class DirectoryObserverManager {
 
     /**
      * Count how many peer observers are being managed
-     * 
+     *
      * @return count of observers on the peer list
      */
     public int getPeerObserverCount() {
@@ -80,7 +80,7 @@ public class DirectoryObserverManager {
 
     /**
      * Count how many place observers are being managed
-     * 
+     *
      * @return count of observers on the place list
      */
     public int getPlaceObserverCount() {
@@ -95,7 +95,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all peer observers of peer list change
-     * 
+     *
      * @param peers the current list of peers to our directory
      */
     public void peerUpdate(final Set<DirectoryEntry> peers) {
@@ -111,7 +111,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place add
-     * 
+     *
      * @param placeKey the key that was added
      */
     public void placeAdd(final String placeKey) {
@@ -121,7 +121,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place adds
-     * 
+     *
      * @param placeKeys the list of keys added
      */
     public void placeAdd(final List<String> placeKeys) {
@@ -134,7 +134,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place adds
-     * 
+     *
      * @param placeEntries the list of entries added
      */
     public void placeAddEntries(final List<DirectoryEntry> placeEntries) {
@@ -147,7 +147,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place remove
-     * 
+     *
      * @param placeKey the key what was removed
      */
     public void placeRemove(final String placeKey) {
@@ -157,7 +157,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place removes
-     * 
+     *
      * @param placeKeys the list of keys removed
      */
     public void placeRemove(final List<String> placeKeys) {
@@ -170,7 +170,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place removes
-     * 
+     *
      * @param placeEntries the list of entries removed
      */
     public void placeRemoveEntries(final List<DirectoryEntry> placeEntries) {
@@ -183,7 +183,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place cost change
-     * 
+     *
      * @param placeKey the revised key
      */
     public void placeCostChange(final String placeKey) {
@@ -192,7 +192,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place cost changes
-     * 
+     *
      * @param placeKeys the list of keys with changed cost
      */
     public void placeCostChange(final List<String> placeKeys) {
@@ -204,7 +204,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of place cost changes
-     * 
+     *
      * @param placeEntries the list of entries with changed cost
      */
     public void placeCostChangeEntries(final List<DirectoryEntry> placeEntries) {
@@ -216,7 +216,7 @@ public class DirectoryObserverManager {
 
     /**
      * Notify all matching place observers of change
-     * 
+     *
      * @param action PLACE_ADD or PLACE_REMOVE
      * @param placeKey the key that was added or removed
      */

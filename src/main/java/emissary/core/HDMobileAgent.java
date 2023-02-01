@@ -57,7 +57,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * New method to get a payload from the list
-     * 
+     *
      * @param num the specified payload
      */
     public synchronized IBaseDataObject getPayload(final int num) {
@@ -69,7 +69,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Add payload to the list, warn if not empty
-     * 
+     *
      * @param p the payload, clear list if null to retain previous behavior
      */
     @Override
@@ -88,7 +88,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Add a new payload (i.e. instead of sprouting a new agent for it)
-     * 
+     *
      * @param p the new payload
      * @return true
      */
@@ -98,7 +98,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Add a collection of new payload objects
-     * 
+     *
      * @param c the collection to add
      * @return true
      */
@@ -125,7 +125,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * The arrive method that takes in a list of payloads arriving on the new machine
-     * 
+     *
      * @param payload the real payload, exisitng if any will be cleared
      * @param arrivalPlace the place we start at
      * @param moveErrorCount state transfer from sending agent
@@ -378,7 +378,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Make the payload at the specified index the new primary one and reset the logger context to the new value
-     * 
+     *
      * @param i the index of the desired payload
      */
     protected void switchPrimaryPayload(final int i) {
@@ -396,7 +396,7 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Do work now that we have arrived a the specified place
-     * 
+     *
      * @param place the place we are asking to work for us
      * @param payloadListArg list of IBaseDataObject for the place to operate on
      * @return list of &quot;sprouted&quot; payloads

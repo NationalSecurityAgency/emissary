@@ -14,7 +14,7 @@ public interface Rollable extends Closeable {
 
     /**
      * True if this object is currently rolling, false otherwise. This method should be thread safe.
-     * 
+     *
      * @return true if this object is currently rolling; false otherwise
      */
     boolean isRolling();

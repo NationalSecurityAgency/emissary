@@ -17,7 +17,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
 
     /**
      * Create the place
-     * 
+     *
      * @param configInfo the config file or resource
      * @param dir string key of the controlling directory place
      * @param placeLoc location of this place
@@ -29,7 +29,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
 
     /**
      * Create the place
-     * 
+     *
      * @param configInfo the config file or resource
      * @param placeLoc location of this place
      */
@@ -64,7 +64,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
 
     /**
      * Search for the first preferred view that is present or use the primary data if none
-     * 
+     *
      * @param payload the payload to pull data from
      */
     protected byte[] getPreferredData(final IBaseDataObject payload) {
@@ -80,7 +80,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
 
     /**
      * Set the results back into the preferred data location
-     * 
+     *
      * @param payload the data object to load
      * @param analyzedData the results of the analysis
      * @return true if the data was stored, false if not. See ANALYZED_DATA_NAME config element

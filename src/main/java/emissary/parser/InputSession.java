@@ -52,7 +52,7 @@ public class InputSession {
 
     /**
      * Record details of an input session
-     * 
+     *
      * @param o the overall position record
      */
     public InputSession(PositionRecord o) {
@@ -61,7 +61,7 @@ public class InputSession {
 
     /**
      * Record details of an input session
-     * 
+     *
      * @param o the overall position record
      * @param d position records for the data
      */
@@ -72,7 +72,7 @@ public class InputSession {
 
     /**
      * Record details of an input session
-     * 
+     *
      * @param o the overall position record
      * @param d position record for the data
      */
@@ -83,7 +83,7 @@ public class InputSession {
 
     /**
      * Record details of an input session
-     * 
+     *
      * @param o the overall position record
      * @param h position records for the header
      * @param f position records for the footer
@@ -97,7 +97,7 @@ public class InputSession {
 
     /**
      * Record details of an input session
-     * 
+     *
      * @param o the overall position record
      * @param h position record for the header
      * @param f position record for the footer
@@ -112,7 +112,7 @@ public class InputSession {
 
     /**
      * Set the overall position record
-     * 
+     *
      * @param rec the PositionRecord for the overall session range
      */
     public void setOverall(PositionRecord rec) throws ParserException {
@@ -122,7 +122,7 @@ public class InputSession {
 
     /**
      * Set the overall position record from the data
-     * 
+     *
      * @param start for the position record
      * @param length for the position record
      */
@@ -132,7 +132,7 @@ public class InputSession {
 
     /**
      * Add a map of metadata
-     * 
+     *
      * @param m map of String key and String or PositionRecord values
      */
     public void addMetaData(Map<String, Object> m) throws ParserException {
@@ -153,7 +153,7 @@ public class InputSession {
 
     /**
      * Set the session validity
-     * 
+     *
      * @param b true if session is valid
      */
     public void setValid(boolean b) {
@@ -162,7 +162,7 @@ public class InputSession {
 
     /**
      * Get session validity
-     * 
+     *
      * @return true if session is valid
      */
     public boolean isValid() {
@@ -171,7 +171,7 @@ public class InputSession {
 
     /**
      * Get overall start position
-     * 
+     *
      * @return overall start
      */
     public long getStart() {
@@ -183,7 +183,7 @@ public class InputSession {
 
     /**
      * Get overall length
-     * 
+     *
      * @return overall length
      */
     public long getLength() {
@@ -195,7 +195,7 @@ public class InputSession {
 
     /**
      * Get overall position record for the session
-     * 
+     *
      * @return overall position record
      */
     public PositionRecord getOverall() {
@@ -204,7 +204,7 @@ public class InputSession {
 
     /**
      * Add and validate a list of header records
-     * 
+     *
      * @param h list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
@@ -217,7 +217,7 @@ public class InputSession {
 
     /**
      * Add and validate a list of data records
-     * 
+     *
      * @param d list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
@@ -230,7 +230,7 @@ public class InputSession {
 
     /**
      * Add and validate a list of footer records
-     * 
+     *
      * @param f list of PositionRecord
      * @throws ParserException when a record is out of bounds
      */
@@ -243,7 +243,7 @@ public class InputSession {
 
     /**
      * Add and validate a header record
-     * 
+     *
      * @param r the record to add
      * @throws ParserException when a record is out of bounds
      */
@@ -254,7 +254,7 @@ public class InputSession {
 
     /**
      * Create a position record and add it to the header
-     * 
+     *
      * @param pos starting position
      * @param len length of data
      * @throws ParserException when out of bounds
@@ -265,7 +265,7 @@ public class InputSession {
 
     /**
      * Add and validate a footer record
-     * 
+     *
      * @param r the record to add
      * @throws ParserException when a record is out of bounds
      */
@@ -276,7 +276,7 @@ public class InputSession {
 
     /**
      * Create a position record and add it to the footer
-     * 
+     *
      * @param pos starting position
      * @param len length of data
      * @throws ParserException when out of bounds
@@ -287,7 +287,7 @@ public class InputSession {
 
     /**
      * Add a validate a data record
-     * 
+     *
      * @param r the record to add
      * @throws ParserException when a record is out of bounds
      */
@@ -298,7 +298,7 @@ public class InputSession {
 
     /**
      * Create a position record and add it to the data
-     * 
+     *
      * @param pos starting position
      * @param len length of data
      * @throws ParserException when out of bounds
@@ -309,7 +309,7 @@ public class InputSession {
 
     /**
      * Add a metadata position record
-     * 
+     *
      * @param name name of metadata item
      * @param r position record of data
      * @throws ParserException when out of bounds
@@ -321,7 +321,7 @@ public class InputSession {
 
     /**
      * Add a metadata position record
-     * 
+     *
      * @param name name of metadata item
      * @param rec string value of metadata item
      */
@@ -331,7 +331,7 @@ public class InputSession {
 
     /**
      * Count of data position records
-     * 
+     *
      * @return count
      */
     public int getDataCount() {
@@ -340,7 +340,7 @@ public class InputSession {
 
     /**
      * Count of footer position records
-     * 
+     *
      * @return count
      */
     public int getFooterCount() {
@@ -349,7 +349,7 @@ public class InputSession {
 
     /**
      * Count of header position records
-     * 
+     *
      * @return count
      */
     public int getHeaderCount() {
@@ -358,7 +358,7 @@ public class InputSession {
 
     /**
      * Count of metadata records
-     * 
+     *
      * @return count
      */
     public int getMetaDataCount() {
@@ -367,7 +367,7 @@ public class InputSession {
 
     /**
      * Get footer position records
-     * 
+     *
      * @return list of PositionRecord
      */
     public List<PositionRecord> getFooter() {
@@ -376,7 +376,7 @@ public class InputSession {
 
     /**
      * List header records
-     * 
+     *
      * @return list of PositionRecord
      */
     public List<PositionRecord> getHeader() {
@@ -385,7 +385,7 @@ public class InputSession {
 
     /**
      * Get data position records
-     * 
+     *
      * @return list of PositionRecord
      */
     public List<PositionRecord> getData() {
@@ -394,7 +394,7 @@ public class InputSession {
 
     /**
      * Return a map of metadata information. Some values will be Strings, others will be PositionRecords
-     * 
+     *
      * @return metadata
      */
     public Map<String, Object> getMetaData() {
@@ -403,7 +403,7 @@ public class InputSession {
 
     /**
      * Info pump for debugging output
-     * 
+     *
      * @return string representation
      */
     @Override
@@ -421,7 +421,7 @@ public class InputSession {
 
     /**
      * Validation of one PositionRecord. Does nothing if overall bounds not yet set
-     * 
+     *
      * @param r the record to check
      * @throws ParserException when out of bounds
      */
@@ -433,7 +433,7 @@ public class InputSession {
 
     /**
      * Validate a list of PositionRecord. Does nothing if overall bounds not yet set
-     * 
+     *
      * @param list the list of PositionRecord
      * @throws ParserException when out of bounds
      */
@@ -450,7 +450,7 @@ public class InputSession {
 
     /**
      * Validate everything. Does nothing if overall bounds not yet set
-     * 
+     *
      * @throws ParserException when out of bounds
      */
     protected void validateAll() throws ParserException {
@@ -465,7 +465,7 @@ public class InputSession {
 
     /**
      * Validate the PositionRecords in the metadata map Does nothing if overall bounds not yet set
-     * 
+     *
      * @throws ParserException when out of bounds
      */
     protected void validateMetaData() throws ParserException {

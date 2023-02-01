@@ -13,7 +13,7 @@ public final class InMemoryChannelFactory {
 
     /**
      * Create a new instance of the factory using the provided byte array
-     * 
+     *
      * @param bytes containing the data to provide to consumers in an immutable manner
      * @return a new instance
      */
@@ -39,7 +39,7 @@ public final class InMemoryChannelFactory {
         /**
          * Create an immutable byte channel to the existing byte array (no copy in/out regardless of how many channels are
          * created)
-         * 
+         *
          * @return the new channel instance
          */
         @Override

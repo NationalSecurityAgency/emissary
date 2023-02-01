@@ -20,7 +20,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Create a new set of counters
-     * 
+     *
      * @param flexentry whether to allow non initialized keys to be incremented
      */
     public CounterSet(boolean flexentry) {
@@ -30,7 +30,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Create a new set of counters
-     * 
+     *
      * @param initialCapacity hash map initial capacity
      */
     public CounterSet(int initialCapacity) {
@@ -39,7 +39,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Create a new set of counters
-     * 
+     *
      * @param initialCapacity hash map initial capacity
      * @param loadFactor hash map load factor
      */
@@ -49,7 +49,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Change the flexentry setting
-     * 
+     *
      * @param val the new value
      */
     public void setFlexEntry(boolean val) {
@@ -58,7 +58,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Determine flex entry status
-     * 
+     *
      * @return true if unknown keys are allowed in add/increment
      */
     public boolean isFlexEntry() {
@@ -74,7 +74,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Add a counter
-     * 
+     *
      * @param key the name of the new Counter
      */
     public void addKey(String key) {
@@ -83,7 +83,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Add a collection of counters
-     * 
+     *
      * @param keys the names of the new counters
      */
     public void addKeys(Collection<String> keys) {
@@ -93,7 +93,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Add value to a counter
-     * 
+     *
      * @param key the name of the counter
      * @param val how much to add
      * @return the value of the counter, or -1 if it is not allowed
@@ -109,7 +109,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Increment the named Counter
-     * 
+     *
      * @param key the name of the Counter
      * @return the value of the counter, or -1 if it is not allowed
      */
@@ -119,7 +119,7 @@ public class CounterSet extends HashMap<String, Integer> {
 
     /**
      * Decrement the named Counter
-     * 
+     *
      * @param key the name of the Counter
      * @return the value of the counter, or -1 if it is not allowed
      */

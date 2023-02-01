@@ -29,7 +29,7 @@ public class DataUtil {
 
     /**
      * As {@link IBaseDataObject#pushCurrentForm(String)} but makes sure each form is not already on the stack first.
-     * 
+     *
      * @param d data object to have form pushed into
      * @param forms that are pushed into current forms if not already present
      */
@@ -41,7 +41,7 @@ public class DataUtil {
 
     /**
      * As {@link IBaseDataObject#pushCurrentForm(String)} but makes sure each form is not already on the stack first.
-     * 
+     *
      * @param d data object to have form pushed into
      * @param form that are pushed into current forms if not already present
      */
@@ -71,7 +71,7 @@ public class DataUtil {
 
     /**
      * Return true if the data is empty or consists only of whitespace or control characters
-     * 
+     *
      * @param data array to check
      * @return true if data is null or devoid of real characters
      */
@@ -89,7 +89,7 @@ public class DataUtil {
 
     /**
      * Convenience method to assign the current form and file type of a {@link IBaseDataObject} to "EMPTY_SESSION".
-     * 
+     *
      * @param d the object to set as empty
      */
     public static void setEmptySession(final IBaseDataObject d) {
@@ -117,7 +117,7 @@ public class DataUtil {
     /**
      * Get the event or collection date from a data object by checking the EventDate and FILE_DATE parameters. If both are
      * missing default to today.
-     * 
+     *
      * @param payload data object to examine
      * @return event date
      */
@@ -143,7 +143,7 @@ public class DataUtil {
 
     /**
      * Get a Calendar object from a Date Object with the TZ set to UTC
-     * 
+     *
      * @param eventDate the date object to convert
      * @return specified time UTC calendar
      */
@@ -166,7 +166,7 @@ public class DataUtil {
 
     /**
      * Merge a key-value pair into a map, where the values are semicolon delimited lists
-     * 
+     *
      * @param info the map to merge into
      * @param key the newly arriving key
      * @param value the newly arriving value
@@ -186,7 +186,7 @@ public class DataUtil {
 
     /**
      * Convert a semicolon delmited list as a set of strings
-     * 
+     *
      * @param values semicolon delimited list
      * @return strings in list
      */
@@ -200,7 +200,7 @@ public class DataUtil {
 
     /**
      * Join a collection with a delimiter
-     * 
+     *
      * @param values the collection to join
      * @param delim the string delimiter to use
      * @param sort true if the output should be sorted
@@ -227,7 +227,7 @@ public class DataUtil {
 
     /**
      * Join a collection with a delimiter, output in sorted order
-     * 
+     *
      * @param values the collection to join
      * @param delim the string delimiter to use
      */
@@ -238,7 +238,7 @@ public class DataUtil {
 
     /**
      * Join a collection with a semi-colon delimiter, output in sorted order
-     * 
+     *
      * @param values the collection to join
      */
     @Deprecated
@@ -248,7 +248,7 @@ public class DataUtil {
 
     /**
      * Given a map of key-values, merge each into {@link IBaseDataObject} checking for duplication
-     * 
+     *
      * @param parent IBaseDataObject to merge String parameter with
      * @param map key-value pairs to merge
      */
@@ -262,7 +262,7 @@ public class DataUtil {
     /**
      * Assume key is name of String value parameter. Check wither parent already has string value in a delim-separated
      * string. If so do nothing, otherwise, add delim + value
-     * 
+     *
      * @param parent IBaseDataObject to mere String parameter with
      * @param key name of String parameter
      * @param val String to append if not already in parents values
@@ -284,7 +284,7 @@ public class DataUtil {
 
     /**
      * Copy an array of metadata parameters from one data object to another
-     * 
+     *
      * @param source to copy from
      * @param target to copy to
      * @param keys array of metadata keys to copy
@@ -297,7 +297,7 @@ public class DataUtil {
 
     /**
      * Copy an collection of metadata parameters from one data object to another
-     * 
+     *
      * @param source to copy from
      * @param target to copy to
      * @param keys collection of metadata keys to copy
@@ -310,7 +310,7 @@ public class DataUtil {
 
     /**
      * Copy a metadata item from one payload to another
-     * 
+     *
      * @param source to copy from
      * @param target to copy to
      * @param key metadata key to copy
@@ -324,7 +324,7 @@ public class DataUtil {
 
     /**
      * Convenience method for using same value as currentForm (pushed) and filetype for a {@link IBaseDataObject}
-     * 
+     *
      * @param dataobj to be set
      * @param form added as current form and filetype for dataobj
      */

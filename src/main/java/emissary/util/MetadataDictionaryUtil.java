@@ -53,7 +53,7 @@ public class MetadataDictionaryUtil {
     /**
      * Get the view, map the first token on each line. The view should be structured as "key value" where the first space on
      * the line separates the key from the rest.
-     * 
+     *
      * @param input the bytes of the view to be mapped
      * @return a byte[] containing transformed/alphabetized keys with their value pairs
      */
@@ -67,7 +67,7 @@ public class MetadataDictionaryUtil {
     /**
      * Converts a map of key/values into a byte array. Each key/value will be output on a separate line in alphabetical
      * order by key in map.
-     * 
+     *
      * @param metadata the Map of metadata to convert
      * @return a byte[] of key/values on individual lines in alphabetical order
      * @throws IOException If there is some I/O problem.
@@ -81,7 +81,7 @@ public class MetadataDictionaryUtil {
     /**
      * Converts a map of key/values into a byte array. Each key/value will be output on a separate line in alphabetical
      * order by key in map.
-     * 
+     *
      * @param kv the Map of metadata to convert
      * @param output a ByteArrayOutputStream to write the key/value pairs to
      * @return a byte[] of key/values on individual lines in alphabetical order
@@ -106,7 +106,7 @@ public class MetadataDictionaryUtil {
     /**
      * Read each line of input, tokenize them into key/value pairs, perform a lookup/transformation of the keys via the
      * MetadataDictionary where applicable, and return the results as a map.
-     * 
+     *
      * @param input the bytes to convert
      * @param output a ByteArrayOutputStream to write failed parse attempts to
      * @return a Map containing each line converted to a key/value pair and sorted alphabetically by key

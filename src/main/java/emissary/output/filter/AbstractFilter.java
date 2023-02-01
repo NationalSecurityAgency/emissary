@@ -95,7 +95,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Initialization phase hook for the filter with provided filter configuration
-     * 
+     *
      * @param theConfigG passed in configuration object, usually DropOff's config
      * @param filterName the configured name of this filter or null for the default
      * @param theFilterConfig the configuration for the specific filter
@@ -160,7 +160,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Run custom configuration
-     * 
+     *
      * @param config the filter specific configurator
      */
     protected void initializeOutputTypes(@Nullable final Configurator config) {
@@ -176,7 +176,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Return the name of this filter
-     * 
+     *
      * @return the string name of the filter
      */
     @Override
@@ -186,7 +186,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Set the filter name
-     * 
+     *
      * @param s the new name to use for this filter instance
      */
     @Override
@@ -202,7 +202,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * <li>[filter-package].[filter-class]-FILTER_NAME.cfg</li>
      * <li>[filter-package].[filter-class].cfg</li>
      * </ol>
-     * 
+     *
      * @param suppliedFilterConfig configuration to use when not null
      */
     protected void loadFilterConfiguration(@Nullable final Configurator suppliedFilterConfig) {
@@ -229,7 +229,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Run the filter for a set of documents
-     * 
+     *
      * @param list collection of IBaseDataObject to run the filter on
      * @param params map of params
      * @return status value
@@ -247,7 +247,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Run the filter for a set of documents
-     * 
+     *
      * @param list collection of IBaseDataObject to run the filter on
      * @param params map of params
      * @param output the output stream
@@ -283,7 +283,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Determine if the payload is outputtable by the filter
-     * 
+     *
      * @param d the document
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
@@ -295,7 +295,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Determine if the payload list is outputtable by the filter
-     * 
+     *
      * @param list collection of IBaseDataObject to check for outputtability
      * @param params map of params
      * @return true if the filter wants a crack at outputting this payload
@@ -324,7 +324,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Get bytes as UTF-8 converted from specified charset
-     * 
+     *
      * @param value the contents
      * @param charset the charset of the bytes in value
      */
@@ -334,7 +334,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Get bytes as UTF-8 converted from specified charset
-     * 
+     *
      * @param value the contents
      * @param start position to start subarray
      * @param len length of subarray
@@ -361,7 +361,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /**
      * Extract the charset from the payload or defaultCharset
-     * 
+     *
      * @param d the payload
      * @param defaultCharset the default
      * @return the charset or defualtCharset if none

@@ -28,22 +28,22 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Real close implementation
-     * 
+     *
      * @throws IOException if an error occurs
      */
     protected abstract void closeImpl() throws IOException;
 
     /**
      * Real read implementation
-     * 
+     *
      * Max bytes to read should be based on SBC position and size, and the byteBuffer position and size to avoid returning
      * more data from the underlying implementation.
-     * 
+     *
      * For example, if the underlying channel contains 64 bytes of data, but your implementation wraps this to present a
      * 'window' of the first 16 bytes, the read operation shouldn't be able to return anything other than the first 16
      * bytes, otherwise unexpected behaviour is likely. If the byteBuffer provided is larger than the amount of bytes
      * available we need to limit the number of bytes read into it.
-     * 
+     *
      * @param byteBuffer to read from the SBC into.
      * @param maxBytesToRead regardless of the remaining bytes in the implementation.
      * @return the number of bytes read
@@ -53,7 +53,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Real size implementation
-     * 
+     *
      * @return the size of the channel
      * @throws IOException if an error occurs
      */
@@ -72,7 +72,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Determine whether the channel is marked as open/closed
-     * 
+     *
      * @return if the channel is open
      */
     @Override
@@ -82,7 +82,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * If the channel is open, return the current position
-     * 
+     *
      * @return the current position if the channel is still open
      */
     @Override
@@ -93,7 +93,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Set the position of the channel. Must be greater than -1, can be beyond the length of the channel.
-     * 
+     *
      * @param position to set within the channel
      */
     @Override
@@ -106,9 +106,9 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Read bytes from the channel into the provided buffer, if the channel is still open.
-     * 
+     *
      * Relies on the implementation provided by the extending class to actually carry out the read.
-     * 
+     *
      * @param byteBuffer to read into
      * @throws IOException if an error occurs
      */
@@ -126,9 +126,9 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Return the size of the channel if the channel is still open.
-     * 
+     *
      * This adheres to the {@link SeekableByteChannel} specification.
-     * 
+     *
      * @throws IOException if an error occurs
      */
     @Override
@@ -139,7 +139,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Block truncation of the channel, keep it immutable. Will throw {@link NonWritableChannelException}
-     * 
+     *
      * @param size to set the channel to
      * @throws IOException if an error occurs
      */
@@ -150,7 +150,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Block writing of the channel, keep it immutable. Will throw {@link NonWritableChannelException}
-     * 
+     *
      * @param byteBuffer to write from
      */
     @Override
@@ -160,7 +160,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
     /**
      * Validate the channel is still open, otherwise throw a {@link ClosedChannelException}
-     * 
+     *
      * @param open if the channel is open or not
      * @throws IOException if an error occurs
      */

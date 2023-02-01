@@ -107,7 +107,7 @@ public class ChecksumResults implements Serializable {
 
     /**
      * Get names of digest results present
-     * 
+     *
      * @return Set of string algorithm names
      */
     public Set<String> getResultsPresent() {

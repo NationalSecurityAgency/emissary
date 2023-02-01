@@ -35,7 +35,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Create the place from the specified config file or resource
-     * 
+     *
      * @param configInfo the config file or resource to use
      */
     public UnixCommandPlace(String configInfo) throws IOException {
@@ -45,7 +45,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Create the place from the specified config file or resource
-     * 
+     *
      * @param configInfo the config file or resource to use
      * @param dir the name of the controlling directory to register with
      * @param placeLoc string name of this place
@@ -57,7 +57,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Create the place from the specified config stream data
-     * 
+     *
      * @param configInfo the config file or resource to use
      * @param dir the name of the controlling directory to register with
      * @param placeLoc string name of this place
@@ -69,7 +69,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Create the place from the specified config stream data
-     * 
+     *
      * @param configInfo the config file or resource to use
      */
     public UnixCommandPlace(InputStream configInfo) throws IOException {
@@ -119,7 +119,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Set a custom executrix, allows easier mocking among other things
-     * 
+     *
      * @param e the new executrix instance to use
      */
     public void setExecutrix(Executrix e) {
@@ -151,7 +151,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Log the messages found in the log file
-     * 
+     *
      * @param tempDir the directory where the command executed
      */
     protected void logMessages(String tempDir) {
@@ -185,7 +185,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Run the stdout process
-     * 
+     *
      * @param cmd command with arguments
      * @param chop if true chomp CRLF from output
      * @return bytes of output from command execution
@@ -228,7 +228,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Process the data coming from MobileAgent
-     * 
+     *
      * @param theDataObject payload to process
      */
     @Override
@@ -245,7 +245,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Process the data in a synchronized wrapper
-     * 
+     *
      * @param theDataObject payload to process
      */
     protected synchronized void synchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
@@ -255,7 +255,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Process the data in an un-synchronized wrapper
-     * 
+     *
      * @param theDataObject payload to process
      */
     protected void unSynchronizedProcess(IBaseDataObject theDataObject) throws ResourceException {
@@ -265,7 +265,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Helper routine to run command on data
-     * 
+     *
      * @param data the bytes to run the command on
      * @return byte array of output
      */
@@ -317,7 +317,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook to add command ouput as an alternate view
-     * 
+     *
      * @param tData the data object we ran the command on
      * @param newForm the name of the alternate view or null
      * @param outputData the result of running the command
@@ -328,7 +328,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook to add command output as metadata
-     * 
+     *
      * @param tData the data object we ran the command on
      * @param tag the configured name of the new metadata item
      * @param outputData the result of running the command
@@ -342,7 +342,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook to set command output as the current form
-     * 
+     *
      * @param tData the data object the command was run on
      * @param outputData the results of running the command
      */
@@ -352,7 +352,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook to add command output as the data element
-     * 
+     *
      * @param tData the data object the command was run on
      * @param outputData the results of running the command
      */
@@ -362,7 +362,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook to handle error or null output from command
-     * 
+     *
      * @param tData the data object the command was run on
      */
     protected void errorHook(IBaseDataObject tData) {
@@ -374,7 +374,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Hook for services not coded in this implementation
-     * 
+     *
      * @param serviceType the configured service type
      * @param tData data object the command was run on
      * @param outputData results of the command that was run
@@ -386,7 +386,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
 
     /**
      * Run the command and process the results
-     * 
+     *
      * @param tData the data object to process
      */
     protected void processData(IBaseDataObject tData) throws ResourceException {

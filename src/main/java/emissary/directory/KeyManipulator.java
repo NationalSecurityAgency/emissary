@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
  * format:
  *
  * <code>dataType.serviceName.serviceType.location$expense</code>
- * 
+ *
  * Example: UNKNOWN.servicename.ID.tcp://host.dom.com:8001/FilePlace$5050
- * 
+ *
  * <table>
  * <caption>For the example key above the return values are as follows:</caption>
  * <tr>

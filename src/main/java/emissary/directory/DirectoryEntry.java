@@ -103,7 +103,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Constructor which create a new directory entry and new directoryInfo object.
-     * 
+     *
      * @param key four-tuple key of the place
      * @param description from config file
      * @param cost from config file
@@ -123,7 +123,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Create an entry from nothing but a key
-     * 
+     *
      * @param key the key to use
      */
     public DirectoryEntry(final String key) {
@@ -132,7 +132,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Make an entry from parts, specifying expense
-     * 
+     *
      * @param dataType the first part of the key
      * @param serviceName the second part of the key
      * @param serviceType the third part of the key
@@ -153,7 +153,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Make an entry from parts, specifing cost and quality
-     * 
+     *
      * @param dataType the first part of the key
      * @param serviceName the second part of the key
      * @param serviceType the third part of the key
@@ -177,7 +177,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Make an entry from parts, default expense
-     * 
+     *
      * @param dataType the first part of the key
      * @param serviceName the second part of the key
      * @param serviceType the third part of the key
@@ -191,7 +191,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Copy constructor
-     * 
+     *
      * @param that the entry to copy
      */
     public DirectoryEntry(final DirectoryEntry that) {
@@ -200,7 +200,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Copy constructor with time copy
-     * 
+     *
      * @param that the entry to copy
      * @param preserveTime copy the time value also when true
      */
@@ -231,7 +231,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set the expense, cost and quality from the expense
-     * 
+     *
      * @param expense the expense to use
      */
     protected void setCQEFromExp(final int expense) {
@@ -294,7 +294,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set the cost of processing at a place.
-     * 
+     *
      * @param cost the new cost
      */
     public void setCost(final int cost) {
@@ -304,7 +304,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Increment the cost of a place's processing
-     * 
+     *
      * @param costIncrement the increment to add
      */
     public void addCost(final int costIncrement) {
@@ -314,7 +314,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set key and precompute stuff we need
-     * 
+     *
      * @see #buildKey
      * @param key the key
      */
@@ -337,7 +337,7 @@ public class DirectoryEntry implements Serializable {
      * likely to be selected from a group with equal expense. Making it higher makes it more likely to be selected from a
      * group with equal expense. Between entries with different expense values there is no effect. The value is not allowed
      * to go below zero.
-     * 
+     *
      * @return the current path weight value
      */
     public int getPathWeight() {
@@ -346,7 +346,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set the path weight of moving to a place
-     * 
+     *
      * @see #getPathWeight()
      */
     public void setPathWeight(final int value) {
@@ -360,7 +360,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Add to the path weight. The increment can be negative to remove weight. The path weight is not allowed to go below
      * zero.
-     * 
+     *
      * @see #getPathWeight()
      * @param weightIncrement amount to add to weight
      */
@@ -373,7 +373,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set a new data type
-     * 
+     *
      * @param dataType the new data type
      */
     public void setDataType(final String dataType) {
@@ -383,7 +383,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set a new servicelocation
-     * 
+     *
      * @param serviceLocation the new value
      */
     public void setServiceLocation(final String serviceLocation) {
@@ -394,7 +394,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Set a reference to the local place object
-     * 
+     *
      * @param place the local reference
      */
     protected void setLocalPlace(final IServiceProviderPlace place) {
@@ -403,7 +403,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Get service name
-     * 
+     *
      * @return service name from key
      */
     public String getDataType() {
@@ -412,7 +412,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Get dataID
-     * 
+     *
      * @return dataID from key
      */
     public String getDataID() {
@@ -421,7 +421,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Get service location
-     * 
+     *
      * @return service location from key
      */
     public String getServiceLocation() {
@@ -430,7 +430,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Get service host url
-     * 
+     *
      * @return service host url from key
      */
     public String getServiceHostURL() {
@@ -439,7 +439,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Get the reference to the local place
-     * 
+     *
      * @return local place reference or null if not local
      */
     public IServiceProviderPlace getLocalPlace() {
@@ -457,7 +457,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Used to order directory entries. Returns true if this entry is better than the argument entry
-     * 
+     *
      * @param that the entry to test
      * @return true if this is better than that
      */
@@ -535,7 +535,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Calculate an expense value from the cost and quality, cost is primary
-     * 
+     *
      * @param cost the cost
      * @param quality the quality
      */
@@ -545,7 +545,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Keep the internal key parameters in sync when one of the setters is called
-     * 
+     *
      * @see #setKey(String)
      */
     protected void buildKey() {
@@ -555,7 +555,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Determine if local by looking up in namespace
-     * 
+     *
      * @return true if local
      */
     public boolean isLocal() {
@@ -575,7 +575,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Change the key such that the place specified by proxyKey acts as a proxy for the current key. We keep the same data
      * type, service type, service name and expense but change the place to the proxy
-     * 
+     *
      * @param proxyKey the replacement key
      */
     public void proxyFor(final String proxyKey) {
@@ -592,7 +592,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Package access to the age value so that creation time can be preserved in some cases
-     * 
+     *
      * @param age the age to be preserved
      */
     void preserveCopyAge(final long age) {
@@ -601,7 +601,7 @@ public class DirectoryEntry implements Serializable {
 
     /**
      * Build an entry from the supplied xml fragment
-     * 
+     *
      * @param e a JDOM Element
      */
     public static DirectoryEntry fromXML(final Element e) {

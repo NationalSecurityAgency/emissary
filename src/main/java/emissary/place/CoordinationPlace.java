@@ -45,7 +45,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Create the place using the supplied configuration and location
-     * 
+     *
      * @param cfgInfo the configuration resource to use
      * @param dir the controlling directory
      * @param placeLoc binding information for this instance
@@ -57,7 +57,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Create the place using the supplied configuration
-     * 
+     *
      * @param cfgInfo the configuration resource to use
      */
     public CoordinationPlace(String cfgInfo) throws IOException {
@@ -67,7 +67,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Create the place using the supplied configuration
-     * 
+     *
      * @param cfgInfo the configuration stream to use
      */
     public CoordinationPlace(InputStream cfgInfo) throws IOException {
@@ -86,7 +86,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Set up the place specific information Config items read here are:
-     * 
+     *
      * <ul>
      * <li>OUTPUT_FORM: default=null, output form for final step of coordination</li>
      * <li>PUSH_OUTPUT_FORM: default=true, calls pushOutputForm when true, setOutputForm otherwise</li>
@@ -168,7 +168,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Consume a data object and coordinate its processing
-     * 
+     *
      * @param d the payload to process
      * @param hd true if doing heavy duty processing
      * @return the list of sprouted data objects
@@ -256,7 +256,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Process point when not using HDMobileAgent
-     * 
+     *
      * @param d the payload to process
      */
     @Override
@@ -269,7 +269,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Process point for HDMobileAgent
-     * 
+     *
      * @param d the payload to process
      * @return the list of sprouted data objects
      */

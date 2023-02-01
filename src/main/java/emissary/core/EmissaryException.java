@@ -10,7 +10,7 @@ public class EmissaryException extends Exception {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      */
     public EmissaryException(final String message) {
@@ -19,7 +19,7 @@ public class EmissaryException extends Exception {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param message a string to go along with the exception
      * @param cause the wrapped exception
      */
@@ -29,7 +29,7 @@ public class EmissaryException extends Exception {
 
     /**
      * Create an emissary exception
-     * 
+     *
      * @param cause the wrapped exception
      */
     public EmissaryException(final Throwable cause) {

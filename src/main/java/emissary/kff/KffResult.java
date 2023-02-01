@@ -37,7 +37,7 @@ public class KffResult implements Serializable {
 
     /**
      * Create a result object using all of the hashes stored in the ChecksumResults
-     * 
+     *
      * @param csum the computed hashes
      */
     public KffResult(ChecksumResults csum) {
@@ -50,7 +50,7 @@ public class KffResult implements Serializable {
 
     /**
      * Create a result indicating the result known/dupe status
-     * 
+     *
      * @param isHit true if this result is a known/dupe file
      */
     public KffResult(boolean isHit) {
@@ -77,7 +77,7 @@ public class KffResult implements Serializable {
 
     /**
      * Set the hit status to true and copy in the filter type from the argument
-     * 
+     *
      * @param ft the filter type
      */
     public void setHitAndType(FilterType ft) {
@@ -194,7 +194,7 @@ public class KffResult implements Serializable {
 
     /**
      * Get any result
-     * 
+     *
      * @param alg algorithm name
      */
     public byte[] getResult(String alg) {
@@ -203,7 +203,7 @@ public class KffResult implements Serializable {
 
     /**
      * Store any result
-     * 
+     *
      * @param alg name of algorithm
      * @param digest the hash computation
      */
@@ -213,7 +213,7 @@ public class KffResult implements Serializable {
 
     /**
      * Get any result in string form
-     * 
+     *
      * @param alg the name of the algorithm
      */
     public String getResultString(String alg) {
@@ -238,7 +238,7 @@ public class KffResult implements Serializable {
 
     /**
      * Record the name of the item being tracked by this object
-     * 
+     *
      * @param argItemName the name
      */
     public void setItemName(String argItemName) {
@@ -254,7 +254,7 @@ public class KffResult implements Serializable {
 
     /**
      * Set the name of the reporting filter
-     * 
+     *
      * @param argFilterName the filter name
      */
     public void setFilterName(String argFilterName) {

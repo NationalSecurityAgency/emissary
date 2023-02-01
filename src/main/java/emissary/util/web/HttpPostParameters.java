@@ -33,7 +33,7 @@ public class HttpPostParameters {
 
     /**
      * Create and add one parameter
-     * 
+     *
      * @param s the field name
      * @param v the value
      */
@@ -43,7 +43,7 @@ public class HttpPostParameters {
 
     /**
      * Add a field and value
-     * 
+     *
      * @param s the field name
      * @param v the value (can be null)
      */

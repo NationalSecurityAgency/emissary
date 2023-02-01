@@ -137,7 +137,7 @@ public final class Ssdeep {
 
         /**
          * A simple non-rolling hash, based on the FNV hash
-         * 
+         *
          * @param b The next byte value, assumed to be in the range 0..255.
          * @param h The existing hash value, 32-bit unsigned.
          * @return The updated hash value, 32-bit unsigned.
@@ -430,7 +430,7 @@ public final class Ssdeep {
 
     /**
      * Calculates the SpamSum hash for specified stream.
-     * 
+     *
      * @param file The input file to be hashed.
      * @return The SpamSum signature for the file.
      * @throws IOException If there is some I/O problem accessing the file.

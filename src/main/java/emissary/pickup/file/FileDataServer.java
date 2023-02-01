@@ -38,7 +38,7 @@ public class FileDataServer extends Pausable {
 
     /**
      * Create the directory monitor
-     * 
+     *
      * @param inputDataDirectory directory path to monitor
      * @param parent the FPP that created me
      * @param pollingInterval how often to check for new files in millis
@@ -65,7 +65,7 @@ public class FileDataServer extends Pausable {
 
     /**
      * Set the number of files to group when polling
-     * 
+     *
      * @param sz the new value for bundleSize
      */
     public void setBundleSize(int sz) {
@@ -163,7 +163,7 @@ public class FileDataServer extends Pausable {
 
     /**
      * Report the problem file and move it to the error location
-     * 
+     *
      * @param f the file having the problem
      */
     protected void reportProblem(File f, String errDir) {

@@ -89,7 +89,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Create a pick up place
-     * 
+     *
      * @param configInfo the config location
      * @param placeLocation the place key
      * @throws IOException If there is some I/O problem.
@@ -101,7 +101,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Create a pick up place
-     * 
+     *
      * @param configInfo the config location
      * @param dir the key of the controlling directory
      * @param placeLoc the place key
@@ -114,7 +114,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Create a pick up place
-     * 
+     *
      * @param configStream the config stream
      * @param dir the key of the controlling directory
      * @param placeLoc the place key
@@ -127,7 +127,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Create a pick up place
-     * 
+     *
      * @param configStream the config stream
      * @param placeLoc the place key
      * @throws IOException If there is some I/O problem.
@@ -184,7 +184,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the value of the inprocess area, usually a directory path
-     * 
+     *
      * @return holdingArea string
      */
     @Override
@@ -194,7 +194,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the value of the error area, usually a directory path
-     * 
+     *
      * @return errorArea string
      */
     @Override
@@ -204,7 +204,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the value of the done area, usually a directory path
-     * 
+     *
      * @return doneArea string
      */
     @Override
@@ -214,7 +214,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the maximum content size for a file that can be handled by this place
-     * 
+     *
      * @return maximumContentLength string
      */
     @Override
@@ -224,7 +224,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the minumum content size for a file that can be handled by this place
-     * 
+     *
      * @return minimumContentLength string
      */
     @Override
@@ -235,7 +235,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Return the value of the oversize area, usually a directory path
-     * 
+     *
      * @return path to the oversize area
      */
     @Override
@@ -245,7 +245,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Add metadata as the data objects are created Can be overridden to customize behavior
-     * 
+     *
      * @param d the nascent data object
      * @param f the file it came from
      */
@@ -257,7 +257,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     /**
      * Call back from a data server or queue server when a new file is ready to process. This method is called for raw
      * files, not work bundles, so the simpleMode determination is made by this Place configuration.
-     * 
+     *
      * @param f file to process
      * @return true if it worked
      * @throws IOException If there is some I/O problem.
@@ -277,7 +277,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Handle oversize payload item
-     * 
+     *
      * @param theFile the file with the oversize data
      * @param fixedName name to use for the object
      * @param simpleMode simple flag from the input
@@ -298,7 +298,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to handle a simple mode File
-     * 
+     *
      * @param theFile the file that contains the data
      * @param fixedName name to use for the dataObject
      * @return true if the file is processed successfully
@@ -310,7 +310,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to move th file to the done area when successfully processed
-     * 
+     *
      * @param theFile the file that was processed
      * @return true if the file was renamed
      */
@@ -320,7 +320,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to move th file to the done area when successfully processed using the specified outut area
-     * 
+     *
      * @param theFile the file that was processed
      * @param outputRoot a specified output root
      * @return true if the file was renamed
@@ -347,7 +347,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Get the endpoint file name for when the file is move to inProcess
-     * 
+     *
      * @param theFile the file to be considered
      * @param eatPrefix optional prefix strip from the work bundle
      * @return null if no holdingArea, else the new File endpoint
@@ -367,7 +367,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to move the file to inProcess area when taking ownership
-     * 
+     *
      * @param source the file to be renamed
      * @param dest where it should end up, or use the holdingArea if nil
      * @return true if renamed, false if not
@@ -396,7 +396,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to move the file to the error area due to failure to process
-     * 
+     *
      * @param theFile the file to move
      * @return true if the rename was successful
      */
@@ -412,7 +412,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Action to delete the file from the holding area
-     * 
+     *
      * @param theFile file to delete
      */
     protected void deleteFileFromHoldingArea(File theFile) {
@@ -426,7 +426,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * File was successfully processed, take appropriate action
-     * 
+     *
      * @param theFile the file that was processed
      */
     protected void handleFileSuccess(File theFile) {
@@ -435,7 +435,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * File was successfully processed, take appropriate action using specified done area
-     * 
+     *
      * @param theFile the file that was processed
      * @param outputRoot the specified output done area
      */
@@ -453,7 +453,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * File failed to process, take appropriate action
-     * 
+     *
      * @param theFile the file that failed
      */
     protected void handleFileError(File theFile) {
@@ -467,7 +467,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Call back from a data server or queue server when a new file is ready to process
-     * 
+     *
      * @param theFile file to process
      * @param fixedName the good short name of the file
      * @param isOversize true if the content is too big by configuration
@@ -516,7 +516,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Build a data object and handle the data bytes
-     * 
+     *
      * @param theContent the data bytes
      * @param fixedName good short name for the data
      * @param theFile where it came from
@@ -530,7 +530,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Set up the dataobject and send it on the way
-     * 
+     *
      * @param d the nascent data object
      * @param fixedName the short name of it
      * @param theFile where it came from
@@ -558,7 +558,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Parse out sessions and process data from a file
-     * 
+     *
      * @param theFile file to process
      * @param fixedName the good short name of the file
      * @return count of sessions parsed
@@ -614,7 +614,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Parse out sessions and process data from a byte array
-     * 
+     *
      * @param data the bytes to process
      * @param fixedName the good short name of the file
      * @param theFile file object representing path data belongs to
@@ -657,7 +657,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Produce a legal tracking filename from the disk filename
-     * 
+     *
      * @return fixed filename
      */
     protected String fixFileName(@Nullable String v) {
@@ -693,7 +693,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Retrieve and agent from the pool and assign the payload to it
-     * 
+     *
      * @param payload the payload for the agent
      * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified
      *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when
@@ -706,7 +706,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     /**
      * Retrieve and agent from the specified pool and assign the payload to it
-     * 
+     *
      * @param payload the payload for the agent
      * @param agentPool the pool of agents
      * @param startingLocation the agent launch point

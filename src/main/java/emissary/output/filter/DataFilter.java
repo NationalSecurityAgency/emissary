@@ -21,7 +21,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Initialize reads the configuration items for this filter
-     * 
+     *
      * @param configG the configurator to read from
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig the configuration for the specific filter
@@ -36,7 +36,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Output one payload item
-     * 
+     *
      * @param d the payload
      * @param params the map of configuration items
      */
@@ -79,7 +79,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Output one payload item to the provided output stream
-     * 
+     *
      * @param d the payload
      * @param params the map of configuration items
      * @param output the output stream to write to
@@ -138,7 +138,7 @@ public class DataFilter extends AbstractFilter {
 
     /**
      * Write a file, either the primary view or an alt view
-     * 
+     *
      * @param d the DataObject to output
      * @param tld the TLD Object to extract metadata (if applicable)
      * @param baseFileName the base file name

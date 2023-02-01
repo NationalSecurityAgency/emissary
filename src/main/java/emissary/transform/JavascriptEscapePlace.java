@@ -1,5 +1,5 @@
 /***********************************************************
- * This place transforms \\uxxxx Javascript escape 
+ * This place transforms \\uxxxx Javascript escape
  * stuff into normal unicode (utf-8 characters)
  **/
 
@@ -26,7 +26,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with specified location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      * @param dir the name of the controlling directory
      * @param placeLoc the string name for this place
@@ -38,7 +38,7 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
 
     /**
      * Configure one with default location
-     * 
+     *
      * @param cfgInfo the name of the config file or resource
      */
     public JavascriptEscapePlace(String cfgInfo) throws IOException {

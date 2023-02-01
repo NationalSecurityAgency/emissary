@@ -22,7 +22,7 @@ public class KeywordScanner {
 
     /**
      * Initializes a new {@code KeywordScanner} object with the provided data bytes.
-     * 
+     *
      * @param data the data to be scanned
      */
     public KeywordScanner(final byte[] data) {
@@ -43,7 +43,7 @@ public class KeywordScanner {
 
     /**
      * Reset the byte array. Use of this method avoids having to instantiate a new KeywordScanner.
-     * 
+     *
      * @param data - bytes to match against
      */
     public void resetData(@Nullable byte[] data) {
@@ -57,7 +57,7 @@ public class KeywordScanner {
 
     /**
      * Returns the first occurrence of the provided pattern in the data.
-     * 
+     *
      * @param patternArg the byte pattern to scan for, null returns -1
      * @return the index in the data where the pattern begins, -1 if not found
      */
@@ -71,7 +71,7 @@ public class KeywordScanner {
      * There is no restriction on the value of {@code start}. If it is negative, it has the same effect as if it were zero:
      * the entire data will be scanned. If it is greater than the length of the data, it has the same effect as if it were
      * equal to the length of the data: -1 is returned.
-     * 
+     *
      * @param patternArg the byte pattern to scan for, null returns -1
      * @param start the index to start searching from, negative values treated as 0
      * @return the index in the data where the pattern begins, -1 if not found
@@ -90,7 +90,7 @@ public class KeywordScanner {
      * <p>
      * If the value of {@code stop} is negative, greater than the data length, or less than or equal to the start value, -1
      * is returned.
-     * 
+     *
      * @param patternArg the byte pattern to scan for, null returns -1
      * @param start the index to start searching from, negative values treated as 0
      * @param stop the index to stop searching at, exclusive, negative value returns -1
@@ -119,7 +119,7 @@ public class KeywordScanner {
      * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
      * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
      * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
-     * 
+     *
      * @param stop the index to stop searching at, exclusive, negative value returns -1
      * @return the index, less than the stop index, where the next occurrence of the pattern is found, -1 if not found
      */
@@ -145,7 +145,7 @@ public class KeywordScanner {
      * This method should follow a call to one of the {@code indexOf} methods. These methods will set the pattern and return
      * the index of the first occurrence of the provided pattern. Calls to this method will then return the index of
      * subsequent occurrences. Without first establishing a pattern in this way, -1 will be returned.
-     * 
+     *
      * @return the index where the next occurrence of the pattern is found, -1 if not found
      */
     public int findNext() {
@@ -154,7 +154,7 @@ public class KeywordScanner {
 
     /**
      * Sets the case sensitivity of the scanner.
-     * 
+     *
      * @param theCase if set to false, the scanner will ignore case. Default is true.
      */
     public void setCaseSensitive(final boolean theCase) {
@@ -163,7 +163,7 @@ public class KeywordScanner {
 
     /**
      * Returns the case sensitivity set for the scanner.
-     * 
+     *
      * @return true if the scanner is case sensitive, false otherwise
      */
     public boolean isCaseSensitive() {

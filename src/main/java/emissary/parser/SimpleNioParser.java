@@ -108,7 +108,7 @@ public class SimpleNioParser extends NIOSessionParser {
 
     /**
      * Possible help to debug this factory mess
-     * 
+     *
      * @return string representation
      */
     @Override
@@ -120,7 +120,7 @@ public class SimpleNioParser extends NIOSessionParser {
      * Creates a hashtable of elements from the session: header, footer, body, and other meta data values extracted from the
      * session data for the next session in the data. This Simple base implementation only treats the whole file as one
      * session
-     * 
+     *
      * @return next session
      */
     @Override

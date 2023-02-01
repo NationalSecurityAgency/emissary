@@ -27,7 +27,7 @@ import javax.servlet.ServletContextListener;
  * </ol>
  * </li>
  * </ol>
- * 
+ *
  * @see emissary.directory.EmissaryNode
  */
 // TODO: can we annotate this instead with @WebListener

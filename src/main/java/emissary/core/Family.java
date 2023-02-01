@@ -19,7 +19,7 @@ public class Family {
 
     /**
      * Create an attachment namer for the basename specified
-     * 
+     *
      * @param basename parent name
      */
     public Family(final String basename) {
@@ -28,7 +28,7 @@ public class Family {
 
     /**
      * Create an attachment namer for the basename specified
-     * 
+     *
      * @param basename parent name
      * @param firstNum number to start with
      */
@@ -53,7 +53,7 @@ public class Family {
 
     /**
      * Start a family nested below the current item
-     * 
+     *
      * @return a Family namer positioned one level deeper than this one
      */
     public Family child() {
@@ -69,7 +69,7 @@ public class Family {
 
     /**
      * Return the separator string for the specified birthorder e.g. sep(5) ==&gt; "-att-5"
-     * 
+     *
      * @param birthorder the number for the attachment to name
      */
     public static String sep(final int birthorder) {

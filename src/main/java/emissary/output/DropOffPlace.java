@@ -50,7 +50,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Primary place constructor
-     * 
+     *
      * @param configInfo our config stuff from the startup
      * @param dir string name of the directory to register into
      * @param placeLoc string form of our key
@@ -110,7 +110,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Start up the requested filter
-     * 
+     *
      * @param filterClasses the name:class values of the configured filter for this drop off
      */
     protected void initializeFilters(final List<String> filterClasses) {
@@ -195,7 +195,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * "HD" agent calls this method when visiting the place. If you use {@link emissary.core.MobileAgent} this method is
      * never called. This method overrides {@link ServiceProviderPlace} and allows this processing place to have access to
      * all payloads wanting to be dropped off in a single list.
-     * 
+     *
      * @param payloadList list of IBaseDataObject from an {@link emissary.core.HDMobileAgent}
      */
     @Override
@@ -259,7 +259,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Called by MobileAgent through ServiceProviderPlace to handle a single payload
-     * 
+     *
      * @param tData the payload to work on
      */
     @Override
@@ -290,7 +290,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Prepare a list of payload object to be filtered
-     * 
+     *
      * @param payloadList the list of items that were eligible for output
      * @param filterParams metadata needed for the output filter
      */
@@ -306,7 +306,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Clean up after all filter are done
-     * 
+     *
      * @param payloadList the list of items that were eligible for output
      * @param filterParams metadata needed for the output filter
      */
@@ -333,7 +333,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Internal method to process a single data object
-     * 
+     *
      * @param tData the payload to work on or prepare
      * @param haveList true if in HD context
      */
@@ -408,7 +408,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Run all the output filter
-     * 
+     *
      * @param target either IBaseDataObject or List thereof
      * @param filterParams other parameters that filter need
      */
@@ -456,7 +456,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Provide access to the filter
-     * 
+     *
      * @return a copy of the list of filter
      */
     public List<IDropOffFilter> getFilters() {
@@ -465,7 +465,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Provide access to filter names
-     * 
+     *
      * @return an array of filter names or an empty array if none
      */
     public String[] getFilterNames() {
@@ -478,7 +478,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Provide access to filter by name
-     * 
+     *
      * @return the named filter or null if none by that name
      */
     public IDropOffFilter getFilter(final String name) {
@@ -525,7 +525,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
 
     /**
      * Add a filter
-     * 
+     *
      * @param filter the new filter to add, must already be configured and initialized
      */
     public void addFilter(final IDropOffFilter filter) {

@@ -29,7 +29,7 @@ public abstract class FillingNIOParser extends NIOSessionParser {
 
     /**
      * Get and set all stats for loading the next chunk This is specified to the RAF parser families
-     * 
+     *
      * @param data the allocated data block to fill or null
      * @return ref to the incoming block now filled or a new one if incoming was null or size was changed
      * @throws ParserEOFException when there is no more data

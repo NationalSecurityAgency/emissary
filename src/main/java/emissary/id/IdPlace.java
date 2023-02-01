@@ -35,7 +35,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Create an Id Place and register it at the location specified
-     * 
+     *
      * @param placeLoc the location for registering this place
      */
     protected IdPlace(final String placeLoc) throws IOException {
@@ -45,7 +45,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Create and register constructor, called from the place by super(x,y,z)
-     * 
+     *
      * @param configFile the config location file or resource
      * @param theDir controlling directory
      * @param thePlaceLocation key to use in registration
@@ -57,7 +57,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Create and register with default directory
-     * 
+     *
      * @param configFile the config location file or resource
      * @param placeLocation key to use in registration
      */
@@ -68,7 +68,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Create an id place with config data from a stream
-     * 
+     *
      * @param configStream stream of config data
      * @param theDir string name of our directory
      * @param thePlaceLocation string name of our location
@@ -79,7 +79,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Construct with config data from a stream on the local directory
-     * 
+     *
      * @param configStream stream of config data
      */
     protected IdPlace(final InputStream configStream) throws IOException {
@@ -133,7 +133,7 @@ public abstract class IdPlace extends ServiceProviderPlace {
 
     /**
      * Return the form renamed if it is listed as a RENAME_ID otherwise just return as-id
-     * 
+     *
      * @param form the form to check
      * @return the renamed form
      */

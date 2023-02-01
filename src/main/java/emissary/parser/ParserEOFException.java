@@ -9,7 +9,7 @@ public class ParserEOFException extends ParserException {
 
     /**
      * An exception with a message
-     * 
+     *
      * @param msg the message
      */
     public ParserEOFException(String msg) {

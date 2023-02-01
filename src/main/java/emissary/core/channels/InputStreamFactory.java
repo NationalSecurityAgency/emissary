@@ -9,7 +9,7 @@ import java.io.InputStream;
 public interface InputStreamFactory {
     /**
      * Get an InputStream instance for the factory object
-     * 
+     *
      * @return an InputStream instance
      */
     InputStream create() throws IOException;

@@ -9,7 +9,7 @@ import java.util.Set;
 public interface PeerObserver extends DirectoryObserver {
     /**
      * Called when the peer group changes
-     * 
+     *
      * @param observableKey the key of the directory being observed
      * @param peers the list of peers currently in the group not including the observable being monitored
      */

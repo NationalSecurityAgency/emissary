@@ -44,7 +44,7 @@ public class UrlData {
 
     /**
      * Get the value of responseCode.
-     * 
+     *
      * @return Value of responseCode.
      */
     public int getResponseCode() {
@@ -53,7 +53,7 @@ public class UrlData {
 
     /**
      * Set the value of responseCode.
-     * 
+     *
      * @param v Value to assign to responseCode.
      */
     public void setResponseCode(final int v) {
@@ -62,7 +62,7 @@ public class UrlData {
 
     /**
      * Get the value of theUrl.
-     * 
+     *
      * @return Value of theUrl.
      */
     public String getTheUrl() {
@@ -71,7 +71,7 @@ public class UrlData {
 
     /**
      * Set the value of theUrl.
-     * 
+     *
      * @param v Value to assign to theUrl.
      */
     public void setTheUrl(final String v) {
@@ -80,7 +80,7 @@ public class UrlData {
 
     /**
      * Get the value of theContent.
-     * 
+     *
      * @return Value of theContent.
      */
     public byte[] getTheContent() {
@@ -93,7 +93,7 @@ public class UrlData {
 
     /**
      * Set the value of theContent.
-     * 
+     *
      * @param v Value to assign to theContent.
      */
     public void setTheContent(final byte[] v) {
@@ -102,7 +102,7 @@ public class UrlData {
 
     /**
      * Get the value of referer.
-     * 
+     *
      * @return Value of referer.
      */
     public String getReferer() {
@@ -111,7 +111,7 @@ public class UrlData {
 
     /**
      * Set the value of referer.
-     * 
+     *
      * @param v Value to assign to referer.
      */
     public void setReferer(final String v) {
@@ -120,7 +120,7 @@ public class UrlData {
 
     /**
      * Get the value of userAgent.
-     * 
+     *
      * @return Value of userAgent.
      */
     public String getUserAgent() {
@@ -129,7 +129,7 @@ public class UrlData {
 
     /**
      * Set the value of userAgent.
-     * 
+     *
      * @param v Value to assign to userAgent.
      */
     public void setUserAgent(final String v) {
@@ -138,7 +138,7 @@ public class UrlData {
 
     /**
      * Get the value of userName.
-     * 
+     *
      * @return Value of userName.
      */
     public String getUserName() {
@@ -147,7 +147,7 @@ public class UrlData {
 
     /**
      * Set the value of userName.
-     * 
+     *
      * @param v Value to assign to userName.
      */
     public void setUserName(final String v) {
@@ -156,7 +156,7 @@ public class UrlData {
 
     /**
      * Get the value of password.
-     * 
+     *
      * @return Value of password.
      */
     public String getPassword() {
@@ -165,7 +165,7 @@ public class UrlData {
 
     /**
      * Set the value of password.
-     * 
+     *
      * @param v Value to assign to password.
      */
     public void setPassword(final String v) {
@@ -174,7 +174,7 @@ public class UrlData {
 
     /**
      * Get the value of theMethod.
-     * 
+     *
      * @return Value of theMethod.
      */
     public int getTheMethod() {
@@ -183,7 +183,7 @@ public class UrlData {
 
     /**
      * Get the value of props.
-     * 
+     *
      * @return Value of props.
      */
     public UrlRequestProperty[] getProps() {
@@ -196,7 +196,7 @@ public class UrlData {
 
     /**
      * Set the value of props.
-     * 
+     *
      * @param v Value to assign to props.
      */
     public void setProps(final UrlRequestProperty[] v) {
@@ -205,7 +205,7 @@ public class UrlData {
 
     /**
      * Add one more property to this request
-     * 
+     *
      * @param v the new UrlRequestProperty to add
      */
     public void addProp(@Nullable final UrlRequestProperty v) {
@@ -228,7 +228,7 @@ public class UrlData {
 
     /**
      * Add a bunch more properties to this request
-     * 
+     *
      * @param v array of new UrlRequestProperty to add
      */
     public void addProps(@Nullable final UrlRequestProperty[] v) {
@@ -251,7 +251,7 @@ public class UrlData {
 
     /**
      * Set the value of theMethod.
-     * 
+     *
      * @param v Value to assign to theMethod.
      */
     public void setTheMethod(final int v) {

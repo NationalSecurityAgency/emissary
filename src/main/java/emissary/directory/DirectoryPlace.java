@@ -103,7 +103,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      *
      * @param placeLoc string key to register this directory
      * @param node EmissaryNode for this directory place
-     * 
+     *
      * @throws IOException when configuration fails
      */
     public DirectoryPlace(final String placeLoc, EmissaryNode node) throws IOException {

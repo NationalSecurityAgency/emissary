@@ -141,7 +141,7 @@ public abstract class BaseCommand implements EmissaryCommand {
      * Create a new command and parse the args.
      * <p>
      * Useful for testings. Also calls setup so properties are set
-     * 
+     *
      * @param clazz the Class of return type class
      * @param args vararg of Strings
      */
@@ -157,7 +157,7 @@ public abstract class BaseCommand implements EmissaryCommand {
      * Create a new command and parse the args
      * <p>
      * Useful for testings
-     * 
+     *
      * @param clazz the Class of return type class
      * @param args vararg of Strings
      */

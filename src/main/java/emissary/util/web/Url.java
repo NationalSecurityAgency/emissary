@@ -31,7 +31,7 @@ public class Url {
 
     /**
      * process a url depending on the method specified
-     * 
+     *
      * @param toProcess the URL resource to process with GET HEAD or POST
      */
     public static UrlData doUrl(final UrlData toProcess) {
@@ -54,7 +54,7 @@ public class Url {
 
     /**
      * get a url
-     * 
+     *
      * @param toGet describe where to GET from
      */
     public static UrlData getUrl(final UrlData toGet) {
@@ -63,7 +63,7 @@ public class Url {
 
     /**
      * get a Url without any extra properties
-     * 
+     *
      * @param urlString the URL resource to GET
      */
     public static UrlData getUrl(final String urlString) {
@@ -72,7 +72,7 @@ public class Url {
 
     /**
      * Get a url, specifying additional header properties
-     * 
+     *
      * @param urlString the URL resource
      * @param props properties to use on the connection
      */
@@ -82,7 +82,7 @@ public class Url {
 
     /**
      * post to a url
-     * 
+     *
      * @param toPost descript where to POST
      */
     public static UrlData postUrl(final UrlData toPost) {
@@ -91,7 +91,7 @@ public class Url {
 
     /**
      * post to a url
-     * 
+     *
      * @param toPost describe where to POST
      * @param parms the POST data
      */
@@ -101,7 +101,7 @@ public class Url {
 
     /**
      * post a Url without any extra properties
-     * 
+     *
      * @param urlString the URL resource to POST on
      */
     public static UrlData postUrl(final String urlString) {
@@ -110,7 +110,7 @@ public class Url {
 
     /**
      * Post on a url, specifying additional header properties and params
-     * 
+     *
      * @param urlString the URL resource
      * @param props array of properties to use
      * @param parms the POST data
@@ -133,7 +133,7 @@ public class Url {
 
     /**
      * process (GET|POST|HEAD) a Url
-     * 
+     *
      * @param urlString the URL resource
      * @param props array of properties to use as headers, must have Content-length if POSTing
      * @param parms parameters to use when POSTing

@@ -68,7 +68,7 @@ public class MetadataDictionary {
 
     /**
      * Create one and register with the specified name
-     * 
+     *
      * @param ns the namespace name
      */
     public MetadataDictionary(final String ns) {
@@ -78,7 +78,7 @@ public class MetadataDictionary {
 
     /**
      * Create one and register with the specified name using the config stream
-     * 
+     *
      * @param ns the namespace name
      * @param conf the config stream to use
      */
@@ -94,7 +94,7 @@ public class MetadataDictionary {
      * <li>REGEX - regex patterns that can drive renaming</li>
      * <li>CACHE_SIZE - size for LRU regex cache</li>
      * </ul>
-     * 
+     *
      * @param confArg the config stream to use or null for default
      */
     @SuppressWarnings("unchecked")
@@ -171,7 +171,7 @@ public class MetadataDictionary {
 
     /**
      * Factory method to initialize and bind a new dictionary
-     * 
+     *
      * @param ns the namespace anem
      */
     public static MetadataDictionary initialize(final String ns) {
@@ -182,7 +182,7 @@ public class MetadataDictionary {
 
     /**
      * Factory method to initialize and bind a new dictionary using a config object
-     * 
+     *
      * @param ns the namespace anem
      * @param conf the config stream to use
      */
@@ -201,7 +201,7 @@ public class MetadataDictionary {
 
     /**
      * Get the dictionary object from the namespace using the specified name
-     * 
+     *
      * @param ns the namespace name
      */
     public static MetadataDictionary lookup(final String ns) throws NamespaceException {
@@ -218,7 +218,7 @@ public class MetadataDictionary {
 
     /**
      * Find a new name for the specified metadata element just using exact matches from the nameMap
-     * 
+     *
      * @param m the metadata element name
      * @return the new name or at least the original name of no remapping
      */
@@ -232,7 +232,7 @@ public class MetadataDictionary {
 
     /**
      * Return a regex renaming of the metadata element name
-     * 
+     *
      * @param m the metadata element name
      * @return the new name as supplied by the first matching regexp or the original name if nothing matches
      */
@@ -280,7 +280,7 @@ public class MetadataDictionary {
 
     /**
      * Remap a metadata element or return the original name
-     * 
+     *
      * @param m the metadata element name
      * @return the new name if there is one, or the old name if not
      */

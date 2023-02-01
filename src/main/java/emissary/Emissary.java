@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 
 /**
  * Main entry point of the jar file
- * 
+ *
  * Parses command line arguments and delegates commands
  */
 public class Emissary {
@@ -170,7 +170,7 @@ public class Emissary {
 
     /*
      * Modify the logback stuff, about to run a command
-     * 
+     *
      * Reinit with a config file if running something like a server where you want the expanded format,
      */
     public static LoggerContext setupLogbackForConsole() {

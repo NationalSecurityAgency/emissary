@@ -109,7 +109,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
 
     /**
      * Sets the position of the channel according to the current entry. Should only be called by the pool.
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     void setPosition() throws IOException {
@@ -120,7 +120,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
 
     /**
      * Commits writes to underlying storage. This method should only be called after a successful write.
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     public final void commit() throws IOException {
@@ -136,7 +136,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
     /**
      * Closes this Channel/Output Stream by releasing resources to underlying pool. Further calls result in unspecified
      * behavior
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     @Override
@@ -152,7 +152,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
 
     /**
      * Opens this object for writing and sets position according to current Journal Entry.
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     void open() throws IOException {

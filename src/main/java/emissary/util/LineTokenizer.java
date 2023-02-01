@@ -18,7 +18,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      */
     public LineTokenizer(byte[] theData) {
@@ -27,7 +27,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      * @param delim the delimiter to mark off lines
      */
@@ -53,7 +53,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      * @param delim the delimiter to mark off lines
      * @param charset the character set to use the outputting tokens as strings
@@ -65,7 +65,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      * @param delim the delimiter to mark off lines
      * @param charset the character set to use the outputting tokens as strings
@@ -77,7 +77,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      * @param charset the character set to use the outputting tokens as strings
      */
@@ -88,7 +88,7 @@ public class LineTokenizer {
 
     /**
      * Create a line tokenizer to operate on some data
-     * 
+     *
      * @param theData byte array of data
      * @param charset the character set to use the outputting tokens as strings
      */
@@ -99,7 +99,7 @@ public class LineTokenizer {
 
     /**
      * Set the character set to use when outputting tokens as strings default is 8859_1
-     * 
+     *
      * @param charset the java charset value
      */
     public void setCharset(@Nullable String charset) {
@@ -108,7 +108,7 @@ public class LineTokenizer {
 
     /**
      * Set the character set to use when outputting tokens as strings default is 8859_1
-     * 
+     *
      * @param charset the java charset value
      */
     public void setCharset(Charset charset) {
@@ -117,7 +117,7 @@ public class LineTokenizer {
 
     /**
      * Indicate if there are more lines
-     * 
+     *
      * @return true if there are more lines
      */
     public boolean hasMoreTokens() {
@@ -126,7 +126,7 @@ public class LineTokenizer {
 
     /**
      * Current count of tokens remaining
-     * 
+     *
      * @return count of tokens remaining
      */
     public int countTokens() {
@@ -136,7 +136,7 @@ public class LineTokenizer {
     /**
      * Current byte offset in the data Caller can use this on their copy of the original data buffer to extract data of
      * interest
-     * 
+     *
      * @return current byte offset
      */
     public int getCurrentPosition() {
@@ -146,7 +146,7 @@ public class LineTokenizer {
     /**
      * Next token as a string The string is created using the charset specified in the constructor or in the
      * setCharset(String s) method
-     * 
+     *
      * @return the next line as a string
      */
     public String nextToken() {
@@ -168,7 +168,7 @@ public class LineTokenizer {
 
     /**
      * Next token as an array of bytes
-     * 
+     *
      * @return the next line as an array of bytes
      */
     public byte[] nextTokenBytes() {

@@ -30,7 +30,7 @@ public class UrlRequestProperty {
 
     /**
      * Get the value of key.
-     * 
+     *
      * @return Value of key.
      */
     public String getKey() {
@@ -39,7 +39,7 @@ public class UrlRequestProperty {
 
     /**
      * Set the value of key.
-     * 
+     *
      * @param v Value to assign to key.
      */
     public void setKey(final String v) {
@@ -48,7 +48,7 @@ public class UrlRequestProperty {
 
     /**
      * Get the value of value.
-     * 
+     *
      * @return Value of value.
      */
     public String getValue() {
@@ -57,7 +57,7 @@ public class UrlRequestProperty {
 
     /**
      * Set the value of value.
-     * 
+     *
      * @param v Value to assign to value.
      */
     public void setValue(final String v) {
@@ -66,7 +66,7 @@ public class UrlRequestProperty {
 
     /**
      * Set the value of value
-     * 
+     *
      * @param v value to assign to value
      */
     public void setValue(final int v) {

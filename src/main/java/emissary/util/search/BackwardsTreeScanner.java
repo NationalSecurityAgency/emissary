@@ -121,7 +121,7 @@ public class BackwardsTreeScanner {
         /**
          * Walk through the keyword backwards. Adding states to the root (or current state) when they don't exists. At the end,
          * record the keyword id in the ending state.
-         * 
+         *
          * Warning this is recursive, but that is OK for small keywords.
          */
         public void learn(byte[] word, int wordLoc, int id) throws Exception {

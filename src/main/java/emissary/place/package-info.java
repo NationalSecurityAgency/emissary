@@ -4,7 +4,7 @@
  * contains the basics of building a place as well as some basic implementations for running command line tools, taking
  * payloads apart into sub pieces, running Python script tools via Jython, and coordinating the execution of multiple
  * other places as an aggregate.
- * 
+ *
  * @see emissary.core.MobileAgent
  * @see emissary.core.IBaseDataObject
  */

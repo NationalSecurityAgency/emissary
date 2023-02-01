@@ -19,7 +19,7 @@ public class CharacterCounterSet extends CounterSet {
 
     /**
      * Create a set of character counters
-     * 
+     *
      * @param initialCapacity the hash map initial capacity
      */
     public CharacterCounterSet(int initialCapacity) {
@@ -29,7 +29,7 @@ public class CharacterCounterSet extends CounterSet {
 
     /**
      * Create a set of character counters
-     * 
+     *
      * @param initialCapacity the hash map initial capacity
      * @param loadFactor the hash map load factor
      */
@@ -91,7 +91,7 @@ public class CharacterCounterSet extends CounterSet {
 
     /**
      * Count the characters in s by class. This works by codepoint and handles codepoints beyond the BMP
-     * 
+     *
      * @param s the string to perform the count on
      */
     public void count(String s) {

@@ -27,7 +27,7 @@ public class PlaceComparisonHelper {
     /**
      * Given a config which contains a 'PLACE_TO_COMPARE' directive, instantiate the referenced place with its usual
      * configuration
-     * 
+     *
      * @param configG from an existing place which is scanned for PLACE_TO_COMPARE, which should reference a place that the
      *        developer wants to compare against
      * @return the instantiated place if configured
@@ -60,7 +60,7 @@ public class PlaceComparisonHelper {
 
     /**
      * Used to compare a 'new' place with another, usually during development aimed at replacing the 'old' place.
-     * 
+     *
      * @param newResults an empty list to add results into from running the newPlace
      * @param ibdoForNewPlace the actual BDO being passed in for comparison
      * @param newPlace the new place we're comparing 'from'
@@ -113,7 +113,7 @@ public class PlaceComparisonHelper {
 
     /**
      * Given two BDOs and results from two processing place runs, compare them and log any differences.
-     * 
+     *
      * @param ibdoForOldPlace likely a cloned object of the 'new' place object
      * @param ibdoForNewPlace the 'main' BDO that was originally passed in from upstream
      * @param oldResults from the 'old' run with the 'ibdoForOldPlace' object

@@ -60,7 +60,7 @@ public class KeyedOutput extends OutputStream implements SeekableByteChannel {
 
     /**
      * Commits writes to underlying storage. This method should only be called after a successful write.
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     public final void commit() throws IOException {
@@ -69,7 +69,7 @@ public class KeyedOutput extends OutputStream implements SeekableByteChannel {
 
     /**
      * Closes this Channel/Output Stream by releasing resources to underlying this.pool.
-     * 
+     *
      * @throws IOException If there is some I/O problem.
      */
     @Override

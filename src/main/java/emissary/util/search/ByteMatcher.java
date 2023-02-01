@@ -40,7 +40,7 @@ public class ByteMatcher {
 
     /**
      * Reset the byte array. Use of this method avoids having to instantiate a new ByteMatcher.
-     * 
+     *
      * @param data - bytes to match against
      */
     public void resetData(byte[] data) {
@@ -68,7 +68,7 @@ public class ByteMatcher {
 
     /**
      * This method finds a pattern in the text and returns the offset
-     * 
+     *
      * @param pattern bytes to find
      * @param startOfs start index
      */
@@ -125,7 +125,7 @@ public class ByteMatcher {
 
     /**
      * Return a slice
-     * 
+     *
      * @param start index to start
      * @param end index one past the end of desired range
      * @return array slice

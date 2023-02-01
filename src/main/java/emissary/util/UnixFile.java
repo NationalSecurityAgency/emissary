@@ -68,7 +68,7 @@ public class UnixFile {
 
     /**
      * Load multiple magic files into one identification engine
-     * 
+     *
      * @param magicPaths the String names of magic files to load
      * @param swallowParseException should we swallow Ignorable ParseException or bubble them up
      */

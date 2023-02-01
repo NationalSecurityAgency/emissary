@@ -12,7 +12,7 @@ public class ParserException extends EmissaryException {
 
     /**
      * An exception with a message
-     * 
+     *
      * @param msg the message
      */
     public ParserException(String msg) {
@@ -21,7 +21,7 @@ public class ParserException extends EmissaryException {
 
     /**
      * An exception with a message and a cause
-     * 
+     *
      * @param msg the message
      * @param cause the cause of the exception
      */

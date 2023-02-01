@@ -9,14 +9,14 @@ import java.util.List;
 public interface IPickUpSpace {
     /**
      * Open a WorkSpace when told and start asking it for data
-     * 
+     *
      * @param spaceName the remote name of the space to open
      */
     void openSpace(String spaceName);
 
     /**
      * Close a WorkSpace
-     * 
+     *
      * @param spaceName the remote name of the space to close
      */
     void closeSpace(String spaceName);
@@ -38,7 +38,7 @@ public interface IPickUpSpace {
 
     /**
      * Take an item from the space
-     * 
+     *
      * @return true if we got one
      */
     boolean take();
@@ -50,7 +50,7 @@ public interface IPickUpSpace {
 
     /**
      * Put a new WorkBundle on the queue
-     * 
+     *
      * @param path the newly arrived WorkBundle object
      */
     boolean enque(emissary.pickup.WorkBundle path);
@@ -62,7 +62,7 @@ public interface IPickUpSpace {
 
     /**
      * Notify controlling space that a bundle is completed
-     * 
+     *
      * @param bundleId the bundle that was completed
      * @param itWorked true if bundle processed normally
      */

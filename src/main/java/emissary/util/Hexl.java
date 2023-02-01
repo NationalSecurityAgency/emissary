@@ -33,7 +33,7 @@ public class Hexl {
 
     /**
      * Print out a portion of the data as a hexdump for debugging
-     * 
+     *
      * @param limit how many bytes of data to print starting from 0
      */
     public static String toHexString(byte[] data, int limit) {

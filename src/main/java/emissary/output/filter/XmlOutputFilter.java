@@ -18,7 +18,7 @@ public class XmlOutputFilter extends AbstractRollableFilter {
 
     /**
      * Initialize reads the configuration items for this filter
-     * 
+     *
      * @param configG the configurator to read from
      * @param filterName the configured name of this filter or null for the default
      * @param filterConfig the configuration for the specific filter

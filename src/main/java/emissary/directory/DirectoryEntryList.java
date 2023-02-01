@@ -45,7 +45,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Create one from an existing DirectoryEntryList Makes a shallow copy of the argument list
-     * 
+     *
      * @param list the existing list to copy into this one
      */
     public DirectoryEntryList(final DirectoryEntryList list) {
@@ -54,7 +54,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Create one from an existing DirectoryEntryList
-     * 
+     *
      * @param list the existing list to copy into this one
      * @param deepCopy true if should be a deep copy
      */
@@ -64,7 +64,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Create one from an existing DirectoryEntryList
-     * 
+     *
      * @param list the existing list to copy into this one
      * @param deepCopy true if should be a deep copy
      * @param preserveTime true if time should be preserved on entries
@@ -88,7 +88,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Add entries from a collection. Does not make a deep copy from collection, just adds them
-     * 
+     *
      * @param c the collection to add from
      * @return true if the list is changed by this call
      */
@@ -105,7 +105,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Add a new DirectoryEntry
-     * 
+     *
      * @param o the DirectoryEntry object to add
      * @return true as per general contract of Collection.add
      */
@@ -123,7 +123,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
      * when storing them in A. When we retrieve the same entry from A and B it looks cheaper coming from B since it is local
      * to B. Whichever one we get last, we want to keep the one coming from B. By the time they get here, the one from B
      * will have REMOTE_COST added once, and the one from A will have it added twice: once by A and once here.
-     * 
+     *
      * @param newEntry the incoming entry for insertion
      * @return true as per general contract of Collection.add
      */
@@ -175,7 +175,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Get entry at specified position
-     * 
+     *
      * @param i the position
      * @return DirectoryEntry at position i
      */
@@ -200,7 +200,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
 
     /**
      * Pick one of any that are tied for expense at random
-     * 
+     *
      * @param desiredExpense the expense we want
      */
     public DirectoryEntry pickOneOf(final int desiredExpense) {

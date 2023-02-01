@@ -141,7 +141,7 @@ public class ByteUtil {
 
     /**
      * Glue two byte arrays together into one
-     * 
+     *
      * @param a the first byte array
      * @param b the second byte array
      * @return the whole
@@ -158,7 +158,7 @@ public class ByteUtil {
 
     /**
      * Glue three byte arrays together into one
-     * 
+     *
      * @param a the first byte array
      * @param b the second byte array
      * @param c the third byte array
@@ -179,7 +179,7 @@ public class ByteUtil {
 
     /**
      * Glue two byte arrays together into one
-     * 
+     *
      * @param a the first byte array
      * @param astart starting position in a
      * @param aend ending position in a
@@ -200,7 +200,7 @@ public class ByteUtil {
 
     /**
      * Glue three byte arrays together into one
-     * 
+     *
      * @param a the first byte array
      * @param astart starting position in a
      * @param aend ending position in a
@@ -226,7 +226,7 @@ public class ByteUtil {
 
     /**
      * Split a byte array at the specified position
-     * 
+     *
      * @param a the byte array
      * @param pos the split position (a[pos] goes to the second part)
      */
@@ -249,7 +249,7 @@ public class ByteUtil {
     /**
      * Given a byte-array and a start offset, return a string of the bytes between the start position and a carriage return
      * byte. In essence, this is grabbing a line of input where the byte array is composed of several lines of input.
-     * 
+     *
      * @param data The byte array of input data.
      * @param pos The initial start offset.
      * @return A string created from the bytes found from the start offset to the carriage return byte.
