@@ -100,26 +100,26 @@ class SeekableByteChannelHelperTest {
     void testGetFromInputStreamWithArrayByteBuffer() throws IOException {
         final ByteBuffer buff = ByteBuffer.allocate(4);
         assertTrue(buff.hasArray());
-        assertEquals(4, SeekableByteChannelHelper.getFromInputStream(IS, buff, 0, 4));
+        assertEquals(4, SeekableByteChannelHelper.getFromInputStream(IS, buff, 0));
 
         assertEquals(-1, SeekableByteChannelHelper.getFromInputStream(
-                new ByteArrayInputStream(new byte[0]), ByteBuffer.allocate(1), 0, 4));
+                new ByteArrayInputStream(new byte[0]), ByteBuffer.allocate(1), 0));
     }
 
     @Test
     void testGetFromInputStreamWithDirectByteBuffer() throws IOException {
         final ByteBuffer buff = ByteBuffer.allocateDirect(4);
         assertFalse(buff.hasArray());
-        assertEquals(4, SeekableByteChannelHelper.getFromInputStream(IS, buff, 0, 4));
+        assertEquals(4, SeekableByteChannelHelper.getFromInputStream(IS, buff, 0));
 
         assertEquals(-1, SeekableByteChannelHelper.getFromInputStream(
-                new ByteArrayInputStream(new byte[0]), ByteBuffer.allocateDirect(1), 0, 4));
+                new ByteArrayInputStream(new byte[0]), ByteBuffer.allocateDirect(1), 0));
     }
 
     @Test
     void testGetFromInputStreamWithInvalidOffset() {
         final ByteBuffer buff = ByteBuffer.allocate(1);
-        assertThrows(IllegalArgumentException.class, () -> SeekableByteChannelHelper.getFromInputStream(IS, buff, -2, 4));
+        assertThrows(IllegalArgumentException.class, () -> SeekableByteChannelHelper.getFromInputStream(IS, buff, -2));
     }
 
     private static class ExceptionInputStream extends InputStream {

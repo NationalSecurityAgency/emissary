@@ -145,11 +145,9 @@ public final class SeekableByteChannelHelper {
      * @param inputStream to read from
      * @param byteBuffer to read into
      * @param bytesToSkip within the {@code is} to get to the next read location
-     * @param maxBytesToRead to limit the amount of data returned from the inputStream
      * @throws IOException if an error occurs
      */
-    public static int getFromInputStream(final InputStream inputStream, final ByteBuffer byteBuffer, final long bytesToSkip,
-            final int maxBytesToRead) throws IOException {
+    public static int getFromInputStream(final InputStream inputStream, final ByteBuffer byteBuffer, final long bytesToSkip) throws IOException {
         Validate.notNull(inputStream, "Required: inputStream");
         Validate.notNull(byteBuffer, "Required: byteBuffer");
         Validate.isTrue(bytesToSkip > -1, "Required: bytesToSkip > -1");
@@ -158,7 +156,7 @@ public final class SeekableByteChannelHelper {
         IOUtils.skipFully(inputStream, bytesToSkip);
 
         // Read direct into buffer's array if possible, otherwise copy through an internal buffer
-        final int bytesToRead = Math.min(maxBytesToRead, byteBuffer.remaining());
+        final int bytesToRead = byteBuffer.remaining();
         if (byteBuffer.hasArray()) {
             final int bytesRead = inputStream.read(byteBuffer.array(), byteBuffer.position(), bytesToRead);
             if (bytesRead > 0) {
@@ -166,7 +164,7 @@ public final class SeekableByteChannelHelper {
             }
             return bytesRead;
         } else {
-            final byte[] internalBuff = new byte[bytesToRead];
+            final byte[] internalBuff = new byte[byteBuffer.remaining()];
             final int bytesRead = inputStream.read(internalBuff);
             if (bytesRead > 0) {
                 byteBuffer.put(internalBuff, 0, bytesRead);

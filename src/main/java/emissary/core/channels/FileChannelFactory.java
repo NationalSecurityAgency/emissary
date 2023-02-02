@@ -80,7 +80,7 @@ public final class FileChannelFactory {
         }
 
         @Override
-        protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
+        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
             initialiseChannel();
             // Set position for underlying channel, otherwise this won't match the outer channel position
             channel.position(position());
