@@ -3,6 +3,7 @@ package emissary.core.channels;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
@@ -20,6 +21,11 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
      * The current position of the SeekableByteChannel.
      */
     private long position = 0;
+
+    /**
+     * Used during {@link #read(ByteBuffer)} to calculate resizing a ByteBuffer
+     */
+    private static final BigInteger bigIntMaxValue = BigInteger.valueOf(Integer.MAX_VALUE);
 
     /**
      * Create a new SBC
@@ -114,7 +120,7 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
         }
 
         // Remaining bytes in this channel
-        final long remaining = remaining();
+        final long channelRemaining = remaining();
         // Remaining bytes in the provided buffer
         final int byteBufferRemaining = byteBuffer.remaining();
         // Store off the current limit in case we need to update it
@@ -122,11 +128,13 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
 
         // If the byte buffer has more bytes left than the channel, we want to right-size it for
         // implementations to be able to 'simply' just read into the byteBuffer.
-        if (byteBufferRemaining > remaining) {
+        if (byteBufferRemaining > channelRemaining) {
+            // Get the new limit in a safe way to avoid arithmetic exception issues
+            final int newLimit = BigInteger.valueOf(channelRemaining).add(BigInteger.valueOf(byteBuffer.position()))
+                    .min(bigIntMaxValue).intValue();
             // Update the limit of the byteBuffer temporarily whilst we carry out the read
             // This will be reset to the original limit before returning
-            // Safe to cast to int as byteBufferRemaining is an int, so remaining must be int-safe.
-            byteBuffer.limit(byteBuffer.position() + (int) remaining);
+            byteBuffer.limit(newLimit);
         }
 
         try {
@@ -142,10 +150,22 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
         }
     }
 
+    /**
+     * Whether this channel has any bytes remaining.
+     * 
+     * @return true if there are bytes remaining
+     * @throws IOException if an error occurs
+     */
     public final boolean hasRemaining() throws IOException {
         return remaining() > 0;
     }
 
+    /**
+     * The amount of bytes remaining in this channel (size - current position).
+     * 
+     * @return amount of bytes remaining
+     * @throws IOException if an error occurs
+     */
     public final long remaining() throws IOException {
         return size() - position();
     }

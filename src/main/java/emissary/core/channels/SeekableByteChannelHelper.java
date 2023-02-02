@@ -164,7 +164,7 @@ public final class SeekableByteChannelHelper {
             }
             return bytesRead;
         } else {
-            final byte[] internalBuff = new byte[byteBuffer.remaining()];
+            final byte[] internalBuff = new byte[bytesToRead];
             final int bytesRead = inputStream.read(internalBuff);
             if (bytesRead > 0) {
                 byteBuffer.put(internalBuff, 0, bytesRead);
