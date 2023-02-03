@@ -24,7 +24,6 @@
   <ciManagement />
   <distributionManagement />
   <properties>
-    <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
@@ -864,7 +863,6 @@
           <version>3.4.0</version>
           <configuration>
             <quiet>true</quiet>
-            <footer>Generated ${maven.build.timestamp}</footer>
             <doclint>all,-missing</doclint>
           </configuration>
           <executions>
