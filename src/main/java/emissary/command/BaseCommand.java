@@ -51,7 +51,7 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     public Path getConfig() {
         if (config == null) {
-            config = Paths.get(getProjectBase().toAbsolutePath() + "/config");
+            config = getProjectBase().toAbsolutePath().resolve("config");
             if (!Files.exists(config)) {
                 throw new IllegalArgumentException("Config dir not configured and " + config.toAbsolutePath() + " does not exist");
             }
@@ -83,21 +83,21 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     public Path getBinDir() {
         if (binDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath() + "/bin");
+            return getProjectBase().toAbsolutePath().resolve("bin");
         }
         return binDir;
     }
 
     public Path getOutputDir() {
         if (outputDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath() + "/localoutput");
+            return getProjectBase().toAbsolutePath().resolve("localoutput");
         }
         return outputDir;
     }
 
     public Path getErrorDir() {
         if (errorDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath() + "/localerror");
+            return getProjectBase().toAbsolutePath().resolve("localerror");
         }
         return errorDir;
     }

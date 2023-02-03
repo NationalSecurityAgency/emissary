@@ -13,7 +13,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -166,7 +165,7 @@ public class FeedCommand extends ServiceCommand {
 
     public String getOutputRoot() {
         if (this.feedOutputRoot == null) {
-            this.feedOutputRoot = Paths.get(this.getProjectBase().toString(), "DoneParsedData").toString();
+            this.feedOutputRoot = this.getProjectBase().resolve("DoneParsedData").toString();
         }
         return this.feedOutputRoot;
     }
