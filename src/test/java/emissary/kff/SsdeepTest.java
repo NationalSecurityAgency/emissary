@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Random;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -81,10 +81,8 @@ final class SsdeepTest extends UnitTest {
         // given seed and consistent across all implementations.
         new Random(BIG_RANDOM_ARRAY_SEED).nextBytes(input);
         final String hash = ss.fuzzy_hash(input);
-        if (!BIG_RANDOM_EXPECTED_HASH.equals(hash)) {
-            fail("random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ") hashed to \"" + hash
-                    + "\" instead of the expected \"" + BIG_RANDOM_EXPECTED_HASH + "\"");
-        }
+        assertEquals(BIG_RANDOM_EXPECTED_HASH, hash,
+                "Hashes do not match for random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ")");
     }
 
     // Changing any of these parameters will require a corresponding
@@ -105,14 +103,10 @@ final class SsdeepTest extends UnitTest {
         // together, and generate a digest of the concatenated results
         // for comparison to an expected value. If this test passes
         // then you can be very sure that you're getting consistent
-        // results, but if if fails it may be very hard to figure out
+        // results, but if it fails it may be very hard to figure out
         // which particular input was hashed differently.
-        final MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-1 not available even though Java guarantees it: " + e);
-        }
+        final MessageDigest digest =
+                assertDoesNotThrow(() -> MessageDigest.getInstance("SHA-1"), "SHA-1 not available even though Java guarantees it");
         final Random rng = new Random(MANY_RANDOM_SEED);
 
         int totalInputBytes = 0;
@@ -131,13 +125,9 @@ final class SsdeepTest extends UnitTest {
         final byte[] digestBytes = digest.digest();
         final String digestHex = Hexl.toUnformattedHexString(digestBytes);
 
-        if ((totalInputBytes != MANY_RANDOM_EXPECTED_INPUT_BYTES) || (totalHashChars != MANY_RANDOM_EXPECTED_HASH_CHARS)
-                || !digestHex.equals(MANY_RANDOM_EXPECTED_HEX_DIGEST)) {
-            fail("mismatch in random arrays: expected " + MANY_RANDOM_EXPECTED_INPUT_BYTES + " bytes, "
-                    + MANY_RANDOM_EXPECTED_HASH_CHARS
-                    + " hash characters, digest \"" + MANY_RANDOM_EXPECTED_HEX_DIGEST + "\" but got " + totalInputBytes + ", " + totalHashChars
-                    + ", \"" + digestHex + "\"");
-        }
+        assertEquals(MANY_RANDOM_EXPECTED_INPUT_BYTES, totalInputBytes, "Input bytes do not match");
+        assertEquals(MANY_RANDOM_EXPECTED_HASH_CHARS, totalHashChars, "Hash characters do not match");
+        assertEquals(MANY_RANDOM_EXPECTED_HEX_DIGEST, digestHex, "Digest hex does not match");
     }
 
     @Test
@@ -188,15 +178,6 @@ final class SsdeepTest extends UnitTest {
         }
 
         // Check that the scores match the expected scores.
-        if (!Arrays.equals(RANDOM_COMPARE_EXPECTED_SCORES, scores)) {
-            final StringBuilder b = new StringBuilder();
-            b.append("mismatched random scores:");
-            for (int i = 0; i < scores.length; i++) {
-                if (RANDOM_COMPARE_EXPECTED_SCORES[i] != scores[i]) {
-                    b.append(String.format(" (%d: got %d expected %d)", i, scores[i], RANDOM_COMPARE_EXPECTED_SCORES[i]));
-                }
-            }
-            fail(b.toString());
-        }
+        assertArrayEquals(RANDOM_COMPARE_EXPECTED_SCORES, scores, "Mismatched random scores");
     }
 }
