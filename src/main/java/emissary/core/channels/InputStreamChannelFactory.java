@@ -1,5 +1,6 @@
 package emissary.core.channels;
 
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
@@ -47,12 +48,7 @@ public class InputStreamChannelFactory {
         /**
          * The current InputStream instance.
          */
-        private InputStream inputStream;
-
-        /**
-         * The current position in the current InputStream instance.
-         */
-        private long streamPosition;
+        private CountingInputStream inputStream;
 
         private long size;
 
@@ -70,25 +66,18 @@ public class InputStreamChannelFactory {
 
         @Override
         protected final int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
-            if (position() < streamPosition) {
-                streamPosition = 0;
+            if (inputStream != null && position() < inputStream.getByteCount()) {
                 inputStream.close();
                 inputStream = null;
             }
 
             if (inputStream == null) {
-                inputStream = inputStreamFactory.create();
+                inputStream = new CountingInputStream(inputStreamFactory.create());
             }
 
             // Actually perform the read
-            final int bytesRead = SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer,
-                    position() - streamPosition, maxBytesToRead);
-
-            // Update positioning
-            position(position() + bytesRead);
-            streamPosition = position();
-
-            return bytesRead;
+            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getByteCount(),
+                    maxBytesToRead);
         }
 
 

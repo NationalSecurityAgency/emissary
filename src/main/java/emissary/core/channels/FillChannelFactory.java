@@ -91,8 +91,6 @@ public class FillChannelFactory {
                 }
             }
 
-            position(position() + bytesToFill);
-
             return bytesToFill;
         }
     }
