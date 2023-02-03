@@ -3,6 +3,7 @@ package emissary.core.channels;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.NonWritableChannelException;
@@ -22,6 +23,11 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
     private long position = 0;
 
     /**
+     * Used during {@link #read(ByteBuffer)} to calculate resizing a ByteBuffer
+     */
+    private static final BigInteger bigIntMaxValue = BigInteger.valueOf(Integer.MAX_VALUE);
+
+    /**
      * Create a new SBC
      */
     protected AbstractSeekableByteChannel() {}
@@ -34,22 +40,13 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
     protected abstract void closeImpl() throws IOException;
 
     /**
-     * Real read implementation
-     * 
-     * Max bytes to read should be based on SBC position and size, and the byteBuffer position and size to avoid returning
-     * more data from the underlying implementation.
-     * 
-     * For example, if the underlying channel contains 64 bytes of data, but your implementation wraps this to present a
-     * 'window' of the first 16 bytes, the read operation shouldn't be able to return anything other than the first 16
-     * bytes, otherwise unexpected behaviour is likely. If the byteBuffer provided is larger than the amount of bytes
-     * available we need to limit the number of bytes read into it.
+     * Real read implementation. The provided byteBuffer will be properly sized (limited) on the way in.
      * 
      * @param byteBuffer to read from the SBC into.
-     * @param maxBytesToRead regardless of the remaining bytes in the implementation.
      * @return the number of bytes read
      * @throws IOException if an error occurs
      */
-    protected abstract int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException;
+    protected abstract int readImpl(ByteBuffer byteBuffer) throws IOException;
 
     /**
      * Real size implementation
@@ -116,15 +113,61 @@ public abstract class AbstractSeekableByteChannel implements SeekableByteChannel
     public final int read(final ByteBuffer byteBuffer) throws IOException {
         checkOpen(open);
         Validate.notNull(byteBuffer, "Required: byteBuffer != null");
+
         // If we're at the end of the file, early return
-        if (position() >= size()) {
+        if (!hasRemaining()) {
             return -1;
         }
-        final int maxBytesToRead = (int) Math.min(size() - position(), byteBuffer.remaining());
-        final int bytesRead = readImpl(byteBuffer, maxBytesToRead);
-        // Update position of channel
-        position(position() + bytesRead);
-        return bytesRead;
+
+        // Remaining bytes in this channel
+        final long channelRemaining = remaining();
+        // Remaining bytes in the provided buffer
+        final int byteBufferRemaining = byteBuffer.remaining();
+        // Store off the current limit in case we need to update it
+        final int byteBufferLimit = byteBuffer.limit();
+
+        // If the byte buffer has more bytes left than the channel, we want to right-size it for
+        // implementations to be able to 'simply' just read into the byteBuffer.
+        if (byteBufferRemaining > channelRemaining) {
+            // Get the new limit in a safe way to avoid arithmetic exception issues
+            final int newLimit = BigInteger.valueOf(channelRemaining).add(BigInteger.valueOf(byteBuffer.position()))
+                    .min(bigIntMaxValue).intValue();
+            // Update the limit of the byteBuffer temporarily whilst we carry out the read
+            // This will be reset to the original limit before returning
+            byteBuffer.limit(newLimit);
+        }
+
+        try {
+            // Actually carry out the read, and keep how many bytes read for later return
+            final int bytesRead = readImpl(byteBuffer);
+            // Update position of channel
+            position(position() + bytesRead);
+            // Return the amount of bytes read from the channel
+            return bytesRead;
+        } finally {
+            // Update limit of byteBuffer, which may have been reduced to ensure a safe read
+            byteBuffer.limit(byteBufferLimit);
+        }
+    }
+
+    /**
+     * Whether this channel has any bytes remaining.
+     * 
+     * @return true if there are bytes remaining
+     * @throws IOException if an error occurs
+     */
+    public final boolean hasRemaining() throws IOException {
+        return remaining() > 0;
+    }
+
+    /**
+     * The amount of bytes remaining in this channel (size - current position).
+     * 
+     * @return amount of bytes remaining
+     * @throws IOException if an error occurs
+     */
+    public final long remaining() throws IOException {
+        return size() - position();
     }
 
     /**

@@ -30,10 +30,11 @@ class AbstractSeekableByteChannelTest {
         protected void closeImpl() throws IOException {}
 
         @Override
-        protected int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
-            byteBuffer.position(byteBuffer.capacity());
+        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+            final int remaining = byteBuffer.remaining();
+            byteBuffer.position(byteBuffer.limit());
 
-            return maxBytesToRead;
+            return remaining;
         }
     }
 

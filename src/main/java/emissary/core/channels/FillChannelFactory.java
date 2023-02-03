@@ -80,8 +80,8 @@ public class FillChannelFactory {
         }
 
         @Override
-        protected int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
-            final int bytesToFill = Math.min(maxBytesToRead, Integer.MAX_VALUE);
+        protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
+            final int bytesToFill = byteBuffer.remaining();
 
             if (byteBuffer.hasArray()) {
                 Arrays.fill(byteBuffer.array(), byteBuffer.position(), byteBuffer.position() + bytesToFill, value);

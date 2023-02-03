@@ -65,7 +65,7 @@ public class InputStreamChannelFactory {
         }
 
         @Override
-        protected final int readImpl(final ByteBuffer byteBuffer, final int maxBytesToRead) throws IOException {
+        protected final int readImpl(final ByteBuffer byteBuffer) throws IOException {
             if (inputStream != null && position() < inputStream.getByteCount()) {
                 inputStream.close();
                 inputStream = null;
@@ -76,8 +76,7 @@ public class InputStreamChannelFactory {
             }
 
             // Actually perform the read
-            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getByteCount(),
-                    maxBytesToRead);
+            return SeekableByteChannelHelper.getFromInputStream(inputStream, byteBuffer, position() - inputStream.getByteCount());
         }
 
 

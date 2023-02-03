@@ -113,7 +113,7 @@ class IBaseDataObjectDiffHelperTest {
                     }
 
                     @Override
-                    protected int readImpl(ByteBuffer byteBuffer, int maxBytesToRead) throws IOException {
+                    protected int readImpl(final ByteBuffer byteBuffer) throws IOException {
                         throw new IOException("Test SBC that always throws IOException!");
                     }
 
