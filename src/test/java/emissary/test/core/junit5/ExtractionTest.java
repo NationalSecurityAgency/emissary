@@ -74,6 +74,10 @@ public abstract class ExtractionTest extends UnitTest {
         return getMyTestParameterFiles(ExtractionTest.class);
     }
 
+    protected String getInitialForm(final String resource) {
+        return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
+    }
+
     @ParameterizedTest
     @MethodSource("data")
     public void testExtractionPlace(String resource) {
@@ -87,8 +91,8 @@ public abstract class ExtractionTest extends UnitTest {
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
             byte[] data = IOUtils.toByteArray(doc);
-            String defaultCurrentForm = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
-            IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, defaultCurrentForm);
+            String initialForm = getInitialForm(resource);
+            IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, initialForm);
             setupPayload(payload, controlDoc);
             processPreHook(payload, controlDoc);
             List<IBaseDataObject> attachments = place.agentProcessHeavyDuty(payload);
