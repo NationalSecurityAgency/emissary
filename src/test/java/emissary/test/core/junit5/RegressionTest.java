@@ -3,6 +3,7 @@ package emissary.test.core.junit5;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
 
+import com.google.errorprone.annotations.ForOverride;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,6 +43,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
      *         automatically
      */
+    @ForOverride
     protected boolean generateAnswers() {
         return false;
     }
@@ -54,6 +56,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @param resource path to the dat file
      * @return the initial IBDO
      */
+    @ForOverride
     protected IBaseDataObject getInitialIbdo(final String resource) {
         return RegressionTestUtil.getInitialIbdoWithFormInFilename(resource, kff);
     }
@@ -67,6 +70,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @param resource path to the dat file
      * @param initialIbdo to tweak
      */
+    @ForOverride
     protected void tweakInitialIbdoBeforeSerialisation(final String resource, final IBaseDataObject initialIbdo) {
         RegressionTestUtil.setDataToNull(initialIbdo);
     }
@@ -81,6 +85,7 @@ public abstract class RegressionTest extends ExtractionTest {
      * @param resource path to the dat file
      * @param finalIbdo the existing final BDO after it's been processed by a place
      */
+    @ForOverride
     protected void tweakFinalIbdoBeforeSerialisation(final String resource, final IBaseDataObject finalIbdo) {
         RegressionTestUtil.tweakFinalIbdoWithFormInFilename(resource, finalIbdo);
     }
@@ -93,19 +98,24 @@ public abstract class RegressionTest extends ExtractionTest {
      * @param resource path to the dat file
      * @param children to tweak
      */
+    @ForOverride
     protected void tweakFinalResultsBeforeSerialisation(final String resource, final List<IBaseDataObject> children) {
         // No-op unless overridden
     }
 
     @Override
+    @ForOverride
     protected String getInitialForm(final String resource) {
         return RegressionTestUtil.getInitialFormFromFilename(resource);
     }
 
+    // Everything above can be overridden by extending classes to modify behaviour as they see fit.
+    // Below this point, methods should not be able to be overridden as they are inherently part of RegressionTest.
+
     @ParameterizedTest
     @MethodSource("data")
     @Override
-    public void testExtractionPlace(final String resource) {
+    public final void testExtractionPlace(final String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         if (generateAnswers()) {
@@ -147,18 +157,18 @@ public abstract class RegressionTest extends ExtractionTest {
     }
 
     @Override
-    protected Document getAnswerDocumentFor(final String resource) {
+    protected final Document getAnswerDocumentFor(final String resource) {
         // If generating answers, get the src version, otherwise get the normal XML file
         return generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource) : super.getAnswerDocumentFor(resource);
     }
 
     @Override
-    protected void setupPayload(final IBaseDataObject payload, final Document answers) {
+    protected final void setupPayload(final IBaseDataObject payload, final Document answers) {
         RegressionTestUtil.setupPayload(payload, answers);
     }
 
     @Override
-    protected void checkAnswers(final Document answers, final IBaseDataObject payload,
+    protected final void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) throws DataConversionException {
         RegressionTestUtil.checkAnswers(answers, payload, attachments, tname, place.getClass().getName());
     }
