@@ -2,6 +2,7 @@ package emissary.core.channels;
 
 import emissary.core.BaseDataObject;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
@@ -159,6 +160,17 @@ class SeekableByteChannelHelperTest {
             assertEquals(5, trimmedArray.length);
             assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().equals(
                     "Returned data for [filename.txt] will be truncated by 4 bytes due to size constraints of byte arrays")));
+
+            appender.list.clear();
+            final byte[] trimmedArray2 = SeekableByteChannelHelper.getByteArrayFromBdo(bdo, 6);
+            assertEquals(6, trimmedArray2.length);
+            assertEquals(1, appender.list.size());
+
+            appender.list.clear();
+            channelLogger.setLevel(Level.ERROR);
+            final byte[] trimmedArray3 = SeekableByteChannelHelper.getByteArrayFromBdo(bdo, 7);
+            assertEquals(7, trimmedArray3.length);
+            assertEquals(0, appender.list.size());
         } finally {
             channelLogger.detachAppender(appender);
             appender.stop();
