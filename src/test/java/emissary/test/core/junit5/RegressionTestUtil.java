@@ -1,7 +1,9 @@
 package emissary.test.core.junit5;
 
+import emissary.core.BaseDataObject;
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectHelper;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.core.channels.FileChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
@@ -13,6 +15,9 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,16 +39,30 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class RegressionTestUtil {
 
-    private static final Path TEST_RESX;
+    // XML builder to read XML answer file in
+    private static final SAXBuilder xmlBuilder = new SAXBuilder(XMLReaders.NONVALIDATING);
+
+    // Default configuration to only check data when comparing
+    private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.onlyCheckData();
+
+    // Logger instance
+    private static final Logger logger = LoggerFactory.getLogger(RegressionTestUtil.class);
+
+    // Open options for (over-)writing answers XML
+    private static final Set<StandardOpenOption> CREATE_WRITE_TRUNCATE = new HashSet<>(Arrays.asList(StandardOpenOption.CREATE,
+            StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
+
+    // test/resources folder
+    private static Path TEST_RESX = getTestResx();
 
     /**
      * Dynamically finds the core/src/test/resources directory to write the XML to.
      * 
-     * Running locally in an IDE, PROJECT_BASE will likely point to core/src/main/
+     * Running locally in an IDE, PROJECT_BASE will likely point to {@code core/src/main/}
      * 
-     * Running in Maven/Docker it will most likely point to core/target/
+     * Running in Maven/Docker it will most likely point to {@code core/target/}
      */
-    static {
+    public static Path getTestResx() {
         // Gets us the parent folder to PROJECT_BASE
         Path pathBuilder = Paths.get(System.getenv("PROJECT_BASE")).getParent();
         // If in Docker, we need to go into src - we're probably already in it otherwise
@@ -51,59 +70,42 @@ public class RegressionTestUtil {
             pathBuilder = pathBuilder.resolve("src");
         }
         // Append test/resources to finish the path off
-        TEST_RESX = pathBuilder.resolve("test/resources");
+        return pathBuilder.resolve("test/resources");
     }
 
-    // Default configuration to only check data when comparing
-    private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.onlyCheckData();
+    /**
+     * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
+     */
+    public static void checkAnswers(final Document answers, final IBaseDataObject payload,
+            final List<IBaseDataObject> attachments, final String tname, final String placeName) throws DataConversionException {
+        final Element root = answers.getRootElement();
+        final Element parent = root.getChild(IBaseDataObjectXmlHelper.ANSWERS_ELEMENT_NAME);
 
-    private static final Logger logger = LoggerFactory.getLogger(RegressionTestUtil.class);
+        assertNotNull(parent, "No 'answers' section found!");
 
-    // Open options for (over-)writing answers XML
-    private static final Set<StandardOpenOption> CREATE_WRITE_TRUNCATE = new HashSet<>(Arrays.asList(StandardOpenOption.CREATE,
-            StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
+        final List<IBaseDataObject> expectedAttachments = new ArrayList<>();
+        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments);
+        final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
+                attachments, placeName, DIFF_CHECK);
+
+        assertNull(differences, differences);
+    }
 
     /**
-     * Simple/default way to provide the initial IBDO
+     * When generating XML answer files, we need to use the src version rather than target.
      * 
-     * Takes the data from the dat file and sets the current (initial) form based on the filename
+     * This method returns the XML file from that location.
      * 
-     * @param resource path to the dat file
-     * @return the initial IBDO
+     * @param resource to get the answer file for
+     * @return the XML file in the src directory (not target)
      */
-    public static IBaseDataObject getInitialIbdoWithFormInFilename(final String resource, final KffDataObjectHandler kff) {
+    public static Document getAnswerDocumentFor(final String resource) {
         try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
-            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
-            final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
-            // Create a BDO for the data, and set the filename correctly
-            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, "Classification",
-                    datFile.getInitialForm(), kff);
-            initialIbdo.setChannelFactory(sbcf);
-            initialIbdo.setFilename(datFile.getOriginalFileName());
-
-            return initialIbdo;
-        } catch (final URISyntaxException e) {
-            fail("Couldn't get path for resource: " + resource, e);
+            return xmlBuilder.build(RegressionTestUtil.getXmlPath(resource).toFile());
+        } catch (final JDOMException | IOException e) {
+            // Fail if invalid XML document
+            fail(String.format("No valid answer document provided for %s", resource), e);
             return null;
-        }
-    }
-
-    /**
-     * Simple/default way to provide the final IBDO. Will modify the provided IBDO.
-     * 
-     * Sets the current (final) form based on the filename
-     * 
-     * @param resource path to the dat file
-     * @param finalIbdo the existing final BDO after it's been processed by a place
-     */
-    public static void modifyFinalIbdoWithFormInFilename(final String resource, final IBaseDataObject finalIbdo) {
-        try {
-            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
-            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
-            finalIbdo.setCurrentForm(datFile.getFinalForm());
-        } catch (final URISyntaxException e) {
-            fail("Couldn't get path for resource: " + resource, e);
         }
     }
 
@@ -122,6 +124,22 @@ public class RegressionTestUtil {
 
         final String xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
         return TEST_RESX.resolve(xmlPath);
+    }
+
+    /**
+     * Generate the relevant XML and write to disk.
+     * 
+     * @param resource referencing the DAT file
+     * @param initialIbdo for 'setup' section
+     * @param finalIbdo for 'answers' section
+     * @param results for 'answers' section
+     */
+    public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
+            final List<IBaseDataObject> results) {
+        // Generate the full XML (setup & answers from before & after)
+        final String xmlContent = IBaseDataObjectXmlHelper.xmlFromIbdo(finalIbdo, results, initialIbdo);
+        // Write out the XML to disk
+        writeXml(resource, xmlContent);
     }
 
     /**
@@ -183,20 +201,67 @@ public class RegressionTestUtil {
     }
 
     /**
-     * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
+     * Allow setting the internal data fields to null to avoid being included during serialisation.
+     * 
+     * @param initialIbdo to null out
      */
-    public static void checkAnswers(final Document answers, final IBaseDataObject payload,
-            final List<IBaseDataObject> attachments, final String tname, final String placeName) throws DataConversionException {
-        final Element root = answers.getRootElement();
-        final Element parent = root.getChild(IBaseDataObjectXmlHelper.ANSWERS_ELEMENT_NAME);
+    public static void setDataToNull(final IBaseDataObject initialIbdo) {
+        try {
+            if (initialIbdo instanceof BaseDataObject) {
+                IBaseDataObjectHelper.setPrivateFieldValue((BaseDataObject) initialIbdo, "theData", null);
+                IBaseDataObjectHelper.setPrivateFieldValue((BaseDataObject) initialIbdo, "seekableByteChannelFactory", null);
+            } else {
+                fail("Didn't get an expected type of IBaseDataObject");
+            }
+        } catch (final IllegalAccessException | NoSuchFieldException e) {
+            fail("Couldn't null out data for BDO", e);
+        }
+    }
 
-        assertNotNull(parent, "No 'answers' section found!");
+    /**
+     * Simple/default way to provide the initial IBDO
+     * 
+     * Takes the data from the dat file and sets the current (initial) form based on the filename
+     * 
+     * @param resource path to the dat file
+     * @return the initial IBDO
+     */
+    public static IBaseDataObject getInitialIbdoWithFormInFilename(final String resource, final KffDataObjectHandler kff) {
+        try {
+            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
+            final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
+            // Create a BDO for the data, and set the filename correctly
+            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, "Classification",
+                    datFile.getInitialForm(), kff);
+            initialIbdo.setChannelFactory(sbcf);
+            initialIbdo.setFilename(datFile.getOriginalFileName());
 
-        final List<IBaseDataObject> expectedAttachments = new ArrayList<>();
-        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments);
-        final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
-                attachments, placeName, DIFF_CHECK);
+            return initialIbdo;
+        } catch (final URISyntaxException e) {
+            fail("Couldn't get path for resource: " + resource, e);
+            return null;
+        }
+    }
 
-        assertNull(differences, differences);
+    /**
+     * Simple/default way to provide the final IBDO. Will modify the provided IBDO.
+     * 
+     * Sets the current (final) form based on the filename
+     * 
+     * @param resource path to the dat file
+     * @param finalIbdo the existing final BDO after it's been processed by a place
+     */
+    public static void tweakFinalIbdoWithFormInFilename(final String resource, final IBaseDataObject finalIbdo) {
+        try {
+            final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
+            final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
+            if (!finalIbdo.currentForm().equals(datFile.getFinalForm())) {
+                final String format = "Final form from place [%s] didn't match final form in filename [%s]";
+                fail(String.format(format, finalIbdo.currentForm(), datFile.getFinalForm()));
+            }
+        } catch (final URISyntaxException e) {
+            fail("Couldn't get path for resource: " + resource, e);
+        }
     }
 }
