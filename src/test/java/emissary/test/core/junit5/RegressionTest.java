@@ -36,9 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public abstract class RegressionTest extends ExtractionTest {
 
     /**
-     * Override this to generate XML for data files
-     * 
-     * Return the initial form for the provided dat files. If multiple types are to be tested,
+     * Override this to generate XML for data files.
      * 
      * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
      *         automatically
