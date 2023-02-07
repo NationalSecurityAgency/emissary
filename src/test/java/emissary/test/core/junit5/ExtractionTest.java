@@ -8,6 +8,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
 
+import com.google.errorprone.annotations.ForOverride;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Attribute;
@@ -73,6 +74,16 @@ public abstract class ExtractionTest extends UnitTest {
         return getMyTestParameterFiles(ExtractionTest.class);
     }
 
+    /**
+     * Allow overriding the initial form in extensions to this test.
+     * 
+     * By default, get the initial form from the filename in the form {@code INITIAL_FORM@2.dat} where {@code INITIAL_FORM}
+     * will be the initial form.
+     *
+     * @param resource to get the form from
+     * @return the initial form
+     */
+    @ForOverride
     protected String getInitialForm(final String resource) {
         return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
     }
