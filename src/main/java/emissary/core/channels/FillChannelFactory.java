@@ -85,6 +85,7 @@ public class FillChannelFactory {
 
             if (byteBuffer.hasArray()) {
                 Arrays.fill(byteBuffer.array(), byteBuffer.position(), byteBuffer.position() + bytesToFill, value);
+                byteBuffer.position(byteBuffer.position() + bytesToFill);
             } else {
                 for (int i = 0; i < bytesToFill; i++) {
                     byteBuffer.put(value);
