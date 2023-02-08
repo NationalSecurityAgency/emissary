@@ -20,6 +20,9 @@ public class EnvCommand extends HttpCommand {
 
     public static int DEFAULT_PORT = 8001;
 
+    @Parameter(names = {"--bashable"}, description = "format output for sourcing by bash")
+    private boolean bashable = false;
+
     @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
@@ -29,9 +32,6 @@ public class EnvCommand extends HttpCommand {
     public String getCommandName() {
         return "env";
     }
-
-    @Parameter(names = {"--bashable"}, description = "format output for sourcing by bash")
-    private boolean bashable = false;
 
     public boolean getBashable() {
         return bashable;
@@ -80,7 +80,7 @@ public class EnvCommand extends HttpCommand {
     @Override
     public void outputBanner() {
         // override so we can use the getQuiet defined here
-        if (getQuiet() == false) {
+        if (isVerbose()) {
             new Banner().dump();
         }
     }

@@ -20,35 +20,49 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public abstract class BaseCommand implements EmissaryCommand {
+    static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
 
     public static final String COMMAND_NAME = "BaseCommand";
-
-    static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
 
     @Parameter(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
     private Path config;
 
+    @Parameter(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
+    private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
+
+    @Parameter(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
+    private String logbackConfig;
+
+    @Parameter(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
+    private String flavor;
+
+    @Parameter(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
+    private Path binDir;
+
+    @Parameter(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
+    private Path outputDir;
+
+    @Parameter(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
+    private Path errorDir;
+
+    @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    private boolean quiet = false;
+
     public Path getConfig() {
         if (config == null) {
-            config = Paths.get(getProjectBase().toAbsolutePath() + "/config");
+            config = getProjectBase().toAbsolutePath().resolve("config");
             if (!Files.exists(config)) {
-                throw new RuntimeException("Config dir not configured and " + config.toAbsolutePath().toString() + " does not exist");
+                throw new IllegalArgumentException("Config dir not configured and " + config.toAbsolutePath() + " does not exist");
             }
         }
 
         return config;
     }
 
-    @Parameter(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
-    private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
-
     public Path getProjectBase() {
         return projectBase;
     }
-
-    @Parameter(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
-    private String logbackConfig;
 
     public String getLogbackConfig() {
         if (logbackConfig == null) {
@@ -56,9 +70,6 @@ public abstract class BaseCommand implements EmissaryCommand {
         }
         return logbackConfig;
     }
-
-    @Parameter(names = {"--flavor"}, description = "emissary config flavor, comma seperated for multiple")
-    private String flavor;
 
     public String getFlavor() {
         return flavor;
@@ -70,43 +81,34 @@ public abstract class BaseCommand implements EmissaryCommand {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, getFlavor());
     }
 
-    @Parameter(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
-    private Path binDir;
-
     public Path getBinDir() {
         if (binDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath().toString() + "/bin");
+            return getProjectBase().toAbsolutePath().resolve("bin");
         }
         return binDir;
     }
 
-    @Parameter(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
-    private Path outputDir;
-
     public Path getOutputDir() {
         if (outputDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath().toString() + "/localoutput");
+            return getProjectBase().toAbsolutePath().resolve("localoutput");
         }
         return outputDir;
     }
 
-    @Parameter(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
-    private Path errorDir;
-
     public Path getErrorDir() {
         if (errorDir == null) {
-            return Paths.get(getProjectBase().toAbsolutePath().toString() + "/localerror");
+            return getProjectBase().toAbsolutePath().resolve("localerror");
         }
         return errorDir;
     }
-
-    @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
-    private boolean quiet = false;
 
     public boolean getQuiet() {
         return quiet;
     }
 
+    public boolean isVerbose() {
+        return !getQuiet();
+    }
 
     @Override
     public void setupCommand() {
@@ -114,27 +116,19 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     public void setupConfig() {
-        String pBase = getProjectBase().toAbsolutePath().toString();
-        logInfo("{} is set to {} ", ConfigUtil.PROJECT_BASE_ENV, pBase);
-
-        String cfg = getConfig().toAbsolutePath().toString();
-        logInfo("Setting {} to {} ", ConfigUtil.CONFIG_DIR_PROPERTY, cfg);
-        System.setProperty(ConfigUtil.CONFIG_DIR_PROPERTY, cfg);
-
-        String binDir = getBinDir().toAbsolutePath().toString();
-        logInfo("Setting {} to {} ", ConfigUtil.CONFIG_BIN_PROPERTY, binDir);
-        System.setProperty(ConfigUtil.CONFIG_BIN_PROPERTY, binDir);
-
-        String outputRoot = getOutputDir().toAbsolutePath().toString();
-        logInfo("Setting {} to {} ", ConfigUtil.CONFIG_OUTPUT_ROOT_PROPERTY, outputRoot);
-        System.setProperty(ConfigUtil.CONFIG_OUTPUT_ROOT_PROPERTY, outputRoot);
-
+        logInfo("{} is set to {} ", ConfigUtil.PROJECT_BASE_ENV, getProjectBase().toAbsolutePath().toString());
+        setSystemProperty(ConfigUtil.CONFIG_DIR_PROPERTY, getConfig().toAbsolutePath().toString());
+        setSystemProperty(ConfigUtil.CONFIG_BIN_PROPERTY, getBinDir().toAbsolutePath().toString());
+        setSystemProperty(ConfigUtil.CONFIG_OUTPUT_ROOT_PROPERTY, getOutputDir().toAbsolutePath().toString());
         logInfo("Emissary error dir set to {} ", getErrorDir().toAbsolutePath().toString());
-
         if (getFlavor() != null) {
-            logInfo("Setting {} to {} ", ConfigUtil.CONFIG_FLAVOR_PROPERTY, getFlavor());
-            System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, getFlavor());
+            setSystemProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, getFlavor());
         }
+    }
+
+    protected void setSystemProperty(String key, String value) {
+        logInfo("Setting {} to {} ", key, value);
+        System.setProperty(key, value);
     }
 
     /**
@@ -170,17 +164,17 @@ public abstract class BaseCommand implements EmissaryCommand {
      * Try to reinitialize the logback context with the configured file you may have 2 log files if anything logged before
      * we do this. Useful when you are running a server For troubleshooting, looking at the http://localhost:8001/lbConfig
      * when this works, you will see the initial logger and then new one
+     *
+     * Need to reinit because logback config uses ${emissary.node.name}-${emissary.node.port} which are now set by the
+     * commands after logback is initialized
      */
     public void reinitLogback() {
-        // Need to reinit because logback config uses ${emissary.node.name}-${emissary.node.port}
-        // which are now set by the commands after logback is initialized
-
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         URL logCfg = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
 
         if (logCfg != null && (logCfg.toString().endsWith("logback-test.xml") || (logCfg.toString().endsWith("logback-test.groovy")))) {
             // logCfg can be null if Emissary.setupLogbackForConsole is called
-            LOG.warn("Not using {}, staying with test config {}", getLogbackConfig(), logCfg.toString());
+            LOG.warn("Not using {}, staying with test config {}", getLogbackConfig(), logCfg);
             doLogbackReinit(loggerContext, logCfg.getPath());
         } else if (Files.exists(Paths.get(getLogbackConfig()))) {
             doLogbackReinit(loggerContext, getLogbackConfig());
@@ -202,14 +196,14 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     public void logInfo(String format, Object... args) {
-        if (getQuiet() == false) {
+        if (isVerbose()) {
             LOG.info(format, args);
         }
     }
 
     @Override
     public void outputBanner() {
-        if (getQuiet() == false) {
+        if (isVerbose()) {
             new Banner().dump();
         }
     }

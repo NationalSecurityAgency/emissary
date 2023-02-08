@@ -8,14 +8,22 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.google.common.net.HostAndPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-// TODO Had to extend Http in order to get node host/port substitution. MAybe move up to BaseCommand?
 @Parameters(commandDescription = "Read the peers.cfg (respective flavors) and return hosts as bashable list")
 public class PeersCommand extends HttpCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(PeersCommand.class);
+
+    public static final String COMMAND_NAME = "peers";
+
+    private static final String PEER_CONFIG = "peer.cfg";
+
     @Parameter(names = {"-d", "--delimiter"}, description = "delimiter to use when writing host output (note: newline needs to be \\n")
     private String delimiter = ",";
 
@@ -25,12 +33,9 @@ public class PeersCommand extends HttpCommand {
     @Parameter(names = "--withPort", description = "returns each peer with associated port")
     private boolean withPort = false;
 
-    private static final String PEER_CONFIG = "peer.cfg";
-
-
     @Override
     public String getCommandName() {
-        return "peers";
+        return COMMAND_NAME;
     }
 
     @Override

@@ -15,13 +15,12 @@ public class TopologyCommand extends HttpCommand {
     static final Logger LOG = LoggerFactory.getLogger(TopologyCommand.class);
 
     public static String COMMAND_NAME = "topology";
+    public static int DEFAULT_PORT = 8001;
 
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
-
-    public static int DEFAULT_PORT = 8001;
 
     @Override
     public int getDefaultPort() {

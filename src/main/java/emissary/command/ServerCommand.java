@@ -18,46 +18,45 @@ import java.util.Set;
 
 @Parameters(commandDescription = "Start an Emissary jetty server")
 public class ServerCommand extends ServiceCommand {
+    private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
 
-    public static String COMMAND_NAME = "server";
+    public static final String COMMAND_NAME = "server";
+
+    public static final int DEFAULT_PORT = 8001;
+
+    @Parameter(names = {"-m", "--mode"}, description = "mode: standalone or cluster", validateWith = ServerModeValidator.class)
+    private String mode = "standalone";
+
+    @Parameter(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
+    private Path staticDir;
+
+    @Parameter(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)")
+    private int agents;
+
+    @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
+    private boolean dumpJettyBeans = false;
 
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
-    public static int DEFAULT_PORT = 8001;
-
     @Override
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
-
-    @Parameter(names = {"-m", "--mode"}, description = "mode: standalone or cluster", validateWith = ServerModeValidator.class)
-    private String mode = "standalone";
-
     public String getMode() {
         return mode;
     }
-
-    @Parameter(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
-    private Path staticDir;
 
     public Path getStaticDir() {
         return staticDir;
     }
 
-    @Parameter(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)")
-    private int agents;
-
     public int getAgents() {
         return agents;
     }
-
-    @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
-    private boolean dumpJettyBeans = false;
 
     public boolean shouldDumpJettyBeans() {
         return dumpJettyBeans;

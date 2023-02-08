@@ -13,30 +13,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implemetation to distribute work to peer nodes")
+@Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes")
 public class FeedCommand extends ServiceCommand {
-
-    public static String COMMAND_NAME = "feed";
-
-    @Override
-    public String getCommandName() {
-        return COMMAND_NAME;
-    }
-
-    public static int DEFAULT_PORT = 7001;
-
-    @Override
-    public int getDefaultPort() {
-        return DEFAULT_PORT;
-    }
-
     private static final Logger LOG = LoggerFactory.getLogger(FeedCommand.class);
+
+    public static final String COMMAND_NAME = "feed";
+    public static final int DEFAULT_PORT = 7001;
 
     @Parameter(names = {"-w", "--workspace"}, description = "fully qualified class to use as the WorkSpace implementation")
     private String workspaceClass = "emissary.pickup.WorkSpace";
@@ -91,6 +78,16 @@ public class FeedCommand extends ServiceCommand {
     @Parameter(names = {"-ft", "--fileTimestamp"},
             description = "set the use of file timestamps to control whether a file is new enough to be added to the queue")
     private boolean fileTimestamp = false;
+
+    @Override
+    public String getCommandName() {
+        return COMMAND_NAME;
+    }
+
+    @Override
+    public int getDefaultPort() {
+        return DEFAULT_PORT;
+    }
 
     @Override
     public void startService() {
@@ -168,7 +165,7 @@ public class FeedCommand extends ServiceCommand {
 
     public String getOutputRoot() {
         if (this.feedOutputRoot == null) {
-            this.feedOutputRoot = Paths.get(this.getProjectBase().toString(), "DoneParsedData").toString();
+            this.feedOutputRoot = this.getProjectBase().resolve("DoneParsedData").toString();
         }
         return this.feedOutputRoot;
     }

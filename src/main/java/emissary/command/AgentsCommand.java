@@ -18,8 +18,6 @@ public class AgentsCommand extends MonitorCommand<AgentsResponseEntity> {
         return COMMAND_NAME;
     }
 
-    private String targetEndpoint = AGENTS_ENDPOINT;
-
     @Override
     public AgentsResponseEntity sendRequest(EmissaryClient client, String endpoint) {
         return client.send(new HttpGet(endpoint)).getContent(AgentsResponseEntity.class);
@@ -27,7 +25,7 @@ public class AgentsCommand extends MonitorCommand<AgentsResponseEntity> {
 
     @Override
     public String getTargetEndpoint() {
-        return this.targetEndpoint;
+        return AGENTS_ENDPOINT;
     }
 
 }
