@@ -29,12 +29,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 
-public class IBaseDataObjectXmlHelper {
-
+/**
+ * This class helps convert IBaseDataObjects to and from XML.
+ */
+public final class IBaseDataObjectXmlHelper {
     /**
      * Logger instance
      */
-    private static final Logger logger = LoggerFactory.getLogger(IBaseDataObjectXmlHelper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectXmlHelper.class);
     /**
      * The XML element name for Answers.
      */
@@ -50,7 +52,7 @@ public class IBaseDataObjectXmlHelper {
     /**
      * New line byte array to use for normalised XML
      */
-    private static final byte[] BASE64_NEW_LINE_BYTE = new byte[] {'\n'};
+    private static final byte[] BASE64_NEW_LINE_BYTE = {'\n'};
     /**
      * New line string to use for normalised XML
      */
@@ -463,6 +465,8 @@ public class IBaseDataObjectXmlHelper {
         }
     };
 
+    private IBaseDataObjectXmlHelper() {}
+
     /**
      * Return UTF8 bytes from an XML value, decoding base64 if required
      * 
@@ -494,6 +498,10 @@ public class IBaseDataObjectXmlHelper {
         final IBaseDataObject ibdo = new BaseDataObject();
         final IBaseDataObject tempIbdo = new BaseDataObject();
 
+        // We want to return the ibdo with the data field equal to null. This can only
+        // be accomplished if the data is never set. Therefore, we have to set the data
+        // on a separate ibdo, hash the ibdo and then transfer just the parameters back
+        // to the original ibdo.
         tempIbdo.setChannelFactory(sbcf);
         kff.hash(tempIbdo);
         ibdo.setParameters(tempIbdo.getParameters());
@@ -630,7 +638,7 @@ public class IBaseDataObjectXmlHelper {
             }
         } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            logger.warn("Unable to call ibdo method {}!", ibdoMethodName, e);
+            LOGGER.warn("Unable to call ibdo method {}!", ibdoMethodName, e);
         }
     }
 
@@ -756,12 +764,12 @@ public class IBaseDataObjectXmlHelper {
             final SeekableByteChannelFactory seekableByteChannelFactory) {
         if (seekableByteChannelFactory != null) {
             try {
-                final byte[] bytes =
-                        SeekableByteChannelHelper.getByteArrayFromChannel(seekableByteChannelFactory, BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+                final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(seekableByteChannelFactory,
+                        BaseDataObject.MAX_BYTE_ARRAY_SIZE);
 
                 addNonNullContent(parent, elementName, bytes);
             } catch (final IOException e) {
-                logger.error("Could not get bytes from SeekableByteChannel!", e);
+                LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
             }
         }
     }
