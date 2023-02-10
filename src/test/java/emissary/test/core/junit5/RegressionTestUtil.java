@@ -56,18 +56,20 @@ public class RegressionTestUtil {
     private static Path TEST_RESX = getTestResx();
 
     /**
-     * Dynamically finds the core/src/test/resources directory to write the XML to.
+     * Dynamically finds the src/test/resources directory to write the XML to.
      * 
-     * Running locally in an IDE, PROJECT_BASE will likely point to {@code core/src/main/}
+     * Running locally in an IDE, PROJECT_BASE will likely point to {@code src/main/}
      * 
-     * Running in Maven/Docker it will most likely point to {@code core/target/}
+     * Running in Maven/Docker it will most likely point to {@code target/}
      */
     public static Path getTestResx() {
         // Gets us the parent folder to PROJECT_BASE
-        Path pathBuilder = Paths.get(System.getenv("PROJECT_BASE")).getParent();
+        Path pathBuilder = Paths.get(System.getenv("PROJECT_BASE"));
         // If in Docker, we need to go into src - we're probably already in it otherwise
-        if (pathBuilder.endsWith("core")) { // Docker
-            pathBuilder = pathBuilder.resolve("src");
+        if (pathBuilder.endsWith("main")) { // Docker
+            pathBuilder = pathBuilder.getParent();
+        } else if (pathBuilder.endsWith("target")) {
+            pathBuilder = pathBuilder.getParent().resolve("src");
         }
         // Append test/resources to finish the path off
         return pathBuilder.resolve("test/resources");
