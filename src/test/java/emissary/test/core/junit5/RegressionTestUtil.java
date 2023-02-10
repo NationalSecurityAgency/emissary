@@ -68,7 +68,7 @@ public class RegressionTestUtil {
         // If in Docker, we need to go into src - we're probably already in it otherwise
         if (pathBuilder.endsWith("main")) { // Docker
             pathBuilder = pathBuilder.getParent();
-        } else if (pathBuilder.endsWith("target")) {
+        } else if (pathBuilder.getFileName().toString().contains("target")) {
             pathBuilder = pathBuilder.getParent().resolve("src");
         }
         // Append test/resources to finish the path off
