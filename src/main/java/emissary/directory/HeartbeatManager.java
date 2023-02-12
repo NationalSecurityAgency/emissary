@@ -71,16 +71,7 @@ public class HeartbeatManager {
     public static final boolean NO_CONTACT = false;
 
     /** The remote directories we are checking on and their health */
-    protected Map<String, Health> directories = new ConcurrentHashMap<String, Health>(100, 0.8f, 3);
-
-    // /**
-    // * Setup to manage heartbeats to remote directories
-    // *
-    // * @param directoryKey Key for directory I act on behalf of
-    // */
-    // public HeartbeatManager(final String directoryKey) {
-    // this(directoryKey, null, DEFAULT_INITIAL_DELAY_SECONDS, DEFAULT_INTERVAL_SECONDS);
-    // }
+    protected Map<String, Health> directories = new ConcurrentHashMap<>(100, 0.8f, 3);
 
     /**
      * Setup to manage heartbeats to remote directories
@@ -106,7 +97,7 @@ public class HeartbeatManager {
         this.initialDelaySeconds = initialDelaySeconds;
         this.intervalSeconds = intervalSeconds;
 
-        logger.debug("Starting with initialDelay=" + initialDelaySeconds + ", interval=" + intervalSeconds);
+        logger.debug("Starting with initialDelay={}, interval={}", initialDelaySeconds, intervalSeconds);
 
         // new daemon timer
         this.timer = new Timer("HeartbeatManager", true);
@@ -132,7 +123,7 @@ public class HeartbeatManager {
      */
     public void setFailThreshold(final int t) {
         this.failThreshold = t;
-        logger.debug("Set new fail threshold to " + t);
+        logger.debug("Set new fail threshold to {}", t);
     }
 
     /**
@@ -140,7 +131,7 @@ public class HeartbeatManager {
      */
     public void setPermanentFailThreshold(final int t) {
         this.permanentFailThreshold = t;
-        logger.debug("Set new permanent fail threshold to " + t);
+        logger.debug("Set new permanent fail threshold to {}", t);
     }
 
     /**
@@ -170,10 +161,9 @@ public class HeartbeatManager {
         if (!KeyManipulator.isLocalTo(this.thisDirectory, key)) {
             final String dkey = KeyManipulator.getDefaultDirectoryKey(key);
             this.directories.put(dkey, new Health(isAlive, "Initial status"));
-            logger.debug("Added remote " + dkey + " with initial status " + isAlive + " now monitoring " + this.directories.size()
-                    + " remote directories");
+            logger.debug("Added remote {} with initial status {} now monitoring {} remote directories", dkey, isAlive, this.directories.size());
         } else {
-            logger.debug("Skipping local directory " + key + ", is not remote");
+            logger.debug("Skipping local directory {}, is not remote", key);
         }
     }
 
@@ -225,11 +215,11 @@ public class HeartbeatManager {
         final String dirKey = KeyManipulator.getDefaultDirectoryKey(key);
         final Health v = this.directories.get(dirKey);
         if (v == null) {
-            logger.error("Not monitoring directory " + dirKey);
+            logger.error("Not monitoring directory {}", dirKey);
             return;
         }
 
-        logger.debug("Externally setting " + status + " status for " + key + " - " + reason);
+        logger.debug("Externally setting {} status for {} - {}", status, key, reason);
 
         v.setStatus(status, reason);
     }
@@ -245,7 +235,7 @@ public class HeartbeatManager {
         final String dirKey = KeyManipulator.getDefaultDirectoryKey(key);
         final Health v = this.directories.get(dirKey);
         if (v == null) {
-            logger.error("Not monitoring directory " + dirKey);
+            logger.error("Not monitoring directory {}", dirKey);
             return;
         }
 
@@ -258,8 +248,8 @@ public class HeartbeatManager {
         final boolean isHealthy = v.isHealthy();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Reporting on " + key + " status=" + status + ", wasAlive/Healthy=" + wasAlive + "/" + wasHealthy + ", isAlive/Healthy="
-                    + isAlive + "/" + isHealthy);
+            logger.debug("Reporting on {} status={}, wasAlive/Healthy={}/{}, isAlive/Healthy={}/{}", key, status, wasAlive, wasHealthy, isAlive,
+                    isHealthy);
         }
 
         if (wasAlive && !isAlive) {
@@ -284,9 +274,9 @@ public class HeartbeatManager {
         try {
             final IRemoteDirectory d = (IRemoteDirectory) Namespace.lookup(myKey);
             final int count = d.irdFailDirectory(key, permanent);
-            logger.info("Notified " + myKey + " of failed directory " + key + (permanent ? " permanently!" : "") + ", " + count + " keys removed");
+            logger.info("Notified {} of failed directory {}{}, {} keys removed", myKey, key, (permanent ? " permanently!" : ""), count);
         } catch (NamespaceException ne) {
-            logger.error("Tried to fail a remote directory " + key + " but cannot look up my own directory using " + myKey, ne);
+            logger.error("Tried to fail a remote directory {} but cannot look up my own directory using {}", key, myKey, ne);
         }
     }
 
@@ -318,7 +308,7 @@ public class HeartbeatManager {
         @Override
         public void run() {
             try {
-                logger.debug("Running timer task on " + HeartbeatManager.this.directories.size() + " directories");
+                logger.debug("Running timer task on {} directories", HeartbeatManager.this.directories.size());
                 for (final String dir : HeartbeatManager.this.directories.keySet()) {
                     heartbeat(dir);
                 }
@@ -340,7 +330,7 @@ public class HeartbeatManager {
     public final boolean heartbeat(final String key) {
         boolean isup = false;
         try {
-            logger.debug("Sending heartbeat msg to " + key);
+            logger.debug("Sending heartbeat msg to {}", key);
             EmissaryResponse response = getHeartbeat(this.thisDirectory, key);
             if (response.getStatus() == 200) {
                 healthReport(key, true, response.getContentString());
@@ -366,7 +356,7 @@ public class HeartbeatManager {
         final HttpPost method = client.createHttpPost(directoryUrl, EmissaryClient.CONTEXT, "/Heartbeat.action");
         final String loc = KeyManipulator.getServiceLocation(toPlace);
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.FROM_PLACE_NAME, fromPlace));
         nvps.add(new BasicNameValuePair(HeartbeatAdapter.TO_PLACE_NAME, loc));
         method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));

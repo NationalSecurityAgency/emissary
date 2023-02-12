@@ -115,9 +115,9 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
             // This check could be wrong since nothing is synchronized.
             // Its understood and ok since it's just debug stuff
             if (afterSize > beforeSize) {
-                logger.debug("Appears to have added entry " + d.getKey() + " list is now size " + afterSize);
+                logger.debug("Appears to have added entry {} list is now size {}", d.getKey(), afterSize);
             } else {
-                logger.debug("Appear to have dropped or replaced entry " + d.getKey() + " list is still size " + afterSize);
+                logger.debug("Appear to have dropped or replaced entry {} list is still size {}", d.getKey(), afterSize);
             }
         }
     }
@@ -128,7 +128,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @return list of all directory entries
      */
     public List<DirectoryEntry> allEntries() {
-        final List<DirectoryEntry> list = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> list = new ArrayList<>();
 
         for (final DirectoryEntryList d : values()) {
             list.addAll(d);
@@ -142,7 +142,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @return list of all directory entry keys
      */
     public List<String> allEntryKeys() {
-        final List<String> list = new ArrayList<String>();
+        final List<String> list = new ArrayList<>();
 
         for (final DirectoryEntryList d : values()) {
             for (final DirectoryEntry e : d) {
@@ -225,7 +225,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @return list of entries that were removed from the map
      */
     public List<DirectoryEntry> removeAllMatching(final String key, final long checkpoint) {
-        final List<DirectoryEntry> removed = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> removed = new ArrayList<>();
 
         for (final DirectoryEntryList list : values()) {
             // NB: cannot remove from DirectoryEntryList through iterator
@@ -277,7 +277,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @return list of entries that were matches, still live in the directory map
      */
     public List<DirectoryEntry> collectAllMatching(final String key) {
-        final List<DirectoryEntry> match = new ArrayList<DirectoryEntry>();
+        final List<DirectoryEntry> match = new ArrayList<>();
 
         final String dataId = KeyManipulator.getDataID(key);
         if (dataId.contains("*") || dataId.contains("?")) {
@@ -386,7 +386,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      */
     public List<String> addCostToMatching(final String key, final int increment) {
         final List<DirectoryEntry> list = collectAllMatching(key);
-        final List<String> ret = new ArrayList<String>();
+        final List<String> ret = new ArrayList<>();
         for (final DirectoryEntry e : list) {
             e.addCost(increment);
             ret.add(e.getFullKey());

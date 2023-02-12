@@ -43,7 +43,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
      */
     @Override
     public void placeRegistered(final String observableKey, final String placeKey) {
-        logger.debug("Place registered " + placeKey + " in directory " + observableKey);
+        logger.debug("Place registered {} in directory {}", placeKey, observableKey);
     }
 
     /**
@@ -54,7 +54,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
      */
     @Override
     public void placeDeregistered(final String observableKey, final String placeKey) {
-        logger.debug("Place deregistered " + placeKey + " in directory " + observableKey);
+        logger.debug("Place deregistered {} in directory {}", placeKey, observableKey);
     }
 
     /**
@@ -65,7 +65,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
      */
     @Override
     public void placeCostChanged(final String observableKey, final String placeKey) {
-        logger.debug("Place cost change " + placeKey + " in directory " + observableKey);
+        logger.debug("Place cost change {} in directory {}", placeKey, observableKey);
     }
 
     /**
@@ -86,7 +86,7 @@ public class DirectoryAdapter implements PeerObserver, PlaceObserver {
      */
     @Override
     public void peerUpdate(final String observableKey, final Set<DirectoryEntry> peers) {
-        logger.debug("Peer group updates from " + observableKey + " set is now " + peers);
+        logger.debug("Peer group updates from {} set is now {}", observableKey, peers);
     }
 
     /**

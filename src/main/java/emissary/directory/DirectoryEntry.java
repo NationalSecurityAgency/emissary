@@ -111,7 +111,7 @@ public class DirectoryEntry implements Serializable {
      */
     public DirectoryEntry(final String key, final String description, final int cost, final int quality) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Directory entry: " + key + "," + cost + "," + quality + ",\"" + description + "\"");
+            logger.debug("Directory entry: {},{},{},\"{}\"", key, cost, quality, description);
         }
         setKey(key);
         this.theQuality = quality;
@@ -565,7 +565,7 @@ public class DirectoryEntry implements Serializable {
             } catch (NamespaceException e) {
                 // empty catch block
             }
-            logger.debug("NS Lookup for locality on " + this.serviceLocation + (this.localPlace == null ? " failed" : " passed"));
+            logger.debug("NS Lookup for locality on {}{}", this.serviceLocation, this.localPlace == null ? " failed" : " passed");
 
             this.lookupAttempted = true;
         }
@@ -609,8 +609,7 @@ public class DirectoryEntry implements Serializable {
         final String desc = e.getChildTextTrim(DESC);
         final int cost = JDOMUtil.getChildIntValue(e, COST);
         final int quality = JDOMUtil.getChildIntValue(e, QUALITY);
-        final DirectoryEntry d = new DirectoryEntry(key, desc, cost, quality);
-        return d;
+        return new DirectoryEntry(key, desc, cost, quality);
     }
 
     /**

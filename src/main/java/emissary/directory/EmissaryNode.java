@@ -197,7 +197,7 @@ public class EmissaryNode {
      * @param prefix the file prefix
      */
     protected Configurator internalGetConfigurator(final String prefix) throws IOException {
-        final List<String> configPrefs = new ArrayList<String>();
+        final List<String> configPrefs = new ArrayList<>();
         configPrefs.add(prefix + "-" + getNodeName() + "-" + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);
         if (this.nodeNameIsDefault) {
             configPrefs.add(prefix + "-" + getNodeName().replace('.', '_') + "-" + getNodePort() + ConfigUtil.CONFIG_FILE_ENDING);
@@ -213,12 +213,10 @@ public class EmissaryNode {
         configPrefs.add(prefix + ConfigUtil.CONFIG_FILE_ENDING);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Searching for " + prefix + " config in preferences " + configPrefs);
+            logger.debug("Searching for {} config in preferences {}", prefix, configPrefs);
         }
 
-        final Configurator nodeConfigStream = ConfigUtil.getConfigInfo(configPrefs);
-
-        return nodeConfigStream;
+        return ConfigUtil.getConfigInfo(configPrefs);
     }
 
     /**
@@ -228,19 +226,19 @@ public class EmissaryNode {
         // Create the core objects we need to get going
         // The AgentPool
         AgentPool pool = new AgentPool(new MobileAgentFactory());
-        logger.debug("Setup AgentPool with " + pool.getNumIdle() + " agents...");
+        logger.debug("Setup AgentPool with {} agents...", pool.getNumIdle());
 
         // The MoveSpool
         MoveSpool spool = new MoveSpool();
-        logger.debug("Started MoveSpool..." + spool.toString());
+        logger.debug("Started MoveSpool...{}", spool);
 
         // The metrics manager
         MetricsManager metricsManager = new MetricsManager();
-        logger.debug("Started metrics manager..." + metricsManager.toString());
+        logger.debug("Started metrics manager...{}", metricsManager);
 
         // The resource watcher
         ResourceWatcher watcher = new ResourceWatcher(metricsManager);
-        logger.debug("Started resource watcher..." + watcher.toString());
+        logger.debug("Started resource watcher...{}", watcher);
 
         // Initialize list of configured spi classes
         SPILoader.load();
