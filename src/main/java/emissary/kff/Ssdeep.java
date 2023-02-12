@@ -6,12 +6,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -710,7 +711,7 @@ public final class Ssdeep {
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {
-            try (final FileInputStream is = new FileInputStream(f)) {
+            try (final InputStream is = Files.newInputStream(Paths.get(f))) {
                 final byte[] buffer = new byte[is.available()];
                 is.read(buffer);
                 // output format matches the original ssdeep program

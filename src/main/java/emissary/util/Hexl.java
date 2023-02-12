@@ -1,15 +1,16 @@
-/**
- * Pretend to be Emacs hexl mode
- */
-
 package emissary.util;
 
 import org.apache.commons.codec.binary.Hex;
 
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+/**
+ * Pretend to be Emacs hexl mode
+ */
 public class Hexl {
 
     static final int CHARS_PER_LINE = 16;
@@ -120,7 +121,7 @@ public class Hexl {
 
         for (int i = 0; i < argv.length; i++) {
 
-            try (FileInputStream theFile = new FileInputStream(argv[i]);
+            try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));
                     DataInputStream theStream = new DataInputStream(theFile)) {
                 theContent = new byte[theStream.available()];
                 theStream.readFully(theContent);

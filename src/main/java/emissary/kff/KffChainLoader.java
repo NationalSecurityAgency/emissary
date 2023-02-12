@@ -8,8 +8,10 @@ import emissary.kff.KffFilter.FilterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,7 +106,7 @@ public class KffChainLoader {
         KffChain kff = getChainInstance();
 
         for (int i = 0; i < args.length; i++) {
-            try (FileInputStream is = new FileInputStream(args[i])) {
+            try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
                 byte[] buffer = new byte[is.available()];
                 is.read(buffer);
 
