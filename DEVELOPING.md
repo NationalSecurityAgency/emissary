@@ -485,7 +485,7 @@ mvn clean test -Dtest=ServerCommandTest -Dmaven.surefire.debug="-Xdebug -Xrunjdw
 
 ### View Dependency Reports
 
-To generate a report to display plugins, properties, dependency that have updates available run the following maven commands.
+To generate a report to display dependencies, plugins, and properties that have updates available run the following maven commands:
 
 ```
 mvn versions:display-dependency-updates
