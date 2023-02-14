@@ -272,6 +272,26 @@ public class Executrix {
                 final BufferedOutputStream theStream = new BufferedOutputStream(theOutput)) {
             theStream.write(theContent, pos, len);
         }
+        int retries = 0;
+        while (retries < 10) {
+            File f = new File(filename);
+            if (f.exists() && f.length() != theContent.length) {
+                try {
+                    logger.info("file {} size less than content length, {} of {} bytes written", filename, f.length(), theContent.length);
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                retries++;
+            } else {
+                break;
+            }
+        }
+        File f = new File(filename);
+        if (!f.exists()) {
+            logger.error("Where did my file {} go?", filename);
+        } else if (f.length() != theContent.length) {
+            logger.error("unable to write file {}, {} of {} bytes written", filename, f.length(), theContent.length);
+        }
     }
 
     /**
@@ -1223,7 +1243,7 @@ public class Executrix {
                 if (f.isDirectory()) {
                     cleanupDirectory(f);
                 } else {
-                    logger.debug("Deleting {}", f.getAbsolutePath());
+                    logger.info("Deleting {}", f.getAbsolutePath());
                     boolean deleted = f.delete();
                     if (!deleted && f.exists()) {
                         deleted = f.delete();
@@ -1233,7 +1253,7 @@ public class Executrix {
                     }
                 }
             }
-            logger.debug("Deleting {}", dir.getAbsolutePath());
+            logger.info("Deleting {}", dir.getAbsolutePath());
 
             try {
 
