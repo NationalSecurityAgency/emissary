@@ -52,7 +52,7 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n", "\t"})
+    @ValueSource(strings = {" ", "\t"})
     void emptyParams(String badValue) {
         // setup
         formParams.replace(CLIENT_NAME, Collections.singletonList(badValue));
@@ -65,6 +65,24 @@ class WorkSpaceClientSpaceTakeActionTest extends EndpointTestBase {
             assertEquals(500, status);
             final String result = response.readEntity(String.class);
             assertTrue(result.startsWith("Bad params:"));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"test\n\r", "\n", "\r"})
+    void cleanParams(String paramsToSanitize) {
+        // setup
+        formParams.replace(CLIENT_NAME, Collections.singletonList(paramsToSanitize));
+        formParams.replace(SPACE_NAME, Collections.singletonList(paramsToSanitize));
+
+        // test
+        try (Response response = target(CLIENT_SPACE_TAKE_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.isEmpty());
+            assertEquals("Server Error", response.getStatusInfo().getReasonPhrase());
         }
     }
 

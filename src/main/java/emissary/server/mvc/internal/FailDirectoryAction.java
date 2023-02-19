@@ -3,6 +3,7 @@ package emissary.server.mvc.internal;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,23 +45,25 @@ public class FailDirectoryAction {
     @Produces(MediaType.TEXT_PLAIN)
     public Response failDirectory(@FormParam(TARGET_DIRECTORY) String targetDirectory, @FormParam(FAILED_DIRECTORY_NAME) String failedDirectory,
             @FormParam(ADD_PROPAGATION_FLAG) boolean propagate) {
-        if (StringUtils.isBlank(targetDirectory) || StringUtils.isBlank(failedDirectory)) {
-            return Response.serverError()
-                    .entity("Bad params: " + TARGET_DIRECTORY + " - " + targetDirectory + ", or " + ADD_KEY + " - " + failedDirectory).build();
+        String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDirectory);
+        String cleanFailedDirectory = RequestUtil.sanitizeParameter(failedDirectory);
+        if (StringUtils.isBlank(cleanTargetDirectory) || StringUtils.isBlank(cleanFailedDirectory)) {
+            return Response.serverError().entity(
+                    "Bad params: " + TARGET_DIRECTORY + " - " + cleanTargetDirectory + ", or " + ADD_KEY + " - " + cleanFailedDirectory).build();
         }
 
         try {
-            IRemoteDirectory localDirectory = new IRemoteDirectory.Lookup().getLocalDirectory(targetDirectory);
+            IRemoteDirectory localDirectory = new IRemoteDirectory.Lookup().getLocalDirectory(cleanTargetDirectory);
             if (localDirectory == null) {
-                logger.error("No local directory found using name {}", targetDirectory);
-                return Response.serverError().entity("No local directory found using name " + targetDirectory).build();
+                logger.error("No local directory found using name {}", cleanTargetDirectory);
+                return Response.serverError().entity("No local directory found using name " + cleanTargetDirectory).build();
             }
 
             MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));
-            int count = localDirectory.irdFailDirectory(failedDirectory, propagate);
-            logger.debug("Modified {} entries from {} due to failure of remote {}", count, localDirectory, targetDirectory);
-            return Response.ok().entity("Modified " + count + " entries from " + localDirectory + " due to failure of remote " + failedDirectory)
-                    .build();
+            int count = localDirectory.irdFailDirectory(cleanFailedDirectory, propagate);
+            logger.debug("Modified {} entries from {} due to failure of remote {}", count, localDirectory, cleanTargetDirectory);
+            return Response.ok().entity(
+                    "Modified " + count + " entries from " + localDirectory + " due to failure of remote " + cleanFailedDirectory).build();
 
         } finally {
             MDC.remove(MDCConstants.SERVICE_LOCATION);

@@ -3,6 +3,7 @@ package emissary.server.mvc.internal;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.pickup.IPickUpSpace;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class WorkSpaceClientOpenWorkSpaceAction {
     @Produces(MediaType.TEXT_PLAIN)
     public Response openSpaceWorker(@FormParam(CLIENT_NAME) String placeName, @FormParam(SPACE_NAME) String spaceName) {
         try {
-            return openTheSpace(placeName, spaceName);
+            return openTheSpace(RequestUtil.sanitizeParameter(placeName), RequestUtil.sanitizeParameter(spaceName));
         } catch (IllegalArgumentException | NamespaceException e) {
             logger.error("Problem opening the WorkSpace: {} - {}, {} - {}", CLIENT_NAME, placeName, SPACE_NAME, spaceName, e);
             return Response.serverError().entity("There was a problem opening the workspace: " + e.getMessage()).build();

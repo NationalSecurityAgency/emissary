@@ -4,6 +4,7 @@ import emissary.core.NamespaceException;
 import emissary.directory.IDirectoryPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.server.mvc.adapters.HeartbeatAdapter;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class HeartbeatAction {
     @Produces(MediaType.TEXT_PLAIN)
     public Response heartbeatPost(@FormParam(HeartbeatAdapter.FROM_PLACE_NAME) String fromPlace,
             @FormParam(HeartbeatAdapter.TO_PLACE_NAME) String toPlace) {
-        return processHeartbeat(fromPlace, toPlace);
+        return processHeartbeat(RequestUtil.sanitizeParameter(fromPlace), RequestUtil.sanitizeParameter(toPlace));
     }
 
 }

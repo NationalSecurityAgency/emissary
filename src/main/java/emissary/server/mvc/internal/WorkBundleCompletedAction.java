@@ -3,6 +3,7 @@ package emissary.server.mvc.internal;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.pickup.WorkSpace;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,17 +43,19 @@ public class WorkBundleCompletedAction {
     @Produces(MediaType.TEXT_PLAIN)
     public Response postWorkBundleCompleted(@FormParam(CLIENT_NAME) String placeName, @FormParam(SPACE_NAME) String spaceName,
             @FormParam(WORK_BUNDLE_ID) String bundleId, @FormParam(WORK_BUNDLE_STATUS) boolean itWorked) {
-        if (StringUtils.isBlank(placeName) || StringUtils.isBlank(spaceName) || StringUtils.isBlank(bundleId)
-                || !spaceName.startsWith("WORKSPACE.WORK_SPACE.INPUT.") || !placeName.startsWith("INITIAL.FILE_PICK_UP_CLIENT.INPUT.")) {
+        String cleanPlaceName = RequestUtil.sanitizeParameter(placeName);
+        String cleanSpaceName = RequestUtil.sanitizeParameter(spaceName);
+        if (StringUtils.isBlank(cleanPlaceName) || StringUtils.isBlank(cleanSpaceName) || StringUtils.isBlank(bundleId)
+                || !cleanSpaceName.startsWith("WORKSPACE.WORK_SPACE.INPUT.") || !cleanPlaceName.startsWith("INITIAL.FILE_PICK_UP_CLIENT.INPUT.")) {
             return Response
                     .serverError()
-                    .entity("Bad params: " + CLIENT_NAME + " - " + placeName + ", " + SPACE_NAME + " - " + spaceName + ", " + WORK_BUNDLE_ID + " - "
-                            + bundleId)
+                    .entity("Bad params: " + CLIENT_NAME + " - " + cleanPlaceName + ", " + SPACE_NAME + " - " + cleanSpaceName + ", " + WORK_BUNDLE_ID
+                            + " - " + bundleId)
                     .build();
         }
 
         try {
-            return workBundleCompleted(spaceName, placeName, bundleId, itWorked);
+            return workBundleCompleted(cleanSpaceName, cleanPlaceName, bundleId, itWorked);
         } catch (NamespaceException e) {
             logger.error("There was a problem while processing the WorkBundle", e);
             return Response.serverError().entity("There was a problem while processing the WorkBundle: " + e.getMessage()).build();
