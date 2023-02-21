@@ -193,6 +193,11 @@ public class TransformHistory {
             return key;
         }
 
+        public String getKeyNoUrl() {
+            String[] splitKey = key.split(".http");
+            return splitKey[0];
+        }
+
         public boolean wasCoordinated() {
             return coordinated;
         }

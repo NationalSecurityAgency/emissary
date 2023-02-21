@@ -1,0 +1,9 @@
+Test file and example of the reducedTransformItineraryList,
+Reduced-transform-itinerary-list should be put in:,
+/../src/test/resources/reduced-transform-itinerary-list.csv,
+Next line used for testReducedTransformHistory(),
+PayloadUtilReducedTransformHistoryTest,REDUCED
+Next line used for testEmptyReducedTransformHistoryListing(),
+,
+Next line used for testTransformHistoryNoUrl(),
+PayloadUtilTransformNoUrlTest,NOURL

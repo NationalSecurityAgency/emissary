@@ -16,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 /**
@@ -759,7 +761,22 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         final Logger dest = (isProbe == null) ? logger : probeLogger;
 
         if (dest.isInfoEnabled()) {
-            dest.info(PayloadUtil.getPayloadDisplayString(payloadArg));
+            // grab reduced-transform-itinerary-list if it exists and add lines to reducedTransformItineraryList
+            List<String> reducedTransformItineraryList;
+            try (Stream<String> lines =
+                    Files.lines(Paths.get(System.getenv("PROJECT_BASE") + "/../src/test/resources/reduced-transform-itinerary-list.csv"))) {
+                reducedTransformItineraryList = lines.collect(Collectors.toList());
+            } catch (IOException e) {
+                reducedTransformItineraryList = null;
+            }
+
+            // see if list is null, if it is, run basic getPayloadDisplayString
+            // if not null, run getPayloadDisplayString with reducedTransformItineraryList
+            if (reducedTransformItineraryList == null) {
+                dest.info(PayloadUtil.getPayloadDisplayString(payloadArg));
+            } else {
+                dest.info(PayloadUtil.getPayloadDisplayString(payloadArg, reducedTransformItineraryList));
+            }
         }
     }
 

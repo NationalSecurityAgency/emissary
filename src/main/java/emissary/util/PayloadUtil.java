@@ -10,11 +10,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -65,14 +61,83 @@ public class PayloadUtil {
         final Date creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
-                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
-                .append("   transform history (").append(th.size()).append(") :").append("\n");
+                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n");
+
+        sb.append("   transform history (").append(th.size()).append(") :").append("\n");
         for (final TransformHistory.History h : th) {
-            sb.append("     ");
+            sb.append(" ");
             if (h.wasCoordinated()) {
-                sb.append("  ");
+                sb.append(" ");
             }
             sb.append(h.getKey()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Generate a string about the payload object. This checks reduced-transform-itinerary-list.csv against current
+     * filenames to see if a reduced history is desired on output
+     *
+     * @param payload the payload to describe
+     * @param reducedTransformItineraryList string list of tests/files that should have reduced transform history
+     */
+    public static String getPayloadDisplayString(final IBaseDataObject payload, List<String> reducedTransformItineraryList) {
+        final StringBuilder sb = new StringBuilder();
+        final List<TransformHistory.History> th = payload.getTransformHistory().getHistory();
+        final String fileName = payload.getFilename();
+        final List<String> currentForms = payload.getAllCurrentForms();
+        final Date creationTimestamp = payload.getCreationTimestamp();
+        boolean matchFound = false;
+
+        sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
+                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n");
+
+        // check current transform filename against files/tests listed
+        // if match is found, reducedHistory is set to true, and only dropoff will be appended to sb
+        for (String currentLine : reducedTransformItineraryList) {
+            String[] splitCurrentLine = currentLine.split(",");
+            String name = "";
+            String toDo = "";
+            if (splitCurrentLine.length == 1) {
+                name = splitCurrentLine[0];
+            } else if (splitCurrentLine.length == 2) {
+                name = splitCurrentLine[0];
+                toDo = splitCurrentLine[1];
+            }
+
+            if (!currentLine.equals(",") && fileName.contains(name)) {
+                if (toDo.equals("REDUCED") || toDo.equals("")) {
+                    matchFound = true;
+                    sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
+                            .append(payload.getLastPlaceVisited())
+                            .append("\n");
+                } else if (toDo.equals("NOURL")) {
+                    matchFound = true;
+                    sb.append("   transform history (").append(th.size()).append(") :").append("\n");
+                    for (final TransformHistory.History h : th) {
+                        sb.append(" ");
+                        if (h.wasCoordinated()) {
+                            sb.append(" ");
+                        }
+                        sb.append("    ").append(h.getKeyNoUrl()).append("\n");
+                    }
+                }
+            }
+            if (matchFound) {
+                break;
+            }
+        }
+
+        // if reduced history is false, output full transform history for file
+        if (!matchFound) {
+            sb.append("   transform history (").append(th.size()).append(") :").append("\n");
+            for (final TransformHistory.History h : th) {
+                sb.append(" ");
+                if (h.wasCoordinated()) {
+                    sb.append(" ");
+                }
+                sb.append("    ").append(h.getKey()).append("\n");
+            }
         }
         return sb.toString();
     }
