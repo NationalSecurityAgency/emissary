@@ -10,6 +10,8 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,27 +42,27 @@ public class JNI implements Serializable {
     /**
      * The mappings for SharedPrefix on native libraries
      */
-    private final Map<String, String> sharedPrefix = new HashMap<String, String>();
+    private final Map<String, String> sharedPrefix = new HashMap<>();
 
     /**
      * The mappings for SharedSuffixes on native libraries
      */
-    private final Map<String, String> sharedSuffix = new HashMap<String, String>();
+    private final Map<String, String> sharedSuffix = new HashMap<>();
 
     /**
      * The mappings for the correct version of each native library
      */
-    private final Map<String, String> libVersions = new HashMap<String, String>();
+    private final Map<String, String> libVersions = new HashMap<>();
 
     /**
      * The location we all agree to save library files retrieved from the repository osname-dependently
      */
-    private final Map<String, String> savePath = new HashMap<String, String>();
+    private final Map<String, String> savePath = new HashMap<>();
 
     /**
      * Handle to the configG gives access to the config file entries
      */
-    private Configurator configG;
+    private final Configurator configG;
 
     protected static final Logger logger = LoggerFactory.getLogger(JNI.class);
 
@@ -80,7 +82,7 @@ public class JNI implements Serializable {
             try {
                 this.theDir = (IDirectoryPlace) Namespace.lookup(theDir);
             } catch (NamespaceException ne) {
-                logger.debug("Cannot get directory using " + theDir + ": " + ne);
+                logger.debug("Cannot get directory using {}: {}", theDir, ne);
             }
         }
 
@@ -109,7 +111,7 @@ public class JNI implements Serializable {
         for (final String entry : parms) {
             final int ndx = entry.indexOf(':');
             if (ndx == -1) {
-                logger.warn("Invalid SHARED_PREFIX: " + entry);
+                logger.warn("Invalid SHARED_PREFIX: {}", entry);
                 continue;
             }
 
@@ -123,7 +125,7 @@ public class JNI implements Serializable {
 
             // Get the osname-dependent SAVE_PATH
             final List<String> iparms = this.configG.findEntries(arch + "_LIBRARY_SAVE_PATH");
-            if (iparms.size() > 0) {
+            if (CollectionUtils.isNotEmpty(iparms)) {
                 this.savePath.put(arch, iparms.get(0));
             }
         }
@@ -132,7 +134,7 @@ public class JNI implements Serializable {
         for (final String entry : parms) {
             final int ndx = entry.indexOf(':');
             if (ndx == -1) {
-                logger.warn("Invalid SHARED_SUFFIX: " + entry);
+                logger.warn("Invalid SHARED_SUFFIX: {}", entry);
                 continue;
             }
 
@@ -148,7 +150,7 @@ public class JNI implements Serializable {
         for (final String entry : parms) {
             final int ndx = entry.indexOf(':');
             if (ndx == -1) {
-                logger.warn("Invalid LIBRARY_VERSION: " + entry);
+                logger.warn("Invalid LIBRARY_VERSION: {}", entry);
                 continue;
             }
 
@@ -161,10 +163,10 @@ public class JNI implements Serializable {
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("JNI config save paths " + this.savePath);
-            logger.debug("JNI config prefixes " + this.sharedPrefix);
-            logger.debug("JNI config suffixes " + this.sharedSuffix);
-            logger.debug("JNI config versions " + this.libVersions);
+            logger.debug("JNI config save paths {}", this.savePath);
+            logger.debug("JNI config prefixes {}", this.sharedPrefix);
+            logger.debug("JNI config suffixes {}", this.sharedSuffix);
+            logger.debug("JNI config versions {}", this.libVersions);
         }
     }
 
@@ -212,9 +214,9 @@ public class JNI implements Serializable {
     /**
      * Load a native library, finding it if it isn't already here. First try to load the library and catch any exception.
      * Try to ask the directory place where the JniRepositoryPlace is and see if the repository has the library we are
-     * looking for. It it comes back, save it to disk in the agreed upon location and then load it in the regular way. Throw
+     * looking for. If it comes back, save it to disk in the agreed upon location and then load it in the regular way. Throw
      * an UnsatisfiedLinkError if this doesn't work.
-     *
+     * <p>
      * Note that System.loadLibrary expects the name as it comes back from expandLibraryName while the repository will
      * respond to the name as it comes from filesystemLibraryName.
      *
@@ -228,8 +230,8 @@ public class JNI implements Serializable {
         final String theLocation = this.savePath.get(osname);
         final String fullPathName = theLocation + File.separator + filename;
 
-        logger.debug("In JNI.loadLibrary(" + lib + ")");
-        logger.debug("loading library: " + libname);
+        logger.debug("In JNI.loadLibrary({})", lib);
+        logger.debug("loading library: {}", libname);
 
         // Try it on the LD_LIBRARY_PATH or equivalent
         try {
@@ -237,7 +239,7 @@ public class JNI implements Serializable {
             return;
         } catch (UnsatisfiedLinkError e) {
             final String syspath = System.getProperty("java.library.path", "<none>");
-            logger.debug("Unable to link local " + libname + " from incoming " + lib + " using system path " + syspath, e);
+            logger.debug("Unable to link local {} from incoming {} using system path {}", libname, lib, syspath, e);
         }
 
 
@@ -246,7 +248,7 @@ public class JNI implements Serializable {
             System.load(fullPathName);
             return;
         } catch (UnsatisfiedLinkError e) {
-            logger.debug("Unable to link abs path " + fullPathName + " from incoming " + lib, e);
+            logger.debug("Unable to link abs path {} from incoming {}", fullPathName, lib, e);
         }
 
         // Retrieve the File and dependencies.
@@ -260,28 +262,24 @@ public class JNI implements Serializable {
         // therefor NO versioning capability of the dependent libraries without
         // jacking the version number for the actual library being requested.
         if (!retrieveDependencies(lib, errorMsg)) {
-            logger.debug("Unable to retrieve dependencies:" + errorMsg[0]);
+            logger.debug("Unable to retrieve dependencies:{}", errorMsg[0]);
             throw (new UnsatisfiedLinkError("Unable to retrieve dependencies for " + filename + " : " + errorMsg[0]));
-            // return;
         }
 
         if (!retrieveFile(filename, errorMsg)) {
-            logger.debug("Unable to retrieve:" + errorMsg[0]);
+            logger.debug("Unable to retrieve:{}", errorMsg[0]);
             throw (new UnsatisfiedLinkError("Unable to retrieve " + filename + " : " + errorMsg[0]));
-            // return;
         }
 
         // Loadlib the file we just retrieved and saved
         try {
             System.load(fullPathName);
-            logger.debug("LINK SUCCESS for " + fullPathName);
-            return;
+            logger.debug("LINK SUCCESS for {}", fullPathName);
         } catch (UnsatisfiedLinkError e) {
-            logger.debug("Unable to link retrieved " + fullPathName + ":" + e);
+            logger.debug("Unable to link retrieved {}:{}", fullPathName, e);
 
             // We have done all we can. Throw an exception and return
             throw (new UnsatisfiedLinkError("Cannot link with retrieved library " + fullPathName + ":" + e));
-            // return;
         }
     }
 
@@ -301,9 +299,8 @@ public class JNI implements Serializable {
         // Use this string on error
         final String myErr = libname + " dependencies are " + deps;
 
-        for (int i = 0; i < deps.size(); i++) {
-            final String file = deps.get(i);
-            logger.debug("JNI: Retrieving dependent file " + file);
+        for (final String file : deps) {
+            logger.debug("JNI: Retrieving dependent file {}", file);
             if (!retrieveFile(file, errmsg)) {
                 errmsg[0] = myErr + ": failed on " + file;
                 return false;
@@ -353,7 +350,7 @@ public class JNI implements Serializable {
 
         try {
             final List<DirectoryEntry> entries = this.theDir.nextKeys("JNI", null, null);
-            if (entries == null || entries.size() == 0) {
+            if (CollectionUtils.isEmpty(entries)) {
                 errmsg[0] = "No JNI place in directory for:" + filename;
                 return null;
             }
@@ -391,7 +388,7 @@ public class JNI implements Serializable {
 
         final String repositoryAddrString = KeyManipulator.getServiceLocation(repositoryKey);
 
-        IJniRepositoryPlace repositoryProxy = null;
+        IJniRepositoryPlace repositoryProxy;
 
         try {
             final String look = repositoryAddrString.substring(repositoryAddrString.indexOf("//"));
@@ -436,11 +433,11 @@ public class JNI implements Serializable {
 
         String repositoryAddrString = KeyManipulator.getServiceLocation(repositoryKey);
 
-        if (repositoryAddrString != null && repositoryAddrString.indexOf("//") > -1) {
+        if (StringUtils.contains(repositoryAddrString, "//")) {
             repositoryAddrString = repositoryAddrString.substring(repositoryAddrString.indexOf("//"));
         }
 
-        IJniRepositoryPlace repositoryProxy = null;
+        IJniRepositoryPlace repositoryProxy;
 
         try {
             repositoryProxy = (IJniRepositoryPlace) Namespace.lookup(repositoryAddrString);
@@ -479,13 +476,13 @@ public class JNI implements Serializable {
             }
         }
 
-        final JNI JNI = new JNI();
-        String path = JNI.getSavePath();
+        final JNI jni = new JNI();
+        String path = jni.getSavePath();
         if (path != null && !path.endsWith("/")) {
             path += "/";
         }
         for (int i = argpos; i < args.length; i++) {
-            System.out.println(path + JNI.filesystemLibraryName(JNI.expandLibraryName(args[i])));
+            logger.info("{}{}", path, jni.filesystemLibraryName(jni.expandLibraryName(args[i])));
         }
     }
 }
