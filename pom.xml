@@ -870,6 +870,7 @@
               <id>attach-javadocs</id>
               <goals>
                 <goal>jar</goal>
+                <goal>test-jar</goal>
               </goals>
               <phase>verify</phase>
             </execution>
@@ -950,6 +951,7 @@
               <id>attach-sources</id>
               <goals>
                 <goal>jar</goal>
+                <goal>test-jar</goal>
               </goals>
               <phase>verify</phase>
             </execution>
