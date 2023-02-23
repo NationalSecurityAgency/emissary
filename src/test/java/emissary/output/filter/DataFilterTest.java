@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataFilterTest extends UnitTest {
@@ -59,6 +60,32 @@ class DataFilterTest extends UnitTest {
         assertEquals(new String(payload.data()), output, "Output must be the payload and nothing else");
 
         expected.delete();
+    }
+    
+    @Test
+    void testSquelchOutputFromFilter() {
+        Configurator config = new ServiceConfigGuide();
+        config.addEntry("OUTPUT_SPEC_FOO", "/tmp/%S%.%F%");
+        config.addEntry("SQUELCH_TYPE", "FTYPE.PrimaryView");
+
+        IDropOffFilter f = new DataFilter();
+        f.initialize(config, "FOO", config);
+
+        IBaseDataObject payload = DataObjectFactory.getInstance();
+        payload.setData("This is the data".getBytes());
+        payload.setFileType("FTYPE");
+        payload.setFilename("/this/is/a/testfile");
+        List<IBaseDataObject> payloadList = new ArrayList<>();
+        payloadList.add(payload);
+
+        Map<String, Object> params = new HashMap<>();
+
+        int status = f.filter(payload, params);
+
+        File expected = new File("/tmp/testfile.FTYPE");
+        assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Status of filter should be success");
+        assertFalse(expected.exists(), "Output File should not exist");
+        
     }
 
 }

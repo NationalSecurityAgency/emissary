@@ -54,9 +54,14 @@ public abstract class AbstractFilter implements IDropOffFilter {
     private IFilterCondition filterCondition;
 
     /**
-     * A set of FileType and FileTYpe.ViewName strings controlling what can be output by this filter
+     * A set of FileType and FileType.ViewName strings controlling what can be output by this filter
      */
     protected Set<String> outputTypes = Collections.emptySet();
+
+    /**
+     * A set of FileType and FileType.ViewName strings controlling what will be squelched by this filter
+     */
+    protected Set<String> squelchTypes = Collections.emptySet();
 
     /** String to use when dealing with the primary view specifically */
     public static final String PRIMARY_VIEW_NAME = "PrimaryView";
@@ -166,6 +171,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected void initializeOutputTypes(@Nullable final Configurator config) {
         if (config != null) {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
+            this.squelchTypes = config.findEntriesAsSet("SQUELCH_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.blacklist = config.findEntriesAsSet("BLACKLIST");
             this.logger.debug("Loaded {} blacklist types for filter {}", this.blacklist.size(), this.blacklist);
@@ -394,7 +400,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param type of the data
      */
     protected boolean isOutputtable(final String type) {
-        return this.outputTypes.contains("*") || this.outputTypes.contains(type);
+        return (this.outputTypes.contains("*") || this.outputTypes.contains(type)) && !this.squelchTypes.contains(type);
     }
 
     /**
@@ -405,6 +411,9 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @return true if any one of the types is outputtable
      */
     protected boolean isOutputtable(final Collection<String> types) {
+        if (!Collections.disjoint(this.squelchTypes, types)) {
+            return false;
+        }
         if (this.outputTypes.contains("*")) {
             this.logger.debug("Outputtable due to wildcard in output types");
             return true;
