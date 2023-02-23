@@ -483,6 +483,16 @@ debugger attaches, and you can then step through the code.
 mvn clean test -Dtest=ServerCommandTest -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
 ```
 
+### View Dependency Reports
+
+To generate a report to display dependencies, plugins, and properties that have updates available run the following maven commands:
+
+```
+mvn versions:display-dependency-updates
+mvn versions:display-plugin-updates
+mvn versions:display-property-updates
+```
+
 ## Running Emissary
 
 There is one bash script in Emissary that runs everything.  It is in the top level Emissary directory.
