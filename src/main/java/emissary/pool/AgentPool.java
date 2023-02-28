@@ -250,6 +250,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
             logger.info("Pool is now empty");
         } catch (InterruptedException e) {
             logger.error("emptyPool interrupted", e);
+            Thread.currentThread().interrupt();
         } finally {
             setMaxIdle(0); // just in case
         }

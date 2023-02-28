@@ -55,7 +55,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
                 }
             } while (getMonitor());
         } catch (InterruptedException e) {
-            // nothing to log here, command was terminated
+            Thread.currentThread().interrupt();
         }
     }
 

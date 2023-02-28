@@ -56,6 +56,7 @@ public class WatcherThread extends Thread {
                         }
                     }
                 } catch (InterruptedException ix) {
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -98,6 +99,7 @@ public class WatcherThread extends Thread {
             t1.join();
             t2.join();
         } catch (InterruptedException ix) {
+            Thread.currentThread().interrupt();
         }
 
         System.out.println(name + " ends at " + new Date());

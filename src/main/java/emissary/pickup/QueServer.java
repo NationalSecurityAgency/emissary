@@ -91,7 +91,7 @@ public abstract class QueServer extends Pausable {
                     try {
                         Thread.sleep(pollingInterval);
                     } catch (InterruptedException ignore) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                     continue;
                 }
@@ -106,6 +106,7 @@ public abstract class QueServer extends Pausable {
                     }
                 } catch (InterruptedException e) {
                     logger.debug("Woke me up so lets check the queue!");
+                    Thread.currentThread().interrupt();
                 }
             }
         }

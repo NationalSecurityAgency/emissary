@@ -161,7 +161,7 @@ public class MoveSpool implements Runnable {
                         }
                     }
                 } catch (InterruptedException ignore) {
-                    // empty catch block
+                    Thread.currentThread().interrupt();
                 }
                 continue;
             }

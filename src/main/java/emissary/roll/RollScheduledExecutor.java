@@ -45,6 +45,7 @@ public class RollScheduledExecutor extends ScheduledThreadPoolExecutor {
             } catch (InterruptedException ex) {
                 // shouldn't happen;
                 log.warn("Thread Interrupted", ex);
+                Thread.currentThread().interrupt();
             } catch (ExecutionException ee) {
                 Throwable ex = ee.getCause();
                 Rollable rollable = f.r.getRollable();

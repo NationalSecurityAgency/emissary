@@ -667,7 +667,7 @@ public class WorkSpace implements Runnable {
                 try {
                     Thread.sleep((tryCount + 1) * 100L);
                 } catch (InterruptedException ignore) {
-                    // empty catch block
+                    Thread.currentThread().interrupt();
                 }
             } else {
                 notified = true;
@@ -987,7 +987,7 @@ public class WorkSpace implements Runnable {
                     }
                 }
             } catch (InterruptedException ex) {
-                // empty catch block
+                Thread.currentThread().interrupt();
             }
 
             if (!this.timeToQuit) {
@@ -1106,7 +1106,7 @@ public class WorkSpace implements Runnable {
                     Thread.sleep(WorkSpace.this.NOTIFIER_PAUSE_TIME);
                     rotatePickUps();
                 } catch (InterruptedException ignore) {
-                    // empty catch block
+                    Thread.currentThread().interrupt();
                 }
 
                 final int outboundSize = getOutboundQueueSize();
@@ -1188,7 +1188,7 @@ public class WorkSpace implements Runnable {
                     try {
                         Thread.sleep(WorkSpace.this.LOOP_PAUSE_TIME);
                     } catch (InterruptedException ioex) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                     continue;
                 }
@@ -1367,7 +1367,7 @@ public class WorkSpace implements Runnable {
                 try {
                     Thread.sleep(intv);
                 } catch (InterruptedException ex) {
-                    // empty catch block
+                    Thread.currentThread().interrupt();
                 }
                 count++;
                 heap = mbean.getHeapMemoryUsage();
