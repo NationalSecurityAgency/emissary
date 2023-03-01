@@ -135,9 +135,9 @@ public class EmissaryClient {
         }
 
         staticRequestConfig =
-                RequestConfig.custom().setConnectTimeout(Long.valueOf(connectionTimeout).intValue())
-                        .setConnectionRequestTimeout(Long.valueOf(connectionManagerTimeout).intValue())
-                        .setSocketTimeout(Long.valueOf(socketTimeout).intValue())
+                RequestConfig.custom().setConnectTimeout((int) connectionTimeout)
+                        .setConnectionRequestTimeout((int) connectionManagerTimeout)
+                        .setSocketTimeout((int) socketTimeout)
                         .setTargetPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
                         .setProxyPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
                         .build();
