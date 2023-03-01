@@ -10,18 +10,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -111,81 +105,53 @@ public class PayloadUtilTest extends UnitTest {
     }
 
     @Test
-    void testReducedTransformHistory() throws IOException {
+    void testReducedHistory() {
         // setup
-        final String fn = "PayloadUtilReducedTransformHistoryTest";
+        final String fn = "testReducedHistory";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
-        d.appendTransformHistory("REDUCED.HISTORY.TRANSFORMPLACE.http://example.com:1234/TransformPlace");
+        d.appendTransformHistory("TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace");
         d.setCreationTimestamp(new Date(0));
 
-        List<String> reducedList = getReducedTransformItineraryFile();
-        List<String> test = Collections.singletonList(reducedList.get(4));
-
         // test
-        final String answer = PayloadUtil.getPayloadDisplayString(d, test);
+        PayloadUtil.reducedTransformHistory.add("testReducedHistory");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.reducedTransformHistory.clear();
 
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
-        assertTrue(answer.contains("filename: PayloadUtilReducedTransformHistoryTest"), "Answer did not contain the correct filename");
-        assertFalse(answer.contains("transform history (2)"), "Answer should not contain the transform history number");
+        assertTrue(answer.contains("filename: testReducedHistory"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("transform history (3)"), "Answer did not contain the transform history number");
         assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
                 "Answer should not contain this transform history entry");
         assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
                 "Answer should not contain this transform history entry");
-        assertTrue(answer.contains("** reduced transform history **"), "Answer should say this is the reduced transform history");
-        assertTrue(answer.contains("REDUCED.HISTORY.TRANSFORMPLACE.http://example.com:1234/TransformPlace"),
-                "Answer should output final place in reduced transform history");
+        assertTrue(answer.contains("** reduced transform history **"), "Answer should contain 'reduced transform history'");
+        assertTrue(answer.contains("dropOff -> TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace"), "Answer should show dropoff");
     }
 
     @Test
-    void testEmptyReducedTransformHistoryListing() throws IOException {
+    void testNoUrlHistory() {
         // setup
-        final String fn = "PayloadUtilReducedTransformHistoryTest";
+        final String fn = "noUrlHistory";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.setCreationTimestamp(new Date(0));
 
-        List<String> reducedList = getReducedTransformItineraryFile();
-        List<String> test = Collections.singletonList(reducedList.get(6));
-
         // test
-        final String answer = PayloadUtil.getPayloadDisplayString(d, test);
+        PayloadUtil.noURLHistory.add("noUrlHistory");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.noURLHistory.clear();
 
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
-        assertTrue(answer.contains("filename: PayloadUtilReducedTransformHistoryTest"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
-        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
-                "Answer did not contain the correct transform history entry");
-        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
-                "Answer did not contain the correct transform history entry");
-    }
-
-    @Test
-    void testTransformHistoryNoUrl() throws IOException {
-        // setup
-        final String fn = "PayloadUtilTransformNoUrlTest";
-        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
-        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
-        d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
-        d.setCreationTimestamp(new Date(0));
-
-        List<String> reducedList = getReducedTransformItineraryFile();
-        List<String> test = Collections.singletonList(reducedList.get(8));
-
-        // test
-        final String answer = PayloadUtil.getPayloadDisplayString(d, test);
-
-        // verify
-        assertTrue(answer.contains("\n"), "Must be multi-line string");
-        assertTrue(answer.contains("filename: PayloadUtilTransformNoUrlTest"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
-        assertFalse(answer.contains(".http://example.com:1234/FooPlace"), "Answer should not contain URL");
-        assertFalse(answer.contains(".http://example.com:1234/BarPlace"), "Answer should not contain URL");
-
+        assertTrue(answer.contains("filename: noUrlHistory"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE"),
+                "Answer should not contain the URL");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
+                "Answer should not contain the URL");
     }
 
     @Test
@@ -310,15 +276,5 @@ public class PayloadUtilTest extends UnitTest {
             return true;
         }
         return false;
-    }
-
-    private List<String> getReducedTransformItineraryFile() throws IOException {
-        List<String> reducedList;
-        try (Stream<String> lines =
-                Files.lines(Paths.get(System.getenv("PROJECT_BASE")
-                        + "/../src/test/resources/emissary/util/PayloadUtilTest/reduced-transform-itinerary-list-test.csv"))) {
-            reducedList = lines.collect(Collectors.toList());
-        }
-        return reducedList;
     }
 }
