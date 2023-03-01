@@ -632,7 +632,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     protected void verifyProcessImplementationProvided() {
 
         Class<?> c = this.getClass();
-        while (!c.getName().equals(ServiceProviderPlace.class.getName())) {
+        while (!c.isAssignableFrom(ServiceProviderPlace.class)) {
             for (Method m : c.getDeclaredMethods()) {
                 String mname = m.getName();
                 String rname = m.getReturnType().getName();
