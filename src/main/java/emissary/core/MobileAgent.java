@@ -423,9 +423,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             return null;
         }
 
-        // Stop looping from occuring
+        // Stop looping from occurring
         if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS &&
-                payloadArg.currentForm() != ERROR_FORM) {
+                !ERROR_FORM.equals(payloadArg.currentForm())) {
             payloadArg.replaceCurrentForm(ERROR_FORM);
             payloadArg.addProcessingError("Agent stopped due to larger than max transform history size (looping?)");
         }
