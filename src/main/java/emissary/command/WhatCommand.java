@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -174,29 +173,22 @@ public class WhatCommand extends BaseCommand {
         }
 
         // Using Header
-        RandomAccessFile raf = null;
-        try {
-            final SessionParser parser = parserFactory.makeSessionParser(Files.newByteChannel(path));
-            LOG.debug("Using parser " + parser.getClass().getName() + " for " + path);
-            final SessionProducer producer = new SessionProducer(parser, Form.UNKNOWN);
-            final String parent = path.getParent().toString();
-            final String fileName = path.getFileName().toString();
-            while (true) {
-                try {
-                    final DecomposedSession sessionHash = parser.getNextSession();
-                    final IBaseDataObject payload = producer.createAndLoadDataObject(sessionHash, parent);
-                    final Identification id = identify(payload, this.headerIdentification);
+        final SessionParser parser = parserFactory.makeSessionParser(Files.newByteChannel(path));
+        LOG.debug("Using parser " + parser.getClass().getName() + " for " + path);
+        final SessionProducer producer = new SessionProducer(parser, Form.UNKNOWN);
+        final String parent = path.getParent().toString();
+        final String fileName = path.getFileName().toString();
+        while (true) {
+            try {
+                final DecomposedSession sessionHash = parser.getNextSession();
+                final IBaseDataObject payload = producer.createAndLoadDataObject(sessionHash, parent);
+                final Identification id = identify(payload, this.headerIdentification);
 
-                    LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.dataLength() + "]");
-                } catch (ParserEOFException eof) {
-                    LOG.debug("Parser reached end of file: ", eof);
-                    // Expected EOF
-                    break;
-                }
-            }
-        } finally {
-            if (raf != null) {
-                raf.close();
+                LOG.info(payload.getFilename() + "/" + fileName + ": " + id.getTypeString() + " [" + payload.dataLength() + "]");
+            } catch (ParserEOFException eof) {
+                LOG.debug("Parser reached end of file: ", eof);
+                // Expected EOF
+                break;
             }
         }
     }

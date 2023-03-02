@@ -16,6 +16,8 @@ import java.util.List;
  *         Creation Date: MM/DD/YYYY
  *
  **/
+
+@SuppressWarnings("all")
 public class TemplatePlace extends ServiceProviderPlace {
 
     /**
