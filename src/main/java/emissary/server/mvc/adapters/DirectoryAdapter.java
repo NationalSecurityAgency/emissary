@@ -33,10 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Stuff for adapting the Directory calls to HTTP All of the outbound methods supply the TARGET_DIRECTORY parameter that
+ * Stuff for adapting the Directory calls to HTTP All the outbound methods supply the TARGET_DIRECTORY parameter that
  * matches the machine/port they are going to. This really only required in testing scenarios but is so helpful that it
  * seems worth the work.
- *
+ * <p>
  * A few of the outbound methods have no corresponding inbound methods because their answer is supplied by a jsp/worker
  * combination without any need to call into the directory on the remote side.
  */
@@ -69,7 +69,7 @@ public class DirectoryAdapter extends EmissaryClient {
             filterDirectoryEntryMap = c.findBooleanEntry("FILTER_DIRECTORY_ENTRY_MAP", true);
         } catch (IOException e) {
             logger.info("Failed to find or read DirectoryAdapter config. Using default values.");
-            logger.debug("{}", e);
+            logger.debug(e.toString());
         }
     }
 
@@ -94,18 +94,18 @@ public class DirectoryAdapter extends EmissaryClient {
 
             final String parentLoc = KeyManipulator.getServiceLocation(parentDirectory);
             // Separate it out into lists
-            final List<String> keyList = new ArrayList<String>();
-            final List<String> descList = new ArrayList<String>();
-            final List<Integer> costList = new ArrayList<Integer>();
-            final List<Integer> qualityList = new ArrayList<Integer>();
+            final List<String> keyList = new ArrayList<>();
+            final List<String> descList = new ArrayList<>();
+            final List<Integer> costList = new ArrayList<>();
+            final List<Integer> qualityList = new ArrayList<>();
             for (final DirectoryEntry d : entryList) {
                 keyList.add(d.getKey());
                 descList.add(d.getDescription());
-                costList.add(Integer.valueOf(d.getCost()));
-                qualityList.add(Integer.valueOf(d.getQuality()));
+                costList.add(d.getCost());
+                qualityList.add(d.getQuality());
             }
 
-            final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+            final List<NameValuePair> nvps = new ArrayList<>();
             nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
 
             for (int count = 0; count < keyList.size(); count++) {
@@ -145,7 +145,7 @@ public class DirectoryAdapter extends EmissaryClient {
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
 
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
 
         int count = 0;
@@ -170,7 +170,7 @@ public class DirectoryAdapter extends EmissaryClient {
         final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/FailDirectory.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
         nvps.add(new BasicNameValuePair(FAILED_DIRECTORY_NAME, failKey));
         nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(permanent)));
@@ -193,7 +193,7 @@ public class DirectoryAdapter extends EmissaryClient {
         }
 
         final String remoteDir = RequestUtil.getParameter(req, FAILED_DIRECTORY_NAME);
-        int count = 0;
+        int count;
 
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(localDirectory.getKey()));
         try {
@@ -202,7 +202,7 @@ public class DirectoryAdapter extends EmissaryClient {
             MDC.remove(MDCConstants.SERVICE_LOCATION);
         }
 
-        logger.debug("Modified " + count + " entries from " + dir + " due to failure of remote " + remoteDir);
+        logger.debug("Modified {} entries from {} due to failure of remote {}", count, dir, remoteDir);
 
         return true;
     }
@@ -247,7 +247,7 @@ public class DirectoryAdapter extends EmissaryClient {
         final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(key), CONTEXT, action);
 
         final String parentLoc = KeyManipulator.getServiceLocation(key);
-        final List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        final List<NameValuePair> nvps = new ArrayList<>();
         nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
 
         if (myKey != null) {
@@ -263,7 +263,7 @@ public class DirectoryAdapter extends EmissaryClient {
             ws = send(method);
             // TODO Consider putting this method in the response
             if (ws.getStatus() != HttpStatus.SC_OK) {
-                logger.debug("Unable to contact remote directory for " + "zone transfer: " + ws.getContentString());
+                logger.debug("Unable to contact remote directory for zone transfer: {}", ws.getContentString());
             } else {
                 map = DirectoryXmlContainer.buildEntryListMap(ws.getContentString());
             }
@@ -272,14 +272,13 @@ public class DirectoryAdapter extends EmissaryClient {
         }
 
         if (map == null) {
-            throw new EmissaryException("Unable to perform zone transfer to " + key + ": received map is null, isError=" + ws.getStatus()
-                    + ", msgBody=" + ws.getContentString());
+            throw new EmissaryException("Unable to perform zone transfer to " + key + ": received map is null, isError="
+                    + (ws == null ? null : ws.getStatus() + ", msgBody=" + ws.getContentString()));
         }
 
         // This ensures each node only has knowledge of all DirectoryPlace and FilePickupPlace entries
         if (filterDirectoryEntryMap) {
-            DirectoryEntryMap filtered = filterDirectoryEntryMap(map);
-            return filtered;
+            return filterDirectoryEntryMap(map);
         } else {
             return map;
         }
@@ -299,7 +298,8 @@ public class DirectoryAdapter extends EmissaryClient {
     /**
      * Look up the local directory using one of two methods. The easier method almost always works, the case where it
      * doesn't in when there are multiple configured Emissary nodes on the same local JVM through a single jetty with
-     * multiple Listeners. This is a testing scenario but it is helpful to keep supporting it so we have good test coverage.
+     * multiple Listeners. This is a testing scenario, but it is helpful to keep supporting it, so we have good test
+     * coverage.
      *
      * @param name name of the local directory or null for default
      */
