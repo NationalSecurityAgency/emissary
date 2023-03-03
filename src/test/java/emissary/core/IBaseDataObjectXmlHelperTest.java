@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.PlaceComparisonHelper;
 
 import org.jdom2.Document;
@@ -24,7 +25,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class IBaseDataObjectXmlHelperTest {
+class IBaseDataObjectXmlHelperTest extends UnitTest {
     @Test
     void testParentIbdoNoFieldsChanged() throws Exception {
         final IBaseDataObject initialIbdo = new BaseDataObject();
