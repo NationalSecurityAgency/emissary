@@ -59,7 +59,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n", "\t"})
+    @ValueSource(strings = {" ", "\t"})
     void badParams(String badParam) {
         // setup
         formParams.replace(TARGET_DIRECTORY, Collections.singletonList(badParam));
@@ -72,6 +72,23 @@ class FailDirectoryActionTest extends EndpointTestBase {
             assertEquals(500, status);
             final String result = response.readEntity(String.class);
             assertTrue(result.startsWith("Bad params:"));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"test\n\r", "\n", "\r"})
+    void cleanParams(String paramsToSanitize) {
+        // setup
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList(paramsToSanitize));
+        formParams.replace(ADD_KEY, Collections.singletonList(paramsToSanitize));
+
+        // test
+        try (final Response response = target(FAIL_DIRECTORY_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("No local directory"));
         }
     }
 

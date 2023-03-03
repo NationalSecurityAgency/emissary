@@ -8,6 +8,7 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.server.mvc.adapters.DirectoryAdapter;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.glassfish.jersey.server.mvc.Template;
 import org.slf4j.Logger;
@@ -42,8 +43,10 @@ public class DumpDirectoryAction {
         IDirectoryPlace dir = null;
         List<String> errors = new ArrayList<>();
 
+        String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDir);
+
         // get top level
-        if (targetDir == null) {
+        if (cleanTargetDirectory == null) {
             LOG.debug("Lookup is using default name since no {} was specified", DirectoryAdapter.TARGET_DIRECTORY);
             try {
                 dir = DirectoryPlace.lookup();
@@ -52,11 +55,11 @@ public class DumpDirectoryAction {
                 errors.add("DirectoryPlace lookup error: " + e.getMessage());
             }
         } else {
-            LOG.debug("Lookup is using directory name {}", targetDir);
+            LOG.debug("Lookup is using directory name {}", cleanTargetDirectory);
             try {
-                dir = (IDirectoryPlace) Namespace.lookup(targetDir);
+                dir = (IDirectoryPlace) Namespace.lookup(cleanTargetDirectory);
             } catch (NamespaceException e) {
-                LOG.error("Namespace lookup error for {}", targetDir, e);
+                LOG.error("Namespace lookup error for {}", cleanTargetDirectory, e);
                 errors.add("Namespace lookup error: " + e.getMessage());
             }
         }

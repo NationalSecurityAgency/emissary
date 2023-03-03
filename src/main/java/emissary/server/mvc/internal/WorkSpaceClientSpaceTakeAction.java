@@ -4,6 +4,7 @@ import emissary.core.EmissaryException;
 import emissary.core.Namespace;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
+import emissary.server.mvc.adapters.RequestUtil;
 import emissary.util.web.HtmlEscaper;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,13 +43,15 @@ public class WorkSpaceClientSpaceTakeAction {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response clientSpaceTake(@FormParam(CLIENT_NAME) String placeName, @FormParam(SPACE_NAME) String spaceName) {
-        if (StringUtils.isBlank(placeName) || StringUtils.isBlank(spaceName)) {
+        String cleanPlaceName = RequestUtil.sanitizeParameter(placeName);
+        String cleanSpaceName = RequestUtil.sanitizeParameter(spaceName);
+        if (StringUtils.isBlank(cleanPlaceName) || StringUtils.isBlank(cleanSpaceName)) {
             return Response.serverError().entity(HtmlEscaper.escapeHtml(
-                    "Bad params: " + CLIENT_NAME + " - " + placeName + ", or " + SPACE_NAME + " - " + spaceName)).build();
+                    "Bad params: " + CLIENT_NAME + " - " + cleanPlaceName + ", or " + SPACE_NAME + " - " + cleanSpaceName)).build();
         }
 
         try {
-            return doClientSpaceTake(placeName, spaceName);
+            return doClientSpaceTake(cleanPlaceName, cleanSpaceName);
         } catch (EmissaryException | IllegalArgumentException e) {
             logger.warn("There was an exception in the WorkSpaceClientSpaceTake", e);
             return Response.serverError().entity("There was an exception in the WorkSpaceClientSpaceTake").build();

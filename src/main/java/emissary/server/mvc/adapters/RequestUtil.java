@@ -233,7 +233,7 @@ public class RequestUtil {
      * @param parameter the String to sanitize
      * @return a new String object with any CR/LF characters removed or null when the provided argument is null
      */
-    protected static String sanitizeParameter(String parameter) {
+    public static String sanitizeParameter(String parameter) {
         return (null == parameter ? null : parameter.replaceAll("[\n\r]", "_"));
     }
 
@@ -243,7 +243,7 @@ public class RequestUtil {
      * @param parameters the String[] to sanitize
      * @return a new String[] object with any CR/LF characters removed
      */
-    protected static String[] sanitizeParameters(String[] parameters) {
+    public static String[] sanitizeParameters(String[] parameters) {
         List<String> sanitizedParameters = new ArrayList<>();
         if (null != parameters) {
             for (String parameter : parameters) {

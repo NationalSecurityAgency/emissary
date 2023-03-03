@@ -63,7 +63,7 @@ class RegisterPeerActionTest extends EndpointTestBase {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {" ", "\n", "\t"})
+    @ValueSource(strings = {" ", "\t"})
     void badParamValues(String badValue) {
         // setup
         formParams.replace(DIRECTORY_NAME, Collections.singletonList(badValue));
@@ -76,6 +76,23 @@ class RegisterPeerActionTest extends EndpointTestBase {
             assertEquals(500, status);
             final String result = response.readEntity(String.class);
             assertTrue(result.startsWith("Bad Params: "));
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"test\n\r", "\n", "\r"})
+    void cleanParams(String paramsToSanitize) {
+        // setup
+        formParams.replace(DIRECTORY_NAME, Collections.singletonList(paramsToSanitize));
+        formParams.replace(TARGET_DIRECTORY, Collections.singletonList(paramsToSanitize));
+
+        // test
+        try (Response response = target(REGISTER_PEER_ACTION).request().post(Entity.form(formParams))) {
+            // verify
+            final int status = response.getStatus();
+            assertEquals(500, status);
+            final String result = response.readEntity(String.class);
+            assertTrue(result.startsWith("Remote directory lookup failed"));
         }
     }
 

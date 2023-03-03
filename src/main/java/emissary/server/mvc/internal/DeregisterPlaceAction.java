@@ -3,6 +3,7 @@ package emissary.server.mvc.internal;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -41,15 +42,16 @@ public class DeregisterPlaceAction {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
     public Response deregisterPlace(@FormParam(TARGET_DIRECTORY) String targetDir, @FormParam(ADD_KEY) List<String> dirAddKeys) {
-        if (StringUtils.isBlank(targetDir) || dirAddKeys.isEmpty()) {
-            return Response.serverError().entity("Bad params: " + TARGET_DIRECTORY + " - " + targetDir + ", or " + ADD_KEY + " - " + dirAddKeys)
-                    .build();
+        String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDir);
+        if (StringUtils.isBlank(cleanTargetDirectory) || dirAddKeys.isEmpty()) {
+            return Response.serverError().entity(
+                    "Bad params: " + TARGET_DIRECTORY + " - " + cleanTargetDirectory + ", or " + ADD_KEY + " - " + dirAddKeys).build();
         }
 
-        final IRemoteDirectory directory = new IRemoteDirectory.Lookup().getLocalDirectory(targetDir);
+        final IRemoteDirectory directory = new IRemoteDirectory.Lookup().getLocalDirectory(cleanTargetDirectory);
         if (directory == null) {
-            logger.error("No directory found using name {}", targetDir);
-            return Response.serverError().entity("No directory found using name " + targetDir).build();
+            logger.error("No directory found using name {}", cleanTargetDirectory);
+            return Response.serverError().entity("No directory found using name " + cleanTargetDirectory).build();
         }
 
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(directory.getKey()));

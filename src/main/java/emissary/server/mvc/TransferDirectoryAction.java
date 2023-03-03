@@ -5,6 +5,7 @@ import emissary.core.Namespace;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IDirectoryPlace;
+import emissary.server.mvc.adapters.RequestUtil;
 import emissary.util.web.HtmlEscaper;
 
 import org.slf4j.Logger;
@@ -30,20 +31,21 @@ public class TransferDirectoryAction {
     @Produces(MediaType.APPLICATION_XML)
     public Response dumpDirectory(@Nullable @QueryParam(TARGET_DIR_PARAM) String dirname) {
         final IDirectoryPlace value;
+        String cleanDirectoryName = RequestUtil.sanitizeParameter(dirname);
         try {
-            if (dirname == null) {
+            if (cleanDirectoryName == null) {
                 LOG.debug("Lookup is using default name since no {} was specified", TARGET_DIR_PARAM);
                 value = DirectoryPlace.lookup();
             } else {
-                LOG.debug("Lookup is using directory name {}", dirname);
-                value = (IDirectoryPlace) Namespace.lookup(dirname);
+                LOG.debug("Lookup is using directory name {}", cleanDirectoryName);
+                value = (IDirectoryPlace) Namespace.lookup(cleanDirectoryName);
             }
             if (value != null) {
                 LOG.debug("Lookup returned {}", value);
                 String msg = DirectoryXmlContainer.toXmlString(value);
                 return Response.ok().entity(msg).build();
             } else {
-                return Response.status(404).entity("Nothing found for " + HtmlEscaper.escapeHtml(dirname)).build();
+                return Response.status(404).entity("Nothing found for " + HtmlEscaper.escapeHtml(cleanDirectoryName)).build();
             }
         } catch (EmissaryException e) {
             LOG.error("Problem looking up", e);

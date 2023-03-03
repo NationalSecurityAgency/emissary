@@ -7,6 +7,7 @@ import emissary.directory.DirectoryXmlContainer;
 import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
+import emissary.server.mvc.adapters.RequestUtil;
 import emissary.util.web.HtmlEscaper;
 
 import org.apache.commons.lang3.StringUtils;
@@ -46,11 +47,13 @@ public class RegisterPeerAction {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_XML)
     public Response registerPeerPost(@FormParam(DIRECTORY_NAME) String directoryName, @FormParam(TARGET_DIRECTORY) String targetDirectory) {
-        if (StringUtils.isBlank(directoryName) || StringUtils.isBlank(targetDirectory)) {
+        String cleanDirectoryName = RequestUtil.sanitizeParameter(directoryName);
+        String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDirectory);
+        if (StringUtils.isBlank(cleanDirectoryName) || StringUtils.isBlank(cleanTargetDirectory)) {
             return Response.serverError().entity(HtmlEscaper.escapeHtml(
-                    "Bad Params: " + DIRECTORY_NAME + " - " + directoryName + ", " + TARGET_DIRECTORY + " - " + targetDirectory)).build();
+                    "Bad Params: " + DIRECTORY_NAME + " - " + cleanDirectoryName + ", " + TARGET_DIRECTORY + " - " + cleanTargetDirectory)).build();
         }
-        return processRegisterPeer(directoryName, targetDirectory);
+        return processRegisterPeer(cleanDirectoryName, cleanTargetDirectory);
     }
 
     private Response processRegisterPeer(String peerKey, String dirName) {
