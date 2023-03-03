@@ -34,9 +34,9 @@ class EmissaryClientTest extends UnitTest {
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();
             RequestConfig requestConfig = client.getRequestConfig();
-            assertEquals(EmissaryClient.DEFAULT_CONNECTION_TIMEOUT.intValue(), requestConfig.getConnectTimeout());
-            assertEquals(EmissaryClient.DEFAULT_CONNECTION_MANAGER_TIMEOUT.intValue(), requestConfig.getConnectionRequestTimeout());
-            assertEquals(EmissaryClient.DEFAULT_SO_TIMEOUT.intValue(), requestConfig.getSocketTimeout());
+            assertEquals(EmissaryClient.DEFAULT_CONNECTION_TIMEOUT, requestConfig.getConnectTimeout());
+            assertEquals(EmissaryClient.DEFAULT_CONNECTION_MANAGER_TIMEOUT, requestConfig.getConnectionRequestTimeout());
+            assertEquals(EmissaryClient.DEFAULT_SO_TIMEOUT, requestConfig.getSocketTimeout());
         } catch (IOException e) {
             logger.error("Problem moving {}", origCfg.toAbsolutePath(), e);
         } finally {
@@ -98,9 +98,9 @@ class EmissaryClientTest extends UnitTest {
         EmissaryClient client = new EmissaryClient();
         RequestConfig requestConfig = client.getRequestConfig();
         // initial value from config file on classpath
-        int valueInCfgOnClasspath = new Long(TimeUnit.MINUTES.toMillis(10)).intValue();
+        int valueInCfgOnClasspath = (int) TimeUnit.MINUTES.toMillis(10);
         assertEquals(valueInCfgOnClasspath, requestConfig.getConnectTimeout());
-        int newTimeout = new Long(TimeUnit.MINUTES.toMillis(3)).intValue();
+        int newTimeout = (int) TimeUnit.MINUTES.toMillis(3);
         client.setConnectionTimeout(newTimeout);
         // did it get reset?
         assertEquals(newTimeout, client.getRequestConfig().getConnectTimeout());
