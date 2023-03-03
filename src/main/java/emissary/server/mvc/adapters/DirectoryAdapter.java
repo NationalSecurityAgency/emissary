@@ -272,8 +272,11 @@ public class DirectoryAdapter extends EmissaryClient {
         }
 
         if (map == null) {
-            throw new EmissaryException("Unable to perform zone transfer to " + key + ": received map is null, isError="
-                    + (ws == null ? null : ws.getStatus() + ", msgBody=" + ws.getContentString()));
+            String errMsg = "Unable to perform zone transfer to " + key + ": received map is null";
+            if (ws != null) {
+                errMsg += ", isError=" + ws.getStatus() + ", msgBody=" + ws.getContentString();
+            }
+            throw new EmissaryException(errMsg);
         }
 
         // This ensures each node only has knowledge of all DirectoryPlace and FilePickupPlace entries
