@@ -92,10 +92,9 @@ public class EmissaryClient {
             final Configurator c = ConfigUtil.getConfigInfo(EmissaryClient.class);
             retries = c.findIntEntry("retries", DEFAULT_RETRIES);
             username = c.findStringEntry("username", DEFAULT_USERNAME);
-            connectionTimeout = (int) Math.min(c.findLongEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT), Integer.MAX_VALUE);
-            connectionManagerTimeout =
-                    (int) Math.min(c.findLongEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT), Integer.MAX_VALUE);
-            socketTimeout = (int) Math.min(c.findLongEntry("soTimeout", DEFAULT_SO_TIMEOUT), Integer.MAX_VALUE);
+            connectionTimeout = c.findIntEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
+            connectionManagerTimeout = c.findIntEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
+            socketTimeout = c.findIntEntry("soTimeout", DEFAULT_SO_TIMEOUT);
             CONTEXT = c.findStringEntry("context", DEFAULT_CONTEXT);
         } catch (IOException iox) {
             LOGGER.warn("Cannot read EmissaryClient properties, configuring defaults: {}", iox.getMessage());
