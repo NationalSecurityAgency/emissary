@@ -4,6 +4,7 @@ import emissary.core.Namespace;
 import emissary.core.ResourceWatcher;
 import emissary.output.DropOffPlace;
 import emissary.output.filter.IDropOffFilter;
+import emissary.server.mvc.adapters.RequestUtil;
 
 import java.util.List;
 import javax.ws.rs.DefaultValue;
@@ -28,7 +29,7 @@ public class RollOutputsAction {
             @QueryParam("p") @DefaultValue("DropOffPlace") String namespaceName) {
         try {
             StringBuilder outputNames = new StringBuilder();
-            DropOffPlace dropOffPlace = (DropOffPlace) Namespace.lookup(namespaceName);
+            DropOffPlace dropOffPlace = (DropOffPlace) Namespace.lookup(RequestUtil.sanitizeParameter(namespaceName));
 
             for (String filter : outputFilterNames) {
                 try {
