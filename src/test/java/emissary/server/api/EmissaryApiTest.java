@@ -2,6 +2,7 @@ package emissary.server.api;
 
 import emissary.client.response.Agent;
 import emissary.client.response.AgentsResponseEntity;
+import emissary.client.response.ConfigsResponseEntity;
 import emissary.client.response.MapResponseEntity;
 import emissary.client.response.PlacesResponseEntity;
 import emissary.command.ServerCommand;
@@ -48,22 +49,26 @@ import static org.mockito.Mockito.when;
 
 class EmissaryApiTest extends EndpointTestBase {
 
+    static final String TEST_HOST = "localhost";
+    static final int TEST_PORT = 10978;
+    static final String TEST_HOST_AND_PORT = TEST_HOST + ":" + TEST_PORT;
+
     @BeforeEach
     public void setup() {
         EmissaryServer mockServer = mock(EmissaryServer.class);
-        EmissaryNode node = spy(new EmissaryNode());
+        EmissaryNode node = spy(new TestEmissaryNode());
         ServerCommand srvCmd = mock(ServerCommand.class);
 
-        doReturn("localhost").when(node).getNodeName();
-        doReturn(8001).when(node).getNodePort();
+        doReturn(TEST_HOST).when(node).getNodeName();
+        doReturn(TEST_PORT).when(node).getNodePort();
         when(mockServer.getNode()).thenReturn(node);
         when(mockServer.getServerCommand()).thenReturn(srvCmd);
         when(srvCmd.getConfig()).thenReturn(Paths.get("/path/to/project/config"));
         when(srvCmd.getProjectBase()).thenReturn(Paths.get("/path/to/project"));
         when(srvCmd.getOutputDir()).thenReturn(Paths.get("/path/to/project/output"));
         when(srvCmd.getBinDir()).thenReturn(Paths.get("/path/to/project/bin"));
-        when(srvCmd.getHost()).thenReturn("localhost");
-        when(srvCmd.getPort()).thenReturn(8001);
+        when(srvCmd.getHost()).thenReturn(TEST_HOST);
+        when(srvCmd.getPort()).thenReturn(TEST_PORT);
         when(srvCmd.getScheme()).thenReturn("https");
 
         Namespace.bind("EmissaryServer", mockServer);
@@ -96,7 +101,7 @@ class EmissaryApiTest extends EndpointTestBase {
             AgentsResponseEntity entity = response.readEntity(AgentsResponseEntity.class);
             assertTrue(entity.getErrors().isEmpty());
             assertTrue(entity.getCluster().isEmpty());
-            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertEquals(TEST_HOST_AND_PORT, entity.getLocal().getHost());
             assertIterableEquals(Arrays.asList(expectedAgents), entity.getLocal().getAgents());
         } finally {
             Namespace.unbind("MobileAgent-07");
@@ -113,7 +118,7 @@ class EmissaryApiTest extends EndpointTestBase {
             MapResponseEntity entity = response.readEntity(MapResponseEntity.class);
             assertTrue(entity.getErrors().isEmpty());
             assertFalse(entity.getResponse().isEmpty());
-            assertEquals("Poolsize active/idle: 0/10", entity.getResponse().get("localhost:8001"));
+            assertEquals("Poolsize active/idle: 0/10", entity.getResponse().get(TEST_HOST_AND_PORT));
         } finally {
             Namespace.unbind("AgentPool");
         }
@@ -128,7 +133,7 @@ class EmissaryApiTest extends EndpointTestBase {
         try (Response response = target("places").request().get()) {
             assertEquals(200, response.getStatus());
             PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertEquals(TEST_HOST_AND_PORT, entity.getLocal().getHost());
             assertEquals(3, entity.getLocal().getPlaces().size());
             assertEquals(Sets.newHashSet("pickupClient", "pickupPlace", "processingPlace"), entity.getLocal().getPlaces());
             assertEquals(0, entity.getErrors().size());
@@ -146,7 +151,7 @@ class EmissaryApiTest extends EndpointTestBase {
         try (Response response = target("places").request().get()) {
             assertEquals(200, response.getStatus());
             PlacesResponseEntity entity = response.readEntity(PlacesResponseEntity.class);
-            assertEquals("localhost:8001", entity.getLocal().getHost());
+            assertEquals(TEST_HOST_AND_PORT, entity.getLocal().getHost());
             assertEquals(0, entity.getLocal().getPlaces().size());
             assertEquals(0, entity.getErrors().size());
             assertTrue(CollectionUtils.isEmpty(entity.getCluster()));
@@ -174,7 +179,7 @@ class EmissaryApiTest extends EndpointTestBase {
             MapResponseEntity entity = response.readEntity(MapResponseEntity.class);
             assertTrue(entity.getErrors().isEmpty());
             assertFalse(entity.getResponse().isEmpty());
-            assertEquals(new emissary.util.Version().getVersion(), entity.getResponse().get("localhost:8001"));
+            assertEquals(new emissary.util.Version().getVersion(), entity.getResponse().get(TEST_HOST_AND_PORT));
         }
     }
 
@@ -189,8 +194,8 @@ class EmissaryApiTest extends EndpointTestBase {
             assertEquals("/path/to/project", entity.getResponse().get("PROJECT_BASE"));
             assertEquals("/path/to/project/output", entity.getResponse().get("OUTPUT_ROOT"));
             assertEquals("/path/to/project/bin", entity.getResponse().get("BIN_DIR"));
-            assertEquals("localhost", entity.getResponse().get("HOST"));
-            assertEquals("8001", entity.getResponse().get("PORT"));
+            assertEquals(TEST_HOST, entity.getResponse().get("HOST"));
+            assertEquals(TEST_PORT, Integer.valueOf(entity.getResponse().get("PORT")));
             assertEquals("https", entity.getResponse().get("SCHEME"));
         }
     }
@@ -205,8 +210,8 @@ class EmissaryApiTest extends EndpointTestBase {
             assertTrue(entity.contains("export PROJECT_BASE=\"/path/to/project\""));
             assertTrue(entity.contains("export OUTPUT_ROOT=\"/path/to/project/output\""));
             assertTrue(entity.contains("export BIN_DIR=\"/path/to/project/bin\""));
-            assertTrue(entity.contains("export HOST=\"localhost\""));
-            assertTrue(entity.contains("export PORT=\"8001\""));
+            assertTrue(entity.contains("export HOST=\"" + TEST_HOST + "\""));
+            assertTrue(entity.contains("export PORT=\"" + TEST_PORT + "\""));
             assertTrue(entity.contains("export SCHEME=\"https\""));
         }
     }
@@ -260,7 +265,7 @@ class EmissaryApiTest extends EndpointTestBase {
     @Test
     void apiutils() throws Exception {
 
-        String PEER = "*.*.*.http://somehost:8001/DirectoryPlace";
+        String PEER = "*.*.*.http://somehost:" + TEST_PORT + "/DirectoryPlace";
         Set<String> PEERS = Collections.singleton(PEER);
 
         DirectoryPlace mockDirectory = mock(DirectoryPlace.class);
@@ -272,12 +277,12 @@ class EmissaryApiTest extends EndpointTestBase {
             assertEquals(PEERS, results);
 
             String result = ApiUtils.stripPeerString(PEER);
-            assertEquals("http://somehost:8001/", result);
+            assertEquals("http://somehost:" + TEST_PORT + "/", result);
 
-            assertThrows(IndexOutOfBoundsException.class, () -> ApiUtils.stripPeerString("*.*.http://throwsException:8001"));
+            assertThrows(IndexOutOfBoundsException.class, () -> ApiUtils.stripPeerString("*.*.http://throwsException:" + TEST_PORT));
 
             String hostAndPort = ApiUtils.getHostAndPort();
-            assertEquals("localhost:8001", hostAndPort);
+            assertEquals(TEST_HOST_AND_PORT, hostAndPort);
 
             Namespace.unbind("EmissaryServer");
             result = ApiUtils.getHostAndPort();
@@ -287,6 +292,52 @@ class EmissaryApiTest extends EndpointTestBase {
             assertThrows(EmissaryException.class, ApiUtils::lookupPeers);
         } finally {
             Namespace.unbind("DirectoryPlace");
+        }
+    }
+
+    @Test
+    void configs() {
+        try (Response response = target("configuration/node").request().get()) {
+            assertEquals(200, response.getStatus());
+            ConfigsResponseEntity entity = response.readEntity(ConfigsResponseEntity.class);
+            assertTrue(entity.getErrors().isEmpty());
+            assertFalse(entity.getLocal().getConfigs().isEmpty());
+            assertEquals(1, entity.getLocal().getConfigs().size());
+            assertEquals("[CLUSTER]", entity.getLocal().getConfigs().get(0).getFlavors().toString());
+            assertEquals("[node.cfg, node-CLUSTER.cfg]", entity.getLocal().getConfigs().get(0).getConfigs().toString());
+        }
+    }
+
+    @Test
+    void configsDetailed() {
+        try (Response response = target("configuration/detailed/node").request().get()) {
+            assertEquals(200, response.getStatus());
+            ConfigsResponseEntity entity = response.readEntity(ConfigsResponseEntity.class);
+            assertTrue(entity.getErrors().isEmpty());
+            assertFalse(entity.getLocal().getConfigs().isEmpty());
+            assertEquals(3, entity.getLocal().getConfigs().size());
+            // config 1
+            assertEquals("[]", entity.getLocal().getConfigs().get(0).getFlavors().toString());
+            assertEquals("[node.cfg]", entity.getLocal().getConfigs().get(0).getConfigs().toString());
+            // config 2
+            assertEquals("[CLUSTER]", entity.getLocal().getConfigs().get(1).getFlavors().toString());
+            assertEquals("[node-CLUSTER.cfg]", entity.getLocal().getConfigs().get(1).getConfigs().toString());
+            // combined configs
+            assertEquals("[CLUSTER]", entity.getLocal().getConfigs().get(2).getFlavors().toString());
+            assertEquals("[node.cfg, node-CLUSTER.cfg]", entity.getLocal().getConfigs().get(2).getConfigs().toString());
+        }
+    }
+
+    private static final class TestEmissaryNode extends EmissaryNode {
+        public TestEmissaryNode() {
+            super();
+            this.nodeName = "TestNode";
+            this.nodePort = TEST_PORT;
+        }
+
+        @Override
+        public boolean isStandalone() {
+            return false;
         }
     }
 }
