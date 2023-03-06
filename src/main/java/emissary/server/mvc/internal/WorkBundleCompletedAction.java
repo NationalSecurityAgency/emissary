@@ -45,17 +45,18 @@ public class WorkBundleCompletedAction {
             @FormParam(WORK_BUNDLE_ID) String bundleId, @FormParam(WORK_BUNDLE_STATUS) boolean itWorked) {
         String cleanPlaceName = RequestUtil.sanitizeParameter(placeName);
         String cleanSpaceName = RequestUtil.sanitizeParameter(spaceName);
-        if (StringUtils.isBlank(cleanPlaceName) || StringUtils.isBlank(cleanSpaceName) || StringUtils.isBlank(bundleId)
+        String cleanBundleId = RequestUtil.sanitizeParameter(bundleId);
+        if (StringUtils.isBlank(cleanPlaceName) || StringUtils.isBlank(cleanSpaceName) || StringUtils.isBlank(cleanBundleId)
                 || !cleanSpaceName.startsWith("WORKSPACE.WORK_SPACE.INPUT.") || !cleanPlaceName.startsWith("INITIAL.FILE_PICK_UP_CLIENT.INPUT.")) {
             return Response
                     .serverError()
                     .entity("Bad params: " + CLIENT_NAME + " - " + cleanPlaceName + ", " + SPACE_NAME + " - " + cleanSpaceName + ", " + WORK_BUNDLE_ID
-                            + " - " + bundleId)
+                            + " - " + cleanBundleId)
                     .build();
         }
 
         try {
-            return workBundleCompleted(cleanSpaceName, cleanPlaceName, bundleId, itWorked);
+            return workBundleCompleted(cleanSpaceName, cleanPlaceName, cleanBundleId, itWorked);
         } catch (NamespaceException e) {
             logger.error("There was a problem while processing the WorkBundle", e);
             return Response.serverError().entity("There was a problem while processing the WorkBundle: " + e.getMessage()).build();
