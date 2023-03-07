@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.kff.KffFilter.FilterType;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,8 +108,7 @@ public class KffChainLoader {
 
         for (int i = 0; i < args.length; i++) {
             try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
+                byte[] buffer = IOUtils.toByteArray(is);
 
                 KffResult r = kff.check(args[i], buffer);
                 System.out.println(args[i] + ": known=" + r.isKnown());

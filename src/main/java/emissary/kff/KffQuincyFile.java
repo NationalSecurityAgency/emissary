@@ -1,5 +1,7 @@
 package emissary.kff;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -33,8 +35,7 @@ public class KffQuincyFile extends KffFile {
 
         for (int i = 1; i < args.length; i++) {
             try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
+                byte[] buffer = IOUtils.toByteArray(is);
 
                 KffResult r = kff.check(args[i], buffer);
                 System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getMd5String());

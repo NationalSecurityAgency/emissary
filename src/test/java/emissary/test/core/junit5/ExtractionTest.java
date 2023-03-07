@@ -9,6 +9,7 @@ import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
@@ -85,8 +86,7 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
-            byte[] data = new byte[doc.available()];
-            doc.read(data);
+            byte[] data = IOUtils.toByteArray(doc);
             String defaultCurrentForm = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
             IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, defaultCurrentForm);
             setupPayload(payload, controlDoc);
