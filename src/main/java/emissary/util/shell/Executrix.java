@@ -173,12 +173,15 @@ public class Executrix {
 
         try (InputStream theStream = Files.newInputStream(Paths.get(theFileName))) {
             final int avail = theStream.available();
-            if ((length == -1) || (length >= avail)) {
-                theContent = new byte[avail];
-            } else {
-                theContent = new byte[length];
+            final int expected = length == -1 || length >= avail ? avail : length;
+
+            theContent = new byte[expected];
+
+            final int actual = theStream.read(theContent);
+            if (actual != expected) {
+                logger.warn("readFile: {}, max length: {}, available bytes: {}, expected: {}, actual: {}", theFileName, length, avail, expected,
+                        actual);
             }
-            theStream.read(theContent);
         }
 
         return theContent;
