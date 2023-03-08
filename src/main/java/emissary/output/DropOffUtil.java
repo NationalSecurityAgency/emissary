@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -39,7 +43,7 @@ import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
-    protected static final String SEPARATOR = File.separator;
+    protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();
     protected static final String OS_NAME = System.getProperty("os.name").toUpperCase();
     protected static boolean osIsWindows = (OS_NAME.indexOf("WINDOWS") >= 0);
 
@@ -221,15 +225,15 @@ public class DropOffUtil {
      */
     public boolean removeExistingFile(final String fileName) {
         // If a file already exists under this name, we're going
-        // go have to move it aside. This is going to break the link
+        // to have to move it aside. This is going to break the link
         // if it is an attachment to another parent document.
-        final File theFile = new File(fileName);
-
-        if (theFile.exists()) {
-            theFile.delete();
+        final Path theFile = Paths.get(fileName);
+        try {
+            Files.deleteIfExists(theFile);
+        } catch (IOException e) {
+            logger.error("Trouble removing file: {}", theFile, e);
         }
-
-        return (!theFile.exists());
+        return !Files.exists(theFile);
     }
 
     /**
@@ -240,14 +244,18 @@ public class DropOffUtil {
      */
     public boolean setupPath(final String fileName) {
         final String pathName = fileName.substring(0, fileName.lastIndexOf(SEPARATOR));
-        final File thePath = new File(pathName);
+        final Path thePath = Paths.get(pathName);
 
         // If the specified output directory doesn't exist try creating it
-        if (!thePath.exists()) {
+        if (!Files.exists(thePath)) {
             int tryCount = 1;
             do {
-                thePath.mkdirs();
-                if (!thePath.exists()) {
+                try {
+                    Files.createDirectories(thePath);
+                } catch (IOException e) {
+                    logger.warn("Trouble setting up directories:{}", thePath, e);
+                }
+                if (!Files.exists(thePath)) {
                     try {
                         Thread.sleep(50L * tryCount);
                     } catch (InterruptedException e) {
@@ -255,9 +263,9 @@ public class DropOffUtil {
                     }
                 }
                 tryCount++;
-            } while (!thePath.exists() && tryCount <= 10);
+            } while (!Files.exists(thePath) && tryCount <= 10);
 
-            if (!thePath.exists()) {
+            if (!Files.exists(thePath)) {
                 logger.warn("Cannot create directory for output: {} in {} attempts", thePath, tryCount);
                 return false;
             }
@@ -269,10 +277,9 @@ public class DropOffUtil {
 
         // If the specified output directory doesn't have write
         // permission try to fix it
-        if (!thePath.canWrite()) {
+        if (!Files.isWritable(thePath)) {
             logger.warn("Dont have write permission for {}, setting it now", pathName);
-            thePath.setWritable(true);
-            if (!thePath.canWrite()) {
+            if (!thePath.toFile().setWritable(true) || !Files.isWritable(thePath)) {
                 logger.warn("Cannot write to directory for output: {}", thePath);
                 return false;
             }
@@ -393,9 +400,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
+                                sb.append(datePath(tld.getStringParameter("DTG")));
                             } else if (d != null) {
-                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
+                                sb.append(datePath(d.getStringParameter("DTG")));
                             }
                             break;
                         case 'R':
@@ -481,7 +488,8 @@ public class DropOffUtil {
     }
 
     protected String cleanSpecPath(@Nullable String token) {
-        return token == null ? null : token.replaceAll("[.]+", ".");
+        token = StringUtils.trimToNull(token);
+        return token == null ? null : token.replaceAll(SEPARATOR, "").replaceAll("[.]+", ".");
     }
 
     /**
@@ -646,14 +654,15 @@ public class DropOffUtil {
      * @return yyyy-mm-dd/hh/(mm%10)
      */
     protected String datePath(@Nullable final String dtg) {
-        if (dtg == null) {
+        if (StringUtils.length(dtg) != 14 || !StringUtils.isNumeric(dtg)) {
+            logger.debug("Date-time group [{}] was not in the expected format yyyymmddhhmmss, defaulting to now", dtg);
             return TimeUtil.getDateAsPath(Instant.now());
         } else {
             return dtg.substring(0, 4) + "-" + // yyyy
                     dtg.substring(4, 6) + "-" + // mm
                     dtg.substring(6, 8) + "/" + // dd
                     dtg.substring(8, 10) + "/" + // HH
-                    dtg.substring(10, 11) + "0"; // M0
+                    dtg.charAt(10) + "0"; // M0
         }
     }
 
