@@ -5,8 +5,11 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.servlet.ServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,7 +17,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RequestUtilTest extends UnitTest {
+class RequestUtilTest extends UnitTest {
 
     @Test
     void testGetParameter() {
@@ -33,7 +36,7 @@ public class RequestUtilTest extends UnitTest {
     }
 
     @Test
-    void testGetParameterValues() {
+    void testGetArrayStringParameterValues() {
         ServletRequest mockRequest = mock(ServletRequest.class);
         when(mockRequest.getAttribute(anyString())).thenReturn("anAttribute").thenReturn(null).thenReturn(null);
         when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {"parameter1", "parameter2"}).thenReturn(null);
@@ -49,6 +52,26 @@ public class RequestUtilTest extends UnitTest {
     }
 
     @Test
+    void testGetStringListParameterValues() {
+        ServletRequest mockRequest = mock(ServletRequest.class);
+        when(mockRequest.getAttribute(anyString())).thenReturn("anAttribute").thenReturn(null).thenReturn(null);
+        when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {"parameter1", "parameter2"}).thenReturn(null);
+
+        // attribute takes precedence, so return that if one is available
+        assertEquals(Collections.singletonList("anAttribute"), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
+
+        // without an attribute, get the parameter values
+        assertEquals(Arrays.asList("parameter1", "parameter2"), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
+
+        when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {}).thenReturn(null);
+        // no attribute or empty parameter value returns an empty string list
+        assertEquals(Collections.emptyList(), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
+
+        // check when parameter value is null (throws null pointer ex) that an empty list is returned
+        assertEquals(Collections.emptyList(), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
+    }
+
+    @Test
     void testSanitizeParameter() {
         String test = "this\ris\r\nnot\nfine\n\r";
 
@@ -58,7 +81,7 @@ public class RequestUtilTest extends UnitTest {
     }
 
     @Test
-    void testSanitizeParameters() {
+    void testSanitizeStringArrayParameters() {
         String testOk = "this_is_fine";
         String testBad = "this\ris\r\nnot\nfine\n\r";
         String[] testStrings = new String[] {testOk, null, testBad};
@@ -68,6 +91,20 @@ public class RequestUtilTest extends UnitTest {
         assertNull(resultStrings[1]);
         assertEquals("this_is__not_fine__", resultStrings[2]);
 
-        assertTrue(Arrays.equals(new String[0], RequestUtil.sanitizeParameters(null)));
+        assertArrayEquals(new String[0], RequestUtil.sanitizeParameters(null));
+    }
+
+    @Test
+    void testSanitizeStringListParameters() {
+        String testOk = "this_is_fine";
+        String testBad = "this\ris\r\nnot\nfine\n\r";
+        List<String> testStrings = Arrays.asList(testOk, null, testBad);
+
+        List<String> resultStrings = RequestUtil.sanitizeParametersStringList(testStrings);
+        assertEquals(testOk, resultStrings.get(0));
+        assertNull(resultStrings.get(1));
+        assertEquals("this_is__not_fine__", resultStrings.get(2));
+
+        assertTrue(RequestUtil.sanitizeParametersStringList(null).isEmpty());
     }
 }

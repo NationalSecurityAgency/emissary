@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.ServletRequest;
 
@@ -71,6 +72,41 @@ public class RequestUtil {
         }
 
         return retArray;
+    }
+
+    /**
+     * Get attribute or parameters from request and return a list of Strings. Attribute has priority over parameter when
+     * both are present
+     */
+    public static List<String> getParameterValuesStringList(final ServletRequest request, final String param) {
+        List<String> retList = new ArrayList<>();
+        Object o = request.getAttribute(param);
+
+        if (o == null) {
+            try {
+                o = sanitizeParametersStringList(Arrays.asList(request.getParameterValues(param)));
+            } catch (NullPointerException e) {
+                logger.debug("RequestUtil.getParameterValues for {} is null", param);
+                return retList;
+            }
+        }
+
+        try {
+            retList = (List<String>) o;
+        } catch (ClassCastException e) {
+            retList = new ArrayList<>(1);
+            retList.add(0, (String) o);
+        }
+
+        if (retList != null) {
+            for (int i = 0; i < retList.size(); i++) {
+                logger.debug("RequestUtil.getParameterValues for {} [{}]: {}", param, i, retList.get(i));
+            }
+        } else {
+            logger.debug("RequestUtil.getParameterValues for {} is null", param);
+        }
+
+        return retList;
     }
 
     /**
@@ -251,5 +287,21 @@ public class RequestUtil {
             }
         }
         return sanitizedParameters.toArray(new String[0]);
+    }
+
+    /**
+     * Sanitize request parameters to remove CR/LF values
+     *
+     * @param parameters the List String to sanitize
+     * @return a new List String object with any CR/LF characters removed
+     */
+    public static List<String> sanitizeParametersStringList(List<String> parameters) {
+        List<String> sanitizedParameters = new ArrayList<>();
+        if (null != parameters) {
+            for (String parameter : parameters) {
+                sanitizedParameters.add(sanitizeParameter(parameter));
+            }
+        }
+        return sanitizedParameters;
     }
 }
