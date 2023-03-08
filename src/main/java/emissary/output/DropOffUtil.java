@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -221,15 +224,15 @@ public class DropOffUtil {
      */
     public boolean removeExistingFile(final String fileName) {
         // If a file already exists under this name, we're going
-        // go have to move it aside. This is going to break the link
+        // to have to move it aside. This is going to break the link
         // if it is an attachment to another parent document.
-        final File theFile = new File(fileName);
-
-        if (theFile.exists()) {
-            theFile.delete();
+        final Path theFile = Paths.get(fileName);
+        try {
+            Files.deleteIfExists(theFile);
+        } catch (IOException e) {
+            logger.error("Trouble removing file: {}", theFile, e);
         }
-
-        return (!theFile.exists());
+        return !Files.exists(theFile);
     }
 
     /**
@@ -271,8 +274,7 @@ public class DropOffUtil {
         // permission try to fix it
         if (!thePath.canWrite()) {
             logger.warn("Dont have write permission for {}, setting it now", pathName);
-            thePath.setWritable(true);
-            if (!thePath.canWrite()) {
+            if (!thePath.setWritable(true) || !thePath.canWrite()) {
                 logger.warn("Cannot write to directory for output: {}", thePath);
                 return false;
             }
