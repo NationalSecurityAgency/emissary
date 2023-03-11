@@ -383,7 +383,7 @@ public class DropOffUtil {
                             break;
                         case 'F':
                             if (d != null) {
-                                sb.append(nvl(d.getFileType(), "NONE"));
+                                sb.append(nvl(cleanSpecPath(d.getFileType()), "NONE"));
                             }
                             break;
                         case 'L':
