@@ -5,6 +5,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.directory.KeyManipulator;
 import emissary.util.io.FileManipulator;
 
+import com.google.common.primitives.Ints;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -169,18 +169,15 @@ public class Executrix {
      * @throws IOException on error
      */
     public static byte[] readFile(final String theFileName, final int length) throws IOException {
+
         byte[] theContent;
 
-        try (InputStream theStream = Files.newInputStream(Paths.get(theFileName))) {
-            final int avail = theStream.available();
-            final int expected = length == -1 || length >= avail ? avail : length;
-
-            theContent = new byte[expected];
-
-            final int actual = theStream.read(theContent);
+        try (RandomAccessFile raf = new RandomAccessFile(theFileName, "r")) {
+            final long avail = raf.length();
+            final int expected = length == -1 || length >= raf.length() ? Ints.saturatedCast(raf.length()) : length;
+            final int actual = raf.read(theContent = new byte[expected]);
             if (actual != expected) {
-                logger.warn("readFile: {}, max length: {}, available bytes: {}, expected: {}, actual: {}", theFileName, length, avail, expected,
-                        actual);
+                logger.warn("readFile [{}, {}]: file length {}, expected read {}, actual read {}", theFileName, length, avail, expected, actual);
             }
         }
 
