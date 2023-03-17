@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +43,7 @@ import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
-    protected static final String SEPARATOR = File.separator;
+    protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();;
     protected static final String OS_NAME = System.getProperty("os.name").toUpperCase();
     protected static boolean osIsWindows = (OS_NAME.indexOf("WINDOWS") >= 0);
 
@@ -243,14 +244,18 @@ public class DropOffUtil {
      */
     public boolean setupPath(final String fileName) {
         final String pathName = fileName.substring(0, fileName.lastIndexOf(SEPARATOR));
-        final File thePath = new File(pathName);
+        final Path thePath = Paths.get(pathName);
 
         // If the specified output directory doesn't exist try creating it
-        if (!thePath.exists()) {
+        if (!Files.exists(thePath)) {
             int tryCount = 1;
             do {
-                thePath.mkdirs();
-                if (!thePath.exists()) {
+                try {
+                    Files.createDirectories(thePath);
+                } catch (IOException e) {
+                    logger.warn("Trouble setting up directories:{}", thePath, e);
+                }
+                if (!Files.exists(thePath)) {
                     try {
                         Thread.sleep(50L * tryCount);
                     } catch (InterruptedException e) {
@@ -258,9 +263,9 @@ public class DropOffUtil {
                     }
                 }
                 tryCount++;
-            } while (!thePath.exists() && tryCount <= 10);
+            } while (!Files.exists(thePath) && tryCount <= 10);
 
-            if (!thePath.exists()) {
+            if (!Files.exists(thePath)) {
                 logger.warn("Cannot create directory for output: {} in {} attempts", thePath, tryCount);
                 return false;
             }
@@ -272,9 +277,9 @@ public class DropOffUtil {
 
         // If the specified output directory doesn't have write
         // permission try to fix it
-        if (!thePath.canWrite()) {
+        if (!Files.isWritable(thePath)) {
             logger.warn("Dont have write permission for {}, setting it now", pathName);
-            if (!thePath.setWritable(true) || !thePath.canWrite()) {
+            if (!thePath.toFile().setWritable(true) || !Files.isWritable(thePath)) {
                 logger.warn("Cannot write to directory for output: {}", thePath);
                 return false;
             }
