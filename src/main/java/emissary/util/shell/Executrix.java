@@ -174,10 +174,10 @@ public class Executrix {
 
         try (RandomAccessFile raf = new RandomAccessFile(theFileName, "r")) {
             final long avail = raf.length();
-            final int expected = length == -1 || length >= raf.length() ? Ints.saturatedCast(raf.length()) : length;
+            final int expected = length == -1 || length >= avail ? Ints.saturatedCast(avail) : length;
             final int actual = raf.read(theContent = new byte[expected]);
             if (actual != expected) {
-                logger.warn("readFile [{}, {}]: file length {}, expected read {}, actual read {}", theFileName, length, avail, expected, actual);
+                logger.debug("readFile(name:{}, length:{}): file size {}, expected {}, actual {}", theFileName, length, avail, expected, actual);
             }
         }
 
