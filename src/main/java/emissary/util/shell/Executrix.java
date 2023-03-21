@@ -169,19 +169,11 @@ public class Executrix {
      * @throws IOException on error
      */
     public static byte[] readFile(final String theFileName, final int length) throws IOException {
-
-        byte[] theContent;
-
         try (RandomAccessFile raf = new RandomAccessFile(theFileName, "r")) {
-            final long avail = raf.length();
-            final int expected = length == -1 || length >= avail ? Ints.saturatedCast(avail) : length;
-            final int actual = raf.read(theContent = new byte[expected]);
-            if (actual != expected) {
-                logger.debug("readFile(name:{}, length:{}): file size {}, expected {}, actual {}", theFileName, length, avail, expected, actual);
-            }
+            byte[] theContent = new byte[length == -1 || length >= raf.length() ? Ints.saturatedCast(raf.length()) : length];
+            raf.readFully(theContent);
+            return theContent;
         }
-
-        return theContent;
     }
 
     /**
