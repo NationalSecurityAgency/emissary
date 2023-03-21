@@ -68,6 +68,21 @@ public class KffDataObjectHandler {
     }
 
     /**
+     * Convenience memthod to hash a byte array of data.
+     * 
+     * @param data to hash
+     * @param name the name of the data (for reporting)
+     * @param prefix prepended to hash name entries
+     * @return parameter entries suitable for a BaseDataObject
+     * @throws IOException if the data can't be read
+     * @throws NoSuchAlgorithmException if the checksum can't be computed
+     */
+    public Map<String, String> hashData(final byte[] data, final String name, String prefix)
+            throws IOException, NoSuchAlgorithmException {
+        return hashData(SeekableByteChannelHelper.memory(data), name, prefix);
+    }
+
+    /**
      * Compute the configure hashes and return as a map Also include entries indicating the know file or duplicate file
      * status if so configured
      * 
