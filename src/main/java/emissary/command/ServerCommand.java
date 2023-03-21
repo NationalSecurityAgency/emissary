@@ -36,6 +36,10 @@ public class ServerCommand extends ServiceCommand {
     @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     private boolean dumpJettyBeans = false;
 
+    @Parameter(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
+    private boolean strictMode = false;
+
+
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
@@ -61,6 +65,11 @@ public class ServerCommand extends ServiceCommand {
     public boolean shouldDumpJettyBeans() {
         return dumpJettyBeans;
     }
+
+    public boolean shouldStrictMode() {
+        return strictMode;
+    }
+
 
     @Override
     public void setupCommand() {

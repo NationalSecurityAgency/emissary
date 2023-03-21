@@ -53,6 +53,8 @@ public class Startup {
     // Failed directories
     protected final Map<String, String> failedLocalDirectories = new ConcurrentHashMap<>();
 
+    protected final Set<String> failedPlaces = ConcurrentHashMap.newKeySet();
+
     // Collection of the places as they finish coming up
     protected final Map<String, String> places = new ConcurrentHashMap<>();
 
@@ -382,8 +384,16 @@ public class Startup {
                     if (p != null) {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
-                        Startup.this.placesToStart.remove(thePlaceLocation);
-                        logger.debug("Giving up on {}", thePlaceLocation);
+
+                        if (Boolean.parseBoolean(System.getProperty("strict.mode"))) {
+                            logger.error("{} failed to start!", thePlaceLocation);
+                            Startup.this.failedPlaces.add(thePlaceLocation);
+                            Startup.this.placesToStart.remove(thePlaceLocation);
+                        } else {
+                            Startup.this.placesToStart.remove(thePlaceLocation);
+                            logger.debug("Giving up on {}", thePlaceLocation);
+                        }
+
                     }
 
                 }
@@ -413,6 +423,21 @@ public class Startup {
             numPlacesFound = this.places.size();
 
             if (numPlacesFound >= numPlacesExpected) {
+
+                if (Boolean.parseBoolean(System.getProperty("strict.mode"))) {
+                    // if (System.getProperty("strict.mode").equals("true")) {
+                    if (this.failedPlaces.size() >= 1) {
+                        StringBuilder failedPlaceList = new StringBuilder();
+                        failedPlaceList.append("The following places have failed to start: \n");
+                        for (String s : this.failedPlaces) {
+                            failedPlaceList.append(s + "\n");
+                        }
+                        logger.error(failedPlaceList.toString());
+                        logger.error(("Server shutting down"));
+                        System.exit(1);
+                    }
+                }
+
                 // normal termination of the loop
                 logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
                 break;
