@@ -18,6 +18,8 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
 
     public static final String COMMAND_NAME = "MonitorCommand";
 
+    private final Object lock = new Object();
+
     @Parameter(names = {"--mon"}, description = "runs the agents command in monitor mode, executing every 30 seconds by default")
     private boolean monitor = false;
 
@@ -79,12 +81,12 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
             try {
                 String endpoint = buildEndpoint(hostAndPort);
                 T response = sendRequest(client, endpoint);
-                synchronized (entity) {
+                synchronized (lock) {
                     entity.append(response);
                 }
             } catch (Exception e) {
-                LOG.error("Problem hitting agents endpoint: " + hostAndPort + "\n" + e.getMessage());
-                synchronized (entity) {
+                LOG.error("Problem hitting agents endpoint: {}\n{}", hostAndPort, e.getMessage());
+                synchronized (lock) {
                     entity.addError(e.getMessage());
                 }
             }
