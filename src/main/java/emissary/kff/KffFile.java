@@ -1,5 +1,6 @@
 package emissary.kff;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,8 +259,7 @@ public class KffFile implements KffFilter {
 
         for (int i = 1; i < args.length; i++) {
             try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
+                byte[] buffer = IOUtils.toByteArray(is);
 
                 KffResult r = kff.check(args[i], buffer);
                 System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());

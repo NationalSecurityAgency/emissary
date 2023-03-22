@@ -1,6 +1,7 @@
 package emissary.util;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -117,14 +118,13 @@ public class Hexl {
             return;
         }
 
-        byte[] theContent = null;
+        byte[] theContent;
 
         for (int i = 0; i < argv.length; i++) {
 
             try (InputStream theFile = Files.newInputStream(Paths.get(argv[i]));
                     DataInputStream theStream = new DataInputStream(theFile)) {
-                theContent = new byte[theStream.available()];
-                theStream.readFully(theContent);
+                theContent = IOUtils.toByteArray(theStream);
             } catch (IOException e) {
                 System.err.println("Error reading from " + argv[i]);
                 continue;

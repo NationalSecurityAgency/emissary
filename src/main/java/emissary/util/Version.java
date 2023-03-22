@@ -3,6 +3,8 @@ package emissary.util;
 import emissary.config.ConfigUtil;
 import emissary.util.io.ResourceReader;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -39,8 +41,7 @@ public final class Version {
             // System.out.println("Reading " + rez);
             rstream = new ResourceReader().getResourceAsStream(rez);
             if (rstream != null) {
-                byte[] data = new byte[rstream.available()];
-                rstream.read(data, 0, data.length);
+                byte[] data = IOUtils.toByteArray(rstream);
                 String sdata = new String(data);
                 String[] lines = sdata.split("[\r\n]+");
                 if (lines != null) {
