@@ -424,18 +424,18 @@ public class Startup {
 
             if (numPlacesFound >= numPlacesExpected) {
 
-                if (Boolean.parseBoolean(System.getProperty("strict.mode"))) {
-                    // if (System.getProperty("strict.mode").equals("true")) {
-                    if (this.failedPlaces.size() >= 1) {
-                        StringBuilder failedPlaceList = new StringBuilder();
-                        failedPlaceList.append("The following places have failed to start: \n");
-                        for (String s : this.failedPlaces) {
-                            failedPlaceList.append(s + "\n");
-                        }
-                        logger.error(failedPlaceList.toString());
-                        logger.error(("Server shutting down"));
-                        System.exit(1);
+                if (Boolean.parseBoolean(System.getProperty("strict.mode")) &&
+                        this.failedPlaces.size() >= 1) {
+
+                    StringBuilder failedPlaceList = new StringBuilder();
+                    failedPlaceList.append("The following places have failed to start: \n");
+                    for (String s : this.failedPlaces) {
+                        failedPlaceList.append(s + "\n");
                     }
+                    logger.error(failedPlaceList.toString());
+                    logger.error(("Server shutting down"));
+                    System.exit(1);
+
                 }
 
                 // normal termination of the loop
