@@ -43,7 +43,7 @@ import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
 
-    protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();;
+    protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();
     protected static final String OS_NAME = System.getProperty("os.name").toUpperCase();
     protected static boolean osIsWindows = (OS_NAME.indexOf("WINDOWS") >= 0);
 
