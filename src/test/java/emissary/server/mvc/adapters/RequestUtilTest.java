@@ -5,7 +5,6 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import javax.servlet.ServletRequest;
 
@@ -36,7 +35,7 @@ class RequestUtilTest extends UnitTest {
     }
 
     @Test
-    void testGetArrayStringParameterValues() {
+    void testGetParameterValues() {
         ServletRequest mockRequest = mock(ServletRequest.class);
         when(mockRequest.getAttribute(anyString())).thenReturn("anAttribute").thenReturn(null).thenReturn(null);
         when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {"parameter1", "parameter2"}).thenReturn(null);
@@ -49,26 +48,6 @@ class RequestUtilTest extends UnitTest {
 
         // no attribute or parameter value returns an empty string array
         assertTrue(Arrays.equals(new String[] {}, RequestUtil.getParameterValues(mockRequest, "param")));
-    }
-
-    @Test
-    void testGetStringListParameterValues() {
-        ServletRequest mockRequest = mock(ServletRequest.class);
-        when(mockRequest.getAttribute(anyString())).thenReturn("anAttribute").thenReturn(null).thenReturn(null);
-        when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {"parameter1", "parameter2"}).thenReturn(null);
-
-        // attribute takes precedence, so return that if one is available
-        assertEquals(Collections.singletonList("anAttribute"), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
-
-        // without an attribute, get the parameter values
-        assertEquals(Arrays.asList("parameter1", "parameter2"), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
-
-        when(mockRequest.getParameterValues(anyString())).thenReturn(new String[] {}).thenReturn(null);
-        // no attribute or empty parameter value returns an empty string list
-        assertEquals(Collections.emptyList(), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
-
-        // check when parameter value is null (throws null pointer ex) that an empty list is returned
-        assertEquals(Collections.emptyList(), RequestUtil.getParameterValuesStringList(mockRequest, "param"));
     }
 
     @Test
