@@ -400,9 +400,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(tld.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
                             } else if (d != null) {
-                                sb.append(datePath(d.getStringParameter("DTG")));
+                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
                             }
                             break;
                         case 'R':
