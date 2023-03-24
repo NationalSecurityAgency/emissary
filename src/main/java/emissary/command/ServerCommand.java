@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
+
 @Parameters(commandDescription = "Start an Emissary jetty server")
 public class ServerCommand extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
@@ -91,11 +93,18 @@ public class ServerCommand extends ServiceCommand {
             flavorMode = getMode().toUpperCase() + "," + getFlavor();
         }
 
+
+        if (shouldStrictMode()) {
+            System.setProperty(STRICT_STARTUP_MODE,
+                    "true");
+        }
+
         // Must maintain insertion order
         Set<String> flavorSet = new LinkedHashSet<>();
         for (String f : flavorMode.split(",")) {
             flavorSet.add(f.toUpperCase());
         }
+
 
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {
             throw new RuntimeException("Can not run a server in both STANDALONE and CLUSTER");

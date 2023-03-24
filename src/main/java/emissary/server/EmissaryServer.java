@@ -74,8 +74,6 @@ public class EmissaryServer {
     /* Default namespace name */
     public static final String DEFAULT_NAMESPACE_NAME = "EmissaryServer";
 
-    public static final String STRICT_STARTUP_MODE = "strict.mode";
-
     // Our logger
     private static final Logger LOG = LoggerFactory.getLogger(EmissaryServer.class);
 
@@ -124,12 +122,6 @@ public class EmissaryServer {
     public Server startServer() {
         // do what StartJetty and then JettyServer did to start
         try {
-
-            if (this.cmd.shouldStrictMode()) {
-                LOG.info("Strict mode activated");
-                System.setProperty(STRICT_STARTUP_MODE, "true");
-            }
-
 
             // needs to be loaded first into the server as it setups up Emissary stuff
             ContextHandler emissaryHandler = buildEmissaryHandler();

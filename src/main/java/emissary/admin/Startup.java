@@ -26,8 +26,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
-import static emissary.server.EmissaryServer.STRICT_STARTUP_MODE;
-
 public class Startup {
 
     public static final int DIRECTORYSTART = 0;
@@ -387,7 +385,7 @@ public class Startup {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
                         logger.error("{} failed to start!", thePlaceLocation);
-                        if (Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE)))
+                        if (this.node.isStartUpMode())
                             Startup.this.failedPlaces.add(thePlaceLocation);
 
                         Startup.this.placesToStart.remove(thePlaceLocation);
@@ -421,7 +419,7 @@ public class Startup {
 
             if (numPlacesFound >= numPlacesExpected) {
 
-                if (Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE)) &&
+                if (this.node.isStartUpMode() &&
                         this.failedPlaces.size() >= 1) {
 
                     StringBuilder failedPlaceList = new StringBuilder();
