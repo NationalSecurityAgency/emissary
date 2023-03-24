@@ -11,6 +11,9 @@ import emissary.util.TimeUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
@@ -603,10 +607,197 @@ class DropOffUtilTest extends UnitTest {
 
     @Test
     void testCleanSpecPath() {
-        assertEquals("/this/is/fine", util.cleanSpecPath("/this/is/fine"));
-        assertEquals("/this/./is/fine", util.cleanSpecPath("/this/../is/fine"));
-        assertEquals("/this/./is/./fine", util.cleanSpecPath("/this/../is/../fine"));
-        assertEquals("/this/./././/./is/fine", util.cleanSpecPath("/this/....../../..//./is/fine"));
+        assertEquals("thisisfine", util.cleanSpecPath("/this/is/fine"));
+        assertEquals("this.isfine", util.cleanSpecPath("/this/../is/fine"));
+        assertEquals("this.is.fine", util.cleanSpecPath("/this/../is/../fine"));
+        assertEquals("this.isfine", util.cleanSpecPath("/this/....../../..//./is/fine"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"20230322160356", "20230322160357", "20230322160999"})
+    void testGetPathFromSpecDTG(String input) {
+        // %G% = DTG multi directory layout yyyy-mm-dd/hh/mi(div)10
+        this.payload.putParameter("DTG", input);
+        String actual = util.getPathFromSpec("%G%", this.payload);
+        assertEquals("2023-03-22/16/00", actual);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {"20230322160", "2023032216.356", "20230322../../../../../160356"})
+    void testGetPathFromSpecDTGFallbackToNow(String input) {
+        this.payload.putParameter("DTG", input);
+        String actual = util.getPathFromSpec("%G%", this.payload);
+        assertNotEquals("2023-03-22/16/00", actual);
+        // defaults to now so check pattern
+        assertTrue(Pattern.compile("\\d{4}-\\d{2}-\\d{2}/\\d{2}/\\d{2}").matcher(actual).matches());
+    }
+
+    @Test
+    void testGetPathFromSpecBestId() {
+        // %B% = ID for the payload depending on type (no -att-)
+        final String spec = "%B%";
+
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        String expected = "this.is.fine";
+        this.payload.putParameter("MY_ID", expected);
+        String actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals(expected, actual);
+        this.payload.putParameter("MY_ID", "this/../../../is/../../.fine");
+        actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetPathFromSpecBestIdWithAtt() {
+        // %b% = ID for the payload depending on type (with -att-)
+        final String spec = "%b%";
+
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        String expected = "this.is.fine-att-1";
+        this.payload.putParameter("MY_ID", "this.is.fine");
+        String actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals(expected, actual);
+        this.payload.putParameter("MY_ID", "this/../../../is/../../.fine");
+        actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetPathFromSpecBestIdRandomUuid() {
+        // %B% = ID for the payload depending on type (no -att-)
+        final String spec = "%B%";
+
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        // random generated uuid
+        this.payload.setFilename("");
+        String actual = util.getPathFromSpec(spec, this.payload);
+        assertTrue(actual.startsWith("ABCD"));
+        assertFalse(actual.endsWith("-att-1"));
+    }
+
+    @Test
+    void testGetPathFromSpecBestIdWithAttRandomUuid() {
+        // %b% = ID for the payload depending on type (with -att-)
+        final String spec = "%b%";
+
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        // random generated uuid
+        this.payload.setFilename("");
+        final IBaseDataObject ibdo = DataObjectFactory.getInstance("This is a test".getBytes(), "testPath-att-1", "UNKNOWN");
+        String actual = util.getPathFromSpec(spec, ibdo, this.payload);
+        assertTrue(actual.startsWith("ABCD"));
+        assertTrue(actual.endsWith("-att-1"));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  "})
+    void testGetPathFromSpecBestIdShortName(String input) {
+        // %B% = ID for the payload depending on type (no -att-)
+        final String spec = "%B%";
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        // shortname
+        this.payload.putParameter("MY_ID", "");
+        String actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals("testPath-att-1", actual);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  "})
+    void testGetPathFromSpecBestIdNoAttShortName(String input) {
+        // %B% = ID for the payload depending on type (no -att-)
+        final String spec = "%b%";
+        this.payload.setFilename("/eat/prefix/testPath-att-1");
+
+        // shortname
+        this.payload.putParameter("MY_ID", "");
+        String actual = util.getPathFromSpec(spec, this.payload);
+        assertEquals("testPath-att-1-att-1", actual);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"UNKNOWN", "TEST_TXT", "SOME-ERROR"})
+    void testGetPathFromSpecFileType(String expected) {
+        this.payload.setFileType(expected);
+        String actual = util.getPathFromSpec("%F%", this.payload);
+        assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    void testGetPathFromSpecFileTypeNone(String input) {
+        this.payload.setFileType(input);
+        String actual = util.getPathFromSpec("%F%", this.payload);
+        assertEquals("NONE", actual);
+    }
+
+    @Test
+    void testGetPathFromSpecFileTypeClean() {
+        this.payload.setFileType("this/is/../../fine");
+        String actual = util.getPathFromSpec("%F%", this.payload);
+        assertEquals("thisis.fine", actual);
+    }
+
+    @Test
+    void testGetPathFromSpecMeta() {
+        // @META{'token'} is to pull the named KEY from the MetaData
+        final String key = "testing";
+        final String spec = "@META{'" + key + "'}";
+
+        this.payload.putParameter(key, "testPath");
+        assertEquals("testPath", util.getPathFromSpec(spec, this.payload));
+
+        this.payload.putParameter(key, "this/is/../../fine");
+        assertEquals("thisis.fine", util.getPathFromSpec(spec, this.payload));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  "})
+    void testGetPathFromSpecMetaNoVal(String input) {
+        // @META{'token'} is to pull the named KEY from the MetaData
+        this.payload.putParameter("testing", null);
+        assertEquals("NO-testing", util.getPathFromSpec("@META{'testing'}", this.payload));
+    }
+
+    @Test
+    void testGetPathFromSpecTLDMeta() {
+        // @TLD{'token'} is to pull the named KEY from the top level document Metadata
+        final String key = "testing";
+        final String spec = "@TLD{'" + key + "'}";
+        final IBaseDataObject tld = DataObjectFactory.getInstance("This is a test".getBytes(), "testPath", "UNKNOWN");
+
+        tld.putParameter(key, "testPath");
+        this.payload.putParameter(key, "testPath-att-1");
+        assertEquals("testPath", util.getPathFromSpec(spec, this.payload, tld));
+        assertEquals("testPath-att-1", util.getPathFromSpec(spec, this.payload));
+
+        tld.putParameter(key, "this/is/../fine");
+        this.payload.putParameter(key, "this/is/fine");
+        assertEquals("thisis.fine", util.getPathFromSpec(spec, this.payload, tld));
+        assertEquals("thisisfine", util.getPathFromSpec(spec, this.payload));
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  "})
+    void testGetPathFromSpecTLDMetaNoVal(String input) {
+        // @TLD{'token'} is to pull the named KEY from the top level document Metadata
+        final String key = "testing";
+        final String spec = "@TLD{'" + key + "'}";
+        final IBaseDataObject tld = DataObjectFactory.getInstance("This is a test".getBytes(), "testPath", "UNKNOWN");
+
+        tld.putParameter(key, null);
+        this.payload.putParameter(key, "not_empty");
+        assertEquals("NO-" + key, util.getPathFromSpec(spec, this.payload, tld));
+        assertEquals("not_empty", util.getPathFromSpec(spec, this.payload));
     }
 
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {

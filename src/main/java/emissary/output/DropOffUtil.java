@@ -393,9 +393,9 @@ public class DropOffUtil {
                             break;
                         case 'G':
                             if (tld != null) {
-                                sb.append(datePath(cleanSpecPath(tld.getStringParameter("DTG"))));
+                                sb.append(datePath(tld.getStringParameter("DTG")));
                             } else if (d != null) {
-                                sb.append(datePath(cleanSpecPath(d.getStringParameter("DTG"))));
+                                sb.append(datePath(d.getStringParameter("DTG")));
                             }
                             break;
                         case 'R':
@@ -481,7 +481,8 @@ public class DropOffUtil {
     }
 
     protected String cleanSpecPath(@Nullable String token) {
-        return token == null ? null : token.replaceAll("[.]+", ".");
+        token = StringUtils.trimToNull(token);
+        return token == null ? null : token.replaceAll(SEPARATOR, "").replaceAll("[.]+", ".");
     }
 
     /**
@@ -646,14 +647,15 @@ public class DropOffUtil {
      * @return yyyy-mm-dd/hh/(mm%10)
      */
     protected String datePath(@Nullable final String dtg) {
-        if (dtg == null) {
+        if (StringUtils.length(dtg) != 14 || !StringUtils.isNumeric(dtg)) {
+            logger.debug("Date-time group [{}] was not in the expected format yyyymmddhhmmss, defaulting to now", dtg);
             return TimeUtil.getDateAsPath(Instant.now());
         } else {
             return dtg.substring(0, 4) + "-" + // yyyy
                     dtg.substring(4, 6) + "-" + // mm
                     dtg.substring(6, 8) + "/" + // dd
                     dtg.substring(8, 10) + "/" + // HH
-                    dtg.substring(10, 11) + "0"; // M0
+                    dtg.charAt(10) + "0"; // M0
         }
     }
 
