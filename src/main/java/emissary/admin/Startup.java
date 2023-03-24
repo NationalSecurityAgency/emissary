@@ -26,6 +26,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
+import static emissary.server.EmissaryServer.STRICT_STARTUP_MODE;
+
 public class Startup {
 
     public static final int DIRECTORYSTART = 0;
@@ -384,16 +386,11 @@ public class Startup {
                     if (p != null) {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
-
-                        if (Boolean.parseBoolean(System.getProperty("strict.mode"))) {
-                            logger.error("{} failed to start!", thePlaceLocation);
+                        logger.error("{} failed to start!", thePlaceLocation);
+                        if (Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE)))
                             Startup.this.failedPlaces.add(thePlaceLocation);
-                            Startup.this.placesToStart.remove(thePlaceLocation);
-                        } else {
-                            Startup.this.placesToStart.remove(thePlaceLocation);
-                            logger.debug("Giving up on {}", thePlaceLocation);
-                        }
 
+                        Startup.this.placesToStart.remove(thePlaceLocation);
                     }
 
                 }
@@ -424,10 +421,13 @@ public class Startup {
 
             if (numPlacesFound >= numPlacesExpected) {
 
-                if (Boolean.parseBoolean(System.getProperty("strict.mode")) &&
+                if (Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE)) &&
                         this.failedPlaces.size() >= 1) {
 
                     StringBuilder failedPlaceList = new StringBuilder();
+                    failedPlaceList.append(
+                            "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                                    "run server start command without the --strict flag.\n");
                     failedPlaceList.append("The following places have failed to start: \n");
                     for (String s : this.failedPlaces) {
                         failedPlaceList.append(s + "\n");

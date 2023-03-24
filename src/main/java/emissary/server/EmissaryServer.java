@@ -74,6 +74,8 @@ public class EmissaryServer {
     /* Default namespace name */
     public static final String DEFAULT_NAMESPACE_NAME = "EmissaryServer";
 
+    public static final String STRICT_STARTUP_MODE = "strict.mode";
+
     // Our logger
     private static final Logger LOG = LoggerFactory.getLogger(EmissaryServer.class);
 
@@ -125,7 +127,7 @@ public class EmissaryServer {
 
             if (this.cmd.shouldStrictMode()) {
                 LOG.info("Strict mode activated");
-                System.setProperty("strict.mode", "true");
+                System.setProperty(STRICT_STARTUP_MODE, "true");
             }
 
 
