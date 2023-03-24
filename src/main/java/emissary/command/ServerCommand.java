@@ -68,6 +68,11 @@ public class ServerCommand extends ServiceCommand {
         return dumpJettyBeans;
     }
 
+    /**
+     * If strictMode is set to true, the server will shut down if a Place fails to start
+     * 
+     * @return strictMode
+     */
     public boolean shouldStrictMode() {
         return strictMode;
     }
