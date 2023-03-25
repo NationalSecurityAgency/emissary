@@ -974,7 +974,7 @@ public class Executrix {
         c = c.replaceAll("<OUTPUT_NAME>", tmpNames[OUT]);
 
         final String[] cmd;
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (System.getProperty("os.name").startsWith("Windows")) {
             final int colPos = tmpNames[DIR].indexOf(":");
             if (colPos > -1) {
                 // Naked Windows command shell
