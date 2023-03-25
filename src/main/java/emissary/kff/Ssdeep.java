@@ -2,6 +2,7 @@ package emissary.kff;
 
 import emissary.core.channels.SeekableByteChannelFactory;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -712,8 +713,7 @@ public final class Ssdeep {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {
             try (final InputStream is = Files.newInputStream(Paths.get(f))) {
-                final byte[] buffer = new byte[is.available()];
-                is.read(buffer);
+                final byte[] buffer = IOUtils.toByteArray(is);
                 // output format matches the original ssdeep program
                 System.out.println(ss.fuzzy_hash(buffer) + ",\"" + f + "\"");
             }

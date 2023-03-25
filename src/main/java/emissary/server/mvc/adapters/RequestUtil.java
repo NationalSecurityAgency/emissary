@@ -252,4 +252,20 @@ public class RequestUtil {
         }
         return sanitizedParameters.toArray(new String[0]);
     }
+
+    /**
+     * Sanitize request parameters to remove CR/LF values
+     *
+     * @param parameters the List String to sanitize
+     * @return a new List String object with any CR/LF characters removed
+     */
+    public static List<String> sanitizeParametersStringList(List<String> parameters) {
+        List<String> sanitizedParameters = new ArrayList<>();
+        if (null != parameters) {
+            for (String parameter : parameters) {
+                sanitizedParameters.add(sanitizeParameter(parameter));
+            }
+        }
+        return sanitizedParameters;
+    }
 }

@@ -6,6 +6,7 @@ import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,8 +56,7 @@ public abstract class IdentificationTest extends UnitTest {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
-            byte[] data = new byte[doc.available()];
-            doc.read(data);
+            byte[] data = IOUtils.toByteArray(doc);
             String expectedAnswer = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
             IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
             processPreHook(payload, resource);

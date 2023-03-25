@@ -1,5 +1,6 @@
 package emissary.kff;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * KffFile provides access to the known file filter data. The NIST/NSRL data is a CSV file with other information. It
@@ -27,7 +28,7 @@ import javax.annotation.Nullable;
  * HotSpot), so try using just RandomAccessFile instead.
  */
 public class KffFile implements KffFilter {
-    private Logger logger;
+    private final Logger logger;
 
     /** File containing SHA-1/CRC32 results of known files */
     protected RandomAccessFile knownFile;
@@ -83,15 +84,10 @@ public class KffFile implements KffFilter {
         // Open file in read-only mode
         knownFile = new RandomAccessFile(filename, "r");
 
-        // Map the entire file in read-only mode
-        // FileChannel channel = knownFile.getChannel();
-        // mappedBuf = channel.map(FileChannel.MapMode.READ_ONLY,
-        // 0, knownFile.length());
-
-        // Initial high value for binary search is largest index
+        // Initial high value for binary search is the largest index
         bSearchInitHigh = ((int) knownFile.length() / recordLength) - 1;
 
-        logger.debug("KFF File " + filename + " has " + (bSearchInitHigh + 1) + " records");
+        logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
     }
 
     /**
@@ -143,42 +139,34 @@ public class KffFile implements KffFilter {
      * @param crc Result of CRC calculation
      * @return true if the record is in the list, false if it isn't
      */
-    private boolean binaryFileSearch(@Nullable byte[] hash, long crc) {
-        if (hash == null && myPreferredAlgorithm != null) {
-            logger.error("Unable to get digest computation for " + myPreferredAlgorithm);
-            return false;
-        }
+    private boolean binaryFileSearch(@Nonnull byte[] hash, long crc) {
 
         // Initialize indexes for binary search
         int low = 0;
         int high = bSearchInitHigh;
 
         /* Buffer to hold a record */
-        byte[] record = new byte[recordLength];
+        byte[] rec = new byte[recordLength];
 
         // Search until the indexes cross
         while (low <= high) {
             // Calculate the midpoint
             int mid = (low + high) >> 1;
 
-            // Multiply the index by the record length to get the buffer
-            // position, and read the record
-            // mappedBuf.position(record.length * mid);
-            // mappedBuf.get(record);
             try {
-                knownFile.seek(record.length * (long) mid);
-                int count = knownFile.read(record);
-                if (count != record.length) {
-                    logger.warn("Short read on KffFile at " + (record.length * mid) + " read " + count + " expected " + record.length);
+                knownFile.seek(rec.length * (long) mid);
+                int count = knownFile.read(rec);
+                if (count != rec.length) {
+                    logger.warn("Short read on KffFile at {} read {} expected {}", (rec.length * mid), count, rec.length);
                     return false;
                 }
             } catch (IOException x) {
-                logger.warn("Exception reading KffFile: " + x);
+                logger.warn("Exception reading KffFile: {}", x.getMessage());
                 return false;
             }
 
             // Compare the record with the target. Adjust the indexes accordingly.
-            int c = compare(record, hash, crc);
+            int c = compare(rec, hash, crc);
             if (c < 0) {
                 high = mid - 1;
             } else if (c > 0) {
@@ -195,16 +183,13 @@ public class KffFile implements KffFilter {
     /**
      * Compares the given hash/crc to the one in the record.
      *
-     * @param record bytes from the kff binary file, one record long
+     * @param rec bytes from the kff binary file, one record long
      * @param hash HASH to compare to record
      * @param crc CRC to compare to record
      * @return &lt;0 if given value is less than record, &gt;0 if given value is greater than record, 0 if they match
      */
-    private int compare(byte[] record, byte[] hash, long crc) {
+    private int compare(@Nonnull byte[] rec, @Nonnull byte[] hash, long crc) {
         int i;
-
-        // logger.debug("record.length " + record.length +
-        // / " hash.length " + hash.length);
 
         // Compare the HASHs first. We can't compare the bytes directly
         // because a Java byte is signed and may generate the wrong
@@ -212,7 +197,7 @@ public class KffFile implements KffFilter {
         // sign bits to get proper results.
         for (i = 0; i < hash.length; i++) {
             int ihash = hash[i] & 0xff;
-            int irec = record[i] & 0xff;
+            int irec = rec[i] & 0xff;
             if (ihash < irec) {
                 return -1;
             } else if (ihash > irec) {
@@ -222,9 +207,9 @@ public class KffFile implements KffFilter {
 
         // If the HASHs match, check the CRCs.
         if (crc != -1L) {
-            for (int j = 24; i < record.length; i++, j -= 8) {
+            for (int j = 24; i < rec.length; i++, j -= 8) {
                 int icrc = ((int) crc >> j) & 0xff;
-                int irec = record[i] & 0xff;
+                int irec = rec[i] & 0xff;
                 if (icrc < irec) {
                     return -1;
                 } else if (icrc > irec) {
@@ -239,10 +224,10 @@ public class KffFile implements KffFilter {
     public boolean check(String fname, ChecksumResults csum) throws Exception {
         byte[] hash = csum.getHash(myPreferredAlgorithm);
         if (hash == null) {
-            logger.warn("Filter cannot be used, " + myPreferredAlgorithm + " not computed on " + fname);
+            logger.warn("Filter cannot be used, {} not computed on {}", myPreferredAlgorithm, fname);
             return false;
         }
-        return binaryFileSearch(csum.getHash(myPreferredAlgorithm), csum.getCrc());
+        return binaryFileSearch(hash, csum.getCrc());
     }
 
     public static void main(String[] args) throws Exception {
@@ -258,8 +243,7 @@ public class KffFile implements KffFilter {
 
         for (int i = 1; i < args.length; i++) {
             try (InputStream is = Files.newInputStream(Paths.get(args[i]))) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
+                byte[] buffer = IOUtils.toByteArray(is);
 
                 KffResult r = kff.check(args[i], buffer);
                 System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());

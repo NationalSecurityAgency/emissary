@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,8 +55,7 @@ class KffDataObjectHandlerTest extends UnitTest {
     public void setUp() throws Exception {
         kff = new KffDataObjectHandler();
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
-            byte[] data = new byte[doc.available()];
-            doc.read(data);
+            byte[] data = IOUtils.toByteArray(doc);
             String defaultCurrentForm = "test";
             payload = DataObjectFactory.getInstance(data, resource, defaultCurrentForm);
         } catch (IOException e) {
