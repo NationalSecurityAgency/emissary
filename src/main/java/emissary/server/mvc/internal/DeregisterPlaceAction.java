@@ -43,9 +43,10 @@ public class DeregisterPlaceAction {
     @Produces(MediaType.TEXT_PLAIN)
     public Response deregisterPlace(@FormParam(TARGET_DIRECTORY) String targetDir, @FormParam(ADD_KEY) List<String> dirAddKeys) {
         String cleanTargetDirectory = RequestUtil.sanitizeParameter(targetDir);
-        if (StringUtils.isBlank(cleanTargetDirectory) || dirAddKeys.isEmpty()) {
+        List<String> cleanDirAddKeys = RequestUtil.sanitizeParametersStringList(dirAddKeys);
+        if (StringUtils.isBlank(cleanTargetDirectory) || cleanDirAddKeys.isEmpty()) {
             return Response.serverError().entity(
-                    "Bad params: " + TARGET_DIRECTORY + " - " + cleanTargetDirectory + ", or " + ADD_KEY + " - " + dirAddKeys).build();
+                    "Bad params: " + TARGET_DIRECTORY + " - " + cleanTargetDirectory + ", or " + ADD_KEY + " - " + cleanDirAddKeys).build();
         }
 
         final IRemoteDirectory directory = new IRemoteDirectory.Lookup().getLocalDirectory(cleanTargetDirectory);
@@ -56,11 +57,11 @@ public class DeregisterPlaceAction {
 
         MDC.put(MDCConstants.SERVICE_LOCATION, KeyManipulator.getServiceLocation(directory.getKey()));
         try {
-            int numRemoved = directory.irdRemovePlaces(dirAddKeys, false);
+            int numRemoved = directory.irdRemovePlaces(cleanDirAddKeys, false);
             // TODO should we also try and unbind the entry from the Namespace?
             // old success return from DeregisterPlaceWorker
             // return WorkerStatus.WORKER_SUCCESS;
-            return Response.ok().entity("Successfully removed " + numRemoved + " place(s) with keys: " + dirAddKeys).build();
+            return Response.ok().entity("Successfully removed " + numRemoved + " place(s) with keys: " + cleanDirAddKeys).build();
         } finally {
             MDC.remove(MDCConstants.SERVICE_LOCATION);
         }

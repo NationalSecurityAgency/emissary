@@ -5,8 +5,10 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 import javax.servlet.ServletRequest;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,7 +16,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RequestUtilTest extends UnitTest {
+class RequestUtilTest extends UnitTest {
 
     @Test
     void testGetParameter() {
@@ -58,7 +60,7 @@ public class RequestUtilTest extends UnitTest {
     }
 
     @Test
-    void testSanitizeParameters() {
+    void testSanitizeStringArrayParameters() {
         String testOk = "this_is_fine";
         String testBad = "this\ris\r\nnot\nfine\n\r";
         String[] testStrings = new String[] {testOk, null, testBad};
@@ -68,6 +70,20 @@ public class RequestUtilTest extends UnitTest {
         assertNull(resultStrings[1]);
         assertEquals("this_is__not_fine__", resultStrings[2]);
 
-        assertTrue(Arrays.equals(new String[0], RequestUtil.sanitizeParameters(null)));
+        assertArrayEquals(new String[0], RequestUtil.sanitizeParameters(null));
+    }
+
+    @Test
+    void testSanitizeStringListParameters() {
+        String testOk = "this_is_fine";
+        String testBad = "this\ris\r\nnot\nfine\n\r";
+        List<String> testStrings = Arrays.asList(testOk, null, testBad);
+
+        List<String> resultStrings = RequestUtil.sanitizeParametersStringList(testStrings);
+        assertEquals(testOk, resultStrings.get(0));
+        assertNull(resultStrings.get(1));
+        assertEquals("this_is__not_fine__", resultStrings.get(2));
+
+        assertTrue(RequestUtil.sanitizeParametersStringList(null).isEmpty());
     }
 }
