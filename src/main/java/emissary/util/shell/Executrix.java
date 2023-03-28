@@ -8,6 +8,7 @@ import emissary.util.io.FileManipulator;
 import com.google.common.primitives.Ints;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -979,7 +980,11 @@ public class Executrix {
             }
         } else {
             // Run the command in shell limiting the core file size to 0 and the specified vm size
-            cmd = new String[] {"/bin/sh", "-c", "ulimit -c 0; ulimit -v " + vmSzLimit + "; " + "cd " + tmpNames[DIR] + "; " + c};
+            String ulimitv = "";
+            if (!SystemUtils.IS_OS_MAC) {
+                ulimitv = "ulimit -v " + vmSzLimit + "; ";
+            }
+            cmd = new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames[DIR] + "; " + c};
         }
         return cmd;
     }
