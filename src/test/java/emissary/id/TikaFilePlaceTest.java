@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+@Deprecated
 class TikaFilePlaceTest extends IdentificationTest {
 
     public static Stream<? extends Arguments> data() {
