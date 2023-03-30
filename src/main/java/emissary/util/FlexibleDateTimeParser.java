@@ -119,6 +119,10 @@ public class FlexibleDateTimeParser {
         }
 
         for (DateTimeFormatter formatter : formats) {
+            if (formatter == null) {
+                continue;
+            }
+
             try {
                 // try for a zoned date (has timezone), local date time (no time zone), or just a local date (no time)
                 TemporalAccessor accessor = formatter.parseBest(cleanedDateString, ZonedDateTime::from, LocalDateTime::from, LocalDate::from);
@@ -132,7 +136,7 @@ public class FlexibleDateTimeParser {
 
             } catch (NullPointerException | IllegalArgumentException | DateTimeParseException e) {
                 // Ignore b/c failures are expected -> set to trace otherwise will be noisy
-                logger.trace("Error parsing date {} with format {}", dateString, formatter == null ? null : formatter.toString());
+                logger.trace("Error parsing date {} with format {}", dateString, formatter);
             }
         }
         return null;

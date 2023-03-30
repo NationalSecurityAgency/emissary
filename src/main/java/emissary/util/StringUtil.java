@@ -16,9 +16,6 @@ public class StringUtil {
             char c = in.charAt(i);
             if (!(c > 0x1F && c < 0xD800)) { // for performance
                 if (!Verifier.isXMLCharacter(c)) {
-                    if (i == len) {
-                        return in.substring(0, i) + "/0x" + Integer.toHexString(c);
-                    }
                     return in.substring(0, i) + "/0x" + Integer.toHexString(c) + XMLcorrect(in.substring(i + 1));
                 }
             }
