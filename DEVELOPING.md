@@ -418,6 +418,12 @@ mvn clean verify -Dcode-quality
 
 Then open target/site/jacoco/index.html in your browser to see code coverage.
 
+### Find duplicate and conflicting classes and resources on the classpath
+```
+mvn duplicate-finder:check
+```
+Then open ./target/duplicate-finder-result.xml to view results
+
 ### Install
 
 The *install* task runs after *verify* and copies any included

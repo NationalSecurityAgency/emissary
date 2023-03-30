@@ -975,6 +975,46 @@
           </configuration>
         </plugin>
         <plugin>
+          <groupId>org.basepom.maven</groupId>
+          <artifactId>duplicate-finder-maven-plugin</artifactId>
+          <version>1.5.1</version>
+          <configuration>
+            <printEqualFiles>false</printEqualFiles>
+            <failBuildInCaseOfDifferentContentConflict>false</failBuildInCaseOfDifferentContentConflict>
+            <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
+            <failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
+            <checkCompileClasspath>true</checkCompileClasspath>
+            <checkRuntimeClasspath>true</checkRuntimeClasspath>
+            <checkTestClasspath>true</checkTestClasspath>
+            <skip>false</skip>
+            <quiet>false</quiet>
+            <preferLocal>true</preferLocal>
+            <useResultFile>true</useResultFile>
+            <resultFileMinClasspathCount>2</resultFileMinClasspathCount>
+            <resultFile>${project.build.directory}/duplicate-finder-result.xml</resultFile>
+            <!-- Version 1.1.1+ -->
+            <includeBootClasspath>false</includeBootClasspath>
+            <bootClasspathProperty>sun.boot.class.path</bootClasspathProperty>
+            <useDefaultResourceIgnoreList>true</useDefaultResourceIgnoreList>
+            <!-- Version 1.1.1+ -->
+            <!-- Version 1.2.0+ -->
+            <includePomProjects>false</includePomProjects>
+            <!-- Version 1.2.0+ -->
+            <!-- Version 1.2.1+ -->
+            <useDefaultResourceIgnoreList>true</useDefaultResourceIgnoreList>
+            <!-- Version 1.2.1+ -->
+          </configuration>
+          <executions>
+            <execution>
+              <id>default</id>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>3.3.0</version>
