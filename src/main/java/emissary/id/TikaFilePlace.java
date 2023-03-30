@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Perform file identification tests using the configured TIKA_SIGNATURE_FILE to drive the identification process
+ * @deprecated Perform file identification tests using the configured TIKA_SIGNATURE_FILE to drive the identification
+ *             process
  */
+@Deprecated
 public class TikaFilePlace extends emissary.id.IdPlace {
     private static final String DEFAULT_TIKA_SIGNATURE_FILE = "TikaMagic.xml";
     private static final String APPLICATION = "application";
