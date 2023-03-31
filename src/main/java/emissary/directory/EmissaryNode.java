@@ -58,7 +58,7 @@ public class EmissaryNode {
     /** Property name that can be used to disable stdout/stderr redirection */
     public static final String DISABLE_LOG_REDIRECTION_PROPERTY = "emissary.log.redirection.disabled";
 
-    /** Porperty that determines if server will shut down in the event a place fails to start */
+    /** Property that determines if server will shut down in the event a place fails to start */
     public static final String STRICT_STARTUP_MODE = "strict.mode";
 
     // types are feeder, worker, standalone
@@ -74,15 +74,7 @@ public class EmissaryNode {
     protected boolean nodeNameIsDefault = false;
     protected String nodeServiceType = null;
 
-    public boolean isStartUpMode() {
-        return startUpMode;
-    }
-
-    public void setStartUpMode(boolean startUpMode) {
-        this.startUpMode = startUpMode;
-    }
-
-    protected boolean startUpMode = false;
+    protected boolean strictStartupMode = false;
 
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
@@ -106,7 +98,7 @@ public class EmissaryNode {
         this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase().replace(' ', '_');
         this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase();
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
-        this.startUpMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
+        this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }
 
     /**
@@ -174,6 +166,14 @@ public class EmissaryNode {
 
     private Object getNodeMode() {
         return nodeMode;
+    }
+
+    public boolean isStrictStartupMode() {
+        return strictStartupMode;
+    }
+
+    public void setStrictStartupMode(boolean strictStartupMode) {
+        this.strictStartupMode = strictStartupMode;
     }
 
     @Override

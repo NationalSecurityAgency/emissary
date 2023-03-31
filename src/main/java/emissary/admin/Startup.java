@@ -385,9 +385,7 @@ public class Startup {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
                         logger.error("{} failed to start!", thePlaceLocation);
-                        if (this.node.isStartUpMode())
-                            Startup.this.failedPlaces.add(thePlaceLocation);
-
+                        Startup.this.failedPlaces.add(thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
                     }
 
@@ -419,22 +417,22 @@ public class Startup {
 
             if (numPlacesFound >= numPlacesExpected) {
 
-                if (this.node.isStartUpMode() &&
-                        this.failedPlaces.size() >= 1) {
-
+                if (this.failedPlaces.size() >= 1) {
                     StringBuilder failedPlaceList = new StringBuilder();
-                    failedPlaceList.append(
-                            "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
-                                    "run server start command without the --strict flag.\n");
-                    failedPlaceList.append("The following places have failed to start: \n");
+                    failedPlaceList.append("The following places have failed to start: ");
                     for (String s : this.failedPlaces) {
                         failedPlaceList.append(s + "\n");
                     }
-                    logger.error(failedPlaceList.toString());
-                    logger.error(("Server shutting down"));
-                    System.exit(1);
-
+                    logger.warn(failedPlaceList.toString());
+                    if (this.node.isStrictStartupMode()) {
+                        logger.error(
+                                "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                                        "run server start command without the --strict flag");
+                        logger.error(("Server shutting down"));
+                        System.exit(1);
+                    }
                 }
+
 
                 // normal termination of the loop
                 logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
