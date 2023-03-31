@@ -421,7 +421,7 @@ public class Startup {
                     StringBuilder failedPlaceList = new StringBuilder();
                     failedPlaceList.append("The following places have failed to start: ");
                     for (String s : this.failedPlaces) {
-                        failedPlaceList.append(s + "\n");
+                        failedPlaceList.append(s + "; ");
                     }
                     logger.warn(failedPlaceList.toString());
                     if (this.node.isStrictStartupMode()) {
