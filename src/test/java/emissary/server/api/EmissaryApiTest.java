@@ -2,6 +2,7 @@ package emissary.server.api;
 
 import emissary.client.response.Agent;
 import emissary.client.response.AgentsResponseEntity;
+import emissary.client.response.DirectoryResponseEntity;
 import emissary.client.response.MapResponseEntity;
 import emissary.client.response.PlacesResponseEntity;
 import emissary.command.ServerCommand;
@@ -27,9 +28,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -208,6 +212,59 @@ class EmissaryApiTest extends EndpointTestBase {
             assertTrue(entity.contains("export HOST=\"localhost\""));
             assertTrue(entity.contains("export PORT=\"8001\""));
             assertTrue(entity.contains("export SCHEME=\"https\""));
+        }
+    }
+
+    @Test
+    void dirPlaceNotStarted() {
+        try (Response response = target("directories").request().get()) {
+            assertEquals(200, response.getStatus());
+            DirectoryResponseEntity entity = response.readEntity(DirectoryResponseEntity.class);
+            assertTrue(entity.getErrors().contains("Problem finding the directory in the namespace: Not found: DirectoryPlace"));
+        }
+    }
+
+    @Test
+    void directories() throws IOException {
+        // expected entryKeys
+        ArrayList<String> expEntryKeys = new ArrayList<>(Arrays.asList(
+                "DUMDUM.THATPLACE.ID.http://host.domain.com:8001/thePlace",
+                "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:8001/DirectoryPlace",
+                "FAKE.THISPLACE.ID.http://host.domain.com:8001/thePlace"));
+        // expected DataIDs
+        ArrayList<String> expDataIds = new ArrayList<>(Arrays.asList(
+                "DUMDUM::ID",
+                "EMISSARY_DIRECTORY_SERVICES::STUDY",
+                "FAKE::ID"));
+
+        // set-up mock DirectoryPlace
+        String loc = "http://localhost:8001/DirectoryPlace";
+        final List<String> keys = new ArrayList<>();
+        keys.add("FAKE.THISPLACE.ID.http://host.domain.com:8001/thePlace$5050");
+        keys.add("DUMDUM.THATPLACE.ID.http://host.domain.com:8001/thePlace$5050");
+        DirectoryPlace mockDir = spy(new DirectoryPlace(loc, new EmissaryNode()));
+        mockDir.addPlaces(keys);
+        Namespace.bind(loc, mockDir);
+
+        try (Response response = target("directories").request().get()) {
+            assertEquals(200, response.getStatus());
+            DirectoryResponseEntity entity = response.readEntity(DirectoryResponseEntity.class);
+            assertTrue(entity.getErrors().isEmpty());
+            assertFalse(entity.getLocal().getEntries().isEmpty());
+            assertEquals("EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:8001/DirectoryPlace", entity.getLocal().getDirectoryPlace());
+            assertEquals(3, entity.getLocal().getEntries().size());
+
+            ArrayList<String> foundEntryKeys = new ArrayList<>();
+            ArrayList<String> foundDataIds = new ArrayList<>();
+            entity.getLocal().getEntries().forEach(entry -> {
+                foundEntryKeys.add(entry.getEntry());
+                foundDataIds.add(entry.getDataId());
+            });
+            assertEquals(expEntryKeys, foundEntryKeys);
+            assertEquals(expDataIds, foundDataIds);
+        } finally {
+            Namespace.unbind("DirectoryPlace");
+            mockDir.shutDown();
         }
     }
 
