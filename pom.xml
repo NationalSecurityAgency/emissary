@@ -715,7 +715,6 @@
             <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
             <configFile>${eclipseFormatterStyle}</configFile>
             <lineEnding>LF</lineEnding>
-            <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
             <skipCssFormatting>true</skipCssFormatting>
             <skipHtmlFormatting>true</skipHtmlFormatting>
             <skipJsFormatting>true</skipJsFormatting>
