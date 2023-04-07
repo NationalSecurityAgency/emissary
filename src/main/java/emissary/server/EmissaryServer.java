@@ -122,6 +122,7 @@ public class EmissaryServer {
     public Server startServer() {
         // do what StartJetty and then JettyServer did to start
         try {
+            // Resource.setDefaultUseCaches(false);
 
             // needs to be loaded first into the server as it setups up Emissary stuff
             ContextHandler emissaryHandler = buildEmissaryHandler();
