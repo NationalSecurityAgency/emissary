@@ -40,7 +40,7 @@
     <dep.guava.version>31.1-jre</dep.guava.version>
     <dep.httpclient.version>4.5.13</dep.httpclient.version>
     <dep.httpcore.version>4.4.15</dep.httpcore.version>
-    <dep.impsort.version>1.6.2</dep.impsort.version>
+    <dep.impsort.version>1.8.0</dep.impsort.version>
     <dep.jackson.version>2.13.4</dep.jackson.version>
     <!-- jersey and tika provide; converge on latest -->
     <dep.jakarta.xml.bind-api.version>2.3.3</dep.jakarta.xml.bind-api.version>
