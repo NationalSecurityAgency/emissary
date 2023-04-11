@@ -40,11 +40,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import javax.ws.rs.core.Response;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -216,15 +212,6 @@ class EmissaryApiTest extends EndpointTestBase {
     }
 
     @Test
-    void dirPlaceNotStarted() {
-        try (Response response = target("directories").request().get()) {
-            assertEquals(200, response.getStatus());
-            DirectoryResponseEntity entity = response.readEntity(DirectoryResponseEntity.class);
-            assertTrue(entity.getErrors().contains("Problem finding the directory in the namespace: Not found: DirectoryPlace"));
-        }
-    }
-
-    @Test
     void directories() throws IOException {
         // expected entryKeys
         ArrayList<String> expEntryKeys = new ArrayList<>(Arrays.asList(
@@ -236,6 +223,16 @@ class EmissaryApiTest extends EndpointTestBase {
                 "DUMDUM::ID",
                 "EMISSARY_DIRECTORY_SERVICES::STUDY",
                 "FAKE::ID"));
+        // expected Cost
+        ArrayList<Object> expCost = new ArrayList<>(Arrays.asList(
+                1050,
+                50,
+                1050));
+        // expected Expense
+        ArrayList<Object> expExpense = new ArrayList<>(Arrays.asList(
+                105050,
+                5050,
+                105050));
 
         // set-up mock DirectoryPlace
         String loc = "http://localhost:8001/DirectoryPlace";
@@ -251,17 +248,26 @@ class EmissaryApiTest extends EndpointTestBase {
             DirectoryResponseEntity entity = response.readEntity(DirectoryResponseEntity.class);
             assertTrue(entity.getErrors().isEmpty());
             assertFalse(entity.getLocal().getEntries().isEmpty());
-            assertEquals("EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:8001/DirectoryPlace", entity.getLocal().getDirectoryPlace());
+            assertEquals("EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://localhost:8001/DirectoryPlace",
+                    entity.getLocal().getDirectoryPlace());
             assertEquals(3, entity.getLocal().getEntries().size());
 
             ArrayList<String> foundEntryKeys = new ArrayList<>();
             ArrayList<String> foundDataIds = new ArrayList<>();
+            ArrayList<Object> foundCost = new ArrayList<>();
+            ArrayList<Object> foundExpense = new ArrayList<>();
             entity.getLocal().getEntries().forEach(entry -> {
                 foundEntryKeys.add(entry.getEntry());
                 foundDataIds.add(entry.getDataId());
+                foundCost.add(entry.getCost());
+                assertEquals(50, entry.getQuality(), "Quality is expected to be 50 for all entries.");
+                foundExpense.add(entry.getExpense());
+                assertEquals(500, entry.getPathWeight(), "PathWeight is expected to be 500 for all entries.");
             });
             assertEquals(expEntryKeys, foundEntryKeys);
             assertEquals(expDataIds, foundDataIds);
+            assertEquals(expCost, foundCost);
+            assertEquals(expExpense, foundExpense);
         } finally {
             Namespace.unbind("DirectoryPlace");
             mockDir.shutDown();

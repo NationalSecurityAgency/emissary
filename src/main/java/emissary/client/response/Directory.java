@@ -1,5 +1,7 @@
 package emissary.client.response;
 
+import emissary.directory.DirectoryEntry;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -13,16 +15,57 @@ public class Directory implements Comparable<Directory>, Serializable {
 
     private static final long serialVersionUID = 2428511052308449193L;
 
-    @XmlElement(name = "dataId")
-    private String dataId;
+    public static final long NOW = System.currentTimeMillis();
+
+    private DirectoryEntry directoryEntry;
 
     @XmlElement(name = "entry")
     private String entry;
 
+    @XmlElement(name = "dataId")
+    private String dataId;
+
+    @XmlElement(name = "cost")
+    private int cost;
+
+    @XmlElement(name = "quality")
+    private int quality;
+
+    @XmlElement(name = "expense")
+    private int expense;
+
+    @XmlElement(name = "pathWeight")
+    private int pathWeight;
+
     public Directory() {}
 
-    public Directory(String dataId, String entry) {
-        this.dataId = dataId;
+    public Directory(DirectoryEntry directoryEntry) {
+        this.directoryEntry = directoryEntry;
+        setUpEntryInfo();
+    }
+
+    private void setUpEntryInfo() {
+        entry = directoryEntry.getKey();
+        dataId = directoryEntry.getDataID();
+        cost = directoryEntry.getCost();
+        quality = directoryEntry.getQuality();
+        expense = directoryEntry.getExpense();
+        pathWeight = directoryEntry.getPathWeight();
+    }
+
+    public DirectoryEntry getDirectoryEntry() {
+        return directoryEntry;
+    }
+
+    public void setDirectoryEntry(DirectoryEntry directoryEntry) {
+        this.directoryEntry = directoryEntry;
+    }
+
+    public String getEntry() {
+        return entry;
+    }
+
+    public void setEntry(String entry) {
         this.entry = entry;
     }
 
@@ -34,12 +77,36 @@ public class Directory implements Comparable<Directory>, Serializable {
         this.dataId = dataId;
     }
 
-    public String getEntry() {
-        return entry;
+    public int getCost() {
+        return cost;
     }
 
-    public void setEntry(String entry) {
-        this.entry = entry;
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+
+    public void setQuality(int quality) {
+        this.quality = quality;
+    }
+
+    public int getExpense() {
+        return expense;
+    }
+
+    public void setExpense(int expense) {
+        this.expense = expense;
+    }
+
+    public int getPathWeight() {
+        return pathWeight;
+    }
+
+    public void setPathWeight(int pathWeight) {
+        this.pathWeight = pathWeight;
     }
 
     @Override

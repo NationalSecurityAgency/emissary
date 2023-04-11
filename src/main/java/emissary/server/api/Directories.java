@@ -40,7 +40,7 @@ public class Directories {
             List<DirectoryEntry> dirEntries = dirPlace.getEntries();
 
             for (DirectoryEntry currentDir : dirEntries) {
-                entries.addEntries(new Directory(currentDir.getDataID(), currentDir.getKey()));
+                entries.addEntries(new Directory(currentDir));
             }
 
             entity.setLocal(entries);
