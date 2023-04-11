@@ -1,7 +1,7 @@
 FROM centos:7
 
 RUN yum update -y \
-    && yum install -y java-1.8.0-openjdk \
+    && yum install -y java-11-amazon-corretto-devel \
     && yum clean all -y \
     && rm -rf /var/cache/yum
 
