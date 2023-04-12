@@ -15,8 +15,6 @@ public class Directory implements Comparable<Directory>, Serializable {
 
     private static final long serialVersionUID = 2428511052308449193L;
 
-    public static final long NOW = System.currentTimeMillis();
-
     private DirectoryEntry directoryEntry;
 
     @XmlElement(name = "entry")
