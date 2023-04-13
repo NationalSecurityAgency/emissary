@@ -165,8 +165,8 @@ public class RegressionTestUtil {
      * Sets up the payload by resetting the payload to that from the XML
      * 
      * @see ExtractionTest#setupPayload(IBaseDataObject, Document)
-     * @param payload
-     * @param answers
+     * @param payload the ibdo to reset
+     * @param answers an XML Document object to set the ibdo payload to
      */
     public static void setupPayload(final IBaseDataObject payload, final Document answers) {
         final Element root = answers.getRootElement();
