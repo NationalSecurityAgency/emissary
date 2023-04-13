@@ -1,5 +1,6 @@
 package emissary.roll;
 
+import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.EmissaryIsolatedClassLoaderExtension;
 
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
@@ -19,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RollManagerTest extends UnitTest {
 
     @Test
-    void testAddRoller() {
-        RollManager rm = new RollManager();
+    void testAddRoller() throws IOException {
+        RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         Roller r = new Roller(TimeUnit.SECONDS, 1, new RollableTest());
         rm.addRoller(r);
         assertTrue(rm.rollers.contains(r), "Roller successfully registered");
@@ -28,8 +30,8 @@ class RollManagerTest extends UnitTest {
     }
 
     @Test
-    void testObserve() {
-        RollManager rm = new RollManager();
+    void testObserve() throws IOException {
+        RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         Roller r = new Roller(1, TimeUnit.DAYS, 1, new RollableTest());
         RollTestObserver o = new RollTestObserver();
         r.addObserver(o);
@@ -41,8 +43,8 @@ class RollManagerTest extends UnitTest {
 
     @Test
     @ExtendWith(EmissaryIsolatedClassLoaderExtension.class)
-    void testAutoConfig() {
-        RollManager rm = RollManager.getManager();
+    void testAutoConfig() throws IOException {
+        RollManager rm = RollManager.getManager(ConfigUtil.getConfigInfo(this.getClass()));
         assertEquals(1, rm.rollers.size(), "One test Roller configured");
         Roller r = rm.rollers.iterator().next();
         assertEquals(TimeUnit.MINUTES, r.getTimeUnit());
@@ -54,7 +56,7 @@ class RollManagerTest extends UnitTest {
 
     @Test
     void testFailedRoller() throws Exception {
-        RollManager rm = new RollManager();
+        RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         CountDownLatch latch = new CountDownLatch(1);
         Roller r = new Roller(TimeUnit.MILLISECONDS, 250, new Rollable() {
             int i = 0;
