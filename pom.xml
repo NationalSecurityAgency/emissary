@@ -897,14 +897,24 @@
           <version>3.16.0</version>
           <configuration>
             <excludes />
-            <failOnViolation>false</failOnViolation>
-            <failurePriority>1</failurePriority>
+            <failOnViolation>true</failOnViolation>
+            <failurePriority>2</failurePriority>
+            <maxAllowedViolations>3</maxAllowedViolations>
             <format>xml</format>
             <includeTests>true</includeTests>
             <minimumTokens>100</minimumTokens>
             <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
             <targetJdk>${maven.compiler.target}</targetJdk>
           </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>check</goal>
+                <!--<goal>cpd-check</goal>-->
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -1246,6 +1256,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
