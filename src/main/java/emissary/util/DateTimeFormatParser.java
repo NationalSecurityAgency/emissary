@@ -122,7 +122,7 @@ public class DateTimeFormatParser {
         if (StringUtils.isNotEmpty(dateString)) {
             String cleanedDateString = cleanDate(dateString);
 
-            List<Function<String, LocalDateTime>> methodList = new ArrayList();
+            List<Function<String, LocalDateTime>> methodList = new ArrayList<>();
             methodList.add(date -> tryParseWithDateTimeZoneFormats(date));
             methodList.add(date -> tryParseWithDateTimeOffsetFormats(date));
             methodList.add(date -> tryParseWithDateTimeFormats(date));
