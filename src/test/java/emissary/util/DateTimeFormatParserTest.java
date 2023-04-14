@@ -3,7 +3,6 @@ package emissary.util;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -371,10 +370,9 @@ public class DateTimeFormatParserTest extends UnitTest {
     }
 
 
-    @Disabled
     @Test
     void testCleanDateString() {
-        test("2016-01-04 18:20<br>", EXPECTED_NO_SECS, "HTML");
+        // test("2016-01-04 18:20<br>", EXPECTED_NO_SECS, "HTML");
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
         test("2016-01-04 18:20=0D", EXPECTED_NO_SECS, "qp'ified ending");

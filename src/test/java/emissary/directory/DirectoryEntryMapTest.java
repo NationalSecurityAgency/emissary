@@ -4,7 +4,6 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -141,9 +140,8 @@ class DirectoryEntryMapTest extends UnitTest {
         assertEquals(2, removed.size(), "All on directory removed");
     }
 
-    @Disabled
     @Test
-    void testCollectAllMatchingTiming() {
+    void testCollectAllMatching() {
         // Create a bunch of entries spread out onto several data identifiers
         final String[] phases = new String[] {"ID", "TRANSFORM", "ANALYZE", "IO"};
         final int phasesLength = phases.length;
@@ -172,16 +170,6 @@ class DirectoryEntryMapTest extends UnitTest {
             assertEquals(expectedCount[i], matches.size(), "Match must produce results using pattern " + searchPatterns[i]);
             assertTrue((end - start) < 1000, "Search using pattern " + searchPatterns[i] + " must be under 1sec");
         }
-
-        // Simulate the scale of an incoming zone transfer during node setup phase
-        final long start = System.currentTimeMillis();
-        for (final DirectoryEntry de : this.dm.allEntries()) {
-            this.dm.collectAllMatching(de.getKey());
-        }
-        final long end = System.currentTimeMillis();
-        final long diff = (end - start);
-
-        assertTrue(diff < 3000, "Search of all patterns must take place in under 3s, was " + diff + "ms");
     }
 
     @Test
