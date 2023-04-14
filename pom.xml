@@ -874,6 +874,8 @@
           <configuration>
             <quiet>true</quiet>
             <doclint>all,-missing</doclint>
+            <failOnWarnings>true</failOnWarnings>
+            <failOnError>true</failOnError>
           </configuration>
           <executions>
             <execution>
