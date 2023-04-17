@@ -74,13 +74,25 @@ public class ByteMatcher {
      */
 
     public int indexOf(byte[] pattern, int startOfs) {
+        return indexOf(pattern, startOfs, mydata.length);
+
+    }
+
+    /**
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     */
+    public int indexOf(byte[] pattern, int beginIndex, int endIndex) {
 
         // Impossible to find under these conditions
-        if (mydata == null || startOfs > (mydata.length - pattern.length))
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length)
             return NOTFOUND;
 
         // Use the Boyer-Moore scanning algorithm.
-        return scanner.indexOf(pattern, startOfs);
+        return scanner.indexOf(pattern, beginIndex, endIndex);
 
     }
 

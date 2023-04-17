@@ -96,6 +96,16 @@ class ByteMatcherTest extends UnitTest {
     }
 
     @Test
+    void testIndexOfBytesExcludedByEndIndex() {
+        assertEquals(ByteMatcher.NOTFOUND, this.b.indexOf("dog".getBytes(), 0, b.length() - 1), "Match pos not found");
+    }
+
+    @Test
+    void testIndexOfBytesIncludedWithEndIndex() {
+        assertEquals(this.data.indexOf("dog"), this.b.indexOf("dog".getBytes(), 0, b.length()), "Match pos same as string");
+    }
+
+    @Test
     void testLength() {
         assertEquals(this.data.length(), this.b.length(), "Length same as string");
     }
