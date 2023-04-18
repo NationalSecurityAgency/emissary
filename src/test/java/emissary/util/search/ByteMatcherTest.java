@@ -106,6 +106,16 @@ class ByteMatcherTest extends UnitTest {
     }
 
     @Test
+    void testIndexOfExcludedByEndIndex() {
+        assertEquals(ByteMatcher.NOTFOUND, this.b.indexOf("dog", 0, b.length() - 1), "Match pos not found");
+    }
+
+    @Test
+    void testIndexOfIncludedWithEndIndex() {
+        assertEquals(this.data.indexOf("dog"), this.b.indexOf("dog", 0, b.length()), "Match pos same as string");
+    }
+
+    @Test
     void testLength() {
         assertEquals(this.data.length(), this.b.length(), "Length same as string");
     }
@@ -218,6 +228,16 @@ class ByteMatcherTest extends UnitTest {
     @Test
     void testIgnoreCaseScanWithOffset() {
         assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX", 0), "Pos in case insensitive search");
+    }
+
+    @Test
+    void testIndexIgnoreCaseScanExcludedByEndIndex() {
+        assertEquals(ByteMatcher.NOTFOUND, this.b.indexIgnoreCase("Dog", 0, b.length() - 1), "Match pos not found");
+    }
+
+    @Test
+    void testIndexIgnoreCaseScanIncludedWithEndIndex() {
+        assertEquals(this.data.indexOf("dog"), this.b.indexIgnoreCase("Dog", 0, b.length()), "Match pos same as string");
     }
 
     @Test

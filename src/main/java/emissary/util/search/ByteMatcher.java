@@ -40,7 +40,7 @@ public class ByteMatcher {
 
     /**
      * Reset the byte array. Use of this method avoids having to instantiate a new ByteMatcher.
-     * 
+     *
      * @param data - bytes to match against
      */
     public void resetData(byte[] data) {
@@ -68,7 +68,7 @@ public class ByteMatcher {
 
     /**
      * This method finds a pattern in the text and returns the offset
-     * 
+     *
      * @param pattern bytes to find
      * @param startOfs start index
      */
@@ -84,6 +84,8 @@ public class ByteMatcher {
      * @param pattern bytes to find
      * @param beginIndex start index
      * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
      */
     public int indexOf(byte[] pattern, int beginIndex, int endIndex) {
 
@@ -137,7 +139,7 @@ public class ByteMatcher {
 
     /**
      * Return a slice
-     * 
+     *
      * @param start index to start
      * @param end index one past the end of desired range
      * @return array slice
@@ -168,31 +170,45 @@ public class ByteMatcher {
         return true;
     }
 
-
     /**
-     * This method finds a pattern in the text and returns the offset ignoring upper/lower case
+     * This method finds a pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset ignoring
+     * upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
      */
-
-    public int indexIgnoreCase(byte[] pattern, int startOfs) {
+    public int indexIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
 
         // Impossible to find under these conditions
-        if (mydata == null || startOfs > (mydata.length - pattern.length)) {
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length) {
             return NOTFOUND;
         }
 
-        int matchPos = NOTFOUND;
+        int matchPos;
 
         // Use the Boyer-Moore scanner. Set it to
         // ignore case.
 
         scanner.setCaseSensitive(false);
-        matchPos = scanner.indexOf(pattern, startOfs);
+        matchPos = scanner.indexOf(pattern, beginIndex, endIndex);
 
         // Reset scanner to default state.
         scanner.setCaseSensitive(true);
 
         return matchPos;
 
+
+    }
+
+    /**
+     * This method finds a pattern in the text and returns the offset ignoring upper/lower case
+     */
+
+    public int indexIgnoreCase(byte[] pattern, int startOfs) {
+        return indexIgnoreCase(pattern, startOfs, mydata.length);
     }
 
 
@@ -202,6 +218,21 @@ public class ByteMatcher {
     public int indexOf(byte[] pattern) {
 
         return indexOf(pattern, 0);
+
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexOf(String pattern, int beginIndex, int endIndex) {
+
+        return indexOf(pattern.getBytes(), beginIndex, endIndex);
 
     }
 
@@ -232,6 +263,22 @@ public class ByteMatcher {
     public int indexIgnoreCase(String pattern, int startOfs) {
 
         return indexIgnoreCase(pattern.getBytes(), startOfs);
+
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset ignoring upper/lower
+     * case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexIgnoreCase(String pattern, int beginIndex, int endIndex) {
+
+        return indexIgnoreCase(pattern.getBytes(), beginIndex, endIndex);
 
     }
 
