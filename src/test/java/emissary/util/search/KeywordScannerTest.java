@@ -90,6 +90,13 @@ class KeywordScannerTest extends UnitTest {
     }
 
     @Test
+    void testCaseInsensitiveAllLUpperCasePatternFound() {
+        this.ks.setCaseSensitive(false);
+        assertFalse(this.ks.isCaseSensitive());
+        assertEquals(10, this.ks.indexOf("TEST".getBytes()), "Case insensitive");
+    }
+
+    @Test
     void testIndexOf() {
         assertEquals(33, this.ks.indexOf("road".getBytes()));
         assertEquals(22, this.ks.indexOf("Emergency".getBytes(), 0));

@@ -171,7 +171,16 @@ public class KeywordScanner {
     }
 
     private static int get256Value(final byte b) {
-        return ((int) b) & 0xff;
+        return get256Value(b, true);
+    }
+
+    private static int get256Value(final byte b, final boolean caseSensitive) {
+        if (caseSensitive) {
+            return (b) & 0xff;
+        } else {
+            // convert to lowercase
+            return (b) & 0xff | 32;
+        }
     }
 
     private void analyze() {
@@ -179,18 +188,12 @@ public class KeywordScanner {
             this.skip[i] = this.patternLength;
         }
         for (int i = 0; i < this.patternLength - 1; i++) {
-            this.skip[get256Value(this.pattern[i])] = this.patternLength - i - 1;
+            this.skip[get256Value(this.pattern[i], caseSensitive)] = this.patternLength - i - 1;
         }
-        this.lastByte = get256Value(this.pattern[this.patternLength - 1]);
+        this.lastByte = get256Value(this.pattern[this.patternLength - 1], caseSensitive);
     }
 
     private int match(final int start, final int stop) {
-        final int compareByte;
-        if (this.caseSensitive) {
-            compareByte = this.lastByte;
-        } else {
-            compareByte = lowercase(this.lastByte);
-        }
 
         int matchIndex = -1;
         for (int position = start + this.patternLength - 1; position < stop;) {
@@ -198,7 +201,7 @@ public class KeywordScanner {
             if (!this.caseSensitive) {
                 currentByte = lowercase(currentByte);
             }
-            if (currentByte != compareByte) {
+            if (currentByte != this.lastByte) {
                 position += this.skip[currentByte];
             } else {
                 if (isSame(position)) {
@@ -213,7 +216,7 @@ public class KeywordScanner {
     }
 
     private int lowercase(final int i) {
-        if ((i >= 65) && (i <= 90)) {
+        if ((i >= 'A') && (i <= 'Z')) {
             return i + 32;
         } else {
             return i;
