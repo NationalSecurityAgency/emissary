@@ -45,9 +45,9 @@ public class EmissaryClient {
 
     public static final String DEFAULT_CONTEXT = "emissary";
     public static final String JETTY_USER_FILE_PROPERTY_NAME = "emissary.jetty.users.file";
-    public static final Long DEFAULT_CONNECTION_TIMEOUT = TimeUnit.MINUTES.toMillis(100L); // 2 X 50 min
-    public static final Long DEFAULT_CONNECTION_MANAGER_TIMEOUT = TimeUnit.MINUTES.toMicros(2L);
-    public static final Long DEFAULT_SO_TIMEOUT = TimeUnit.MINUTES.toMillis(1L);
+    public static final int DEFAULT_CONNECTION_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(100L); // 2 X 50 min
+    public static final int DEFAULT_CONNECTION_MANAGER_TIMEOUT = (int) TimeUnit.MINUTES.toMicros(2L);
+    public static final int DEFAULT_SO_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(1L);
     public static final int DEFAULT_RETRIES = 3;
     public static final String DEFAULT_USERNAME = "emissary";
     public static final String DEFAULT_PASSWORD = "password";
@@ -68,11 +68,11 @@ public class EmissaryClient {
     protected static String username = DEFAULT_USERNAME;
     protected static String realm = AuthScope.ANY_REALM;
     // How long to wait while establishing a connection (ms)
-    protected static long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+    protected static int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     // How long to wait for a connection from the pool (ms)
-    protected static long connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
+    protected static int connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
     // How long to wait on a data read in a connection (ms)
-    protected static long socketTimeout = DEFAULT_SO_TIMEOUT;
+    protected static int socketTimeout = DEFAULT_SO_TIMEOUT;
     // class is thread-safe
     protected static final AuthCache AUTH_CACHE = new BasicAuthCache();
 
@@ -92,9 +92,9 @@ public class EmissaryClient {
             final Configurator c = ConfigUtil.getConfigInfo(EmissaryClient.class);
             retries = c.findIntEntry("retries", DEFAULT_RETRIES);
             username = c.findStringEntry("username", DEFAULT_USERNAME);
-            connectionTimeout = c.findLongEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
-            connectionManagerTimeout = c.findLongEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
-            socketTimeout = c.findLongEntry("soTimeout", DEFAULT_SO_TIMEOUT);
+            connectionTimeout = c.findIntEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
+            connectionManagerTimeout = c.findIntEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
+            socketTimeout = c.findIntEntry("soTimeout", DEFAULT_SO_TIMEOUT);
             CONTEXT = c.findStringEntry("context", DEFAULT_CONTEXT);
         } catch (IOException iox) {
             LOGGER.warn("Cannot read EmissaryClient properties, configuring defaults: {}", iox.getMessage());
@@ -135,9 +135,9 @@ public class EmissaryClient {
         }
 
         staticRequestConfig =
-                RequestConfig.custom().setConnectTimeout(Long.valueOf(connectionTimeout).intValue())
-                        .setConnectionRequestTimeout(Long.valueOf(connectionManagerTimeout).intValue())
-                        .setSocketTimeout(Long.valueOf(socketTimeout).intValue())
+                RequestConfig.custom().setConnectTimeout(connectionTimeout)
+                        .setConnectionRequestTimeout(connectionManagerTimeout)
+                        .setSocketTimeout(socketTimeout)
                         .setTargetPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
                         .setProxyPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
                         .build();

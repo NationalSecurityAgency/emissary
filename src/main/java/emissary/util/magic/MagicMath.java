@@ -60,34 +60,34 @@ public class MagicMath {
         while (!chars.empty()) {
             Character c = chars.pop();
             String val = EMPTYSTRING;
-            if (c.charValue() == '\\') {
+            if (c == '\\') {
                 if (chars.empty()) {
-                    array.add(Integer.valueOf(32));
+                    array.add(32);
                     break;
                 }
                 Character next = chars.peek();
-                if (literals[next.charValue()] > 0) {
-                    array.add(literals[next.charValue()]);
+                if (literals[next] > 0) {
+                    array.add(literals[next]);
                     chars.pop();
-                } else if (Character.isDigit(next.charValue())) {
+                } else if (Character.isDigit(next)) {
                     int max = 3;
-                    while (!chars.empty() && Character.isDigit(next.charValue()) && max-- > 0) {
-                        val += chars.pop().charValue();
+                    while (!chars.empty() && Character.isDigit(next) && max-- > 0) {
+                        val += chars.pop();
                         if (!chars.empty())
                             next = chars.peek();
                     }
                     array.add(new BigInteger(val, 8));
                     val = EMPTYSTRING;
-                } else if (next.charValue() == 'x') {
+                } else if (next == 'x') {
                     chars.pop(); // pop the hex symbol
-                    val += (chars.pop()).charValue();
-                    val += (chars.pop()).charValue();
+                    val += chars.pop();
+                    val += chars.pop();
                     array.add(new BigInteger(val, 16));
                     val = EMPTYSTRING;
                 }
                 continue;
             }
-            array.add(Integer.valueOf(c.charValue()));
+            array.add((int) c);
         }
         byte[] bytes = new byte[array.size()];
         Iterator<Number> iter = array.iterator();

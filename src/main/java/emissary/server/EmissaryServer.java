@@ -159,7 +159,7 @@ public class EmissaryServer {
             server.setHandler(handlers);
             server.addBean(loginService);
             server.setStopAtShutdown(true);
-            server.setStopTimeout(10000l);
+            server.setStopTimeout(10000L);
             if (this.cmd.shouldDumpJettyBeans()) {
                 LOG.info(server.dump());
             }
@@ -609,7 +609,7 @@ public class EmissaryServer {
         int minThreads = 10;
         int lowThreads = 50;
         int threadsPriority = 9;
-        int idleTimeout = new Long(TimeUnit.MINUTES.toMillis(15)).intValue();
+        int idleTimeout = (int) TimeUnit.MINUTES.toMillis(15);
 
         QueuedThreadPool threadPool = new QueuedThreadPool(maxThreads, minThreads, idleTimeout);
         threadPool.setLowThreadsThreshold(lowThreads);
