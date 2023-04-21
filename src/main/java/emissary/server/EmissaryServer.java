@@ -341,7 +341,8 @@ public class EmissaryServer {
         } catch (NamespaceException e) {
             LOG.error("Unable to lookup {} ", name, e);
         } catch (InterruptedException e) {
-            LOG.warn("Stop interrupted. Expected?");
+            LOG.warn("Interrupted! Expected?");
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             LOG.warn("Unable to stop server {} ", name, e);
         }

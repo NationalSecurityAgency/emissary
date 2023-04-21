@@ -305,7 +305,7 @@ public class Startup {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
-                // empty catch block
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -421,7 +421,7 @@ public class Startup {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                // empty catch block
+                Thread.currentThread().interrupt();
             }
 
             if (numPlacesFound != numPlacesFoundPreviously) {

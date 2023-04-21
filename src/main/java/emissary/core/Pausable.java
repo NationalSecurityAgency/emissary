@@ -70,7 +70,7 @@ public abstract class Pausable extends Thread implements IPausable {
                 logger.info("{} currently paused, sleeping for {}", getClass().getName(), getPauseInterval());
                 sleep(getPauseInterval());
             } catch (InterruptedException ignore) {
-                // ignore and continue
+                Thread.currentThread().interrupt();
             }
             return true;
         }

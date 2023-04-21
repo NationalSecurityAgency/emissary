@@ -500,7 +500,7 @@ public class Main {
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException ignore) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                 }
             } while (loopOnInput);
@@ -523,7 +523,7 @@ public class Main {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException ignore) {
-                    // empty catch block
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -1159,7 +1159,7 @@ public class Main {
                         try {
                             workQueue.wait(1000);
                         } catch (InterruptedException ignore) {
-                            // empty catch block
+                            Thread.currentThread().interrupt();
                         }
                     }
                 }

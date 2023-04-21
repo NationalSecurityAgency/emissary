@@ -178,7 +178,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             // Return the final, full path
             return journaledPool.getFree();
         } catch (InterruptedException ex) {
-            // should not happen in our implementation
+            Thread.currentThread().interrupt();
             throw new IOException("Interrupted trying to obtain KeyedOutput", ex);
         } finally {
             lock.unlock();
@@ -200,6 +200,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             LOG.error("Error occurred during roll.", ex);
         } catch (InterruptedException ex) {
             LOG.warn("Roll interrupted during execution. Should continue on next roll.", ex);
+            Thread.currentThread().interrupt();
         } finally {
             this.rolling = false;
         }

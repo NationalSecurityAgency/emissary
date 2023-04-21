@@ -154,7 +154,8 @@ public class FileDataServer extends Pausable {
             if (processedCount == 0) {
                 try {
                     Thread.sleep(pollingInterval);
-                } catch (InterruptedException e) { /* Dont care */
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
 

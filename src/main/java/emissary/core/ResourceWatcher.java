@@ -137,7 +137,7 @@ public class ResourceWatcher implements Runnable {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ignore) {
-                // Ignore.
+                Thread.currentThread().interrupt();
             }
             Iterator<TimedResource> it = tracking.iterator();
             while (it.hasNext()) {

@@ -128,7 +128,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                         // as a last resort
                         wait(60000);
                     } catch (InterruptedException e) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                 }
 
@@ -373,6 +373,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             // Log only when interrupted by the ResourceWatcher, not during shutdown.
             if (!this.timeToQuit) {
                 logger.warn("Place {} was interrupted during execution. Adjust place time out or modify code accordingly.", place);
+            } else {
+                // It must be time to quit so re-interrupt the current thread
+                Thread.currentThread().interrupt();
             }
         }
     }

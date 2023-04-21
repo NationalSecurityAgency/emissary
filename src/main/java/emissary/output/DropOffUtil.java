@@ -259,7 +259,7 @@ public class DropOffUtil {
                     try {
                         Thread.sleep(50L * tryCount);
                     } catch (InterruptedException e) {
-                        // Ignored.
+                        Thread.currentThread().interrupt();
                     }
                 }
                 tryCount++;

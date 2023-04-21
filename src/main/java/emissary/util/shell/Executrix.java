@@ -845,8 +845,11 @@ public class Executrix {
             stdOutThread.finish();
             stdErrThread.finish();
             exitValue = p.exitValue();
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             logger.warn("Exec exception, args={}", Arrays.asList(cmd), e);
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted exception, args={}", Arrays.asList(cmd), e);
+            Thread.currentThread().interrupt();
         } finally {
             if (dog != null) {
                 dog.stop();
@@ -1242,7 +1245,7 @@ public class Executrix {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException ignore) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                     if (dir.exists()) {
                         deleted = dir.delete();
@@ -1254,7 +1257,7 @@ public class Executrix {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException ignore) {
-                        // empty catch block
+                        Thread.currentThread().interrupt();
                     }
                     if (dir.exists()) {
                         logger.debug("Temporary directory is still there. doing rm-rf {}", dir.getAbsolutePath());
