@@ -118,7 +118,7 @@ public class HDMobileAgent extends MobileAgent {
      * Clear the payloadList and all other state info
      */
     @Override
-    protected void clear() {
+    protected synchronized void clear() {
         super.clear();
         this.payloadList.clear();
     }
@@ -516,7 +516,7 @@ public class HDMobileAgent extends MobileAgent {
      * Report whether we are busy or not
      */
     @Override
-    public boolean isInUse() {
+    public synchronized boolean isInUse() {
         return (this.payloadList != null) && !this.payloadList.isEmpty() && (arrivalPlace != null);
     }
 
