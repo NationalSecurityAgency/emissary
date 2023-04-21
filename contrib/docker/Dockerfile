@@ -1,7 +1,9 @@
 FROM centos:7
 
 RUN yum update -y \
-    && yum install -y java-1.8.0-openjdk \
+    && rpm --import https://yum.corretto.aws/corretto.key \
+    && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
+    && yum install -y java-11-amazon-corretto-devel \
     && yum clean all -y \
     && rm -rf /var/cache/yum
 
