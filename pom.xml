@@ -990,7 +990,7 @@
           <version>1.5.1</version>
           <configuration>
             <printEqualFiles>false</printEqualFiles>
-            <failBuildInCaseOfDifferentContentConflict>false</failBuildInCaseOfDifferentContentConflict>
+            <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
             <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
             <failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
             <checkCompileClasspath>true</checkCompileClasspath>
@@ -1264,6 +1264,10 @@
           <reuseForks>true</reuseForks>
           <forkCount>${surefire.forkCount}</forkCount>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.basepom.maven</groupId>
+        <artifactId>duplicate-finder-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>
