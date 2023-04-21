@@ -164,23 +164,14 @@ public class KeywordScanner {
     /**
      * Returns the case sensitivity set for the scanner.
      * 
-     * @return true if the scanner is case sensitive, false otherwise
+     * @return true if the scanner is case-sensitive, false otherwise
      */
     public boolean isCaseSensitive() {
         return this.caseSensitive;
     }
 
-    private static int get256Value(final byte b) {
-        return get256Value(b, true);
-    }
-
-    private static int get256Value(final byte b, final boolean caseSensitive) {
-        if (caseSensitive) {
-            return (b) & 0xff;
-        } else {
-            // convert to lowercase
-            return (b) & 0xff | 32;
-        }
+    private int get256Value(final byte b) {
+        return caseSensitive ? Byte.toUnsignedInt(b) : lowercase(Byte.toUnsignedInt(b));
     }
 
     private void analyze() {
@@ -188,28 +179,23 @@ public class KeywordScanner {
             this.skip[i] = this.patternLength;
         }
         for (int i = 0; i < this.patternLength - 1; i++) {
-            this.skip[get256Value(this.pattern[i], caseSensitive)] = this.patternLength - i - 1;
+            this.skip[get256Value(this.pattern[i])] = this.patternLength - i - 1;
         }
-        this.lastByte = get256Value(this.pattern[this.patternLength - 1], caseSensitive);
+        this.lastByte = get256Value(this.pattern[this.patternLength - 1]);
     }
 
     private int match(final int start, final int stop) {
 
         int matchIndex = -1;
-        for (int position = start + this.patternLength - 1; position < stop;) {
+        int position = start + this.patternLength - 1;
+        while (position < stop) {
             int currentByte = get256Value(this.data[position]);
-            if (!this.caseSensitive) {
-                currentByte = lowercase(currentByte);
+            if (currentByte == this.lastByte && isSame(position)) {
+                matchIndex = position + 1 - this.patternLength;
+                break;
+
             }
-            if (currentByte != this.lastByte) {
-                position += this.skip[currentByte];
-            } else {
-                if (isSame(position)) {
-                    matchIndex = position + 1 - this.patternLength;
-                    break;
-                }
-                position += this.skip[currentByte];
-            }
+            position += this.skip[currentByte];
         }
 
         return matchIndex;
