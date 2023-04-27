@@ -53,6 +53,8 @@ public class Startup {
     // Failed directories
     protected final Map<String, String> failedLocalDirectories = new ConcurrentHashMap<>();
 
+    protected final Set<String> failedPlaces = ConcurrentHashMap.newKeySet();
+
     // Collection of the places as they finish coming up
     protected final Map<String, String> places = new ConcurrentHashMap<>();
 
@@ -382,8 +384,9 @@ public class Startup {
                     if (p != null) {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
+                        logger.error("{} failed to start!", thePlaceLocation);
+                        Startup.this.failedPlaces.add(thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
-                        logger.debug("Giving up on {}", thePlaceLocation);
                     }
 
                 }
@@ -413,6 +416,24 @@ public class Startup {
             numPlacesFound = this.places.size();
 
             if (numPlacesFound >= numPlacesExpected) {
+
+                if (this.failedPlaces.size() >= 1) {
+                    StringBuilder failedPlaceList = new StringBuilder();
+                    failedPlaceList.append("The following places have failed to start: ");
+                    for (String s : this.failedPlaces) {
+                        failedPlaceList.append(s + "; ");
+                    }
+                    logger.warn(failedPlaceList.toString());
+                    if (this.node.isStrictStartupMode()) {
+                        logger.error(
+                                "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                                        "run server start command without the --strict flag");
+                        logger.error(("Server shutting down"));
+                        System.exit(1);
+                    }
+                }
+
+
                 // normal termination of the loop
                 logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
                 break;

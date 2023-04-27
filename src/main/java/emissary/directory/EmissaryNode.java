@@ -58,6 +58,9 @@ public class EmissaryNode {
     /** Property name that can be used to disable stdout/stderr redirection */
     public static final String DISABLE_LOG_REDIRECTION_PROPERTY = "emissary.log.redirection.disabled";
 
+    /** Property that determines if server will shut down in the event a place fails to start */
+    public static final String STRICT_STARTUP_MODE = "strict.mode";
+
     // types are feeder, worker, standalone
     // TODO: make an enum for these
     private static final String DEFAULT_NODE_MODE = "standalone";
@@ -70,6 +73,8 @@ public class EmissaryNode {
     protected String nodeMode = null; // probably better as nodeType, but that requires a refactor
     protected boolean nodeNameIsDefault = false;
     protected String nodeServiceType = null;
+
+    protected boolean strictStartupMode = false;
 
     /**
      * Construct the node. The node name and port are from system properties. The node type is based on the os.name in this
@@ -93,6 +98,7 @@ public class EmissaryNode {
         this.nodeType = System.getProperty("os.name", DEFAULT_NODE_TYPE).toLowerCase().replace(' ', '_');
         this.nodeMode = System.getProperty("node.mode", DEFAULT_NODE_MODE).toLowerCase();
         this.nodeServiceType = System.getProperty(NODE_SERVICE_TYPE_PROPERTY, DEFAULT_NODE_SERVICE_TYPE);
+        this.strictStartupMode = Boolean.parseBoolean(System.getProperty(STRICT_STARTUP_MODE, String.valueOf(false)));
     }
 
     /**
@@ -160,6 +166,14 @@ public class EmissaryNode {
 
     private Object getNodeMode() {
         return nodeMode;
+    }
+
+    public boolean isStrictStartupMode() {
+        return strictStartupMode;
+    }
+
+    public void setStrictStartupMode(boolean strictStartupMode) {
+        this.strictStartupMode = strictStartupMode;
     }
 
     @Override

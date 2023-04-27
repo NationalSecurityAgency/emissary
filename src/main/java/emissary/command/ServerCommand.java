@@ -16,6 +16,8 @@ import java.nio.file.Path;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
+
 @Parameters(commandDescription = "Start an Emissary jetty server")
 public class ServerCommand extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
@@ -35,6 +37,10 @@ public class ServerCommand extends ServiceCommand {
 
     @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     private boolean dumpJettyBeans = false;
+
+    @Parameter(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
+    private boolean strictMode = false;
+
 
     @Override
     public String getCommandName() {
@@ -62,6 +68,16 @@ public class ServerCommand extends ServiceCommand {
         return dumpJettyBeans;
     }
 
+    /**
+     * If strictMode is set to true, the server will shut down if a Place fails to start
+     * 
+     * @return strictMode
+     */
+    public boolean shouldStrictMode() {
+        return strictMode;
+    }
+
+
     @Override
     public void setupCommand() {
         setupHttp();
@@ -82,11 +98,18 @@ public class ServerCommand extends ServiceCommand {
             flavorMode = getMode().toUpperCase() + "," + getFlavor();
         }
 
+
+        if (shouldStrictMode()) {
+            System.setProperty(STRICT_STARTUP_MODE,
+                    "true");
+        }
+
         // Must maintain insertion order
         Set<String> flavorSet = new LinkedHashSet<>();
         for (String f : flavorMode.split(",")) {
             flavorSet.add(f.toUpperCase());
         }
+
 
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {
             throw new RuntimeException("Can not run a server in both STANDALONE and CLUSTER");
