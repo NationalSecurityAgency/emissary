@@ -1,134 +1,131 @@
 package emissary.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Information class about processing stages in the workflow
  */
-public class Stage {
-    // List of stages to use. Use non-default constructors or extend class to change
-    protected static List<String> stages;
+enum Stage {
 
-    // Each stage must be marked parallel or not
-    protected static List<Boolean> parallel;
+    /*
+     * The order of these stage declarations is important, as the order of the declarations directly corresponds to the
+     * stage sequence order
+     */
 
-    public Stage() {}
+    /** Prepare, coordinate idents */
+    STUDY(false),
+    /** Identification phase */
+    ID(false),
+    /** Coordinate processing */
+    COORDINATE(false),
+    /** Before transform hook */
+    PRETRANSFORM(true),
+    /** Transformation phase */
+    TRANSFORM(false),
+    /** After transform hook */
+    POSTTRANSFORM(true),
+    /** Analysis/metadata generation */
+    ANALYZE(true),
+    /** Verify prior to emitting output */
+    VERIFY(false),
+    /** Emit output */
+    IO(false),
+    /** Finish */
+    REVIEW(false);
 
-    static {
-        stages = new ArrayList<>();
-        parallel = new ArrayList<>();
-        stages.add("STUDY"); // prepare, coordinate idents
-        parallel.add(Boolean.FALSE);
-
-        stages.add("ID"); // identification phase
-        parallel.add(Boolean.FALSE);
-
-        stages.add("COORDINATE"); // Coordinate processing
-        parallel.add(Boolean.FALSE);
-
-        stages.add("PRETRANSFORM"); // before transform hook
-        parallel.add(Boolean.TRUE);
-
-        stages.add("TRANSFORM"); // transformation phase
-        parallel.add(Boolean.FALSE);
-
-        stages.add("POSTTRANSFORM"); // after transform hook
-        parallel.add(Boolean.TRUE);
-
-        stages.add("ANALYZE"); // analysis/metadata generation
-        parallel.add(Boolean.TRUE);
-
-        stages.add("VERIFY"); // verify for output
-        parallel.add(Boolean.FALSE);
-
-        stages.add("IO"); // output
-        parallel.add(Boolean.FALSE);
-
-        stages.add("REVIEW"); // finish off
-        parallel.add(Boolean.FALSE);
-    }
-
+    final boolean isParallel;
 
     /**
-     * Indicate if a stage supports parallel processing or not
-     * 
-     * @param i the index of the stage
+     * Constructor, which specifies whether the specific stage support parallel operations
+     *
+     * @param isParallel flag indicating parallel processing support
      */
-    public boolean isParallelStage(final int i) {
-        if (i >= 0 && i < parallel.size()) {
-            return parallel.get(i);
-        }
-        return false;
+    Stage(boolean isParallel) {
+        this.isParallel = isParallel;
     }
 
     /**
-     * Indicate if named stages supports parallel processing or not
-     * 
-     * @param stage the name of the stage
+     * Indicates whether the specific stage support parallel operations
+     *
+     * @return isParallel indicator
      */
-    public boolean isParallelStage(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                return parallel.get(i);
-            }
-        }
-        return false;
+    public boolean isParallel() {
+        return isParallel;
     }
 
-
     /**
-     * Return stage name at index
+     * Attempts to resolve the stage value by name
+     *
+     * @param name value to look up
+     * @return resolved Stage name or null if no matching value was found
      */
-    public String getStageName(final int i) {
-        if (i >= 0 && i < stages.size()) {
-            return stages.get(i);
-        } else {
-            return "UNDEFINED";
+    public static Stage getByName(String name) {
+        try {
+            return Stage.valueOf(name);
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 
     /**
-     * Return stage index for name
-     * 
-     * @param stage the name of the stage
-     * @return the index of the stage or -1 if no such stage
+     * Attempts to resolve the stage value by ordinal position
+     *
+     * @param index value to look up
+     * @return resolved Stage, or null if no matching value was found
      */
-    public int getStageIndex(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage)) {
-                return i;
-            }
+    public static Stage getByOrdinal(final int index) {
+        if (index < 0 || index >= Stage.values().length) {
+            return null;
         }
-        return -1;
-    }
-
-
-    /**
-     * Return a list of stages
-     */
-    public List<String> getStages() {
-        return new ArrayList<>(stages);
+        return Stage.values()[index];
     }
 
     /**
-     * Return the stage following the named stage or null if the end of the list
-     * 
-     * @param stage the one to find following for
+     * Attempts to resolve the stage value by ordinal position
+     *
+     * @param index value to look up
+     * @return resolved Stage name or null if no matching value was found
      */
-    public String nextStageAfter(final String stage) {
-        for (int i = 0; i < stages.size(); i++) {
-            if (stages.get(i).equals(stage) && (i < stages.size() - 1)) {
-                return stages.get(i + 1);
-            }
+
+    public static String getStageName(final int index) {
+        Stage stage = getByOrdinal(index);
+        return stage == null ? "UNDEFINED" : stage.name();
+    }
+
+    /**
+     * Return the stage following the provided stage
+     *
+     * @param current current stage
+     * @return the Stage following the current stage or null there is no next value
+     */
+    public static Stage nextStageAfter(final Stage current) {
+        final int nextIndex = current.ordinal() + 1;
+        return getByOrdinal(nextIndex);
+    }
+
+    /**
+     * Return the stage following the named stage
+     *
+     * @param name stage to look up
+     * @return the Stage following the name stage or null there is no next value
+     */
+    public static Stage nextStageAfter(final String name) {
+        Stage current = Stage.getByName(name);
+        if (current == null) {
+            return null;
         }
-        return null;
+        final int nextIndex = current.ordinal() + 1;
+        return getByOrdinal(nextIndex);
     }
 
     /**
-     * Get size of stage list
+     * Resolves a Stage from a given ordinal position and indicates whether is supports parallel operations
+     *
+     * @param index ordinal position for the Stage
+     * @return value indicating whether the Stage supports parallel processing. Returns false if the specified index is
+     *         invalid.
      */
-    public int size() {
-        return stages.size();
+    public static boolean isParallelStage(final int index) {
+        Stage stage = getByOrdinal(index);
+        return stage != null && stage.isParallel();
     }
+
 }
