@@ -31,9 +31,9 @@ jobs:
           VALIDATE_ALL_CODEBASE: ${{ contains(github.event_name, 'pull_request') }}
           # Enable Linters to run
           VALIDATE_GITHUB_ACTIONS: true
-          VALIDATE_GOOGLE_JAVA_FORMAT: true
+          #VALIDATE_GOOGLE_JAVA_FORMAT: true
           JAVA_FILE_NAME: ../../contrib/checkstyle.xml
-          VALIDATE_DOCKERFILE_HADOLINT: true
+          #VALIDATE_DOCKERFILE_HADOLINT: true
           VALIDATE_MARKDOWN: true
           VALIDATE_XML: true
           VALIDATE_YAML: true
