@@ -41,7 +41,6 @@ public class ServerCommand extends ServiceCommand {
     @Parameter(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
     private boolean strictMode = false;
 
-
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
@@ -77,7 +76,6 @@ public class ServerCommand extends ServiceCommand {
         return strictMode;
     }
 
-
     @Override
     public void setupCommand() {
         setupHttp();
@@ -91,17 +89,15 @@ public class ServerCommand extends ServiceCommand {
     }
 
     public void setupServer() throws EmissaryException {
-        String flavorMode = "";
+        String flavorMode;
         if (getFlavor() == null) {
             flavorMode = getMode().toUpperCase();
         } else {
             flavorMode = getMode().toUpperCase() + "," + getFlavor();
         }
 
-
         if (shouldStrictMode()) {
-            System.setProperty(STRICT_STARTUP_MODE,
-                    "true");
+            System.setProperty(STRICT_STARTUP_MODE, "true");
         }
 
         // Must maintain insertion order
@@ -110,13 +106,11 @@ public class ServerCommand extends ServiceCommand {
             flavorSet.add(f.toUpperCase());
         }
 
-
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {
             throw new RuntimeException("Can not run a server in both STANDALONE and CLUSTER");
         } else {
             overrideFlavor(String.join(",", flavorSet));
         }
-
     }
 
     @Override
