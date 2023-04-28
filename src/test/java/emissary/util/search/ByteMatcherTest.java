@@ -270,4 +270,17 @@ class ByteMatcherTest extends UnitTest {
     void testBadConditionOnIndexIgnoreCase() {
         assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(), this.data.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
     }
+
+    @Test
+    void testNullDataBytesIndexOf() {
+        this.b = new ByteMatcher((byte[]) null);
+        assertEquals(-1, this.b.indexOf("Fred".getBytes()), "Match pos not found");
+    }
+
+    @Test
+    void testNullDataBytesIgnoreCase() {
+        this.b = new ByteMatcher((byte[]) null);
+        assertEquals(-1, this.b.indexIgnoreCase("Fred".getBytes()), "Match pos not found");
+    }
+
 }

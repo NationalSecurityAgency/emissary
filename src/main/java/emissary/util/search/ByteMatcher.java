@@ -74,6 +74,11 @@ public class ByteMatcher {
      */
 
     public int indexOf(byte[] pattern, int startOfs) {
+
+        if (mydata == null) {
+            return NOTFOUND;
+        }
+
         return indexOf(pattern, startOfs, mydata.length);
 
     }
@@ -208,6 +213,11 @@ public class ByteMatcher {
      */
 
     public int indexIgnoreCase(byte[] pattern, int startOfs) {
+
+        if (mydata == null) {
+            return NOTFOUND;
+        }
+
         return indexIgnoreCase(pattern, startOfs, mydata.length);
     }
 
