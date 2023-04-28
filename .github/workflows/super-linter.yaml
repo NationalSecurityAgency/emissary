@@ -1,0 +1,39 @@
+---
+name: Lint Codebase
+
+on:
+  push:
+    branches: [master, release-*]
+  pull_request:
+    branches: [master, release-*]
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  super-linter:
+    name: Super-Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3.3.0
+        with:
+          # Full git history is needed to get a proper list of changed files within super-linter
+          fetch-depth: 0
+
+      - name: Lint Code Base
+        uses: github/super-linter/slim@v4.10.0
+        env:
+          LOG_LEVEL: NOTICE
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # setting this to false means that only changed files will be scanned in each commit
+          VALIDATE_ALL_CODEBASE: ${{ !contains(github.event_name, 'pull_request') }}
+          # Enable Linters to run
+          VALIDATE_GITHUB_ACTIONS: true
+          # VALIDATE_GOOGLE_JAVA_FORMAT: true
+          JAVA_FILE_NAME: ../../contrib/checkstyle.xml
+          VALIDATE_DOCKERFILE_HADOLINT: true
+          # VALIDATE_MARKDOWN: true
+          VALIDATE_XML: true
+          VALIDATE_YAML: true
