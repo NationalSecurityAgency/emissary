@@ -58,7 +58,7 @@ public class DirectoryList implements Serializable {
             sb.append("DirectoryPlace: ").append("\n");
             sb.append("  ").append(getDirectoryPlace()).append("\n").append("Entries: ");
             for (Directory entry : getEntries()) {
-                sb.append("\n  ").append(entry);
+                sb.append("\n  ").append(entry).append("$").append(entry.getExpense());
             }
             logger.info("{}", sb);
         }

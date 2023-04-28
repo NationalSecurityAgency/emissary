@@ -11,7 +11,7 @@ import static emissary.server.api.Directories.DIRECTORIES_ENDPOINT;
 @Parameters(commandDescription = "List all of the active directories")
 public class DirectoryCommand extends MonitorCommand<DirectoryResponseEntity> {
 
-    public static String COMMAND_NAME = "directory";
+    public static final String COMMAND_NAME = "directory";
     public static final int DEFAULT_PORT = 8001;
 
     @Override
