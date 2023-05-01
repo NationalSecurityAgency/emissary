@@ -324,6 +324,7 @@ public class EmissaryServer {
         try {
             ResourceWatcher rw = ResourceWatcher.lookup();
             rw.logStats(LOG);
+            rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
         }

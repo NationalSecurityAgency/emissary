@@ -138,6 +138,7 @@ public class RollManager implements Observer {
                 log.warn("Error while closing Rollable: {}", r.getClass(), ex);
             }
         }
+        RM = null;
     }
 
     private static final class RMThreadFactory implements ThreadFactory {
