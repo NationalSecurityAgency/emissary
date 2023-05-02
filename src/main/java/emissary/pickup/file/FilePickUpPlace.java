@@ -5,7 +5,6 @@ import emissary.pickup.PickUpPlace;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -64,10 +63,11 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
      */
     @Override
     public void shutDown() {
-        for (Iterator<FileDataServer> i = theDataServer.iterator(); i.hasNext();) {
+        for (FileDataServer fileDataServer : theDataServer) {
             logger.info("*** Stopping FilePickUpPlace ");
-            i.next().shutdown();
+            fileDataServer.shutdown();
         }
+        super.shutDown();
     }
 
     /**
