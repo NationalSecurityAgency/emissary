@@ -350,6 +350,7 @@ public class EmissaryServer {
 
         LOG.debug("Unbinding name: {}", name);
         Namespace.unbind(name);
+        Namespace.clear();
         LOG.info("Emissary named {} completely stopped.", name);
     }
 
