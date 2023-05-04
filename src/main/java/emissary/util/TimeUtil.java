@@ -20,6 +20,7 @@ public class TimeUtil {
     private static final DateTimeFormatter DATE_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(GMT);
     private static final DateTimeFormatter DATE_FULL_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX").withZone(GMT);
     private static final DateTimeFormatter DATE_ORDINAL = DateTimeFormatter.ofPattern("yyyyDDD").withZone(GMT);
+    private static final String ISO_8601_TIME_DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     /**
      * Get the application configured timezone
@@ -229,6 +230,10 @@ public class TimeUtil {
     @Deprecated
     public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
+    }
+
+    public static String getISO8601DateFormatString() {
+        return ISO_8601_TIME_DATE_STRING;
     }
 
     /** This class is not meant to be instantiated. */
