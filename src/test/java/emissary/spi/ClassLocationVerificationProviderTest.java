@@ -11,7 +11,7 @@ class ClassLocationVerificationProviderTest extends UnitTest {
     @Test
     void testVerifyClassInWorkingDirectory() {
         String emissaryClassName = Emissary.class.getName();
-        boolean status = ClassLocationVerificationProvider.verify(emissaryClassName, "emissary");
+        boolean status = ClassLocationVerificationProvider.verify(emissaryClassName, "/classes/");
         Assertions.assertTrue(status);
 
         status = ClassLocationVerificationProvider.verify(emissaryClassName, "doesnotexist");
