@@ -164,14 +164,14 @@ public class KeywordScanner {
     /**
      * Returns the case sensitivity set for the scanner.
      * 
-     * @return true if the scanner is case sensitive, false otherwise
+     * @return true if the scanner is case-sensitive, false otherwise
      */
     public boolean isCaseSensitive() {
         return this.caseSensitive;
     }
 
-    private static int get256Value(final byte b) {
-        return ((int) b) & 0xff;
+    private int get256Value(final byte b) {
+        return caseSensitive ? Byte.toUnsignedInt(b) : lowercase(Byte.toUnsignedInt(b));
     }
 
     private void analyze() {
@@ -185,35 +185,24 @@ public class KeywordScanner {
     }
 
     private int match(final int start, final int stop) {
-        final int compareByte;
-        if (this.caseSensitive) {
-            compareByte = this.lastByte;
-        } else {
-            compareByte = lowercase(this.lastByte);
-        }
 
         int matchIndex = -1;
-        for (int position = start + this.patternLength - 1; position < stop;) {
+        int position = start + this.patternLength - 1;
+        while (position < stop) {
             int currentByte = get256Value(this.data[position]);
-            if (!this.caseSensitive) {
-                currentByte = lowercase(currentByte);
+            if (currentByte == this.lastByte && isSame(position)) {
+                matchIndex = position + 1 - this.patternLength;
+                break;
+
             }
-            if (currentByte != compareByte) {
-                position += this.skip[currentByte];
-            } else {
-                if (isSame(position)) {
-                    matchIndex = position + 1 - this.patternLength;
-                    break;
-                }
-                position += this.skip[currentByte];
-            }
+            position += this.skip[currentByte];
         }
 
         return matchIndex;
     }
 
     private int lowercase(final int i) {
-        if ((i >= 65) && (i <= 90)) {
+        if ((i >= 'A') && (i <= 'Z')) {
             return i + 32;
         } else {
             return i;
