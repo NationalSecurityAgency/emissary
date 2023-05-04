@@ -37,3 +37,4 @@ jobs:
           # VALIDATE_MARKDOWN: true
           VALIDATE_XML: true
           VALIDATE_YAML: true
+          FILTER_REGEX_EXCLUDE: .*contrib/helm.*
