@@ -104,6 +104,7 @@ public class ResourceWatcher implements Runnable {
      * Safely stop the monitoring Thread
      */
     public void quit() {
+        LOG.info("Stopping resource watcher...");
         this.timeToQuit = true;
     }
 
@@ -148,6 +149,7 @@ public class ResourceWatcher implements Runnable {
                 }
             }
         }
+        LOG.info("Resource watcher stopped.");
     }
 
     public void logStats(final Logger loggerArg) {

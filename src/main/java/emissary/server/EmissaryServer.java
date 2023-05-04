@@ -324,6 +324,7 @@ public class EmissaryServer {
         try {
             ResourceWatcher rw = ResourceWatcher.lookup();
             rw.logStats(LOG);
+            rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
         }
@@ -349,6 +350,7 @@ public class EmissaryServer {
 
         LOG.debug("Unbinding name: {}", name);
         Namespace.unbind(name);
+        Namespace.clear();
         LOG.info("Emissary named {} completely stopped.", name);
     }
 
