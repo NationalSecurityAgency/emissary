@@ -8,6 +8,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.IPausable;
+import emissary.core.MetricsManager;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
@@ -360,6 +361,12 @@ public class EmissaryServer {
             rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
+        }
+
+        try {
+            MetricsManager.lookup().shutdown();
+        } catch (Exception ex) {
+            LOG.warn("No metrics manager available");
         }
 
         RollManager.shutdown();

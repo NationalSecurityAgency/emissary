@@ -201,4 +201,15 @@ public class MetricsManager {
             graphiteReporter.start(interval, intervalUnit);
         }
     }
+
+    public void shutdown() {
+        this.healthChecks.shutdown();
+        this.metrics.getMetrics().keySet().forEach(metrics::remove);
+        this.metrics.getTimers().keySet().forEach(metrics::remove);
+        this.metrics.getCounters().keySet().forEach(metrics::remove);
+        this.metrics.getGauges().keySet().forEach(metrics::remove);
+        this.metrics.getHistograms().keySet().forEach(metrics::remove);
+        this.metrics.getMeters().keySet().forEach(metrics::remove);
+        Namespace.unbind(DEFAULT_NAMESPACE_NAME);
+    }
 }
