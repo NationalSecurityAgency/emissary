@@ -1371,6 +1371,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         this.peerDirectories.clear();
         this.observerManager.peerUpdate(this.peerDirectories);
 
+        unbindFromNamespace();
         logger.info("Done shutting down DirectoryPlace");
 
     }
