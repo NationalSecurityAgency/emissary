@@ -149,6 +149,7 @@ public class ResourceWatcher implements Runnable {
                 }
             }
         }
+        Namespace.unbind(DEFAULT_NAMESPACE_NAME);
         LOG.info("Resource watcher stopped.");
     }
 
