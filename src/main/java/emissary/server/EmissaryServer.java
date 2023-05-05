@@ -20,6 +20,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
@@ -368,6 +369,8 @@ public class EmissaryServer {
         } catch (Exception ex) {
             LOG.warn("No metrics manager available");
         }
+
+        SPILoader.unload();
 
         RollManager.shutdown();
 

@@ -25,4 +25,9 @@ public class SPILoader {
             logger.info("Initialized {}", provider.getClass().getName());
         });
     }
+
+    public static void unload() {
+        ServiceLoader<InitializationProvider> loader = ServiceLoader.load(InitializationProvider.class);
+        loader.forEach(InitializationProvider::shutdown);
+    }
 }
