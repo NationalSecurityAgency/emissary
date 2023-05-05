@@ -17,6 +17,7 @@ import emissary.command.TopologyCommand;
 import emissary.command.VersionCommand;
 import emissary.command.WhatCommand;
 import emissary.util.GitRepositoryState;
+import emissary.util.io.LoggingPrintStream;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
@@ -29,13 +30,13 @@ import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 /**
@@ -202,22 +203,9 @@ public class Emissary {
         // no need for sysout-over-slf4j anymore, which as need for any calls, like jni, which only
         // output to stdout/stderr Last none logback message
         LOG.trace("Redefining stdout so logback and capture the output");
-        System.setOut(new PrintStream(System.out) {
-            @Override
-            public void print(String s) {
-                LOG.info(s);
-            }
-        });
+        System.setOut(new LoggingPrintStream(System.out, "STDOUT", LOG, org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS));
 
         LOG.trace("Redefining stderr so logback and capture the output");
-        System.setErr(new PrintStream(System.err) {
-
-            @Override
-            public void print(String s) {
-                LOG.error(s);
-            }
-        });
+        System.setErr(new LoggingPrintStream(System.err, "STDERR", LOG, org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS));
     }
-
-
 }
