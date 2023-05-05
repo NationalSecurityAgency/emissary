@@ -150,8 +150,10 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("filename: noUrlHistory"), "Answer did not contain the correct filename");
         assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE"),
                 "Answer should not contain the URL");
+        assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"), "Answer should not contain full URL");
         assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
                 "Answer should not contain the URL");
+        assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"), "Answer should not contain full URL");
     }
 
     @Test
