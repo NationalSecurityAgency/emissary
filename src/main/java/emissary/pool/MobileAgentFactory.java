@@ -6,7 +6,6 @@ import emissary.core.Factory;
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 
-import emissary.core.Namespace;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
 import org.apache.commons.pool2.impl.DefaultPooledObject;

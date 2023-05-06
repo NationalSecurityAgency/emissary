@@ -347,6 +347,8 @@ public class EmissaryServer {
                 if (obj instanceof IServiceProviderPlace) {
                     LOG.info("Stopping {} ", obj);
                     ((IServiceProviderPlace) obj).shutDown();
+                    // make sure key is removed from namespace
+                    Namespace.unbind(key);
                     LOG.info("Done stopping place: {}", key);
                 }
             } catch (Exception ex) {
