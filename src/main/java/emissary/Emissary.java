@@ -110,7 +110,7 @@ public class Emissary {
             }
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
-            if (!Arrays.asList(args).contains(VersionCommand.COMMAND_NAME)) {
+            if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
             cmd.run(jc);
