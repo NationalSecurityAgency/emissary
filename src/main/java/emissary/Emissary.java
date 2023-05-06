@@ -25,6 +25,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.MissingCommandException;
+import com.beust.jcommander.ParameterException;
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +102,15 @@ public class Emissary {
         }
         try {
             jc.parse(args);
+        } catch (MissingCommandException e) {
+            dumpBanner();
+            LOG.error("Undefined command: {}", Arrays.toString(args));
+            HelpCommand.dumpCommands(jc);
+            exit(1);
+        } catch (ParameterException ignored) {
+            // Each command will handle missing parameters or sub commands.
+        }
+        try {
             String commandName = jc.getParsedCommand();
             if (commandName == null) {
                 dumpBanner();
@@ -115,11 +125,6 @@ public class Emissary {
             }
             cmd.run(jc);
             // don't exit(0) here or things like server will not continue to run
-        } catch (MissingCommandException e) {
-            dumpBanner();
-            LOG.error("Undefined command: {}", Arrays.toString(args));
-            HelpCommand.dumpCommands(jc);
-            exit(1);
         } catch (Exception e) {
             dumpBanner();
             LOG.error("Command threw an exception: {}", Arrays.toString(args), e);
