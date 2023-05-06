@@ -254,7 +254,14 @@ public class EmissaryServer {
      * Stop the server running under the default name
      */
     public static void stopServer() {
-        stopServer(getDefaultNamespaceName(), false);
+        stopServer(false);
+    }
+
+    /**
+     * Stop the server running under the default name
+     */
+    public static void stopServerForce() {
+        stopServer(true, false);
     }
 
     /**
@@ -263,8 +270,19 @@ public class EmissaryServer {
      * @param quiet be quiet about failures if true
      */
     public static void stopServer(final boolean quiet) {
-        stopServer(getDefaultNamespaceName(), quiet);
+        stopServer(false, quiet);
     }
+
+    /**
+     * Stop the server running under the default name
+     *
+     * @param force force shutdown
+     * @param quiet be quiet about failures if true
+     */
+    public static void stopServer(final boolean force, final boolean quiet) {
+        stopServer(getDefaultNamespaceName(), force, quiet);
+    }
+
 
     /**
      * Stop the server if it is running and remove it from the namespace
@@ -273,6 +291,17 @@ public class EmissaryServer {
      * @param quiet be quiet about failures if true
      */
     public static void stopServer(final String name, final boolean quiet) {
+        stopServer(name, false, quiet);
+    }
+
+    /**
+     * Stop the server if it is running and remove it from the namespace
+     *
+     * @param force force shutdown
+     * @param name the namespace name of the server
+     * @param quiet be quiet about failures if true
+     */
+    public static void stopServer(final String name, final boolean force, final boolean quiet) {
         // TODO pull these out to methods and test them
 
         LOG.info("Beginning shutdown of EmissaryServer {}", name);
@@ -286,7 +315,7 @@ public class EmissaryServer {
         }
 
         try {
-            AgentPool.lookup().close();
+            AgentPool.lookup().close(force);
         } catch (Exception e) {
             LOG.warn("Problem stopping AgentPool", e);
         }
