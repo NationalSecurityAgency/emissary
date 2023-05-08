@@ -156,8 +156,10 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
      */
     @Override
     public void destroyObject(PooledObject<IMobileAgent> o) {
-        logger.debug("Destroying {}", o.getObject().getName());
-        o.getObject().killAgentAsync();
+        IMobileAgent a = o.getObject();
+        logger.info("Stopping agent {}", a.getName());
+        a.killAgentAsync();
+        logger.info("Stopped agent {}", a.getName());
     }
 
     /**

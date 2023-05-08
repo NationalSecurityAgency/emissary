@@ -229,9 +229,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                         continue;
                     }
 
-                    logger.info("Stopping agent {}", a.getName());
                     a.killAgent();
-                    logger.info("Stopped agent {}", a.getName());
                     numberKilled++;
                     killedThisRound++;
 
@@ -257,42 +255,17 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
     }
 
     /**
-     * Using the {@link Namespace}, lookup all IMobileAgents and force shutdown
-     */
-    protected void killAll() {
-        for (String key : Namespace.keySet()) {
-            try {
-                Object obj = Namespace.lookup(key);
-                if (obj instanceof IMobileAgent) {
-                    IMobileAgent a = (IMobileAgent) obj;
-                    logger.info("Killing {} ", key);
-                    a.killAgentAsync();
-                    Namespace.unbind(key);
-                    logger.info("Killed {}", key);
-                }
-            } catch (Exception ex) {
-                logger.error("Error kill " + key, ex);
-            }
-        }
-        logger.info("Done stopping all places");
-    }
-
-
-    /**
      * Close down all agents and stop and unbind the pool
      */
     @Override
     public void close() {
-        close(false);
+        setMaxTotal(0);
+        emptyPool();
+        kill();
     }
 
-    public void close(boolean force) {
-        setMaxTotal(0);
-        if (force) {
-            killAll();
-        } else {
-            emptyPool();
-        }
+    public void kill() {
+        super.close();
         Namespace.unbind(getPoolName());
         logger.info("Done stopping the agent pool");
     }

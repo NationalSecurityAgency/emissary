@@ -315,7 +315,11 @@ public class EmissaryServer {
         }
 
         try {
-            AgentPool.lookup().close(force);
+            if (force) {
+                AgentPool.lookup().kill();
+            } else {
+                AgentPool.lookup().close();
+            }
         } catch (Exception e) {
             LOG.warn("Problem stopping AgentPool", e);
         }
