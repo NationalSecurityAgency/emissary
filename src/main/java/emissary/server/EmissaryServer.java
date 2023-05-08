@@ -297,8 +297,8 @@ public class EmissaryServer {
     /**
      * Stop the server if it is running and remove it from the namespace
      *
-     * @param force force shutdown
      * @param name the namespace name of the server
+     * @param force force shutdown
      * @param quiet be quiet about failures if true
      */
     public static void stopServer(final String name, final boolean force, final boolean quiet) {
