@@ -24,6 +24,7 @@
   <ciManagement />
   <distributionManagement />
   <properties>
+    <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
