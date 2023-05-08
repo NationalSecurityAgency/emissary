@@ -258,7 +258,7 @@ public class EmissaryServer {
     }
 
     /**
-     * Stop the server running under the default name
+     * Forcibly stop the server running under the default name
      */
     public static void stopServerForce() {
         stopServer(true, false);
