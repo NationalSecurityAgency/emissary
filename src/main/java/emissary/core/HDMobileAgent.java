@@ -116,9 +116,12 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Clear the payloadList and all other state info
+     * <p>
+     * Do not make this method synchronized - causes Agents command to return null
      */
     @Override
-    protected synchronized void clear() {
+    @SuppressWarnings("java:S3551")
+    protected void clear() {
         super.clear();
         this.payloadList.clear();
     }
