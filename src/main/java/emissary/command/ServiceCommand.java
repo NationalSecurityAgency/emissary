@@ -22,12 +22,16 @@ public abstract class ServiceCommand extends HttpCommand {
     public static String COMMAND_NAME = "ServiceCommand";
     public static String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
     public static String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
+    public static String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
 
     @Parameter(names = {"--csrf"}, description = "disable csrf protection", arity = 1)
     private boolean csrf = true;
 
     @Parameter(names = {"--stop"}, description = "Shutdown the service")
     private boolean stop = false;
+
+    @Parameter(names = {"--kill"}, description = "Force the shutdown of the service")
+    private boolean kill = false;
 
     @Parameter(names = {"--pause"}, description = "Stop the service from taking work")
     private boolean pause = false;
@@ -43,6 +47,10 @@ public abstract class ServiceCommand extends HttpCommand {
         return stop;
     }
 
+    public boolean isKill() {
+        return kill;
+    }
+
     public boolean isPause() {
         return pause;
     }
@@ -56,7 +64,7 @@ public abstract class ServiceCommand extends HttpCommand {
     }
 
     public String getServiceShutdownEndpoint() {
-        return SERVICE_SHUTDOWN_ENDPOINT;
+        return isKill() ? SERVICE_KILL_ENDPOINT : SERVICE_SHUTDOWN_ENDPOINT;
     }
 
     public String getServiceName() {
@@ -87,7 +95,7 @@ public abstract class ServiceCommand extends HttpCommand {
         LOG.debug("Checking to see if Emissary {} is running at {}", getServiceName(), getServiceHealthEndpoint());
         EmissaryResponse response = performGet(getServiceHealthEndpoint());
         boolean isRunning = response.getStatus() == 200;
-        if (isStop()) {
+        if (isStop() || isKill()) {
             if (isRunning) {
                 stopService();
             } else {

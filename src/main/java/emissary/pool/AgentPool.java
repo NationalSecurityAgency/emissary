@@ -229,9 +229,7 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
                         continue;
                     }
 
-                    logger.info("Stopping agent {}", a.getName());
                     a.killAgent();
-                    logger.info("Stopped agent {}", a.getName());
                     numberKilled++;
                     killedThisRound++;
 
@@ -256,16 +254,27 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         }
     }
 
-
     /**
-     * Close down all agents and stop and unbind the pool
+     * Gracefully close down all agents and unbind the pool
      */
     @Override
     public void close() {
+        logger.info("Closing the agent pool");
         setMaxTotal(0);
         emptyPool();
+        super.close();
         Namespace.unbind(getPoolName());
-        logger.info("Done stopping the agent pool");
+        logger.info("Done closing the agent pool");
+    }
+
+    /**
+     * Forcibly stop all agents and unbind the pool
+     */
+    public void kill() {
+        logger.info("Killing the agent pool");
+        super.close();
+        Namespace.unbind(getPoolName());
+        logger.info("Done killing the agent pool");
     }
 
     /**

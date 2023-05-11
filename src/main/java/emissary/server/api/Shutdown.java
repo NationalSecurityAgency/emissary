@@ -25,12 +25,27 @@ public class Shutdown {
     @Path("/" + SHUTDOWN)
     @Produces(MediaType.TEXT_HTML)
     public Response shutdownNow(@Context HttpServletRequest request) {
+        return shutdown(request, false);
+    }
+
+    @POST
+    @Path("/" + SHUTDOWN + "/force")
+    @Produces(MediaType.TEXT_HTML)
+    public Response forceShutdown(@Context HttpServletRequest request) {
+        return shutdown(request, true);
+    }
+
+    protected Response shutdown(HttpServletRequest request, boolean force) {
         try {
             LOG.debug("Calling the stop method");
             // need a new thread so the response will return
             new Thread(() -> {
                 try {
-                    EmissaryServer.stopServer();
+                    if (force) {
+                        EmissaryServer.stopServerForce();
+                    } else {
+                        EmissaryServer.stopServer();
+                    }
                 } catch (Exception e) {
                     // swallow
                 }
