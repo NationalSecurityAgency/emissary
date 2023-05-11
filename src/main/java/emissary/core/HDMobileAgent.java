@@ -556,7 +556,7 @@ public class HDMobileAgent extends MobileAgent {
     public String toString() {
         if (isZombie()) {
             return "Closed";
-        } else if (!isInUse()) {
+        } else if (this.idle.get()) {
             return "Idle";
         }
 

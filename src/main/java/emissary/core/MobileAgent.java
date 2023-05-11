@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 /**
@@ -55,6 +56,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // What we carry around with us
     protected IBaseDataObject payload = null;
+
+    // Track if the MobileAgent is currently in use
+    protected AtomicBoolean idle = new AtomicBoolean(true);
 
     // Place we are at now
     protected transient IServiceProviderPlace arrivalPlace = null;
@@ -399,6 +403,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         clear();
         setArrivalPlace(null);
         this.lastPlaceProcessed = null;
+        this.idle.set(true);
         AgentPool pool = null;
         try {
             pool = AgentPool.lookup();
@@ -696,6 +701,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         if (dataObject != null && !(dataObject instanceof IBaseDataObject)) {
             throw new IllegalArgumentException("Illegal payload sent to MobileAgent, " + "cannot handle " + dataObject.getClass().getName());
         }
+
+        this.idle.set(false);
 
         setProcessFirstPlace(processAtFirstPlace);
 
