@@ -514,9 +514,12 @@ public class HDMobileAgent extends MobileAgent {
 
     /**
      * Report whether we are busy or not
+     * <p>
+     * Do not make this method synchronized - causes Agents command to hang
      */
     @Override
-    public synchronized boolean isInUse() {
+    @SuppressWarnings("java:S3551")
+    public boolean isInUse() {
         return (this.payloadList != null) && !this.payloadList.isEmpty() && (arrivalPlace != null);
     }
 
