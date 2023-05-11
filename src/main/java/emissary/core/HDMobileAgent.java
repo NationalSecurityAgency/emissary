@@ -513,14 +513,6 @@ public class HDMobileAgent extends MobileAgent {
     }
 
     /**
-     * Report whether we are busy or not
-     */
-    @Override
-    public synchronized boolean isInUse() {
-        return (this.payloadList != null) && !this.payloadList.isEmpty() && (arrivalPlace != null);
-    }
-
-    /**
      * Setup the parallel type set tracking variable for a possible new payload
      */
     protected void setParallelTrackingInfoFor(final IBaseDataObject d) {
@@ -556,7 +548,7 @@ public class HDMobileAgent extends MobileAgent {
     public String toString() {
         if (isZombie()) {
             return "Closed";
-        } else if (this.idle.get()) {
+        } else if (!isInUse()) {
             return "Idle";
         }
 

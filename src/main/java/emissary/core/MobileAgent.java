@@ -188,8 +188,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Report whether we are busy or not
      */
     @Override
-    public synchronized boolean isInUse() {
-        return (this.payload != null) && (this.arrivalPlace != null);
+    public boolean isInUse() {
+        return !this.idle.get();
     }
 
     /**
