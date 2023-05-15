@@ -98,22 +98,13 @@ public class PayloadUtil {
                 .append("   transform history (").append(th.size()).append(") :").append("\n");
 
         // transform history output
-        switch (configureHistoryCase(fileName)) {
+        String historyCase = configureHistoryCase(fileName);
+        switch (historyCase) { // leaving as switch for future transform history altercations
             case REDUCED_HISTORY:
                 // found reduced history match, output only dropoff
                 sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
                         .append(payload.getLastPlaceVisited())
                         .append("\n");
-                break;
-            case NO_URL:
-                // found nourl match, remove urls from history locations
-                for (final TransformHistory.History h : th) {
-                    sb.append(" ");
-                    if (h.wasCoordinated()) {
-                        sb.append(" ");
-                    }
-                    sb.append("    ").append(h.getKeyNoUrl()).append("\n");
-                }
                 break;
             default:
                 // output full transform history
@@ -122,7 +113,13 @@ public class PayloadUtil {
                     if (h.wasCoordinated()) {
                         sb.append(" ");
                     }
-                    sb.append("    ").append(h.getKey()).append("\n");
+
+                    // check is NO_URL or not
+                    if (historyCase.equals(NO_URL)) {
+                        sb.append("    ").append(h.getKeyNoUrl()).append("\n");
+                    } else {
+                        sb.append("    ").append(h.getKey()).append("\n");
+                    }
                 }
         }
         return sb.toString();
