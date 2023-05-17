@@ -60,7 +60,7 @@ enum Stage {
     public static Stage getByName(String name) {
         try {
             return Stage.valueOf(name);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             return null;
         }
     }

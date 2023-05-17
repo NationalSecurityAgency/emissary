@@ -41,6 +41,11 @@ class StageTest extends UnitTest {
     }
 
     @Test
+    void testGetByNameNull() {
+        assertNull(Stage.getByName(null));
+    }
+
+    @Test
     void testStageProgression() {
         List<Stage> list = Arrays.asList(Stage.values());
         Stage stage;

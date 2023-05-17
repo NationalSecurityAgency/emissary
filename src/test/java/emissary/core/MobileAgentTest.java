@@ -40,6 +40,26 @@ class MobileAgentTest extends UnitTest {
         agent.recordHistory(place, d);
     }
 
+    @Test
+    void testTypeLookup() {
+        // invalid types
+        assertEquals(0, MobileAgent.typeLookup(null));
+        assertEquals(0, MobileAgent.typeLookup(""));
+        assertEquals(0, MobileAgent.typeLookup("UNDEFINED"));
+        assertEquals(0, MobileAgent.typeLookup("JUNK"));
+
+        // valid types
+        assertEquals(0, MobileAgent.typeLookup("STUDY"));
+        assertEquals(1, MobileAgent.typeLookup("ID"));
+        assertEquals(2, MobileAgent.typeLookup("COORDINATE"));
+        assertEquals(3, MobileAgent.typeLookup("PRETRANSFORM"));
+        assertEquals(4, MobileAgent.typeLookup("TRANSFORM"));
+        assertEquals(5, MobileAgent.typeLookup("POSTTRANSFORM"));
+        assertEquals(6, MobileAgent.typeLookup("ANALYZE"));
+        assertEquals(7, MobileAgent.typeLookup("VERIFY"));
+        assertEquals(8, MobileAgent.typeLookup("IO"));
+        assertEquals(9, MobileAgent.typeLookup("REVIEW"));
+    }
 
     @Test
     void testAddParrallelTrackingInfo() {
