@@ -90,15 +90,16 @@ public class PayloadUtil {
         final StringBuilder sb = new StringBuilder();
         final List<TransformHistory.History> th = payload.getTransformHistory().getHistory();
         final String fileName = payload.getFilename();
+        final String fileType = payload.getFileType();
         final List<String> currentForms = payload.getAllCurrentForms();
         final Date creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
-                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
+                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")
                 .append("   transform history (").append(th.size()).append(") :").append("\n");
 
         // transform history output
-        String historyCase = configureHistoryCase(fileName);
+        String historyCase = configureHistoryCase(fileType);
         switch (historyCase) { // leaving as switch for future transform history altercations
             case REDUCED_HISTORY:
                 // found reduced history match, output only dropoff
@@ -107,7 +108,6 @@ public class PayloadUtil {
                         .append("\n");
                 break;
             default:
-                // output full transform history
                 for (final TransformHistory.History h : th) {
                     sb.append(" ");
                     if (h.wasCoordinated()) {
@@ -126,19 +126,19 @@ public class PayloadUtil {
     }
 
     /**
-     * Check if file/test in PayloadUtil.cfg matches current filename
+     * Check if fileType in PayloadUtil.cfg matches current payload fileType
      *
-     * @param fileName current payload filename
+     * @param fileType current payload fileType
      * @return string for output case
      */
-    public static String configureHistoryCase(String fileName) {
+    public static String configureHistoryCase(String fileType) {
         for (String currentReducedItem : reducedTransformHistory) {
-            if (!currentReducedItem.equals("") && fileName.toLowerCase().contains(currentReducedItem.toLowerCase())) {
+            if (!currentReducedItem.equals("") && fileType.equalsIgnoreCase(currentReducedItem)) {
                 return REDUCED_HISTORY;
             }
         }
         for (String currentNoUrlItem : noURLHistory) {
-            if (!currentNoUrlItem.equals("") && fileName.toLowerCase().contains(currentNoUrlItem.toLowerCase())) {
+            if (!currentNoUrlItem.equals("") && fileType.equalsIgnoreCase(currentNoUrlItem)) {
                 return NO_URL;
             }
         }

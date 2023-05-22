@@ -17,9 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PayloadUtilTest extends UnitTest {
 
@@ -115,7 +113,7 @@ public class PayloadUtilTest extends UnitTest {
         d.setCreationTimestamp(new Date(0));
 
         // test
-        PayloadUtil.reducedTransformHistory.add("testReducedHistory");
+        PayloadUtil.reducedTransformHistory.add("UNKNOWN");
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
         PayloadUtil.reducedTransformHistory.clear();
 
@@ -141,7 +139,7 @@ public class PayloadUtilTest extends UnitTest {
         d.setCreationTimestamp(new Date(0));
 
         // test
-        PayloadUtil.noURLHistory.add("noUrlHistory");
+        PayloadUtil.noURLHistory.add("UNKNOWN");
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
         PayloadUtil.noURLHistory.clear();
 
@@ -154,6 +152,31 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
                 "Answer should not contain the URL");
         assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"), "Answer should not contain full URL");
+    }
+
+    @Test
+    void testHistoryDoesNotReduce() {
+        // setup
+        final String fn = "noMatch";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
+        d.setCreationTimestamp(new Date(0));
+
+        // test
+        PayloadUtil.reducedTransformHistory.add("REDUCED");
+        PayloadUtil.noURLHistory.add("NOURL");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.reducedTransformHistory.clear();
+        PayloadUtil.noURLHistory.clear();
+
+        // verify
+        assertTrue(answer.contains("\n"), "Must be multi-line string");
+        assertTrue(answer.contains("filename: noMatch"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+                "Answer should not reduce history due to no matching form");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+                "Answer should not reduce history due to no matching form");
     }
 
     @Test
