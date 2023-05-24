@@ -1,0 +1,39 @@
+name: Patch branch create
+
+on:
+  workflow_dispatch:
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'corretto'
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Get the version
+        run: echo "PATCH_BRANCH=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*')" >> "$GITHUB_ENV"
+
+      - name: Branch that patch
+        run: git switch -c patch/${{ env.PATCH_BRANCH }}
+
+      - name: Set the patch version
+        run: |
+          mvn -B -V -e -ntp versions:set -DnextSnapshot=true
+          mvn -B -V -e -ntp versions:commit
+          git add .
+          git commit -m "[github-actions] prepare for next patch iteration"
+          git push -u origin patch/${{ env.PATCH_BRANCH }}

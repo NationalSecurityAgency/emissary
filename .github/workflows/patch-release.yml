@@ -1,0 +1,70 @@
+name: Patch branch release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'corretto'
+          cache: 'maven'
+#          server-id: emissary-releases
+#          server-username: MAVEN_USERNAME
+#          server-password: MAVEN_PASSWORD
+
+      - name: Configure Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Release patch with Maven
+        run: mvn -B -V -e -ntp "-Dstyle.color=always" build-helper:parse-version release:prepare -DdevelopmentVersion=\${parsedVersion.majorVersion}.\${parsedVersion.minorVersion}.\${parsedVersion.nextIncrementalVersion}-SNAPSHOT
+
+      - name: Get the release tag/version
+        run: echo "RELEASE_VERSION=$(grep 'scm.tag=' release.properties|cut -d '=' -f 2)" >> "$GITHUB_ENV"
+
+      - name: Checkout release tag
+        uses: actions/checkout@v3
+        with:
+          ref: '${{ env.RELEASE_VERSION }}'
+
+      - name: Build the release version
+        run: mvn -B -V -e -ntp "-Dstyle.color=always" clean install -Pdist
+
+#      - name: Deploy the release
+#        run: mvn -B -V -e -ntp "-Dstyle.color=always" deploy -DskipTests -DaltDeploymentRepository=emissary-releases::${{ secrets.EMISSARY_RELEASE_URL }}
+#        env:
+#          MAVEN_USERNAME: ${{ secrets.EMISSARY_RELEASE_USERNAME }}
+#          MAVEN_PASSWORD: ${{ secrets.EMISSARY_RELEASE_PASSWORD }}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: ${{ env.RELEASE_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/emissary-${{ env.RELEASE_VERSION }}-dist.tar.gz
+          asset_name: emissary-${{ env.RELEASE_VERSION }}-dist.tar.gz
+          asset_content_type: application/tar+gzip
