@@ -1,5 +1,7 @@
 package emissary.test.core.junit5;
 
+import emissary.core.DataObjectFactory;
+import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 
 import org.jdom2.Document;
@@ -7,6 +9,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class TestExtractionTest extends UnitTest {
 
     private final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
+    private final String MISSING_TAGS_RESOURCE = "/emissary/test/core/junit5/MissingTags.xml";
 
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
@@ -89,6 +93,22 @@ class TestExtractionTest extends UnitTest {
             fail("Attribute " + matchMode + " does not exist in data");
         }
         return data;
+    }
+
+    @Test
+    void testExtractionNoNameTags() throws JDOMException, IOException {
+        IBaseDataObject d = DataObjectFactory.getInstance();
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(MISSING_TAGS_RESOURCE);
+        Document doc = builder.build(inputStream);
+        Element answers = doc.getRootElement().getChild("answers");
+
+        // ensure that the test fails if the meta or nometa tags are not created correctly and a name tag is missing
+        Assertions.assertThrows(AssertionError.class, () -> {
+            test.checkAnswers(answers, d, null, MISSING_TAGS_RESOURCE);
+        }, "The test should fail if we did not create the nometa tag correctly");
     }
 
     public static class WhyDoYouMakeMeDoThisExtractionTest extends emissary.test.core.junit5.ExtractionTest {

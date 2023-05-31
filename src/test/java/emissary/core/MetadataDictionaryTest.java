@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class MetadataDictionaryTest extends UnitTest {
@@ -91,6 +92,16 @@ public class MetadataDictionaryTest extends UnitTest {
             fail("Exception doing namespace lookup", ex);
         } finally {
             clearNamespace();
+        }
+    }
+
+    @Test
+    void testNullRegex() {
+        MetadataDictionary dict = getDict(true);
+        try {
+            assertNull(dict.regex(null), "regex() should return null if we pass it a null value.");
+        } catch (NullPointerException ex) {
+            fail("An exception was thrown instead of handling a null value gracefully", ex);
         }
     }
 
