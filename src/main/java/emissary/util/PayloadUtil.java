@@ -1,5 +1,6 @@
 package emissary.util;
 
+import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Family;
@@ -13,12 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -30,8 +26,7 @@ public class PayloadUtil {
     private static final String LS = System.getProperty("line.separator");
     private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
 
-    protected static List<String> reducedTransformHistory = new ArrayList<>();
-    protected static List<String> noURLHistory = new ArrayList<>();
+    protected static Map<String, String> historyPreference = new HashMap<>();
 
     protected static final String REDUCED_HISTORY = "REDUCED_HISTORY";
     protected static final String NO_URL = "NO_URL";
@@ -50,8 +45,16 @@ public class PayloadUtil {
 
         // fill lists with data from PayloadUtil.cfg for transform itinerary/history
         if (configG != null) {
-            reducedTransformHistory = configG.findEntries(REDUCED_HISTORY);
-            noURLHistory = configG.findEntries(NO_URL);
+            for (ConfigEntry configEntry : configG.getEntries()) {
+                // check if fileType is already mapped to history output preference
+                if (historyPreference.containsKey(configEntry.getValue())) {
+                    logger.warn("FileType {} already has history preference {} associated. {} will be ignored.", configEntry.getValue(),
+                            historyPreference.get(configEntry.getValue()), configEntry.getKey());
+                } else {
+                    // mapped fileType -> preferenceType
+                    historyPreference.put(configEntry.getValue(), configEntry.getKey());
+                }
+            }
         }
     }
 
@@ -100,27 +103,20 @@ public class PayloadUtil {
 
         // transform history output
         String historyCase = configureHistoryCase(fileType);
-        switch (historyCase) { // leaving as switch for future transform history altercations
-            case REDUCED_HISTORY:
-                // found reduced history match, output only dropoff
-                sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
-                        .append(payload.getLastPlaceVisited())
-                        .append("\n");
-                break;
-            default:
-                for (final TransformHistory.History h : th) {
+        if (historyCase.equals(REDUCED_HISTORY)) {
+            // found reduced history match, output only dropoff
+            sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
+                    .append(payload.getLastPlaceVisited())
+                    .append("\n");
+        } else {
+            for (final TransformHistory.History h : th) {
+                sb.append(" ");
+                if (h.wasCoordinated()) {
                     sb.append(" ");
-                    if (h.wasCoordinated()) {
-                        sb.append(" ");
-                    }
-
-                    // check is NO_URL or not
-                    if (historyCase.equals(NO_URL)) {
-                        sb.append("    ").append(h.getKeyNoUrl()).append("\n");
-                    } else {
-                        sb.append("    ").append(h.getKey()).append("\n");
-                    }
                 }
+                // check is NO_URL or not
+                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append("\n");
+            }
         }
         return sb.toString();
     }
@@ -132,18 +128,10 @@ public class PayloadUtil {
      * @return string for output case
      */
     public static String configureHistoryCase(String fileType) {
-        for (String currentReducedItem : reducedTransformHistory) {
-            if (!currentReducedItem.equals("") && fileType.equalsIgnoreCase(currentReducedItem)) {
-                return REDUCED_HISTORY;
-            }
+        if (historyPreference.containsKey(fileType)) {
+            return historyPreference.get(fileType);
         }
-        for (String currentNoUrlItem : noURLHistory) {
-            if (!currentNoUrlItem.equals("") && fileType.equalsIgnoreCase(currentNoUrlItem)) {
-                return NO_URL;
-            }
-        }
-
-        // no match found in cfg, return empty string
+        // no match for current fileType, return empty string
         return "";
     }
 

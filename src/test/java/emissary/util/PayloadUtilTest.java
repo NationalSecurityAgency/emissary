@@ -115,9 +115,9 @@ public class PayloadUtilTest extends UnitTest {
         d.setCreationTimestamp(new Date(0));
 
         // test
-        PayloadUtil.reducedTransformHistory.add("UNKNOWN");
+        PayloadUtil.historyPreference.put("UNKNOWN", "REDUCED_HISTORY");
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
-        PayloadUtil.reducedTransformHistory.clear();
+        PayloadUtil.historyPreference.clear();
 
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
@@ -141,9 +141,9 @@ public class PayloadUtilTest extends UnitTest {
         d.setCreationTimestamp(new Date(0));
 
         // test
-        PayloadUtil.noURLHistory.add("UNKNOWN");
+        PayloadUtil.historyPreference.put("UNKNOWN", "NO_URL");
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
-        PayloadUtil.noURLHistory.clear();
+        PayloadUtil.historyPreference.clear();
 
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
@@ -166,11 +166,10 @@ public class PayloadUtilTest extends UnitTest {
         d.setCreationTimestamp(new Date(0));
 
         // test
-        PayloadUtil.reducedTransformHistory.add("REDUCED");
-        PayloadUtil.noURLHistory.add("NOURL");
+        PayloadUtil.historyPreference.put("REDUCED", "REDUCED_HISTORY");
+        PayloadUtil.historyPreference.put("NOURL", "NO_URL");
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
-        PayloadUtil.reducedTransformHistory.clear();
-        PayloadUtil.noURLHistory.clear();
+        PayloadUtil.historyPreference.clear();
 
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
