@@ -1,6 +1,5 @@
 package emissary.util;
 
-import emissary.config.ConfigEntry;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Family;
@@ -50,16 +49,33 @@ public class PayloadUtil {
 
         // fill lists with data from PayloadUtil.cfg for transform itinerary/history
         if (configG != null) {
-            for (ConfigEntry configEntry : configG.getEntries()) {
-                // check if fileType is already mapped to history output preference
-                if (historyPreference.containsKey(configEntry.getValue())) {
-                    logger.warn("FileType {} already has history preference {} associated. {} will be ignored.", configEntry.getValue(),
-                            historyPreference.get(configEntry.getValue()), configEntry.getKey());
-                } else {
-                    // mapped fileType -> preferenceType
-                    historyPreference.put(configEntry.getValue(), configEntry.getKey());
-                }
+            for (String fileType : configG.findEntries(REDUCED_HISTORY)) {
+                setFileTypeHistoryPreference(fileType, REDUCED_HISTORY);
             }
+            for (String fileType : configG.findEntries(NO_URL)) {
+                setFileTypeHistoryPreference(fileType, NO_URL);
+            }
+        }
+    }
+
+    /**
+     * Check if fileType is already mapped to history preference. If not, set fileType -$gt; preference in map
+     *
+     * @param fileType current fileType pulled from cfg
+     * @param preference preference associated with current cfg fileType
+     */
+    protected static void setFileTypeHistoryPreference(String fileType, String preference) {
+        if (historyPreference.containsKey(fileType)) {
+            if (historyPreference.get(fileType).equals(preference)) {
+                // log if filetype is assigned in the same preference more than once
+                logger.warn("FileType {} is assigned to {} in cfg more than once.", fileType, preference);
+            } else {
+                // log if filetype already has previous preference assignment
+                logger.warn("FileType {} already has history preference {} assigned. {} will be ignored.", fileType,
+                        historyPreference.get(fileType), preference);
+            }
+        } else {
+            historyPreference.put(fileType, preference);
         }
     }
 
