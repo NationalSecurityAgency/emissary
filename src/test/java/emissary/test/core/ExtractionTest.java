@@ -34,6 +34,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -224,10 +226,8 @@ public abstract class ExtractionTest extends UnitTest {
         // Check specified nometa
         for (Element meta : el.getChildren("nometa")) {
             String key = meta.getChildTextTrim("name");
-            assertTrue(
-                    String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                            payload.getStringParameter(key)),
-                    !payload.hasParameter(key));
+            assertFalse(String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
+                    payload.getStringParameter(key)), payload.hasParameter(key));
         }
 
         // Check the primary view. Even though there is only one
@@ -242,8 +242,8 @@ public abstract class ExtractionTest extends UnitTest {
         for (Element view : el.getChildren("view")) {
             String viewName = view.getChildTextTrim("name");
             String lengthStr = view.getChildTextTrim("length");
-            byte viewData[] = payload.getAlternateView(viewName);
-            assertTrue(String.format("Alternate View '%s' is missing in %s", viewName, tname), viewData != null);
+            byte[] viewData = payload.getAlternateView(viewName);
+            assertNotNull(String.format("Alternate View '%s' is missing in %s", viewName, tname), viewData);
             if (lengthStr != null) {
                 assertEquals(String.format("Length of Alternate View '%s' is wrong in %s", viewName, tname), Integer.parseInt(lengthStr),
                         viewData.length);
@@ -254,8 +254,8 @@ public abstract class ExtractionTest extends UnitTest {
         // Check for noview items
         for (Element view : el.getChildren("noview")) {
             String viewName = view.getChildTextTrim("name");
-            byte viewData[] = payload.getAlternateView(viewName);
-            assertTrue(String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname), viewData == null);
+            byte[] viewData = payload.getAlternateView(viewName);
+            assertNull(String.format("Alternate View '%s' is present, but should not be, in %s", viewName, tname), viewData);
         }
 
 
@@ -282,7 +282,7 @@ public abstract class ExtractionTest extends UnitTest {
         } else {
             if (extractCountStr != null) {
                 assertEquals(String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr),
-                        Integer.parseInt(extractCountStr), 0);
+                        0, Integer.parseInt(extractCountStr));
             }
         }
     }
