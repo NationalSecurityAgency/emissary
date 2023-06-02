@@ -8,6 +8,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
 import emissary.core.IPausable;
+import emissary.core.MetricsManager;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
@@ -19,6 +20,7 @@ import emissary.pool.MoveSpool;
 import emissary.roll.RollManager;
 import emissary.server.mvc.ThreadDumpAction;
 import emissary.server.mvc.ThreadDumpAction.ThreadDumpInfo;
+import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
@@ -345,6 +347,8 @@ public class EmissaryServer {
                 if (obj instanceof IServiceProviderPlace) {
                     LOG.info("Stopping {} ", obj);
                     ((IServiceProviderPlace) obj).shutDown();
+                    // make sure key is removed from namespace
+                    Namespace.unbind(key);
                     LOG.info("Done stopping place: {}", key);
                 }
             } catch (Exception ex) {
@@ -361,6 +365,14 @@ public class EmissaryServer {
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
         }
+
+        try {
+            MetricsManager.lookup().shutdown();
+        } catch (Exception ex) {
+            LOG.warn("No metrics manager available");
+        }
+
+        SPILoader.unload();
 
         RollManager.shutdown();
 

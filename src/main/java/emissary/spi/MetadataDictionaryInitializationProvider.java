@@ -14,4 +14,13 @@ public class MetadataDictionaryInitializationProvider implements InitializationP
         // / Initialize the metadata dictionary
         MetadataDictionary.initialize();
     }
+
+    @Override
+    public void shutdown() {
+        try {
+            MetadataDictionary.lookup().shutdown();
+        } catch (Exception e) {
+            logger.warn("no metadata dictionary available");
+        }
+    }
 }

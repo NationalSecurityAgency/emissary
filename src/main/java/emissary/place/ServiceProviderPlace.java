@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.PLACE_NAME;
@@ -974,21 +975,15 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     public void shutDown() {
         logger.debug("Called shutDown()");
 
-        // List of keys without expense
-        List<String> keylist = new ArrayList<>();
-        for (String k : keys) {
-            keylist.add(KeyManipulator.removeExpense(k));
-        }
-
-        // Remove from directory
-        deregisterFromDirectory(keylist);
+        // Remove from directory a list of keys without expense
+        deregisterFromDirectory(keys.stream().map(KeyManipulator::removeExpense).collect(Collectors.toList()));
 
         // Unbind from namespace
-        for (String key : keys) {
-            String bindKey = KeyManipulator.getServiceLocation(key);
-            Namespace.unbind(bindKey);
-            logger.debug("Unbinding place with {}", bindKey);
-        }
+        unbindFromNamespace();
+    }
+
+    protected void unbindFromNamespace() {
+        keys.stream().map(KeyManipulator::getServiceLocation).forEach(Namespace::unbind);
     }
 
     /**

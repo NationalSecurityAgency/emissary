@@ -297,4 +297,13 @@ public class MetadataDictionary {
         }
         return r;
     }
+
+    public void shutdown() {
+        logger.info("Initiating metadata dictionary shutdown...");
+        this.nameMap.clear();
+        this.regexCache.clear();
+        this.regexMap.clear();
+        Namespace.unbind(namespaceName);
+        logger.info("Metadata dictionary shutdown.");
+    }
 }

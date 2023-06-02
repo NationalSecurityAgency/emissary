@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.core.IMobileAgent;
+import emissary.core.Namespace;
 
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.PooledObjectFactory;
@@ -159,6 +160,9 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
         IMobileAgent a = o.getObject();
         logger.info("Stopping agent {}", a.getName());
         a.killAgentAsync();
+        if (useNamespace) {
+            Namespace.unbind(o.getObject().getName());
+        }
         logger.info("Stopped agent {}", a.getName());
     }
 
