@@ -226,12 +226,14 @@ public abstract class ExtractionTest extends UnitTest {
         // Check specified metadata
         for (Element meta : el.getChildren("meta")) {
             String key = meta.getChildTextTrim("name");
+            checkForMissingNameElement("meta", key, tname);
             checkStringValue(meta, payload.getStringParameter(key), tname);
         }
 
         // Check specified nometa
         for (Element meta : el.getChildren("nometa")) {
             String key = meta.getChildTextTrim("name");
+            checkForMissingNameElement("nometa", key, tname);
             assertFalse(payload.hasParameter(key),
                     String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
                             payload.getStringParameter(key)));
@@ -291,6 +293,12 @@ public abstract class ExtractionTest extends UnitTest {
                 assertEquals(0, Integer.parseInt(extractCountStr),
                         String.format("No extracted children in '%s' when expecting %s", tname, extractCountStr));
             }
+        }
+    }
+
+    private void checkForMissingNameElement(String parentTag, String key, String tname) {
+        if (key == null) {
+            fail(String.format("The element %s has a problem in %s: does not have a child name element", parentTag, tname));
         }
     }
 

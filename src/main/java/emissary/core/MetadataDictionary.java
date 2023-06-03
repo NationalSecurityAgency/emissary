@@ -237,6 +237,9 @@ public class MetadataDictionary {
      * @return the new name as supplied by the first matching regexp or the original name if nothing matches
      */
     public String regex(final String m) {
+        if (m == null) {
+            return null;
+        }
         String r = this.regexCache.get(m);
         if (r != null) {
             this.logger.trace("Found cache match for {} --> {}", m, r);
