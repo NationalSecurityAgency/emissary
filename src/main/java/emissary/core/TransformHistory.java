@@ -3,6 +3,8 @@ package emissary.core;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -191,6 +193,10 @@ public class TransformHistory {
 
         public String getKey() {
             return key;
+        }
+
+        public String getKeyNoUrl() {
+            return StringUtils.substringBefore(key, ".http");
         }
 
         public boolean wasCoordinated() {

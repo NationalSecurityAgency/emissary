@@ -1,5 +1,7 @@
 package emissary.util;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
 import emissary.core.TransformHistory;
@@ -10,8 +12,10 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +29,55 @@ public class PayloadUtil {
 
     private static final String LS = System.getProperty("line.separator");
     private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
+
+    protected static Map<String, String> historyPreference = new HashMap<>();
+
+    protected static final String REDUCED_HISTORY = "REDUCED_HISTORY";
+    protected static final String NO_URL = "NO_URL";
+
+    static {
+        configure();
+    }
+
+    protected static void configure() {
+        Configurator configG = null;
+        try {
+            configG = ConfigUtil.getConfigInfo(PayloadUtil.class);
+        } catch (IOException e) {
+            logger.error("Cannot open default config file", e);
+        }
+
+        // fill lists with data from PayloadUtil.cfg for transform itinerary/history
+        if (configG != null) {
+            for (String fileType : configG.findEntries(REDUCED_HISTORY)) {
+                setFileTypeHistoryPreference(fileType, REDUCED_HISTORY);
+            }
+            for (String fileType : configG.findEntries(NO_URL)) {
+                setFileTypeHistoryPreference(fileType, NO_URL);
+            }
+        }
+    }
+
+    /**
+     * Check if fileType is already mapped to history preference. If not, set fileType -$gt; preference in map
+     *
+     * @param fileType current fileType pulled from cfg
+     * @param preference preference associated with current cfg fileType
+     */
+    protected static void setFileTypeHistoryPreference(String fileType, String preference) {
+        if (historyPreference.containsKey(fileType)) {
+            if (historyPreference.get(fileType).equals(preference)) {
+                // log if filetype is assigned in the same preference more than once
+                logger.warn("FileType {} is assigned to {} in cfg more than once.", fileType, preference);
+            } else {
+                // log if filetype already has previous preference assignment
+                logger.warn("FileType {} already has history preference {} assigned. {} will be ignored.", fileType,
+                        historyPreference.get(fileType), preference);
+            }
+        } else {
+            historyPreference.put(fileType, preference);
+        }
+    }
 
     /**
      * Try really hard to get a meaningful name for a payload object
@@ -61,20 +114,46 @@ public class PayloadUtil {
         final StringBuilder sb = new StringBuilder();
         final List<TransformHistory.History> th = payload.getTransformHistory().getHistory();
         final String fileName = payload.getFilename();
+        final String fileType = payload.getFileType();
         final List<String> currentForms = payload.getAllCurrentForms();
         final Date creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
-                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(payload.getFileType()).append("\n")
+                .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")
                 .append("   transform history (").append(th.size()).append(") :").append("\n");
-        for (final TransformHistory.History h : th) {
-            sb.append("     ");
-            if (h.wasCoordinated()) {
-                sb.append("  ");
+
+        // transform history output
+        String historyCase = configureHistoryCase(fileType);
+        if (historyCase.equals(REDUCED_HISTORY)) {
+            // found reduced history match, output only dropoff
+            sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
+                    .append(payload.getLastPlaceVisited())
+                    .append("\n");
+        } else {
+            for (final TransformHistory.History h : th) {
+                sb.append(" ");
+                if (h.wasCoordinated()) {
+                    sb.append(" ");
+                }
+                // check is NO_URL or not
+                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append("\n");
             }
-            sb.append(h.getKey()).append("\n");
         }
         return sb.toString();
+    }
+
+    /**
+     * Check if fileType in PayloadUtil.cfg matches current payload fileType
+     *
+     * @param fileType current payload fileType
+     * @return string for output case
+     */
+    public static String configureHistoryCase(String fileType) {
+        if (historyPreference.containsKey(fileType)) {
+            return historyPreference.get(fileType);
+        }
+        // no match for current fileType, return empty string
+        return "";
     }
 
     /**

@@ -98,10 +98,86 @@ public class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("currentForms: [UNKNOWN]"), "Answer did not contain the currentForms");
         assertTrue(answer.contains("filetype: UNKNOWN"), "Answer did not contain the correct filetype");
         assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
-        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
-                "Answer did not contain the correct transform history entry");
         assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
                 "Answer did not contain the correct transform history entry");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+                "Answer did not contain the correct transform history entry");
+    }
+
+    @Test
+    void testReducedHistory() {
+        // setup
+        final String fn = "testReducedHistory";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
+        d.appendTransformHistory("TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace");
+        d.setCreationTimestamp(new Date(0));
+
+        // test
+        PayloadUtil.historyPreference.put("UNKNOWN", "REDUCED_HISTORY");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.historyPreference.clear();
+
+        // verify
+        assertTrue(answer.contains("\n"), "Must be multi-line string");
+        assertTrue(answer.contains("filename: testReducedHistory"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("transform history (3)"), "Answer did not contain the transform history number");
+        assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+                "Answer should not contain this transform history entry");
+        assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+                "Answer should not contain this transform history entry");
+        assertTrue(answer.contains("** reduced transform history **"), "Answer should contain 'reduced transform history'");
+        assertTrue(answer.contains("dropOff -> TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace"), "Answer should show dropoff");
+    }
+
+    @Test
+    void testNoUrlHistory() {
+        // setup
+        final String fn = "noUrlHistory";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
+        d.setCreationTimestamp(new Date(0));
+
+        // test
+        PayloadUtil.historyPreference.put("UNKNOWN", "NO_URL");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.historyPreference.clear();
+
+        // verify
+        assertTrue(answer.contains("\n"), "Must be multi-line string");
+        assertTrue(answer.contains("filename: noUrlHistory"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE"),
+                "Answer should not contain the URL");
+        assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"), "Answer should not contain full URL");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
+                "Answer should not contain the URL");
+        assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"), "Answer should not contain full URL");
+    }
+
+    @Test
+    void testHistoryDoesNotReduce() {
+        // setup
+        final String fn = "noMatch";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
+        d.setCreationTimestamp(new Date(0));
+
+        // test
+        PayloadUtil.historyPreference.put("REDUCED", "REDUCED_HISTORY");
+        PayloadUtil.historyPreference.put("NOURL", "NO_URL");
+        final String answer = PayloadUtil.getPayloadDisplayString(d, false);
+        PayloadUtil.historyPreference.clear();
+
+        // verify
+        assertTrue(answer.contains("\n"), "Must be multi-line string");
+        assertTrue(answer.contains("filename: noMatch"), "Answer did not contain the correct filename");
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+                "Answer should not reduce history due to no matching form");
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+                "Answer should not reduce history due to no matching form");
     }
 
     @Test
