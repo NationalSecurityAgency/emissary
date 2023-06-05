@@ -1,6 +1,7 @@
 package emissary.util.search;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import javax.annotation.Nullable;
 
 /**
@@ -64,6 +65,70 @@ public class ByteMatcher {
      */
     public int length() {
         return mydata.length;
+    }
+
+    public boolean containsAny(String... patterns) {
+        return Arrays.stream(patterns).anyMatch(this::contains);
+    }
+
+    public boolean containsAnyIgnoreCase(String... patterns) {
+        return Arrays.stream(patterns).anyMatch(this::containsIgnoreCase);
+    }
+
+    public boolean containsAny(int beginIndex, int endIndex, String... patterns) {
+        return Arrays.stream(patterns).anyMatch(pattern -> contains(pattern, beginIndex, endIndex));
+    }
+
+    public boolean containsAnyIgnoreCase(int beginIndex, int endIndex, String... patterns) {
+        return Arrays.stream(patterns).anyMatch(pattern -> containsIgnoreCase(pattern, beginIndex, endIndex));
+    }
+
+    public boolean containsAll(String... patterns) {
+        return Arrays.stream(patterns).allMatch(this::contains);
+    }
+
+    public boolean containsAllIgnoreCase(String... patterns) {
+        return Arrays.stream(patterns).allMatch(this::containsIgnoreCase);
+    }
+
+    public boolean containsAll(int beginIndex, int endIndex, String... patterns) {
+        return Arrays.stream(patterns).allMatch(pattern -> contains(pattern, beginIndex, endIndex));
+    }
+
+    public boolean containsAllIgnoreCase(int beginIndex, int endIndex, String... patterns) {
+        return Arrays.stream(patterns).allMatch(pattern -> containsIgnoreCase(pattern, beginIndex, endIndex));
+    }
+
+    public boolean contains(String pattern) {
+        return contains(pattern.getBytes());
+    }
+
+    public boolean containsIgnoreCase(String pattern) {
+        return containsIgnoreCase(pattern.getBytes());
+    }
+
+    public boolean contains(String pattern, int beginIndex, int endIndex) {
+        return contains(pattern.getBytes(), beginIndex, endIndex);
+    }
+
+    public boolean containsIgnoreCase(String pattern, int beginIndex, int endIndex) {
+        return containsIgnoreCase(pattern.getBytes(), beginIndex, endIndex);
+    }
+
+    public boolean contains(byte[] pattern) {
+        return indexOf(pattern) >= 0;
+    }
+
+    public boolean containsIgnoreCase(byte[] pattern) {
+        return indexIgnoreCase(pattern) >= 0;
+    }
+
+    public boolean contains(byte[] pattern, int beginIndex, int endIndex) {
+        return indexOf(pattern, beginIndex, endIndex) >= 0;
+    }
+
+    public boolean containsIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
+        return indexIgnoreCase(pattern, beginIndex, endIndex) >= 0;
     }
 
     /**
