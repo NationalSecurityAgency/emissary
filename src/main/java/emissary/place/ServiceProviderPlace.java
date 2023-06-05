@@ -573,7 +573,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             rehash(payload);
             return l;
         } catch (Exception e) {
-            logger.error("Place.process threw: {}", e, e);
+            logger.error("Place.process threw:", e);
             throw e;
         }
     }
