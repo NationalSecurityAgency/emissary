@@ -242,7 +242,7 @@ public class PayloadUtil {
             root.addContent(views);
         }
 
-        logger.debug("Produced xml document for " + d.shortName());
+        logger.debug("Produced xml document for {}", d.shortName());
         return new Document(root);
     }
 
@@ -265,7 +265,7 @@ public class PayloadUtil {
         for (final IBaseDataObject d : list) {
             final Document doc = toXml(d);
             root.addContent(doc.detachRootElement());
-            logger.debug("Adding xml content for " + d.shortName() + " to document");
+            logger.debug("Adding xml content for {} to document", d.shortName());
         }
         return new Document(root);
     }
