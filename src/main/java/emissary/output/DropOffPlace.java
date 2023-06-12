@@ -245,9 +245,9 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                 objectMetricsLog.info(appendEntries(outputObjectMetrics(tld, objectMetricsFields)), "Finished DropOff");
             }
 
-            logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
+            logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {}",
                     tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
-                    tld.getFileType());
+                    tld.getFileType(), tld.data().length);
         }
 
         // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
