@@ -910,7 +910,7 @@
           <version>3.0.0</version>
           <configuration>
             <autoVersionSubmodules>true</autoVersionSubmodules>
-            <pushChanges>true</pushChanges>
+            <pushChanges>false</pushChanges>
             <goals>deploy</goals>
             <localCheckout>true</localCheckout>
             <releaseProfiles>basis,hotspot,dev</releaseProfiles>
