@@ -16,7 +16,7 @@ public class HelpCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(HelpCommand.class);
 
-    public static String COMMAND_NAME = "help";
+    public static final String COMMAND_NAME = "help";
 
     @Parameter(arity = 1, description = "display usage for this subcommand ")
     public List<String> subcommands = new ArrayList<>();
@@ -38,18 +38,18 @@ public class HelpCommand implements EmissaryCommand {
     @Override
     public void run(JCommander jc) {
         setup();
-        if (subcommands.size() == 0) {
+        if (subcommands.isEmpty()) {
             dumpCommands(jc);
         } else if (subcommands.size() > 1) {
             LOG.error("You can only see help for 1 command at a time");
             dumpCommands(jc);
         } else {
             String subcommand = getSubcommand();
-            LOG.info("Detailed help for: " + subcommand);
+            LOG.info("Detailed help for: {}", subcommand);
             try {
                 jc.usage(subcommand);
             } catch (ParameterException e) {
-                LOG.error("ERROR: invalid command name: " + subcommand);
+                LOG.error("ERROR: invalid command name: {}", subcommand);
                 dumpCommands(jc);
             }
         }
@@ -61,11 +61,13 @@ public class HelpCommand implements EmissaryCommand {
     }
 
     public static void dumpCommands(JCommander jc) {
-        System.out.println("Available commands:");
+        LOG.info("Available commands:");
         for (Entry<String, JCommander> cmd : jc.getCommands().entrySet()) {
-            String name = cmd.getKey();
-            String description = jc.getCommandDescription(name);
-            LOG.info("\t" + String.format("%1$-15s", name) + " " + description);
+            final String name = cmd.getKey();
+            final String description = jc.getCommandDescription(name);
+            if (LOG.isInfoEnabled()) {
+                LOG.info("\t {} {}", String.format("%1$-15s", name), description);
+            }
         }
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");
     }
