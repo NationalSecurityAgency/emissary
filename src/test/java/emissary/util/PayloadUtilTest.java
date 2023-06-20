@@ -243,15 +243,15 @@ public class PayloadUtilTest extends UnitTest {
     void testIsValidForm() {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
-        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are valid");
-        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are valid");
-        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are valid");
-        assertTrue(PayloadUtil.isValidForm("-_"), "Dash and underscore are valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses are valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "Slash are valid");
-        assertFalse(PayloadUtil.isValidForm("."), "Dot isn't considered valid");
-        assertFalse(PayloadUtil.isValidForm(" "), "Space isn't considered valid");
-        assertTrue(PayloadUtil.isValidForm("+"), "Plus are valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are expected to be valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are expected to be valid");
+        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are expected to be valid");
+        assertTrue(PayloadUtil.isValidForm("-_"), "'-' and '_' are expected to be valid form characters");
+        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses are expected to be valid form characters");
+        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "'/' is expected to be a valid form character");
+        assertFalse(PayloadUtil.isValidForm("."), "Dot should not be considered a valid form character");
+        assertFalse(PayloadUtil.isValidForm(" "), "Space should not be considered a valid form character");
+        assertTrue(PayloadUtil.isValidForm("+"), "'+' is expected to be a valid form character");
 
         // Cycle through all characters and see how many are valid and that we have the expected number
         int validChars = 0;
