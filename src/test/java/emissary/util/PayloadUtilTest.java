@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PayloadUtilTest extends UnitTest {
 
     private static String timezone = "GMT";
-    private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/";
+    private static final String validFormCharsString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-)(/+";
     private static final Set<Character> validFormChars = new HashSet<>();
 
     @BeforeAll
@@ -243,14 +243,15 @@ public class PayloadUtilTest extends UnitTest {
     void testIsValidForm() {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
-        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are not considered valid");
-        assertTrue(PayloadUtil.isValidForm("-_"), "Dash and underscore aren't considered valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses aren't considered valid");
-        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "Slash aren't considered valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are valid");
+        assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are valid");
+        assertTrue(PayloadUtil.isValidForm("-_"), "Dash and underscore are valid");
+        assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses are valid");
+        assertTrue(PayloadUtil.isValidForm("formName-(application/xml)"), "Slash are valid");
         assertFalse(PayloadUtil.isValidForm("."), "Dot isn't considered valid");
         assertFalse(PayloadUtil.isValidForm(" "), "Space isn't considered valid");
+        assertTrue(PayloadUtil.isValidForm("+"), "Plus are valid");
 
         // Cycle through all characters and see how many are valid and that we have the expected number
         int validChars = 0;
