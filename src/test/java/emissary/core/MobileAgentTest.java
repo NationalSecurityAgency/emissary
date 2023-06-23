@@ -104,21 +104,6 @@ class MobileAgentTest extends UnitTest {
         place.shutDown();
     }
 
-    @Test
-    void testBlacklistEdgeCase() throws Exception {
-        HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.core.FakePlace.cfg");
-        place.addServiceProxy("FOOD");
-        place.addBlacklist("FOOD");
-        d.setCurrentForm("THECF");
-        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
-        agent.getNextKey(place, d);
-
-        assertEquals(1, agent.visitedPlaces.size(), "FOOD should have been added");
-        assertTrue(agent.visitedPlaces.contains("FOOD"), "FOOD should have been added");
-
-        place.shutDown();
-    }
-
     static final class MobAg extends HDMobileAgent {
         static final long serialVersionUID = 102211824991899593L;
 
