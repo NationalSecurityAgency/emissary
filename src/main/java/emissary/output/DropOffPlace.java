@@ -47,6 +47,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
     private List<String> objectMetricsFields = new ArrayList<>();
     private String outputObjectMetricsLatency;
     private DateTimeFormatter latencyDateTimeFormatter;
+    private boolean outputCompletionPayloadSize = false;
 
     /**
      * Primary place constructor
@@ -100,7 +101,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         this.outputObjectMetricsLatency = configG.findStringEntry("OBJECT_METRICS_LATENCY", "");
         String outputTldMetricsLatencyFormat = configG.findStringEntry("OBJECT_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         this.latencyDateTimeFormatter = DateTimeFormatter.ofPattern(outputTldMetricsLatencyFormat);
-
+        this.outputCompletionPayloadSize = configG.findBooleanEntry("OUTPUT_COMPLETION_PAYLOAD_SIZE", false);
         // Build and store all the filter that are desired IN THE ORDER SPECIFIED
         final List<String> filterClasses = configG.findEntries("OUTPUT_FILTER");
         initializeFilters(filterClasses);
@@ -245,9 +246,17 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                 objectMetricsLog.info(appendEntries(outputObjectMetrics(tld, objectMetricsFields)), "Finished DropOff");
             }
 
-            logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
-                    tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
-                    tld.getFileType());
+            if (outputCompletionPayloadSize) {
+                logger.info(
+                        "Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes",
+                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
+                        tld.getFileType(), tld.data().length);
+            } else {
+                logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
+                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
+                        tld.getFileType());
+            }
+
         }
 
         // Execute 'Dispose Runnables' to tidy up resources used with SeekableByteChannelFactory implementations
