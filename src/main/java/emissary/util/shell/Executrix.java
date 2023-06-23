@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
@@ -829,6 +830,11 @@ public class Executrix {
                     stdErrThread = new ReadOutputBuffer(p.getErrorStream(), err, charset);
                 }
             }
+
+            // pass context to child threads so the info is available for any messages logged on those threads
+            stdOutThread.setContextMap(MDC.getCopyOfContextMap());
+            stdErrThread.setContextMap(MDC.getCopyOfContextMap());
+
             stdOutThread.start();
             stdErrThread.start();
             streamData(p, data);

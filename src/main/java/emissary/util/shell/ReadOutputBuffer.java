@@ -99,7 +99,7 @@ public class ReadOutputBuffer extends ProcessReader {
     }
 
     @Override
-    public void run() {
+    void runImpl() {
         String aLine = "";
         this.finished = false;
         try {

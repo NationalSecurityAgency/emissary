@@ -39,7 +39,7 @@ public class ReadOutputLogger extends ProcessReader {
     }
 
     @Override
-    public void run() {
+    void runImpl() {
         this.finished = false;
         try {
             String aLine;
