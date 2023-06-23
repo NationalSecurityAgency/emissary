@@ -76,6 +76,44 @@ class MobileAgentTest extends UnitTest {
         assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO", "FOOD")), "FOO and FOOD should have both been added");
     }
 
+    @Test
+    void testBlacklist() throws Exception {
+        IBaseDataObject d = DataObjectFactory.getInstance();
+        HDMobileAgent agent = new MobileAgentTest.MobAg();
+        HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.core.FakePlace.cfg");
+
+        // blacklist one
+        place.addBlacklist("FoodPlace");
+        d.setCurrentForm("THECF");
+        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d);
+        d.appendTransformHistory("UNKNOWN.FOO.ANALYZE.http://localhost:8005/FooPlace$1234");
+        agent.getNextKey(place, d);
+        assertEquals(1, agent.visitedPlaces.size(), "FOOD should not have been added");
+        assertTrue(agent.visitedPlaces.contains("FOO") && !agent.visitedPlaces.contains("FOOD"), "FOOD should not have been added");
+
+        // blacklisting both
+        agent.clear();
+        place.addBlacklist("FooPlace");
+        d.clearTransformHistory();
+        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d);
+        d.appendTransformHistory("UNKNOWN.FOO.ANALYZE.http://localhost:8005/FooPlace$1234");
+        agent.getNextKey(place, d);
+        assertEquals(0, agent.visitedPlaces.size(), "Nothing should have been added");
+
+        // nothing is blacklisted
+        agent.clear();
+        place.clearBlacklist();
+        d.clearTransformHistory();
+        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d);
+        d.appendTransformHistory("UNKNOWN.FOO.ANALYZE.http://localhost:8005/FooPlace$1234");
+        agent.getNextKey(place, d);
+        assertEquals(2, agent.visitedPlaces.size(), "FOO and FOOD should have both been added");
+        assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO", "FOOD")), "FOO and FOOD should have both been added");
+    }
+
     static final class MobAg extends HDMobileAgent {
         static final long serialVersionUID = 102211824991899593L;
 

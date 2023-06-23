@@ -332,7 +332,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     }
 
     /**
-     * Do work now that we have arrived a the specified place
+     * Do work now that we have arrived at the specified place
      *
      * @param place the place we are asking to work for us
      * @param payloadArg the data for the place to operate on
@@ -525,6 +525,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
                 String formID = form + KeyManipulator.DATAIDSEPARATOR + stageName;
                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
+
+                // if last place/directory entry is blacklisted in place, reject
+                if (place.getProxies().contains("*")) {
+                    String entry = curEntry.getKey().substring(curEntry.getKey().lastIndexOf('/') + 1);
+                    if (place.blacklisted(entry)) {
+                        continue;
+                    }
+                }
 
                 // Process through the parallel service type once per place max
                 // no matter how many forms would route there

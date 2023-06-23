@@ -123,6 +123,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     protected boolean processHDMethodImplemented = false;
 
     /**
+     * Blacklist of place/directory entries for wildcard service proxy
+     */
+    private List<String> blackList = new ArrayList<>();
+
+    /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
      * element used to know where that is and how to name it. If the old style config with SERVICE_PROXY etc is used then
      * the PlaceName becomes the runtime class name of the instance without the package.
@@ -293,7 +298,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     }
 
     /**
-     * Get a local reference to the directpry.
+     * Get a local reference to the directory.
      *
      * @param theDir key for the directory to use, if null will look up default name
      * @return true if it worked
@@ -1123,6 +1128,18 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         // Nothing found?
         return null;
+    }
+
+    public boolean blacklisted(String s) {
+        return blackList.contains(s);
+    }
+
+    public void addBlacklist(String s) {
+        blackList.add(s);
+    }
+
+    public void clearBlacklist() {
+        blackList.clear();
     }
 
     /**
