@@ -78,12 +78,10 @@ class MobileAgentTest extends UnitTest {
 
     @Test
     void testBlacklist() throws Exception {
-        IBaseDataObject d = DataObjectFactory.getInstance();
-        HDMobileAgent agent = new MobileAgentTest.MobAg();
         HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.core.FakePlace.cfg");
 
         // blacklist one
-        place.addBlacklist("FoodPlace");
+        place.addBlacklist("FOOD");
         d.setCurrentForm("THECF");
         d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
         agent.getNextKey(place, d);
@@ -91,16 +89,6 @@ class MobileAgentTest extends UnitTest {
         agent.getNextKey(place, d);
         assertEquals(1, agent.visitedPlaces.size(), "FOOD should not have been added");
         assertTrue(agent.visitedPlaces.contains("FOO") && !agent.visitedPlaces.contains("FOOD"), "FOOD should not have been added");
-
-        // blacklisting both
-        agent.clear();
-        place.addBlacklist("FooPlace");
-        d.clearTransformHistory();
-        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
-        agent.getNextKey(place, d);
-        d.appendTransformHistory("UNKNOWN.FOO.ANALYZE.http://localhost:8005/FooPlace$1234");
-        agent.getNextKey(place, d);
-        assertEquals(0, agent.visitedPlaces.size(), "Nothing should have been added");
 
         // nothing is blacklisted
         agent.clear();
@@ -112,6 +100,23 @@ class MobileAgentTest extends UnitTest {
         agent.getNextKey(place, d);
         assertEquals(2, agent.visitedPlaces.size(), "FOO and FOOD should have both been added");
         assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO", "FOOD")), "FOO and FOOD should have both been added");
+
+        place.shutDown();
+    }
+
+    @Test
+    void testBlacklistEdgeCase() throws Exception {
+        HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.core.FakePlace.cfg");
+        place.addServiceProxy("FOOD");
+        place.addBlacklist("FOOD");
+        d.setCurrentForm("THECF");
+        d.appendTransformHistory("UNKNOWN.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d);
+
+        assertEquals(1, agent.visitedPlaces.size(), "FOOD should have been added");
+        assertTrue(agent.visitedPlaces.contains("FOOD"), "FOOD should have been added");
+
+        place.shutDown();
     }
 
     static final class MobAg extends HDMobileAgent {
