@@ -28,7 +28,7 @@ public class PayloadUtil {
     public static final Logger logger = LoggerFactory.getLogger(PayloadUtil.class);
 
     private static final String LS = System.getProperty("line.separator");
-    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/]+$");
+    private static final Pattern validFormRegex = Pattern.compile("^[\\w-)(/+]+$");
 
     protected static Map<String, String> historyPreference = new HashMap<>();
 
@@ -296,7 +296,7 @@ public class PayloadUtil {
     /**
      * Checks whether the form complies with form rules established by a regex
      *
-     * Approved forms can contain alpha-numerics, '-', or '_'
+     * Approved forms can contain alpha-numerics, '-', '_', '()', '/', '+'
      *
      * @param form The form to be tested
      * @return Whether the form is Emissary compliant

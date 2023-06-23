@@ -621,7 +621,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             throw new IllegalArgumentException("caller attempted to push a null form value");
         } else if (!PayloadUtil.isValidForm(newForm)) {
             // If there is a key separator in the form, then throw an error log as this will cause issues in routing
-            logger.error("INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/'. Given form: {}", newForm);
+            logger.error("INVALID FORM: The form can only contain a-z, A-Z, 0-9, '-', '_', '()', '/', '+'. Given form: {}", newForm);
         }
 
         checkForAndLogDuplicates(newForm, "pushCurrentForm");
