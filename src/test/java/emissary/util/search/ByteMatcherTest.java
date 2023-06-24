@@ -283,4 +283,66 @@ class ByteMatcherTest extends UnitTest {
         assertEquals(-1, this.b.indexIgnoreCase("Fred".getBytes()), "Match pos not found");
     }
 
+    @Test
+    void testContainsAny() {
+        assertTrue(this.b.containsAny("fox", "test"));
+        assertFalse(this.b.containsAny("fOX", "TEST"));
+        assertFalse(this.b.containsAny("no", "tokens", "found"));
+
+        assertTrue(this.b.containsAny(16, b.length(), "fox", "test"));
+        assertFalse(this.b.containsAny(16, 18, "fox", "test"));
+    }
+
+    @Test
+    void testContainsAnyIgnoreCase() {
+        assertTrue(this.b.containsAnyIgnoreCase("fox", "test"));
+        assertTrue(this.b.containsAnyIgnoreCase("fOX", "TEST"));
+        assertFalse(this.b.containsAnyIgnoreCase("no", "tokens", "found"));
+
+        assertTrue(this.b.containsAnyIgnoreCase(16, 19, "fOX", "TEST"));
+        assertFalse(this.b.containsAnyIgnoreCase(17, b.length(), "fOX", "TEST"));
+    }
+
+
+    @Test
+    void testContainsAll() {
+        assertTrue(this.b.containsAll("fox", "jumped", "dog", "lazy"));
+        assertFalse(this.b.containsAll("fox", "jumped", "dog", "LAZY"));
+        assertFalse(this.b.containsAll("no", "tokens", "found"));
+
+        assertTrue(this.b.containsAll(0, b.length(), "fox", "jumped", "dog", "lazy"));
+        assertFalse(this.b.containsAll(0, b.length() - 1, "fox", "jumped", "dog", "lazy"));
+    }
+
+    @Test
+    void testContainsAllIgnoreCase() {
+        assertTrue(this.b.containsAllIgnoreCase("fox", "jumped", "dog", "lazy"));
+        assertTrue(this.b.containsAllIgnoreCase("fox", "jumped", "dog", "LAZY"));
+        assertFalse(this.b.containsAllIgnoreCase("no", "tokens", "found"));
+
+        assertTrue(this.b.containsAllIgnoreCase(16, b.length(), "fox", "jumped", "dog", "LAZY"));
+        assertFalse(this.b.containsAllIgnoreCase(17, b.length(), "fox", "jumped", "dog", "LAZY"));
+    }
+
+    @Test
+    void testContains() {
+        assertTrue(this.b.contains("fox"));
+    }
+
+    @Test
+    void testContainsIgnoreCase() {
+        assertTrue(this.b.containsIgnoreCase("FoX"));
+    }
+
+    @Test
+    void testContainsWithIndices() {
+        assertTrue(this.b.contains("quick brown fox", 4, 19));
+        assertFalse(this.b.contains("quick brown fox", 4, 18));
+    }
+
+    @Test
+    void testContainsWithIndicesIgnoreCase() {
+        assertTrue(this.b.containsIgnoreCase("Quick BROWN fOX", 4, data.length()));
+        assertFalse(this.b.containsIgnoreCase("Quick BROWN fOX", 5, data.length()));
+    }
 }
