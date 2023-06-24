@@ -1,6 +1,7 @@
 <root>
   <setup>
     <initialForm>HTML</initialForm>
+    <fontEncoding>UTF8</fontEncoding>
   </setup>
 
   <answers>
@@ -8,6 +9,7 @@
     <currentForm>HTML</currentForm>
     <fileType>HTML</fileType>
     <currentFormSize>1</currentFormSize>
+    <fontEncoding>UTF8</fontEncoding>
 
     <meta>
       <name>CHARACTER_DIGIT_HTML_ESCAPE</name>

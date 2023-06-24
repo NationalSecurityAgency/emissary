@@ -218,6 +218,11 @@ public abstract class ExtractionTest extends UnitTest {
             assertEquals(shortName, payload.shortName(), "Shortname does not match expected in " + tname);
         }
 
+        String fontEncoding = el.getChildTextTrim("fontEncoding");
+        if (fontEncoding != null && fontEncoding.length() > 0) {
+            assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
+        }
+
         String broke = el.getChildTextTrim("broken");
         if (broke != null && broke.length() > 0) {
             assertEquals(broke, payload.isBroken() ? "true" : "false", "Broken status in " + tname);
@@ -367,6 +372,11 @@ public abstract class ExtractionTest extends UnitTest {
             final String classification = setup.getChildTextTrim("classification");
             if (StringUtils.isNotBlank(classification)) {
                 payload.setClassification(classification);
+            }
+
+            final String fontEncoding = setup.getChildTextTrim("fontEncoding");
+            if (StringUtils.isNotBlank(fontEncoding)) {
+                payload.setFontEncoding(fontEncoding);
             }
 
             for (Element meta : setup.getChildren("meta")) {
