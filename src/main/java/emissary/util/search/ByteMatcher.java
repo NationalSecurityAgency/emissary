@@ -67,66 +67,193 @@ public class ByteMatcher {
         return mydata.length;
     }
 
+    /**
+     * Checks if data contains the string pattern
+     *
+     * @param pattern string to find
+     *
+     * @return true if data contains the search pattern, false if not or null string input
+     */
     public boolean contains(String pattern) {
         return contains(pattern.getBytes());
     }
 
+    /**
+     * Checks if data contains the byte array pattern
+     *
+     * @param pattern bytes to find
+     *
+     * @return true if data contains the search pattern, false if not or null byte array input
+     */
     public boolean contains(byte[] pattern) {
         return indexOf(pattern) >= 0;
     }
 
+    /**
+     * Checks if data contains the string pattern
+     *
+     * @param pattern string to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return true if data contains the search pattern, false if not or null string input
+     */
     public boolean contains(String pattern, int beginIndex, int endIndex) {
         return contains(pattern.getBytes(), beginIndex, endIndex);
     }
 
+    /**
+     * Checks if data contains the byte array pattern
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return true if data contains the search pattern, false if not or null byte array input
+     */
     public boolean contains(byte[] pattern, int beginIndex, int endIndex) {
         return indexOf(pattern, beginIndex, endIndex) >= 0;
     }
 
+    /**
+     * Checks if data contains any of the string patterns
+     *
+     * @param patterns strings to find
+     *
+     * @return true if data contains the search pattern, false if not or null string input
+     */
     public boolean containsAny(String... patterns) {
         return Arrays.stream(patterns).anyMatch(this::contains);
     }
 
+    /**
+     * Checks if data contains any of the string patterns
+     *
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @param patterns true if data contains any search pattern, false if not or null string input
+     */
     public boolean containsAny(int beginIndex, int endIndex, String... patterns) {
         return Arrays.stream(patterns).anyMatch(pattern -> contains(pattern, beginIndex, endIndex));
     }
 
+    /**
+     * Checks if data contains all string patterns
+     *
+     * @param patterns strings to find
+     *
+     * @return true if data contains all search patterns, false if not or null string input
+     */
     public boolean containsAll(String... patterns) {
         return Arrays.stream(patterns).allMatch(this::contains);
     }
 
+    /**
+     * Checks if data contains all string patterns
+     *
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     * @param patterns strings to find
+     *
+     * @return true if data contains all search patterns, false if not or null string input
+     */
     public boolean containsAll(int beginIndex, int endIndex, String... patterns) {
         return Arrays.stream(patterns).allMatch(pattern -> contains(pattern, beginIndex, endIndex));
     }
 
+    /**
+     * Checks if data contains the string pattern ignoring upper/lower case
+     *
+     * @param pattern string to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return true if data contains search pattern, false if not or null string input
+     */
     public boolean containsIgnoreCase(String pattern, int beginIndex, int endIndex) {
         return containsIgnoreCase(pattern.getBytes(), beginIndex, endIndex);
     }
 
+    /**
+     * Checks if data contains the byte array pattern ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return true if data contains all search patterns, false if not or null byte array input
+     */
     public boolean containsIgnoreCase(byte[] pattern, int beginIndex, int endIndex) {
         return indexIgnoreCase(pattern, beginIndex, endIndex) >= 0;
     }
 
+    /**
+     * Checks if data contains the string pattern ignoring upper/lower case
+     *
+     * @param pattern string to find
+     *
+     * @return true if data contains search pattern, false if not or null string input
+     */
     public boolean containsIgnoreCase(String pattern) {
         return containsIgnoreCase(pattern.getBytes());
     }
 
+    /**
+     * Checks if data contains the byte array pattern ignoring upper/lower case
+     *
+     * @param pattern bytes to find
+     *
+     * @return true if data contains search pattern, false if not or null byte array input
+     */
     public boolean containsIgnoreCase(byte[] pattern) {
         return indexIgnoreCase(pattern) >= 0;
     }
 
+    /**
+     * Checks if data contains any of the string patterns ignoring upper/lower case
+     *
+     * @param patterns strings to find
+     *
+     * @return true if data contains any search pattern, false if not or null string input
+     */
     public boolean containsAnyIgnoreCase(String... patterns) {
         return Arrays.stream(patterns).anyMatch(this::containsIgnoreCase);
     }
 
+    /**
+     * Checks if data contains any of the string patterns ignoring upper/lower case
+     *
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     * @param patterns strings to find
+     *
+     * @return true if data contains any search pattern, false if not or null string input
+     */
     public boolean containsAnyIgnoreCase(int beginIndex, int endIndex, String... patterns) {
         return Arrays.stream(patterns).anyMatch(pattern -> containsIgnoreCase(pattern, beginIndex, endIndex));
     }
 
+    /**
+     * Checks if data contains all string patterns ignoring upper/lower case
+     *
+     * @param patterns strings to find
+     *
+     * @return true if data contains search pattern, false if not or null string input
+     */
     public boolean containsAllIgnoreCase(String... patterns) {
         return Arrays.stream(patterns).allMatch(this::containsIgnoreCase);
     }
 
+    /**
+     * Checks if data contains all string patterns ignoring upper/lower case
+     *
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     * @param patterns strings to find
+     *
+     * @return true if data contains all search patterns, false if not or null string input
+     */
     public boolean containsAllIgnoreCase(int beginIndex, int endIndex, String... patterns) {
         return Arrays.stream(patterns).allMatch(pattern -> containsIgnoreCase(pattern, beginIndex, endIndex));
     }
