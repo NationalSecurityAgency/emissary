@@ -156,17 +156,7 @@ public interface IServiceProviderPlace {
     MobileAgent getAgent() throws NamespaceException;
 
     /**
-     * Returns whether form is blacklisted
+     * Returns whether form is disallowed
      */
-    boolean blacklisted(String s);
-
-    /**
-     * Add to blacklist
-     */
-    void addBlacklist(String s);
-
-    /**
-     * Clear everything in blacklist
-     */
-    void clearBlacklist();
+    boolean isDisallowed(String s);
 }

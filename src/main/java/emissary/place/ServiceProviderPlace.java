@@ -51,6 +51,7 @@ import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
 import static emissary.core.constants.Configurations.SERVICE_KEY;
 import static emissary.core.constants.Configurations.SERVICE_NAME;
 import static emissary.core.constants.Configurations.SERVICE_PROXY;
+import static emissary.core.constants.Configurations.SERVICE_PROXY_DISALLOW;
 import static emissary.core.constants.Configurations.SERVICE_QUALITY;
 import static emissary.core.constants.Configurations.SERVICE_TYPE;
 
@@ -85,6 +86,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * file.
      */
     protected List<String> keys = new ArrayList<>();
+
+    /**
+     * List of disallowed places in SERVICE_PROXY_DISALLOW
+     */
+    protected List<String> disallowList = new ArrayList<>();
 
     // Items that are going to be deprecated, but here now to
     // make the transition easier, for compatibility
@@ -121,11 +127,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      */
     protected boolean processMethodImplemented = false;
     protected boolean processHDMethodImplemented = false;
-
-    /**
-     * Blacklist of place/directory entries for wildcard service proxy
-     */
-    private List<String> blackList = new ArrayList<>();
 
     /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
@@ -442,6 +443,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             for (String sp : configG.findEntries(SERVICE_PROXY)) {
                 DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
                 keys.add(de.getFullKey());
+            }
+            // pick up the disallowed proxies(save full 4-tuple keys!)
+            for (String sp : configG.findEntries(SERVICE_PROXY_DISALLOW)) {
+                DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
+                disallowList.add(de.getDataType());
             }
         } else {
             // May be configured the new way, but warn if there is a mixture of
@@ -1130,16 +1136,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         return null;
     }
 
-    public boolean blacklisted(String s) {
-        return blackList.contains(s);
-    }
-
-    public void addBlacklist(String s) {
-        blackList.add(s);
-    }
-
-    public void clearBlacklist() {
-        blackList.clear();
+    public boolean isDisallowed(String s) {
+        return disallowList.contains(s);
     }
 
     /**
