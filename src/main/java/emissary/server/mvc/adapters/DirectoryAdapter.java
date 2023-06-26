@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -126,7 +126,7 @@ public class DirectoryAdapter extends EmissaryClient {
                 }
             }
             nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));
-            method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
+            method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
             return send(method);
         }
     }
@@ -153,7 +153,7 @@ public class DirectoryAdapter extends EmissaryClient {
             nvps.add(new BasicNameValuePair(ADD_KEY + (count++), k));
         }
         nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));
-        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
         return send(method);
     }
 
@@ -174,7 +174,7 @@ public class DirectoryAdapter extends EmissaryClient {
         nvps.add(new BasicNameValuePair(TARGET_DIRECTORY, parentLoc));
         nvps.add(new BasicNameValuePair(FAILED_DIRECTORY_NAME, failKey));
         nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(permanent)));
-        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
         return send(method);
     }
 
@@ -254,7 +254,7 @@ public class DirectoryAdapter extends EmissaryClient {
             nvps.add(new BasicNameValuePair(DIRECTORY_NAME, myKey));
         }
 
-        method.setEntity(new UrlEncodedFormEntity(nvps, Charset.defaultCharset()));
+        method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
 
         DirectoryEntryMap map = null;
         EmissaryResponse ws = null;
