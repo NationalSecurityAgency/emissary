@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -56,6 +57,20 @@ class TestExtractionTest extends UnitTest {
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
 
         assertThrows(AssertionError.class, () -> test.checkStringValue(meta, "7;0;0;0;2;1", "testCheckStringValueForCollection"));
+    }
+
+    @Test
+    void testCheckStringValueForFontEncoding() throws JDOMException, IOException {
+        SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
+        InputStream inputStream = TestExtractionTest.class.getResourceAsStream(RESOURCE_NAME);
+        assertNotNull(inputStream, "Could not locate: " + RESOURCE_NAME);
+        Document answerDoc = builder.build(inputStream);
+        inputStream.close();
+
+        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+
+        String fontEncodingValue = answerDoc.getRootElement().getChild("answers").getChild("fontEncoding").getValue();
+        assertEquals("UTF16", fontEncodingValue);
     }
 
     @Test
