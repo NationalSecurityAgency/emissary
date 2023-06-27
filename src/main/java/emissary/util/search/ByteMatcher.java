@@ -1,6 +1,7 @@
 package emissary.util.search;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 /**
@@ -27,7 +28,7 @@ public class ByteMatcher {
     }
 
     public void resetData(String data) {
-        resetData(data, Charset.defaultCharset());
+        resetData(data, StandardCharsets.UTF_8);
     }
 
     public void resetData(String data, String charsetName) {

@@ -20,7 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,10 +63,10 @@ class JournaledCoalescerTest extends UnitTest {
 
         // setup temp files
         tempBUD1 = Files.createTempFile(targetBUDPath, BUD1_NAME, "");
-        Files.write(tempBUD1, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Files.write(tempBUD1, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
 
         tempBUD2 = Files.createTempFile(targetBUDPath, BUD2_NAME, "");
-        Files.write(tempBUD2, BUD2_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Files.write(tempBUD2, BUD2_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
     }
 
     @AfterEach
@@ -136,7 +136,7 @@ class JournaledCoalescerTest extends UnitTest {
         // verify
         Path bud1destination = targetBUDPath.resolve(BUD1_NAME);
         assertTrue(Files.exists(bud1destination));
-        List<String> fileResults = Files.readAllLines(bud1destination, Charset.defaultCharset());
+        List<String> fileResults = Files.readAllLines(bud1destination, StandardCharsets.UTF_8);
         assertEquals(4, fileResults.size());
         assertTrue(fileResults.containsAll(Arrays.asList(BUD1_LINES.get(0), BUD1_LINES.get(1), BUD2_LINES.get(0), BUD2_LINES.get(1))));
     }
@@ -195,7 +195,7 @@ class JournaledCoalescerTest extends UnitTest {
         assertNotEquals(expectedPrefix2, bud1Destination.getFileName().toString());
         assertEquals(targetBUDPath, bud1Destination.getParent());
         assertEquals(expectedPrefix1, bud1Destination.getFileName().toString());
-        assertEquals(BUD1_LINES, Files.readAllLines(bud1Destination, Charset.defaultCharset()));
+        assertEquals(BUD1_LINES, Files.readAllLines(bud1Destination, StandardCharsets.UTF_8));
 
         assertNotEquals(expectedPrefix1, expectedPrefix2);
     }
@@ -225,7 +225,7 @@ class JournaledCoalescerTest extends UnitTest {
         // verify
         assertFalse(Files.exists(oldRolling));
         assertTrue(Files.exists(finalBudOutput));
-        assertEquals(BUD1_LINES, Files.readAllLines(finalBudOutput, Charset.defaultCharset()));
+        assertEquals(BUD1_LINES, Files.readAllLines(finalBudOutput, StandardCharsets.UTF_8));
     }
 
     /**
@@ -244,7 +244,7 @@ class JournaledCoalescerTest extends UnitTest {
 
         // create the rolled file
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
-        Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Files.write(oldRolled, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
 
         try (JournaledCoalescer jrnl = new JournaledCoalescer(targetBUDPath, fileNameGenerator)) {
             assertTrue(Files.exists(oldRolled));
@@ -264,7 +264,7 @@ class JournaledCoalescerTest extends UnitTest {
     void testCrashAfterRolledNoPartFiles() throws Exception {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBUDPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
-        Files.write(oldRolled, BUD1_LINES, Charset.defaultCharset(), StandardOpenOption.WRITE);
+        Files.write(oldRolled, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
 
         new JournaledCoalescer(targetBUDPath, fileNameGenerator).close();
 
