@@ -3,12 +3,16 @@ package emissary.core;
 import emissary.admin.PlaceStarter;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
+import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,8 +83,12 @@ class MobileAgentTest extends UnitTest {
     @Test
     void testDisallowedList() throws Exception {
         // setup
+        byte[] configDisallowedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
+                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
+                + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW = \"B\"\n").getBytes();
+        InputStream config = new ByteArrayInputStream(configDisallowedData);
+        IServiceProviderPlace place = new PlaceTest(config);
         HDMobileAgent agent = new MobAg2();
-        HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.place.sample.DisallowPlace.cfg");
         d.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
         agent.getNextKey(place, d);
         d.appendTransformHistory("A.FOO1.ANALYZE.http://localhost:8005/FooPlace$1234");
@@ -131,6 +139,12 @@ class MobileAgentTest extends UnitTest {
             } else {
                 return null;
             }
+        }
+    }
+
+    private static final class PlaceTest extends ServiceProviderPlace {
+        public PlaceTest(InputStream config) throws IOException {
+            super(config);
         }
     }
 }
