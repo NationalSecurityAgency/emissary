@@ -219,7 +219,7 @@ public abstract class ExtractionTest extends UnitTest {
         }
 
         String fontEncoding = el.getChildTextTrim("fontEncoding");
-        if (fontEncoding != null && fontEncoding.length() > 0) {
+        if (StringUtils.isNotBlank(fontEncoding)) {
             assertEquals(fontEncoding, payload.getFontEncoding(), "Font encoding does not match expected in " + tname);
         }
 
