@@ -526,6 +526,11 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 String formID = form + KeyManipulator.DATAIDSEPARATOR + stageName;
                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
 
+                // if last place/directory entry is disallowed, reject
+                if (curEntry != null && place.isDisallowed(curEntry.getDataType())) {
+                    continue;
+                }
+
                 // Process through the parallel service type once per place max
                 // no matter how many forms would route there
                 if (curEntry != null && isParallelServiceType(curType)) {

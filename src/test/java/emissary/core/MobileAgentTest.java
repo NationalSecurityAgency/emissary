@@ -76,6 +76,25 @@ class MobileAgentTest extends UnitTest {
         assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO", "FOOD")), "FOO and FOOD should have both been added");
     }
 
+    @Test
+    void testDisallowedList() throws Exception {
+        // setup
+        HDMobileAgent agent = new MobAg2();
+        HDMobileAgentTest.SimplePlace place = new HDMobileAgentTest.SimplePlace("emissary.place.sample.DisallowPlace.cfg");
+        d.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d);
+        d.appendTransformHistory("A.FOO1.ANALYZE.http://localhost:8005/FooPlace$1234");
+        agent.getNextKey(place, d);
+        d.appendTransformHistory("B.FOO2.ANALYZE.http://localhost:8005/FooPlace$1234");
+        agent.getNextKey(place, d);
+
+        // verify
+        assertEquals(2, agent.visitedPlaces.size(), "FOO2 should not have been added");
+        assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO1", "FOO3")), "FOO1 and FOO3 should have both been added");
+        agent.killAgent();
+        place.shutDown();
+    }
+
     static final class MobAg extends HDMobileAgent {
         static final long serialVersionUID = 102211824991899593L;
 
@@ -95,6 +114,22 @@ class MobileAgentTest extends UnitTest {
                 return new DirectoryEntry("UNKNOWN.FOO.ANALYZE.http://localhost:8005/FooPlace$1234");
             } else {
                 return new DirectoryEntry("UNKNOWN.FOOD.ANALYZE.http://localhost:8005/FoodPlace$1234");
+            }
+        }
+    }
+
+    static final class MobAg2 extends HDMobileAgent {
+        @Override
+        protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
+                final IBaseDataObject payloadArg) {
+            if (lastEntry.getDataType().equalsIgnoreCase("S")) {
+                return new DirectoryEntry("A.FOO1.ANALYZE.http://localhost:8005/FooPlace$1234");
+            } else if (lastEntry.getDataType().equalsIgnoreCase("A")) {
+                return new DirectoryEntry("B.FOO2.ANALYZE.http://localhost:8005/FooPlace$1234");
+            } else if (lastEntry.getDataType().equalsIgnoreCase("B")) {
+                return new DirectoryEntry("C.FOO3.ANALYZE.http://localhost:8005/FooPlace$1234");
+            } else {
+                return null;
             }
         }
     }
