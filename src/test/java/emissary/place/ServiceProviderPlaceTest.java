@@ -1,7 +1,10 @@
 package emissary.place;
 
 import emissary.config.ConfigUtil;
-import emissary.core.*;
+import emissary.core.BaseDataObject;
+import emissary.core.EmissaryException;
+import emissary.core.IBaseDataObject;
+import emissary.core.Namespace;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.KeyManipulator;
 import emissary.test.core.junit5.UnitTest;
@@ -69,7 +72,13 @@ class ServiceProviderPlaceTest extends UnitTest {
     private static final byte[] configDisallowedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
             + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
             + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY2\"\n"
-            + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY3\"\n").getBytes();
+            + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY3\"\n"
+            + "SERVICE_PROXY_DISALLOW != \"TEST_SERVICE_PROXY3\"\n").getBytes();
+
+    private static final byte[] configDisallowedData2 = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
+            + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
+            + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n"
+            + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW != \"*\"\n").getBytes();
 
     String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 
@@ -534,14 +543,22 @@ class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    void testDisallowedServiceProxy() throws Exception {
-        InputStream config2 = new ByteArrayInputStream(configDisallowedData);
-        IServiceProviderPlace p = new PlaceTest(config2);
-        assertEquals("PlaceTest", p.getPlaceName(), "Configured place name");
-        System.out.println(p.getPrimaryProxy());
-        assertTrue(p.isDisallowed("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be disallowed");
-        assertTrue(!p.isDisallowed("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
-        assertTrue(p.isDisallowed("TEST_SERVICE_PROXY3"), "TEST_SERVICE_PROXY3 should be disallowed");
+    void testDisallowedServiceProxy() {
+        try {
+            InputStream config = new ByteArrayInputStream(configDisallowedData);
+            IServiceProviderPlace p = new PlaceTest(config);
+            assertEquals("PlaceTest", p.getPlaceName(), "Configured place name");
+            assertTrue(p.isDisallowed("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be disallowed");
+            assertTrue(!p.isDisallowed("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
+            assertTrue(!p.isDisallowed("TEST_SERVICE_PROXY3"), "TEST_SERVICE_PROXY3 should be allowed");
+
+            InputStream config2 = new ByteArrayInputStream(configDisallowedData2);
+            IServiceProviderPlace p2 = new PlaceTest(config2);
+            assertTrue(!p2.isDisallowed("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be allowed");
+            assertTrue(!p2.isDisallowed("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
+        } catch (IOException iox) {
+            fail("Place should have configured with SERVICE_KEY", iox);
+        }
     }
 
     private static final class PlaceTest extends ServiceProviderPlace {
