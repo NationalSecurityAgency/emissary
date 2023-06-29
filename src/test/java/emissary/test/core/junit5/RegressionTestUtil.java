@@ -4,6 +4,8 @@ import emissary.core.BaseDataObject;
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.core.channels.FileChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
@@ -12,7 +14,6 @@ import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
 
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -37,23 +38,37 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class RegressionTestUtil {
+/**
+ * This class contains utility methods used by RegressionTest.
+ */
+public final class RegressionTestUtil {
+    /**
+     * XML builder to read XML answer file in
+     */
+    private static final SAXBuilder XML_BUILDER = new SAXBuilder(XMLReaders.NONVALIDATING);
 
-    // XML builder to read XML answer file in
-    private static final SAXBuilder xmlBuilder = new SAXBuilder(XMLReaders.NONVALIDATING);
-
-    // Default configuration to only check data when comparing
+    /**
+     * Default configuration to only check data when comparing
+     */
     private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.onlyCheckData();
 
-    // Logger instance
-    private static final Logger logger = LoggerFactory.getLogger(RegressionTestUtil.class);
+    /**
+     * Logger instance
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegressionTestUtil.class);
 
-    // Open options for (over-)writing answers XML
+    /**
+     * Open options for (over-)writing answers XML
+     */
     private static final Set<StandardOpenOption> CREATE_WRITE_TRUNCATE = new HashSet<>(Arrays.asList(StandardOpenOption.CREATE,
             StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING));
 
-    // test/resources folder
-    private static Path TEST_RESX = getTestResx();
+    /**
+     * test/resources folder
+     */
+    private static final Path TEST_RESX = getTestResx();
+
+    private RegressionTestUtil() {}
 
     /**
      * Dynamically finds the src/test/resources directory to write the XML to.
@@ -79,14 +94,14 @@ public class RegressionTestUtil {
      * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
      */
     public static void checkAnswers(final Document answers, final IBaseDataObject payload,
-            final List<IBaseDataObject> attachments, final String tname, final String placeName) throws DataConversionException {
+            final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
         final Element parent = root.getChild(IBaseDataObjectXmlHelper.ANSWERS_ELEMENT_NAME);
 
         assertNotNull(parent, "No 'answers' section found!");
 
         final List<IBaseDataObject> expectedAttachments = new ArrayList<>();
-        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments);
+        final IBaseDataObject expectedIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(answers, expectedAttachments, decoders);
         final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
                 attachments, placeName, DIFF_CHECK);
 
@@ -103,7 +118,9 @@ public class RegressionTestUtil {
      */
     public static Document getAnswerDocumentFor(final String resource) {
         try {
-            return xmlBuilder.build(RegressionTestUtil.getXmlPath(resource).toFile());
+            final Path path = RegressionTestUtil.getXmlPath(resource);
+
+            return path == null ? null : XML_BUILDER.build(path.toFile());
         } catch (final JDOMException | IOException e) {
             // Fail if invalid XML document
             fail(String.format("No valid answer document provided for %s", resource), e);
@@ -120,7 +137,7 @@ public class RegressionTestUtil {
     public static Path getXmlPath(final String resource) {
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
-            logger.debug("Resource is not a DATA file {}", resource);
+            LOGGER.debug("Resource is not a DATA file {}", resource);
             return null;
         }
 
@@ -134,12 +151,13 @@ public class RegressionTestUtil {
      * @param resource referencing the DAT file
      * @param initialIbdo for 'setup' section
      * @param finalIbdo for 'answers' section
+     * @param encoders for encoding ibdo into XML
      * @param results for 'answers' section
      */
     public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
-            final List<IBaseDataObject> results) {
+            final List<IBaseDataObject> results, final ElementEncoders encoders) {
         // Generate the full XML (setup & answers from before & after)
-        final String xmlContent = IBaseDataObjectXmlHelper.xmlFromIbdo(finalIbdo, results, initialIbdo);
+        final String xmlContent = IBaseDataObjectXmlHelper.xmlFromIbdo(finalIbdo, results, initialIbdo, encoders);
         // Write out the XML to disk
         writeXml(resource, xmlContent);
     }
@@ -152,7 +170,10 @@ public class RegressionTestUtil {
      */
     public static void writeXml(final String resource, final String xmlContent) {
         final Path path = getXmlPath(resource);
-        logger.info("Writing answers file to path: {}", path.toString());
+        if (path == null) {
+            fail(String.format("Could not get path for resource = %s", resource));
+        }
+        LOGGER.info("Writing answers file to path: {}", path);
         try (FileChannel fc = FileChannel.open(path, CREATE_WRITE_TRUNCATE);
                 SeekableInMemoryByteChannel simbc = new SeekableInMemoryByteChannel(xmlContent.getBytes())) {
             fc.transferFrom(simbc, 0, simbc.size());
@@ -168,7 +189,7 @@ public class RegressionTestUtil {
      * @param payload the ibdo to reset
      * @param answers an XML Document object to set the ibdo payload to
      */
-    public static void setupPayload(final IBaseDataObject payload, final Document answers) {
+    public static void setupPayload(final IBaseDataObject payload, final Document answers, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
 
         if (root != null) {
@@ -179,7 +200,7 @@ public class RegressionTestUtil {
                 payload.setFileType(null); // Remove default filetype put on by ExtractionTest.
                 // The only other fields set are data and filename.
 
-                IBaseDataObjectXmlHelper.ibdoFromXmlMainElements(parent, payload);
+                IBaseDataObjectXmlHelper.ibdoFromXmlMainElements(parent, payload, decoders);
             }
         }
     }

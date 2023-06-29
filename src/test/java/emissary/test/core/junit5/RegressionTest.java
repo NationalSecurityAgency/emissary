@@ -2,13 +2,16 @@ package emissary.test.core.junit5;
 
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
+import emissary.core.IBaseDataObjectXmlCodecs;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 
 import com.google.errorprone.annotations.ForOverride;
-import org.jdom2.DataConversionException;
 import org.jdom2.Document;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -107,6 +110,67 @@ public abstract class RegressionTest extends ExtractionTest {
         return RegressionTestUtil.getInitialFormFromFilename(resource);
     }
 
+    /**
+     * This method returns the XML element decoders.
+     * 
+     * @return the XML element decoders.
+     */
+    protected ElementDecoders getDecoders() {
+        return IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
+    }
+
+    /**
+     * This method returns the XML element encoders.
+     * 
+     * @return the XML element encoders.
+     */
+    protected ElementEncoders getEncoders() {
+        return IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
+    }
+
+    /**
+     * When the data is able to be retrieved from the XML (e.g. when getEncoders() returns the default encoders), then this
+     * method should be empty. However, in this case getEncoders() is returning the sha256 encoders which means the original
+     * data cannot be retrieved from the XML. Therefore, in order to test equivalence, all of the non-printable data in the
+     * IBaseDataObjects needs to be converted to a sha256 hash. The full encoders can be used by overriding the
+     * checkAnswersPreHook(...) to be empty and overriding getEncoders() to return the DEFAULT_ELEMENT_ENCODERS.
+     */
+    @Override
+    protected void checkAnswersPreHook(final Document answers, final IBaseDataObject payload, final List<IBaseDataObject> attachments,
+            final String tname) {
+        if (payload.data() != null && IBaseDataObjectXmlCodecs.hasNonPrintableValues(payload.data())) {
+            final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(payload.data());
+
+            if (hash != null) {
+                payload.setData(hash.getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        if (payload.getExtractedRecords() != null) {
+            for (final IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
+                if (IBaseDataObjectXmlCodecs.hasNonPrintableValues(extractedRecord.data())) {
+                    final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(extractedRecord.data());
+
+                    if (hash != null) {
+                        extractedRecord.setData(hash.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            }
+        }
+
+        if (attachments != null) {
+            for (final IBaseDataObject attachment : attachments) {
+                if (IBaseDataObjectXmlCodecs.hasNonPrintableValues(attachment.data())) {
+                    final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(attachment.data());
+
+                    if (hash != null) {
+                        attachment.setData(hash.getBytes(StandardCharsets.UTF_8));
+                    }
+                }
+            }
+        }
+    }
+
     // Everything above can be overridden by extending classes to modify behaviour as they see fit.
     // Below this point, methods should not be able to be overridden as they are inherently part of RegressionTest.
 
@@ -151,7 +215,7 @@ public abstract class RegressionTest extends ExtractionTest {
         tweakFinalResultsBeforeSerialisation(resource, finalResults);
 
         // Generate the full XML (setup & answers from before & after)
-        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults);
+        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, getEncoders());
     }
 
     @Override
@@ -162,13 +226,12 @@ public abstract class RegressionTest extends ExtractionTest {
 
     @Override
     protected final void setupPayload(final IBaseDataObject payload, final Document answers) {
-        RegressionTestUtil.setupPayload(payload, answers);
+        RegressionTestUtil.setupPayload(payload, answers, getDecoders());
     }
 
     @Override
     protected final void checkAnswers(final Document answers, final IBaseDataObject payload,
-            final List<IBaseDataObject> attachments, final String tname) throws DataConversionException {
-        RegressionTestUtil.checkAnswers(answers, payload, attachments, tname, place.getClass().getName());
+            final List<IBaseDataObject> attachments, final String tname) {
+        RegressionTestUtil.checkAnswers(answers, payload, attachments, place.getClass().getName(), getDecoders());
     }
-
 }
