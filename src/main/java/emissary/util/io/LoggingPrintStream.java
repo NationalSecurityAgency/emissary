@@ -96,7 +96,12 @@ public class LoggingPrintStream extends PrintStream {
         this.closeWaitTime = closeWaitTime;
         this.closeWaitTimeUnit = closeWaitTimeUnit;
         this.executorService = Executors.newSingleThreadExecutor(
-                runnable -> new Thread(runnable, "LoggingPrintStream_" + streamName));
+                runnable -> {
+                    Thread t = new Thread(runnable, "LoggingPrintStream_" + streamName);
+                    // mark this as a daemon thread, so it won't block application shutdown
+                    t.setDaemon(true);
+                    return t;
+                });
 
     }
 
