@@ -7,11 +7,16 @@ import emissary.core.IBaseDataObject;
 import emissary.output.filter.IDropOffFilter;
 import emissary.test.core.junit5.UnitTest;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -44,6 +49,7 @@ class DropOffPlaceTest extends UnitTest {
         cfg.addEntry("UNIX_ROOT", tempDir.toString());
         cfg.addEntry("OUTPUT_FILTER", "BLAH:emissary.output.filter.DataFilter");
         cfg.addEntry("OUTPUT_SPEC_BLAH", "%R%/xyzzy/%S%.%F%");
+        cfg.addEntry("OUTPUT_COMPLETION_PAYLOAD_SIZE", "TRUE");
         this.place = new DropOffPlace(cfg);
     }
 
@@ -75,6 +81,71 @@ class DropOffPlaceTest extends UnitTest {
         assertEquals(1, payloadList.size(), "All payloads still on list");
         assertEquals(0, val.size(), "Nothing returned from drop off");
         assertEquals(0, payloadList.get(0).currentFormSize(), "All current forms removed");
+    }
+
+
+    @Test
+    void testOutputMessageContainsPayloadSize() throws Exception {
+        final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        final Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
+
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        byte[] content = "This is the data".getBytes();
+        String expected = "payload size: " + content.length + " bytes";
+
+        try {
+
+            appender.start();
+            rootLogger.addAppender(appender);
+
+            final IBaseDataObject payload = DataObjectFactory.getInstance();
+            payload.setData(content);
+
+            payload.setCurrentForm("FOO");
+            payload.setFileType("FTYPE");
+            payload.setFilename("/this/is/a/testfile");
+            final List<IBaseDataObject> payloadList = new ArrayList<>();
+            payloadList.add(payload);
+
+            final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
+            assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().endsWith(expected)));
+        } finally {
+            rootLogger.detachAppender(appender);
+            appender.stop();
+        }
+    }
+
+
+    @Test
+    void testOutputMessageHandlesNullPayloadArray() throws Exception {
+        final LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        final Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
+
+        ListAppender<ILoggingEvent> appender = new ListAppender<>();
+        String fileType = "FTYPE";
+        String expected = "with filetype: " + fileType;
+
+        try {
+            appender.start();
+            rootLogger.addAppender(appender);
+
+            final IBaseDataObject payload = DataObjectFactory.getInstance();
+            payload.setCurrentForm("FOO");
+            payload.setFileType(fileType);
+            payload.setFilename("/this/is/a/testfile");
+
+            // payload.setData(xx); is never called; this causes DataFilter.filter to fail,
+            // but that's outside the scope of this test's concern
+
+            final List<IBaseDataObject> payloadList = new ArrayList<>();
+            payloadList.add(payload);
+
+            final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
+            assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().endsWith(expected)));
+        } finally {
+            rootLogger.detachAppender(appender);
+            appender.stop();
+        }
     }
 
     @Test
