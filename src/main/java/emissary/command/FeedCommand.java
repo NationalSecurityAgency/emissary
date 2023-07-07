@@ -23,7 +23,7 @@ import java.util.Set;
 @Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes")
 @Command(description = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes",
         subcommands = {HelpCommand.class})
-public class FeedCommand extends ServiceCommand implements Runnable {
+public class FeedCommand extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(FeedCommand.class);
 
     public static final String COMMAND_NAME = "feed";
@@ -218,10 +218,5 @@ public class FeedCommand extends ServiceCommand implements Runnable {
 
     public boolean isFileTimestamp() {
         return fileTimestamp;
-    }
-
-    @Override
-    public void run() {
-
     }
 }

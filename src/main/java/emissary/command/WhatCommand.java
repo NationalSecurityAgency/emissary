@@ -21,7 +21,6 @@ import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.shell.Executrix;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
@@ -75,7 +74,7 @@ public class WhatCommand extends BaseCommand {
     private ParserFactory parserFactory;
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         // TODO This entire class should be refactored into a testable unit
         setup();
         processPath(this.input);

@@ -4,7 +4,6 @@ import emissary.client.EmissaryClient;
 import emissary.client.response.ConfigsResponseEntity;
 import emissary.server.api.Configs;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
@@ -62,7 +61,7 @@ public class ConfigCommand extends HttpCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         try {
             ConfigsResponseEntity entity = offline ? getOfflineConfigs() : getConfigs();

@@ -22,7 +22,7 @@ import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
 
 @Parameters(commandDescription = "Start an Emissary jetty server")
 @Command(description = "Start an Emissary jetty server", subcommands = {HelpCommand.class})
-public class ServerCommand extends ServiceCommand implements Runnable {
+public class ServerCommand extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
 
     public static final String COMMAND_NAME = "server";
@@ -155,10 +155,5 @@ public class ServerCommand extends ServiceCommand implements Runnable {
         } else {
             LOG.info("Setting Emissary server state to {} successful", state);
         }
-    }
-
-    @Override
-    public void run() {
-
     }
 }

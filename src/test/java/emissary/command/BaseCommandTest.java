@@ -3,7 +3,6 @@ package emissary.command;
 import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -37,8 +36,7 @@ class TestBaseCommand extends BaseCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
     }
-
 }

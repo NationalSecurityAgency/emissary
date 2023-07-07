@@ -4,9 +4,6 @@ import emissary.client.EmissaryClient;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +12,13 @@ import picocli.CommandLine.Option;
 
 import static emissary.Emissary.setupLogbackForConsole;
 
-@Parameters(commandDescription = "Output the configured values for certain properties")
 @Command(description = "Output the configured values for certain properties", subcommands = {HelpCommand.class})
-public class EnvCommand extends HttpCommand implements Runnable {
+public class EnvCommand extends HttpCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(EnvCommand.class);
 
     public static int DEFAULT_PORT = 8001;
 
-    @Parameter(names = {"--bashable"}, description = "format output for sourcing by bash")
     @Option(names = {"--bashable"}, description = "format output for sourcing by bash")
     private boolean bashable = false;
 
@@ -51,7 +46,7 @@ public class EnvCommand extends HttpCommand implements Runnable {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/env";
 
         if (getBashable()) {
@@ -87,11 +82,5 @@ public class EnvCommand extends HttpCommand implements Runnable {
         if (isVerbose()) {
             new Banner().dump();
         }
-    }
-
-
-    @Override
-    public void run() {
-
     }
 }

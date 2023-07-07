@@ -3,7 +3,6 @@ package emissary.command;
 import emissary.client.EmissaryResponse;
 import emissary.directory.EmissaryNode;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -94,7 +93,7 @@ public abstract class ServiceCommand extends HttpCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
 
         // let's check to see if the server is already running

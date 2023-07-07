@@ -1,10 +1,9 @@
 package emissary.command;
 
-import com.beust.jcommander.JCommander;
 import picocli.CommandLine.Command;
 
 @Command(description = "Emissary Command")
-public interface EmissaryCommand {
+public interface EmissaryCommand extends Runnable {
 
     String COMMAND_NAME = "EmissaryCommand";
 
@@ -16,9 +15,6 @@ public interface EmissaryCommand {
 
     // do whatever command specific you need
     void setupCommand();
-
-    // The run method should call setup to work correctly
-    void run(JCommander jc);
 
     // dump the banner
     void outputBanner();

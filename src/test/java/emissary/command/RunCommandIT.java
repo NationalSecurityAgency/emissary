@@ -2,7 +2,6 @@ package emissary.command;
 
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class RunCommandIT extends UnitTest {
         String clazzName = "com.junk.Who";
         Exception e = assertThrows(Exception.class, () -> {
             RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
-            cmd.run(new JCommander());
+            cmd.run();
         });
         assertTrue(e.getMessage().contains("Could not find fully qualified class named " + clazzName));
     }
@@ -90,7 +89,7 @@ class RunCommandIT extends UnitTest {
         PrintStream origErr = System.err;
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
-        cmd.run(new JCommander());
+        cmd.run();
         System.setOut(origOut);
         System.setErr(origErr);
     }

@@ -2,8 +2,6 @@ package emissary.command;
 
 import emissary.client.EmissaryResponse;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -14,7 +12,6 @@ import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
  * Use the {@link ServiceCommand} --stop flag to stop a running server
  */
 @Deprecated
-@Parameters(commandDescription = "Stop an Emissary jetty server")
 @Command(description = "Stop an Emissary jetty server", subcommands = {HelpCommand.class})
 public class StopCommand extends HttpCommand {
 
@@ -40,7 +37,7 @@ public class StopCommand extends HttpCommand {
 
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         LOG.info("Stopping Emissary Server at {}://{}:{}", getScheme(), getHost(), getPort());
         EmissaryResponse response = performPost(getShutdownEndpoint());
@@ -63,5 +60,4 @@ public class StopCommand extends HttpCommand {
     public void setupStop() {
 
     }
-
 }

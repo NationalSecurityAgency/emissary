@@ -4,7 +4,6 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.KeyManipulator;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.google.common.net.HostAndPort;
@@ -45,7 +44,7 @@ public class PeersCommand extends HttpCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         try {
             System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), this.withPort)));

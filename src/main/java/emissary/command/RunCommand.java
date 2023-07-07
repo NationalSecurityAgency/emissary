@@ -1,6 +1,5 @@
 package emissary.command;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
@@ -17,7 +16,7 @@ import java.util.List;
 @Deprecated
 @Parameters(commandDescription = "Run arbitrary class with optional args")
 @Command(description = "Run arbitrary class with optional args", subcommands = {HelpCommand.class})
-public class RunCommand extends BaseCommand implements Runnable {
+public class RunCommand extends BaseCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(RunCommand.class);
 
@@ -36,7 +35,7 @@ public class RunCommand extends BaseCommand implements Runnable {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         // make a class from whatever name
         String clazzName = args.get(0);
@@ -76,11 +75,5 @@ public class RunCommand extends BaseCommand implements Runnable {
 
     public void setupRun() {
         setupConfig();
-    }
-
-
-    @Override
-    public void run() {
-
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map.Entry;
 
 @Parameters(commandDescription = "Print commands or usage for subcommand")
 @Command(name = "help", description = "Print commands or usage for subcommand")
-public class HelpCommand implements EmissaryCommand, Runnable {
+public class HelpCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(HelpCommand.class);
 
@@ -47,6 +47,7 @@ public class HelpCommand implements EmissaryCommand, Runnable {
     public void run() {
         setup();
         if (subcommands.isEmpty()) {
+            // uh
         } else if (subcommands.size() > 1) {
             LOG.error("You can only see help for 1 command at a time");
         } else {
@@ -55,7 +56,6 @@ public class HelpCommand implements EmissaryCommand, Runnable {
         }
     }
 
-    @Override
     public void run(JCommander jc) {
         setup();
         if (subcommands.isEmpty()) {
@@ -71,6 +71,26 @@ public class HelpCommand implements EmissaryCommand, Runnable {
             } catch (ParameterException e) {
                 LOG.error("ERROR: invalid command name: {}", subcommand);
                 dumpCommands(jc);
+            }
+        }
+    }
+
+    public void run(CommandLine c) {
+        setup();
+        if (subcommands.isEmpty()) {
+            dumpCommands(c);
+        } else if (subcommands.size() > 1) {
+            LOG.error("You can only see help for 1 command at a time");
+            dumpCommands(c);
+        } else {
+            String subcommand = getSubcommand();
+            LOG.info("Detailed help for: {}", subcommand);
+            try {
+                // TODO: placeholder
+                c.usage(System.out);
+            } catch (ParameterException e) {
+                LOG.error("ERROR: invalid command name: {}", subcommand);
+                dumpCommands(c);
             }
         }
     }

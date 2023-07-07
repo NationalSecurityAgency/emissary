@@ -3,7 +3,6 @@ package emissary.command;
 import emissary.client.EmissaryClient;
 import emissary.client.response.BaseResponseEntity;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +49,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
     public abstract String getTargetEndpoint();
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         try {
             do {

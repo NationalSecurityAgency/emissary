@@ -4,7 +4,6 @@ import emissary.command.BaseCommand;
 import emissary.command.EmissaryCommand;
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -172,7 +171,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run() {
             setup();
             LOG.info("You got junk");
         }
@@ -202,7 +201,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run() {
             setup();
             throw new RuntimeException("Still broken here");
         }
@@ -224,11 +223,10 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run() {
             setup();
             LOG.info("Another great command run");
         }
-
     }
 
 }

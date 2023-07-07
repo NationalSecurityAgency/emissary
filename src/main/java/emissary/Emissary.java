@@ -24,8 +24,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.MissingCommandException;
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +46,7 @@ import javax.annotation.Nullable;
 public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
-    private final JCommander jc = new JCommander();
+    // private final JCommander jc = new JCommander();
     private final CommandLine c = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
@@ -77,11 +75,6 @@ public class Emissary {
     }
 
     @VisibleForTesting
-    protected JCommander getJCommander() {
-        return jc;
-    }
-
-    @VisibleForTesting
     protected CommandLine getCommand() {
         return c;
     }
@@ -94,7 +87,7 @@ public class Emissary {
         commands = Collections.unmodifiableMap(cmds);
         // sort by command name and then add to jCommander
         for (String key : new TreeSet<>(commands.keySet())) {
-            jc.addCommand(key, commands.get(key));
+            // jc.addCommand(key, commands.get(key));
             c.addSubcommand(key, commands.get(key));
         }
     }
@@ -106,7 +99,7 @@ public class Emissary {
             // could also set system property JCommander.DEBUG
             // if that was set before adding commands to the jc object though, you would get logs
             // for adding parameter descriptions etc
-            jc.setVerbose(1);
+            // jc.setVerbose(1);
         }
         try {
             // jc.parse(args);
@@ -116,11 +109,14 @@ public class Emissary {
             if (tent.size() == 0) {
                 dumpBanner();
                 LOG.error("One command is required");
-                HelpCommand.dumpCommands(jc);
+                HelpCommand.dumpCommands(c);
                 exit(1);
             }
             if (code == 2) {
-                throw new MissingCommandException("Hey");
+                dumpBanner();
+                LOG.error("Undefined command: {}", Arrays.toString(args));
+                HelpCommand.dumpCommands(c);
+                exit(1);
             }
             String commandName = tent.get(0);
             EmissaryCommand cmd = commands.get(commandName);
@@ -128,13 +124,12 @@ public class Emissary {
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
-            cmd.run(jc);
+            if (cmd instanceof HelpCommand) {
+                ((HelpCommand) cmd).run(c);
+            } else {
+                cmd.run();
+            }
             // don't exit(0) here or things like server will not continue to run
-        } catch (MissingCommandException e) {
-            dumpBanner();
-            LOG.error("Undefined command: {}", Arrays.toString(args));
-            HelpCommand.dumpCommands(jc);
-            exit(1);
         } catch (Exception e) {
             dumpBanner();
             LOG.error("Command threw an exception: {}", Arrays.toString(args), e);

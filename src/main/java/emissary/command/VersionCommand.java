@@ -2,7 +2,6 @@ package emissary.command;
 
 import emissary.util.Version;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
@@ -16,7 +15,7 @@ import java.io.PrintStream;
 
 @Parameters(commandDescription = "Dump the Emissary version")
 @Command(description = "Dump the Emissary version", subcommands = {HelpCommand.class})
-public class VersionCommand implements EmissaryCommand, Runnable {
+public class VersionCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(VersionCommand.class);
     public static final String COMMAND_NAME = "version";
@@ -44,7 +43,7 @@ public class VersionCommand implements EmissaryCommand, Runnable {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         if (!showMobileAgent) {
             LOG.info("Emissary Version: {}", new Version().toString());
@@ -60,10 +59,5 @@ public class VersionCommand implements EmissaryCommand, Runnable {
         if (getQuiet() == false) {
             new Banner().dump();
         }
-    }
-
-    @Override
-    public void run() {
-
     }
 }

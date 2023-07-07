@@ -3,17 +3,14 @@ package emissary.command;
 import emissary.client.EmissaryClient;
 import emissary.client.response.PeersResponseEntity;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 
-@Parameters(commandDescription = "Run a topology starting with a HTTP call to the given node")
 @Command(description = "Run a topology starting with a HTTP call to the given node",
         subcommands = {HelpCommand.class})
-public class TopologyCommand extends HttpCommand implements Runnable {
+public class TopologyCommand extends HttpCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(TopologyCommand.class);
 
@@ -31,7 +28,7 @@ public class TopologyCommand extends HttpCommand implements Runnable {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run() {
         setup();
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/cluster/peers";
         LOG.info("Hitting " + endpoint);
@@ -52,10 +49,5 @@ public class TopologyCommand extends HttpCommand implements Runnable {
 
     public void setupTopology() {
         setupHttp();
-    }
-
-    @Override
-    public void run() {
-
     }
 }
