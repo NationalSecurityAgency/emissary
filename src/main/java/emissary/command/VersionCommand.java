@@ -7,21 +7,26 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 @Parameters(commandDescription = "Dump the Emissary version")
-public class VersionCommand implements EmissaryCommand {
+@Command(description = "Dump the Emissary version", subcommands = {HelpCommand.class})
+public class VersionCommand implements EmissaryCommand, Runnable {
 
     static final Logger LOG = LoggerFactory.getLogger(VersionCommand.class);
     public static final String COMMAND_NAME = "version";
 
     @Parameter(names = "--showMobi1eAgents", description = "show MobileAgents", hidden = true)
+    @Option(names = "--showMobi1eAgents", description = "show MobileAgents", hidden = true)
     private boolean showMobileAgent = false;
 
     @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
     private boolean quiet = false;
 
     public boolean getQuiet() {
@@ -57,4 +62,8 @@ public class VersionCommand implements EmissaryCommand {
         }
     }
 
+    @Override
+    public void run() {
+
+    }
 }

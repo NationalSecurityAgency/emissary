@@ -12,10 +12,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
 
 @Parameters(commandDescription = "Test the configuration for a place")
+@Command(description = "Test the configuration for a place", subcommands = {HelpCommand.class})
 public class ConfigCommand extends HttpCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigCommand.class);
@@ -23,12 +26,15 @@ public class ConfigCommand extends HttpCommand {
     public static String COMMAND_NAME = "config";
 
     @Parameter(names = {"--place"}, description = "fully-qualified place", arity = 1, required = true)
+    @Option(names = {"--place"}, description = "fully-qualified place", arity = "1", required = true)
     private String place;
 
     @Parameter(names = {"--detailed"}, description = "get verbose output when parsing the configs")
+    @Option(names = {"--detailed"}, description = "get verbose output when parsing the configs")
     private boolean detailed = false;
 
     @Parameter(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)")
+    @Option(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)")
     private boolean offline = false;
 
     @Override

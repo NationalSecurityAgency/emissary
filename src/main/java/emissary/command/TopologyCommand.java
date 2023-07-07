@@ -8,9 +8,12 @@ import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
 
 @Parameters(commandDescription = "Run a topology starting with a HTTP call to the given node")
-public class TopologyCommand extends HttpCommand {
+@Command(description = "Run a topology starting with a HTTP call to the given node",
+        subcommands = {HelpCommand.class})
+public class TopologyCommand extends HttpCommand implements Runnable {
 
     static final Logger LOG = LoggerFactory.getLogger(TopologyCommand.class);
 
@@ -51,4 +54,8 @@ public class TopologyCommand extends HttpCommand {
         setupHttp();
     }
 
+    @Override
+    public void run() {
+
+    }
 }

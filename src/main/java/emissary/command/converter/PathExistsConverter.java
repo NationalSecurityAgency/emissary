@@ -3,12 +3,16 @@ package emissary.command.converter;
 import com.beust.jcommander.converters.BaseConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class PathExistsConverter extends BaseConverter<Path> {
+public class PathExistsConverter extends BaseConverter<Path> implements ITypeConverter<Path> {
+    public PathExistsConverter() {
+        this(null);
+    }
 
     public PathExistsConverter(String optionName) {
         super(optionName);

@@ -10,17 +10,21 @@ import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import static emissary.Emissary.setupLogbackForConsole;
 
 @Parameters(commandDescription = "Output the configured values for certain properties")
-public class EnvCommand extends HttpCommand {
+@Command(description = "Output the configured values for certain properties", subcommands = {HelpCommand.class})
+public class EnvCommand extends HttpCommand implements Runnable {
 
     static final Logger LOG = LoggerFactory.getLogger(EnvCommand.class);
 
     public static int DEFAULT_PORT = 8001;
 
     @Parameter(names = {"--bashable"}, description = "format output for sourcing by bash")
+    @Option(names = {"--bashable"}, description = "format output for sourcing by bash")
     private boolean bashable = false;
 
     @Override
@@ -86,4 +90,8 @@ public class EnvCommand extends HttpCommand {
     }
 
 
+    @Override
+    public void run() {
+
+    }
 }

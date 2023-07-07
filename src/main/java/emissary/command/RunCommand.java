@@ -5,6 +5,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -14,13 +16,17 @@ import java.util.List;
 
 @Deprecated
 @Parameters(commandDescription = "Run arbitrary class with optional args")
-public class RunCommand extends BaseCommand {
+@Command(description = "Run arbitrary class with optional args", subcommands = {HelpCommand.class})
+public class RunCommand extends BaseCommand implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(RunCommand.class);
 
     @Parameter(
             variableArity = true,
             required = true,
+            description = "fully qualified class name to run with remaining arguments passed on as args to that classes main method.  Use -- to stop processing strings as args and pass them along.")
+    @CommandLine.Parameters(
+            arity = "1..*",
             description = "fully qualified class name to run with remaining arguments passed on as args to that classes main method.  Use -- to stop processing strings as args and pass them along.")
     public List<String> args = new ArrayList<>();
 
@@ -73,4 +79,8 @@ public class RunCommand extends BaseCommand {
     }
 
 
+    @Override
+    public void run() {
+
+    }
 }

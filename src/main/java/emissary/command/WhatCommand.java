@@ -26,6 +26,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -41,6 +43,8 @@ import static emissary.core.Form.TEXT;
 
 @Deprecated
 @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
+@Command(description = "Run Identification places on a payload to determine the file type",
+        subcommands = {HelpCommand.class})
 public class WhatCommand extends BaseCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(WhatCommand.class);
@@ -53,12 +57,15 @@ public class WhatCommand extends BaseCommand {
     }
 
     @Parameter(names = {"-h", "--header"}, description = "use header identification, defaults to true", arity = 1)
+    @Option(names = {"-h", "--header"}, description = "use header identification, defaults to true", arity = "1")
     private boolean headerIdentification = true;
 
     @Parameter(names = {"-i", "--input"}, description = "input file or directory", converter = PathExistsReadableConverter.class, required = true)
+    @Option(names = {"-i", "--input"}, description = "input file or directory", converter = PathExistsReadableConverter.class, required = true)
     private Path input;
 
     @Parameter(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false")
+    @Option(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false")
     private boolean recursive = false;
 
     protected List<IServiceProviderPlace> places;

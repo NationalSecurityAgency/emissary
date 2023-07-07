@@ -12,6 +12,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.net.URL;
 import java.nio.file.Files;
@@ -19,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+@Command(description = "Base Command")
 public abstract class BaseCommand implements EmissaryCommand {
     static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
 
@@ -26,27 +29,36 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     @Parameter(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
+    @Option(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
+            converter = PathExistsConverter.class)
     private Path config;
 
     @Parameter(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
+    @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
     private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
 
     @Parameter(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
+    @Option(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
     private String logbackConfig;
 
     @Parameter(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
+    @Option(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
     private String flavor;
 
     @Parameter(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
+    @Option(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
     private Path binDir;
 
     @Parameter(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
+    @Option(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
     private Path outputDir;
 
     @Parameter(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
+    @Option(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
     private Path errorDir;
 
     @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
     private boolean quiet = false;
 
     public Path getConfig() {

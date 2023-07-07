@@ -5,10 +5,11 @@ import emissary.pickup.WorkBundle;
 import com.beust.jcommander.IStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
 
 import java.util.Comparator;
 
-public class WorkspaceSortModeConverter implements IStringConverter<Comparator<WorkBundle>> {
+public class WorkspaceSortModeConverter implements IStringConverter<Comparator<WorkBundle>>, ITypeConverter<Comparator<WorkBundle>> {
     private static final Logger LOG = LoggerFactory.getLogger(WorkspaceSortModeConverter.class);
     public static final String YOUNGEST_FIRST = "yf";
     public static final String OLDEST_FIRST = "of";

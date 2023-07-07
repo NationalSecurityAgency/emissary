@@ -1,7 +1,9 @@
 package emissary.command;
 
 import com.beust.jcommander.JCommander;
+import picocli.CommandLine.Command;
 
+@Command(description = "Emissary Command")
 public interface EmissaryCommand {
 
     String COMMAND_NAME = "EmissaryCommand";

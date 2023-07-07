@@ -29,6 +29,7 @@ import com.beust.jcommander.MissingCommandException;
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
     private final JCommander jc = new JCommander();
+    private final CommandLine c = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
     public static Map<String, EmissaryCommand> EMISSARY_COMMANDS = new HashMap<>();
@@ -79,6 +81,11 @@ public class Emissary {
         return jc;
     }
 
+    @VisibleForTesting
+    protected CommandLine getCommand() {
+        return c;
+    }
+
     protected Emissary() {
         this(EMISSARY_COMMANDS);
     }
@@ -88,6 +95,7 @@ public class Emissary {
         // sort by command name and then add to jCommander
         for (String key : new TreeSet<>(commands.keySet())) {
             jc.addCommand(key, commands.get(key));
+            c.addSubcommand(key, commands.get(key));
         }
     }
 
@@ -101,14 +109,20 @@ public class Emissary {
             jc.setVerbose(1);
         }
         try {
-            jc.parse(args);
-            String commandName = jc.getParsedCommand();
-            if (commandName == null) {
+            // jc.parse(args);
+            // String commandName2 = jc.getParsedCommand();
+            int code = c.execute(args);
+            List<String> tent = c.getParseResult().originalArgs();
+            if (tent.size() == 0) {
                 dumpBanner();
                 LOG.error("One command is required");
                 HelpCommand.dumpCommands(jc);
                 exit(1);
             }
+            if (code == 2) {
+                throw new MissingCommandException("Hey");
+            }
+            String commandName = tent.get(0);
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {

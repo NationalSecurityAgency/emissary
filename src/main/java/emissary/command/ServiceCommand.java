@@ -8,6 +8,7 @@ import com.beust.jcommander.Parameter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Option;
 
 import static emissary.server.api.HealthCheckAction.HEALTH;
 import static emissary.server.api.Shutdown.SHUTDOWN;
@@ -25,18 +26,23 @@ public abstract class ServiceCommand extends HttpCommand {
     public static String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
 
     @Parameter(names = {"--csrf"}, description = "disable csrf protection", arity = 1)
+    @Option(names = {"--csrf"}, description = "disable csrf protection", arity = "1")
     private boolean csrf = true;
 
     @Parameter(names = {"--stop"}, description = "Shutdown the service")
+    @Option(names = {"--stop"}, description = "Shutdown the service")
     private boolean stop = false;
 
     @Parameter(names = {"--kill"}, description = "Force the shutdown of the service")
+    @Option(names = {"--kill"}, description = "Force the shutdown of the service")
     private boolean kill = false;
 
     @Parameter(names = {"--pause"}, description = "Stop the service from taking work")
+    @Option(names = {"--pause"}, description = "Stop the service from taking work")
     private boolean pause = false;
 
     @Parameter(names = {"--unpause"}, description = "Allow a paused service to take work")
+    @Option(names = {"--unpause"}, description = "Allow a paused service to take work")
     private boolean unpause = false;
 
     public boolean isCsrf() {

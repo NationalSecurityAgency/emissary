@@ -6,19 +6,27 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 @Parameters(commandDescription = "Print commands or usage for subcommand")
-public class HelpCommand implements EmissaryCommand {
+@Command(name = "help", description = "Print commands or usage for subcommand")
+public class HelpCommand implements EmissaryCommand, Runnable {
 
     static final Logger LOG = LoggerFactory.getLogger(HelpCommand.class);
 
     public static final String COMMAND_NAME = "help";
 
     @Parameter(arity = 1, description = "display usage for this subcommand ")
+    // @Option(names = "placeholder", arity = "1", description = "display usage for this subcommand ")
+    @CommandLine.Parameters(
+            paramLabel = "COMMAND",
+            arity = "0..1",
+            description = {"display usage for this subcommand "})
     public List<String> subcommands = new ArrayList<>();
 
 
@@ -33,6 +41,18 @@ public class HelpCommand implements EmissaryCommand {
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
+    }
+
+    @Override
+    public void run() {
+        setup();
+        if (subcommands.isEmpty()) {
+        } else if (subcommands.size() > 1) {
+            LOG.error("You can only see help for 1 command at a time");
+        } else {
+            String subcommand = getSubcommand();
+            LOG.info("Detailed help for: {}", subcommand);
+        }
     }
 
     @Override
@@ -72,9 +92,21 @@ public class HelpCommand implements EmissaryCommand {
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");
     }
 
+    public static void dumpCommands(CommandLine cl) {
+        LOG.info("Available commands:");
+        for (Entry<String, CommandLine> cmd : cl.getSubcommands().entrySet()) {
+            final String name = cmd.getKey();
+            String[] descList = cl.getCommandSpec().usageMessage().description();
+            final String description = descList.length == 0 ? "" : descList[0];
+            if (LOG.isInfoEnabled()) {
+                LOG.info("\t {} {}", String.format("%1$-15s", name), description);
+            }
+        }
+        LOG.info("Use 'help <command-name>' to see more detailed info about that command");
+    }
+
     @Override
     public void outputBanner() {
         new Banner().dump();
     }
-
 }

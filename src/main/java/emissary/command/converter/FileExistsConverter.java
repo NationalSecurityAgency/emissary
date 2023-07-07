@@ -3,13 +3,17 @@ package emissary.command.converter;
 import com.beust.jcommander.converters.BaseConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileExistsConverter extends BaseConverter<File> {
+public class FileExistsConverter extends BaseConverter<File> implements ITypeConverter<File> {
+    public FileExistsConverter() {
+        this(null);
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 

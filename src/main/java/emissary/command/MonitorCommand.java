@@ -7,6 +7,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.util.Date;
@@ -21,12 +22,15 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
     private final Object lock = new Object();
 
     @Parameter(names = {"--mon"}, description = "runs the agents command in monitor mode, executing every 30 seconds by default")
+    @Option(names = {"--mon"}, description = "runs the agents command in monitor mode, executing every 30 seconds by default")
     private boolean monitor = false;
 
     @Parameter(names = {"-i", "--interval"}, description = "how many seconds to wait between each endpoint call")
+    @Option(names = {"-i", "--interval"}, description = "how many seconds to wait between each endpoint call")
     private int sleepInterval = 30;
 
     @Parameter(names = {"--cluster"}, description = "sets endpoint to clustered mode")
+    @Option(names = {"--cluster"}, description = "sets endpoint to clustered mode")
     private boolean clustered = false;
 
     public boolean getMonitor() {

@@ -5,11 +5,14 @@ import emissary.client.response.MapResponseEntity;
 
 import com.beust.jcommander.Parameters;
 import org.apache.http.client.methods.HttpGet;
+import picocli.CommandLine.Command;
 
 import static emissary.server.api.Pool.POOL_ENDPOINT;
 
 @Parameters(commandDescription = "List the active/idle agents in the pool for a given node or all nodes in the cluster")
-public class PoolCommand extends MonitorCommand<MapResponseEntity> {
+@Command(description = "List the active/idle agents in the pool for a given node or all nodes in the cluster",
+        subcommands = {HelpCommand.class})
+public class PoolCommand extends MonitorCommand<MapResponseEntity> implements Runnable {
 
     public static final String COMMAND_NAME = "pool";
 
@@ -34,4 +37,8 @@ public class PoolCommand extends MonitorCommand<MapResponseEntity> {
     }
 
 
+    @Override
+    public void run() {
+
+    }
 }

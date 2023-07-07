@@ -6,6 +6,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
 
 import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
 
@@ -14,6 +15,7 @@ import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
  */
 @Deprecated
 @Parameters(commandDescription = "Stop an Emissary jetty server")
+@Command(description = "Stop an Emissary jetty server", subcommands = {HelpCommand.class})
 public class StopCommand extends HttpCommand {
 
     public static String COMMAND_NAME = "stop";
