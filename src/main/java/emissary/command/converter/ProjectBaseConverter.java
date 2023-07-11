@@ -41,7 +41,7 @@ public class ProjectBaseConverter extends PathExistsConverter implements ITypeCo
             }
         }
 
-        Path p = super.convert(value);
+        Path p = super.convert("-b", value);
         String pString = p.toAbsolutePath().toString();
 
         // both -b and PROJECT_BASE were set, make sure they are pointing to the same place

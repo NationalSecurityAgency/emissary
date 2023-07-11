@@ -4,8 +4,6 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.KeyManipulator;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +14,6 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Parameters(commandDescription = "Read the peers.cfg (respective flavors) and return hosts as bashable list")
 @Command(description = "Read the peers.cfg (respective flavors) and return hosts as bashable list", subcommands = {HelpCommand.class})
 public class PeersCommand extends HttpCommand {
 
@@ -26,15 +23,12 @@ public class PeersCommand extends HttpCommand {
 
     private static final String PEER_CONFIG = "peer.cfg";
 
-    @Parameter(names = {"-d", "--delimiter"}, description = "delimiter to use when writing host output (note: newline needs to be \\n")
     @Option(names = {"-d", "--delimiter"}, description = "delimiter to use when writing host output (note: newline needs to be \\n")
     private String delimiter = ",";
 
-    @Parameter(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])")
     @Option(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])")
     private String ignoreHost = "";
 
-    @Parameter(names = "--withPort", description = "returns each peer with associated port")
     @Option(names = "--withPort", description = "returns each peer with associated port")
     private boolean withPort = false;
 

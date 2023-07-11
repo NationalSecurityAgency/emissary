@@ -7,8 +7,6 @@ import emissary.core.EmissaryException;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -20,7 +18,6 @@ import java.util.Set;
 
 import static emissary.directory.EmissaryNode.STRICT_STARTUP_MODE;
 
-@Parameters(commandDescription = "Start an Emissary jetty server")
 @Command(description = "Start an Emissary jetty server", subcommands = {HelpCommand.class})
 public class ServerCommand extends ServiceCommand {
     private static final Logger LOG = LoggerFactory.getLogger(ServerCommand.class);
@@ -29,7 +26,6 @@ public class ServerCommand extends ServiceCommand {
 
     public static final int DEFAULT_PORT = 8001;
 
-    @Parameter(names = {"-m", "--mode"}, description = "mode: standalone or cluster", validateWith = ServerModeValidator.class)
     private String mode = "standalone";
 
     @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster")
@@ -39,19 +35,15 @@ public class ServerCommand extends ServiceCommand {
         mode = value;
     }
 
-    @Parameter(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     @Option(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     private Path staticDir;
 
-    @Parameter(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)")
     @Option(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)")
     private int agents;
 
-    @Parameter(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     @Option(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
     private boolean dumpJettyBeans = false;
 
-    @Parameter(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
     @Option(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
     private boolean strictMode = false;
 

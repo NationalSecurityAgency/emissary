@@ -3,10 +3,9 @@ package emissary.command.converter;
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 
-import com.beust.jcommander.IStringConverter;
 import picocli.CommandLine.ITypeConverter;
 
-public class PriorityDirectoryConverter implements IStringConverter<PriorityDirectory>, ITypeConverter<PriorityDirectory> {
+public class PriorityDirectoryConverter implements ITypeConverter<PriorityDirectory> {
     public PriorityDirectoryConverter() {
         super();
     }
