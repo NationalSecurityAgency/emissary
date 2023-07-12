@@ -33,7 +33,8 @@ public abstract class BaseCommand implements EmissaryCommand {
             converter = PathExistsConverter.class)
     private Path config;
 
-    @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
+    @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different\nDefault: ${DEFAULT-VALUE}",
+            converter = ProjectBaseConverter.class)
     private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
 
     @Option(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
@@ -51,7 +52,7 @@ public abstract class BaseCommand implements EmissaryCommand {
     @Option(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
     private Path errorDir;
 
-    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
 
     public Path getConfig() {
@@ -147,7 +148,6 @@ public abstract class BaseCommand implements EmissaryCommand {
     public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
         T cmd = clazz.cast(Class.forName(clazz.getName()).newInstance());
-        // new JCommander(cmd, args); // sets the parameters by side effect
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -225,4 +225,7 @@ public abstract class BaseCommand implements EmissaryCommand {
             new Banner().dump();
         }
     }
+
+    @Override
+    public void run() {}
 }

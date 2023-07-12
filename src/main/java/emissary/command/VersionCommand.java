@@ -4,6 +4,7 @@ import emissary.util.Version;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -17,10 +18,10 @@ public class VersionCommand implements EmissaryCommand {
     static final Logger LOG = LoggerFactory.getLogger(VersionCommand.class);
     public static final String COMMAND_NAME = "version";
 
-    @Option(names = "--showMobi1eAgents", description = "show MobileAgents", hidden = true)
+    @Option(names = "--showMobi1eAgents", description = "show MobileAgents\nDefault: ${DEFAULT-VALUE}", hidden = true)
     private boolean showMobileAgent = false;
 
-    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
 
     public boolean getQuiet() {
@@ -38,7 +39,7 @@ public class VersionCommand implements EmissaryCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
         if (!showMobileAgent) {
             LOG.info("Emissary Version: {}", new Version().toString());

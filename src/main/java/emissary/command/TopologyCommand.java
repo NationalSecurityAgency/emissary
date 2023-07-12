@@ -6,6 +6,7 @@ import emissary.client.response.PeersResponseEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(description = "Run a topology starting with a HTTP call to the given node",
@@ -28,7 +29,7 @@ public class TopologyCommand extends HttpCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/cluster/peers";
         LOG.info("Hitting " + endpoint);

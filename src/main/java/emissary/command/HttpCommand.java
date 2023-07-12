@@ -30,19 +30,20 @@ public abstract class HttpCommand extends BaseCommand {
 
     public static final int DEFAULT_PORT = 9001;
 
-    @Option(names = {"-p", "--port"}, description = "http port")
+    @Option(names = {"-p", "--port"}, description = "http port\nDefault: ${DEFAULT-VALUE}")
     private int port = getDefaultPort();
 
-    @Option(names = {"-h", "--host"}, description = "http host")
+    @Option(names = {"-h", "--host"}, description = "http host\nDefault: ${DEFAULT-VALUE}")
     private String host = "localhost";
 
-    @Option(names = {"-s", "--scheme"}, description = "http scheme")
+    @Option(names = {"-s", "--scheme"}, description = "http scheme\nDefault: ${DEFAULT-VALUE}")
     private String scheme = "http";
 
     @Option(names = {"-j", "--jettyuserfile"}, description = "jetty-users file to load", converter = FileExistsConverter.class)
     private File jettyUserFile;
 
-    @Option(names = {"--ssl"}, description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg")
+    @Option(names = {"--ssl"},
+            description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg\nDefault: ${DEFAULT-VALUE}")
     private boolean sslEnabled = false;
 
     public int getDefaultPort() {

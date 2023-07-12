@@ -28,7 +28,7 @@ public class ServerCommand extends ServiceCommand {
 
     private String mode = "standalone";
 
-    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster")
+    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", defaultValue = "standalone")
     private void setMode(String value) {
         ServerModeValidator smv = new ServerModeValidator();
         smv.validate("mode", value);
@@ -38,13 +38,13 @@ public class ServerCommand extends ServiceCommand {
     @Option(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     private Path staticDir;
 
-    @Option(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)")
+    @Option(names = {"-a", "--agents"}, description = "number of mobile agents (default is based on memory)\nDefault: ${DEFAULT-VALUE}")
     private int agents;
 
-    @Option(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded")
+    @Option(names = {"--dumpJettyBeans"}, description = "dump all the jetty beans that loaded\nDefault: ${DEFAULT-VALUE}")
     private boolean dumpJettyBeans = false;
 
-    @Option(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server")
+    @Option(names = {"--strict"}, description = "If one Place fails to start, shut down the entire server\nDefault: ${DEFAULT-VALUE}")
     private boolean strictMode = false;
 
     @Override

@@ -23,6 +23,7 @@ import emissary.util.shell.Executrix;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -57,13 +58,13 @@ public class WhatCommand extends BaseCommand {
         return COMMAND_NAME;
     }
 
-    @Option(names = {"-h", "--header"}, description = "use header identification, defaults to true", arity = "1")
+    @Option(names = {"-h", "--header"}, description = "use header identification, defaults to true\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean headerIdentification = true;
 
     @Option(names = {"-i", "--input"}, description = "input file or directory", converter = WhatCommandPathExistsConverter.class, required = true)
     private Path input;
 
-    @Option(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false")
+    @Option(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false\nDefault: ${DEFAULT-VALUE}")
     private boolean recursive = false;
 
     protected List<IServiceProviderPlace> places;
@@ -73,7 +74,7 @@ public class WhatCommand extends BaseCommand {
     private ParserFactory parserFactory;
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         // TODO This entire class should be refactored into a testable unit
         setup();
         processPath(this.input);

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -27,10 +28,10 @@ public class ConfigCommand extends HttpCommand {
     @Option(names = {"--place"}, description = "fully-qualified place", arity = "1", required = true)
     private String place;
 
-    @Option(names = {"--detailed"}, description = "get verbose output when parsing the configs")
+    @Option(names = {"--detailed"}, description = "get verbose output when parsing the configs\nDefault: ${DEFAULT-VALUE}")
     private boolean detailed = false;
 
-    @Option(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)")
+    @Option(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)\nDefault: ${DEFAULT-VALUE}")
     private boolean offline = false;
 
     @Override
@@ -58,7 +59,7 @@ public class ConfigCommand extends HttpCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
         try {
             ConfigsResponseEntity entity = offline ? getOfflineConfigs() : getConfigs();

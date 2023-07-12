@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ class TestBaseCommand extends BaseCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
     }
 }

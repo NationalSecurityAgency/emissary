@@ -24,19 +24,19 @@ public abstract class ServiceCommand extends HttpCommand {
     public static String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
     public static String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
 
-    @Option(names = {"--csrf"}, description = "disable csrf protection", arity = "1")
+    @Option(names = {"--csrf"}, description = "disable csrf protection\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean csrf = true;
 
-    @Option(names = {"--stop"}, description = "Shutdown the service")
+    @Option(names = {"--stop"}, description = "Shutdown the service\nDefault: ${DEFAULT-VALUE}")
     private boolean stop = false;
 
-    @Option(names = {"--kill"}, description = "Force the shutdown of the service")
+    @Option(names = {"--kill"}, description = "Force the shutdown of the service\nDefault: ${DEFAULT-VALUE}")
     private boolean kill = false;
 
-    @Option(names = {"--pause"}, description = "Stop the service from taking work")
+    @Option(names = {"--pause"}, description = "Stop the service from taking work\nDefault: ${DEFAULT-VALUE}")
     private boolean pause = false;
 
-    @Option(names = {"--unpause"}, description = "Allow a paused service to take work")
+    @Option(names = {"--unpause"}, description = "Allow a paused service to take work\nDefault: ${DEFAULT-VALUE}")
     private boolean unpause = false;
 
     public boolean isCsrf() {
@@ -87,6 +87,7 @@ public abstract class ServiceCommand extends HttpCommand {
         }
     }
 
+    @Override
     public void run(CommandLine c) {
         setup();
 
@@ -115,11 +116,6 @@ public abstract class ServiceCommand extends HttpCommand {
                 startService();
             }
         }
-    }
-
-    @Override
-    public void run() {
-
     }
 
     /**

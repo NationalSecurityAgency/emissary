@@ -1,21 +1,6 @@
 package emissary;
 
-import emissary.command.AgentsCommand;
-import emissary.command.Banner;
-import emissary.command.ConfigCommand;
-import emissary.command.DirectoryCommand;
-import emissary.command.EmissaryCommand;
-import emissary.command.EnvCommand;
-import emissary.command.FeedCommand;
-import emissary.command.HelpCommand;
-import emissary.command.PeersCommand;
-import emissary.command.PoolCommand;
-import emissary.command.RunCommand;
-import emissary.command.ServerCommand;
-import emissary.command.StopCommand;
-import emissary.command.TopologyCommand;
-import emissary.command.VersionCommand;
-import emissary.command.WhatCommand;
+import emissary.command.*;
 import emissary.util.GitRepositoryState;
 import emissary.util.io.LoggingPrintStream;
 
@@ -28,6 +13,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import picocli.CommandLine.UnmatchedArgumentException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +32,6 @@ import javax.annotation.Nullable;
 public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
-    // private final JCommander jc = new JCommander();
     private final CommandLine c = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
@@ -87,7 +72,6 @@ public class Emissary {
         commands = Collections.unmodifiableMap(cmds);
         // sort by command name and then add to jCommander
         for (String key : new TreeSet<>(commands.keySet())) {
-            // jc.addCommand(key, commands.get(key));
             c.addSubcommand(key, commands.get(key));
         }
     }
@@ -102,34 +86,27 @@ public class Emissary {
             // jc.setVerbose(1);
         }
         try {
-            // jc.parse(args);
-            // String commandName2 = jc.getParsedCommand();
-            int code = c.execute(args);
-            List<String> tent = c.getParseResult().originalArgs();
-            if (tent.size() == 0) {
+            c.parseArgs(args);
+            List<String> commandNames = c.getParseResult().originalArgs();
+            if (commandNames.size() == 0) {
                 dumpBanner();
                 LOG.error("One command is required");
                 HelpCommand.dumpCommands(c);
                 exit(1);
             }
-            if (code == 2) {
-                dumpBanner();
-                LOG.error("Undefined command: {}", Arrays.toString(args));
-                HelpCommand.dumpCommands(c);
-                exit(1);
-            }
-            String commandName = tent.get(0);
+            String commandName = commandNames.get(0);
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
-            if (cmd instanceof HelpCommand) {
-                ((HelpCommand) cmd).run(c);
-            } else {
-                cmd.run();
-            }
+            cmd.run(c);
             // don't exit(0) here or things like server will not continue to run
+        } catch (UnmatchedArgumentException e) {
+            dumpBanner();
+            LOG.error("Undefined command: {}", Arrays.toString(args));
+            HelpCommand.dumpCommands(c);
+            exit(1);
         } catch (Exception e) {
             dumpBanner();
             LOG.error("Command threw an exception: {}", Arrays.toString(args), e);

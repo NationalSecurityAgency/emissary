@@ -7,6 +7,7 @@ import emissary.directory.KeyManipulator;
 import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -23,13 +24,14 @@ public class PeersCommand extends HttpCommand {
 
     private static final String PEER_CONFIG = "peer.cfg";
 
-    @Option(names = {"-d", "--delimiter"}, description = "delimiter to use when writing host output (note: newline needs to be \\n")
+    @Option(names = {"-d", "--delimiter"},
+            description = "delimiter to use when writing host output (note: newline needs to be \\n\nDefault: ${DEFAULT-VALUE}")
     private String delimiter = ",";
 
-    @Option(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])")
+    @Option(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])\nDefault: <empty string>")
     private String ignoreHost = "";
 
-    @Option(names = "--withPort", description = "returns each peer with associated port")
+    @Option(names = "--withPort", description = "returns each peer with associated port\nDefault: ${DEFAULT-VALUE}")
     private boolean withPort = false;
 
     @Override
@@ -38,7 +40,7 @@ public class PeersCommand extends HttpCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
         try {
             System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), this.withPort)));

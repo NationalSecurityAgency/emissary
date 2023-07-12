@@ -30,22 +30,22 @@ public class FeedCommand extends ServiceCommand {
     public static final String COMMAND_NAME = "feed";
     public static final int DEFAULT_PORT = 7001;
 
-    @Option(names = {"-w", "--workspace"}, description = "fully qualified class to use as the WorkSpace implementation")
+    @Option(names = {"-w", "--workspace"}, description = "fully qualified class to use as the WorkSpace implementation\nDefault: ${DEFAULT-VALUE}")
     private String workspaceClass = "emissary.pickup.WorkSpace";
 
-    @Option(names = {"--bundleSize"}, description = "number of files to pack in each work bundle given to the peers")
+    @Option(names = {"--bundleSize"}, description = "number of files to pack in each work bundle given to the peers\nDefault: ${DEFAULT-VALUE}")
     private int bundleSize = 1;
 
-    @Option(names = {"-ci", "--caseId"}, description = "case id to assign")
+    @Option(names = {"-ci", "--caseId"}, description = "case id to assign\nDefault: ${DEFAULT-VALUE}")
     private String caseId = "auto";
 
-    @Option(names = {"-cc", "--caseClass"}, description = "case class to assign")
+    @Option(names = {"-cc", "--caseClass"}, description = "case class to assign\nDefault: <empty string>")
     private String caseClass = "";
 
-    @Option(names = {"-ep", "--eatPrefix"}, description = "prefix to eat on input files when creating work bundles")
+    @Option(names = {"-ep", "--eatPrefix"}, description = "prefix to eat on input files when creating work bundles\nDefault: <empty string>")
     private String eatPrefix = "";
 
-    @Option(names = {"-cs", "--case"}, description = "Pattern to use to find the clients in the namespace")
+    @Option(names = {"-cs", "--case"}, description = "Pattern to use to find the clients in the namespace\nDefault: ${DEFAULT-VALUE}")
     private String clientPattern = "INITIAL.FILE_PICK_UP_CLIENT.INPUT.*";
 
     @Option(names = {"-o", "--feedOutputRoot"},
@@ -62,27 +62,27 @@ public class FeedCommand extends ServiceCommand {
             converter = WorkspaceSortModeConverter.class)
     private Comparator<WorkBundle> sort;
 
-    @Option(names = {"-ns", "--namespaceName"}, description = "name to assign to the work space")
+    @Option(names = {"-ns", "--namespaceName"}, description = "name to assign to the work space\nDefault: ${DEFAULT-VALUE}")
     private String workspaceName = "WorkSpace";
 
-    @Option(names = {"-sd", "--skipDot"}, description = "skips dot files when creating work bundles")
+    @Option(names = {"-sd", "--skipDot"}, description = "skips dot files when creating work bundles\nDefault: ${DEFAULT-VALUE}")
     private boolean skipDotFile = true;
 
     @Option(names = {"-dirs", "--includeDirs"},
-            description = "Set directory processing flag. When true directory entries are retrieved from the input area just like normal")
+            description = "Set directory processing flag. When true directory entries are retrieved from the input area just like normal\nDefault: ${DEFAULT-VALUE}")
     private boolean includeDirs = false;
 
-    @Option(names = {"-l", "--loop"}, description = "Controls loop functionality of workspace")
+    @Option(names = {"-l", "--loop"}, description = "Controls loop functionality of workspace\nDefault: ${DEFAULT-VALUE}")
     private boolean loop = true;
 
-    @Option(names = {"-r", "--retry"}, description = "controls if we retry or not")
+    @Option(names = {"-r", "--retry"}, description = "controls if we retry or not\nDefault: ${DEFAULT-VALUE}")
     private boolean retry = true;
 
-    @Option(names = {"--simple"}, description = "turn on simple mode")
+    @Option(names = {"--simple"}, description = "turn on simple mode\nDefault: ${DEFAULT-VALUE}")
     private boolean simple = false;
 
     @Option(names = {"-ft", "--fileTimestamp"},
-            description = "set the use of file timestamps to control whether a file is new enough to be added to the queue")
+            description = "set the use of file timestamps to control whether a file is new enough to be added to the queue\nDefault: ${DEFAULT-VALUE}")
     private boolean fileTimestamp = false;
 
     @Override

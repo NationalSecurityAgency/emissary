@@ -7,6 +7,7 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.ByteArrayOutputStream;
@@ -171,7 +172,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run() {
+        public void run(CommandLine c) {
             setup();
             LOG.info("You got junk");
         }
@@ -201,7 +202,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run() {
+        public void run(CommandLine c) {
             setup();
             throw new RuntimeException("Still broken here");
         }
@@ -223,7 +224,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run() {
+        public void run(CommandLine c) {
             setup();
             LOG.info("Another great command run");
         }

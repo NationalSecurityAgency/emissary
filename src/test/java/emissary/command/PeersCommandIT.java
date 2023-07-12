@@ -145,7 +145,7 @@ class PeersCommandIT extends UnitTest {
         PrintStream origErr = System.err;
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
-        cmd.run();
+        cmd.run(null);
         System.setOut(origOut);
         System.setErr(origErr);
     }

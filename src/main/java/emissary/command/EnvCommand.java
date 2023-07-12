@@ -7,6 +7,7 @@ import ch.qos.logback.classic.LoggerContext;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -19,7 +20,7 @@ public class EnvCommand extends HttpCommand {
 
     public static int DEFAULT_PORT = 8001;
 
-    @Option(names = {"--bashable"}, description = "format output for sourcing by bash")
+    @Option(names = {"--bashable"}, description = "format output for sourcing by bash\nDefault: ${DEFAULT-VALUE}")
     private boolean bashable = false;
 
     @Override
@@ -46,7 +47,7 @@ public class EnvCommand extends HttpCommand {
     }
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         String endpoint = getScheme() + "://" + getHost() + ":" + getPort() + "/api/env";
 
         if (getBashable()) {

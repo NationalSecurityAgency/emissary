@@ -4,6 +4,7 @@ import emissary.client.EmissaryResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import static emissary.command.ServiceCommand.SERVICE_SHUTDOWN_ENDPOINT;
@@ -37,7 +38,7 @@ public class StopCommand extends HttpCommand {
 
 
     @Override
-    public void run() {
+    public void run(CommandLine c) {
         setup();
         LOG.info("Stopping Emissary Server at {}://{}:{}", getScheme(), getHost(), getPort());
         EmissaryResponse response = performPost(getShutdownEndpoint());
