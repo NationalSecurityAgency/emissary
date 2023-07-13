@@ -17,6 +17,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
+import emissary.util.InternalProvenance;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
@@ -34,6 +35,7 @@ import javax.annotation.Nullable;
 
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.FILE_NAME;
+import static net.logstash.logback.marker.Markers.appendEntries;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
@@ -552,6 +554,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
                 (simpleMode ? "simple" : ""));
+        InternalProvenanceLogger.info(appendEntries(InternalProvenance.CreatePickupMessageMap(fixedName)), "");
         assignToPooledAgent(d, -1L);
         return true;
     }
