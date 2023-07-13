@@ -17,7 +17,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
-import emissary.util.InternalProvenance;
+import emissary.util.InternalProvenanceUtil;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
@@ -540,6 +540,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @return true if it works
      */
     protected boolean processDataObject(IBaseDataObject d, String fixedName, File theFile, boolean simpleMode) throws EmissaryException {
+        outputInternalProvenance(d);
         String currentForm = d.popCurrentForm();
         if (currentForm == null) {
             // Add our stuff to the form stack if none is set (e.g from DecomposedSession)
@@ -554,9 +555,18 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
                 (simpleMode ? "simple" : ""));
-        InternalProvenanceLogger.info(appendEntries(InternalProvenance.CreatePickupMessageMap(fixedName)), "");
         assignToPooledAgent(d, -1L);
         return true;
+    }
+
+    /**
+     * Output the pickup stage for InternalProvenance This is a separate method to provide overriding in upstream software
+     * components if they want to use a different value for id.
+     * 
+     * @param ibdo data object that is being processed
+     */
+    protected void outputInternalProvenance(IBaseDataObject ibdo) {
+        InternalProvenanceLogger.info(appendEntries(InternalProvenanceUtil.createPickupMessageMap(ibdo.getFilename())), "");
     }
 
     /**

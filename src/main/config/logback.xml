@@ -52,7 +52,7 @@
   <!-- Enable output metrics logging by creating an environment variable of "LogObjectMetrics=true" -->
   <if condition='${InternalProvenance} == true'>
     <then>
-      <appender name="INTERNAL-PROVENANCE" class="emissary.util.CustomTimeLogbackAppender">
+      <appender name="INTERNAL-PROVENANCE" class="emissary.util.TenMinLogbackAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
           <customFields>{"node":"${emissary.node.name}"}</customFields>
           <includeMdc>false</includeMdc>
@@ -66,12 +66,11 @@
             <message>[ignore]</message>
           </fieldNames>
         </encoder>
-        <file>logs/InternalProvince/${emissary.node.name}-InternalProvince.log</file>
+        <file>target/localoutput/InternalProvince/${emissary.node.name}-InternalProvince.json</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-          <fileNamePattern>logs/objectTrace/${emissary.node.name}-InternalProvince.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
+          <fileNamePattern>target/localoutput/${emissary.node.name}-InternalProvince.json.%d{yyyyMMdd-HHmm}</fileNamePattern>
         </rollingPolicy>
       </appender>
-
       <logger name="InternalProvenance" level="INFO" additivity="false">
         <appender-ref ref="INTERNAL-PROVENANCE" />
       </logger>
