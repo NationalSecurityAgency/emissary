@@ -108,17 +108,17 @@ class EmissaryTest extends UnitTest {
     }
 
 
-    // @Test
+    @Test
     void testVerbose() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         // like is done in the emissary script
-        System.setProperty("set.jcommander.debug", "true");
+        System.setProperty("set.picocli.debug", "true");
         cmds.put("another", new AnotherBaseCommand());
 
         Emissary2 emissary = new Emissary2(cmds);
 
         emissary.execute(makeArgs("another"));
-        assertTrue(emissary.getOut().contains("JCommander] Parsing \"another\""));
+        assertTrue(emissary.getErr().contains("picocli INFO] Parsing 1 command line args [another]"));
     }
 
     private String[] makeArgs(String... args) {

@@ -78,12 +78,9 @@ public class Emissary {
 
     protected void execute(String[] args) {
         reconfigureLogHook(); // so we can capture everything for test, like the verbose output
-        String shouldSetVerbose = System.getProperty("set.jcommander.debug");
+        String shouldSetVerbose = System.getProperty("set.picocli.debug");
         if (shouldSetVerbose != null && shouldSetVerbose.equals("true")) {
-            // could also set system property JCommander.DEBUG
-            // if that was set before adding commands to the jc object though, you would get logs
-            // for adding parameter descriptions etc
-            // jc.setVerbose(1);
+            CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);
         }
         try {
             c.parseArgs(args);
