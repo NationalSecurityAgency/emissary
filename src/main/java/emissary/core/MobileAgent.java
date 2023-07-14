@@ -526,8 +526,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 String formID = form + KeyManipulator.DATAIDSEPARATOR + stageName;
                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
 
-                // if last place/directory entry is disallowed, reject
-                if (curEntry != null && place.isDisallowed(curEntry.getDataType())) {
+                // if last place/directory entry is denied, reject
+                if (curEntry != null && place.isDenied(curEntry.getDataType())) {
                     continue;
                 }
 

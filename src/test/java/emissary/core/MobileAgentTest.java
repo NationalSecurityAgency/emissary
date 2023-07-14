@@ -81,12 +81,12 @@ class MobileAgentTest extends UnitTest {
     }
 
     @Test
-    void testDisallowedList() throws Exception {
+    void testDenyList() throws Exception {
         // setup
-        byte[] configDisallowedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
-                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
-                + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW = \"B\"\n").getBytes();
-        InputStream config = new ByteArrayInputStream(configDisallowedData);
+        byte[] configDeniedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
+                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with denied list\"\n" + "SERVICE_COST = 60\n"
+                + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY = \"B\"\n").getBytes();
+        InputStream config = new ByteArrayInputStream(configDeniedData);
         IServiceProviderPlace place = new PlaceTest(config);
         HDMobileAgent agent = new MobAg2();
         d.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");

@@ -69,16 +69,16 @@ class ServiceProviderPlaceTest extends UnitTest {
     private static final byte[] configBadKeyData = ("TGT_HOST = \"localhost\"\n" + "TGT_PORT = \"8001\"\n"
             + "SERVICE_KEY = \"TP4.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$8050\"\n" + "SERVICE_DESCRIPTION = \"bogus\"\n").getBytes();
 
-    private static final byte[] configDisallowedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
-            + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
+    private static final byte[] configDeniedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
+            + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with denied list\"\n" + "SERVICE_COST = 60\n"
             + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY2\"\n"
-            + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY3\"\n"
-            + "SERVICE_PROXY_DISALLOW != \"TEST_SERVICE_PROXY3\"\n").getBytes();
+            + "SERVICE_PROXY_DENY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY = \"TEST_SERVICE_PROXY3\"\n"
+            + "SERVICE_PROXY_DENY != \"TEST_SERVICE_PROXY3\"\n").getBytes();
 
-    private static final byte[] configDisallowedData2 = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
-            + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with disallowed list\"\n" + "SERVICE_COST = 60\n"
+    private static final byte[] configDeniedData2 = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
+            + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with denied list\"\n" + "SERVICE_COST = 60\n"
             + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n"
-            + "SERVICE_PROXY_DISALLOW = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DISALLOW != \"*\"\n").getBytes();
+            + "SERVICE_PROXY_DENY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY != \"*\"\n").getBytes();
 
     String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 
@@ -543,19 +543,19 @@ class ServiceProviderPlaceTest extends UnitTest {
     }
 
     @Test
-    void testDisallowedServiceProxy() {
+    void testDeniedServiceProxy() {
         try {
-            InputStream config = new ByteArrayInputStream(configDisallowedData);
+            InputStream config = new ByteArrayInputStream(configDeniedData);
             IServiceProviderPlace p = new PlaceTest(config);
             assertEquals("PlaceTest", p.getPlaceName(), "Configured place name");
-            assertTrue(p.isDisallowed("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be disallowed");
-            assertTrue(!p.isDisallowed("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
-            assertTrue(!p.isDisallowed("TEST_SERVICE_PROXY3"), "TEST_SERVICE_PROXY3 should be allowed");
+            assertTrue(p.isDenied("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be denied");
+            assertTrue(!p.isDenied("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
+            assertTrue(!p.isDenied("TEST_SERVICE_PROXY3"), "TEST_SERVICE_PROXY3 should be allowed");
 
-            InputStream config2 = new ByteArrayInputStream(configDisallowedData2);
+            InputStream config2 = new ByteArrayInputStream(configDeniedData2);
             IServiceProviderPlace p2 = new PlaceTest(config2);
-            assertTrue(!p2.isDisallowed("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be allowed");
-            assertTrue(!p2.isDisallowed("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
+            assertTrue(!p2.isDenied("TEST_SERVICE_PROXY"), "TEST_SERVICE_PROXY should be allowed");
+            assertTrue(!p2.isDenied("TEST_SERVICE_PROXY2"), "TEST_SERVICE_PROXY2 should be allowed");
         } catch (IOException iox) {
             fail("Place should have configured with SERVICE_KEY", iox);
         }

@@ -51,7 +51,7 @@ import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
 import static emissary.core.constants.Configurations.SERVICE_KEY;
 import static emissary.core.constants.Configurations.SERVICE_NAME;
 import static emissary.core.constants.Configurations.SERVICE_PROXY;
-import static emissary.core.constants.Configurations.SERVICE_PROXY_DISALLOW;
+import static emissary.core.constants.Configurations.SERVICE_PROXY_DENY;
 import static emissary.core.constants.Configurations.SERVICE_QUALITY;
 import static emissary.core.constants.Configurations.SERVICE_TYPE;
 
@@ -88,9 +88,9 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     protected List<String> keys = new ArrayList<>();
 
     /**
-     * List of disallowed places in SERVICE_PROXY_DISALLOW
+     * List of denied places in SERVICE_PROXY_DENY
      */
-    protected List<String> disallowList = new ArrayList<>();
+    protected List<String> denyList = new ArrayList<>();
 
     // Items that are going to be deprecated, but here now to
     // make the transition easier, for compatibility
@@ -444,10 +444,10 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
                 DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
                 keys.add(de.getFullKey());
             }
-            // pick up the disallowed proxies(save full 4-tuple keys!)
-            for (String sp : configG.findEntries(SERVICE_PROXY_DISALLOW)) {
+            // pick up the denied proxies(save full 4-tuple keys!)
+            for (String sp : configG.findEntries(SERVICE_PROXY_DENY)) {
                 DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
-                disallowList.add(de.getDataType());
+                denyList.add(de.getDataType());
             }
         } else {
             // May be configured the new way, but warn if there is a mixture of
@@ -1136,8 +1136,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         return null;
     }
 
-    public boolean isDisallowed(String s) {
-        return disallowList.contains(s);
+    public boolean isDenied(String s) {
+        return denyList.contains(s);
     }
 
     /**
