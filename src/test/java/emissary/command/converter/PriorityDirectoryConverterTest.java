@@ -33,7 +33,7 @@ class PriorityDirectoryConverterTest extends UnitTest {
 
     @Test
     void convertNull() {
-        // This case should never happen due to JCommander test
+        // This case should never happen due to Picocli test
         assertThrows(NullPointerException.class, () -> converter.convert(null));
     }
 

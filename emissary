@@ -24,11 +24,11 @@ if [ "${DEBUG}" == "true" ]; then
   DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${DEBUG_PORT}"
 fi
 
-# Turn on jcommander argument parsing debugging and an echo of the command line
+# Turn on picocli argument parsing debugging and an echo of the command line
 # CMD_DEBUG=true ./emissary <command> <args>
 # see Emissary.java for where it is used
 if [ "${CMD_DEBUG}" == "true" ]; then
-  DEBUG_OPTS="${DEBUG_OPTS} -Dset.jcommander.debug=true"
+  DEBUG_OPTS="${DEBUG_OPTS} -Dset.picocli.debug=true"
 fi
 
 # just some defaults

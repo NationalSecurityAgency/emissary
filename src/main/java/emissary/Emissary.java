@@ -70,7 +70,7 @@ public class Emissary {
 
     protected Emissary(Map<String, EmissaryCommand> cmds) {
         commands = Collections.unmodifiableMap(cmds);
-        // sort by command name and then add to jCommander
+        // sort by command name and then add to Picocli
         for (String key : new TreeSet<>(commands.keySet())) {
             c.addSubcommand(key, commands.get(key));
         }
