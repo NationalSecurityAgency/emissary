@@ -136,7 +136,7 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testSafelistFields() {
+    void testAllowlistFields() {
         config.addEntry("EXTRA_PARAM", "BAR");
         f.initialize(config, "FOO", config);
 
@@ -160,9 +160,9 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testIgnorelistedFields() {
-        config.addEntry("IGNORELIST_FIELD", "FOO");
-        config.addEntry("IGNORELIST_PREFIX", "BAR_");
+    void testDenylistedFields() {
+        config.addEntry("DENYLIST_FIELD", "FOO");
+        config.addEntry("DENYLIST_PREFIX", "BAR_");
         config.addEntry("EXTRA_PARAM", "*");
         f.initialize(config, "FOO", config);
 
@@ -187,16 +187,16 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have safelist field");
+        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
         assertTrue(s.contains("\"BAR\":[\"myBar\"]"), "Filter output should have prefix no-match field BAR");
-        assertFalse(s.contains("\"FOO\":"), "Filter output should not have ignorelist field FOO");
-        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have ignorelist prefix field BAR_");
+        assertFalse(s.contains("\"FOO\":"), "Filter output should not have denylist field FOO");
+        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have denylist prefix field BAR_");
     }
 
     @Test
-    void testIgnorelistedFieldsNoSafelist() {
-        config.addEntry("IGNORELIST_FIELD", "FOO");
-        config.addEntry("IGNORELIST_PREFIX", "BAR_");
+    void testDenylistedFieldsNoAllowlist() {
+        config.addEntry("DENYLIST_FIELD", "FOO");
+        config.addEntry("DENYLIST_PREFIX", "BAR_");
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
@@ -220,15 +220,15 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have safelist field");
+        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
         assertTrue(s.contains("\"BAR\":[\"myBar\"]"), "Filter output should have prefix no-match field");
-        assertFalse(s.contains("\"FOO\":"), "Filter output should not have ignorelist field");
-        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have ignorelist prefix field");
+        assertFalse(s.contains("\"FOO\":"), "Filter output should not have denylist field");
+        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have denylist prefix field");
     }
 
     @Test
-    void testIgnorelistAll() {
-        config.addEntry("IGNORELIST_FIELD", "*");
+    void testDenylistAll() {
+        config.addEntry("DENYLIST_FIELD", "*");
         f.initialize(config, "FOO", config);
 
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -248,8 +248,8 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testIgnorelistedPrefixSafelistField() {
-        config.addEntry("IGNORELIST_PREFIX", "BAR");
+    void testDenylistedPrefixAllowlistField() {
+        config.addEntry("DENYLIST_PREFIX", "BAR");
         config.addEntry("EXTRA_PARAM", "BAR_BAZ");
         f.initialize(config, "FOO", config);
 
@@ -267,14 +267,14 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         // assert
-        assertFalse(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should not have ignorelist field BAR_BAR with value bar");
+        assertFalse(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should not have denylist field BAR_BAR with value bar");
         assertTrue(s.contains("\"BAR_BAZ\":[\"baz\"]"), "Filter output should have field BAR_BAZ with value baz");
     }
 
     @Test
-    void testSafelistedPrefixIgnorelistField() {
+    void testAllowlistedPrefixDenylistField() {
         config.addEntry("EXTRA_PARAM_PREFIX", "BAR");
-        config.addEntry("IGNORELIST_FIELD", "BAR_BAZ");
+        config.addEntry("DENYLIST_FIELD", "BAR_BAZ");
         f.initialize(config, "FOO", config);
 
         // setup ibdo
@@ -296,9 +296,9 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testIgnorelistValue() {
+    void testDenylistValue() {
         config.addEntry("EXTRA_PARAM", "*");
-        config.addEntry("IGNORELIST_VALUE_BAR", "baz");
+        config.addEntry("DENYLIST_VALUE_BAR", "baz");
         f.initialize(config, "FOO", config);
 
         // setup ibdo
