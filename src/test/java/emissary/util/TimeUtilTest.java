@@ -13,7 +13,10 @@ import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TimeUtilTest extends UnitTest {
 
