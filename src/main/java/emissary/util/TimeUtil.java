@@ -2,12 +2,10 @@ package emissary.util;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.DateTimeException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
@@ -230,6 +228,34 @@ public class TimeUtil {
     @Deprecated
     public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
+    }
+
+    /**
+     * Parses hex date string into formatted string ("yyyy-MM-dd HH:mm:ss.SSS")
+     *
+     * @param hexDate the string representation of the date
+     * @return Converted time in string format yyyy-MM-dd HH:mm:ss.SSS
+     * @throws DateTimeParseException if could not parse date
+     *
+     */
+    public static String convertHexDate(String hexDate) {
+        String hexNumber = hexDate.substring(2);
+        String dateHex = hexNumber.substring(0, 8);
+        String timeHex = hexNumber.substring(8, 16);
+
+        long daysToAdd = Long.parseLong(dateHex, 16);
+        long millisToAdd = Math.round(Long.parseLong(timeHex, 16) * 10 / 3.0);
+
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+        String startingDate = "1900-01-01 00:00:00.000";
+        LocalDateTime ldt;
+
+        ldt = LocalDateTime.parse(startingDate, dtf);
+        ldt = ldt.plusDays(daysToAdd);
+        ldt = ldt.plus(millisToAdd, ChronoUnit.MILLIS);
+
+        return ldt.format(dtf);
     }
 
     public static String getISO8601DateFormatString() {

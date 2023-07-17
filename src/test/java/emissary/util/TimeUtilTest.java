@@ -13,10 +13,7 @@ import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TimeUtilTest extends UnitTest {
 
@@ -155,5 +152,13 @@ class TimeUtilTest extends UnitTest {
         final String time = TimeUtil.getDateAsFullISO8601(ZonedDateTime.now());
         assertTrue(time.contains("T"), "Full ISO8601 must have a 'T'");
         assertTrue(time.contains("Z"), "Full ISO8601 must have a 'Z'");
+    }
+
+    @Test
+    void testConvertHexDate() {
+        String cellContents = "0x00009FF700F77536";
+        String cellContents2 = "0x0000A07800E93033";
+        assertEquals("2012-02-14 15:00:57.993", TimeUtil.convertHexDate(cellContents));
+        assertEquals("2012-06-22 14:09:00.757", TimeUtil.convertHexDate(cellContents2));
     }
 }
