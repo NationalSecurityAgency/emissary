@@ -1687,6 +1687,21 @@
       </properties>
     </profile>
     <profile>
+      <id>publish</id>
+      <distributionManagement>
+        <repository>
+          <id>emissary-releases</id>
+          <name>Emissary Releases</name>
+          <url>${distribution.release.url}</url>
+        </repository>
+        <snapshotRepository>
+          <id>emissary-snapshots</id>
+          <name>Emissary Snapshots</name>
+          <url>${distribution.snapshot.url}</url>
+        </snapshotRepository>
+      </distributionManagement>
+    </profile>
+    <profile>
       <id>github-publish</id>
       <distributionManagement>
         <repository>
