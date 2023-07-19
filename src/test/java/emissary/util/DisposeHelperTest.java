@@ -26,6 +26,7 @@ class DisposeHelperTest {
     private static final Runnable SECOND = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestSecondRunnable");
     private static final Runnable THIRD = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestThirdRunnable");
 
+    @SuppressWarnings("ConstantOverflow")
     private static final Runnable THROWS = () -> Math.abs(1 / 0); // Cause a RuntimeException
 
     private ListAppender<ILoggingEvent> appender = null;
