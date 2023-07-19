@@ -70,12 +70,12 @@ class RunCommandIT extends UnitTest {
     @Test
     void testFlagArgsPassedThrough() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         String clazzName = "emissary.command.RunCommandIT";
-        String stopJcommanderProcessing = "--";
+        String stopPicocliProcessing = "--";
         String arg1 = "-f";
         String arg2 = "somefile";
         String arg3 = "--greatestArg";
         String arg4 = "ever";
-        RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName, stopJcommanderProcessing, arg1, arg2, arg3, arg4);
+        RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName, stopPicocliProcessing, arg1, arg2, arg3, arg4);
 
         captureStdOutAndStdErrAndRunCommand(cmd);
 

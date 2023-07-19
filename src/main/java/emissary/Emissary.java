@@ -1,6 +1,21 @@
 package emissary;
 
-import emissary.command.*;
+import emissary.command.AgentsCommand;
+import emissary.command.Banner;
+import emissary.command.ConfigCommand;
+import emissary.command.DirectoryCommand;
+import emissary.command.EmissaryCommand;
+import emissary.command.EnvCommand;
+import emissary.command.FeedCommand;
+import emissary.command.HelpCommand;
+import emissary.command.PeersCommand;
+import emissary.command.PoolCommand;
+import emissary.command.RunCommand;
+import emissary.command.ServerCommand;
+import emissary.command.StopCommand;
+import emissary.command.TopologyCommand;
+import emissary.command.VersionCommand;
+import emissary.command.WhatCommand;
 import emissary.util.GitRepositoryState;
 import emissary.util.io.LoggingPrintStream;
 
