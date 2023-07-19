@@ -15,7 +15,7 @@ public class ResourceException extends EmissaryException {
      * 
      * @param message a string to go along with the exception
      */
-    public ResourceException(final String message) {
+    public ResourceException(String message) {
         super(message);
     }
 
@@ -25,7 +25,7 @@ public class ResourceException extends EmissaryException {
      * @param message a string to go along with the exception
      * @param cause the wrapped exception
      */
-    public ResourceException(final String message, final Throwable cause) {
+    public ResourceException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -34,7 +34,7 @@ public class ResourceException extends EmissaryException {
      * 
      * @param cause the wrapped exception
      */
-    public ResourceException(final Throwable cause) {
+    public ResourceException(Throwable cause) {
         super("Exception: " + cause.getMessage(), cause);
     }
 }

@@ -95,7 +95,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param threadGroup group we operate it
      * @param threadName symbolic name for this agent thread
      */
-    public MobileAgent(final ThreadGroup threadGroup, final String threadName) {
+    public MobileAgent(ThreadGroup threadGroup, String threadName) {
         logger.debug("Constructing agent {}", threadName);
         this.thread = new Thread(threadGroup, this, threadName);
         this.thread.setPriority(Thread.NORM_PRIORITY);
@@ -195,14 +195,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     /**
      * Set the current place we should kick off with
      */
-    protected synchronized void setArrivalPlace(final IServiceProviderPlace p) {
+    protected synchronized void setArrivalPlace(IServiceProviderPlace p) {
         this.arrivalPlace = p;
     }
 
     /**
      * Set the payload
      */
-    protected synchronized void setPayload(final IBaseDataObject p) {
+    protected synchronized void setPayload(IBaseDataObject p) {
         this.payload = p;
     }
 
@@ -230,11 +230,11 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         this.visitedPlaces.clear();
     }
 
-    protected void addParallelTrackingInfo(final String t) {
+    protected void addParallelTrackingInfo(String t) {
         this.visitedPlaces.add(t);
     }
 
-    protected boolean checkParallelTrackingFor(final String type) {
+    protected boolean checkParallelTrackingFor(String type) {
         return this.visitedPlaces.contains(type);
     }
 
@@ -251,12 +251,12 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param currentPlaceArg where we are now
      */
-    protected void agentControl(final IServiceProviderPlace currentPlaceArg) {
+    protected void agentControl(IServiceProviderPlace currentPlaceArg) {
         logger.debug("In agentControl {} for {}", currentPlaceArg, this.agentID);
         DirectoryEntry newEntry = currentPlaceArg.getDirectoryEntry();
 
         IServiceProviderPlace currentPlace = currentPlaceArg;
-        final IBaseDataObject mypayload = getPayload();
+        IBaseDataObject mypayload = getPayload();
         int loopCount = 0;
         boolean controlError = false;
 
@@ -337,7 +337,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param place the place we are asking to work for us
      * @param payloadArg the data for the place to operate on
      */
-    protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+    protected void atPlace(IServiceProviderPlace place, IBaseDataObject payloadArg) {
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
         try (TimedResource timer = resourceWatcherStart(place)) {
@@ -366,7 +366,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         }
     }
 
-    protected final void checkInterrupt(final IServiceProviderPlace place) {
+    protected final void checkInterrupt(IServiceProviderPlace place) {
         if (Thread.interrupted()) {
             // this should NEVER happen. if it does, we've done something bad
             if (this.thread != Thread.currentThread()) {
@@ -383,7 +383,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         }
     }
 
-    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
+    protected TimedResource resourceWatcherStart(IServiceProviderPlace place) {
         TimedResource tr = TimedResource.EMPTY;
         // CoordinationPlaces are tracked individually
         if (!(place instanceof CoordinationPlace)) {
@@ -420,7 +420,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the current payload we care about
      * @return the SDE answer from the directory
      */
-    protected DirectoryEntry getNextKey(@Nullable final IServiceProviderPlace place, @Nullable final IBaseDataObject payloadArg) {
+    protected DirectoryEntry getNextKey(@Nullable IServiceProviderPlace place, @Nullable IBaseDataObject payloadArg) {
 
         logger.debug("start getNextKey");
 
@@ -458,7 +458,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
         // If we are in the error condition,
         // clean up and try for error drop off
-        final String curKey = payloadArg.currentForm();
+        String curKey = payloadArg.currentForm();
         if (ERROR_FORM.equals(curKey)) {
             if (payloadArg.currentFormSize() > 1 && ERROR_FORM.equals(payloadArg.currentFormAt(1))) {
                 logger.error("ERROR handling place produced an error, purging all current forms");
@@ -484,7 +484,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         /* Get the last entry from the payload */
         DirectoryEntry lastEntry = payloadArg.getLastPlaceVisited();
 
-        final List<String> dataForms = payloadArg.getAllCurrentForms();
+        List<String> dataForms = payloadArg.getAllCurrentForms();
         logger.debug(">>> Current forms for {} are {}", payloadArg.shortName(), dataForms);
 
         /* Get the last service type from the last key */
@@ -511,7 +511,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         DirectoryEntry curEntry = null;
         for (int curType = startType; curType < Stage.values().length; curType++) {
             // Search the form stack starting with the top.
-            final String stageName = Stage.getStageName(curType);
+            String stageName = Stage.getStageName(curType);
             for (String form : dataForms) {
 
                 // Test a full key form to see if it is the correct stage to be chosen
@@ -568,14 +568,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     /**
      * Evaluate parallel attribute of specified type index
      */
-    protected boolean isParallelServiceType(final int typeSetPosition) {
+    protected boolean isParallelServiceType(int typeSetPosition) {
         return Stage.isParallelStage(typeSetPosition);
     }
 
     /**
      * Get index in typeSet for specified string, 0 if not found
      */
-    public static int typeLookup(final String s) {
+    public static int typeLookup(String s) {
         Stage stage = Stage.getByName(s);
         int idx = (stage == null) ? 0 : stage.ordinal();
         if (idx < 0) {
@@ -592,14 +592,13 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * the first one will be returned to the caller. Caller knows to look on the internal queue for additional entries
      * before calling this method again.
      */
-    protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
-            final IBaseDataObject payloadArg) {
+    protected DirectoryEntry nextKeyFromDirectory(String dataID, IServiceProviderPlace place, DirectoryEntry lastEntry, IBaseDataObject payloadArg) {
 
         try {
             logger.debug("Trying nextKey for {} with last={}, atPlace={}", dataID, lastEntry, place);
 
             // Query the directory
-            final List<DirectoryEntry> entries = place.nextKeys(dataID, payloadArg, lastEntry);
+            List<DirectoryEntry> entries = place.nextKeys(dataID, payloadArg, lastEntry);
 
             // Add the entries returned to the queue
             if ((entries != null) && !entries.isEmpty()) {
@@ -627,9 +626,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param theID usually comes from the shortName of the payload
      */
-    protected void setAgentID(@Nullable final String theID) {
-        final long t = (System.currentTimeMillis() % 10000);
-        final String id = "Agent-" + t;
+    protected void setAgentID(@Nullable String theID) {
+        long t = (System.currentTimeMillis() % 10000);
+        String id = "Agent-" + t;
         this.agentID = id + "-" + ((theID != null) ? theID : "blah");
     }
 
@@ -642,7 +641,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param arrivalPlaceArg the place we start at
      */
     @Override
-    public synchronized void go(final Object payloadArg, final IServiceProviderPlace arrivalPlaceArg) {
+    public synchronized void go(Object payloadArg, IServiceProviderPlace arrivalPlaceArg) {
         clear();
         go(payloadArg, arrivalPlaceArg, false);
     }
@@ -674,8 +673,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param queuedItineraryItems transported itinerary items list of DirectoryEntry
      */
     @Override
-    public synchronized void arrive(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final int moveErrorCount,
-            final List<DirectoryEntry> queuedItineraryItems) throws Exception {
+    public synchronized void arrive(Object dataObject, IServiceProviderPlace arrivalPlaceArg, int moveErrorCount,
+            List<DirectoryEntry> queuedItineraryItems) throws Exception {
 
         if (dataObject instanceof IBaseDataObject) {
             clear();
@@ -695,8 +694,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param arrivalPlaceArg the place we start at
      * @param processAtFirstPlace true if we should call process on arrivalPlaceArg
      */
-    protected synchronized void go(@Nullable final Object dataObject, @Nullable final IServiceProviderPlace arrivalPlaceArg,
-            final boolean processAtFirstPlace) {
+    protected synchronized void go(@Nullable Object dataObject, @Nullable IServiceProviderPlace arrivalPlaceArg, boolean processAtFirstPlace) {
         // Check conditions
         if (dataObject != null && !(dataObject instanceof IBaseDataObject)) {
             throw new IllegalArgumentException("Illegal payload sent to MobileAgent, " + "cannot handle " + dataObject.getClass().getName());
@@ -710,7 +708,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // can handle the setting of their payload and still
         // be able to use this method
         if (dataObject != null) {
-            final IBaseDataObject d = (IBaseDataObject) dataObject;
+            IBaseDataObject d = (IBaseDataObject) dataObject;
             logger.debug("Setting payload {}", d.shortName());
             setPayload(d);
             setAgentID(d.shortName());
@@ -739,15 +737,15 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param payloadArg the dataobject to work on
      */
-    protected static void purgeNonFinalForms(final IBaseDataObject payloadArg) {
+    protected static void purgeNonFinalForms(IBaseDataObject payloadArg) {
         int i = 0;
         while (i < payloadArg.currentFormSize()) {
-            final String form = payloadArg.getAllCurrentForms().get(i);
+            String form = payloadArg.getAllCurrentForms().get(i);
             if (form.equals(ERROR_FORM)) {
                 i++;
                 continue;
             }
-            final String pseudoKey = payloadArg.currentFormAt(i) + ".SKIP.*.http://Previous_Error_Bypass$100";
+            String pseudoKey = payloadArg.currentFormAt(i) + ".SKIP.*.http://Previous_Error_Bypass$100";
 
             logger.debug("Removed {} because of ERROR.SKIP", payloadArg.currentFormAt(i));
             payloadArg.appendTransformHistory(pseudoKey);
@@ -760,10 +758,10 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param payloadArg the one we just finished with
      */
-    protected void logAgentCompletion(final IBaseDataObject payloadArg) {
+    protected void logAgentCompletion(IBaseDataObject payloadArg) {
         // Keep this at a nice high level, above the debug chatter
-        final Object isProbe = payloadArg.getParameter("DIRECTORY_PROBE");
-        final Logger dest = (isProbe == null) ? logger : probeLogger;
+        Object isProbe = payloadArg.getParameter("DIRECTORY_PROBE");
+        Logger dest = (isProbe == null) ? logger : probeLogger;
 
         if (dest.isInfoEnabled()) {
             dest.info(PayloadUtil.getPayloadDisplayString(payloadArg));
@@ -776,7 +774,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param place where the processing is taking place
      * @param payloadArg the dataobject that is being processed
      */
-    protected void recordHistory(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+    protected void recordHistory(IServiceProviderPlace place, IBaseDataObject payloadArg) {
         recordHistory(place.getDirectoryEntry(), payloadArg);
     }
 
@@ -786,11 +784,11 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param placeEntry where the processing is taking place
      * @param payloadArg the dataobject that is being processed
      */
-    protected void recordHistory(final DirectoryEntry placeEntry, final IBaseDataObject payloadArg) {
+    protected void recordHistory(DirectoryEntry placeEntry, IBaseDataObject payloadArg) {
 
         String placeKey = null;
-        final String cf = payloadArg.currentForm();
-        final DirectoryEntry dnew = new DirectoryEntry(placeEntry);
+        String cf = payloadArg.currentForm();
+        DirectoryEntry dnew = new DirectoryEntry(placeEntry);
         if (!KeyManipulator.isKeyComplete(cf)) {
             // Splice this current form into the place key
             // for a proper representation of why we are here
@@ -800,7 +798,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             // We already have a full key in the current form
             // just need to figure out the current cost
             if (!payloadArg.beforeStart()) {
-                final DirectoryEntry lpv = payloadArg.getLastPlaceVisited();
+                DirectoryEntry lpv = payloadArg.getLastPlaceVisited();
 
                 // Subtract one remote overhead if this represents a move
                 int exp = lpv.getExpense();
@@ -833,7 +831,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param arg the new value for processFirstPlace
      */
-    protected void setProcessFirstPlace(final boolean arg) {
+    protected void setProcessFirstPlace(boolean arg) {
         this.processFirstPlace = arg;
     }
 
@@ -877,7 +875,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param value the maximum number of move failures
      */
     @Override
-    public void setMaxMoveErrors(final int value) {
+    public void setMaxMoveErrors(int value) {
         this.MAX_MOVE_ERRORS = value;
     }
 
@@ -895,7 +893,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param value the new maximum number of steps
      */
     @Override
-    public void setMaxItinerarySteps(final int value) {
+    public void setMaxItinerarySteps(int value) {
         this.MAX_ITINERARY_STEPS = value;
     }
 }

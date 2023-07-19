@@ -53,7 +53,7 @@ public class TransformHistory {
      * @see emissary.core.MobileAgent#agentControl
      * @param key the new value to append
      */
-    public void append(final String key) {
+    public void append(String key) {
         append(key, false);
     }
 
@@ -115,7 +115,7 @@ public class TransformHistory {
      */
     public String lastVisit() {
         List<String> historyList = get();
-        final int sz = historyList.size();
+        int sz = historyList.size();
         if (sz == 0) {
             return null;
         }
@@ -129,7 +129,7 @@ public class TransformHistory {
      */
     public String penultimateVisit() {
         List<String> historyList = get();
-        final int sz = historyList.size();
+        int sz = historyList.size();
         if (sz < 2) {
             return null;
         }
@@ -141,8 +141,8 @@ public class TransformHistory {
      *
      * @return true is place has been visited
      */
-    public boolean hasVisited(final String pattern) {
-        for (final String historyValue : get()) {
+    public boolean hasVisited(String pattern) {
+        for (String historyValue : get()) {
             if (KeyManipulator.gmatch(historyValue, pattern)) {
                 return true;
             }
@@ -160,14 +160,14 @@ public class TransformHistory {
         if (historyList.isEmpty()) {
             return true;
         }
-        final String s = historyList.get(historyList.size() - 1);
+        String s = historyList.get(historyList.size() - 1);
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
     @Override
     public String toString() {
-        final StringBuilder myOutput = new StringBuilder();
-        final String ls = System.getProperty("line.separator");
+        StringBuilder myOutput = new StringBuilder();
+        String ls = System.getProperty("line.separator");
         myOutput.append("transform history (").append(this.history.size()).append(") :").append(ls);
         history.forEach(x -> myOutput.append(x.toString()).append(ls));
         return myOutput.toString();

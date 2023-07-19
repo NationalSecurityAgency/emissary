@@ -13,7 +13,7 @@ public class EmissaryException extends Exception {
      * 
      * @param message a string to go along with the exception
      */
-    public EmissaryException(final String message) {
+    public EmissaryException(String message) {
         super(message);
     }
 
@@ -23,7 +23,7 @@ public class EmissaryException extends Exception {
      * @param message a string to go along with the exception
      * @param cause the wrapped exception
      */
-    public EmissaryException(final String message, final Throwable cause) {
+    public EmissaryException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -32,7 +32,7 @@ public class EmissaryException extends Exception {
      * 
      * @param cause the wrapped exception
      */
-    public EmissaryException(final Throwable cause) {
+    public EmissaryException(Throwable cause) {
         super("Exception: " + cause.getMessage(), cause);
     }
 }

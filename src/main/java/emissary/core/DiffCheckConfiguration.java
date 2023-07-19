@@ -88,7 +88,7 @@ public class DiffCheckConfiguration {
      * 
      * @param enabled set of pre-configured options
      */
-    private DiffCheckConfiguration(final EnumSet<DiffCheckOptions> enabled) {
+    private DiffCheckConfiguration(EnumSet<DiffCheckOptions> enabled) {
         this.enabled = enabled;
     }
 
@@ -117,7 +117,7 @@ public class DiffCheckConfiguration {
          * @param options to enable explicitly
          * @return a new Configuration instance with the enabled options
          */
-        public DiffCheckConfiguration explicit(final DiffCheckOptions... options) {
+        public DiffCheckConfiguration explicit(DiffCheckOptions... options) {
             reset();
             building.addAll(Arrays.asList(options));
             return build();

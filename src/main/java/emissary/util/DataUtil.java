@@ -33,8 +33,8 @@ public class DataUtil {
      * @param d data object to have form pushed into
      * @param forms that are pushed into current forms if not already present
      */
-    public static void pushDedupedForms(final IBaseDataObject d, final Collection<String> forms) {
-        for (final String f : forms) {
+    public static void pushDedupedForms(IBaseDataObject d, Collection<String> forms) {
+        for (String f : forms) {
             pushDedupedForm(d, f);
         }
     }
@@ -45,7 +45,7 @@ public class DataUtil {
      * @param d data object to have form pushed into
      * @param form that are pushed into current forms if not already present
      */
-    public static void pushDedupedForm(final IBaseDataObject d, final String form) {
+    public static void pushDedupedForm(IBaseDataObject d, String form) {
         if (d.searchCurrentForm(form) == -1) {
             d.pushCurrentForm(form);
         }
@@ -57,15 +57,15 @@ public class DataUtil {
      * @param d the data object
      * @return true if d is not null and not empty
      */
-    public static boolean isNotEmpty(@Nullable final IBaseDataObject d) {
+    public static boolean isNotEmpty(@Nullable IBaseDataObject d) {
         return (d != null) && !isEmpty(d);
     }
 
     /**
      * Return true if the data slot is empty or just whitespace and/or control chars
      */
-    public static boolean isEmpty(final IBaseDataObject d) {
-        final byte[] data = d.data();
+    public static boolean isEmpty(IBaseDataObject d) {
+        byte[] data = d.data();
         return isEmpty(data);
     }
 
@@ -75,15 +75,15 @@ public class DataUtil {
      * @param data array to check
      * @return true if data is null or devoid of real characters
      */
-    public static boolean isEmpty(@Nullable final byte[] data) {
+    public static boolean isEmpty(@Nullable byte[] data) {
         return (data == null) || (data.length == 0);
     }
 
     /**
      * Return true if the data slot is empty or just one whitespace character
      */
-    public static boolean isEmpty(final WorkUnit u) {
-        final byte[] data = u.getData();
+    public static boolean isEmpty(WorkUnit u) {
+        byte[] data = u.getData();
         return isEmpty(data);
     }
 
@@ -92,7 +92,7 @@ public class DataUtil {
      * 
      * @param d the object to set as empty
      */
-    public static void setEmptySession(final IBaseDataObject d) {
+    public static void setEmptySession(IBaseDataObject d) {
         d.setCurrentForm(Form.EMPTY);
         d.setFileTypeIfEmpty(Form.EMPTY);
     }
@@ -100,8 +100,8 @@ public class DataUtil {
     /**
      * Escape a string so it is suitable for use in a CSV record
      */
-    public static String csvescape(final String field) {
-        final String SEP = ",";
+    public static String csvescape(String field) {
+        String SEP = ",";
         String s = field;
         if ((s != null) && (s.contains("\n") || s.contains("\r"))) {
             s = NL_REPL.matcher(s).replaceAll(" ");
@@ -122,7 +122,7 @@ public class DataUtil {
      * @return event date
      */
     @Deprecated
-    public static Calendar getEventDate(final IBaseDataObject payload) {
+    public static Calendar getEventDate(IBaseDataObject payload) {
         String evDate = payload.getStringParameter(EVENT_DATE);
         if (evDate == null) {
             evDate = payload.getStringParameter(FILE_DATE);
@@ -148,8 +148,8 @@ public class DataUtil {
      * @return specified time UTC calendar
      */
     @Deprecated
-    public static Calendar getCal(final Date eventDate) {
-        final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+    public static Calendar getCal(Date eventDate) {
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         cal.setTime(eventDate);
         return cal;
     }
@@ -158,8 +158,8 @@ public class DataUtil {
      * Merge two maps with semicolon delimited lists as values
      */
     @Deprecated
-    public static void merge(final Map<String, String> info, final Map<String, String> recordInfo) {
-        for (final Map.Entry<String, String> entry : recordInfo.entrySet()) {
+    public static void merge(Map<String, String> info, Map<String, String> recordInfo) {
+        for (Map.Entry<String, String> entry : recordInfo.entrySet()) {
             addInfo(info, entry.getKey(), entry.getValue());
         }
     }
@@ -172,9 +172,9 @@ public class DataUtil {
      * @param value the newly arriving value
      */
     @Deprecated
-    public static void addInfo(final Map<String, String> info, final String key, final String value) {
+    public static void addInfo(Map<String, String> info, String key, String value) {
         if (info.containsKey(key)) {
-            final Set<String> existingValues = split(info.get(key));
+            Set<String> existingValues = split(info.get(key));
             existingValues.addAll(split(value));
             info.put(key, join(existingValues));
         } else {
@@ -191,9 +191,9 @@ public class DataUtil {
      * @return strings in list
      */
     @Deprecated
-    public static Set<String> split(final String values) {
-        final Set<String> valuesSet = new HashSet<>();
-        final String[] items = SEMICOLON_SPLIT.split(values);
+    public static Set<String> split(String values) {
+        Set<String> valuesSet = new HashSet<>();
+        String[] items = SEMICOLON_SPLIT.split(values);
         valuesSet.addAll(Arrays.asList(items));
         return valuesSet;
     }
@@ -206,8 +206,8 @@ public class DataUtil {
      * @param sort true if the output should be sorted
      */
     @Deprecated
-    public static String join(final Collection<String> values, final String delim, final boolean sort) {
-        final Collection<String> tojoin;
+    public static String join(Collection<String> values, String delim, boolean sort) {
+        Collection<String> tojoin;
         if (sort) {
             tojoin = new TreeSet<>();
             tojoin.addAll(values);
@@ -215,8 +215,8 @@ public class DataUtil {
             tojoin = values;
         }
 
-        final StringBuilder sb = new StringBuilder();
-        for (final String v : tojoin) {
+        StringBuilder sb = new StringBuilder();
+        for (String v : tojoin) {
             if (sb.length() > 0) {
                 sb.append(delim);
             }
@@ -232,7 +232,7 @@ public class DataUtil {
      * @param delim the string delimiter to use
      */
     @Deprecated
-    public static String join(final Collection<String> values, final String delim) {
+    public static String join(Collection<String> values, String delim) {
         return join(values, delim, true);
     }
 
@@ -242,7 +242,7 @@ public class DataUtil {
      * @param values the collection to join
      */
     @Deprecated
-    public static String join(final Collection<String> values) {
+    public static String join(Collection<String> values) {
         return join(values, IBaseDataObject.DEFAULT_PARAM_SEPARATOR, true);
     }
 
@@ -253,8 +253,8 @@ public class DataUtil {
      * @param map key-value pairs to merge
      */
     @Deprecated
-    public static void mergeMap(final IBaseDataObject parent, final Map<String, String> map) {
-        for (final Map.Entry<String, String> e : map.entrySet()) {
+    public static void mergeMap(IBaseDataObject parent, Map<String, String> map) {
+        for (Map.Entry<String, String> e : map.entrySet()) {
             mergeParameter(parent, e.getKey(), e.getValue());
         }
     }
@@ -268,12 +268,12 @@ public class DataUtil {
      * @param val String to append if not already in parents values
      */
     @Deprecated
-    public static void mergeParameter(final IBaseDataObject parent, final String key, final String val) {
+    public static void mergeParameter(IBaseDataObject parent, String key, String val) {
         String param;
         if (parent.hasParameter(key)) {
             param = parent.getStringParameter(key);
-            final Set<String> oldvals = split(param);
-            final Set<String> newvals = split(val);
+            Set<String> oldvals = split(param);
+            Set<String> newvals = split(val);
             newvals.addAll(oldvals);
             param = join(newvals);
         } else {
@@ -289,8 +289,8 @@ public class DataUtil {
      * @param target to copy to
      * @param keys array of metadata keys to copy
      */
-    public static void copyParams(final IBaseDataObject source, final IBaseDataObject target, final String[] keys) {
-        for (final String k : keys) {
+    public static void copyParams(IBaseDataObject source, IBaseDataObject target, String[] keys) {
+        for (String k : keys) {
             copyParam(source, target, k);
         }
     }
@@ -302,8 +302,8 @@ public class DataUtil {
      * @param target to copy to
      * @param keys collection of metadata keys to copy
      */
-    public static void copyParams(final IBaseDataObject source, final IBaseDataObject target, final Collection<String> keys) {
-        for (final String k : keys) {
+    public static void copyParams(IBaseDataObject source, IBaseDataObject target, Collection<String> keys) {
+        for (String k : keys) {
             copyParam(source, target, k);
         }
     }
@@ -315,8 +315,8 @@ public class DataUtil {
      * @param target to copy to
      * @param key metadata key to copy
      */
-    public static void copyParam(final IBaseDataObject source, final IBaseDataObject target, final String key) {
-        final Object value = source.getParameter(key);
+    public static void copyParam(IBaseDataObject source, IBaseDataObject target, String key) {
+        Object value = source.getParameter(key);
         if (value != null) {
             target.setParameter(key, value);
         }
@@ -328,7 +328,7 @@ public class DataUtil {
      * @param dataobj to be set
      * @param form added as current form and filetype for dataobj
      */
-    public static void setCurrentFormAndFiletype(final IBaseDataObject dataobj, final String form) {
+    public static void setCurrentFormAndFiletype(IBaseDataObject dataobj, String form) {
         dataobj.pushCurrentForm(form);
         dataobj.setFileType(form);
     }

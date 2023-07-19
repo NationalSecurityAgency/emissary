@@ -21,17 +21,17 @@ public class WorkUnit implements Serializable {
 
     public WorkUnit() {}
 
-    public WorkUnit(final String filename, final byte[] data) {
+    public WorkUnit(String filename, byte[] data) {
         setFilename(filename);
         setData(data);
     }
 
-    public WorkUnit(final String filename, final byte[] data, final String currentForm) {
+    public WorkUnit(String filename, byte[] data, String currentForm) {
         this(filename, data);
         setCurrentForm(currentForm);
     }
 
-    public WorkUnit(final String f, final byte[] hd, final byte[] data, final byte[] ft, final String currentForm) {
+    public WorkUnit(String f, byte[] hd, byte[] data, byte[] ft, String currentForm) {
         setFilename(f);
         setHeader(hd);
         setData(data);
@@ -53,7 +53,7 @@ public class WorkUnit implements Serializable {
      *
      * @param argFilename Value to assign to this.filename
      */
-    public void setFilename(final String argFilename) {
+    public void setFilename(String argFilename) {
         this.filename = argFilename;
     }
 
@@ -71,7 +71,7 @@ public class WorkUnit implements Serializable {
      *
      * @param argData Value to assign to this.data
      */
-    public void setData(final byte[] argData) {
+    public void setData(byte[] argData) {
         this.data = argData;
     }
 
@@ -89,7 +89,7 @@ public class WorkUnit implements Serializable {
      *
      * @param argCurrentForm Value to assign to this.currentForm
      */
-    public void setCurrentForm(final String argCurrentForm) {
+    public void setCurrentForm(String argCurrentForm) {
         this.currentForm = argCurrentForm;
     }
 
@@ -107,7 +107,7 @@ public class WorkUnit implements Serializable {
      *
      * @param argHeader Value to assign to this.header[]
      */
-    public void setHeader(final byte[] argHeader) {
+    public void setHeader(byte[] argHeader) {
         this.header = argHeader;
     }
 
@@ -125,28 +125,28 @@ public class WorkUnit implements Serializable {
      *
      * @param argFooter Value to assign to this.footer[]
      */
-    public void setFooter(final byte[] argFooter) {
+    public void setFooter(byte[] argFooter) {
         this.footer = argFooter;
     }
 
     /**
      * Add a parameter to control the work
      */
-    public void addParameter(final String key, final String value) {
+    public void addParameter(String key, String value) {
         this.params.put(key, value);
     }
 
     /**
      * Add a bunch of parameters to control the work
      */
-    public void addParameters(final Map<String, String> m) {
+    public void addParameters(Map<String, String> m) {
         this.params.putAll(m);
     }
 
     /**
      * Retrieve a parameter
      */
-    public String getParameter(final String key) {
+    public String getParameter(String key) {
         return this.params.get(key);
     }
 

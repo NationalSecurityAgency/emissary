@@ -21,7 +21,7 @@ public class NamespaceException extends emissary.core.EmissaryException {
      * 
      * @param s the message to go along with the exception
      */
-    public NamespaceException(final String s) {
+    public NamespaceException(String s) {
         super(s);
     }
 }

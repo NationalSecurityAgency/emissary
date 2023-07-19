@@ -49,14 +49,14 @@ public interface IBaseDataObject {
      * @param offset the index of the first byte to use
      * @param length the number of bytes to use
      */
-    void setData(final byte[] newData, int offset, int length);
+    void setData(byte[] newData, int offset, int length);
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
      * 
      * @param sbcf the new channel factory to set on this object
      */
-    void setChannelFactory(final SeekableByteChannelFactory sbcf);
+    void setChannelFactory(SeekableByteChannelFactory sbcf);
 
     /**
      * Returns the seekable byte channel factory containing a reference to the data

@@ -39,7 +39,7 @@ public class TimedResource implements AutoCloseable {
         timerContext = null;
     }
 
-    public TimedResource(final IMobileAgent agent, final IServiceProviderPlace place, final long allowedDuration, final Timer timer) {
+    public TimedResource(IMobileAgent agent, IServiceProviderPlace place, long allowedDuration, Timer timer) {
         this.started = System.currentTimeMillis();
         this.agent = agent;
         this.payloadCount = agent.payloadCount();

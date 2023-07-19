@@ -109,7 +109,7 @@ public class DirectoryEntry implements Serializable {
      * @param cost from config file
      * @param quality from config file
      */
-    public DirectoryEntry(final String key, final String description, final int cost, final int quality) {
+    public DirectoryEntry(String key, String description, int cost, int quality) {
         if (logger.isDebugEnabled()) {
             logger.debug("Directory entry: {},{},{},\"{}\"", key, cost, quality, description);
         }
@@ -126,7 +126,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param key the key to use
      */
-    public DirectoryEntry(final String key) {
+    public DirectoryEntry(String key) {
         setKey(key);
     }
 
@@ -140,8 +140,7 @@ public class DirectoryEntry implements Serializable {
      * @param description the description
      * @param expense the expense
      */
-    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
-            final String description, final int expense) {
+    public DirectoryEntry(String dataType, String serviceName, String serviceType, String serviceLocation, String description, int expense) {
         this.dataType = dataType;
         this.serviceName = serviceName;
         this.serviceType = serviceType;
@@ -162,8 +161,8 @@ public class DirectoryEntry implements Serializable {
      * @param cost the cost of the place
      * @param quality the quality of the place
      */
-    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
-            final String description, final int cost, final int quality) {
+    public DirectoryEntry(String dataType, String serviceName, String serviceType, String serviceLocation, String description, int cost,
+            int quality) {
         this.dataType = dataType;
         this.serviceName = serviceName;
         this.serviceType = serviceType;
@@ -184,8 +183,7 @@ public class DirectoryEntry implements Serializable {
      * @param serviceLocation the fourth part of the key
      * @param description the description
      */
-    public DirectoryEntry(final String dataType, final String serviceName, final String serviceType, final String serviceLocation,
-            final String description) {
+    public DirectoryEntry(String dataType, String serviceName, String serviceType, String serviceLocation, String description) {
         this(dataType, serviceName, serviceType, serviceLocation, description, 0, 0);
     }
 
@@ -194,7 +192,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param that the entry to copy
      */
-    public DirectoryEntry(final DirectoryEntry that) {
+    public DirectoryEntry(DirectoryEntry that) {
         this(that, !PRESERVE_TIME);
     }
 
@@ -204,7 +202,7 @@ public class DirectoryEntry implements Serializable {
      * @param that the entry to copy
      * @param preserveTime copy the time value also when true
      */
-    DirectoryEntry(final DirectoryEntry that, final boolean preserveTime) {
+    DirectoryEntry(DirectoryEntry that, boolean preserveTime) {
         this.theKey = that.theKey;
         this.serviceType = that.serviceType;
         this.serviceName = that.serviceName;
@@ -234,9 +232,9 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param expense the expense to use
      */
-    protected void setCQEFromExp(final int expense) {
+    protected void setCQEFromExp(int expense) {
         if (expense >= 100) {
-            final int invQual = expense % 100;
+            int invQual = expense % 100;
             this.theQuality = 100 - invQual;
             this.theCost = (expense - invQual) / 100;
         } else {
@@ -280,7 +278,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Set the quality associated with the entry and force the expese to be recalculated
      */
-    public void setQuality(final int quality) {
+    public void setQuality(int quality) {
         this.theQuality = quality;
         calculateExpense();
     }
@@ -297,7 +295,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param cost the new cost
      */
-    public void setCost(final int cost) {
+    public void setCost(int cost) {
         this.theCost = cost;
         calculateExpense();
     }
@@ -307,7 +305,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param costIncrement the increment to add
      */
-    public void addCost(final int costIncrement) {
+    public void addCost(int costIncrement) {
         this.theCost += costIncrement;
         calculateExpense();
     }
@@ -318,7 +316,7 @@ public class DirectoryEntry implements Serializable {
      * @see #buildKey
      * @param key the key
      */
-    protected void setKey(final String key) {
+    protected void setKey(String key) {
         this.theKey = KeyManipulator.removeExpense(key);
         this.serviceType = KeyManipulator.getServiceType(this.theKey);
         this.serviceName = KeyManipulator.getServiceName(this.theKey);
@@ -326,7 +324,7 @@ public class DirectoryEntry implements Serializable {
         this.dataID = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;
         this.serviceLocation = KeyManipulator.getServiceLocation(key);
         this.serviceHostURL = KeyManipulator.getServiceHostURL(key);
-        final int exp = KeyManipulator.getExpense(key, -1);
+        int exp = KeyManipulator.getExpense(key, -1);
         if (exp > -1) {
             setCQEFromExp(exp);
         }
@@ -349,7 +347,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @see #getPathWeight()
      */
-    public void setPathWeight(final int value) {
+    public void setPathWeight(int value) {
         this.pathWeight = value;
         if (this.pathWeight < 0) {
             this.pathWeight = 0;
@@ -364,7 +362,7 @@ public class DirectoryEntry implements Serializable {
      * @see #getPathWeight()
      * @param weightIncrement amount to add to weight
      */
-    public void addPathWeight(final int weightIncrement) {
+    public void addPathWeight(int weightIncrement) {
         this.pathWeight += weightIncrement;
         if (this.pathWeight < 0) {
             this.pathWeight = 0;
@@ -376,7 +374,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param dataType the new data type
      */
-    public void setDataType(final String dataType) {
+    public void setDataType(String dataType) {
         this.dataType = dataType;
         buildKey();
     }
@@ -386,7 +384,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param serviceLocation the new value
      */
-    public void setServiceLocation(final String serviceLocation) {
+    public void setServiceLocation(String serviceLocation) {
         this.serviceLocation = serviceLocation;
         this.serviceHostURL = serviceLocation.substring(0, serviceLocation.lastIndexOf(CLASSSEPARATOR) + 1);
         buildKey();
@@ -397,7 +395,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param place the local reference
      */
-    protected void setLocalPlace(final IServiceProviderPlace place) {
+    protected void setLocalPlace(IServiceProviderPlace place) {
         this.localPlace = place;
     }
 
@@ -461,21 +459,21 @@ public class DirectoryEntry implements Serializable {
      * @param that the entry to test
      * @return true if this is better than that
      */
-    public boolean isBetterThan(final DirectoryEntry that) {
+    public boolean isBetterThan(DirectoryEntry that) {
         return this.theExpense < that.getExpense();
     }
 
     /**
      * test if the current dataEntry matches the passed key pattern.
      */
-    public boolean equals(final String pattern) {
+    public boolean equals(String pattern) {
         return equals(pattern.toCharArray());
     }
 
     /**
      * test if the current dataEntry matches the passed key pattern
      */
-    public boolean equals(final char[] pattern) {
+    public boolean equals(char[] pattern) {
         return KeyManipulator.gmatch(this.theKey.toCharArray(), pattern);
     }
 
@@ -484,7 +482,7 @@ public class DirectoryEntry implements Serializable {
      * test if the current dataEntry matches the passed key pattern specifically ignoring cost in the incoming pattern (if
      * any)
      */
-    public boolean equalsIgnoreCost(final String pattern) {
+    public boolean equalsIgnoreCost(String pattern) {
         return equals(KeyManipulator.removeExpense(pattern));
     }
 
@@ -498,7 +496,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Set a new service type
      */
-    public void setServiceType(final String serviceType) {
+    public void setServiceType(String serviceType) {
         this.serviceType = serviceType;
         buildKey();
     }
@@ -514,7 +512,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Set a new service name
      */
-    public void setServiceName(final String serviceName) {
+    public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
         buildKey();
     }
@@ -539,7 +537,7 @@ public class DirectoryEntry implements Serializable {
      * @param cost the cost
      * @param quality the quality
      */
-    public static int calculateExpense(final int cost, final int quality) {
+    public static int calculateExpense(int cost, int quality) {
         return (cost * 100) + (100 - quality);
     }
 
@@ -578,8 +576,8 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param proxyKey the replacement key
      */
-    public void proxyFor(final String proxyKey) {
-        final String newKey = KeyManipulator.makeProxyKey(this.theKey, proxyKey, this.theExpense);
+    public void proxyFor(String proxyKey) {
+        String newKey = KeyManipulator.makeProxyKey(this.theKey, proxyKey, this.theExpense);
         setKey(newKey);
     }
 
@@ -595,7 +593,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param age the age to be preserved
      */
-    void preserveCopyAge(final long age) {
+    void preserveCopyAge(long age) {
         this.age = age;
     }
 
@@ -604,11 +602,11 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param e a JDOM Element
      */
-    public static DirectoryEntry fromXML(final Element e) {
-        final String key = e.getChildTextTrim(KEY);
-        final String desc = e.getChildTextTrim(DESC);
-        final int cost = JDOMUtil.getChildIntValue(e, COST);
-        final int quality = JDOMUtil.getChildIntValue(e, QUALITY);
+    public static DirectoryEntry fromXML(Element e) {
+        String key = e.getChildTextTrim(KEY);
+        String desc = e.getChildTextTrim(DESC);
+        int cost = JDOMUtil.getChildIntValue(e, COST);
+        int quality = JDOMUtil.getChildIntValue(e, QUALITY);
         return new DirectoryEntry(key, desc, cost, quality);
     }
 
@@ -616,7 +614,7 @@ public class DirectoryEntry implements Serializable {
      * Turn this entry into an xml fragment
      */
     public Element getXML() {
-        final Element root = new Element(ENTRY);
+        Element root = new Element(ENTRY);
         root.addContent(JDOMUtil.simpleElement(KEY, this.theKey));
         root.addContent(JDOMUtil.simpleElement(DESC, this.description));
         root.addContent(JDOMUtil.simpleElement(COST, this.theCost));
