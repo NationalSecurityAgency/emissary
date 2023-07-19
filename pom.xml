@@ -1686,5 +1686,14 @@
         <maven.compiler.release>11</maven.compiler.release>
       </properties>
     </profile>
+    <profile>
+      <id>github-publish</id>
+      <distributionManagement>
+        <repository>
+          <id>github</id>
+          <url>https://maven.pkg.github.com/NationalSecurityAgency/emissary</url>
+        </repository>
+      </distributionManagement>
+    </profile>
   </profiles>
 </project>
