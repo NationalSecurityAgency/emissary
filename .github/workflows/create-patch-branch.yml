@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check patch release type is using correct branch
-        if: ${{ github.event.inputs.release_type == 'patch' && !startsWith(github.ref_name, 'release/') }}
+        if: ${{ !startsWith(github.ref_name, 'release/') }}
         run: |
           echo "Cannot create a patch branch, please target a branch that starts with 'release/'"
           exit 1
