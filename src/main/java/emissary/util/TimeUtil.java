@@ -237,8 +237,8 @@ public class TimeUtil {
     /**
      * Parses hex date string into formatted string ("yyyy-MM-dd HH:mm:ss.SSS")
      *
-     * @param hexDate the string representation of the date
-     * @return Converted time in string format yyyy-MM-dd HH:mm:ss.SSS
+     * @param hexDate hex string representation of the date
+     * @return converted time in string format yyyy-MM-dd HH:mm:ss.SSS
      * @throws DateTimeParseException if could not parse date
      *
      */
@@ -260,6 +260,25 @@ public class TimeUtil {
         ldt = ldt.plus(millisToAdd, ChronoUnit.MILLIS);
 
         return ldt.format(dtf);
+    }
+
+
+    /**
+     * Parses hex date string into formatted string ("yyyy-MM-dd HH:mm:ss.SSS"). If parse exception occurs, return
+     * defaultDate.
+     *
+     * @param hexDate hex string representation of the date
+     * @param defaultDate formatted default string
+     * @return converted time in string format yyyy-MM-dd HH:mm:ss.SSS
+     *
+     */
+
+    public static String convertHexDate(String hexDate, String defaultDate) {
+        try {
+            return convertHexDate(hexDate);
+        } catch (DateTimeParseException ex) {
+            return defaultDate;
+        }
     }
 
     public static String getISO8601DateFormatString() {
