@@ -8,7 +8,10 @@
   <name>Emissary</name>
   <description>Distributed P2P Data-driven Workflow Framework</description>
   <url>https://github.com/NationalSecurityAgency/emissary</url>
-  <organization />
+  <organization>
+    <name>National Security Agency</name>
+    <url>https://code.nsa.gov/</url>
+  </organization>
   <licenses>
     <license>
       <name>Apache-2.0</name>
