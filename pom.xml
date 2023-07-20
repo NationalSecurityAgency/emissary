@@ -74,7 +74,7 @@
     <dep.logback.version>1.2.11</dep.logback.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
-    <dep.mockito-junit.version>4.5.1</dep.mockito-junit.version>
+    <dep.mockito.version>5.4.0</dep.mockito.version>
     <dep.slf4j.version>1.7.36</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
     <dep.spymemcached.version>2.12.3</dep.spymemcached.version>
@@ -396,14 +396,14 @@
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
-        <artifactId>mockito-inline</artifactId>
-        <version>${dep.mockito-junit.version}</version>
+        <artifactId>mockito-core</artifactId>
+        <version>${dep.mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-junit-jupiter</artifactId>
-        <version>${dep.mockito-junit.version}</version>
+        <version>${dep.mockito.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -611,7 +611,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-inline</artifactId>
+      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
