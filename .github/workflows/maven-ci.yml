@@ -2,9 +2,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ master, release-* ]
+    branches: [ master, release/**, patch/** ]
   pull_request:
-    branches: [ master, release-* ]
+    branches: [ master, release/**, patch/** ]
 
 jobs:
   build:
@@ -37,15 +37,7 @@ jobs:
         distribution: 'corretto'
 
     - name: Build with Maven
-      run: mvn -B --no-transfer-progress verify --file pom.xml
+      run: mvn -B -e -ntp "-Dstyle.color=always" verify
 
-#    - name: Verify Changed Files
-#      uses: tj-actions/verify-changed-files@v12
-#      id: verify-changed-files
-#
-#    - name: Run step only when files change
-#      if: steps.verify-changed-files.outputs.files_changed == 'true'
-#      uses: actions/github-script@v6.3.3
-#      with:
-#        script: |
-#          core.setFailed('Changed files found: ${{ steps.verify-changed-files.outputs.changed_files }}')
+    - name: Verify Changed Files
+      run: contrib/ci/detect-changes.sh

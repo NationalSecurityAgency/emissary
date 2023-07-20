@@ -1,0 +1,61 @@
+name: 'Create a Patch Branch'
+
+on:
+  workflow_dispatch:
+
+env:
+  JAVA_VERSION: '11'
+  JAVA_DISTRIBUTION: 'corretto'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check patch release type is using correct branch
+        if: ${{ !startsWith(github.ref_name, 'release/') }}
+        run: |
+          echo "Cannot create a patch branch, please target a branch that starts with 'release/'"
+          exit 1
+
+  patch:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3.3.0
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: 'maven'
+
+      - name: Configure Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - name: Get the version
+        run: |
+          echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' )" >> "$GITHUB_ENV"
+          echo "PATCH_BRANCH=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F. '{print "patch/"$1"."$2".x"}')" >> "$GITHUB_ENV"
+
+      - name: Fail for milestone versions
+        if: ${{ contains(env.PROJECT_VERSION, '-M') }}
+        run: |
+          echo "Cannot create a patch branch on a milestone release"
+          exit 1
+
+      - name: Branch that patch
+        run: git switch -c ${{ env.PATCH_BRANCH }}
+
+      - name: Set the patch version
+        run: |
+          mvn -B -V -e -ntp versions:set -DnextSnapshot=true
+          mvn -B -V -e -ntp versions:commit
+          git add .
+          git commit -m "[github-actions](${{ github.actor }}) prepare for next patch iteration"
+          git push -u origin ${{ env.PATCH_BRANCH }}
