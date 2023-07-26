@@ -82,23 +82,41 @@ class MobileAgentTest extends UnitTest {
 
     @Test
     void testDenyList() throws Exception {
-        // setup
-        byte[] configDeniedData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"
-                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_DESCRIPTION = \"test place with denied list\"\n" + "SERVICE_COST = 60\n"
-                + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY = \"B\"\n").getBytes();
+        byte[] configDeniedData = ("PLACE_NAME = \"DelayPlace\"\n" + "SERVICE_NAME = \"DELAY\"\n"
+                + "SERVICE_TYPE = \"STUDY\"\n" + "SERVICE_DESCRIPTION = \"delay stuff\"\n" + "SERVICE_COST = 99\n"
+                + "SERVICE_QUALITY = 50\n" + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes();
         InputStream config = new ByteArrayInputStream(configDeniedData);
         IServiceProviderPlace place = new PlaceTest(config);
         HDMobileAgent agent = new MobAg2();
-        d.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
-        agent.getNextKey(place, d);
-        d.appendTransformHistory("A.FOO1.ANALYZE.http://localhost:8005/FooPlace$1234");
-        agent.getNextKey(place, d);
-        d.appendTransformHistory("B.FOO2.ANALYZE.http://localhost:8005/FooPlace$1234");
-        agent.getNextKey(place, d);
+
+        // test accepted
+        IBaseDataObject d1 = DataObjectFactory.getInstance();
+        d1.setCurrentForm("THECF");
+        d1.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d1);
+
+        // test denied
+        IBaseDataObject d2 = DataObjectFactory.getInstance();
+        d2.setCurrentForm("FINI");
+        d2.appendTransformHistory("A.FOO1.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d2);
+
+        // test upstream in parallel tracking
+        byte[] configDeniedData2 = ("PLACE_NAME = \"FilePickUpClient\"\n" + "SERVICE_NAME = \"DELAY\"\n"
+                + "SERVICE_TYPE = \"STUDY\"\n" + "SERVICE_DESCRIPTION = \"delay stuff\"\n" + "SERVICE_COST = 99\n"
+                + "SERVICE_QUALITY = 50\n" + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"THECF\"\n").getBytes();
+        InputStream config2 = new ByteArrayInputStream(configDeniedData2);
+        PlaceStarter.createPlace("http://localhost:8005/FilePickUpClient", config2,
+                "emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient", null);
+        IBaseDataObject d3 = DataObjectFactory.getInstance();
+        d3.setCurrentForm("THECF");
+        d3.appendTransformHistory("B.FOO1.ANALYZE.http://localhost:8005/GarbagePlace$1234");
+        agent.getNextKey(place, d3);
 
         // verify
-        assertEquals(2, agent.visitedPlaces.size(), "FOO2 should not have been added");
-        assertTrue(agent.visitedPlaces.containsAll(Arrays.asList("FOO1", "FOO3")), "FOO1 and FOO3 should have both been added");
+        assertEquals(1, agent.visitedPlaces.size(), "FOO2 and FOO3 should not have been added");
+        assertTrue(agent.visitedPlaces.contains("FOO"), "Only FOO should have been added");
+
         agent.killAgent();
         place.shutDown();
     }
@@ -127,15 +145,28 @@ class MobileAgentTest extends UnitTest {
     }
 
     static final class MobAg2 extends HDMobileAgent {
+        private boolean hit = false;
+
         @Override
         protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
                 final IBaseDataObject payloadArg) {
             if (lastEntry.getDataType().equalsIgnoreCase("S")) {
-                return new DirectoryEntry("A.FOO1.ANALYZE.http://localhost:8005/FooPlace$1234");
+                DirectoryEntry d = new DirectoryEntry("A.FOO.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
+                d.isLocal();
+                return d;
             } else if (lastEntry.getDataType().equalsIgnoreCase("A")) {
-                return new DirectoryEntry("B.FOO2.ANALYZE.http://localhost:8005/FooPlace$1234");
+                DirectoryEntry d = new DirectoryEntry("B.FOO2.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
+                d.isLocal();
+                return d;
             } else if (lastEntry.getDataType().equalsIgnoreCase("B")) {
-                return new DirectoryEntry("C.FOO3.ANALYZE.http://localhost:8005/FooPlace$1234");
+                DirectoryEntry d = new DirectoryEntry("C.FOO.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
+                d.isLocal();
+                return d;
+            } else if (!hit && lastEntry.getDataType().equalsIgnoreCase("THECF")) {
+                DirectoryEntry d = new DirectoryEntry("D.FOO3.ANALYZE.http://localhost:8005/FilePickUpClient");
+                d.isLocal();
+                hit = true;
+                return d;
             } else {
                 return null;
             }

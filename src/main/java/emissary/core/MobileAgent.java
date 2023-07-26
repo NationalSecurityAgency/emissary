@@ -526,8 +526,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 String formID = form + KeyManipulator.DATAIDSEPARATOR + stageName;
                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
 
-                // if last place/directory entry is denied, reject
-                if (curEntry != null && place.isDenied(curEntry.getDataType())) {
+                // if next proposed place/directory entry is denied, reject
+                if (curEntry != null && curEntry.getLocalPlace() != null && curEntry.getLocalPlace().isDenied(form)) {
+                    logger.warn("FORM {} is denied for place {}; continuing", form, curEntry.getLocalPlace().getPlaceName());
                     continue;
                 }
 
@@ -548,7 +549,13 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                                 formID = lastEntry.getDataID();
                                 parallelEntryRejected = true;
                                 logger.debug("Rejecting parallel entry found for {}: visitedPlaces={}", lastEntry.getFullKey(), this.visitedPlaces);
-                                curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
+                                DirectoryEntry entry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
+                                // if next proposed place/directory entry is denied, reject
+                                if (entry != null && entry.getLocalPlace() != null && entry.getLocalPlace().isDenied(form)) {
+                                    logger.warn("FORM {} is denied for place {}; continuing", form, curEntry.getLocalPlace().getPlaceName());
+                                } else {
+                                    curEntry = entry;
+                                }
                             } else {
                                 addParallelTrackingInfo(curEntry.getServiceName());
                                 logger.debug("Added parallel tracking = {}", this.visitedPlaces);
