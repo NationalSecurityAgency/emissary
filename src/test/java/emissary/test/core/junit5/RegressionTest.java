@@ -5,6 +5,7 @@ import emissary.core.IBaseDataObjectHelper;
 import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
+import emissary.util.ByteUtil;
 
 import com.google.errorprone.annotations.ForOverride;
 import org.jdom2.Document;
@@ -138,8 +139,12 @@ public abstract class RegressionTest extends ExtractionTest {
     @Override
     protected void checkAnswersPreHook(final Document answers, final IBaseDataObject payload, final List<IBaseDataObject> attachments,
             final String tname) {
-        if (payload.data() != null && IBaseDataObjectXmlCodecs.hasNonPrintableValues(payload.data())) {
-            final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(payload.data());
+        if (!IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+            return;
+        }
+
+        if (payload.data() != null && ByteUtil.hasNonPrintableValues(payload.data())) {
+            final String hash = ByteUtil.sha256Bytes(payload.data());
 
             if (hash != null) {
                 payload.setData(hash.getBytes(StandardCharsets.UTF_8));
@@ -148,8 +153,8 @@ public abstract class RegressionTest extends ExtractionTest {
 
         if (payload.getExtractedRecords() != null) {
             for (final IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
-                if (IBaseDataObjectXmlCodecs.hasNonPrintableValues(extractedRecord.data())) {
-                    final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(extractedRecord.data());
+                if (ByteUtil.hasNonPrintableValues(extractedRecord.data())) {
+                    final String hash = ByteUtil.sha256Bytes(extractedRecord.data());
 
                     if (hash != null) {
                         extractedRecord.setData(hash.getBytes(StandardCharsets.UTF_8));
@@ -160,8 +165,8 @@ public abstract class RegressionTest extends ExtractionTest {
 
         if (attachments != null) {
             for (final IBaseDataObject attachment : attachments) {
-                if (IBaseDataObjectXmlCodecs.hasNonPrintableValues(attachment.data())) {
-                    final String hash = IBaseDataObjectXmlCodecs.sha256Bytes(attachment.data());
+                if (ByteUtil.hasNonPrintableValues(attachment.data())) {
+                    final String hash = ByteUtil.sha256Bytes(attachment.data());
 
                     if (hash != null) {
                         attachment.setData(hash.getBytes(StandardCharsets.UTF_8));

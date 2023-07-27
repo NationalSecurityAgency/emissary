@@ -5,6 +5,7 @@ import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.test.core.junit5.UnitTest;
+import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
 
 import org.jdom2.Document;
@@ -146,7 +147,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
                 actualChildren, SHA256_ELEMENT_ENCODERS);
 
-        expectedIbdo.setData(IBaseDataObjectXmlCodecs.sha256Bytes(bytes).getBytes(StandardCharsets.ISO_8859_1));
+        expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.ISO_8859_1));
 
         final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
                 actualChildren, "testSha256Conversion", DiffCheckConfiguration.onlyCheckData());

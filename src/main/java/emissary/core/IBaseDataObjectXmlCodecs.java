@@ -3,8 +3,10 @@ package emissary.core;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
+import emissary.util.ByteUtil;
 import emissary.util.xml.AbstractJDOMUtil;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -14,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Base64;
 import java.util.Collection;
@@ -275,7 +275,7 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a boolean value.
      */
     public static final ElementDecoder DEFAULT_BOOLEAN_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, boolean.class);
+        final Method method = getIbdoMethod(ibdoMethodName, boolean.class);
 
         for (final Element element : elements) {
             method.invoke(ibdo, Boolean.valueOf(element.getValue()));
@@ -286,7 +286,7 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a SeekableByteChannel value.
      */
     public static final ElementDecoder DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, SeekableByteChannelFactory.class);
+        final Method method = getIbdoMethod(ibdoMethodName, SeekableByteChannelFactory.class);
 
         for (final Element element : elements) {
             final String elementValue = element.getValue();
@@ -300,7 +300,7 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a byte array value.
      */
     public static final ElementDecoder DEFAULT_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, byte[].class);
+        final Method method = getIbdoMethod(ibdoMethodName, byte[].class);
 
         for (final Element element : elements) {
             final String elementValue = element.getValue();
@@ -314,7 +314,7 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has an integer value.
      */
     public static final ElementDecoder DEFAULT_INTEGER_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, int.class);
+        final Method method = getIbdoMethod(ibdoMethodName, int.class);
 
         for (final Element element : elements) {
             method.invoke(ibdo, Integer.decode(element.getValue()));
@@ -325,7 +325,7 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a string value.
      */
     public static final ElementDecoder DEFAULT_STRING_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, String.class);
+        final Method method = getIbdoMethod(ibdoMethodName, String.class);
 
         for (final Element element : elements) {
             final String elementValue = element.getValue();
@@ -340,7 +340,7 @@ public final class IBaseDataObjectXmlCodecs {
      * array.
      */
     public static final ElementDecoder DEFAULT_STRING_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, String.class, byte[].class);
+        final Method method = getIbdoMethod(ibdoMethodName, String.class, byte[].class);
 
         for (final Element element : elements) {
             final Element nameElement = element.getChild(NAME_ELEMENT_NAME);
@@ -361,7 +361,7 @@ public final class IBaseDataObjectXmlCodecs {
      * object.
      */
     public static final ElementDecoder DEFAULT_STRING_OBJECT_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, String.class, Object.class);
+        final Method method = getIbdoMethod(ibdoMethodName, String.class, Object.class);
 
         for (final Element element : elements) {
             final Element nameElement = element.getChild(NAME_ELEMENT_NAME);
@@ -427,9 +427,9 @@ public final class IBaseDataObjectXmlCodecs {
         private static Element protectedElementHash(final String name, final byte[] bytes) {
             final Element element = new Element(name);
 
-            if (hasNonPrintableValues(bytes)) {
+            if (ByteUtil.hasNonPrintableValues(bytes)) {
                 element.setAttribute(ENCODING_ATTRIBUTE_NAME, SHA256_ATTRIBUTE_NAME);
-                element.addContent(sha256Bytes(bytes));
+                element.addContent(ByteUtil.sha256Bytes(bytes));
             } else {
                 element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
             }
@@ -465,8 +465,8 @@ public final class IBaseDataObjectXmlCodecs {
             for (int i = values.size() - 1; i >= 0; i--) {
                 String value = values.get(i);
 
-                if (PROCESSING_ERROR_ELEMENT_NAME.equals(childElementName)) {
-                    value = value == null ? null : value.substring(0, value.length() - 1);
+                if (PROCESSING_ERROR_ELEMENT_NAME.equals(childElementName) && StringUtils.isNotEmpty(value)) {
+                    value = value.substring(0, value.length() - 1);
                 }
 
                 if (value != null) {
@@ -616,25 +616,6 @@ public final class IBaseDataObjectXmlCodecs {
     }
 
     /**
-     * Scans a byte array looking for non-printable values.
-     * 
-     * @param bytes the bytes to be scanned.
-     * @return whether or not there were non-printable values.
-     */
-    public static boolean hasNonPrintableValues(final byte[] bytes) {
-        boolean badCharacters = false;
-
-        for (byte aByte : bytes) {
-            if (aByte < 9 || aByte > 13 && aByte < 32) {
-                badCharacters = true;
-                break;
-            }
-        }
-
-        return badCharacters;
-    }
-
-    /**
      * Creates a 'protected' element which can be encoded with base64 if it contains unsafe characters
      * 
      * See method source for specific definition of 'unsafe'.
@@ -646,7 +627,7 @@ public final class IBaseDataObjectXmlCodecs {
     private static Element protectedElementBase64(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
-        if (hasNonPrintableValues(bytes)) {
+        if (ByteUtil.hasNonPrintableValues(bytes)) {
             String base64String = BASE64_NEW_LINE_STRING +
                     BASE64_ENCODER.encodeToString(bytes) +
                     BASE64_NEW_LINE_STRING;
@@ -661,28 +642,13 @@ public final class IBaseDataObjectXmlCodecs {
     }
 
     /**
-     * Creates a hex string of a sha256 hash for a byte[].
+     * Gets the requested method object from the IBaseDataObject class.
      * 
-     * @param bytes to be hashed
-     * @return the hex string of a sha256 hash of the bytes.
+     * @throws SecurityException
+     * @throws NoSuchMethodException
      */
-    public static String sha256Bytes(final byte[] bytes) {
-        try {
-            final MessageDigest md = MessageDigest.getInstance("SHA-256");
-            final byte[] hash = md.digest(bytes);
-
-            final StringBuilder hexString = new StringBuilder(2 * hash.length);
-            for (byte b : hash) {
-                final String hex = Integer.toHexString(0xff & b);
-
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            return null;
-        }
+    private static Method getIbdoMethod(final String name, final Class<?>... parameterTypes)
+            throws NoSuchMethodException, SecurityException {
+        return IBaseDataObject.class.getDeclaredMethod(name, parameterTypes);
     }
 }
