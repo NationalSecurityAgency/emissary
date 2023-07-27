@@ -11,12 +11,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class IBaseDataObjectDiffHelper {
 
@@ -59,7 +57,8 @@ public class IBaseDataObjectDiffHelper {
         }
 
         diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
-        diff(sortParameters(ibdo1.getParameters()), sortParameters(ibdo2.getParameters()), "parameters", differences);
+        // TreeMap automatically sorts parameters by key
+        diff(new TreeMap<>(ibdo1.getParameters()), new TreeMap<>(ibdo2.getParameters()), "parameters", differences);
         diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
         diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
         diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
@@ -224,24 +223,5 @@ public class IBaseDataObjectDiffHelper {
                 !map1.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), map2.get(e.getKey())))) {
             differences.add(identifier + ARE_NOT_EQUAL);
         }
-    }
-
-
-    /**
-     * This method is used to sort the given map of parameters by key.
-     *
-     * @param parameters the map of parameters from IBaseDataObject to sort
-     * @return map of sorted parameters
-     */
-    public static Map<String, Collection<Object>> sortParameters(Map<String, Collection<Object>> parameters) {
-        List<Entry<String, Collection<Object>>> list = new ArrayList<>(parameters.entrySet());
-        list.sort(Entry.comparingByKey());
-
-        Map<String, Collection<Object>> sortedParams = new HashMap<>();
-        for (Entry<String, Collection<Object>> curParam : list) {
-            sortedParams.put(curParam.getKey(), curParam.getValue());
-        }
-
-        return sortedParams;
     }
 }
