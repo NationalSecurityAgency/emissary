@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 public class KffDataObjectHandler {
     // Parameter names for data object param map
     public static final String KFF_PARAM_BASE = "CHECKSUM_";
+    public static final String KFF_PARAM_CRC32 = KFF_PARAM_BASE + "CRC32";
     public static final String KFF_PARAM_MD5 = KFF_PARAM_BASE + "MD5";
     public static final String KFF_PARAM_SHA1 = KFF_PARAM_BASE + "SHA-1";
     public static final String KFF_PARAM_SHA256 = KFF_PARAM_BASE + "SHA-256";
@@ -242,6 +243,7 @@ public class KffDataObjectHandler {
      * @param d the payload
      */
     public static void removeHash(IBaseDataObject d) {
+        d.deleteParameter(KFF_PARAM_CRC32);
         d.deleteParameter(KFF_PARAM_MD5);
         d.deleteParameter(KFF_PARAM_SHA1);
         d.deleteParameter(KFF_PARAM_SHA256);
