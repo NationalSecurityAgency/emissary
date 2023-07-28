@@ -17,10 +17,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -302,7 +302,7 @@ class IBaseDataObjectDiffHelperTest {
     @Test
     void testParamSort() {
         // set-up
-        Set<String> expectedParams = new HashSet<>();
+        Set<String> expectedParams = new TreeSet<>();
         expectedParams.add("LIST");
         expectedParams.add("STRING");
         expectedParams.add("TEST");
