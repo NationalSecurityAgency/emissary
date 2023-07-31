@@ -2,8 +2,9 @@ package emissary.core;
 
 import emissary.admin.PlaceStarter;
 import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
-import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.AfterEach;
@@ -82,40 +83,31 @@ class MobileAgentTest extends UnitTest {
 
     @Test
     void testDenyList() throws Exception {
-        byte[] configDeniedData = ("PLACE_NAME = \"DelayPlace\"\n" + "SERVICE_NAME = \"DELAY\"\n"
-                + "SERVICE_TYPE = \"STUDY\"\n" + "SERVICE_DESCRIPTION = \"delay stuff\"\n" + "SERVICE_COST = 99\n"
-                + "SERVICE_QUALITY = 50\n" + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes();
-        InputStream config = new ByteArrayInputStream(configDeniedData);
-        IServiceProviderPlace place = new PlaceTest(config);
         HDMobileAgent agent = new MobAg2();
 
         // test accepted
+        byte[] configDeniedData = ("PLACE_NAME = \"DelayPlace\"\n" + "SERVICE_NAME = \"DELAY\"\n"
+                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_COST = 99\n" + "SERVICE_QUALITY = 50\n"
+                + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes();
+        InputStream config = new ByteArrayInputStream(configDeniedData);
+        DirectoryPlace place = new PlaceTest("http://example.com:8001/DelayPlace", config);
         IBaseDataObject d1 = DataObjectFactory.getInstance();
         d1.setCurrentForm("THECF");
-        d1.appendTransformHistory("S.GARBAGE.ANALYZE.http://localhost:8005/GarbagePlace$1234");
         agent.getNextKey(place, d1);
 
         // test denied
+        byte[] configDeniedData2 = ("PLACE_NAME = \"DelayPlace2\"\n" + "SERVICE_NAME = \"DELAY2\"\n"
+                + "SERVICE_TYPE = \"ANALYZE\"\n" + "SERVICE_COST = 99\n" + "SERVICE_QUALITY = 50\n"
+                + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"FINI\"\n").getBytes();
+        InputStream config2 = new ByteArrayInputStream(configDeniedData2);
+        DirectoryPlace place2 = new PlaceTest("http://example.com:8002/DelayPlace", config2);
         IBaseDataObject d2 = DataObjectFactory.getInstance();
         d2.setCurrentForm("FINI");
-        d2.appendTransformHistory("A.FOO1.ANALYZE.http://localhost:8005/GarbagePlace$1234");
-        agent.getNextKey(place, d2);
-
-        // test upstream in parallel tracking
-        byte[] configDeniedData2 = ("PLACE_NAME = \"FilePickUpClient\"\n" + "SERVICE_NAME = \"DELAY\"\n"
-                + "SERVICE_TYPE = \"STUDY\"\n" + "SERVICE_DESCRIPTION = \"delay stuff\"\n" + "SERVICE_COST = 99\n"
-                + "SERVICE_QUALITY = 50\n" + "SERVICE_PROXY = \"*\"\n" + "SERVICE_PROXY_DENY = \"THECF\"\n").getBytes();
-        InputStream config2 = new ByteArrayInputStream(configDeniedData2);
-        PlaceStarter.createPlace("http://localhost:8005/FilePickUpClient", config2,
-                "emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient", null);
-        IBaseDataObject d3 = DataObjectFactory.getInstance();
-        d3.setCurrentForm("THECF");
-        d3.appendTransformHistory("B.FOO1.ANALYZE.http://localhost:8005/GarbagePlace$1234");
-        agent.getNextKey(place, d3);
+        agent.getNextKey(place2, d2);
 
         // verify
-        assertEquals(1, agent.visitedPlaces.size(), "FOO2 and FOO3 should not have been added");
-        assertTrue(agent.visitedPlaces.contains("FOO"), "Only FOO should have been added");
+        assertEquals(1, agent.visitedPlaces.size(), "DELAY2 should not have been added");
+        assertTrue(agent.visitedPlaces.contains("DELAY"), "Only DELAY should have been added");
 
         agent.killAgent();
         place.shutDown();
@@ -144,38 +136,11 @@ class MobileAgentTest extends UnitTest {
         }
     }
 
-    static final class MobAg2 extends HDMobileAgent {
-        private boolean hit = false;
-
-        @Override
-        protected DirectoryEntry nextKeyFromDirectory(final String dataID, final IServiceProviderPlace place, final DirectoryEntry lastEntry,
-                final IBaseDataObject payloadArg) {
-            if (lastEntry.getDataType().equalsIgnoreCase("S")) {
-                DirectoryEntry d = new DirectoryEntry("A.FOO.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
-                d.isLocal();
-                return d;
-            } else if (lastEntry.getDataType().equalsIgnoreCase("A")) {
-                DirectoryEntry d = new DirectoryEntry("B.FOO2.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
-                d.isLocal();
-                return d;
-            } else if (lastEntry.getDataType().equalsIgnoreCase("B")) {
-                DirectoryEntry d = new DirectoryEntry("C.FOO.ANALYZE.http://localhost:8001/PlaceTest$9950[1]");
-                d.isLocal();
-                return d;
-            } else if (!hit && lastEntry.getDataType().equalsIgnoreCase("THECF")) {
-                DirectoryEntry d = new DirectoryEntry("D.FOO3.ANALYZE.http://localhost:8005/FilePickUpClient");
-                d.isLocal();
-                hit = true;
-                return d;
-            } else {
-                return null;
-            }
+    class PlaceTest extends DirectoryPlace {
+        public PlaceTest(final String placeLoc, InputStream config) throws IOException {
+            super(config, placeLoc, new EmissaryNode());
         }
     }
-
-    private static final class PlaceTest extends ServiceProviderPlace {
-        public PlaceTest(InputStream config) throws IOException {
-            super(config);
-        }
+    static final class MobAg2 extends HDMobileAgent {
     }
 }

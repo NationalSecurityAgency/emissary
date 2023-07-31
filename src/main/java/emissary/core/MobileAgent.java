@@ -526,12 +526,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 String formID = form + KeyManipulator.DATAIDSEPARATOR + stageName;
                 curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
 
-                // if next proposed place/directory entry is denied, reject
-                if (curEntry != null && curEntry.getLocalPlace() != null && curEntry.getLocalPlace().isDenied(form)) {
-                    logger.warn("FORM {} is denied for place {}; continuing", form, curEntry.getLocalPlace().getPlaceName());
-                    continue;
-                }
-
                 // Process through the parallel service type once per place max
                 // no matter how many forms would route there
                 if (curEntry != null && isParallelServiceType(curType)) {
@@ -549,13 +543,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                                 formID = lastEntry.getDataID();
                                 parallelEntryRejected = true;
                                 logger.debug("Rejecting parallel entry found for {}: visitedPlaces={}", lastEntry.getFullKey(), this.visitedPlaces);
-                                DirectoryEntry entry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
-                                // if next proposed place/directory entry is denied, reject
-                                if (entry != null && entry.getLocalPlace() != null && entry.getLocalPlace().isDenied(form)) {
-                                    logger.warn("FORM {} is denied for place {}; continuing", form, curEntry.getLocalPlace().getPlaceName());
-                                } else {
-                                    curEntry = entry;
-                                }
+                                curEntry = nextKeyFromDirectory(formID, place, lastEntry, payloadArg);
                             } else {
                                 addParallelTrackingInfo(curEntry.getServiceName());
                                 logger.debug("Added parallel tracking = {}", this.visitedPlaces);
