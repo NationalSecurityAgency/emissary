@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class KffFileTest extends UnitTest {
 
-    private static final String expectedShaHash = "000000206738748EDD92C4E3D2E823896700F849";
+    private static final String ITEM_NAME = "Some_item_name"; // "000000206738748EDD92C4E3D2E823896700F849";
     private static final byte[] expectedSha1Bytes = {(byte) 0, (byte) 0, (byte) 0, (byte) 32, (byte) 103, (byte) 56, (byte) 116,
             (byte) -114, (byte) -35, (byte) -110, (byte) -60, (byte) -29, (byte) -46, (byte) -24, (byte) 35, (byte) -119,
             (byte) 103, (byte) 0, (byte) -8, (byte) 73};
@@ -44,7 +44,7 @@ class KffFileTest extends UnitTest {
         results.setHash("SHA-1", expectedSha1Bytes);
         results.setHash("CRC32", expectedCrcBytes);
         try {
-            assertTrue(kffFile.check(expectedShaHash, results));
+            assertTrue(kffFile.check(ITEM_NAME, results));
         } catch (Exception e) {
             fail(e);
         }
@@ -54,7 +54,7 @@ class KffFileTest extends UnitTest {
         results = new ChecksumResults();
         results.setHash("SHA-1", incorrectSha1Bytes);
         try {
-            assertFalse(kffFile.check(expectedShaHash, results));
+            assertFalse(kffFile.check(ITEM_NAME, results));
         } catch (Exception e) {
             fail(e);
         }

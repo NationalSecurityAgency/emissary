@@ -1,5 +1,8 @@
 package emissary.kff;
 
+import emissary.core.channels.FileChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.annotation.Nonnull;
@@ -31,7 +35,8 @@ public class KffFile implements KffFilter {
     private final Logger logger;
 
     /** File containing SHA-1/CRC32 results of known files */
-    protected RandomAccessFile knownFile;
+    // protected RandomAccessFile knownFile;
+    protected SeekableByteChannelFactory knownFileFactory;
 
     /** Byte buffer that is mapped to the above file */
     protected ByteBuffer mappedBuf;
@@ -82,10 +87,11 @@ public class KffFile implements KffFilter {
         logger = LoggerFactory.getLogger(this.getClass());
 
         // Open file in read-only mode
-        knownFile = new RandomAccessFile(filename, "r");
+        // knownFile = new RandomAccessFile(filename, "r");
+        knownFileFactory = FileChannelFactory.create(Paths.get(filename));
 
         // Initial high value for binary search is the largest index
-        bSearchInitHigh = ((int) knownFile.length() / recordLength) - 1;
+        bSearchInitHigh = ((int) knownFileFactory.create().size() / recordLength) - 1;
 
         logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
     }
@@ -147,33 +153,34 @@ public class KffFile implements KffFilter {
 
         /* Buffer to hold a record */
         byte[] rec = new byte[recordLength];
-
+        ByteBuffer byteBuffer = ByteBuffer.wrap(rec);
         // Search until the indexes cross
-        while (low <= high) {
-            // Calculate the midpoint
-            int mid = (low + high) >> 1;
+        try (SeekableByteChannel knownFile = knownFileFactory.create()) {
+            while (low <= high) {
+                byteBuffer.clear();
 
-            try {
-                knownFile.seek(rec.length * (long) mid);
-                int count = knownFile.read(rec);
+                // Calculate the midpoint
+                int mid = (low + high) >> 1;
+
+                knownFile.position(rec.length * (long) mid);
+                int count = knownFile.read(byteBuffer);
                 if (count != rec.length) {
-                    logger.warn("Short read on KffFile at {} read {} expected {}", (rec.length * mid), count, rec.length);
+                    logger.warn("Short read on KffFile at {} read {} expected {}", (recordLength * mid), count, recordLength);
                     return false;
                 }
-            } catch (IOException x) {
-                logger.warn("Exception reading KffFile: {}", x.getMessage());
-                return false;
+                // Compare the record with the target. Adjust the indexes accordingly.
+                int c = compare(rec, hash, crc);
+                if (c < 0) {
+                    high = mid - 1;
+                } else if (c > 0) {
+                    low = mid + 1;
+                } else {
+                    return true;
+                }
             }
-
-            // Compare the record with the target. Adjust the indexes accordingly.
-            int c = compare(rec, hash, crc);
-            if (c < 0) {
-                high = mid - 1;
-            } else if (c > 0) {
-                low = mid + 1;
-            } else {
-                return true;
-            }
+        } catch (IOException e) {
+            logger.warn("Exception reading KffFile: {}", e.getMessage());
+            return false;
         }
 
         // not found
