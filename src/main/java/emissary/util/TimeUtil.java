@@ -15,6 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 public class TimeUtil {
@@ -250,24 +252,33 @@ public class TimeUtil {
      *
      */
     public static String convertHexDate(String hexDate) {
+        String regex = "^([0-9A-Fa-f]{8})([0-9A-Fa-f]{8})";
+        Pattern p = Pattern.compile(regex);
         String hexNumber = hexDate.substring(HEX_PREFIX_LEN);
-        String dateHex = hexNumber.substring(0, 8);
-        String timeHex = hexNumber.substring(8, 16);
+        Matcher m = p.matcher(hexNumber);
 
-        long daysToAdd = Long.parseLong(dateHex, HEX_RADIX);
-        long millisToAdd = Math.round(Long.parseLong(timeHex, HEX_RADIX) * 10 / 3.0);
+        if (m.find()) {
+            String dateHex = m.group(1);
+            String timeHex = m.group(2);
+            long daysToAdd = Long.parseLong(dateHex, HEX_RADIX);
+            long millisToAdd = Math.round(Long.parseLong(timeHex, HEX_RADIX) * 10 / 3.0);
 
-        LocalDateTime ldt;
+            LocalDateTime ldt;
 
-        try {
-            ldt = STARTING_DATE.plusDays(daysToAdd);
-            ldt = ldt.plus(millisToAdd, ChronoUnit.MILLIS);
-        } catch (DateTimeParseException ex) {
-            logger.debug("Could not parse date", ex);
-            throw ex;
+            try {
+                ldt = STARTING_DATE.plusDays(daysToAdd);
+                ldt = ldt.plus(millisToAdd, ChronoUnit.MILLIS);
+            } catch (DateTimeParseException ex) {
+                logger.debug("Could not parse date", ex);
+                throw ex;
+            }
+
+            return ldt.format(DATE_ISO_8601_SSS);
         }
 
-        return ldt.format(DATE_ISO_8601_SSS);
+        String msg = String.format("Unexpected hexDate format '%s'", hexDate);
+        logger.debug(msg);
+        throw new IllegalArgumentException(msg);
     }
 
     public static String getISO8601DateFormatString() {
