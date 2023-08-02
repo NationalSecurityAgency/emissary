@@ -13,7 +13,7 @@ Table of Contents
 Release process uses GitHub actions and involves:
 - Creating a release branch to perform the following actions:
   - Dry run a maven release
-  - Remove SNAPSHOT from the version and create scm tag
+  - Remove the "-SNAPSHOT" suffix from the version and create scm tag
   - Create a GitHub release and upload artifacts
 - If patch release, delete the patch branch
 - For a formal release only, increment snapshot version on master branch 
