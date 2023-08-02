@@ -28,7 +28,8 @@ public class TimeUtil {
     private static final DateTimeFormatter DATE_ORDINAL = DateTimeFormatter.ofPattern("yyyyDDD").withZone(GMT);
     private static final DateTimeFormatter DATE_ISO_8601_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final String ISO_8601_TIME_DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    private static final int HEX_PREFIX_LEN = "0x".length();
+    private static final String HEX_REGEX = "^(?:0x)([0-9A-Fa-f]{8})([0-9A-Fa-f]{8})";
+    private static final Pattern P = Pattern.compile(HEX_REGEX);
     private static final int HEX_RADIX = 16;
     private static final LocalDateTime STARTING_DATE = LocalDateTime.parse("1900-01-01 00:00:00.000", DATE_ISO_8601_SSS);
     private static final Logger logger = LoggerFactory.getLogger(TimeUtil.class);
@@ -252,10 +253,7 @@ public class TimeUtil {
      *
      */
     public static String convertHexDate(String hexDate) {
-        String regex = "^([0-9A-Fa-f]{8})([0-9A-Fa-f]{8})";
-        Pattern p = Pattern.compile(regex);
-        String hexNumber = hexDate.substring(HEX_PREFIX_LEN);
-        Matcher m = p.matcher(hexNumber);
+        Matcher m = P.matcher(hexDate);
 
         if (m.find()) {
             String dateHex = m.group(1);
