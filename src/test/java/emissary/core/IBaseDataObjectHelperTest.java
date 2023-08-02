@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.parser.SessionParser;
+import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 
-class IBaseDataObjectHelperTest {
+class IBaseDataObjectHelperTest extends UnitTest {
 
     private IBaseDataObject ibdo1;
     private IBaseDataObject ibdo2;
@@ -54,11 +55,11 @@ class IBaseDataObjectHelperTest {
         ibdo2 = new BaseDataObject();
     }
 
-    private void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
+    private static void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
             final Boolean switchWithFullClone) {
         try {
             final Method method = IBaseDataObject.class.getMethod(methodName);
-            final boolean isArrayType = method.getReturnType().getName().equals("[B");
+            final boolean isArrayType = "[B".equals(method.getReturnType().getName());
             final IBaseDataObject cloneFalseObj = IBaseDataObjectHelper.clone(origObj, false);
             final IBaseDataObject cloneTrueObj = IBaseDataObjectHelper.clone(origObj, true);
             verifyCloneAssertions(method, origObj, cloneFalseObj, isSame, isEquals);
@@ -76,8 +77,8 @@ class IBaseDataObjectHelperTest {
         }
     }
 
-    private void verifyCloneAssertions(final Method method, final Object obj1, final Object obj2, final Boolean isSame, final Boolean isEquals)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    private static void verifyCloneAssertions(final Method method, final Object obj1, final Object obj2, final Boolean isSame, final Boolean isEquals)
+            throws IllegalAccessException, InvocationTargetException {
         final Object o1 = method.invoke(obj1);
         final Object o2 = method.invoke(obj2);
 
@@ -91,7 +92,7 @@ class IBaseDataObjectHelperTest {
 
         if (isEquals != null) {
             if (isEquals) {
-                if (method.getReturnType().getName().equals("[B")) {
+                if ("[B".equals(method.getReturnType().getName())) {
                     assertArrayEquals((byte[]) o1, (byte[]) o2);
                 } else {
                     assertEquals(o1, o2);
@@ -181,7 +182,7 @@ class IBaseDataObjectHelperTest {
     void testCloneInternalId() {
         verifyClone("getInternalId", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
         // Now assert that if an exception occurs, the IDs will differ
-        try (final MockedStatic<IBaseDataObjectHelper> helper = Mockito.mockStatic(IBaseDataObjectHelper.class, Mockito.CALLS_REAL_METHODS)) {
+        try (MockedStatic<IBaseDataObjectHelper> helper = Mockito.mockStatic(IBaseDataObjectHelper.class, Mockito.CALLS_REAL_METHODS)) {
             helper.when(() -> IBaseDataObjectHelper.setPrivateFieldValue(any(), any(), any()))
                     .thenThrow(IllegalAccessException.class);
 
@@ -275,7 +276,7 @@ class IBaseDataObjectHelperTest {
         verifyClone("getTransactionId", ibdo1, DONT_CHECK, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
     }
 
-    private void checkThrowsNull(final Executable e) {
+    private static void checkThrowsNull(final Executable e) {
         assertThrows(NullPointerException.class, e);
     }
 

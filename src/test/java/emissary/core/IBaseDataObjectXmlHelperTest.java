@@ -1,20 +1,20 @@
 package emissary.core;
 
+import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
 import emissary.test.core.junit5.UnitTest;
+import emissary.util.ByteUtil;
 import emissary.util.PlaceComparisonHelper;
 
 import org.jdom2.Document;
-import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
+import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_ENCODERS;
+import static emissary.core.IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -34,11 +37,18 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final List<IBaseDataObject> actualChildren = new ArrayList<>();
 
         final IBaseDataObject actualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
-                actualChildren);
+                actualChildren, DEFAULT_ELEMENT_ENCODERS);
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
                 actualChildren, "testParentIbdoNoFieldsChanged", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
+
+        final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, SHA256_ELEMENT_ENCODERS);
+        final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
+                actualChildren, "testParentIbdoNoFieldsChangedSha256", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(sha256Diff);
     }
 
     @Test
@@ -76,11 +86,18 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         expectedIbdo.addAlternateView("AlternateView2Key", "AlternateView2Value".getBytes(StandardCharsets.ISO_8859_1));
 
         final IBaseDataObject actualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
-                actualChildren);
+                actualChildren, DEFAULT_ELEMENT_ENCODERS);
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
                 actualChildren, "testParentIbdoAllFieldsChanged", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
+
+        final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, SHA256_ELEMENT_ENCODERS);
+        final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
+                actualChildren, "testParentIbdoAllFieldsChangedSha256", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(sha256Diff);
     }
 
     @Test
@@ -89,8 +106,9 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         final IBaseDataObject expectedIbdo = new BaseDataObject();
         final List<IBaseDataObject> expectedChildren = new ArrayList<>();
         final List<IBaseDataObject> actualChildren = new ArrayList<>();
+        final byte[] bytes = "\001Data".getBytes(StandardCharsets.ISO_8859_1);
 
-        expectedIbdo.setData("\001Data".getBytes(StandardCharsets.ISO_8859_1));
+        expectedIbdo.setData(bytes);
         expectedIbdo.setBirthOrder(5);
         expectedIbdo.setBroken("\001Broken1");
         expectedIbdo.setBroken("\001Broken2");
@@ -120,11 +138,21 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 "\200AlternateView2Value".getBytes(StandardCharsets.ISO_8859_1));
 
         final IBaseDataObject actualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
-                actualChildren);
+                actualChildren, DEFAULT_ELEMENT_ENCODERS);
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
                 actualChildren, "testBase64Conversion", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
+
+        final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
+                actualChildren, SHA256_ELEMENT_ENCODERS);
+
+        expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.ISO_8859_1));
+
+        final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
+                actualChildren, "testSha256Conversion", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(sha256Diff);
     }
 
     @Test
@@ -151,9 +179,9 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         expectedChildren.add(childIbdo2);
 
         final IBaseDataObject actualIbdo = ibdoFromXmlFromIbdo(expectedIbdo, expectedChildren, initialIbdo,
-                actualChildren);
+                actualChildren, DEFAULT_ELEMENT_ENCODERS);
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
-                actualChildren, "testBase64Conversion", DiffCheckConfiguration.onlyCheckData());
+                actualChildren, "testAttachmentsAndExtractedRecords", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
     }
@@ -169,11 +197,18 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         dataExceptionIbdo.setChannelFactory(new ExceptionChannelFactory());
 
         final IBaseDataObject actualIbdo = ibdoFromXmlFromIbdo(dataExceptionIbdo, expectedChildren, initialIbdo,
-                actualChildren);
+                actualChildren, DEFAULT_ELEMENT_ENCODERS);
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
                 actualChildren, "testBadChannelFactory", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
+
+        final IBaseDataObject sha256ActualIbdo = ibdoFromXmlFromIbdo(dataExceptionIbdo, expectedChildren, initialIbdo,
+                actualChildren, SHA256_ELEMENT_ENCODERS);
+        final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
+                actualChildren, "testBadChannelFactory", DiffCheckConfiguration.onlyCheckData());
+
+        assertNull(sha256Diff);
     }
 
     @Test
@@ -186,40 +221,17 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
 
         priorityIbdo.setPriority(100);
 
-        final String xmlString = IBaseDataObjectXmlHelper.xmlFromIbdo(priorityIbdo, expectedChildren, initialIbdo);
+        final String xmlString = IBaseDataObjectXmlHelper.xmlFromIbdo(priorityIbdo, expectedChildren, initialIbdo, DEFAULT_ELEMENT_ENCODERS);
         final String newXmlString = xmlString.replace("100", "100A");
 
         final SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         final Document document = builder.build(new StringReader(newXmlString));
-        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(document, actualChildren);
+        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.ibdoFromXml(document, actualChildren, DEFAULT_ELEMENT_DECODERS);
 
         final String diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, actualIbdo, expectedChildren,
                 actualChildren, "testBadChannelFactory", DiffCheckConfiguration.onlyCheckData());
 
         assertNull(diff);
-    }
-
-    @Test
-    void testSetParameterOnIbdoException() throws Exception {
-        final Class<?> keyClass = null;
-        final Class<?> valueClass = int.class;
-        final IBaseDataObject ibdo = new BaseDataObject();
-        final String ibdoMethodName = "methodNotInIbdo";
-        final Object parameter = null;
-        final Element element = null;
-        final List<String> differences = new ArrayList<>();
-        final Method method = IBaseDataObjectXmlHelper.class.getDeclaredMethod("setParameterOnIbdo", Class.class,
-                Class.class, IBaseDataObject.class, String.class, Object.class, Element.class);
-
-        method.setAccessible(true);
-
-        method.invoke(IBaseDataObjectXmlHelper.class, keyClass, valueClass, ibdo, ibdoMethodName, parameter, element);
-
-        method.setAccessible(false);
-
-        IBaseDataObjectDiffHelper.diff(new BaseDataObject(), ibdo, differences, DiffCheckConfiguration.onlyCheckData());
-
-        assertEquals(0, differences.size());
     }
 
     @Test
@@ -254,14 +266,13 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
     }
 
     private static IBaseDataObject ibdoFromXmlFromIbdo(final IBaseDataObject ibdo, final List<IBaseDataObject> children,
-            final IBaseDataObject initialIbdo, final List<IBaseDataObject> outputChildren) throws Exception {
-        final String xmlString = IBaseDataObjectXmlHelper.xmlFromIbdo(ibdo, children, initialIbdo);
+            final IBaseDataObject initialIbdo, final List<IBaseDataObject> outputChildren, final ElementEncoders elementEncoders) throws Exception {
+        final String xmlString = IBaseDataObjectXmlHelper.xmlFromIbdo(ibdo, children, initialIbdo, elementEncoders);
 
         final SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         final Document document = builder.build(new StringReader(xmlString));
-        final IBaseDataObject ibdo2 = IBaseDataObjectXmlHelper.ibdoFromXml(document, outputChildren);
 
-        return ibdo2;
+        return IBaseDataObjectXmlHelper.ibdoFromXml(document, outputChildren, DEFAULT_ELEMENT_DECODERS);
     }
 
     private static class ExceptionChannelFactory implements SeekableByteChannelFactory {
@@ -279,12 +290,12 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 }
 
                 @Override
-                public int read(ByteBuffer dst) throws IOException {
+                public int read(final ByteBuffer dst) throws IOException {
                     throw new IOException("This SBC only throws Exceptions");
                 }
 
                 @Override
-                public int write(ByteBuffer src) throws IOException {
+                public int write(final ByteBuffer src) throws IOException {
                     throw new IOException("This SBC only throws Exceptions");
                 }
 
@@ -294,7 +305,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 }
 
                 @Override
-                public SeekableByteChannel position(long newPosition) throws IOException {
+                public SeekableByteChannel position(final long newPosition) throws IOException {
                     throw new IOException("This SBC only throws Exceptions");
                 }
 
@@ -304,10 +315,10 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 }
 
                 @Override
-                public SeekableByteChannel truncate(long size) throws IOException {
+                public SeekableByteChannel truncate(final long size) throws IOException {
                     throw new IOException("This SBC only throws Exceptions");
                 }
             };
         }
-    };
+    }
 }

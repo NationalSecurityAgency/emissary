@@ -1,5 +1,7 @@
 package emissary.util;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -271,6 +273,51 @@ public class ByteUtil {
             ret = new String(data, pos, data.length - pos);
         }
         return ret;
+    }
+
+    /**
+     * Scans a byte array looking for non-printable values.
+     * 
+     * @param bytes the bytes to be scanned.
+     * @return whether or not there were non-printable values.
+     */
+    public static boolean hasNonPrintableValues(final byte[] bytes) {
+        boolean badCharacters = false;
+
+        for (byte aByte : bytes) {
+            if (aByte < 9 || aByte > 13 && aByte < 32) {
+                badCharacters = true;
+                break;
+            }
+        }
+
+        return badCharacters;
+    }
+
+    /**
+     * Creates a hex string of a sha256 hash for a byte[].
+     * 
+     * @param bytes to be hashed
+     * @return the hex string of a sha256 hash of the bytes.
+     */
+    public static String sha256Bytes(final byte[] bytes) {
+        try {
+            final MessageDigest md = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = md.digest(bytes);
+
+            final StringBuilder hexString = new StringBuilder(2 * hash.length);
+            for (byte b : hash) {
+                final String hex = Integer.toHexString(0xff & b);
+
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return null;
+        }
     }
 
     /** This class is not meant to be instantiated. */
