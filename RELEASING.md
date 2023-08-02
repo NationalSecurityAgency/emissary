@@ -75,7 +75,7 @@ and the release is performed. When finished, the patch branch is deleted. No com
 
 ### Iterative Release (Milestone)
 
-Iterative releases are not guaranteed to be stable, like snapshots, but allow for markers in the development stage and allow for testing and
+Like snapshots, iterative releases are not guaranteed to be stable, but allow for markers in the development stage and allow for testing and
 feedback before a formal release. Currently, we support milestone releasing but the functionality can easily be extended to create other iterative
 release types, e.g. alpha, beta, release candidates.
 
