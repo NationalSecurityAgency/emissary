@@ -1,33 +1,19 @@
 package emissary.core;
 
-import emissary.core.channels.InMemoryChannelFactory;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
+import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.channels.SeekableByteChannelFactory;
-import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.kff.KffDataObjectHandler;
 import emissary.util.xml.AbstractJDOMUtil;
 
 import org.apache.commons.lang3.Validate;
 import org.jdom2.Document;
 import org.jdom2.Element;
-import org.jdom2.Namespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Base64;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.xml.XMLConstants;
 
 /**
  * This class helps convert IBaseDataObjects to and from XML.
@@ -45,34 +31,6 @@ public final class IBaseDataObjectXmlHelper {
      * The XML element prefix for attachments.
      */
     public static final String ATTACHMENT_ELEMENT_PREFIX = "att";
-    /**
-     * The XML attribute name for Base64.
-     */
-    public static final String BASE64_ATTRIBUTE_NAME = "base64";
-    /**
-     * New line byte array to use for normalised XML
-     */
-    private static final byte[] BASE64_NEW_LINE_BYTE = {'\n'};
-    /**
-     * New line string to use for normalised XML
-     */
-    private static final String BASE64_NEW_LINE_STRING = new String(BASE64_NEW_LINE_BYTE);
-    /**
-     * Max width of Base64 char block.
-     */
-    private static final int BASE64_LINE_WIDTH = 76;
-    /**
-     * The Base64 decoder.
-     */
-    private static final Base64.Decoder BASE64_DECODER = Base64.getMimeDecoder();
-    /**
-     * The Base64 encoder.
-     * 
-     * Uses same width as default, but overrides new line separator to use normalised XML separator.
-     * 
-     * @see http://www.jdom.org/docs/apidocs/org/jdom2/output/Format.html#setLineSeparator(java.lang.String)
-     */
-    private static final Base64.Encoder BASE64_ENCODER = Base64.getMimeEncoder(BASE64_LINE_WIDTH, BASE64_NEW_LINE_BYTE);
     /**
      * The XML element name for Birth Order.
      */
@@ -113,10 +71,6 @@ public final class IBaseDataObjectXmlHelper {
      * The IBaseDataObject set method name for Data.
      */
     public static final String DATA_SET_METHOD_NAME = "setChannelFactory";
-    /**
-     * The XML attribute name for Encoding.
-     */
-    public static final String ENCODING_ATTRIBUTE_NAME = "encoding";
     /**
      * The XML element prefix for Extracted Records.
      */
@@ -169,10 +123,6 @@ public final class IBaseDataObjectXmlHelper {
      * The IBaseDataObject set method name for Id.
      */
     public static final String ID_SET_METHOD_NAME = "setId";
-    /**
-     * The XML element name for Name.
-     */
-    public static final String NAME_ELEMENT_NAME = "name";
     /**
      * The XML element name for Num Siblings.
      */
@@ -257,232 +207,8 @@ public final class IBaseDataObjectXmlHelper {
      * The XML element name for Setup.
      */
     public static final String SETUP_ELEMENT_NAME = "setup";
-    /**
-     * The XML namespace for "xml".
-     */
-    public static final Namespace XML_NAMESPACE = Namespace.getNamespace(XMLConstants.XML_NS_PREFIX,
-            XMLConstants.XML_NS_URI);
-    /**
-     * A map of element names of IBaseDataObject methods that get/set primitives and their default values.
-     */
-    public static final Map<String, Object> PRIMITVE_NAME_DEFAULT_MAP = Collections
-            .unmodifiableMap(new ConcurrentHashMap<>(Stream.of(
-                    new SimpleEntry<>(BIRTH_ORDER_ELEMENT_NAME, new BaseDataObject().getBirthOrder()),
-                    new SimpleEntry<>(BROKEN_ELEMENT_NAME, new BaseDataObject().isBroken()),
-                    new SimpleEntry<>(NUM_CHILDREN_ELEMENT_NAME, new BaseDataObject().getNumChildren()),
-                    new SimpleEntry<>(NUM_SIBLINGS_ELEMENT_NAME, new BaseDataObject().getNumSiblings()),
-                    new SimpleEntry<>(OUTPUTABLE_ELEMENT_NAME, new BaseDataObject().isOutputable()),
-                    new SimpleEntry<>(PRIORITY_ELEMENT_NAME, new BaseDataObject().getPriority()))
-                    .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue))));
-
-    /**
-     * Interface for decoding an element value.
-     */
-    private interface ElementDecoder {
-        /**
-         * Decodes an XML element.
-         * 
-         * @param element to decode.
-         * @return the decoded element value.
-         */
-        Object decode(Element element);
-
-        /**
-         * Returns the class of the key for a mapped value or null for a non-mapped value.
-         * 
-         * @return the class of the key for a mapped value or null for a non-mapped value.
-         */
-        Class<?> getKeyClass();
-
-        /**
-         * Returns the class of the value, whether mapped or non-mapped.
-         * 
-         * @return the class of the value, whether mapped or non-mapped.
-         */
-        Class<?> getValueClass();
-    }
-
-    /**
-     * Implementation of an XML element decoder that has a boolean value.
-     */
-    private static ElementDecoder booleanDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            return Boolean.valueOf(element.getValue());
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return boolean.class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has a SeekableByteChannel value.
-     */
-    private static ElementDecoder seekableByteChannelFactoryDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-
-            return InMemoryChannelFactory.create(extractBytes(encoding, elementValue));
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return SeekableByteChannelFactory.class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has a byte array value.
-     */
-    private static ElementDecoder byteArrayDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-
-            return extractBytes(encoding, elementValue);
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return byte[].class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has an integer value.
-     */
-    private static ElementDecoder integerDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            try {
-                return Integer.decode(element.getValue());
-            } catch (final NumberFormatException e) {
-                return null;
-            }
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return int.class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has a string value.
-     */
-    private static ElementDecoder stringDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-
-            return new String(extractBytes(encoding, elementValue), StandardCharsets.UTF_8);
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return null;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return String.class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has a mapped value where the key is a string and the value is a byte
-     * array.
-     */
-    private static ElementDecoder stringByteArrayDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            final Element childElement = element.getChild(VALUE_ELEMENT_NAME);
-            final String elementValue = childElement.getValue();
-            final String encoding = childElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-
-            return extractBytes(encoding, elementValue);
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return String.class;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return byte[].class;
-        }
-    };
-
-    /**
-     * Implementation of an XML element decoder that has a mapped value where the key is a string and the value is an
-     * object.
-     */
-    private static ElementDecoder stringObjectDecoder = new ElementDecoder() {
-        @Override
-        public Object decode(final Element element) {
-            final Element childElement = element.getChild(VALUE_ELEMENT_NAME);
-            final String elementValue = childElement.getValue();
-            final String encoding = childElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-
-            return new String(extractBytes(encoding, elementValue), StandardCharsets.UTF_8);
-        }
-
-        @Override
-        public Class<?> getKeyClass() {
-            return String.class;
-        }
-
-        @Override
-        public Class<?> getValueClass() {
-            return Object.class;
-        }
-    };
 
     private IBaseDataObjectXmlHelper() {}
-
-    /**
-     * Return UTF8 bytes from an XML value, decoding base64 if required
-     * 
-     * @param encoding e.g. 'base64', otherwise it returns the bytes as they are presented
-     * @param elementValue containing the data
-     * @return the data from elementValue, decoded from base64 if required
-     */
-    private static byte[] extractBytes(final String encoding, final String elementValue) {
-        if (BASE64_ATTRIBUTE_NAME.equalsIgnoreCase(encoding)) {
-            final String newElementValue = elementValue.replace("\n", "");
-            final byte[] bytes = newElementValue.getBytes(StandardCharsets.UTF_8);
-            return BASE64_DECODER.decode(bytes);
-        } else {
-            return elementValue.getBytes(StandardCharsets.UTF_8);
-        }
-    }
 
     /**
      * Setup a typical BDO
@@ -518,27 +244,29 @@ public final class IBaseDataObjectXmlHelper {
      * 
      * @param document containing the IBaseDataObject and children descriptions.
      * @param children the list where the children will be added.
+     * @param decoders used to decode XML into ibdo.
      * @return the IBaseDataObject.
      */
-    public static IBaseDataObject ibdoFromXml(final Document document, final List<IBaseDataObject> children) {
+    public static IBaseDataObject ibdoFromXml(final Document document, final List<IBaseDataObject> children, final ElementDecoders decoders) {
         Validate.notNull(document, "Required document != null!");
         Validate.notNull(children, "Required children != null!");
+        Validate.notNull(decoders, "Required: decoders not null!");
 
         final Element root = document.getRootElement();
         final Element answersElement = root.getChild(ANSWERS_ELEMENT_NAME);
         final IBaseDataObject parentIbdo = new BaseDataObject();
         final List<Element> answerChildren = answersElement.getChildren();
 
-        ibdoFromXmlMainElements(answersElement, parentIbdo);
+        ibdoFromXmlMainElements(answersElement, parentIbdo, decoders);
 
         for (final Element answerChild : answerChildren) {
             final IBaseDataObject childIbdo = new BaseDataObject();
             final String childName = answerChild.getName();
 
             if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
-                parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo));
+                parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
-                children.add(ibdoFromXmlMainElements(answerChild, childIbdo));
+                children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             }
         }
 
@@ -550,96 +278,41 @@ public final class IBaseDataObjectXmlHelper {
      * 
      * @param element to create IBaseDataObject from.
      * @param ibdo to apply the element values to.
+     * @param decoders used to decode XML into ibdo.
      * @return the IBaseDataObject that was passed in.
      */
-    public static IBaseDataObject ibdoFromXmlMainElements(final Element element, final IBaseDataObject ibdo) {
-        parseElement(element.getChild(DATA_ELEMENT_NAME), ibdo, DATA_SET_METHOD_NAME,
-                seekableByteChannelFactoryDecoder);
-        parseElement(element.getChild(BIRTH_ORDER_ELEMENT_NAME), ibdo, BIRTH_ORDER_SET_METHOD_NAME, integerDecoder);
-        parseElement(element.getChild(BROKEN_ELEMENT_NAME), ibdo, BROKEN_SET_METHOD_NAME, stringDecoder);
-        parseElement(element.getChild(CLASSIFICATION_ELEMENT_NAME), ibdo, CLASSIFICATION_SET_METHOD_NAME,
-                stringDecoder);
+    public static IBaseDataObject ibdoFromXmlMainElements(final Element element, final IBaseDataObject ibdo,
+            final ElementDecoders decoders) {
+        Validate.notNull(element, "Required: element not null!");
+        Validate.notNull(ibdo, "Required: ibdo not null!");
+        Validate.notNull(decoders, "Required: decoders not null!");
 
-        for (final Element currentForm : element.getChildren(CURRENT_FORM_ELEMENT_NAME)) {
-            parseElement(currentForm, ibdo, CURRENT_FORM_SET_METHOD_NAME, stringDecoder);
-        }
-
-        parseElement(element.getChild(FILENAME_ELEMENT_NAME), ibdo, FILENAME_SET_METHOD_NAME, stringDecoder);
-        parseElement(element.getChild(FONT_ENCODING_ELEMENT_NAME), ibdo, FONT_ENCODING_SET_METHOD_NAME, stringDecoder);
-        parseElement(element.getChild(FOOTER_ELEMENT_NAME), ibdo, FOOTER_SET_METHOD_NAME, byteArrayDecoder);
-        parseElement(element.getChild(HEADER_ELEMENT_NAME), ibdo, HEADER_SET_METHOD_NAME, byteArrayDecoder);
-        parseElement(element.getChild(HEADER_ENCODING_ELEMENT_NAME), ibdo, HEADER_ENCODING_SET_METHOD_NAME,
-                stringDecoder);
-        parseElement(element.getChild(ID_ELEMENT_NAME), ibdo, ID_SET_METHOD_NAME, stringDecoder);
-        parseElement(element.getChild(NUM_CHILDREN_ELEMENT_NAME), ibdo, NUM_CHILDREN_SET_METHOD_NAME, integerDecoder);
-        parseElement(element.getChild(NUM_SIBLINGS_ELEMENT_NAME), ibdo, NUM_SIBLINGS_SET_METHOD_NAME, integerDecoder);
-        parseElement(element.getChild(OUTPUTABLE_ELEMENT_NAME), ibdo, OUTPUTABLE_SET_METHOD_NAME, booleanDecoder);
-        parseElement(element.getChild(PRIORITY_ELEMENT_NAME), ibdo, PRIORITY_SET_METHOD_NAME, integerDecoder);
-        parseElement(element.getChild(PROCESSING_ERROR_ELEMENT_NAME), ibdo, PROCESSING_ERROR_SET_METHOD_NAME,
-                stringDecoder);
-        parseElement(element.getChild(TRANSACTION_ID_ELEMENT_NAME), ibdo, TRANSACTION_ID_SET_METHOD_NAME,
-                stringDecoder);
-        parseElement(element.getChild(WORK_BUNDLE_ID_ELEMENT_NAME), ibdo, WORK_BUNDLE_ID_SET_METHOD_NAME,
-                stringDecoder);
-
-        for (final Element parameter : element.getChildren(PARAMETER_ELEMENT_NAME)) {
-            parseElement(parameter, ibdo, PARAMETER_SET_METHOD_NAME, stringObjectDecoder);
-        }
-
-        for (final Element view : element.getChildren(VIEW_ELEMENT_NAME)) {
-            parseElement(view, ibdo, VIEW_SET_METHOD_NAME, stringByteArrayDecoder);
+        try {
+            decoders.integerDecoder.decode(element.getChildren(BIRTH_ORDER_ELEMENT_NAME), ibdo, BIRTH_ORDER_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(BROKEN_ELEMENT_NAME), ibdo, BROKEN_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(CLASSIFICATION_ELEMENT_NAME), ibdo, CLASSIFICATION_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(CURRENT_FORM_ELEMENT_NAME), ibdo, CURRENT_FORM_SET_METHOD_NAME);
+            decoders.seekableByteChannelFactoryDecoder.decode(element.getChildren(DATA_ELEMENT_NAME), ibdo, DATA_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(FILENAME_ELEMENT_NAME), ibdo, FILENAME_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(FONT_ENCODING_ELEMENT_NAME), ibdo, FONT_ENCODING_SET_METHOD_NAME);
+            decoders.byteArrayDecoder.decode(element.getChildren(FOOTER_ELEMENT_NAME), ibdo, FOOTER_SET_METHOD_NAME);
+            decoders.byteArrayDecoder.decode(element.getChildren(HEADER_ELEMENT_NAME), ibdo, HEADER_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(HEADER_ENCODING_ELEMENT_NAME), ibdo, HEADER_ENCODING_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(ID_ELEMENT_NAME), ibdo, ID_SET_METHOD_NAME);
+            decoders.integerDecoder.decode(element.getChildren(NUM_CHILDREN_ELEMENT_NAME), ibdo, NUM_CHILDREN_SET_METHOD_NAME);
+            decoders.integerDecoder.decode(element.getChildren(NUM_SIBLINGS_ELEMENT_NAME), ibdo, NUM_SIBLINGS_SET_METHOD_NAME);
+            decoders.booleanDecoder.decode(element.getChildren(OUTPUTABLE_ELEMENT_NAME), ibdo, OUTPUTABLE_SET_METHOD_NAME);
+            decoders.stringObjectDecoder.decode(element.getChildren(PARAMETER_ELEMENT_NAME), ibdo, PARAMETER_SET_METHOD_NAME);
+            decoders.integerDecoder.decode(element.getChildren(PRIORITY_ELEMENT_NAME), ibdo, PRIORITY_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(PROCESSING_ERROR_ELEMENT_NAME), ibdo, PROCESSING_ERROR_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(TRANSACTION_ID_ELEMENT_NAME), ibdo, TRANSACTION_ID_SET_METHOD_NAME);
+            decoders.stringByteArrayDecoder.decode(element.getChildren(VIEW_ELEMENT_NAME), ibdo, VIEW_SET_METHOD_NAME);
+            decoders.stringDecoder.decode(element.getChildren(WORK_BUNDLE_ID_ELEMENT_NAME), ibdo, WORK_BUNDLE_ID_SET_METHOD_NAME);
+        } catch (Exception e) {
+            LOGGER.error("Failed to parse XML!", e);
         }
 
         return ibdo;
-    }
-
-    /**
-     * Parse an element to set the value on a BDO
-     * 
-     * @param element to get the data from
-     * @param ibdo to set the data on
-     * @param ibdoMethodName to use to set the data
-     * @param elementDecoder to use to decode the element data
-     */
-    private static void parseElement(final Element element, final IBaseDataObject ibdo, final String ibdoMethodName,
-            final ElementDecoder elementDecoder) {
-        if (element != null) {
-            final Object parameter = elementDecoder.decode(element);
-
-            if (parameter != null) {
-                setParameterOnIbdo(elementDecoder.getKeyClass(), elementDecoder.getValueClass(), ibdo, ibdoMethodName,
-                        parameter, element);
-            }
-        }
-    }
-
-    /**
-     * Set a parameter on a specific BDO
-     * 
-     * @param keyClass to use for the key, otherwise assumes string
-     * @param valueClass to use for the value
-     * @param ibdo to set the parameter on
-     * @param ibdoMethodName method name to use (e.g. setFontEncoding)
-     * @param parameter value to use
-     * @param element to get the name from
-     */
-    private static void setParameterOnIbdo(final Class<?> keyClass, final Class<?> valueClass,
-            final IBaseDataObject ibdo, final String ibdoMethodName, final Object parameter, final Element element) {
-        try {
-            if (keyClass == null) {
-                final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, valueClass);
-
-                method.invoke(ibdo, parameter);
-            } else {
-                final String name = (String) stringDecoder.decode(element.getChild(NAME_ELEMENT_NAME));
-                final Method method = IBaseDataObject.class.getDeclaredMethod(ibdoMethodName, keyClass, valueClass);
-
-                method.invoke(ibdo, name, parameter);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException
-                | InvocationTargetException e) {
-            LOGGER.warn("Unable to call ibdo method {}!", ibdoMethodName, e);
-        }
     }
 
     /**
@@ -648,26 +321,28 @@ public final class IBaseDataObjectXmlHelper {
      * @param parent the parent IBaseDataObject
      * @param children the children IBaseDataObjects.
      * @param initialIbdo the initial IBaseDataObject.
+     * @param encoders used to encode ibdo into XML.
      * @return the XML string.
      */
     public static String xmlFromIbdo(final IBaseDataObject parent, final List<IBaseDataObject> children,
-            final IBaseDataObject initialIbdo) {
+            final IBaseDataObject initialIbdo, final ElementEncoders encoders) {
         Validate.notNull(parent, "Required: parent != null!");
         Validate.notNull(children, "Required: children != null!");
         Validate.notNull(initialIbdo, "Required: initialIbdo != null!");
+        Validate.notNull(encoders, "Required: encoders not null!");
 
         final Element rootElement = new Element(RESULT_ELEMENT_NAME);
         final Element setupElement = new Element(SETUP_ELEMENT_NAME);
 
         rootElement.addContent(setupElement);
 
-        xmlFromIbdoMainElements(initialIbdo, setupElement);
+        xmlFromIbdoMainElements(initialIbdo, setupElement, encoders);
 
         final Element answersElement = new Element(ANSWERS_ELEMENT_NAME);
 
         rootElement.addContent(answersElement);
 
-        xmlFromIbdoMainElements(parent, answersElement);
+        xmlFromIbdoMainElements(parent, answersElement, encoders);
 
         final List<IBaseDataObject> extractedRecords = parent.getExtractedRecords();
         if (extractedRecords != null) {
@@ -675,7 +350,7 @@ public final class IBaseDataObjectXmlHelper {
                 final IBaseDataObject extractedRecord = extractedRecords.get(i);
                 final Element extractElement = new Element(EXTRACTED_RECORD_ELEMENT_PREFIX + (i + 1));
 
-                xmlFromIbdoMainElements(extractedRecord, extractElement);
+                xmlFromIbdoMainElements(extractedRecord, extractElement, encoders);
 
                 answersElement.addContent(extractElement);
             }
@@ -685,7 +360,7 @@ public final class IBaseDataObjectXmlHelper {
             final IBaseDataObject child = children.get(i);
             final Element childElement = new Element(ATTACHMENT_ELEMENT_PREFIX + (i + 1));
 
-            xmlFromIbdoMainElements(child, childElement);
+            xmlFromIbdoMainElements(child, childElement, encoders);
 
             answersElement.addContent(childElement);
         }
@@ -698,135 +373,32 @@ public final class IBaseDataObjectXmlHelper {
      * 
      * @param ibdo to create xml from.
      * @param element to add the xml to.
+     * @param encoders used to encode ibdo into XML.
      */
-    public static void xmlFromIbdoMainElements(final IBaseDataObject ibdo, final Element element) {
-        addNonNullContent(element, DATA_ELEMENT_NAME, ibdo.getChannelFactory());
-        addNonDefaultContent(element, BIRTH_ORDER_ELEMENT_NAME, ibdo.getBirthOrder());
-        addNonNullContent(element, BROKEN_ELEMENT_NAME, ibdo.getBroken());
-        addNonNullContent(element, CLASSIFICATION_ELEMENT_NAME, ibdo.getClassification());
+    public static void xmlFromIbdoMainElements(final IBaseDataObject ibdo, final Element element, final ElementEncoders encoders) {
+        Validate.notNull(ibdo, "Required: ibdo not null!");
+        Validate.notNull(element, "Required: element not null!");
+        Validate.notNull(encoders, "Required: encoders not null!");
 
-        final int childCount = element.getChildren().size();
-        for (final String currentForm : ibdo.getAllCurrentForms()) {
-            element.addContent(childCount, protectedElement(CURRENT_FORM_ELEMENT_NAME, currentForm));
-        }
-
-        addNonNullContent(element, FILENAME_ELEMENT_NAME, ibdo.getFilename());
-        addNonNullContent(element, FONT_ENCODING_ELEMENT_NAME, ibdo.getFontEncoding());
-        addNonNullContent(element, FOOTER_ELEMENT_NAME, ibdo.footer());
-        addNonNullContent(element, HEADER_ELEMENT_NAME, ibdo.header());
-        addNonNullContent(element, HEADER_ENCODING_ELEMENT_NAME, ibdo.getHeaderEncoding());
-        addNonNullContent(element, ID_ELEMENT_NAME, ibdo.getId());
-        addNonDefaultContent(element, NUM_CHILDREN_ELEMENT_NAME, ibdo.getNumChildren());
-        addNonDefaultContent(element, NUM_SIBLINGS_ELEMENT_NAME, ibdo.getNumSiblings());
-        addNonDefaultContent(element, OUTPUTABLE_ELEMENT_NAME, ibdo.isOutputable());
-        addNonDefaultContent(element, PRIORITY_ELEMENT_NAME, ibdo.getPriority());
-
-        final String processingError = ibdo.getProcessingError();
-        final String fixedProcessingError = processingError == null ? null
-                : processingError.substring(0, processingError.length() - 1);
-        addNonNullContent(element, PROCESSING_ERROR_ELEMENT_NAME, fixedProcessingError);
-
-        addNonNullContent(element, TRANSACTION_ID_ELEMENT_NAME, ibdo.getTransactionId());
-        addNonNullContent(element, WORK_BUNDLE_ID_ELEMENT_NAME, ibdo.getWorkBundleId());
-
-        for (final Entry<String, Collection<Object>> parameter : ibdo.getParameters().entrySet()) {
-            for (final Object item : parameter.getValue()) {
-                final Element metaElement = new Element(PARAMETER_ELEMENT_NAME);
-
-                element.addContent(metaElement);
-                metaElement.addContent(preserve(protectedElement(NAME_ELEMENT_NAME, parameter.getKey())));
-                metaElement.addContent(preserve(protectedElement(VALUE_ELEMENT_NAME, item.toString())));
-            }
-        }
-
-        for (final Entry<String, byte[]> view : ibdo.getAlternateViews().entrySet()) {
-            final Element metaElement = new Element(VIEW_ELEMENT_NAME);
-
-            element.addContent(metaElement);
-            metaElement.addContent(preserve(protectedElement(NAME_ELEMENT_NAME, view.getKey())));
-            metaElement.addContent(preserve(protectedElement(VALUE_ELEMENT_NAME, view.getValue())));
-        }
-    }
-
-    private static void addNonNullContent(final Element parent, final String elementName, final String string) {
-        if (string != null) {
-            parent.addContent(preserve(protectedElement(elementName, string)));
-        }
-    }
-
-    private static void addNonNullContent(final Element parent, final String elementName, final byte[] bytes) {
-        if (bytes != null) {
-            parent.addContent(preserve(protectedElement(elementName, bytes)));
-        }
-    }
-
-    private static void addNonNullContent(final Element parent, final String elementName,
-            final SeekableByteChannelFactory seekableByteChannelFactory) {
-        if (seekableByteChannelFactory != null) {
-            try {
-                final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(seekableByteChannelFactory,
-                        BaseDataObject.MAX_BYTE_ARRAY_SIZE);
-
-                addNonNullContent(parent, elementName, bytes);
-            } catch (final IOException e) {
-                LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
-            }
-        }
-    }
-
-    private static void addNonDefaultContent(final Element parent, final String elementName, final boolean bool) {
-        if (((Boolean) PRIMITVE_NAME_DEFAULT_MAP.get(elementName)).booleanValue() != bool) {
-            parent.addContent(AbstractJDOMUtil.simpleElement(elementName, bool));
-        }
-    }
-
-    private static void addNonDefaultContent(final Element parent, final String elementName, final int integer) {
-        if (((Integer) PRIMITVE_NAME_DEFAULT_MAP.get(elementName)).intValue() != integer) {
-            parent.addContent(AbstractJDOMUtil.simpleElement(elementName, integer));
-        }
-    }
-
-    private static Element preserve(final Element element) {
-        element.setAttribute("space", "preserve", XML_NAMESPACE);
-
-        return element;
-    }
-
-    private static Element protectedElement(final String name, final String string) {
-        return protectedElement(name, string.getBytes(StandardCharsets.UTF_8));
-    }
-
-    /**
-     * Creates a 'protected' element which can be encoded with base64 if it contains unsafe characters
-     * 
-     * See method source for specific definition of 'unsafe'.
-     * 
-     * @param name of the element
-     * @param bytes to wrap, if they contain unsafe characters
-     * @return the created element
-     */
-    private static Element protectedElement(final String name, final byte[] bytes) {
-        final Element element = new Element(name);
-
-        boolean badCharacters = false;
-        for (int i = 0; i < bytes.length; i++) {
-            if (bytes[i] < 9 || bytes[i] > 13 && bytes[i] < 32) {
-                badCharacters = true;
-                break;
-            }
-        }
-        if (badCharacters) {
-            final StringBuilder base64String = new StringBuilder();
-            base64String.append(BASE64_NEW_LINE_STRING);
-            base64String.append(BASE64_ENCODER.encodeToString(bytes));
-            base64String.append(BASE64_NEW_LINE_STRING);
-
-            element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64_ATTRIBUTE_NAME);
-            element.addContent(base64String.toString());
-        } else {
-            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
-        }
-
-        return element;
+        encoders.seekableByteChannelFactoryEncoder.encode(Collections.singletonList(ibdo.getChannelFactory()), element, DATA_ELEMENT_NAME);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getBirthOrder()), element, BIRTH_ORDER_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getBroken()), element, BROKEN_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getClassification()), element, CLASSIFICATION_ELEMENT_NAME);
+        encoders.stringEncoder.encode(ibdo.getAllCurrentForms(), element, CURRENT_FORM_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFilename()), element, FILENAME_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFontEncoding()), element, FONT_ENCODING_ELEMENT_NAME);
+        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.footer()), element, FOOTER_ELEMENT_NAME);
+        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.header()), element, HEADER_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getHeaderEncoding()), element, HEADER_ENCODING_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getId()), element, ID_ELEMENT_NAME);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumChildren()), element, NUM_CHILDREN_ELEMENT_NAME);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumSiblings()), element, NUM_SIBLINGS_ELEMENT_NAME);
+        encoders.booleanEncoder.encode(Collections.singletonList(ibdo.isOutputable()), element, OUTPUTABLE_ELEMENT_NAME);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getPriority()), element, PRIORITY_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getProcessingError()), element, PROCESSING_ERROR_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getTransactionId()), element, TRANSACTION_ID_ELEMENT_NAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getWorkBundleId()), element, WORK_BUNDLE_ID_ELEMENT_NAME);
+        encoders.stringObjectEncoder.encode(Collections.singletonList(ibdo.getParameters()), element, PARAMETER_ELEMENT_NAME);
+        encoders.stringByteArrayEncoder.encode(Collections.singletonList(ibdo.getAlternateViews()), element, VIEW_ELEMENT_NAME);
     }
 }
