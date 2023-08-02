@@ -5,6 +5,7 @@ import emissary.core.Form;
 import emissary.core.HDMobileAgent;
 import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
+import emissary.place.sample.DelayPlace;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
@@ -364,6 +365,46 @@ class RoutingAlgorithmTest extends UnitTest {
         this.payload.pushCurrentForm(foo2.getKey());
         final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
         assertEquals(foo2.getKey(), result.getKey(), "Routing must take place to fully qualified key");
+    }
+
+    @Test
+    void testWildCardProxyHonorsDenyList() throws IOException {
+        loadAllTestEntries();
+
+        this.payload.pushCurrentForm("MYFORM");
+
+        // create our place and add it to the directory. This place proxies for "*" but explicitly denies "MYFORM"
+        DelayPlace deniedWildcardPlace = new DelayPlace(new ResourceReader().getConfigDataName(DelayPlace.class).replace("/main/", "/test/"));
+        this.dir.addTestEntry(deniedWildcardPlace.getDirectoryEntry());
+
+        // Add another entry that proxies for "MYFORM".
+        // Doesn't need an actual place, but does need a higher expense than deniedWildcardPlace
+        DirectoryEntry expected = new DirectoryEntry("MYFORM.s4.ANALYZE.http://example.com:8001/A$9999");
+        this.dir.addTestEntry(expected);
+
+        final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
+        assertEquals(expected, result, "After a denied entry, should get next matching entry for the same stage");
+    }
+
+    @Test
+    void testWildCardProxyWithDeniedEntry() throws IOException {
+        loadAllTestEntries();
+
+        this.payload.pushCurrentForm("OTHERFORM");
+
+        // create our place and add it to the directory. This place proxies for "*" but explicitly denies "MYFORM"
+        DelayPlace deniedWildcardPlace = new DelayPlace(new ResourceReader().getConfigDataName(DelayPlace.class).replace("/main/", "/test/"));
+        this.dir.addTestEntry(deniedWildcardPlace.getDirectoryEntry());
+
+        // OTHERFORM is not denied so we expect non-null result
+        final DirectoryEntry result = this.agent.getNextKeyAccess(this.dir, this.payload);
+        assertEquals(deniedWildcardPlace.getKey(), result.getKey(), "Should get matching entry for wildcard place");
+
+        this.payload.pushCurrentForm("MYFORM");
+
+        // MYFORM is denied so null should be returned
+        final DirectoryEntry nullResult = this.agent.getNextKeyAccess(this.dir, this.payload);
+        assertNull(nullResult, "MYFORM should be denied");
     }
 
     /**
