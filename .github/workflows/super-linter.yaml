@@ -21,6 +21,19 @@ jobs:
         with:
           # Full git history is needed to get a proper list of changed files within super-linter
           fetch-depth: 0
+        if: ${{ !contains(github.event_name, 'pull_request') }}
+      - name: Checkout PR Code
+        uses: actions/checkout@v3.3.0
+        with:
+          # Full git history is needed to get a proper list of changed files within super-linter
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+        if: ${{ contains(github.event_name, 'pull_request') }}
+      - name: Create local merge to test
+        run: |
+          git switch -c pr_merge_candidate
+          git branch --set-upstream-to=origin/"$GITHUB_BASE_REF" pr_merge_candidate
+        if: ${{ contains(github.event_name, 'pull_request') }}
 
       - name: Lint Code Base
         uses: github/super-linter/slim@v4.10.0
@@ -34,6 +47,7 @@ jobs:
           # VALIDATE_GOOGLE_JAVA_FORMAT: true
           JAVA_FILE_NAME: ../../contrib/checkstyle.xml
           VALIDATE_DOCKERFILE_HADOLINT: true
+          DOCKERFILE_HADOLINT_FILE_NAME: ../../contrib/docker/.hadolint.yaml
           # VALIDATE_MARKDOWN: true
           VALIDATE_XML: true
           VALIDATE_YAML: true
