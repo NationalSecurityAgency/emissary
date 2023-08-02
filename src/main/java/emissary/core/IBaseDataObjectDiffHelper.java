@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 public class IBaseDataObjectDiffHelper {
 
@@ -25,7 +26,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two IBaseDataObject's and adds any differences to the provided string list.
-     * 
+     *
      * @param ibdo1 the first IBaseDataObject to compare.
      * @param ibdo2 the second IBaseDataObject to compare.
      * @param differences the string list differences are to be added to.
@@ -56,7 +57,8 @@ public class IBaseDataObjectDiffHelper {
         }
 
         diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
-        diff(ibdo1.getParameters(), ibdo2.getParameters(), "parameters", differences);
+        // TreeMap automatically sorts parameters by key
+        diff(new TreeMap<>(ibdo1.getParameters()), new TreeMap<>(ibdo2.getParameters()), "parameters", differences);
         diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
         diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
         diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
@@ -83,7 +85,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two lists of IBaseDataObject's and adds any differences to the provided string list.
-     * 
+     *
      * @param ibdoList1 the first list of IBaseDataObjects to compare.
      * @param ibdoList2 the second list of IBaseDataObjects to compare.
      * @param identifier a string that helps identify the context of comparing these two list of IBaseDataObjects.
@@ -118,7 +120,7 @@ public class IBaseDataObjectDiffHelper {
     /**
      * This method compares two {@link SeekableByteChannelFactory} (SBCF) objects and adds any differences to the provided
      * string list.
-     * 
+     *
      * @param sbcf1 the first SBCF to compare.
      * @param sbcf2 the second SBCF to compare.
      * @param identifier an identifier to describe the context of this SBCF comparison.
@@ -150,7 +152,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two Objects and adds any differences to the provided string list.
-     * 
+     *
      * @param object1 the first Object to compare.
      * @param object2 the second Object to compare.
      * @param identifier an identifier to describe the context of this Object comparison.
@@ -168,7 +170,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two integers and adds any differences to the provided string list.
-     * 
+     *
      * @param integer1 the first integer to compare.
      * @param integer2 the second integer to compare.
      * @param identifier an identifier to describe the context of this integer comparison.
@@ -186,7 +188,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two booleans and adds any differences to the provided string list.
-     * 
+     *
      * @param boolean1 the first boolean to compare.
      * @param boolean2 the second boolean to compare.
      * @param identifier an identifier to describe the context of this boolean comparison.
@@ -204,7 +206,7 @@ public class IBaseDataObjectDiffHelper {
 
     /**
      * This method compares two maps and adds any differences to the provided string list.
-     * 
+     *
      * @param map1 the first map to compare.
      * @param map2 the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
@@ -222,5 +224,4 @@ public class IBaseDataObjectDiffHelper {
             differences.add(identifier + ARE_NOT_EQUAL);
         }
     }
-
 }

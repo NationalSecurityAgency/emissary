@@ -14,9 +14,13 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -293,5 +297,21 @@ class IBaseDataObjectDiffHelperTest {
 
         ibdo2.setClassification("classification");
         verifyDiffList(1, ibdoList1, ibdoList2);
+    }
+
+    @Test
+    void testParamSort() {
+        // set-up
+        Set<String> expectedParams = new TreeSet<>();
+        expectedParams.add("LIST");
+        expectedParams.add("STRING");
+        expectedParams.add("TEST");
+        ibdo1.putParameter("STRING", "string");
+        ibdo1.putParameter("TEST", "test");
+        ibdo1.putParameter("LIST", Arrays.asList("first", "second", "third"));
+
+        // test
+        TreeMap<String, Collection<Object>> sortedParams = new TreeMap<>(ibdo1.getParameters());
+        assertEquals(expectedParams, sortedParams.keySet(), "parameters should be sorted in natural order of keys");
     }
 }
