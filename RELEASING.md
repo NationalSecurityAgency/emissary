@@ -43,7 +43,7 @@ Creates a branch called `release/<version>` and performs release. One commit is 
 
 ### Patch Release
 
-Releases may have bugs or vulnerabilities with a high enough severity that requires a patch release to fix.
+Releases may have bugs or vulnerabilities with a high enough severity that requires a patch release to fix. Patch releases can only be performed from a patch branch (described below).
 
 #### Create Patch Branch
 
