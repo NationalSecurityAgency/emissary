@@ -17,9 +17,12 @@ import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
+import emissary.util.ObjectTracing;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.File;
@@ -34,6 +37,7 @@ import javax.annotation.Nullable;
 
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.FILE_NAME;
+import static net.logstash.logback.marker.Markers.appendEntries;
 
 /**
  * This class is the base class of those places that inject data into the system. This place knows a lot about
@@ -76,6 +80,9 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
+
+    private boolean useObjectTraceLogger = true;
+    protected Logger objectTraceLogger;
 
     public PickUpPlace() throws IOException {
         super();
@@ -180,6 +187,15 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         }
 
         ALWAYS_COPY_METADATA_VALS = configG.findEntriesAsSet("ALWAYS_COPY_METADATA");
+
+        // Setup objectTraceLogger
+        useObjectTraceLogger = configG.findBooleanEntry("USE_OBJECT_TRACE_LOGGER", useObjectTraceLogger);
+        if (useObjectTraceLogger) {
+            logger.info("Setting up the object trace logger");
+            objectTraceLogger = LoggerFactory.getLogger("objectTrace");
+
+            ObjectTracing.setUpFieldNames(configG.findEntries("OBJECT_TRACE_LOGGER_FIELD_NAME"));
+        }
     }
 
     /**
@@ -552,8 +568,25 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
                 (simpleMode ? "simple" : ""));
+
+        // If object tracing log that agent is being deployed for fixedName (filename)
+        if (useObjectTraceLogger) {
+            objectTraceLog(d);
+        }
+
         assignToPooledAgent(d, -1L);
         return true;
+    }
+
+    /**
+     * Creates an entry in the object trace log. Can be overridden if desired.
+     * 
+     * @param d The IBDO
+     */
+    public void objectTraceLog(IBaseDataObject d) {
+        objectTraceLogger.info(appendEntries(
+                ObjectTracing.createTraceMessageMap(new String[] {"PickUp", d.getFilename(), String.valueOf(System.currentTimeMillis())})).toString(),
+                "");
     }
 
     /**
