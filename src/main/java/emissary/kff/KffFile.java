@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
@@ -44,8 +43,8 @@ public class KffFile implements KffFilter {
     /** Initial value of high index for binary search */
     private int bSearchInitHigh;
 
-    protected int RECORD_LENGTH = 24;
-    protected int recordLength = RECORD_LENGTH;
+    public static final int DEFAULT_RECORD_LENGTH = 24;
+    protected int recordLength = DEFAULT_RECORD_LENGTH;
 
     /** String logical name for this filter */
     protected String filterName = "UNKNOWN";
