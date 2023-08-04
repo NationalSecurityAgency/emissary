@@ -15,6 +15,52 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 
+import static emissary.core.constants.AnswerXMLFileElementNames.ANSWERS_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.ATTACHMENT_ELEMENT_PREFIX;
+import static emissary.core.constants.AnswerXMLFileElementNames.BIRTH_ORDER_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.BROKEN_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.CLASSIFICATION_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.CURRENT_FORM_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.DATA_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.AnswerXMLFileElementNames.FILENAME_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.FONT_ENCODING_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.FOOTER_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.HEADER_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.HEADER_ENCODING_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.ID_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.NUM_CHILDREN_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.NUM_SIBLINGS_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.OUTPUTABLE_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.PARAMETER_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.PRIORITY_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.PROCESSING_ERROR_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.RESULT_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.SETUP_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.TRANSACTION_ID_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.VIEW_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.WORK_BUNDLE_ID_ELEMENT_NAME;
+import static emissary.core.constants.IBDOMethodNames.BIRTH_ORDER_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.BROKEN_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.CLASSIFICATION_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.CURRENT_FORM_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.DATA_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.FILENAME_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.FONT_ENCODING_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.FOOTER_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.HEADER_ENCODING_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.HEADER_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.ID_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.NUM_CHILDREN_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.NUM_SIBLINGS_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.OUTPUTABLE_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.PARAMETER_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.PRIORITY_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.PROCESSING_ERROR_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.TRANSACTION_ID_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.VIEW_SET_METHOD_NAME;
+import static emissary.core.constants.IBDOMethodNames.WORK_BUNDLE_ID_SET_METHOD_NAME;
+
 /**
  * This class helps convert IBaseDataObjects to and from XML.
  */
@@ -23,190 +69,6 @@ public final class IBaseDataObjectXmlHelper {
      * Logger instance
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectXmlHelper.class);
-    /**
-     * The XML element name for Answers.
-     */
-    public static final String ANSWERS_ELEMENT_NAME = "answers";
-    /**
-     * The XML element prefix for attachments.
-     */
-    public static final String ATTACHMENT_ELEMENT_PREFIX = "att";
-    /**
-     * The XML element name for Birth Order.
-     */
-    public static final String BIRTH_ORDER_ELEMENT_NAME = "birthOrder";
-    /**
-     * The IBaseDataObject set method name for Birth Order.
-     */
-    public static final String BIRTH_ORDER_SET_METHOD_NAME = "setBirthOrder";
-    /**
-     * The XML element name for Broken.
-     */
-    public static final String BROKEN_ELEMENT_NAME = "broken";
-    /**
-     * The IBaseDataObject set method name for Broken.
-     */
-    public static final String BROKEN_SET_METHOD_NAME = "setBroken";
-    /**
-     * The XML element name for Classification.
-     */
-    public static final String CLASSIFICATION_ELEMENT_NAME = "classification";
-    /**
-     * The IBaseDataObject set method name for Classification.
-     */
-    public static final String CLASSIFICATION_SET_METHOD_NAME = "setClassification";
-    /**
-     * The XML element name for Current Form.
-     */
-    public static final String CURRENT_FORM_ELEMENT_NAME = "currentForm";
-    /**
-     * The IBaseDataObject set method name for Current Form.
-     */
-    public static final String CURRENT_FORM_SET_METHOD_NAME = "pushCurrentForm";
-    /**
-     * The XML element name for Data.
-     */
-    public static final String DATA_ELEMENT_NAME = "data";
-    /**
-     * The IBaseDataObject set method name for Data.
-     */
-    public static final String DATA_SET_METHOD_NAME = "setChannelFactory";
-    /**
-     * The XML element prefix for Extracted Records.
-     */
-    public static final String EXTRACTED_RECORD_ELEMENT_PREFIX = "extract";
-    /**
-     * The XML element name for Filename.
-     */
-    public static final String FILENAME_ELEMENT_NAME = "filename";
-    /**
-     * The IBaseDataObject set method name for Filename.
-     */
-    public static final String FILENAME_SET_METHOD_NAME = "setFilename";
-    /**
-     * The XML element name for Font Encoding.
-     */
-    public static final String FONT_ENCODING_ELEMENT_NAME = "fontEncoding";
-    /**
-     * The IBaseDataObject set method name for Font Encoding.
-     */
-    public static final String FONT_ENCODING_SET_METHOD_NAME = "setFontEncoding";
-    /**
-     * The XML element name for Footer.
-     */
-    public static final String FOOTER_ELEMENT_NAME = "footer";
-    /**
-     * The IBaseDataObject set method name for Footer.
-     */
-    public static final String FOOTER_SET_METHOD_NAME = "setFooter";
-    /**
-     * The XML element name for Header.
-     */
-    public static final String HEADER_ELEMENT_NAME = "header";
-    /**
-     * The IBaseDataObject set method name for Header.
-     */
-    public static final String HEADER_SET_METHOD_NAME = "setHeader";
-    /**
-     * The XML element name for Header Encoding.
-     */
-    public static final String HEADER_ENCODING_ELEMENT_NAME = "headerEncoding";
-    /**
-     * The IBaseDataObject set method name for Header Encoding.
-     */
-    public static final String HEADER_ENCODING_SET_METHOD_NAME = "setHeaderEncoding";
-    /**
-     * The XML element name for Id.
-     */
-    public static final String ID_ELEMENT_NAME = "id";
-    /**
-     * The IBaseDataObject set method name for Id.
-     */
-    public static final String ID_SET_METHOD_NAME = "setId";
-    /**
-     * The XML element name for Num Siblings.
-     */
-    public static final String NUM_CHILDREN_ELEMENT_NAME = "numChildren";
-    /**
-     * The IBaseDataObject set method name for Num Siblings.
-     */
-    public static final String NUM_CHILDREN_SET_METHOD_NAME = "setNumChildren";
-    /**
-     * The XML element name for Num Siblings.
-     */
-    public static final String NUM_SIBLINGS_ELEMENT_NAME = "numSiblings";
-    /**
-     * The IBaseDataObject set method name for Num Siblings.
-     */
-    public static final String NUM_SIBLINGS_SET_METHOD_NAME = "setNumSiblings";
-    /**
-     * The XML element name for Outputable.
-     */
-    public static final String OUTPUTABLE_ELEMENT_NAME = "outputable";
-    /**
-     * The IBaseDataObject set method name for Outputable.
-     */
-    public static final String OUTPUTABLE_SET_METHOD_NAME = "setOutputable";
-    /**
-     * The XML element name for Parameters.
-     */
-    public static final String PARAMETER_ELEMENT_NAME = "meta";
-    /**
-     * The IBaseDataObject set method name for Parameters.
-     */
-    public static final String PARAMETER_SET_METHOD_NAME = "putParameter";
-    /**
-     * The XML element name for Priority.
-     */
-    public static final String PRIORITY_ELEMENT_NAME = "priority";
-    /**
-     * The IBaseDataObject set method name for Priority.
-     */
-    public static final String PRIORITY_SET_METHOD_NAME = "setPriority";
-    /**
-     * The XML element name for Processing Error.
-     */
-    public static final String PROCESSING_ERROR_ELEMENT_NAME = "processingError";
-    /**
-     * The IBaseDataObject set method name for Processing Error.
-     */
-    public static final String PROCESSING_ERROR_SET_METHOD_NAME = "addProcessingError";
-    /**
-     * The XML element name for Result.
-     */
-    public static final String RESULT_ELEMENT_NAME = "result";
-    /**
-     * The XML element name for Transaction Id.
-     */
-    public static final String TRANSACTION_ID_ELEMENT_NAME = "transactionId";
-    /**
-     * The IBaseDataObject set method name for Transaction Id.
-     */
-    public static final String TRANSACTION_ID_SET_METHOD_NAME = "setTransactionId";
-    /**
-     * The XML element name for Value.
-     */
-    public static final String VALUE_ELEMENT_NAME = "value";
-    /**
-     * The XML element name for View.
-     */
-    public static final String VIEW_ELEMENT_NAME = "view";
-    /**
-     * The IBaseDataObject set method name for View.
-     */
-    public static final String VIEW_SET_METHOD_NAME = "addAlternateView";
-    /**
-     * The XML element name for Work Bundle Id.
-     */
-    public static final String WORK_BUNDLE_ID_ELEMENT_NAME = "workBundleId";
-    /**
-     * The IBaseDataObject set method name for Work Bundle Id.
-     */
-    public static final String WORK_BUNDLE_ID_SET_METHOD_NAME = "setWorkBundleId";
-    /**
-     * The XML element name for Setup.
-     */
-    public static final String SETUP_ELEMENT_NAME = "setup";
 
     private IBaseDataObjectXmlHelper() {}
 

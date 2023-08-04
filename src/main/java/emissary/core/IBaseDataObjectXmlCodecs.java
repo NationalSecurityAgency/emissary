@@ -16,28 +16,19 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 
-import static emissary.core.IBaseDataObjectXmlHelper.BIRTH_ORDER_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.BROKEN_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.NUM_CHILDREN_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.NUM_SIBLINGS_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.OUTPUTABLE_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PARAMETER_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PRIORITY_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PROCESSING_ERROR_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.VALUE_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.VIEW_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.NAME_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.PARAMETER_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.PRIMITVE_NAME_DEFAULT_MAP;
+import static emissary.core.constants.AnswerXMLFileElementNames.PROCESSING_ERROR_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.VALUE_ELEMENT_NAME;
+import static emissary.core.constants.AnswerXMLFileElementNames.VIEW_ELEMENT_NAME;
 
 /**
  * This class contains the interfaces and implementations used to convert an IBDO-&gt;XML and XML-&gt;IBDO.
@@ -79,22 +70,6 @@ public final class IBaseDataObjectXmlCodecs {
      * The XML attribute name for Encoding.
      */
     public static final String ENCODING_ATTRIBUTE_NAME = "encoding";
-    /**
-     * The XML element name for Name.
-     */
-    public static final String NAME_ELEMENT_NAME = "name";
-    /**
-     * A map of element names of IBaseDataObject methods that get/set primitives and their default values.
-     */
-    public static final Map<String, Object> PRIMITVE_NAME_DEFAULT_MAP = Collections
-            .unmodifiableMap(new ConcurrentHashMap<>(Stream.of(
-                    new SimpleEntry<>(BIRTH_ORDER_ELEMENT_NAME, new BaseDataObject().getBirthOrder()),
-                    new SimpleEntry<>(BROKEN_ELEMENT_NAME, new BaseDataObject().isBroken()),
-                    new SimpleEntry<>(NUM_CHILDREN_ELEMENT_NAME, new BaseDataObject().getNumChildren()),
-                    new SimpleEntry<>(NUM_SIBLINGS_ELEMENT_NAME, new BaseDataObject().getNumSiblings()),
-                    new SimpleEntry<>(OUTPUTABLE_ELEMENT_NAME, new BaseDataObject().isOutputable()),
-                    new SimpleEntry<>(PRIORITY_ELEMENT_NAME, new BaseDataObject().getPriority()))
-                    .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue))));
     /**
      * The XML namespace for "xml".
      */
