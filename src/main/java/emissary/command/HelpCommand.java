@@ -49,14 +49,7 @@ public class HelpCommand implements EmissaryCommand {
             dumpCommands(c);
         } else {
             String subcommand = getSubcommand();
-            LOG.info("Detailed help for: {}", subcommand);
-            try {
-                CommandLine help = c.getSubcommands().get(subcommand);
-                help.usage(System.out);
-            } catch (ParameterException | NullPointerException e) {
-                LOG.error("ERROR: invalid command name: {}", subcommand);
-                dumpCommands(c);
-            }
+            dumpHelp(c, subcommand);
         }
     }
 
@@ -76,6 +69,17 @@ public class HelpCommand implements EmissaryCommand {
             }
         }
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");
+    }
+
+    public static void dumpHelp(CommandLine c, String subcommand) {
+        LOG.info("Detailed help for: {}", subcommand);
+        try {
+            CommandLine help = c.getSubcommands().get(subcommand);
+            help.usage(System.out);
+        } catch (ParameterException | NullPointerException e) {
+            LOG.error("ERROR: invalid command name: {}", subcommand);
+            dumpCommands(c);
+        }
     }
 
     @Override

@@ -28,6 +28,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import picocli.CommandLine.MissingParameterException;
 import picocli.CommandLine.UnmatchedArgumentException;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ import javax.annotation.Nullable;
 public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
-    private final CommandLine c = new CommandLine(EmissaryCommand.class);
+    private final CommandLine cli = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
     public static Map<String, EmissaryCommand> EMISSARY_COMMANDS = new HashMap<>();
@@ -76,7 +77,7 @@ public class Emissary {
 
     @VisibleForTesting
     protected CommandLine getCommand() {
-        return c;
+        return cli;
     }
 
     protected Emissary() {
@@ -87,7 +88,7 @@ public class Emissary {
         commands = Collections.unmodifiableMap(cmds);
         // sort by command name and then add to Picocli
         for (String key : new TreeSet<>(commands.keySet())) {
-            c.addSubcommand(key, commands.get(key));
+            cli.addSubcommand(key, commands.get(key));
         }
     }
 
@@ -98,12 +99,12 @@ public class Emissary {
             CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);
         }
         try {
-            c.parseArgs(args);
-            List<String> commandNames = c.getParseResult().originalArgs();
-            if (commandNames.size() == 0) {
+            cli.parseArgs(args);
+            List<String> commandNames = cli.getParseResult().originalArgs();
+            if (commandNames.isEmpty()) {
                 dumpBanner();
                 LOG.error("One command is required");
-                HelpCommand.dumpCommands(c);
+                HelpCommand.dumpCommands(cli);
                 exit(1);
             }
             String commandName = commandNames.get(0);
@@ -112,12 +113,17 @@ public class Emissary {
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
-            cmd.run(c);
+            cmd.run(cli);
             // don't exit(0) here or things like server will not continue to run
+        } catch (MissingParameterException e) {
+            dumpBanner();
+            LOG.error(e.getMessage());
+            HelpCommand.dumpHelp(cli, args[0]);
+            exit(1);
         } catch (UnmatchedArgumentException e) {
             dumpBanner();
             LOG.error("Undefined command: {}", Arrays.toString(args));
-            HelpCommand.dumpCommands(c);
+            HelpCommand.dumpCommands(cli);
             exit(1);
         } catch (Exception e) {
             dumpBanner();

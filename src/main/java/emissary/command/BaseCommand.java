@@ -153,12 +153,16 @@ public abstract class BaseCommand implements EmissaryCommand {
         PrintStream old = System.out;
         System.setOut(ps);
 
-        CommandLine cl = new CommandLine(cmd);
-        int code = cl.execute(args);
-
-        System.out.flush();
-        System.setOut(old);
-        if (code == 2) {
+        CommandLine cl;
+        int code;
+        try {
+            cl = new CommandLine(cmd);
+            code = cl.execute(args);
+        } finally {
+            System.out.flush();
+            System.setOut(old);
+        }
+        if (cl != null && code == 2) {
             throw new ParameterException(cl, baos.toString());
         }
         cmd.setup();
