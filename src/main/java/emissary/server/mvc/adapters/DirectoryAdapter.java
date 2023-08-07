@@ -12,14 +12,13 @@ import emissary.directory.IRemoteDirectory;
 import emissary.directory.KeyManipulator;
 import emissary.log.MDCConstants;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.EntityBuilder;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -85,7 +84,7 @@ public class DirectoryAdapter extends EmissaryClient {
      */
     public EmissaryResponse outboundAddPlaces(final String parentDirectory, final List<DirectoryEntry> entryList, final boolean propagating) {
         if (disableAddPlaces) {
-            BasicHttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "Not accepting remote add places");
+            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.SC_OK, "Not accepting remote add places");
             response.setEntity(EntityBuilder.create().setText("").setContentEncoding(MediaType.TEXT_PLAIN).build());
             return new EmissaryResponse(response);
         } else {

@@ -4,27 +4,27 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.http.HttpEntity;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.AuthSchemes;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.Credentials;
+import org.apache.hc.client5.http.auth.StandardAuthScheme;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.client5.http.entity.EntityBuilder;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.util.Timeout;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +58,9 @@ public class EmissaryClient {
 
     private static final PoolingHttpClientConnectionManager CONNECTION_MANAGER = HTTPConnectionFactory.getFactory().getDefaultConnectionManager();
     // some default objects to use
-    private static final CredentialsProvider CRED_PROV = new BasicCredentialsProvider();
+    private static final BasicCredentialsProvider CRED_PROV = new BasicCredentialsProvider();
+    protected static final int ANY_PORT = -1;
+    protected static final String ANY_HOST = null;
 
     private static CloseableHttpClient staticClient = null;
     private static RequestConfig staticRequestConfig = null;
@@ -66,7 +69,6 @@ public class EmissaryClient {
     public static String CONTEXT = DEFAULT_CONTEXT;
     protected static int retries = DEFAULT_RETRIES;
     protected static String username = DEFAULT_USERNAME;
-    protected static String realm = AuthScope.ANY_REALM;
     // How long to wait while establishing a connection (ms)
     protected static int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
     // How long to wait for a connection from the pool (ms)
@@ -124,22 +126,22 @@ public class EmissaryClient {
                 LOGGER.error("Error reading password from {}", userPropertiesFile);
             }
             // Supply default credentials for anyone we want to connect to
-            final String decodedPassword = pass != null && pass.startsWith("OBF:") ? Password.deobfuscate(pass) : pass;
-            final Credentials cred = new UsernamePasswordCredentials(username, decodedPassword);
-            CRED_PROV.setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, realm), cred);
+            final String decodedPassword = pass.startsWith("OBF:") ? Password.deobfuscate(pass) : pass;
+            final Credentials cred = new UsernamePasswordCredentials(username, decodedPassword.toCharArray());
+            CRED_PROV.setCredentials(new AuthScope(ANY_HOST, ANY_PORT), cred);
         } catch (IOException iox) {
             LOGGER.error("Cannot read {} in EmissaryClient, defaulting credentials", System.getProperty(JETTY_USER_FILE_PROPERTY_NAME));
-            final Credentials cred = new UsernamePasswordCredentials(username, DEFAULT_PASSWORD);
-            final AuthScope authScope = new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, realm);
+            final Credentials cred = new UsernamePasswordCredentials(username, DEFAULT_PASSWORD.toCharArray());
+            final AuthScope authScope = new AuthScope(ANY_HOST, ANY_PORT);
             CRED_PROV.setCredentials(authScope, cred);
         }
 
         staticRequestConfig =
-                RequestConfig.custom().setConnectTimeout(connectionTimeout)
-                        .setConnectionRequestTimeout(connectionManagerTimeout)
-                        .setSocketTimeout(socketTimeout)
-                        .setTargetPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
-                        .setProxyPreferredAuthSchemes(Collections.singleton(AuthSchemes.DIGEST))
+                RequestConfig.custom().setConnectTimeout(Timeout.ofMilliseconds(connectionTimeout))
+                        .setConnectionRequestTimeout(Timeout.ofMicroseconds(connectionManagerTimeout))
+                        .setResponseTimeout(Timeout.ofMilliseconds(socketTimeout))
+                        .setTargetPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))
+                        .setProxyPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))
                         .build();
 
         staticClient =
@@ -165,7 +167,7 @@ public class EmissaryClient {
         this.requestConfig = requestConfig;
     }
 
-    public EmissaryResponse send(final HttpRequestBase method) {
+    public EmissaryResponse send(final HttpUriRequestBase method) {
         return send(method, null);
     }
 
@@ -175,8 +177,12 @@ public class EmissaryClient {
      * @param method the method to be sent
      * @param cookie a cookie to set on the request
      */
-    public EmissaryResponse send(final HttpRequestBase method, @Nullable final Cookie cookie) {
-        LOGGER.debug("Sending {} to {}", method.getMethod(), method.getURI());
+    public EmissaryResponse send(final HttpUriRequestBase method, @Nullable final Cookie cookie) {
+        try {
+            LOGGER.debug("Sending {} to {}", method.getMethod(), method.getUri());
+        } catch (URISyntaxException e) {
+            LOGGER.debug("Sending {} and failed to retrieve URI", method.getMethod());
+        }
         EmissaryResponse er;
 
         HttpClientContext localContext = HttpClientContext.create();
@@ -200,7 +206,7 @@ public class EmissaryClient {
             return er;
         } catch (IOException e) {
             LOGGER.debug("Problem processing request:", e);
-            BasicHttpResponse response = new BasicHttpResponse(method.getProtocolVersion(), HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());
+            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());
             response.setEntity(EntityBuilder.create().setText(e.getClass() + ": " + e.getMessage()).setContentEncoding(MediaType.TEXT_PLAIN).build());
             return new EmissaryResponse(response);
         }
@@ -216,7 +222,7 @@ public class EmissaryClient {
 
     public void setConnectionTimeout(int timeout) {
         if (timeout > 0) {
-            requestConfig = RequestConfig.copy(requestConfig).setConnectTimeout(timeout).build();
+            requestConfig = RequestConfig.copy(requestConfig).setConnectTimeout(Timeout.ofMilliseconds(timeout)).build();
         } else {
             LOGGER.warn("Tried to set timeout to {}", timeout);
         }
@@ -240,11 +246,11 @@ public class EmissaryClient {
         return method;
     }
 
-    public HttpRequestBase setCsrfHeader(HttpRequestBase request, String csrfToken) {
+    public HttpUriRequestBase setCsrfHeader(HttpUriRequestBase request, String csrfToken) {
         return setCsrfHeader(request, CSRF_HEADER_PARAM, csrfToken);
     }
 
-    public HttpRequestBase setCsrfHeader(HttpRequestBase request, String csrfParam, String csrfToken) {
+    public HttpUriRequestBase setCsrfHeader(HttpUriRequestBase request, String csrfParam, String csrfToken) {
         request.addHeader(csrfParam, csrfToken);
         return request;
     }

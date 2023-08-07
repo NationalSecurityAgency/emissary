@@ -5,7 +5,7 @@ import emissary.client.response.PeerList;
 import emissary.client.response.PeersResponseEntity;
 import emissary.core.EmissaryException;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

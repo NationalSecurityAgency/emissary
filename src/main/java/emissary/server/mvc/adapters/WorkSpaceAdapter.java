@@ -5,12 +5,13 @@ import emissary.client.EmissaryResponse;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.WorkBundle;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.util.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,8 @@ public class WorkSpaceAdapter extends EmissaryClient {
         nvps.add(new BasicNameValuePair(SPACE_NAME, space));
         method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));
         // set a timeout in case a node is unresponsive
-        method.setConfig(RequestConfig.custom().setConnectTimeout(60000).setSocketTimeout(60000).build());
+        method.setConfig(RequestConfig.custom().setConnectTimeout(Timeout.ofMilliseconds(60000)).setConnectionKeepAlive(Timeout.ofMilliseconds(60000))
+                .build());
 
         return send(method);
     }
