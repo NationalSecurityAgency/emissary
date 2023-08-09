@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class KffFileTest extends UnitTest {
+    public static final Random RANDOM = new Random();
     private static final Logger LOGGER = LoggerFactory.getLogger(KffFileTest.class);
 
     private static final String ITEM_NAME = "Some_item_name";
@@ -94,53 +95,28 @@ class KffFileTest extends UnitTest {
 
     @Test
     /**
-     * Tests concurrent KffFile.check invocations to ensure thread-safety
+     * Tests concurrent {@link KffFile#check(String, ChecksumResults)} invocations to ensure that method's thread-safety
      */
     void testConcurrentKffFileCheckCalls() throws Exception {
-
-        final Random RANDOM = new Random();
-        ExecutorService executorService = null;
+        int EXPECTED_FAILURE_COUNT = 200;
 
         // the inputs we'll submit, along wth their expected KffFile.check return values
-        Map<ChecksumResults, Boolean> kffRecords = new HashMap<>();
+        List<CheckTestInput> testInputs = new ArrayList<>();
 
-        // parse "known entries" from the binary input file
-        try (SeekableByteChannel byteChannel = channelFactory.create()) {
-            int recordCount = (int) (byteChannel.size() / DEFAULT_RECORD_LENGTH);
-            LOGGER.debug("test file contains {} known file entries", recordCount);
+        // create inputs that should be found in the file
+        parseRecordsFromBinaryFileAndAddToTestInputs(testInputs);
+        int numberOfKffEntriesInTestFile = testInputs.size();
 
-            byte[] recordBytes = new byte[DEFAULT_RECORD_LENGTH];
-            ByteBuffer buffer = ByteBuffer.wrap(recordBytes);
+        // create inputs that should NOT be found in the file
+        createRecordsFromRandomBytesAndAddToTestInputs(testInputs, EXPECTED_FAILURE_COUNT);
 
-            for (int i = 0; i < recordCount; i++) {
-                buffer.clear();
+        shuffleTestInputs(testInputs);
 
-                // parse the next "known file" entry and add it to our inputs, with an expected value of true
-                byteChannel.position(i * DEFAULT_RECORD_LENGTH);
-                // read the value into recordBytes
-                byteChannel.read(buffer);
-                ChecksumResults csr = buildChecksumResultsWithSha1AndCRC(recordBytes);
-                kffRecords.put(csr, true);
-            }
-        }
+        List<KffFileCheckTask> callables = createCallableTasksForParallelExecution(testInputs);
 
-        int EXPECTED_FAILURE_COUNT = 500;
-        byte[] recordBytes = new byte[DEFAULT_RECORD_LENGTH];
-        for (int j = 0; j < EXPECTED_FAILURE_COUNT; j++) {
-            // build a ChecksumResults entry with random bytes, and add it to our inputs with an expected value of false
-            RANDOM.nextBytes(recordBytes);
-            ChecksumResults csr = buildChecksumResultsWithSha1AndCRC(recordBytes);
-            kffRecords.put(csr, false);
-        }
+        logger.info("testing {} invocations, with {} that should return true", callables.size(), numberOfKffEntriesInTestFile);
 
-        // convert collection of inputs to a list of callable tasks we can execute in parallel
-        List<KffFileCheckTask> callables = kffRecords.entrySet().stream()
-                .map(entry -> new KffFileCheckTask(kffFile, entry.getKey(), entry.getValue()))
-                .collect(Collectors.toList());
-
-        // shuffle the callables, so we have expected failures interspersed with expected successes
-        Collections.shuffle(callables);
-
+        ExecutorService executorService = null;
         try {
             executorService = Executors.newFixedThreadPool(10);
             // invoke the callable tasks concurrently using the thread pool and get their results
@@ -153,6 +129,69 @@ class KffFileTest extends UnitTest {
                 executorService.shutdown();
             }
         }
+    }
+
+    private static void createRecordsFromRandomBytesAndAddToTestInputs(List<CheckTestInput> testInputs, int recordCount) {
+        for (int i = 0; i < recordCount; i++) {
+            // build a ChecksumResults entry with random bytes, and add it to our inputs with an expected value of false
+
+            ChecksumResults csr = buildCheckSumResultsFromRandomBytes();
+            CheckTestInput expectedFailure = new CheckTestInput(csr, false);
+            testInputs.add(expectedFailure);
+        }
+    }
+
+    private void parseRecordsFromBinaryFileAndAddToTestInputs(List<CheckTestInput> testInputs) throws IOException {
+        int numberOfKffEntriesInTestFile;
+        // parse "known entries" from the binary input file
+        try (SeekableByteChannel byteChannel = channelFactory.create()) {
+            numberOfKffEntriesInTestFile = (int) (byteChannel.size() / DEFAULT_RECORD_LENGTH);
+            LOGGER.debug("test file contains {} known file entries", numberOfKffEntriesInTestFile);
+
+            for (int i = 0; i < numberOfKffEntriesInTestFile; i++) {
+                ChecksumResults csr = buildCheckSumResultsFromKffFileBytes(byteChannel, i * DEFAULT_RECORD_LENGTH);
+                CheckTestInput expectedSuccess = new CheckTestInput(csr, true);
+                testInputs.add(expectedSuccess);
+            }
+        }
+    }
+
+    /**
+     * Randomly shuffles the test inputs so that expected failures are interspersed with expected successes
+     * 
+     * @param testInputs The collection of inputs
+     */
+    private static void shuffleTestInputs(List<CheckTestInput> testInputs) {
+        Collections.shuffle(testInputs);
+    }
+
+    /**
+     * Read a raw record from the binary KFF file on disk, and converts the raw bytes into a ChecksumResults object
+     * 
+     * @param sbc channel that exposes the file contents
+     * @param startPosition offset within the channel at which the record begins
+     * @return ChecksumResults object
+     * @throws IOException if there is a problem reading bytes from the channel
+     */
+    private static ChecksumResults buildCheckSumResultsFromKffFileBytes(SeekableByteChannel sbc, int startPosition) throws IOException {
+        sbc.position(startPosition);
+        ByteBuffer buffer = ByteBuffer.wrap(new byte[DEFAULT_RECORD_LENGTH]);
+        // read the "known file" entry into the buffer
+        sbc.read(buffer);
+        // convert the raw byte[] in a ChecksumResults object
+        return buildChecksumResultsWithSha1AndCRC(buffer.array());
+    }
+
+    /**
+     * Builds a {@link ChecksumResults} objects from 24 random bytes
+     * 
+     * @return a ChecksumResults object with contents that won't be found in the binary KFF file on disk
+     */
+    private static ChecksumResults buildCheckSumResultsFromRandomBytes() {
+        byte[] randomBytes = new byte[DEFAULT_RECORD_LENGTH];
+        RANDOM.nextBytes(randomBytes);
+        // convert the raw byte[] in a ChecksumResults object
+        return buildChecksumResultsWithSha1AndCRC(randomBytes);
     }
 
     /**
@@ -173,37 +212,8 @@ class KffFileTest extends UnitTest {
     }
 
     /**
-     * Callable to allow for evaluation of {@link KffFile#check(String, ChecksumResults)} calls in parallel
-     */
-    static class KffFileCheckTask implements Callable<Boolean> {
-        private final KffFile kffFile;
-        private final ChecksumResults csum;
-        private final Boolean expectedResult;
-
-        KffFileCheckTask(KffFile kffFile, ChecksumResults csum, boolean expectedResult) {
-            this.kffFile = kffFile;
-            this.csum = csum;
-            this.expectedResult = expectedResult;
-        }
-
-
-        /**
-         * Computes a result, or throws an exception if unable to do so.
-         *
-         * @return computed result
-         * @throws Exception if unable to compute a result
-         */
-        @Override
-        public Boolean call() throws Exception {
-            boolean actual = kffFile.check("ignored param", csum);
-            LOGGER.debug("expected {}, got {}", expectedResult, actual);
-            return expectedResult.equals(actual);
-        }
-    }
-
-    /**
      * Retrieves the SHA-1 bytes from the provided array.
-     * 
+     *
      * @param recordBytes Bytes to parse
      * @return The SHA-1 bytes.
      */
@@ -215,7 +225,7 @@ class KffFileTest extends UnitTest {
 
     /**
      * Retrieves the last 4 bytes from the input array and reverses their order from big-endian to little-endian
-     * 
+     *
      * @param recordBytes Bytes to parse
      * @return the CRC32 bytes, in litte-endian order
      */
@@ -227,5 +237,57 @@ class KffFileTest extends UnitTest {
         return result;
     }
 
+    /**
+     * Convert the inputs to a list of {@link Callable} tasks we can execute in parallel
+     * 
+     * @param testInputs List of inputs
+     * @return List of Callables
+     */
+    private static List<KffFileCheckTask> createCallableTasksForParallelExecution(List<CheckTestInput> testInputs) {
+        return testInputs.stream().map(input -> new KffFileCheckTask(kffFile, input.csr, input.expectedResult))
+                .collect(Collectors.toList());
+    }
 
+    /**
+     * Callable to allow for evaluation of {@link KffFile#check(String, ChecksumResults)} calls in parallel
+     */
+    static class KffFileCheckTask implements Callable<Boolean> {
+        private final KffFile kffFile;
+        private final ChecksumResults csr;
+        private final Boolean expectedResult;
+
+        KffFileCheckTask(KffFile kffFile, ChecksumResults csr, boolean expectedResult) {
+            this.kffFile = kffFile;
+            this.csr = csr;
+            this.expectedResult = expectedResult;
+        }
+
+        /**
+         * Computes a result, or throws an exception if unable to do so.
+         *
+         * @return computed result
+         * @throws Exception if unable to compute a result
+         */
+        @Override
+        public Boolean call() throws Exception {
+            boolean actual = kffFile.check("ignored param", csr);
+            // increase this log level to view stream of executions and results
+            LOGGER.info("expected {}, got {}", expectedResult, actual);
+            return expectedResult.equals(actual);
+        }
+    }
+
+    /**
+     * Data Transfer Object (DTO) used for associating a {@link ChecksumResults} object and the expected result of
+     * submitting that object to a {@link KffFile#check(String, ChecksumResults)} call
+     */
+    static class CheckTestInput {
+        final ChecksumResults csr;
+        final boolean expectedResult;
+
+        CheckTestInput(ChecksumResults csr, boolean expectedResult) {
+            this.csr = csr;
+            this.expectedResult = expectedResult;
+        }
+    }
 }
