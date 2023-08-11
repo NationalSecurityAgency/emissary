@@ -1,23 +1,36 @@
 package emissary.command.converter;
 
-import com.beust.jcommander.converters.BaseConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class PathExistsConverter extends BaseConverter<Path> {
+public class PathExistsConverter implements ITypeConverter<Path> {
+    private String optionName;
+
+    public PathExistsConverter() {
+        this(null);
+    }
 
     public PathExistsConverter(String optionName) {
-        super(optionName);
+        this.optionName = optionName;
     }
 
     private static final Logger LOG = LoggerFactory.getLogger(PathExistsConverter.class);
 
     @Override
     public Path convert(String value) {
+        return convert(optionName, value);
+    }
+
+    public String getOptionName() {
+        return optionName;
+    }
+
+    public Path convert(String option, String value) {
         Path p = null;
         if (value.endsWith("/")) {
             p = Paths.get(value.substring(0, value.length() - 1));
@@ -26,12 +39,11 @@ public class PathExistsConverter extends BaseConverter<Path> {
         }
         // ensure the value exists
         if (!Files.exists(p)) {
-            String msg = String.format("The option '%s' was configured with path '%s' which does not exist", getOptionName(), p);
+            String msg = String.format("The option '%s' was configured with path '%s' which does not exist", option, p);
             LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
         return p;
     }
-
 
 }

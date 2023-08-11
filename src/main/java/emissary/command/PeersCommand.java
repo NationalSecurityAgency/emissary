@@ -4,18 +4,18 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.directory.KeyManipulator;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import com.google.common.net.HostAndPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Parameters(commandDescription = "Read the peers.cfg (respective flavors) and return hosts as bashable list")
+@Command(description = "Read the peers.cfg (respective flavors) and return hosts as bashable list", subcommands = {HelpCommand.class})
 public class PeersCommand extends HttpCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(PeersCommand.class);
@@ -24,13 +24,14 @@ public class PeersCommand extends HttpCommand {
 
     private static final String PEER_CONFIG = "peer.cfg";
 
-    @Parameter(names = {"-d", "--delimiter"}, description = "delimiter to use when writing host output (note: newline needs to be \\n")
+    @Option(names = {"-d", "--delimiter"},
+            description = "delimiter to use when writing host output (note: newline needs to be \\n\nDefault: ${DEFAULT-VALUE}")
     private String delimiter = ",";
 
-    @Parameter(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])")
+    @Option(names = {"-ih", "--ignoreHost"}, description = "the host to ignore with optional port (host[:port])\nDefault: <empty string>")
     private String ignoreHost = "";
 
-    @Parameter(names = "--withPort", description = "returns each peer with associated port")
+    @Option(names = "--withPort", description = "returns each peer with associated port\nDefault: ${DEFAULT-VALUE}")
     private boolean withPort = false;
 
     @Override
@@ -39,7 +40,7 @@ public class PeersCommand extends HttpCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
         try {
             System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), this.withPort)));

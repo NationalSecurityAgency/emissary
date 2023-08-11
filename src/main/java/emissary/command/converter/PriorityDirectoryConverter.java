@@ -3,9 +3,13 @@ package emissary.command.converter;
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 
-import com.beust.jcommander.IStringConverter;
+import picocli.CommandLine.ITypeConverter;
 
-public class PriorityDirectoryConverter implements IStringConverter<PriorityDirectory> {
+public class PriorityDirectoryConverter implements ITypeConverter<PriorityDirectory> {
+    public PriorityDirectoryConverter() {
+        super();
+    }
+
     public static final String PRIORITY_DIR_REGEX = ".*:\\d+$";
 
     @Override

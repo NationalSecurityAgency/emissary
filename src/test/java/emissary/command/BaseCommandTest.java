@@ -3,8 +3,8 @@ package emissary.command;
 import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import org.junit.jupiter.api.Test;
+import picocli.CommandLine;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +37,7 @@ class TestBaseCommand extends BaseCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
     }
-
 }

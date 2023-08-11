@@ -6,77 +6,83 @@ import emissary.pickup.PriorityDirectory;
 import emissary.pickup.WorkBundle;
 import emissary.pickup.WorkSpace;
 
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.Parameters;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Spec;
 
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@Parameters(commandDescription = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes")
+@Command(description = "Start the feeder process given a particular WorkSpace implementation to distribute work to peer nodes",
+        subcommands = {HelpCommand.class})
 public class FeedCommand extends ServiceCommand {
+    @Spec
+    private CommandSpec spec;
     private static final Logger LOG = LoggerFactory.getLogger(FeedCommand.class);
 
     public static final String COMMAND_NAME = "feed";
     public static final int DEFAULT_PORT = 7001;
 
-    @Parameter(names = {"-w", "--workspace"}, description = "fully qualified class to use as the WorkSpace implementation")
+    @Option(names = {"-w", "--workspace"}, description = "fully qualified class to use as the WorkSpace implementation\nDefault: ${DEFAULT-VALUE}")
     private String workspaceClass = "emissary.pickup.WorkSpace";
 
-    @Parameter(names = {"--bundleSize"}, description = "number of files to pack in each work bundle given to the peers")
+    @Option(names = {"--bundleSize"}, description = "number of files to pack in each work bundle given to the peers\nDefault: ${DEFAULT-VALUE}")
     private int bundleSize = 1;
 
-    @Parameter(names = {"-ci", "--caseId"}, description = "case id to assign")
+    @Option(names = {"-ci", "--caseId"}, description = "case id to assign\nDefault: ${DEFAULT-VALUE}")
     private String caseId = "auto";
 
-    @Parameter(names = {"-cc", "--caseClass"}, description = "case class to assign")
+    @Option(names = {"-cc", "--caseClass"}, description = "case class to assign\nDefault: <empty string>")
     private String caseClass = "";
 
-    @Parameter(names = {"-ep", "--eatPrefix"}, description = "prefix to eat on input files when creating work bundles")
+    @Option(names = {"-ep", "--eatPrefix"}, description = "prefix to eat on input files when creating work bundles\nDefault: <empty string>")
     private String eatPrefix = "";
 
-    @Parameter(names = {"-cs", "--case"}, description = "Pattern to use to find the clients in the namespace")
+    @Option(names = {"-cs", "--case"}, description = "Pattern to use to find the clients in the namespace\nDefault: ${DEFAULT-VALUE}")
     private String clientPattern = "INITIAL.FILE_PICK_UP_CLIENT.INPUT.*";
 
-    @Parameter(names = {"-o", "--feedOutputRoot"},
+    @Option(names = {"-o", "--feedOutputRoot"},
             description = "the root path to use when writing successfully parsed input, defaults to projectBase/DoneParsedData")
     private String feedOutputRoot;
 
-    @Parameter(names = {"-i", "--inputRoot"},
+    @Option(names = {"-i", "--inputRoot"},
+            split = ",",
             description = "the root path or comma-separated paths to use when reading input, can use PriorityDirectory format",
             converter = PriorityDirectoryConverter.class)
     private List<PriorityDirectory> priorityDirectories;
 
-    @Parameter(names = {"--sort"}, description = "order which to sort files as they are put into work bundles, defaults to Priority sort (10)",
+    @Option(names = {"--sort"}, description = "order which to sort files as they are put into work bundles, defaults to Priority sort (10)",
             converter = WorkspaceSortModeConverter.class)
     private Comparator<WorkBundle> sort;
 
-    @Parameter(names = {"-ns", "--namespaceName"}, description = "name to assign to the work space")
+    @Option(names = {"-ns", "--namespaceName"}, description = "name to assign to the work space\nDefault: ${DEFAULT-VALUE}")
     private String workspaceName = "WorkSpace";
 
-    @Parameter(names = {"-sd", "--skipDot"}, description = "skips dot files when creating work bundles")
+    @Option(names = {"-sd", "--skipDot"}, description = "skips dot files when creating work bundles\nDefault: ${DEFAULT-VALUE}")
     private boolean skipDotFile = true;
 
-    @Parameter(names = {"-dirs", "--includeDirs"},
-            description = "Set directory processing flag. When true directory entries are retrieved from the input area just like normal")
+    @Option(names = {"-dirs", "--includeDirs"},
+            description = "Set directory processing flag. When true directory entries are retrieved from the input area just like normal\nDefault: ${DEFAULT-VALUE}")
     private boolean includeDirs = false;
 
-    @Parameter(names = {"-l", "--loop"}, description = "Controls loop functionality of workspace")
+    @Option(names = {"-l", "--loop"}, description = "Controls loop functionality of workspace\nDefault: ${DEFAULT-VALUE}")
     private boolean loop = true;
 
-    @Parameter(names = {"-r", "--retry"}, description = "controls if we retry or not")
+    @Option(names = {"-r", "--retry"}, description = "controls if we retry or not\nDefault: ${DEFAULT-VALUE}")
     private boolean retry = true;
 
-    @Parameter(names = {"--simple"}, description = "turn on simple mode")
+    @Option(names = {"--simple"}, description = "turn on simple mode\nDefault: ${DEFAULT-VALUE}")
     private boolean simple = false;
 
-    @Parameter(names = {"-ft", "--fileTimestamp"},
-            description = "set the use of file timestamps to control whether a file is new enough to be added to the queue")
+    @Option(names = {"-ft", "--fileTimestamp"},
+            description = "set the use of file timestamps to control whether a file is new enough to be added to the queue\nDefault: ${DEFAULT-VALUE}")
     private boolean fileTimestamp = false;
 
     @Override
@@ -93,7 +99,7 @@ public class FeedCommand extends ServiceCommand {
     public void startService() {
         if (CollectionUtils.isEmpty(priorityDirectories)) {
             LOG.error("No input root or priority directories specified");
-            throw new ParameterException("Missing required parameter '-i' for input root or priority directories");
+            throw new ParameterException(spec.commandLine(), "Missing required parameter '-i' for input root or priority directories");
         }
 
         LOG.info("Starting feeder using {} as the workspace class", workspaceClass);
@@ -193,5 +199,4 @@ public class FeedCommand extends ServiceCommand {
     public boolean isFileTimestamp() {
         return fileTimestamp;
     }
-
 }

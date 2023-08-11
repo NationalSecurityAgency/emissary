@@ -1,6 +1,6 @@
 package emissary.command;
 
-import emissary.command.converter.PathExistsReadableConverter;
+import emissary.command.converter.WhatCommandPathExistsConverter;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
@@ -21,13 +21,14 @@ import emissary.parser.SessionProducer;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.shell.Executrix;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,25 +41,30 @@ import static emissary.core.Form.HTML;
 import static emissary.core.Form.TEXT;
 
 @Deprecated
-@Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
+// @Parameters(commandDescription = "Run Identification places on a payload to determine the file type")
+@Command(description = "Run Identification places on a payload to determine the file type",
+        subcommands = {HelpCommand.class})
 public class WhatCommand extends BaseCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(WhatCommand.class);
 
     public static String COMMAND_NAME = "what";
 
+    public WhatCommand()
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {}
+
     @Override
     public String getCommandName() {
         return COMMAND_NAME;
     }
 
-    @Parameter(names = {"-h", "--header"}, description = "use header identification, defaults to true", arity = 1)
+    @Option(names = {"-h", "--header"}, description = "use header identification, defaults to true\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean headerIdentification = true;
 
-    @Parameter(names = {"-i", "--input"}, description = "input file or directory", converter = PathExistsReadableConverter.class, required = true)
+    @Option(names = {"-i", "--input"}, description = "input file or directory", converter = WhatCommandPathExistsConverter.class, required = true)
     private Path input;
 
-    @Parameter(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false")
+    @Option(names = {"-r", "--recursive"}, description = "recurse on input directories, defaults to false\nDefault: ${DEFAULT-VALUE}")
     private boolean recursive = false;
 
     protected List<IServiceProviderPlace> places;
@@ -68,7 +74,7 @@ public class WhatCommand extends BaseCommand {
     private ParserFactory parserFactory;
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         // TODO This entire class should be refactored into a testable unit
         setup();
         processPath(this.input);

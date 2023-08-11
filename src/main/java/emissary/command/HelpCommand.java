@@ -1,24 +1,28 @@
 package emissary.command;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Parameters;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-@Parameters(commandDescription = "Print commands or usage for subcommand")
+@Command(name = "help", description = "Print commands or usage for subcommand")
 public class HelpCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(HelpCommand.class);
 
     public static final String COMMAND_NAME = "help";
 
-    @Parameter(arity = 1, description = "display usage for this subcommand ")
+    // @Option(names = "placeholder", arity = "1", description = "display usage for this subcommand ")
+    @Parameters(
+            paramLabel = "COMMAND",
+            arity = "0..1",
+            description = {"display usage for this subcommand "})
     public List<String> subcommands = new ArrayList<>();
 
 
@@ -36,22 +40,16 @@ public class HelpCommand implements EmissaryCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
         if (subcommands.isEmpty()) {
-            dumpCommands(jc);
+            dumpCommands(c);
         } else if (subcommands.size() > 1) {
             LOG.error("You can only see help for 1 command at a time");
-            dumpCommands(jc);
+            dumpCommands(c);
         } else {
             String subcommand = getSubcommand();
-            LOG.info("Detailed help for: {}", subcommand);
-            try {
-                jc.usage(subcommand);
-            } catch (ParameterException e) {
-                LOG.error("ERROR: invalid command name: {}", subcommand);
-                dumpCommands(jc);
-            }
+            dumpHelp(c, subcommand);
         }
     }
 
@@ -60,11 +58,12 @@ public class HelpCommand implements EmissaryCommand {
         // nothing for this command
     }
 
-    public static void dumpCommands(JCommander jc) {
+    public static void dumpCommands(CommandLine cl) {
         LOG.info("Available commands:");
-        for (Entry<String, JCommander> cmd : jc.getCommands().entrySet()) {
+        for (Entry<String, CommandLine> cmd : cl.getSubcommands().entrySet()) {
             final String name = cmd.getKey();
-            final String description = jc.getCommandDescription(name);
+            String[] descList = cl.getSubcommands().get(name).getCommandSpec().usageMessage().description();
+            final String description = descList.length == 0 ? "" : descList[0];
             if (LOG.isInfoEnabled()) {
                 LOG.info("\t {} {}", String.format("%1$-15s", name), description);
             }
@@ -72,9 +71,19 @@ public class HelpCommand implements EmissaryCommand {
         LOG.info("Use 'help <command-name>' to see more detailed info about that command");
     }
 
+    public static void dumpHelp(CommandLine c, String subcommand) {
+        LOG.info("Detailed help for: {}", subcommand);
+        try {
+            CommandLine help = c.getSubcommands().get(subcommand);
+            help.usage(System.out);
+        } catch (ParameterException | NullPointerException e) {
+            LOG.error("ERROR: invalid command name: {}", subcommand);
+            dumpCommands(c);
+        }
+    }
+
     @Override
     public void outputBanner() {
         new Banner().dump();
     }
-
 }

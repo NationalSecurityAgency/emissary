@@ -4,7 +4,6 @@ import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.UnitTestFileUtils;
 
-import com.beust.jcommander.ParameterException;
 import com.google.common.collect.Lists;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import picocli.CommandLine.ParameterException;
 
 import java.io.IOException;
 import java.nio.file.Files;

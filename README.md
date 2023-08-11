@@ -63,7 +63,7 @@ Run ```mvn clean package``` to compile, test, and package Emissary
 ### Running
 
 There is one bash script in Emissary that runs everything.  It is in the top level Emissary directory. The script runs 
-the [emissary.Emissary](src/main/java/emissary/Emissary.java) class which has several [JCommander](http://jcommander.org/) 
+the [emissary.Emissary](src/main/java/emissary/Emissary.java) class which has several [Picocli](https://picocli.info/) 
 commands available to handle different functions.
 
 #### No arguments

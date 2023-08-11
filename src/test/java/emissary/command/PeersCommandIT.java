@@ -3,7 +3,6 @@ package emissary.command;
 import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import com.google.common.net.HostAndPort;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,7 +145,7 @@ class PeersCommandIT extends UnitTest {
         PrintStream origErr = System.err;
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
-        cmd.run(new JCommander());
+        cmd.run(null);
         System.setOut(origOut);
         System.setErr(origErr);
     }

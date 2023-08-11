@@ -24,11 +24,12 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.MissingCommandException;
 import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.MissingParameterException;
+import picocli.CommandLine.UnmatchedArgumentException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +48,7 @@ import javax.annotation.Nullable;
 public class Emissary {
     private static final Logger LOG = LoggerFactory.getLogger(Emissary.class);
 
-    private final JCommander jc = new JCommander();
+    private final CommandLine cli = new CommandLine(EmissaryCommand.class);
     private final Map<String, EmissaryCommand> commands;
 
     public static Map<String, EmissaryCommand> EMISSARY_COMMANDS = new HashMap<>();
@@ -75,8 +76,8 @@ public class Emissary {
     }
 
     @VisibleForTesting
-    protected JCommander getJCommander() {
-        return jc;
+    protected CommandLine getCommand() {
+        return cli;
     }
 
     protected Emissary() {
@@ -85,41 +86,44 @@ public class Emissary {
 
     protected Emissary(Map<String, EmissaryCommand> cmds) {
         commands = Collections.unmodifiableMap(cmds);
-        // sort by command name and then add to jCommander
+        // sort by command name and then add to Picocli
         for (String key : new TreeSet<>(commands.keySet())) {
-            jc.addCommand(key, commands.get(key));
+            cli.addSubcommand(key, commands.get(key));
         }
     }
 
     protected void execute(String[] args) {
         reconfigureLogHook(); // so we can capture everything for test, like the verbose output
-        String shouldSetVerbose = System.getProperty("set.jcommander.debug");
+        String shouldSetVerbose = System.getProperty("set.picocli.debug");
         if (shouldSetVerbose != null && shouldSetVerbose.equals("true")) {
-            // could also set system property JCommander.DEBUG
-            // if that was set before adding commands to the jc object though, you would get logs
-            // for adding parameter descriptions etc
-            jc.setVerbose(1);
+            CommandLine.tracer().setLevel(CommandLine.TraceLevel.INFO);
         }
         try {
-            jc.parse(args);
-            String commandName = jc.getParsedCommand();
-            if (commandName == null) {
+            cli.parseArgs(args);
+            List<String> commandNames = cli.getParseResult().originalArgs();
+            if (commandNames.isEmpty()) {
                 dumpBanner();
                 LOG.error("One command is required");
-                HelpCommand.dumpCommands(jc);
+                HelpCommand.dumpCommands(cli);
                 exit(1);
             }
+            String commandName = commandNames.get(0);
             EmissaryCommand cmd = commands.get(commandName);
             dumpBanner(cmd);
             if (Arrays.asList(args).contains(ServerCommand.COMMAND_NAME)) {
                 dumpVersionInfo();
             }
-            cmd.run(jc);
+            cmd.run(cli);
             // don't exit(0) here or things like server will not continue to run
-        } catch (MissingCommandException e) {
+        } catch (MissingParameterException e) {
+            dumpBanner();
+            LOG.error(e.getMessage());
+            HelpCommand.dumpHelp(cli, args[0]);
+            exit(1);
+        } catch (UnmatchedArgumentException e) {
             dumpBanner();
             LOG.error("Undefined command: {}", Arrays.toString(args));
-            HelpCommand.dumpCommands(jc);
+            HelpCommand.dumpCommands(cli);
             exit(1);
         } catch (Exception e) {
             dumpBanner();

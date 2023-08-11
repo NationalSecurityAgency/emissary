@@ -2,26 +2,26 @@ package emissary.command;
 
 import emissary.util.Version;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-@Parameters(commandDescription = "Dump the Emissary version")
+@Command(description = "Dump the Emissary version", subcommands = {HelpCommand.class})
 public class VersionCommand implements EmissaryCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(VersionCommand.class);
     public static final String COMMAND_NAME = "version";
 
-    @Parameter(names = "--showMobi1eAgents", description = "show MobileAgents", hidden = true)
+    @Option(names = "--showMobi1eAgents", description = "show MobileAgents\nDefault: ${DEFAULT-VALUE}", hidden = true)
     private boolean showMobileAgent = false;
 
-    @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
 
     public boolean getQuiet() {
@@ -39,7 +39,7 @@ public class VersionCommand implements EmissaryCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
         if (!showMobileAgent) {
             LOG.info("Emissary Version: {}", new Version().toString());
@@ -56,5 +56,4 @@ public class VersionCommand implements EmissaryCommand {
             new Banner().dump();
         }
     }
-
 }

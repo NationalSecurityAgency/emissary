@@ -4,31 +4,34 @@ import emissary.client.EmissaryClient;
 import emissary.client.response.ConfigsResponseEntity;
 import emissary.server.api.Configs;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.Parameters;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.ParameterException;
+import picocli.CommandLine.Spec;
 
 import java.io.IOException;
 
-@Parameters(commandDescription = "Test the configuration for a place")
+@Command(description = "Test the configuration for a place", subcommands = {HelpCommand.class})
 public class ConfigCommand extends HttpCommand {
-
+    @Spec
+    private CommandSpec spec;
     private static final Logger logger = LoggerFactory.getLogger(ConfigCommand.class);
     public static int DEFAULT_PORT = 8001;
     public static String COMMAND_NAME = "config";
 
-    @Parameter(names = {"--place"}, description = "fully-qualified place", arity = 1, required = true)
+    @Option(names = {"--place"}, description = "fully-qualified place", arity = "1", required = true)
     private String place;
 
-    @Parameter(names = {"--detailed"}, description = "get verbose output when parsing the configs")
+    @Option(names = {"--detailed"}, description = "get verbose output when parsing the configs\nDefault: ${DEFAULT-VALUE}")
     private boolean detailed = false;
 
-    @Parameter(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)")
+    @Option(names = {"--offline"}, description = "run the config command in offline mode (useful for local testing)\nDefault: ${DEFAULT-VALUE}")
     private boolean offline = false;
 
     @Override
@@ -46,7 +49,7 @@ public class ConfigCommand extends HttpCommand {
         setupHttp();
 
         if (!offline && StringUtils.isNotBlank(getFlavor())) {
-            throw new ParameterException("--flavor can only be specified in offline mode");
+            throw new ParameterException(spec.commandLine(), "--flavor can only be specified in offline mode");
         }
 
         if (offline && StringUtils.isBlank(getFlavor())) {
@@ -56,7 +59,7 @@ public class ConfigCommand extends HttpCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
         try {
             ConfigsResponseEntity entity = offline ? getOfflineConfigs() : getConfigs();

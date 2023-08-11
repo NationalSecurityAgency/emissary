@@ -5,12 +5,12 @@ import emissary.client.EmissaryResponse;
 import emissary.command.converter.FileExistsConverter;
 import emissary.directory.EmissaryNode;
 
-import com.beust.jcommander.Parameter;
 import com.google.common.net.HostAndPort;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.Option;
 
 import java.io.File;
 import java.util.LinkedHashSet;
@@ -30,19 +30,20 @@ public abstract class HttpCommand extends BaseCommand {
 
     public static final int DEFAULT_PORT = 9001;
 
-    @Parameter(names = {"-p", "--port"}, description = "http port")
+    @Option(names = {"-p", "--port"}, description = "http port\nDefault: ${DEFAULT-VALUE}")
     private int port = getDefaultPort();
 
-    @Parameter(names = {"-h", "--host"}, description = "http host")
+    @Option(names = {"-h", "--host"}, description = "http host\nDefault: ${DEFAULT-VALUE}")
     private String host = "localhost";
 
-    @Parameter(names = {"-s", "--scheme"}, description = "http scheme")
+    @Option(names = {"-s", "--scheme"}, description = "http scheme\nDefault: ${DEFAULT-VALUE}")
     private String scheme = "http";
 
-    @Parameter(names = {"-j", "--jettyuserfile"}, description = "jetty-users file to load", converter = FileExistsConverter.class)
+    @Option(names = {"-j", "--jettyuserfile"}, description = "jetty-users file to load", converter = FileExistsConverter.class)
     private File jettyUserFile;
 
-    @Parameter(names = {"--ssl"}, description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg")
+    @Option(names = {"--ssl"},
+            description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg\nDefault: ${DEFAULT-VALUE}")
     private boolean sslEnabled = false;
 
     public int getDefaultPort() {

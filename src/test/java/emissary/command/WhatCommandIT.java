@@ -107,7 +107,6 @@ class WhatCommandIT extends UnitTest {
 
         // test
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> WhatCommand.parse(WhatCommand.class, arguments));
-
         // verify
         assertTrue(thrown.getMessage().contains("The option '-i' was configured with path 'missingInputDirectory' which does not exist"));
     }
@@ -122,7 +121,6 @@ class WhatCommandIT extends UnitTest {
 
         // test
         RuntimeException thrown = assertThrows(RuntimeException.class, () -> WhatCommand.parse(WhatCommand.class, arguments));
-
         // verify
         assertTrue(thrown.getMessage().contains("The option '-b' was configured with path 'missingConfigDirectory' which does not exist"));
     }
