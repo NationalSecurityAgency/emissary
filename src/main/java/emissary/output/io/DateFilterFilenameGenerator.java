@@ -5,20 +5,24 @@ import emissary.util.io.FileNameGenerator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+/**
+ * Creates a Filename Generator that contains a timestamp (julian day), uuid, node name/host, and filter name. Example
+ * filename with a filter param of json is: 20232231650_7959b045-d895-4b34-bed2-8800b5071dcd_localhost_json
+ */
 public class DateFilterFilenameGenerator implements FileNameGenerator {
 
-    protected static final SimpleDateFormat DATE_PATTERN = new SimpleDateFormat("yyyyDDDHHmm");
+    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmm");
     public static final char DELIMITER = '_';
     public static final char DASH = '-';
     private final String filterNamePart;
     private static final String NODE_NAME = System.getProperty(EmissaryNode.NODE_NAME_PROPERTY);
 
     /**
-     * Create a file name generator that contains date,
+     * Create a file name generator that contains date, uuid, node name, filter extension.
      * 
      * @param filterName filter name used to create file extension
      */
@@ -40,7 +44,7 @@ public class DateFilterFilenameGenerator implements FileNameGenerator {
     }
 
     private static String now() {
-        return DATE_PATTERN.format(new Date());
+        return DATE_PATTERN.format(LocalDateTime.now());
     }
 
 }
