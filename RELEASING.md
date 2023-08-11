@@ -73,6 +73,8 @@ Options:
 Releases patch fixes from a branch called `patch/<version>`, i.e. `patch/8.0.x`. A release branch called `release/<version>` is created
 and the release is performed. When finished, the patch branch is deleted. No commits are made to `master`.
 
+Changes that are in a patch branch should first have a pull request that targets the Master/Main branch and once approved cherrypicked to the patch branch for release.
+
 ### Iterative Release (Milestone)
 
 Like snapshots, iterative releases are not guaranteed to be stable, but allow for markers in the development stage and allow for testing and
