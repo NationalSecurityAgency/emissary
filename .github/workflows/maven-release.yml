@@ -44,6 +44,11 @@ jobs:
         run: |
           echo "Milestone release is missing a release suffix, i.e. -M1"
           exit 1
+      - name: Check suffix is not specified for a release or patch
+        if: ${{ github.event.inputs.release_type != 'milestone' && github.event.inputs.release_suffix != '' }}
+        run: |
+          echo "Suffix should only be specified for milestone releases"
+          exit 1
       - name: Check patch release type is using correct branch
         if: ${{ github.event.inputs.release_type == 'patch' && !startsWith(github.ref_name, 'patch/') }}
         run: |
