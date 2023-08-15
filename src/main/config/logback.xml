@@ -52,7 +52,7 @@
   <!-- Enable output metrics logging by creating an environment variable of "ObjectTrace=true" -->
   <if condition='${ObjectTrace} == true'>
     <then>
-      <appender name="OBJECT-TRACE" class="emissary.util.FifteenMinuteLogbackAppender">
+      <appender name="OBJECT-TRACE" class="emissary.util.ObjectTracingLogbackAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
           <customFields>{"node":"${emissary.node.name}"}</customFields>
           <includeMdc>false</includeMdc>

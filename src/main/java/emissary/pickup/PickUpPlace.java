@@ -193,8 +193,6 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         if (useObjectTraceLogger) {
             logger.info("Setting up the object trace logger");
             objectTraceLogger = LoggerFactory.getLogger("objectTrace");
-
-            ObjectTracing.setUpFieldNames(configG.findEntries("OBJECT_TRACE_LOGGER_FIELD_NAME"));
         }
     }
 
@@ -584,9 +582,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param d The IBDO
      */
     public void objectTraceLog(IBaseDataObject d) {
-        objectTraceLogger.info(appendEntries(
-                ObjectTracing.createTraceMessageMap(new String[] {"PickUp", d.getFilename(), String.valueOf(System.currentTimeMillis())})).toString(),
-                "");
+        objectTraceLogger.info(appendEntries(ObjectTracing.createTraceMessageMap(d)), "");
     }
 
     /**
