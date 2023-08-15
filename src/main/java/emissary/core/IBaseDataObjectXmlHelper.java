@@ -15,51 +15,51 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 import java.util.List;
 
-import static emissary.core.constants.AnswerXMLFileElementNames.ANSWERS_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.ATTACHMENT_ELEMENT_PREFIX;
-import static emissary.core.constants.AnswerXMLFileElementNames.BIRTH_ORDER_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.BROKEN_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.CLASSIFICATION_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.CURRENT_FORM_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.DATA_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
-import static emissary.core.constants.AnswerXMLFileElementNames.FILENAME_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.FONT_ENCODING_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.FOOTER_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.HEADER_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.HEADER_ENCODING_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.ID_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.NUM_CHILDREN_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.NUM_SIBLINGS_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.OUTPUTABLE_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.PARAMETER_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.PRIORITY_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.PROCESSING_ERROR_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.RESULT_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.SETUP_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.TRANSACTION_ID_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.VIEW_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.WORK_BUNDLE_ID_ELEMENT_NAME;
-import static emissary.core.constants.IBDOMethodNames.BIRTH_ORDER_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.BROKEN_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.CLASSIFICATION_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.CURRENT_FORM_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.DATA_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.FILENAME_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.FONT_ENCODING_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.FOOTER_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.HEADER_ENCODING_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.HEADER_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.ID_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.NUM_CHILDREN_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.NUM_SIBLINGS_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.OUTPUTABLE_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.PARAMETER_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.PRIORITY_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.PROCESSING_ERROR_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.TRANSACTION_ID_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.VIEW_SET_METHOD_NAME;
-import static emissary.core.constants.IBDOMethodNames.WORK_BUNDLE_ID_SET_METHOD_NAME;
+import static emissary.core.constants.IbdoMethodNames.ADD_ALTERNATE_VIEW;
+import static emissary.core.constants.IbdoMethodNames.ADD_PROCESSING_ERROR;
+import static emissary.core.constants.IbdoMethodNames.SET_BIRTH_ORDER;
+import static emissary.core.constants.IbdoMethodNames.SET_BROKEN;
+import static emissary.core.constants.IbdoMethodNames.SET_CLASSIFICATION;
+import static emissary.core.constants.IbdoMethodNames.SET_CURRENT_FORM;
+import static emissary.core.constants.IbdoMethodNames.SET_DATA;
+import static emissary.core.constants.IbdoMethodNames.SET_FILENAME;
+import static emissary.core.constants.IbdoMethodNames.SET_FONT_ENCODING;
+import static emissary.core.constants.IbdoMethodNames.SET_FOOTER;
+import static emissary.core.constants.IbdoMethodNames.SET_HEADER;
+import static emissary.core.constants.IbdoMethodNames.SET_HEADER_ENCODING;
+import static emissary.core.constants.IbdoMethodNames.SET_ID;
+import static emissary.core.constants.IbdoMethodNames.SET_NUM_CHILDREN;
+import static emissary.core.constants.IbdoMethodNames.SET_NUM_SIBLINGS;
+import static emissary.core.constants.IbdoMethodNames.SET_OUTPUTABLE;
+import static emissary.core.constants.IbdoMethodNames.SET_PARAMETER;
+import static emissary.core.constants.IbdoMethodNames.SET_PRIORITY;
+import static emissary.core.constants.IbdoMethodNames.SET_TRANSACTION_ID;
+import static emissary.core.constants.IbdoMethodNames.SET_WORK_BUNDLE_ID;
+import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.ATTACHMENT_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.DATA;
+import static emissary.core.constants.IbdoXmlElementNames.EXTRACTED_RECORD_ELEMENT_PREFIX;
+import static emissary.core.constants.IbdoXmlElementNames.FILENAME;
+import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.ID;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
+import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
+import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
+import static emissary.core.constants.IbdoXmlElementNames.RESULT;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static emissary.core.constants.IbdoXmlElementNames.TRANSACTION_ID;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+import static emissary.core.constants.IbdoXmlElementNames.WORK_BUNDLE_ID;
 
 /**
  * This class helps convert IBaseDataObjects to and from XML.
@@ -115,7 +115,7 @@ public final class IBaseDataObjectXmlHelper {
         Validate.notNull(decoders, "Required: decoders not null!");
 
         final Element root = document.getRootElement();
-        final Element answersElement = root.getChild(ANSWERS_ELEMENT_NAME);
+        final Element answersElement = root.getChild(ANSWERS);
         final IBaseDataObject parentIbdo = new BaseDataObject();
         final List<Element> answerChildren = answersElement.getChildren();
 
@@ -150,26 +150,26 @@ public final class IBaseDataObjectXmlHelper {
         Validate.notNull(decoders, "Required: decoders not null!");
 
         try {
-            decoders.integerDecoder.decode(element.getChildren(BIRTH_ORDER_ELEMENT_NAME), ibdo, BIRTH_ORDER_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(BROKEN_ELEMENT_NAME), ibdo, BROKEN_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(CLASSIFICATION_ELEMENT_NAME), ibdo, CLASSIFICATION_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(CURRENT_FORM_ELEMENT_NAME), ibdo, CURRENT_FORM_SET_METHOD_NAME);
-            decoders.seekableByteChannelFactoryDecoder.decode(element.getChildren(DATA_ELEMENT_NAME), ibdo, DATA_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(FILENAME_ELEMENT_NAME), ibdo, FILENAME_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(FONT_ENCODING_ELEMENT_NAME), ibdo, FONT_ENCODING_SET_METHOD_NAME);
-            decoders.byteArrayDecoder.decode(element.getChildren(FOOTER_ELEMENT_NAME), ibdo, FOOTER_SET_METHOD_NAME);
-            decoders.byteArrayDecoder.decode(element.getChildren(HEADER_ELEMENT_NAME), ibdo, HEADER_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(HEADER_ENCODING_ELEMENT_NAME), ibdo, HEADER_ENCODING_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(ID_ELEMENT_NAME), ibdo, ID_SET_METHOD_NAME);
-            decoders.integerDecoder.decode(element.getChildren(NUM_CHILDREN_ELEMENT_NAME), ibdo, NUM_CHILDREN_SET_METHOD_NAME);
-            decoders.integerDecoder.decode(element.getChildren(NUM_SIBLINGS_ELEMENT_NAME), ibdo, NUM_SIBLINGS_SET_METHOD_NAME);
-            decoders.booleanDecoder.decode(element.getChildren(OUTPUTABLE_ELEMENT_NAME), ibdo, OUTPUTABLE_SET_METHOD_NAME);
-            decoders.stringObjectDecoder.decode(element.getChildren(PARAMETER_ELEMENT_NAME), ibdo, PARAMETER_SET_METHOD_NAME);
-            decoders.integerDecoder.decode(element.getChildren(PRIORITY_ELEMENT_NAME), ibdo, PRIORITY_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(PROCESSING_ERROR_ELEMENT_NAME), ibdo, PROCESSING_ERROR_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(TRANSACTION_ID_ELEMENT_NAME), ibdo, TRANSACTION_ID_SET_METHOD_NAME);
-            decoders.stringByteArrayDecoder.decode(element.getChildren(VIEW_ELEMENT_NAME), ibdo, VIEW_SET_METHOD_NAME);
-            decoders.stringDecoder.decode(element.getChildren(WORK_BUNDLE_ID_ELEMENT_NAME), ibdo, WORK_BUNDLE_ID_SET_METHOD_NAME);
+            decoders.integerDecoder.decode(element.getChildren(BIRTH_ORDER), ibdo, SET_BIRTH_ORDER);
+            decoders.stringDecoder.decode(element.getChildren(BROKEN), ibdo, SET_BROKEN);
+            decoders.stringDecoder.decode(element.getChildren(CLASSIFICATION), ibdo, SET_CLASSIFICATION);
+            decoders.stringDecoder.decode(element.getChildren(CURRENT_FORM), ibdo, SET_CURRENT_FORM);
+            decoders.seekableByteChannelFactoryDecoder.decode(element.getChildren(DATA), ibdo, SET_DATA);
+            decoders.stringDecoder.decode(element.getChildren(FILENAME), ibdo, SET_FILENAME);
+            decoders.stringDecoder.decode(element.getChildren(FONT_ENCODING), ibdo, SET_FONT_ENCODING);
+            decoders.byteArrayDecoder.decode(element.getChildren(FOOTER), ibdo, SET_FOOTER);
+            decoders.byteArrayDecoder.decode(element.getChildren(HEADER), ibdo, SET_HEADER);
+            decoders.stringDecoder.decode(element.getChildren(HEADER_ENCODING), ibdo, SET_HEADER_ENCODING);
+            decoders.stringDecoder.decode(element.getChildren(ID), ibdo, SET_ID);
+            decoders.integerDecoder.decode(element.getChildren(NUM_CHILDREN), ibdo, SET_NUM_CHILDREN);
+            decoders.integerDecoder.decode(element.getChildren(NUM_SIBLINGS), ibdo, SET_NUM_SIBLINGS);
+            decoders.booleanDecoder.decode(element.getChildren(OUTPUTABLE), ibdo, SET_OUTPUTABLE);
+            decoders.stringObjectDecoder.decode(element.getChildren(PARAMETER), ibdo, SET_PARAMETER);
+            decoders.integerDecoder.decode(element.getChildren(PRIORITY), ibdo, SET_PRIORITY);
+            decoders.stringDecoder.decode(element.getChildren(PROCESSING_ERROR), ibdo, ADD_PROCESSING_ERROR);
+            decoders.stringDecoder.decode(element.getChildren(TRANSACTION_ID), ibdo, SET_TRANSACTION_ID);
+            decoders.stringByteArrayDecoder.decode(element.getChildren(VIEW), ibdo, ADD_ALTERNATE_VIEW);
+            decoders.stringDecoder.decode(element.getChildren(WORK_BUNDLE_ID), ibdo, SET_WORK_BUNDLE_ID);
         } catch (Exception e) {
             LOGGER.error("Failed to parse XML!", e);
         }
@@ -193,14 +193,14 @@ public final class IBaseDataObjectXmlHelper {
         Validate.notNull(initialIbdo, "Required: initialIbdo != null!");
         Validate.notNull(encoders, "Required: encoders not null!");
 
-        final Element rootElement = new Element(RESULT_ELEMENT_NAME);
-        final Element setupElement = new Element(SETUP_ELEMENT_NAME);
+        final Element rootElement = new Element(RESULT);
+        final Element setupElement = new Element(SETUP);
 
         rootElement.addContent(setupElement);
 
         xmlFromIbdoMainElements(initialIbdo, setupElement, encoders);
 
-        final Element answersElement = new Element(ANSWERS_ELEMENT_NAME);
+        final Element answersElement = new Element(ANSWERS);
 
         rootElement.addContent(answersElement);
 
@@ -242,25 +242,25 @@ public final class IBaseDataObjectXmlHelper {
         Validate.notNull(element, "Required: element not null!");
         Validate.notNull(encoders, "Required: encoders not null!");
 
-        encoders.seekableByteChannelFactoryEncoder.encode(Collections.singletonList(ibdo.getChannelFactory()), element, DATA_ELEMENT_NAME);
-        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getBirthOrder()), element, BIRTH_ORDER_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getBroken()), element, BROKEN_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getClassification()), element, CLASSIFICATION_ELEMENT_NAME);
-        encoders.stringEncoder.encode(ibdo.getAllCurrentForms(), element, CURRENT_FORM_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFilename()), element, FILENAME_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFontEncoding()), element, FONT_ENCODING_ELEMENT_NAME);
-        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.footer()), element, FOOTER_ELEMENT_NAME);
-        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.header()), element, HEADER_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getHeaderEncoding()), element, HEADER_ENCODING_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getId()), element, ID_ELEMENT_NAME);
-        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumChildren()), element, NUM_CHILDREN_ELEMENT_NAME);
-        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumSiblings()), element, NUM_SIBLINGS_ELEMENT_NAME);
-        encoders.booleanEncoder.encode(Collections.singletonList(ibdo.isOutputable()), element, OUTPUTABLE_ELEMENT_NAME);
-        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getPriority()), element, PRIORITY_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getProcessingError()), element, PROCESSING_ERROR_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getTransactionId()), element, TRANSACTION_ID_ELEMENT_NAME);
-        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getWorkBundleId()), element, WORK_BUNDLE_ID_ELEMENT_NAME);
-        encoders.stringObjectEncoder.encode(Collections.singletonList(ibdo.getParameters()), element, PARAMETER_ELEMENT_NAME);
-        encoders.stringByteArrayEncoder.encode(Collections.singletonList(ibdo.getAlternateViews()), element, VIEW_ELEMENT_NAME);
+        encoders.seekableByteChannelFactoryEncoder.encode(Collections.singletonList(ibdo.getChannelFactory()), element, DATA);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getBirthOrder()), element, BIRTH_ORDER);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getBroken()), element, BROKEN);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getClassification()), element, CLASSIFICATION);
+        encoders.stringEncoder.encode(ibdo.getAllCurrentForms(), element, CURRENT_FORM);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFilename()), element, FILENAME);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getFontEncoding()), element, FONT_ENCODING);
+        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.footer()), element, FOOTER);
+        encoders.byteArrayEncoder.encode(Collections.singletonList(ibdo.header()), element, HEADER);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getHeaderEncoding()), element, HEADER_ENCODING);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getId()), element, ID);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumChildren()), element, NUM_CHILDREN);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getNumSiblings()), element, NUM_SIBLINGS);
+        encoders.booleanEncoder.encode(Collections.singletonList(ibdo.isOutputable()), element, OUTPUTABLE);
+        encoders.integerEncoder.encode(Collections.singletonList(ibdo.getPriority()), element, PRIORITY);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getProcessingError()), element, PROCESSING_ERROR);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getTransactionId()), element, TRANSACTION_ID);
+        encoders.stringEncoder.encode(Collections.singletonList(ibdo.getWorkBundleId()), element, WORK_BUNDLE_ID);
+        encoders.stringObjectEncoder.encode(Collections.singletonList(ibdo.getParameters()), element, PARAMETER);
+        encoders.stringByteArrayEncoder.encode(Collections.singletonList(ibdo.getAlternateViews()), element, VIEW);
     }
 }

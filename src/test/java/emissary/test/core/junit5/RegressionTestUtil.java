@@ -34,8 +34,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static emissary.core.constants.AnswerXMLFileElementNames.ANSWERS_ELEMENT_NAME;
-import static emissary.core.constants.AnswerXMLFileElementNames.SETUP_ELEMENT_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
+import static emissary.core.constants.IbdoXmlElementNames.SETUP;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -98,7 +98,7 @@ public final class RegressionTestUtil {
     public static void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
-        final Element parent = root.getChild(ANSWERS_ELEMENT_NAME);
+        final Element parent = root.getChild(ANSWERS);
 
         assertNotNull(parent, "No 'answers' section found!");
 
@@ -195,7 +195,7 @@ public final class RegressionTestUtil {
         final Element root = answers.getRootElement();
 
         if (root != null) {
-            final Element parent = root.getChild(SETUP_ELEMENT_NAME);
+            final Element parent = root.getChild(SETUP);
 
             if (parent != null) {
                 payload.popCurrentForm(); // Remove default form put on by ExtractionTest.
