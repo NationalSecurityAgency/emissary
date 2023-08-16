@@ -16,10 +16,12 @@ Release process uses GitHub actions and involves:
   - Remove the "-SNAPSHOT" suffix from the version and create scm tag
   - Create a GitHub release and upload artifacts
 - If patch release, delete the patch branch
-- For a formal release only, increment snapshot version on master branch 
+- For a formal release only, increment snapshot version on a branch and open a pull request 
 - Publish the artifacts to GitHub Maven Repo
 
-The release process used for this repository creates a branch for every release that is prefixed with `release/`. Tags are not added nor are releases performed on the `master` branch. The `master` branch is the target for merging new commits and for development releases (-SNAPSHOT) only. All patches will originate using a `patch/` prefixed branch and once complete a new `release/` branch will be created. 
+The release process used for this repository creates a branch for every release that is prefixed with `release/`. Tags are not added nor are releases performed on the `master` branch. 
+The `master` branch is the target for merging new commits and for development releases (-SNAPSHOT) only. All patches will originate using a `patch/` prefixed branch and once complete 
+a new `release/` branch will be created. 
 
 ## Versioning
 
@@ -38,7 +40,8 @@ Options:
 - Type: `Release`
 - Suffix: Leave blank
 ```
-Creates a branch called `release/<version>` and performs release. One commit is added to `master` only to increment to the next snapshot version.
+Creates a branch called `release/<version>` and performs release. One commit is added to a branch called `action/<version>` only to increment to the next snapshot version, and 
+a pull request is created that needs to be approved and merged to finish the release process.
 
 
 ### Patch Release
@@ -55,8 +58,10 @@ Note: When manually creating a patch branch, the name must start with `patch/` a
 Action: `Create a Patch Branch`
 Options:
 - From: `Branch: release/<version>`
+- Cherry pick: Optionally add commit hashes to cherry pick to the patch branch
 ```
 Convenience action to simply create a branch called `patch/<version>`. The action must be run from a release branch, i.e. `release/<version>`.
+The user can specify one or more commit hashes, separated by spaces, to cherry-pick to the newly created patch branch, i.e. `commitA commitB`.
 
 #### Release Patch
 
@@ -71,7 +76,7 @@ Options:
 - Suffix: Leave blank
 ```
 Releases patch fixes from a branch called `patch/<version>`, i.e. `patch/8.0.x`. A release branch called `release/<version>` is created
-and the release is performed. When finished, the patch branch is deleted. No commits are made to `master`.
+and the release is performed. When finished, the patch branch is deleted. No commits or pull request are created to increment to the next version.
 
 ### Iterative Release (Milestone)
 
@@ -87,7 +92,8 @@ Options:
 - Suffix: `-M1` <- this is just an example it can be anything, e.g. `M1` OR `-MILESTONE1`
 ```
 
-Creates a branch called `release/<version><suffix>`, i.e. `release/8.0.0-M1`, and performs release. No commits are added to `master`.
+Creates a branch called `release/<version><suffix>`, i.e. `release/8.0.0-M1`, and performs release. No commits or pull request are created to increment 
+to the next version.
 
 ## Publishing a Release
 
