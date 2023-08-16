@@ -2,6 +2,11 @@ name: 'Create a Patch Branch'
 
 on:
   workflow_dispatch:
+    inputs:
+      cherrypick_commits:
+        description: "List of space delimited commits to cherry pick"
+        required: false
+        default: ""
 
 env:
   JAVA_VERSION: '11'
@@ -58,4 +63,11 @@ jobs:
           mvn -B -V -e -ntp versions:commit
           git add .
           git commit -m "[github-actions](${{ github.actor }}) prepare for next patch iteration"
+          git push -u origin ${{ env.PATCH_BRANCH }}
+
+      - name: Cherry pick to patch branch
+        if: ${{ github.event.inputs.cherrypick_commits != '' }}
+        run: |
+          git fetch --all
+          git cherry-pick ${{ github.event.inputs.cherrypick_commits }}
           git push -u origin ${{ env.PATCH_BRANCH }}
