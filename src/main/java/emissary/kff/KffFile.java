@@ -63,7 +63,7 @@ public class KffFile implements KffFilter {
      * @throws IOException if thrown by file I/O
      */
     public KffFile(String filename, String filterName, FilterType ftype) throws IOException {
-        this(filename, filterName, ftype, 24);
+        this(filename, filterName, ftype, DEFAULT_RECORD_LENGTH);
     }
 
 
@@ -162,7 +162,7 @@ public class KffFile implements KffFilter {
                 int mid = (low + high) >> 1;
 
                 knownFile.position(rec.length * (long) mid);
-                int count = knownFile.read(byteBuffer);
+                int count = IOUtils.read(knownFile, byteBuffer);
                 if (count != rec.length) {
                     logger.warn("Short read on KffFile at {} read {} expected {}", (recordLength * mid), count, recordLength);
                     return false;
