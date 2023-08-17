@@ -8,8 +8,10 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.channels.SeekableByteChannelHelper;
 import emissary.directory.DirectoryEntry;
 import emissary.pickup.Priority;
+import emissary.test.core.junit5.LogbackTester;
 import emissary.test.core.junit5.UnitTest;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1317,6 +1320,71 @@ class BaseDataObjectTest extends UnitTest {
                     .getExtractedRecordCount(), "Cloned IBDO should have same sized extracted record list");
         } catch (CloneNotSupportedException ex) {
             fail("Clone method should have been called", ex);
+        }
+    }
+
+    @Test
+    void testChannelFactoryInArrayOutNoSet() throws IOException {
+        final byte[] bytes = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
+        final Level[] levels = new Level[] {Level.WARN};
+        final String[] messages = new String[] {"IBDO-DATA-MODIFICATION: Data array modified without setting in TestPlace!"};
+        final boolean[] throwables = new boolean[] {false};
+
+        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
+            final IBaseDataObject ibdo = new BaseDataObject();
+
+            ibdo.setChannelFactory(InMemoryChannelFactory.create(bytes));
+
+            final byte[] data = ibdo.data();
+
+            Arrays.fill(data, (byte) 0);
+
+            ibdo.checkAndResetArrayHashMap("TestPlace");
+
+            assertArrayEquals(bytes, ibdo.data());
+            logbackTester.checkLogList(levels, messages, throwables);
+        }
+    }
+
+    @Test
+    void testChannelFactoryInArrayOutSetChannelFactory() throws IOException {
+        final byte[] bytes = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
+
+        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
+            final IBaseDataObject ibdo = new BaseDataObject();
+
+            ibdo.setChannelFactory(InMemoryChannelFactory.create(bytes));
+
+            final byte[] data = ibdo.data();
+
+            Arrays.fill(data, (byte) 0);
+            ibdo.setChannelFactory(InMemoryChannelFactory.create(data));
+
+            ibdo.checkAndResetArrayHashMap("TestPlace");
+
+            assertArrayEquals(new byte[bytes.length], ibdo.data());
+            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+        }
+    }
+
+    @Test
+    void testChannelFactoryInArrayOutSetArray() throws IOException {
+        final byte[] bytes = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
+
+        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
+            final IBaseDataObject ibdo = new BaseDataObject();
+
+            ibdo.setChannelFactory(InMemoryChannelFactory.create(bytes));
+
+            final byte[] data = ibdo.data();
+
+            Arrays.fill(data, (byte) 0);
+            ibdo.setData(data);
+
+            ibdo.checkAndResetArrayHashMap("TestPlace");
+
+            assertArrayEquals(new byte[bytes.length], ibdo.data());
+            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
         }
     }
 }

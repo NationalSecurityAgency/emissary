@@ -182,6 +182,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
+    protected final Map<byte[], String> arrayHashMap = new HashMap<>();
+
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
     }
@@ -218,6 +220,21 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             } else {
                 return DataState.BYTE_ARRAY_AND_CHANNEL;
             }
+        }
+    }
+
+    @Override
+    public void checkAndResetArrayHashMap(final String placeName) {
+        for (Map.Entry<byte[], String> e : arrayHashMap.entrySet()) {
+            if (!ByteUtil.sha256Bytes(e.getKey()).equals(e.getValue())) {
+                logger.warn("IBDO-DATA-MODIFICATION: Data array modified without setting in {}!", placeName);
+            }
+        }
+
+        arrayHashMap.clear();
+
+        if (this.theData != null) {
+            arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
         }
     }
 
@@ -327,6 +344,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         Validate.notNull(sbcf, "Required: SeekableByteChannelFactory not null");
         this.theData = null;
         this.seekableByteChannelFactory = sbcf;
+        this.arrayHashMap.clear();
     }
 
     /**
@@ -378,7 +396,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 return theData;
             case CHANNEL_ONLY:
                 // Max size here is slightly less than the true max size to avoid memory issues
-                return SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
+                final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
+
+                arrayHashMap.put(bytes, ByteUtil.sha256Bytes(bytes));
+
+                return bytes;
             case NO_DATA:
             default:
                 return null; // NOSONAR maintains backwards compatibility
@@ -396,6 +418,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         } else {
             this.theData = newData;
         }
+
+        arrayHashMap.clear();
+        arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
     }
 
     /**
@@ -422,6 +447,9 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             this.theData = new byte[length];
             System.arraycopy(newData, offset, this.theData, 0, length);
         }
+
+        arrayHashMap.clear();
+        arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
     }
 
     /**

@@ -26,6 +26,8 @@ public interface IBaseDataObject {
      */
     String DEFAULT_PARAM_SEPARATOR = ";";
 
+    void checkAndResetArrayHashMap(final String placeName);
+
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to
      * Integer.MAX_VALUE bytes of the original data.
