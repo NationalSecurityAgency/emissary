@@ -11,6 +11,7 @@ import org.apache.hc.client5.http.auth.StandardAuthScheme;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.cookie.Cookie;
 import org.apache.hc.client5.http.entity.EntityBuilder;
@@ -47,7 +48,7 @@ public class EmissaryClient {
     public static final String DEFAULT_CONTEXT = "emissary";
     public static final String JETTY_USER_FILE_PROPERTY_NAME = "emissary.jetty.users.file";
     public static final int DEFAULT_CONNECTION_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(100L); // 2 X 50 min
-    public static final int DEFAULT_CONNECTION_MANAGER_TIMEOUT = (int) TimeUnit.MINUTES.toMicros(2L);
+    public static final int DEFAULT_CONNECTION_MANAGER_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(2L);
     public static final int DEFAULT_SO_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(1L);
     public static final int DEFAULT_RETRIES = 3;
     public static final String DEFAULT_USERNAME = "emissary";
@@ -64,6 +65,7 @@ public class EmissaryClient {
 
     private static CloseableHttpClient staticClient = null;
     private static RequestConfig staticRequestConfig = null;
+    private static ConnectionConfig staticConnectionConfig = null;
 
     // static config variables
     public static String CONTEXT = DEFAULT_CONTEXT;
@@ -78,8 +80,9 @@ public class EmissaryClient {
     // class is thread-safe
     protected static final AuthCache AUTH_CACHE = new BasicAuthCache();
 
-    private CloseableHttpClient client = null;
-    private RequestConfig requestConfig = null;
+    private CloseableHttpClient client;
+    private RequestConfig requestConfig;
+    private ConnectionConfig connectionConfig;
 
     static {
         configure();
@@ -137,12 +140,17 @@ public class EmissaryClient {
         }
 
         staticRequestConfig =
-                RequestConfig.custom().setConnectTimeout(Timeout.ofMilliseconds(connectionTimeout))
-                        .setConnectionRequestTimeout(Timeout.ofMicroseconds(connectionManagerTimeout))
-                        .setResponseTimeout(Timeout.ofMilliseconds(socketTimeout))
+                RequestConfig.custom()
+                        .setConnectionRequestTimeout(Timeout.ofMilliseconds(connectionManagerTimeout))
                         .setTargetPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))
                         .setProxyPreferredAuthSchemes(Collections.singleton(StandardAuthScheme.DIGEST))
                         .build();
+
+        staticConnectionConfig = ConnectionConfig.custom()
+                .setConnectTimeout(Timeout.ofMilliseconds(connectionTimeout))
+                .setSocketTimeout(Timeout.ofMilliseconds(socketTimeout)).build();
+
+        CONNECTION_MANAGER.setDefaultConnectionConfig(staticConnectionConfig);
 
         staticClient =
                 HttpClientBuilder.create().setConnectionManager(CONNECTION_MANAGER).setDefaultCredentialsProvider(CRED_PROV)
@@ -151,20 +159,21 @@ public class EmissaryClient {
     }
 
     public EmissaryClient() {
-        this(staticClient, staticRequestConfig);
+        this(staticClient, staticRequestConfig, staticConnectionConfig);
     }
 
-    public EmissaryClient(RequestConfig requestConfig) {
-        this(staticClient, requestConfig);
+    public EmissaryClient(RequestConfig requestConfig, ConnectionConfig connectionConfig) {
+        this(staticClient, requestConfig, connectionConfig);
     }
 
     public EmissaryClient(CloseableHttpClient client) {
-        this(client, staticRequestConfig);
+        this(client, staticRequestConfig, staticConnectionConfig);
     }
 
-    public EmissaryClient(CloseableHttpClient client, RequestConfig requestConfig) {
+    public EmissaryClient(CloseableHttpClient client, RequestConfig requestConfig, ConnectionConfig connectionConfig) {
         this.client = client;
         this.requestConfig = requestConfig;
+        this.connectionConfig = connectionConfig;
     }
 
     public EmissaryResponse send(final HttpUriRequestBase method) {
@@ -220,9 +229,14 @@ public class EmissaryClient {
         return requestConfig;
     }
 
+    protected ConnectionConfig getConnectionConfig() {
+        return connectionConfig;
+    }
+
+
     public void setConnectionTimeout(int timeout) {
         if (timeout > 0) {
-            requestConfig = RequestConfig.copy(requestConfig).setConnectTimeout(Timeout.ofMilliseconds(timeout)).build();
+            connectionConfig = ConnectionConfig.copy(connectionConfig).setConnectTimeout(Timeout.ofMilliseconds(timeout)).build();
         } else {
             LOGGER.warn("Tried to set timeout to {}", timeout);
         }

@@ -3,6 +3,7 @@ package emissary.client;
 import emissary.config.ConfigUtil;
 import emissary.test.core.junit5.UnitTest;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.core5.util.Timeout;
 import org.junit.jupiter.api.Test;
@@ -35,9 +36,10 @@ class EmissaryClientTest extends UnitTest {
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();
             RequestConfig requestConfig = client.getRequestConfig();
-            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_CONNECTION_TIMEOUT), requestConfig.getConnectTimeout());
-            assertEquals(Timeout.ofMicroseconds(EmissaryClient.DEFAULT_CONNECTION_MANAGER_TIMEOUT), requestConfig.getConnectionRequestTimeout());
-            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_SO_TIMEOUT), requestConfig.getResponseTimeout());
+            ConnectionConfig connectionConfig = client.getConnectionConfig();
+            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_CONNECTION_TIMEOUT), connectionConfig.getConnectTimeout());
+            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_CONNECTION_MANAGER_TIMEOUT), requestConfig.getConnectionRequestTimeout());
+            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_SO_TIMEOUT), connectionConfig.getSocketTimeout());
         } catch (IOException e) {
             logger.error("Problem moving {}", origCfg.toAbsolutePath(), e);
         } finally {
@@ -59,11 +61,12 @@ class EmissaryClientTest extends UnitTest {
         EmissaryClient.configure();
         EmissaryClient client = new EmissaryClient();
         RequestConfig requestConfig = client.getRequestConfig();
+        ConnectionConfig connectionConfig = client.getConnectionConfig();
         // asserted values are copied from src/main/resource/emissary/client/EmissaryClient.cfg, which is packaged
         // with the jar
-        assertEquals(Timeout.ofMilliseconds(TimeUnit.MINUTES.toMillis(10)), requestConfig.getConnectTimeout());
-        assertEquals(Timeout.ofMicroseconds(TimeUnit.MINUTES.toMillis(5)), requestConfig.getConnectionRequestTimeout());
-        assertEquals(Timeout.ofMilliseconds(TimeUnit.SECONDS.toMillis(90)), requestConfig.getResponseTimeout());
+        assertEquals(Timeout.ofMilliseconds(TimeUnit.MINUTES.toMillis(10)), connectionConfig.getConnectTimeout());
+        assertEquals(Timeout.ofMilliseconds(TimeUnit.MINUTES.toMillis(5)), requestConfig.getConnectionRequestTimeout());
+        assertEquals(Timeout.ofMilliseconds(TimeUnit.SECONDS.toMillis(90)), connectionConfig.getSocketTimeout());
     }
 
     @Test
@@ -82,9 +85,10 @@ class EmissaryClientTest extends UnitTest {
             EmissaryClient.configure();
             EmissaryClient client = new EmissaryClient();
             RequestConfig requestConfig = client.getRequestConfig();
-            assertEquals(Timeout.ofMilliseconds(newConnectionTimeout), requestConfig.getConnectTimeout());
-            assertEquals(Timeout.ofMicroseconds(newConnectionManagerTimeout), requestConfig.getConnectionRequestTimeout());
-            assertEquals(Timeout.ofMilliseconds(newSocketTimeout), requestConfig.getResponseTimeout());
+            ConnectionConfig connectionConfig = client.getConnectionConfig();
+            assertEquals(Timeout.ofMilliseconds(newConnectionTimeout), connectionConfig.getConnectTimeout());
+            assertEquals(Timeout.ofMilliseconds(newConnectionManagerTimeout), requestConfig.getConnectionRequestTimeout());
+            assertEquals(Timeout.ofMilliseconds(newSocketTimeout), connectionConfig.getSocketTimeout());
         } catch (IOException e) {
             logger.error("Problem with {}", cfgFile.toAbsolutePath(), e);
         } finally {
@@ -98,15 +102,16 @@ class EmissaryClientTest extends UnitTest {
         EmissaryClient.configure();
         EmissaryClient client = new EmissaryClient();
         RequestConfig requestConfig = client.getRequestConfig();
+        ConnectionConfig connectionConfig = client.getConnectionConfig();
         // initial value from config file on classpath
         int valueInCfgOnClasspath = (int) TimeUnit.MINUTES.toMillis(10);
-        assertEquals(Timeout.ofMilliseconds(valueInCfgOnClasspath), requestConfig.getConnectTimeout());
+        assertEquals(Timeout.ofMilliseconds(valueInCfgOnClasspath), connectionConfig.getConnectTimeout());
         int newTimeout = (int) TimeUnit.MINUTES.toMillis(3);
         client.setConnectionTimeout(newTimeout);
         // did it get reset?
-        assertEquals(Timeout.ofMilliseconds(newTimeout), client.getRequestConfig().getConnectTimeout());
+        assertEquals(Timeout.ofMilliseconds(newTimeout), client.getConnectionConfig().getConnectTimeout());
         // ensure it didn't override config for new instances
-        assertEquals(Timeout.ofMilliseconds(valueInCfgOnClasspath), new EmissaryClient().getRequestConfig().getConnectTimeout());
+        assertEquals(Timeout.ofMilliseconds(valueInCfgOnClasspath), new EmissaryClient().getConnectionConfig().getConnectTimeout());
     }
 
 }

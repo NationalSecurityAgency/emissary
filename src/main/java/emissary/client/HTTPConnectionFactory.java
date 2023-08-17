@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.util.PkiUtil;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.hc.client5.http.impl.DefaultClientConnectionReuseStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
@@ -16,7 +17,6 @@ import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.ConnectionReuseStrategy;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
-import org.apache.hc.core5.http.impl.DefaultConnectionReuseStrategy;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -78,7 +78,7 @@ public class HTTPConnectionFactory {
 
     final PoolingHttpClientConnectionManager connMan;
 
-    private ConnectionReuseStrategy connReuseStrategy = DefaultConnectionReuseStrategy.INSTANCE;
+    private ConnectionReuseStrategy connReuseStrategy = DefaultClientConnectionReuseStrategy.INSTANCE;
 
     int maxConns = DFLT_MAXCONNS;
 
@@ -95,8 +95,7 @@ public class HTTPConnectionFactory {
             final Configurator cfg = config == null ? ConfigUtil.getConfigInfo(HTTPConnectionFactory.class) : config;
             // if someone doesn't want keep alives...
             if (!cfg.findBooleanEntry(CFG_HTTP_KEEPALIVE, DFLT_KEEPALIVE)) {
-                this.connReuseStrategy = DefaultConnectionReuseStrategy.INSTANCE;
-                ;
+                this.connReuseStrategy = (httpRequest, httpResponse, httpContext) -> false;
             }
             this.maxConns = cfg.findIntEntry(CFG_HTTP_MAXCONNS, DFLT_MAXCONNS);
             this.userAgent = cfg.findStringEntry(CFG_HTTP_AGENT, DEFAULT_HTTP_AGENT);
