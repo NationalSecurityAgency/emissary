@@ -81,8 +81,9 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
 
-    private boolean useObjectTraceLogger = true;
+    private boolean useObjectTraceLogger = false;
     protected Logger objectTraceLogger;
+    private ObjectTracing tracingUtil;
 
     public PickUpPlace() throws IOException {
         super();
@@ -194,6 +195,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             logger.info("Setting up the object trace logger");
             objectTraceLogger = LoggerFactory.getLogger("objectTrace");
         }
+        tracingUtil = new ObjectTracing();
     }
 
     /**
@@ -577,12 +579,12 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     }
 
     /**
-     * Creates an entry in the object trace log. Can be overridden if desired.
+     * Creates an entry in the object trace log.
      * 
      * @param d The IBDO
      */
     public void objectTraceLog(IBaseDataObject d) {
-        objectTraceLogger.info(appendEntries(ObjectTracing.createTraceMessageMap(d)), "");
+        objectTraceLogger.info(appendEntries(tracingUtil.createTraceMessageMap(d)), "");
     }
 
     /**
