@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap.SimpleEntry;
+import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -28,16 +28,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 
-import static emissary.core.IBaseDataObjectXmlHelper.BIRTH_ORDER_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.BROKEN_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.NUM_CHILDREN_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.NUM_SIBLINGS_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.OUTPUTABLE_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PARAMETER_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PRIORITY_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.PROCESSING_ERROR_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.VALUE_ELEMENT_NAME;
-import static emissary.core.IBaseDataObjectXmlHelper.VIEW_ELEMENT_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.BASE64_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
+import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.ENCODING_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NAME;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
+import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
+import static emissary.core.constants.IbdoXmlElementNames.OUTPUTABLE;
+import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
+import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
+import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
+import static emissary.core.constants.IbdoXmlElementNames.SHA256_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.VALUE;
+import static emissary.core.constants.IbdoXmlElementNames.VIEW;
 
 /**
  * This class contains the interfaces and implementations used to convert an IBDO-&gt;XML and XML-&gt;IBDO.
@@ -47,14 +51,6 @@ public final class IBaseDataObjectXmlCodecs {
      * Logger instance
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectXmlCodecs.class);
-    /**
-     * The XML attribute name for Base64.
-     */
-    public static final String BASE64_ATTRIBUTE_NAME = "base64";
-    /**
-     * The XML attribute name for SHA256.
-     */
-    public static final String SHA256_ATTRIBUTE_NAME = "sha256";
     /**
      * New line string to use for normalised XML
      */
@@ -76,25 +72,17 @@ public final class IBaseDataObjectXmlCodecs {
      */
     private static final Base64.Decoder BASE64_DECODER = Base64.getMimeDecoder();
     /**
-     * The XML attribute name for Encoding.
-     */
-    public static final String ENCODING_ATTRIBUTE_NAME = "encoding";
-    /**
-     * The XML element name for Name.
-     */
-    public static final String NAME_ELEMENT_NAME = "name";
-    /**
      * A map of element names of IBaseDataObject methods that get/set primitives and their default values.
      */
     public static final Map<String, Object> PRIMITVE_NAME_DEFAULT_MAP = Collections
             .unmodifiableMap(new ConcurrentHashMap<>(Stream.of(
-                    new SimpleEntry<>(BIRTH_ORDER_ELEMENT_NAME, new BaseDataObject().getBirthOrder()),
-                    new SimpleEntry<>(BROKEN_ELEMENT_NAME, new BaseDataObject().isBroken()),
-                    new SimpleEntry<>(NUM_CHILDREN_ELEMENT_NAME, new BaseDataObject().getNumChildren()),
-                    new SimpleEntry<>(NUM_SIBLINGS_ELEMENT_NAME, new BaseDataObject().getNumSiblings()),
-                    new SimpleEntry<>(OUTPUTABLE_ELEMENT_NAME, new BaseDataObject().isOutputable()),
-                    new SimpleEntry<>(PRIORITY_ELEMENT_NAME, new BaseDataObject().getPriority()))
-                    .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue))));
+                    new AbstractMap.SimpleEntry<>(BIRTH_ORDER, new BaseDataObject().getBirthOrder()),
+                    new AbstractMap.SimpleEntry<>(BROKEN, new BaseDataObject().isBroken()),
+                    new AbstractMap.SimpleEntry<>(NUM_CHILDREN, new BaseDataObject().getNumChildren()),
+                    new AbstractMap.SimpleEntry<>(NUM_SIBLINGS, new BaseDataObject().getNumSiblings()),
+                    new AbstractMap.SimpleEntry<>(OUTPUTABLE, new BaseDataObject().isOutputable()),
+                    new AbstractMap.SimpleEntry<>(PRIORITY, new BaseDataObject().getPriority()))
+                    .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));
     /**
      * The XML namespace for "xml".
      */
@@ -343,11 +331,11 @@ public final class IBaseDataObjectXmlCodecs {
         final Method method = getIbdoMethod(ibdoMethodName, String.class, byte[].class);
 
         for (final Element element : elements) {
-            final Element nameElement = element.getChild(NAME_ELEMENT_NAME);
+            final Element nameElement = element.getChild(NAME);
             final String name = nameElement.getValue();
             final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
             final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
-            final Element valueElement = element.getChild(VALUE_ELEMENT_NAME);
+            final Element valueElement = element.getChild(VALUE);
             final String value = valueElement.getValue();
             final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
             final byte[] valueDecoded = extractBytes(valueEncoding, value);
@@ -364,11 +352,11 @@ public final class IBaseDataObjectXmlCodecs {
         final Method method = getIbdoMethod(ibdoMethodName, String.class, Object.class);
 
         for (final Element element : elements) {
-            final Element nameElement = element.getChild(NAME_ELEMENT_NAME);
+            final Element nameElement = element.getChild(NAME);
             final String name = nameElement.getValue();
             final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
             final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
-            final Element valueElement = element.getChild(VALUE_ELEMENT_NAME);
+            final Element valueElement = element.getChild(VALUE);
             final String value = valueElement.getValue();
             final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
             final String valueDecoded = new String(extractBytes(valueEncoding, value));
@@ -465,7 +453,7 @@ public final class IBaseDataObjectXmlCodecs {
             for (int i = values.size() - 1; i >= 0; i--) {
                 String value = values.get(i);
 
-                if (PROCESSING_ERROR_ELEMENT_NAME.equals(childElementName) && StringUtils.isNotEmpty(value)) {
+                if (PROCESSING_ERROR.equals(childElementName) && StringUtils.isNotEmpty(value)) {
                     value = value.substring(0, value.length() - 1);
                 }
 
@@ -519,11 +507,11 @@ public final class IBaseDataObjectXmlCodecs {
             for (final Map<String, Collection<Object>> value : values) {
                 for (final Entry<String, Collection<Object>> parameter : value.entrySet()) {
                     for (final Object item : parameter.getValue()) {
-                        final Element metaElement = new Element(PARAMETER_ELEMENT_NAME);
+                        final Element metaElement = new Element(PARAMETER);
 
                         parentElement.addContent(metaElement);
-                        metaElement.addContent(preserve(protectedElement(NAME_ELEMENT_NAME, parameter.getKey())));
-                        metaElement.addContent(preserve(protectedElement(VALUE_ELEMENT_NAME, item.toString())));
+                        metaElement.addContent(preserve(protectedElement(NAME, parameter.getKey())));
+                        metaElement.addContent(preserve(protectedElement(VALUE, item.toString())));
                     }
                 }
             }
@@ -540,11 +528,11 @@ public final class IBaseDataObjectXmlCodecs {
         public void encode(final List<Map<String, byte[]>> values, final Element parentElement, final String childElementName) {
             for (final Map<String, byte[]> value : values) {
                 for (final Entry<String, byte[]> view : value.entrySet()) {
-                    final Element metaElement = new Element(VIEW_ELEMENT_NAME);
+                    final Element metaElement = new Element(VIEW);
 
                     parentElement.addContent(metaElement);
-                    metaElement.addContent(preserve(protectedElement(NAME_ELEMENT_NAME, view.getKey())));
-                    metaElement.addContent(preserve(protectedElementBase64(VALUE_ELEMENT_NAME, view.getValue())));
+                    metaElement.addContent(preserve(protectedElement(NAME, view.getKey())));
+                    metaElement.addContent(preserve(protectedElementBase64(VALUE, view.getValue())));
                 }
             }
         }
