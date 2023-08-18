@@ -47,16 +47,8 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     protected WorkBundle currentBundle = null;
     protected WorkUnit currentWorkUnit = null;
 
-    // These allow the same config file to drive this
-    // place on both windows and unix like systems where
-    // the path need to change based on the OS. For example
-    // we might have:
-    // Unix: /sharedfilesystem/foo/bar/baz
-    // Win: G:/foo/bar/baz
     protected String unixInRoot;
-    protected String winInRoot;
     protected String unixOutRoot;
-    protected String winOutRoot;
     protected String digestHashType;
 
     protected MessageDigest digest = null;
@@ -101,9 +93,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
         pollingInterval = configG.findIntEntry("POLLING_INTERVAL", pollingInterval);
         MAX_QUE_SIZE = configG.findIntEntry("MAX_QUE_SIZE", MAX_QUE_SIZE);
         unixInRoot = configG.findStringEntry("UNIX_IN_ROOT", null);
-        winInRoot = configG.findStringEntry("WIN_IN_ROOT", null);
         unixOutRoot = configG.findStringEntry("UNIX_OUT_ROOT", null);
-        winOutRoot = configG.findStringEntry("WIN_OUT_ROOT", null);
         digestHashType = configG.findStringEntry("DIGEST_HASH_TYPE", "SHA-256");
 
         try {
@@ -167,16 +157,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
      * @return altered path
      */
     protected String fixFilePath(String path) {
-        path = path.replace('\\', '/');
-        if (OS_IS_WINDOWS) {
-            if (unixInRoot != null && winInRoot != null && path.startsWith(unixInRoot)) {
-                path = path.replaceFirst("\\A.*" + unixInRoot, winInRoot);
-                // hopefully it now looks like x:/slkfj/sdkfj/safkj
-            }
-        } else if (!OS_IS_WINDOWS && winInRoot != null && unixInRoot != null && path.startsWith(winInRoot)) {
-            path = path.replaceFirst("\\A.*" + winInRoot, unixInRoot);
-        }
-        return path;
+        return path.replace('\\', '/');
     }
 
     /**

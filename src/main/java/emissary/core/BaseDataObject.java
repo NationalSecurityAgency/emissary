@@ -482,8 +482,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     private String makeShortName() {
         /*
-         * using the file object works for most cases. It works on windows with a valid unix path. However, it fails on the unix
-         * side if it is given a valid Windows path.
+         * using the file object works for most cases. It fails on the unix side if it is given a valid Windows path.
          */
         // File file = new File( theFileName );
         // return file.getName();

@@ -71,8 +71,6 @@ public class Executrix {
     public static final int INPATH = 5;
     public static final int OUTPATH = 6;
 
-    public static final String CYGHOME = System.getProperty("CYGHOME", "c:/cygwin").replaceAll("\\Q\\\\E", "/");
-
     /**
      * Create using all defaults
      */
@@ -957,8 +955,7 @@ public class Executrix {
     /**
      * Gets the value of a command that can be executed adding supplied limits and supplied paths to the configuration value
      * The values in the command string that can be replaced are &lt;INPUT_PATH&gt;, &lt;OUTPUT_PATH&gt;,
-     * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On windows the command is wrapped in
-     * <code>cmd /c %CYGWIN_HOME%/bin/bash -c 'your command'</code> while on unix systems it is wrapped more like
+     * &lt;INPUT_NAME&gt;, and &lt;OUTPUT_NAME&gt;. On unix systems it is wrapped like
      * <code>/bin/sh -c ulimit -c 0; ulimit -v val; your command</code>
      * 
      * @param commandArg a command string to work with
@@ -974,28 +971,12 @@ public class Executrix {
         c = c.replaceAll("<INPUT_NAME>", tmpNames[IN]);
         c = c.replaceAll("<OUTPUT_NAME>", tmpNames[OUT]);
 
-        final String[] cmd;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            final int colPos = tmpNames[DIR].indexOf(":");
-            if (colPos > -1) {
-                // Naked Windows command shell
-                cmd =
-                        new String[] {"cmd", "/c",
-                                tmpNames[DIR].substring(0, colPos + 1) + " && cd " + tmpNames[DIR] + " && " + CYGHOME + "/bin/bash -c '" + c + "'"};
-            } else {
-                // Cygwin shell with cygwin java ? is there even such a thing?
-                cmd = new String[] {"cmd", "/c", "cd " + tmpNames[DIR] + " && timeout " + +cpuLimit + " " + commandArg};
-                logger.info("Running windows command without CYGHOME: {}", Arrays.asList(cmd));
-            }
-        } else {
-            // Run the command in shell limiting the core file size to 0 and the specified vm size
-            String ulimitv = "";
-            if (!SystemUtils.IS_OS_MAC) {
-                ulimitv = "ulimit -v " + vmSzLimit + "; ";
-            }
-            cmd = new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames[DIR] + "; " + c};
+        // Run the command in shell limiting the core file size to 0 and the specified vm size
+        String ulimitv = "";
+        if (!SystemUtils.IS_OS_MAC) {
+            ulimitv = "ulimit -v " + vmSzLimit + "; ";
         }
-        return cmd;
+        return new String[] {"/bin/sh", "-c", "ulimit -c 0; " + ulimitv + "cd " + tmpNames[DIR] + "; " + c};
     }
 
     /**
@@ -1258,8 +1239,8 @@ public class Executrix {
                     }
                 }
 
-                // Try 3 (non-windows)
-                if (!deleted && dir.exists() && !System.getProperty("os.name").startsWith("Windows")) {
+                // Try 3
+                if (!deleted && dir.exists()) {
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException ignore) {
