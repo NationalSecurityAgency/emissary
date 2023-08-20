@@ -23,9 +23,9 @@ jobs:
       contents: write
     steps:
       - name: Set env
-        run: |-
-          echo "CHERRYPICK_COMMITS=$([ ! -z "${{ inputs.commits }}" ] && echo "${{ inputs.commits }}" || echo "${{ github.event.inputs.cherrypick_commits }}")" >> $GITHUB_ENV
-          echo "BRANCH=$([ ! -z "${{ inputs.branch }}" ] && echo "${{ inputs.branch }}" || echo "${{ github.ref_name }}")" >> $GITHUB_ENV
+        run: |
+          echo "CHERRYPICK_COMMITS=$([ -n "${{ inputs.commits }}" ] && echo "${{ inputs.commits }}" || echo "${{ github.event.inputs.cherrypick_commits }}")" >> "$GITHUB_ENV"
+          echo "BRANCH=$([ -n "${{ inputs.branch }}" ] && echo "${{ inputs.branch }}" || echo "${{ github.ref_name }}")" >> "$GITHUB_ENV"
 
       - name: Check for protected branch
         if: ${{ env.BRANCH == 'master' }}

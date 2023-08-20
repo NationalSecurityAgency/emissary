@@ -51,7 +51,7 @@ jobs:
           echo "PATCH_BRANCH=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F. '{print "patch/"$1"."$2".x"}')" >> "$GITHUB_ENV"
 
       - id: set_output
-        run: echo "patch_branch=${{ env.PATCH_BRANCH }}" >> $GITHUB_OUTPUT
+        run: echo "patch_branch=${{ env.PATCH_BRANCH }}" >> "$GITHUB_OUTPUT"
 
       - name: Fail for milestone versions
         if: ${{ contains(env.PROJECT_VERSION, '-M') }}
