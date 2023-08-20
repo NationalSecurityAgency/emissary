@@ -1,0 +1,52 @@
+name: "Cherry pick commit(s) to a branch"
+
+on:
+  workflow_dispatch:
+    inputs:
+      cherrypick_commits:
+        description: "List of space delimited commits to cherry pick"
+        required: false
+        default: ""
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      commits:
+        required: true
+        type: string
+
+jobs:
+  cherry_pick:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Set env
+        run: |-
+          echo "CHERRYPICK_COMMITS=$([ ! -z "${{ inputs.commits }}" ] && echo "${{ inputs.commits }}" || echo "${{ github.event.inputs.cherrypick_commits }}")" >> $GITHUB_ENV
+          echo "BRANCH=$([ ! -z "${{ inputs.branch }}" ] && echo "${{ inputs.branch }}" || echo "${{ github.ref_name }}")" >> $GITHUB_ENV
+
+      - name: Check for protected branch
+        if: ${{ env.BRANCH == 'master' }}
+        run: |
+          echo "Cannot cherry pick to protected branch"
+          exit 1
+
+      - name: Check for commit(s)
+        if: ${{ env.CHERRYPICK_COMMITS == '' }}
+        run: |
+          echo "No commits specified to cherry pick"
+          exit 1
+
+      - name: Checkout repo
+        uses: actions/checkout@v3.3.0
+
+      - name: Cherry pick to patch branch
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git fetch --all
+          git switch ${{ env.BRANCH }}
+          git cherry-pick ${{ env.CHERRYPICK_COMMITS }}
+          git push -u origin ${{ env.BRANCH }}
