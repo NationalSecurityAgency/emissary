@@ -20,6 +20,7 @@ import java.util.AbstractMap;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,10 +29,39 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 
+import static emissary.core.constants.IbdoMethodNames.ADD_ALTERNATE_VIEW;
+import static emissary.core.constants.IbdoMethodNames.ADD_PROCESSING_ERROR;
+import static emissary.core.constants.IbdoMethodNames.SET_BIRTH_ORDER;
+import static emissary.core.constants.IbdoMethodNames.SET_BROKEN;
+import static emissary.core.constants.IbdoMethodNames.SET_CLASSIFICATION;
+import static emissary.core.constants.IbdoMethodNames.SET_CURRENT_FORM;
+import static emissary.core.constants.IbdoMethodNames.SET_DATA;
+import static emissary.core.constants.IbdoMethodNames.SET_FILENAME;
+import static emissary.core.constants.IbdoMethodNames.SET_FONT_ENCODING;
+import static emissary.core.constants.IbdoMethodNames.SET_FOOTER;
+import static emissary.core.constants.IbdoMethodNames.SET_HEADER;
+import static emissary.core.constants.IbdoMethodNames.SET_HEADER_ENCODING;
+import static emissary.core.constants.IbdoMethodNames.SET_ID;
+import static emissary.core.constants.IbdoMethodNames.SET_NUM_CHILDREN;
+import static emissary.core.constants.IbdoMethodNames.SET_NUM_SIBLINGS;
+import static emissary.core.constants.IbdoMethodNames.SET_OUTPUTABLE;
+import static emissary.core.constants.IbdoMethodNames.SET_PARAMETER;
+import static emissary.core.constants.IbdoMethodNames.SET_PRIORITY;
+import static emissary.core.constants.IbdoMethodNames.SET_TRANSACTION_ID;
+import static emissary.core.constants.IbdoMethodNames.SET_WORK_BUNDLE_ID;
 import static emissary.core.constants.IbdoXmlElementNames.BASE64_ATTRIBUTE_NAME;
 import static emissary.core.constants.IbdoXmlElementNames.BIRTH_ORDER;
 import static emissary.core.constants.IbdoXmlElementNames.BROKEN;
+import static emissary.core.constants.IbdoXmlElementNames.CLASSIFICATION;
+import static emissary.core.constants.IbdoXmlElementNames.CURRENT_FORM;
+import static emissary.core.constants.IbdoXmlElementNames.DATA;
 import static emissary.core.constants.IbdoXmlElementNames.ENCODING_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.FILENAME;
+import static emissary.core.constants.IbdoXmlElementNames.FONT_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.FOOTER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER;
+import static emissary.core.constants.IbdoXmlElementNames.HEADER_ENCODING;
+import static emissary.core.constants.IbdoXmlElementNames.ID;
 import static emissary.core.constants.IbdoXmlElementNames.NAME;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_CHILDREN;
 import static emissary.core.constants.IbdoXmlElementNames.NUM_SIBLINGS;
@@ -40,8 +70,10 @@ import static emissary.core.constants.IbdoXmlElementNames.PARAMETER;
 import static emissary.core.constants.IbdoXmlElementNames.PRIORITY;
 import static emissary.core.constants.IbdoXmlElementNames.PROCESSING_ERROR;
 import static emissary.core.constants.IbdoXmlElementNames.SHA256_ATTRIBUTE_NAME;
+import static emissary.core.constants.IbdoXmlElementNames.TRANSACTION_ID;
 import static emissary.core.constants.IbdoXmlElementNames.VALUE;
 import static emissary.core.constants.IbdoXmlElementNames.VIEW;
+import static emissary.core.constants.IbdoXmlElementNames.WORK_BUNDLE_ID;
 
 /**
  * This class contains the interfaces and implementations used to convert an IBDO-&gt;XML and XML-&gt;IBDO.
@@ -88,6 +120,34 @@ public final class IBaseDataObjectXmlCodecs {
      */
     public static final Namespace XML_NAMESPACE = Namespace.getNamespace(XMLConstants.XML_NS_PREFIX,
             XMLConstants.XML_NS_URI);
+    /**
+     * The Map for ElementDecoders, which uses ElementName -&gt; MethodName mapping
+     */
+    private static final Map<String, String> METHOD_MAP;
+    static {
+        METHOD_MAP = new HashMap<>();
+        METHOD_MAP.put(BIRTH_ORDER, SET_BIRTH_ORDER);
+        METHOD_MAP.put(BROKEN, SET_BROKEN);
+        METHOD_MAP.put(CLASSIFICATION, SET_CLASSIFICATION);
+        METHOD_MAP.put(CURRENT_FORM, SET_CURRENT_FORM);
+        METHOD_MAP.put(DATA, SET_DATA);
+        METHOD_MAP.put(FILENAME, SET_FILENAME);
+        METHOD_MAP.put(FONT_ENCODING, SET_FONT_ENCODING);
+        METHOD_MAP.put(FOOTER, SET_FOOTER);
+        METHOD_MAP.put(HEADER, SET_HEADER);
+        METHOD_MAP.put(HEADER_ENCODING, SET_HEADER_ENCODING);
+        METHOD_MAP.put(ID, SET_ID);
+        METHOD_MAP.put(NUM_CHILDREN, SET_NUM_CHILDREN);
+        METHOD_MAP.put(NUM_SIBLINGS, SET_NUM_SIBLINGS);
+        METHOD_MAP.put(OUTPUTABLE, SET_OUTPUTABLE);
+        METHOD_MAP.put(PARAMETER, SET_PARAMETER);
+        METHOD_MAP.put(PRIORITY, SET_PRIORITY);
+        METHOD_MAP.put(PROCESSING_ERROR, ADD_PROCESSING_ERROR);
+        METHOD_MAP.put(TRANSACTION_ID, SET_TRANSACTION_ID);
+        METHOD_MAP.put(VIEW, ADD_ALTERNATE_VIEW);
+        METHOD_MAP.put(WORK_BUNDLE_ID, SET_WORK_BUNDLE_ID);
+    }
+    private static final String NO_IBDO_METHOD_MATCH_ELEMENT_NAME = "Could not find the IBDO method for element name ";
 
     /**
      * Interface for decoding an element value.
@@ -126,31 +186,31 @@ public final class IBaseDataObjectXmlCodecs {
         /**
          * Decoder for boolean elements.
          */
-        public final ElementDecoder booleanDecoder;
+        private final ElementDecoder booleanDecoder;
         /**
          * Decoder for byte[] elements.
          */
-        public final ElementDecoder byteArrayDecoder;
+        private final ElementDecoder byteArrayDecoder;
         /**
          * Decoder for integer elements.
          */
-        public final ElementDecoder integerDecoder;
+        private final ElementDecoder integerDecoder;
         /**
          * Decoder for SeekableByteChannel elements.
          */
-        public final ElementDecoder seekableByteChannelFactoryDecoder;
+        private final ElementDecoder seekableByteChannelFactoryDecoder;
         /**
          * Decoder for Map&lt;String,byte[]&gt; elements.
          */
-        public final ElementDecoder stringByteArrayDecoder;
+        private final ElementDecoder stringByteArrayDecoder;
         /**
          * Decoder for String elements.
          */
-        public final ElementDecoder stringDecoder;
+        private final ElementDecoder stringDecoder;
         /**
          * Decoder for Map&lt;String,Collection&lt;Object&gt;&gt; elements.
          */
-        public final ElementDecoder stringObjectDecoder;
+        private final ElementDecoder stringObjectDecoder;
 
         /**
          * Constructs a container for the XML element decoders.
@@ -186,6 +246,55 @@ public final class IBaseDataObjectXmlCodecs {
             this.stringByteArrayDecoder = stringByteArrayDecoder;
             this.stringDecoder = stringDecoder;
             this.stringObjectDecoder = stringObjectDecoder;
+        }
+
+        public void decodeBoolean(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            booleanDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            byteArrayDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeInteger(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            integerDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeSeekableByteChannelFactory(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            seekableByteChannelFactoryDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeStringByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            stringByteArrayDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeString(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            stringDecoder.decode(elements, ibdo, methodName);
+        }
+
+        public void decodeStringObject(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+            List<Element> elements = currentElement.getChildren(elementName);
+            String methodName = METHOD_MAP.get(elementName);
+            Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
+            stringObjectDecoder.decode(elements, ibdo, methodName);
         }
     }
 
