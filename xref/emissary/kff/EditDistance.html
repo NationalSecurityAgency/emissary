@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>EditDistance xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../apidocs/emissary/kff/EditDistance.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.kff;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <em class="jxr_javadoccomment"> * A java port of the ssdeep code for "fuzzy hashing". <a href="http://ssdeep.sourceforge.net" target="alexandria_uri">http://ssdeep.sourceforge.net</a> There are a number of ports out</em>
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <em class="jxr_javadoccomment"> * there that all look basically the same. This one is from</em>
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_javadoccomment"> * <a href="https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/" target="alexandria_uri">https://opensourceprojects.eu/p/triplecheck/code/23/tree/tool/src/ssdeep/</a></em>
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_javadoccomment"> * A new ssdeep hash gets calculated and saved at each level of unwrapping.</em>
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="EditDistance" href="../../emissary/kff/EditDistance.html#EditDistance">EditDistance</a> {
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>      <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_comment">     * This edit distance code is taken from trn3.6. A few minor modifications have been made by Andrew Tridgell</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_comment">     * &lt;tridge@samba.org&gt; for use in spamsum.</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <em class="jxr_javadoccomment">/***************************************************************************/</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_comment">     * The authors make no claims as to the fitness or correctness of this software for any use whatsoever, and it is</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_comment">     * provided as is. Any use of this software is at the user's own risk.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_comment">     * edit_dist -- returns the minimum edit distance between two strings</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment">     * </em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_comment">     * Program by: Mark Maimone CMU Computer Science 13 Nov 89 Last Modified: 28 Jan 90</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_comment">     * </em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_comment">     * If the input strings have length n and m, the algorithm runs in time O(nm) and space O(min(m,n)).</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_comment">     * </em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_comment">     * HISTORY 13 Nov 89 (mwm) Created edit_dist() and set_costs().</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_comment">     * </em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_comment">     * 28 Jan 90 (mwm) Added view_costs(). Should verify that THRESHOLD computations will work even when THRESHOLD is not a</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_comment">     * multiple of sizeof(int).</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_comment">     * </em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_comment">     * 17 May 93 (mwm) Improved performance when used with trn's newsgroup processing; assume all costs are 1, and you can</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_comment">     * terminate when a threshold is exceeded.</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> MIN_DIST = 100;
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_comment">     * Use a less-general version of the routine, one that's better for trn. All change costs are 1, and it's okay to</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_comment">     * terminate if the edit distance is known to exceed MIN_DIST</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> THRESHOLD = 4000; <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_comment">                                                * worry about allocating more memory only when this # of bytes is exceeded</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_comment">                                                */</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> STRLENTHRESHOLD = (THRESHOLD / (Integer.SIZE / 8) - 3) / 2;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <em class="jxr_comment">// #define SAFE_ASSIGN(x,y) (((x) != NULL) ? (*(x) = (y)) : (y))</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <em class="jxr_comment">// #define swap_int(x,y) (_iswap = (x), (x) = (y), (y) = _iswap)</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swap_<strong class="jxr_keyword">int</strong>(<strong class="jxr_keyword">int</strong>[] x, <strong class="jxr_keyword">int</strong>[] y) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">int</strong> _iswap = x[0];
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          x[0] = y[0];
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          y[0] = _iswap;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      <em class="jxr_comment">// #define swap_char(x,y) (_cswap = (x), (x) = (y), (y) = _cswap)</em>
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swap_<strong class="jxr_keyword">char</strong>(<em class="jxr_comment">/* ref */</em>byte[][] x, <em class="jxr_comment">/* ref */</em>byte[][] y) {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          byte[] _cswap = (x[0]);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          (x[0]) = (y[0]);
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          (y[0]) = _cswap;
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <em class="jxr_comment">// #define min3(x,y,z) (_mx = (x), _my = (y), _mz = (z), (_mx &lt; _my ? (_mx &lt; _mz ? _mx : _mz) : (_mz &lt; _my) ? _mz :</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      <em class="jxr_comment">// _my))</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> min3(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> z) {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">int</strong> _mx = (x);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">int</strong> _my = (y);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">int</strong> _mz = (z);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> (_mx &lt; _my ? (_mx &lt; _mz ? _mx : _mz) : (_mz &lt; _my) ? _mz : _my);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_comment">// #define min2(x,y) (_mx = (x), _my = (y), (_mx &lt; _my ? _mx : _my))</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> min2(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          <strong class="jxr_keyword">int</strong> _mx = (x);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">int</strong> _my = (y);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> (_mx &lt; _my ? _mx : _my);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> insert_cost = 1;
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> delete_cost = 1;
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> _iswap; <em class="jxr_comment">/* swap_int temp variable */</em>
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">char</strong> _cswap; <em class="jxr_comment">/* swap_char temp variable */</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      <em class="jxr_comment">/* min2, min3 temp variables */</em>
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> _mx;
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> _my;
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> _mz;
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>     <em class="jxr_comment">// dynamic programming counters</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> row;
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> col;
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> index = 0;
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> radix; <em class="jxr_comment">// radix for modular indexing</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> low;
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong>[] buffer; <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_comment">                          * pointer to storage for one row of the d.p. array</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_comment">                          */</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong>[] store = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[THRESHOLD / (Integer.SIZE / 8)];
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_comment">     * a small amount of static storage, to be used when the input strings are small enough</em>
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> 
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <em class="jxr_comment">/* Handle trivial cases when one string is empty */</em>
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> ins = 1;
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> del = 1;
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> ch = 3;
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> swap_cost = 5;
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> from_len;
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> to_len;
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> ar(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> index) {
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">return</strong> (((x) == 0) ? (y) * del : (((y) == 0) ? (x) * ins : buffer[mod(index)]));
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> 
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> NW(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + from_len + 2);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>     }
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> 
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> N(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + from_len + 3);
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> 
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> W(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + radix - 1);
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> 
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> NNWW(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + 1);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> mod(<strong class="jxr_keyword">int</strong> x) {
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         <strong class="jxr_keyword">return</strong> ((x) % radix);
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     }
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>     <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> <em class="jxr_comment">     * edit_distn -- returns the edit distance between two strings, or -1 on failure</em>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> edit_distn(@Nullable byte[] from, <strong class="jxr_keyword">int</strong> _from_len, @Nullable byte[] to, <strong class="jxr_keyword">int</strong> _to_len) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         from_len = _from_len;
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         to_len = _to_len;
+<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">if</strong> (from == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             <strong class="jxr_keyword">if</strong> (to == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>                 <strong class="jxr_keyword">return</strong> 0;
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>                 <strong class="jxr_keyword">return</strong> to_len * insert_cost;
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             }
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (to == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             <strong class="jxr_keyword">return</strong> from_len * delete_cost;
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>         }
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         <em class="jxr_comment">/* Initialize registers */</em>
+<a class="jxr_linenumber" name="L167" href="#L167">167</a> 
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         radix = 2 * from_len + 3;
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <em class="jxr_comment">/* Make from short enough to fit in the static storage, if it's at all possible */</em>
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">if</strong> (from_len &gt; to_len &amp;&amp; from_len &gt; STRLENTHRESHOLD) {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">int</strong>[] x = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[1];
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>             <strong class="jxr_keyword">int</strong>[] y = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[1];
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>             x[0] = from_len;
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             y[0] = to_len;
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>             swap_<strong class="jxr_keyword">int</strong>(x, y);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>             byte[][] xx = <strong class="jxr_keyword">new</strong> byte[1][];
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             byte[][] yy = <strong class="jxr_keyword">new</strong> byte[1][];
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             xx[0] = from;
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             yy[0] = to;
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             swap_<strong class="jxr_keyword">char</strong>(xx, yy);
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         } <em class="jxr_comment">// if from_len &gt; to_len</em>
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>         <em class="jxr_comment">/* Allocate the array storage (from the heap if necessary) */</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a> 
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">if</strong> (from_len &lt;= STRLENTHRESHOLD) {
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>             buffer = store;
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>             buffer = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[radix];
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>         }
+<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <em class="jxr_comment">/*</em>
+<a class="jxr_linenumber" name="L194" href="#L194">194</a> <em class="jxr_comment">         * Here's where the fun begins. We will find the minimum edit distance using dynamic programming. We only need to store</em>
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> <em class="jxr_comment">         * two rows of the matrix at a time, since we always progress down the matrix. For example, given the strings "one" and</em>
+<a class="jxr_linenumber" name="L196" href="#L196">196</a> <em class="jxr_comment">         * "two", and insert, delete and change costs equal to 1:</em>
+<a class="jxr_linenumber" name="L197" href="#L197">197</a> <em class="jxr_comment">         * </em>
+<a class="jxr_linenumber" name="L198" href="#L198">198</a> <em class="jxr_comment">         * _ o n e _ 0 1 2 3 t 1 1 2 3 w 2 2 2 3 o 3 2 3 3</em>
+<a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_comment">         * </em>
+<a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_comment">         * The dynamic programming recursion is defined as follows:</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_comment">         * </em>
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_comment">         * ar(x,0) := x * insert_cost ar(0,y) := y * delete_cost ar(x,y) := min(a(x - 1, y - 1) + (from[x] == to[y] ? 0 :</em>
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_comment">         * change), a(x - 1, y) + insert_cost, a(x, y - 1) + delete_cost, a(x - 2, y - 2) + (from[x] == to[y-1] &amp;&amp; from[x-1] ==</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_comment">         * to[y] ? swap_cost : infinity))</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_comment">         * </em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> <em class="jxr_comment">         * Since this only looks at most two rows and three columns back, we need only store the values for the two preceeding</em>
+<a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_comment">         * rows. In this implementation, we do not explicitly store the zero column, so only 2 * from_len + 2 words are needed.</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_comment">         * However, in the implementation of the swap_cost check, the current matrix value is used as a buffer; we can't</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_comment">         * overwrite the earlier value until the swap_cost check has been performed. So we use 2 * from_len + 3 elements in the</em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_comment">         * buffer.</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_comment">         */</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>         <em class="jxr_comment">// /#define ar(x,y,index) (((x) == 0) ? (y) * del : (((y) == 0) ? (x) * ins :</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <em class="jxr_comment">// \ buffer[mod(index)]))</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <em class="jxr_comment">// /#define NW(x,y) ar(x, y, index + from_len + 2)</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <em class="jxr_comment">// /#define N(x,y) ar(x, y, index + from_len + 3)</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <em class="jxr_comment">// /#define W(x,y) ar(x, y, index + radix - 1)</em>
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <em class="jxr_comment">// /#define NNWW(x,y) ar(x, y, index + 1)</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <em class="jxr_comment">// /#define mod(x) ((x) % radix)</em>
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>         buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> 
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         low = buffer[mod(index + radix - 1)];
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">for</strong> (col = 1; col &lt; from_len; col++) {
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>             buffer[index] = min3(col * del + ((from[col] == to[0]) ? 0 : ch), (col + 1) * del + ins, buffer[index - 1] + del);
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>             <strong class="jxr_keyword">if</strong> (buffer[index] &lt; low) {
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>                 low = buffer[index];
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             }
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>             index++;
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         }
+<a class="jxr_linenumber" name="L232" href="#L232">232</a> 
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         <em class="jxr_comment">/* Now handle the rest of the matrix */</em>
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">for</strong> (row = 1; row &lt; to_len; row++) {
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>             <strong class="jxr_keyword">for</strong> (col = 0; col &lt; from_len; col++) {
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>                 buffer[index] = min3(NW(row, col) + ((from[col] == to[row]) ? 0 : ch), N(row, col + 1) + ins, W(row + 1, col) + del);
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>                 <strong class="jxr_keyword">if</strong> (from[col] == to[row - 1] &amp;&amp; col &gt; 0 &amp;&amp; from[col - 1] == to[row]) {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>                     buffer[index] = min2(buffer[index], NNWW(row - 1, col - 1) + swap_cost);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>                 }
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>                 <strong class="jxr_keyword">if</strong> (buffer[index] &lt; low || col == 0) {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                     low = buffer[index];
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>                 }
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>                 index = mod(index + 1);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>             }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             <strong class="jxr_keyword">if</strong> (low &gt; MIN_DIST) {
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>             }
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         }
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>         row = buffer[mod(index + radix - 1)];
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>         <strong class="jxr_keyword">return</strong> row;
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>     } <em class="jxr_comment">// edit_distn</em>
+<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     <strong class="jxr_keyword">private</strong> <a name="EditDistance" href="../../emissary/kff/EditDistance.html#EditDistance">EditDistance</a>() {}
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>HtmlEntityMapTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../testapidocs/emissary/util/HtmlEntityMapTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.util;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.io.PrintStream;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">class</strong> <a name="HtmlEntityMapTest" href="../../emissary/util/HtmlEntityMapTest.html#HtmlEntityMapTest">HtmlEntityMapTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>      @Test
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>      <strong class="jxr_keyword">void</strong> testEntityMap() {
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>          HtmlEntityMap h = <strong class="jxr_keyword">new</strong> HtmlEntityMap();
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>          ByteArrayOutputStream baos = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>          PrintStream myOut = <strong class="jxr_keyword">new</strong> PrintStream(baos);
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>          h.dumpTestPage(myOut);
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>          myOut.close();
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>          String report = baos.toString();
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>          assertTrue(report.contains(<span class="jxr_string">"&amp;Uarr;"</span>), <span class="jxr_string">"HtmlEntityMap must contain escaped output"</span>);
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>          assertTrue(report.contains(<span class="jxr_string">"\u219F"</span>), <span class="jxr_string">"HtmlEntityMap must contain utf chars"</span>);
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      }
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

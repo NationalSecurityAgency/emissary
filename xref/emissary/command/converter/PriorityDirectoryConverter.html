@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>PriorityDirectoryConverter xref</title>
+<link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../apidocs/emissary/command/converter/PriorityDirectoryConverter.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.command.converter;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.pickup.Priority;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.pickup.PriorityDirectory;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> picocli.CommandLine.ITypeConverter;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="PriorityDirectoryConverter" href="../../../emissary/command/converter/PriorityDirectoryConverter.html#PriorityDirectoryConverter">PriorityDirectoryConverter</a> <strong class="jxr_keyword">implements</strong> ITypeConverter&lt;PriorityDirectory&gt; {
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>       <strong class="jxr_keyword">public</strong> <a name="PriorityDirectoryConverter" href="../../../emissary/command/converter/PriorityDirectoryConverter.html#PriorityDirectoryConverter">PriorityDirectoryConverter</a>() {
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>          <strong class="jxr_keyword">super</strong>();
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      }
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PRIORITY_DIR_REGEX = <span class="jxr_string">".*:&#92;&#92;d+$"</span>;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>      @Override
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">public</strong> <a name="PriorityDirectory" href="../../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a> convert(String value) {
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>          <em class="jxr_comment">// Take from the old WorkSpace.java class</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>          <strong class="jxr_keyword">if</strong> (value.matches(PRIORITY_DIR_REGEX)) {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> pos = value.lastIndexOf(<span class="jxr_string">":"</span>);
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>              String dirName = value.substring(0, pos);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>              <strong class="jxr_keyword">if</strong> (!dirName.endsWith(<span class="jxr_string">"/"</span>)) {
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>                  dirName += <span class="jxr_string">"/"</span>;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>              }
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> priority = Integer.parseInt(value.substring(pos + 1));
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PriorityDirectory" href="../../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>(dirName, priority);
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>              <strong class="jxr_keyword">if</strong> (!value.endsWith(<span class="jxr_string">"/"</span>)) {
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>                  value += <span class="jxr_string">"/"</span>;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>              }
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="PriorityDirectory" href="../../../emissary/pickup/PriorityDirectory.html#PriorityDirectory">PriorityDirectory</a>(value, Priority.DEFAULT);
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          }
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      }
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

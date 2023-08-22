@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>MetadataDictionaryUtil xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../apidocs/emissary/util/MetadataDictionaryUtil.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.util;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.core.MetadataDictionary;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.core.NamespaceException;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> com.google.common.collect.TreeMultimap;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.Map.Entry;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.TreeMap;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> * This class takes an alternate view byte stream and changes the metadata labels to be consistent with the</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * MetadataDictionary</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  @Deprecated
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="MetadataDictionaryUtil" href="../../emissary/util/MetadataDictionaryUtil.html#MetadataDictionaryUtil">MetadataDictionaryUtil</a> {
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <em class="jxr_comment">// The metadata dictionary to use</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      <a name="MetadataDictionary" href="../../emissary/core/MetadataDictionary.html#MetadataDictionary">MetadataDictionary</a> dict = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <em class="jxr_comment">// Service prefix to apply to all keys</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      String servicePrefix = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <em class="jxr_comment">// Our friendly logger</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> Logger logger = LoggerFactory.getLogger(MetadataDictionaryUtil.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <em class="jxr_comment">// The charset of the data</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> String charset = StandardCharsets.UTF_8.name();
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <em class="jxr_comment">// separator for key and value</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong> SEP = ' ';
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <a name="MetadataDictionaryUtil" href="../../emissary/util/MetadataDictionaryUtil.html#MetadataDictionaryUtil">MetadataDictionaryUtil</a>(<strong class="jxr_keyword">final</strong> String servicePrefix) <strong class="jxr_keyword">throws</strong> <a name="NamespaceException" href="../../emissary/core/NamespaceException.html#NamespaceException">NamespaceException</a> {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">this</strong>.dict = MetadataDictionary.lookup();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">this</strong>.servicePrefix = servicePrefix;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      }
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <strong class="jxr_keyword">public</strong> <a name="MetadataDictionaryUtil" href="../../emissary/util/MetadataDictionaryUtil.html#MetadataDictionaryUtil">MetadataDictionaryUtil</a>(<strong class="jxr_keyword">final</strong> <a name="MetadataDictionary" href="../../emissary/core/MetadataDictionary.html#MetadataDictionary">MetadataDictionary</a> dict, <strong class="jxr_keyword">final</strong> String servicePrefix) {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">this</strong>.dict = dict;
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          <strong class="jxr_keyword">this</strong>.servicePrefix = servicePrefix;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCharset(<strong class="jxr_keyword">final</strong> String cs) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">this</strong>.charset = cs;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      }
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * Get the view, map the first token on each line. The view should be structured as "key value" where the first space on</em>
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * the line separates the key from the rest.</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * @param input the bytes of the view to be mapped</em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * @return a byte[] containing transformed/alphabetized keys with their value pairs</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">public</strong> byte[] map(<strong class="jxr_keyword">final</strong> byte[] input) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">try</strong> (ByteArrayOutputStream output = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream()) {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>              <strong class="jxr_keyword">final</strong> Map&lt;String, Collection&lt;String&gt;&gt; kv = convertLinesToMap(input, output);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">return</strong> convertMapToByteArray(kv, output);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  <em class="jxr_javadoccomment">     * Converts a map of key/values into a byte array. Each key/value will be output on a separate line in alphabetical</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * order by key in map.</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * @param metadata the Map of metadata to convert</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * @return a byte[] of key/values on individual lines in alphabetical order</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] convertMapToByteArray(<strong class="jxr_keyword">final</strong> Map&lt;String, Collection&lt;String&gt;&gt; metadata) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">try</strong> (ByteArrayOutputStream output = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream()) {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>              <strong class="jxr_keyword">return</strong> convertMapToByteArray(metadata, output);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  <em class="jxr_javadoccomment">     * Converts a map of key/values into a byte array. Each key/value will be output on a separate line in alphabetical</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * order by key in map.</em>
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     * @param kv the Map of metadata to convert</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * @param output a ByteArrayOutputStream to write the key/value pairs to</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * @return a byte[] of key/values on individual lines in alphabetical order</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] convertMapToByteArray(<strong class="jxr_keyword">final</strong> Map&lt;String, Collection&lt;String&gt;&gt; kv, <strong class="jxr_keyword">final</strong> ByteArrayOutputStream output) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <em class="jxr_comment">// Output the mapped tokens in the revised alphabetical order</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Entry&lt;String, Collection&lt;String&gt;&gt; entry : kv.entrySet()) {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>              <strong class="jxr_keyword">final</strong> String key = entry.getKey();
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String v : entry.getValue()) {
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>                  output.write(key.getBytes());
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>                  output.write(SEP);
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>                  output.write(v.getBytes());
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>                  output.write('\n');
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>             }
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         }
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> 
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         <strong class="jxr_keyword">return</strong> output.toByteArray();
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     }
+<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> <em class="jxr_javadoccomment">     * Read each line of input, tokenize them into key/value pairs, perform a lookup/transformation of the keys via the</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> <em class="jxr_javadoccomment">     * MetadataDictionary where applicable, and return the results as a map.</em>
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L110" href="#L110">110</a> <em class="jxr_javadoccomment">     * @param input the bytes to convert</em>
+<a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     * @param output a ByteArrayOutputStream to write failed parse attempts to</em>
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * @return a Map containing each line converted to a key/value pair and sorted alphabetically by key</em>
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
+<a class="jxr_linenumber" name="L114" href="#L114">114</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> Map&lt;String, Collection&lt;String&gt;&gt; convertLinesToMap(<strong class="jxr_keyword">final</strong> byte[] input, <strong class="jxr_keyword">final</strong> ByteArrayOutputStream output) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">final</strong> TreeMultimap&lt;String, String&gt; kv = TreeMultimap.create();
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">final</strong> <a name="LineTokenizer" href="../../emissary/util/LineTokenize<a name="LineTokenizer" href="../../emissary/util/LineTokenizer.html#LineTokenizer">LineTokenizer</a>kenizer">LineTokenizer</a> ltok = <strong class="jxr_keyword">new</strong> <a name="LineTokenizer" href="../../emissary/util/LineTokenizer.html#LineTokenizer">LineTokenizer</a>(input, <strong class="jxr_keyword">this</strong>.charset);
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> 
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         <em class="jxr_comment">// Look at each line for a key value and run it through the dictionary</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>         <strong class="jxr_keyword">while</strong> (ltok.hasMoreTokens()) {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>             <strong class="jxr_keyword">final</strong> String line = ltok.nextToken();
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> pos = line.indexOf(SEP);
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>             <strong class="jxr_keyword">if</strong> (pos == -1) {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>                 output.write(line.getBytes());
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>                 output.write('\n');
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>                 <strong class="jxr_keyword">this</strong>.logger.debug(<span class="jxr_string">"Found no key/value pair on line "</span> + line);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>                 <strong class="jxr_keyword">final</strong> String key = line.substring(0, pos);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>                 <strong class="jxr_keyword">final</strong> String value = line.substring(pos + 1);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>                 <strong class="jxr_keyword">final</strong> String nkey = <strong class="jxr_keyword">this</strong>.dict.map(<strong class="jxr_keyword">this</strong>.servicePrefix + key);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>                 kv.put(nkey, value.trim());
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             }
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         }
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;(kv.asMap());
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

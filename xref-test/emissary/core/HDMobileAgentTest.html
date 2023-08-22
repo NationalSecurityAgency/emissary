@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>HDMobileAgentTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../testapidocs/emissary/core/HDMobileAgentTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.core;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.place.ServiceProviderPlace;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">class</strong> <a name="HDMobileAgentTest" href="../../emissary/core/HDMobileAgentTest.html#HDMobileAgentTest">HDMobileAgentTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">public</strong> <a name="HDMobileAgentTest" href="../../emissary/core/HDMobileAgentTest.html#HDMobileAgentTest">HDMobileAgentTest</a>() {}
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      @Test
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">void</strong> testAtPlaceHDNull() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          <strong class="jxr_keyword">final</strong> SimplePlace place = <strong class="jxr_keyword">new</strong> SimplePlace(<span class="jxr_string">"emissary.core.FakePlace.cfg"</span>);
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>          ArrayList&lt;IBaseDataObject&gt; children = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          IBaseDataObject ibdo = DataObjectFactory.getInstance(<strong class="jxr_keyword">new</strong> byte[] {}, <span class="jxr_string">"testFile"</span>, <span class="jxr_string">"someFormFileType"</span>);
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          children.add(ibdo);
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>          children.add(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          place.setReturnCollection(children);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          HDMobileAgent ma = <strong class="jxr_keyword">new</strong> HDMobileAgent();
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          List&lt;IBaseDataObject&gt; ret = ma.atPlaceHD(place, Collections.emptyList());
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          assertEquals(1, ret.size());
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          children.clear();
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          children.add(ibdo);
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          children.add(ibdo);
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          ret = ma.atPlaceHD(place, Collections.emptyList());
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          assertEquals(2, ret.size());
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> SimplePlace <strong class="jxr_keyword">extends</strong> ServiceProviderPlace {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">private</strong> List&lt;IBaseDataObject&gt; children = Collections.emptyList();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">public</strong> SimplePlace(String configInfo) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>              <strong class="jxr_keyword">super</strong>(configInfo, <span class="jxr_string">"SimplePlace.www.example.com:8001"</span>);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          <strong class="jxr_keyword">void</strong> setReturnCollection(List&lt;IBaseDataObject&gt; children) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>              <strong class="jxr_keyword">this</strong>.children = children;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          }
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          @Override
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">public</strong> List&lt;IBaseDataObject&gt; agentProcessHeavyDuty(List&lt;IBaseDataObject&gt; payloadListArg) {
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>              <strong class="jxr_keyword">return</strong> children;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          }
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      }
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>
