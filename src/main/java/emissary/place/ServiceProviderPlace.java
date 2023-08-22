@@ -570,7 +570,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         MDC.put(MDCConstants.SERVICE_LOCATION, this.getKey());
         try {
             List<IBaseDataObject> l = processHeavyDuty(payload);
-            payload.checkAndResetArrayHashMap(placeName);
+            payload.checkForUnsafeDataChanges();
             rehash(payload);
             return l;
         } catch (Exception e) {

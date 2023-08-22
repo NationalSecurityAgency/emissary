@@ -182,7 +182,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
-    protected final Map<byte[], String> arrayHashMap = new HashMap<>();
+    final SafeUsageChecker safeUsageChecker = new SafeUsageChecker();
 
     protected enum DataState {
         NO_DATA, CHANNEL_ONLY, BYTE_ARRAY_ONLY, BYTE_ARRAY_AND_CHANNEL
@@ -224,17 +224,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public void checkAndResetArrayHashMap(final String placeName) {
-        for (Map.Entry<byte[], String> e : arrayHashMap.entrySet()) {
-            if (!ByteUtil.sha256Bytes(e.getKey()).equals(e.getValue())) {
-                logger.warn("IBDO-DATA-MODIFICATION: Data array modified without setting in {}!", placeName);
-            }
-        }
+    /**
+     * {@inheritDoc}
+     */
+    public void checkForUnsafeDataChanges() {
 
-        arrayHashMap.clear();
-
-        if (this.theData != null) {
-            arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
+        safeUsageChecker.checkForUnsafeDataChanges();
+        if (theData != null) {
+            safeUsageChecker.recordSnapshot(theData);
         }
     }
 
@@ -344,7 +341,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         Validate.notNull(sbcf, "Required: SeekableByteChannelFactory not null");
         this.theData = null;
         this.seekableByteChannelFactory = sbcf;
-        this.arrayHashMap.clear();
+
+        // calls to setData clear the unsafe state by definition
+        // reset the usage checker but don't capture a snapshot until someone requests the data in byte[] form
+        safeUsageChecker.reset();
     }
 
     /**
@@ -398,8 +398,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 // Max size here is slightly less than the true max size to avoid memory issues
                 final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromBdo(this, MAX_BYTE_ARRAY_SIZE);
 
-                arrayHashMap.put(bytes, ByteUtil.sha256Bytes(bytes));
-
+                // capture a reference to the returned byte[] so we can test for unsafe modifications of its contents
+                safeUsageChecker.recordSnapshot(bytes);
                 return bytes;
             case NO_DATA:
             default:
@@ -413,14 +413,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Override
     public void setData(@Nullable final byte[] newData) {
         this.seekableByteChannelFactory = null;
-        if (newData == null) {
-            this.theData = new byte[0];
-        } else {
-            this.theData = newData;
-        }
+        this.theData = newData == null ? new byte[0] : newData;
 
-        arrayHashMap.clear();
-        arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
+        // calls to setData clear the unsafe state by definition, but we need to capture a new snapshot
+        safeUsageChecker.resetCacheThenRecordSnapshot(theData);
     }
 
     /**
@@ -448,8 +444,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             System.arraycopy(newData, offset, this.theData, 0, length);
         }
 
-        arrayHashMap.clear();
-        arrayHashMap.put(this.theData, ByteUtil.sha256Bytes(this.theData));
+        // calls to setData clear the unsafe state by definition, but we need to capture a new snapshot
+        safeUsageChecker.resetCacheThenRecordSnapshot(theData);
     }
 
     /**

@@ -26,7 +26,13 @@ public interface IBaseDataObject {
      */
     String DEFAULT_PARAM_SEPARATOR = ";";
 
-    void checkAndResetArrayHashMap(final String placeName);
+    /**
+     * Checks to see if payload byte arrays visible to external classes have any changes not explicitly saved via a call to
+     * the {@link IBaseDataObject#setData(byte[]) setData(byte[])}, {@link IBaseDataObject#setData(byte[], int, int)
+     * setData(byte[], int, int)}, or {@link IBaseDataObject#setChannelFactory(SeekableByteChannelFactory)
+     * setChannelFactory(SeekableByteChannelFactory)} method.
+     */
+    void checkForUnsafeDataChanges();
 
     /**
      * Return the data as a byte array. If using a channel to the data, calling this method will only return up to

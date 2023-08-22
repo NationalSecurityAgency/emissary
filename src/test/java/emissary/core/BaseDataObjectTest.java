@@ -41,6 +41,7 @@ import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static emissary.core.SafeUsageChecker.UNSAFE_MODIFICATION_DETECTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -1327,10 +1328,10 @@ class BaseDataObjectTest extends UnitTest {
     void testChannelFactoryInArrayOutNoSet() throws IOException {
         final byte[] bytes = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
         final Level[] levels = new Level[] {Level.WARN};
-        final String[] messages = new String[] {"IBDO-DATA-MODIFICATION: Data array modified without setting in TestPlace!"};
+        final String[] messages = new String[] {UNSAFE_MODIFICATION_DETECTED};
         final boolean[] throwables = new boolean[] {false};
 
-        try (LogbackTester logbackTester = new LogbackTester(BaseDataObject.class.getName())) {
+        try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
             final IBaseDataObject ibdo = new BaseDataObject();
 
             ibdo.setChannelFactory(InMemoryChannelFactory.create(bytes));
@@ -1339,7 +1340,7 @@ class BaseDataObjectTest extends UnitTest {
 
             Arrays.fill(data, (byte) 0);
 
-            ibdo.checkAndResetArrayHashMap("TestPlace");
+            ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(bytes, ibdo.data());
             logbackTester.checkLogList(levels, messages, throwables);
@@ -1360,7 +1361,7 @@ class BaseDataObjectTest extends UnitTest {
             Arrays.fill(data, (byte) 0);
             ibdo.setChannelFactory(InMemoryChannelFactory.create(data));
 
-            ibdo.checkAndResetArrayHashMap("TestPlace");
+            ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(new byte[bytes.length], ibdo.data());
             logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
@@ -1381,7 +1382,7 @@ class BaseDataObjectTest extends UnitTest {
             Arrays.fill(data, (byte) 0);
             ibdo.setData(data);
 
-            ibdo.checkAndResetArrayHashMap("TestPlace");
+            ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(new byte[bytes.length], ibdo.data());
             logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
