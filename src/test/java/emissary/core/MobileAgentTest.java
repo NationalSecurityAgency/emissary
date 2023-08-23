@@ -83,7 +83,7 @@ class MobileAgentTest extends UnitTest {
 
     @Test
     void testDenyList() throws Exception {
-        HDMobileAgent agent = new MobAg2();
+        HDMobileAgent agent = new HDMobileAgent();
 
         // test accepted
         byte[] configDeniedData = ("PLACE_NAME = \"DelayPlace\"\n" + "SERVICE_NAME = \"DELAY\"\n"
@@ -136,11 +136,9 @@ class MobileAgentTest extends UnitTest {
         }
     }
 
-    class PlaceTest extends DirectoryPlace {
+    static class PlaceTest extends DirectoryPlace {
         public PlaceTest(final String placeLoc, InputStream config) throws IOException {
             super(config, placeLoc, new EmissaryNode());
         }
-    }
-    static final class MobAg2 extends HDMobileAgent {
     }
 }
