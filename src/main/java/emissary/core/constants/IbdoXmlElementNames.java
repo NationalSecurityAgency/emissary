@@ -111,18 +111,5 @@ public final class IbdoXmlElementNames {
      */
     public static final String EXTRACTED_RECORD_ELEMENT_PREFIX = "extract";
 
-    /**
-     * The XML attribute name for Base64.
-     */
-    public static final String BASE64_ATTRIBUTE_NAME = "base64";
-    /**
-     * The XML attribute name for SHA256.
-     */
-    public static final String SHA256_ATTRIBUTE_NAME = "sha256";
-    /**
-     * The XML attribute name for Encoding.
-     */
-    public static final String ENCODING_ATTRIBUTE_NAME = "encoding";
-
     private IbdoXmlElementNames() {}
 }
