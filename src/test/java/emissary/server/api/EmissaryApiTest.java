@@ -266,7 +266,6 @@ class EmissaryApiTest extends EndpointTestBase {
                 foundCost.add(entry.getCost());
                 assertEquals(50, entry.getQuality(), "Quality is expected to be 50 for all entries.");
                 foundExpense.add(entry.getExpense());
-                assertEquals(500, entry.getPathWeight(), "PathWeight is expected to be 500 for all entries.");
             });
             assertEquals(expEntryKeys, foundEntryKeys);
             assertEquals(expDataIds, foundDataIds);

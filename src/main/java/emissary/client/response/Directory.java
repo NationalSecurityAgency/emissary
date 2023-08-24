@@ -32,9 +32,6 @@ public class Directory implements Comparable<Directory>, Serializable {
     @XmlElement(name = "expense")
     private int expense;
 
-    @XmlElement(name = "pathWeight")
-    private int pathWeight;
-
     public Directory() {}
 
     public Directory(DirectoryEntry directoryEntry) {
@@ -48,7 +45,6 @@ public class Directory implements Comparable<Directory>, Serializable {
         cost = directoryEntry.getCost();
         quality = directoryEntry.getQuality();
         expense = directoryEntry.getExpense();
-        pathWeight = directoryEntry.getPathWeight();
     }
 
     public DirectoryEntry getDirectoryEntry() {
@@ -97,14 +93,6 @@ public class Directory implements Comparable<Directory>, Serializable {
 
     public void setExpense(int expense) {
         this.expense = expense;
-    }
-
-    public int getPathWeight() {
-        return pathWeight;
-    }
-
-    public void setPathWeight(int pathWeight) {
-        this.pathWeight = pathWeight;
     }
 
     @Override

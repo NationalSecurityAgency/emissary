@@ -143,7 +143,6 @@ public class DumpDirectoryAction {
         final int cost;
         final int quality;
         final int expense;
-        final int pathWeight;
         final String age;
 
         public DirectoryEntryInfo(String stripe, DirectoryEntry entry, long now) {
@@ -152,7 +151,6 @@ public class DumpDirectoryAction {
             this.cost = entry.getCost();
             this.quality = entry.getQuality();
             this.expense = entry.getExpense();
-            this.pathWeight = entry.getPathWeight();
             long ago = now - entry.getAge();
             long hh = ago / 3600000;
             long mm = (ago % 3600000) / 60000;

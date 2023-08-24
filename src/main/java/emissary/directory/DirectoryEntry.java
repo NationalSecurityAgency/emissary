@@ -40,13 +40,6 @@ public class DirectoryEntry implements Serializable {
      */
     protected int theExpense = 0;
 
-    /**
-     * Nominal starting path weight. Making it lower makes the entry less likely to be selected from a group with equal
-     * expense. Making it higher makes it more likely to be selected from a group with equal expense. Between entries with
-     * different expense values there is no effect.
-     */
-    protected transient int pathWeight = 500;
-
     /** Protection against repeated namespace lookups for this entry */
     protected transient boolean lookupAttempted = false;
 
@@ -215,7 +208,6 @@ public class DirectoryEntry implements Serializable {
         this.theQuality = that.theQuality;
         this.theCost = that.theCost;
         this.calculateExpense();
-        this.pathWeight = that.pathWeight;
         this.description = that.description;
         if (preserveTime) {
             this.age = that.age;
@@ -329,45 +321,6 @@ public class DirectoryEntry implements Serializable {
         final int exp = KeyManipulator.getExpense(key, -1);
         if (exp > -1) {
             setCQEFromExp(exp);
-        }
-    }
-
-    /**
-     * Get the path weight of moving to a place Nominal starting path weight is 500. Making it lower makes the entry less
-     * likely to be selected from a group with equal expense. Making it higher makes it more likely to be selected from a
-     * group with equal expense. Between entries with different expense values there is no effect. The value is not allowed
-     * to go below zero.
-     * 
-     * @return the current path weight value
-     */
-    public int getPathWeight() {
-        return this.pathWeight;
-    }
-
-    /**
-     * Set the path weight of moving to a place
-     * 
-     * @see #getPathWeight()
-     */
-    public void setPathWeight(final int value) {
-        this.pathWeight = value;
-        if (this.pathWeight < 0) {
-            this.pathWeight = 0;
-        }
-    }
-
-
-    /**
-     * Add to the path weight. The increment can be negative to remove weight. The path weight is not allowed to go below
-     * zero.
-     * 
-     * @see #getPathWeight()
-     * @param weightIncrement amount to add to weight
-     */
-    public void addPathWeight(final int weightIncrement) {
-        this.pathWeight += weightIncrement;
-        if (this.pathWeight < 0) {
-            this.pathWeight = 0;
         }
     }
 
