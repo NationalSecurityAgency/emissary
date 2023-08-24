@@ -99,7 +99,7 @@ public class EmissaryClient {
             username = c.findStringEntry("username", DEFAULT_USERNAME);
             connectionTimeout = c.findIntEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
             connectionManagerTimeout = c.findIntEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
-            socketTimeout = c.findIntEntry("soTimeout", DEFAULT_SOCKET_TIMEOUT);
+            socketTimeout = c.findIntEntry("socketTimeout", DEFAULT_SOCKET_TIMEOUT);
             CONTEXT = c.findStringEntry("context", DEFAULT_CONTEXT);
         } catch (IOException iox) {
             LOGGER.warn("Cannot read EmissaryClient properties, configuring defaults: {}", iox.getMessage());

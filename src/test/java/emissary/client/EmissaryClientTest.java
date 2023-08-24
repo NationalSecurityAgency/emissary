@@ -79,7 +79,7 @@ class EmissaryClientTest extends UnitTest {
             int newSocketTimeout = 3000;
             String cfg =
                     "connectionTimeout = " + newConnectionTimeout + "\n" + "connectionManagerTimeout = " + newConnectionManagerTimeout + "\n"
-                            + "soTimeout = " + newSocketTimeout;
+                            + "socketTimeout = " + newSocketTimeout;
             byte[] data = cfg.getBytes();
             out.write(data, 0, data.length);
             EmissaryClient.configure();
