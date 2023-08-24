@@ -6,7 +6,7 @@ import emissary.command.ServerCommand;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.Version;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;

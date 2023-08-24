@@ -5,19 +5,18 @@ import emissary.config.Configurator;
 import emissary.util.PkiUtil;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.http.ConnectionReuseStrategy;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.DefaultConnectionReuseStrategy;
-import org.apache.http.impl.NoConnectionReuseStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.DefaultClientConnectionReuseStrategy;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.ConnectionReuseStrategy;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -79,7 +78,7 @@ public class HTTPConnectionFactory {
 
     final PoolingHttpClientConnectionManager connMan;
 
-    private ConnectionReuseStrategy connReuseStrategy = DefaultConnectionReuseStrategy.INSTANCE;
+    private ConnectionReuseStrategy connReuseStrategy = DefaultClientConnectionReuseStrategy.INSTANCE;
 
     int maxConns = DFLT_MAXCONNS;
 
@@ -96,7 +95,7 @@ public class HTTPConnectionFactory {
             final Configurator cfg = config == null ? ConfigUtil.getConfigInfo(HTTPConnectionFactory.class) : config;
             // if someone doesn't want keep alives...
             if (!cfg.findBooleanEntry(CFG_HTTP_KEEPALIVE, DFLT_KEEPALIVE)) {
-                this.connReuseStrategy = NoConnectionReuseStrategy.INSTANCE;
+                this.connReuseStrategy = (httpRequest, httpResponse, httpContext) -> false;
             }
             this.maxConns = cfg.findIntEntry(CFG_HTTP_MAXCONNS, DFLT_MAXCONNS);
             this.userAgent = cfg.findStringEntry(CFG_HTTP_AGENT, DEFAULT_HTTP_AGENT);

@@ -6,8 +6,8 @@ import emissary.command.converter.FileExistsConverter;
 import emissary.directory.EmissaryNode;
 
 import com.google.common.net.HostAndPort;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Option;

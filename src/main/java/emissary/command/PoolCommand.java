@@ -3,7 +3,7 @@ package emissary.command;
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import picocli.CommandLine.Command;
 
 import static emissary.server.api.Pool.POOL_ENDPOINT;

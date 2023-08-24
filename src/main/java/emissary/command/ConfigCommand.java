@@ -5,7 +5,7 @@ import emissary.client.response.ConfigsResponseEntity;
 import emissary.server.api.Configs;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
