@@ -39,7 +39,7 @@ class EmissaryClientTest extends UnitTest {
             ConnectionConfig connectionConfig = client.getConnectionConfig();
             assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_CONNECTION_TIMEOUT), connectionConfig.getConnectTimeout());
             assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_CONNECTION_MANAGER_TIMEOUT), requestConfig.getConnectionRequestTimeout());
-            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_SO_TIMEOUT), connectionConfig.getSocketTimeout());
+            assertEquals(Timeout.ofMilliseconds(EmissaryClient.DEFAULT_SOCKET_TIMEOUT), connectionConfig.getSocketTimeout());
         } catch (IOException e) {
             logger.error("Problem moving {}", origCfg.toAbsolutePath(), e);
         } finally {
