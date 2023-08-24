@@ -1041,6 +1041,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             return Collections.emptyList();
         }
 
+        // remove denied entries
+        currentList.removeIf(de -> de.getLocalPlace() != null && de.getLocalPlace().isDenied(payload.currentForm()));
+
+        if (currentList.isEmpty()) {
+            logger.debug("nextKeys - no non-DENIED entries found here for {}", dataID);
+            return Collections.emptyList();
+        }
         // The list we are building for return to the caller
         final List<DirectoryEntry> keyList = new ArrayList<>();
 
