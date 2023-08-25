@@ -61,7 +61,7 @@
     <dep.guava.version>32.0.0-jre</dep.guava.version>
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
-    <dep.impsort.version>1.6.2</dep.impsort.version>
+    <dep.impsort.version>1.8.0</dep.impsort.version>
     <dep.jackson.version>2.13.4</dep.jackson.version>
     <dep.jakarta.activation-api.version>1.2.2</dep.jakarta.activation-api.version>
     <dep.jakarta.servlet-api.version>4.0.3</dep.jakarta.servlet-api.version>
