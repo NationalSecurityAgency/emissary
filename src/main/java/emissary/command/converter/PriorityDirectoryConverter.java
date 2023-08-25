@@ -3,9 +3,11 @@ package emissary.command.converter;
 import emissary.pickup.Priority;
 import emissary.pickup.PriorityDirectory;
 
+import org.apache.commons.lang3.StringUtils;
 import picocli.CommandLine.ITypeConverter;
 
 public class PriorityDirectoryConverter implements ITypeConverter<PriorityDirectory> {
+
     public PriorityDirectoryConverter() {
         super();
     }
@@ -14,20 +16,15 @@ public class PriorityDirectoryConverter implements ITypeConverter<PriorityDirect
 
     @Override
     public PriorityDirectory convert(String value) {
-        // Take from the old WorkSpace.java class
+        final String dirName;
+        final int priority;
         if (value.matches(PRIORITY_DIR_REGEX)) {
-            final int pos = value.lastIndexOf(":");
-            String dirName = value.substring(0, pos);
-            if (!dirName.endsWith("/")) {
-                dirName += "/";
-            }
-            final int priority = Integer.parseInt(value.substring(pos + 1));
-            return new PriorityDirectory(dirName, priority);
+            dirName = StringUtils.substringBeforeLast(value, ":");
+            priority = Integer.parseInt(StringUtils.substringAfterLast(value, ":"));
         } else {
-            if (!value.endsWith("/")) {
-                value += "/";
-            }
-            return new PriorityDirectory(value, Priority.DEFAULT);
+            dirName = value;
+            priority = Priority.DEFAULT;
         }
+        return new PriorityDirectory(StringUtils.appendIfMissing(dirName, "/"), priority);
     }
 }

@@ -47,7 +47,7 @@ class ProjectBaseConverterTest extends UnitTest {
     void convertNotMatching() {
         // test
         String projectBase = path.toString() + "/";
-        assertThrows(RuntimeException.class, () -> converter.convert(projectBase));
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(projectBase));
     }
 
 }

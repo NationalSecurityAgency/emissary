@@ -46,7 +46,7 @@ public class ProjectBaseConverter extends PathExistsConverter implements ITypeCo
 
         // both -b and PROJECT_BASE were set, make sure they are pointing to the same place
         if (origValue != null && projectBaseEnv != null && !projectBaseEnvString.equals(pString)) {
-            String msg = "You passed in " + projectBaseEnvString + " but PROJECT_BASE was set to " + pString;
+            String msg = "You passed in " + pString + " but PROJECT_BASE was set to " + projectBaseEnvString;
             LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }
