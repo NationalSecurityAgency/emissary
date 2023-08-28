@@ -93,10 +93,10 @@ class KffFileTest extends UnitTest {
         assertDoesNotThrow(() -> KffFile.main(args));
     }
 
-    @Test
     /**
      * Tests concurrent {@link KffFile#check(String, ChecksumResults)} invocations to ensure that method's thread-safety
      */
+    @Test
     void testConcurrentKffFileCheckCalls() throws Exception {
         int EXPECTED_FAILURE_COUNT = 200;
 
