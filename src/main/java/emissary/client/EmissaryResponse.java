@@ -4,10 +4,10 @@ import emissary.client.response.BaseEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +27,10 @@ public class EmissaryResponse {
     final Header[] headers;
     final ObjectMapper objectMapper = new ObjectMapper();
 
-    public EmissaryResponse(HttpResponse response) {
-        int tempStatus = response.getStatusLine().getStatusCode();
+    public EmissaryResponse(ClassicHttpResponse response) {
+        int tempStatus = response.getCode();
         String tempContent;
-        headers = response.getAllHeaders();
+        headers = response.getHeaders();
         Header[] contentHeaders = response.getHeaders(HttpHeaders.CONTENT_TYPE);
         if (contentHeaders.length > 0) {
             contentType = contentHeaders[0].getValue();

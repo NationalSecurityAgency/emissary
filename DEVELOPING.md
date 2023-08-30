@@ -20,7 +20,7 @@ Emissary is laid out in the following package structure:
 * **admin** - code that starts Places
 * **analyze** - interfaces/abstract classes for Analyzers and Extractors
 * **client** - client classes and response object
-* **command** - JCommander classes
+* **command** - Picocli classes
 * **config** - code for parsing configuration files
 * **core** - core data structures, including the IBaseDataObject
 * **directory** - mapping of Places to functionality
@@ -502,7 +502,7 @@ mvn versions:display-property-updates
 There is one bash script in Emissary that runs everything.  It is in the top level Emissary directory.
 This script sets up a few environment variables and Java system properties.  It also sets up the 
 classpath in a couple of ways.  The script then runs the [emissary.Emissary](src/main/java/emissary/Emissary.java) class
-which has several [JCommander](http://jcommander.org/) commands available to handle different functions.
+which has several [Picocli](https://picocli.info/) commands available to handle different functions.
 
 ### Classpath
 
@@ -573,7 +573,7 @@ You can also debug what the script is doing by prepending the following
 ```
 DEBUG_CMD=true
 ``` 
-This will output the command that is going to be run and show you how JCommander is parsing the arguments.
+This will output the command that is going to be run and show you how Picocli is parsing the arguments.
 
 #### Setting up remote debugging in your IDE
 

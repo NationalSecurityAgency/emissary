@@ -349,7 +349,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testUnixShortName() {
         this.b.setFilename("/usr/local/share/filename.txt");
-        assertEquals("filename.txt", this.b.shortName(), "Short windows name");
+        assertEquals("filename.txt", this.b.shortName(), "Short unix name");
     }
 
     @Test

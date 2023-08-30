@@ -155,4 +155,8 @@ public interface IServiceProviderPlace {
      */
     MobileAgent getAgent() throws NamespaceException;
 
+    /**
+     * Returns whether form is denied
+     */
+    boolean isDenied(String s);
 }

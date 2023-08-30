@@ -19,7 +19,7 @@ import emissary.server.mvc.adapters.WorkSpaceAdapter;
 import emissary.util.Version;
 import emissary.util.io.FileFind;
 
-import org.apache.http.HttpStatus;
+import org.apache.hc.core5.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

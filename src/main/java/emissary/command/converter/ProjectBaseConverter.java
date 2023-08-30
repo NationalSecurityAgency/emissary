@@ -2,11 +2,15 @@ package emissary.command.converter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class ProjectBaseConverter extends PathExistsConverter {
+public class ProjectBaseConverter extends PathExistsConverter implements ITypeConverter<Path> {
+    public ProjectBaseConverter() {
+        this(null);
+    }
 
     public ProjectBaseConverter(String optionName) {
         super(optionName);
@@ -37,12 +41,12 @@ public class ProjectBaseConverter extends PathExistsConverter {
             }
         }
 
-        Path p = super.convert(value);
+        Path p = super.convert("-b", value);
         String pString = p.toAbsolutePath().toString();
 
         // both -b and PROJECT_BASE were set, make sure they are pointing to the same place
         if (origValue != null && projectBaseEnv != null && !projectBaseEnvString.equals(pString)) {
-            String msg = "You passed in " + projectBaseEnvString + " but PROJECT_BASE was set to " + pString;
+            String msg = "You passed in " + pString + " but PROJECT_BASE was set to " + projectBaseEnvString;
             LOG.error(msg);
             throw new IllegalArgumentException(msg);
         }

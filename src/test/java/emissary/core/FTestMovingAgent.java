@@ -11,8 +11,8 @@ import emissary.pool.MobileAgentFactory;
 import emissary.test.core.junit5.FunctionalTest;
 import emissary.util.Version;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

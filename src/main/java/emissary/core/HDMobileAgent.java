@@ -395,7 +395,7 @@ public class HDMobileAgent extends MobileAgent {
     }
 
     /**
-     * Do work now that we have arrived a the specified place
+     * Do work now that we have arrived at the specified place
      * 
      * @param place the place we are asking to work for us
      * @param payloadListArg list of IBaseDataObject for the place to operate on

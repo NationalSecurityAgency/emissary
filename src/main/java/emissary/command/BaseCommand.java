@@ -8,45 +8,51 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.joran.util.ConfigurationWatchListUtil;
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.ParameterException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+@Command(description = "Base Command")
 public abstract class BaseCommand implements EmissaryCommand {
     static final Logger LOG = LoggerFactory.getLogger(BaseCommand.class);
 
     public static final String COMMAND_NAME = "BaseCommand";
 
-    @Parameter(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
+    @Option(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
     private Path config;
 
-    @Parameter(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different", converter = ProjectBaseConverter.class)
+    @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different\nDefault: ${DEFAULT-VALUE}",
+            converter = ProjectBaseConverter.class)
     private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
 
-    @Parameter(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
+    @Option(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
     private String logbackConfig;
 
-    @Parameter(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
+    @Option(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
     private String flavor;
 
-    @Parameter(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
+    @Option(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
     private Path binDir;
 
-    @Parameter(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
+    @Option(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
     private Path outputDir;
 
-    @Parameter(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
+    @Option(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
     private Path errorDir;
 
-    @Parameter(names = {"-q", "--quiet"}, description = "hide banner and non essential messages")
+    @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
     private boolean quiet = false;
 
     public Path getConfig() {
@@ -142,7 +148,23 @@ public abstract class BaseCommand implements EmissaryCommand {
     public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws InstantiationException, IllegalAccessException,
             ClassNotFoundException {
         T cmd = clazz.cast(Class.forName(clazz.getName()).newInstance());
-        new JCommander(cmd, args); // sets the parameters by side effect
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        PrintStream old = System.out;
+        System.setOut(ps);
+
+        CommandLine cl;
+        int code;
+        try {
+            cl = new CommandLine(cmd);
+            code = cl.execute(args);
+        } finally {
+            System.out.flush();
+            System.setOut(old);
+        }
+        if (cl != null && code == 2) {
+            throw new ParameterException(cl, baos.toString());
+        }
         cmd.setup();
         return cmd;
     }
@@ -207,4 +229,7 @@ public abstract class BaseCommand implements EmissaryCommand {
             new Banner().dump();
         }
     }
+
+    @Override
+    public void run() {}
 }

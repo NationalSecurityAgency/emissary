@@ -4,10 +4,11 @@ import emissary.command.BaseCommand;
 import emissary.command.EmissaryCommand;
 import emissary.test.core.junit5.UnitTest;
 
-import com.beust.jcommander.JCommander;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -44,10 +45,9 @@ class EmissaryTest extends UnitTest {
         cmds.put("eeee", new JunkCommand());
 
         Emissary emissary = new Emissary(cmds);
-
         ArrayList<String> sortedNames = new ArrayList<>(cmds.keySet());
         Collections.sort(sortedNames);
-        ArrayList<String> namesAsStored = new ArrayList<>(emissary.getJCommander().getCommands().keySet());
+        ArrayList<String> namesAsStored = new ArrayList<>(emissary.getCommand().getSubcommands().keySet());
 
         assertIterableEquals(namesAsStored, sortedNames);
     }
@@ -112,13 +112,13 @@ class EmissaryTest extends UnitTest {
     void testVerbose() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         // like is done in the emissary script
-        System.setProperty("set.jcommander.debug", "true");
+        System.setProperty("set.picocli.debug", "true");
         cmds.put("another", new AnotherBaseCommand());
 
         Emissary2 emissary = new Emissary2(cmds);
 
         emissary.execute(makeArgs("another"));
-        assertTrue(emissary.getOut().contains("JCommander] Parsing \"another\""));
+        assertTrue(emissary.getErr().contains("picocli INFO] Parsing 1 command line args [another]"));
     }
 
     private String[] makeArgs(String... args) {
@@ -162,6 +162,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
+    @Command()
     static class JunkCommand implements EmissaryCommand {
         final Logger LOG = LoggerFactory.getLogger(JunkCommand.class);
 
@@ -171,7 +172,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run(CommandLine c) {
             setup();
             LOG.info("You got junk");
         }
@@ -187,6 +188,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
+    @Command()
     static class BrokeCommand implements EmissaryCommand {
 
         @Override
@@ -200,7 +202,7 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run(CommandLine c) {
             setup();
             throw new RuntimeException("Still broken here");
         }
@@ -211,6 +213,7 @@ class EmissaryTest extends UnitTest {
         }
     }
 
+    @Command()
     static class AnotherBaseCommand extends BaseCommand {
         // need to extend BaseCommand to get verbose options
         final Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.class);
@@ -221,11 +224,10 @@ class EmissaryTest extends UnitTest {
         }
 
         @Override
-        public void run(JCommander jc) {
+        public void run(CommandLine c) {
             setup();
             LOG.info("Another great command run");
         }
-
     }
 
 }

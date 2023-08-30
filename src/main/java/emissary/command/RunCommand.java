@@ -1,10 +1,10 @@
 package emissary.command;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,14 +13,13 @@ import java.util.Arrays;
 import java.util.List;
 
 @Deprecated
-@Parameters(commandDescription = "Run arbitrary class with optional args")
+@Command(description = "Run arbitrary class with optional args", subcommands = {HelpCommand.class})
 public class RunCommand extends BaseCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(RunCommand.class);
 
-    @Parameter(
-            variableArity = true,
-            required = true,
+    @Parameters(
+            arity = "1..*",
             description = "fully qualified class name to run with remaining arguments passed on as args to that classes main method.  Use -- to stop processing strings as args and pass them along.")
     public List<String> args = new ArrayList<>();
 
@@ -30,7 +29,7 @@ public class RunCommand extends BaseCommand {
     }
 
     @Override
-    public void run(JCommander jc) {
+    public void run(CommandLine c) {
         setup();
         // make a class from whatever name
         String clazzName = args.get(0);
@@ -59,8 +58,11 @@ public class RunCommand extends BaseCommand {
             LOG.error(errorMsg, e);
             throw new RuntimeException(errorMsg + " : " + e.getMessage());
         }
+    }
 
-
+    @Override
+    public void run() {
+        run(null);
     }
 
     @Override
@@ -71,6 +73,4 @@ public class RunCommand extends BaseCommand {
     public void setupRun() {
         setupConfig();
     }
-
-
 }

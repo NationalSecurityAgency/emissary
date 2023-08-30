@@ -69,8 +69,6 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     // Reference to global agent pool for out payloads
     protected AgentPool agentPool;
 
-    protected static final boolean OS_IS_WINDOWS = System.getProperty("os.name").toUpperCase().contains("WINDOWS");
-
     // Initial forms for new data, read from config file
     protected List<String> initialFormValues = Collections.emptyList();
 
@@ -669,20 +667,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         s = s.replace('\n', '_');
         s = s.replace('\r', '_');
         s = s.replace('\f', '_');
-        if (OS_IS_WINDOWS) {
-
-            // don't want to replace a : that might be part of the Drive (C:)
-            if (s.length() > 1 && s.charAt(1) == ':') {
-                String drive = s.substring(0, 2);
-                String file = s.substring(2);
-                file = file.replace(':', '_');
-                s = drive + file;
-            } else {
-                s = s.replace(':', '_');
-            }
-        } else {
-            s = s.replace(':', '_');
-        }
+        s = s.replace(':', '_');
 
         if (s.startsWith(".")) {
             s = "_dot_" + s.substring(1);

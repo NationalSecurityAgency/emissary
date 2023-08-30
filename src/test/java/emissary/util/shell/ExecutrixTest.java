@@ -2,10 +2,10 @@ package emissary.util.shell;
 
 import emissary.test.core.junit5.UnitTest;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,30 +34,30 @@ import static org.mockito.Mockito.when;
 
 class ExecutrixTest extends UnitTest {
     private Executrix e;
-    private final boolean isWindows = SystemUtils.OS_NAME.contains("Windows");
 
-    @Override
     @BeforeEach
-    public void setUp() throws Exception {
-        this.e = new Executrix();
-        this.e.setTmpDir(TMPDIR);
+    public void setUp(@TempDir Path dir) throws Exception {
+        e = new Executrix();
+        if (System.getProperty("java.io.tmpdir") == null) {
+            e.setTmpDir(dir.toString());
+        }
     }
 
     @Override
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-        this.e = null;
+        e = null;
         validateMockitoUsage();
     }
 
     @Test
     void testExecutrixParams() {
-        this.e.setInFileEnding(".in");
-        this.e.setOutFileEnding(".out");
-        this.e.setOrder("NORMAL");
+        e.setInFileEnding(".in");
+        e.setOutFileEnding(".out");
+        e.setOrder("NORMAL");
 
-        final String[] names = this.e.makeTempFilenames();
+        final String[] names = e.makeTempFilenames();
         assertNotNull(names, "names array produced null");
         assertTrue(names.length >= Executrix.OUTPATH, "names has not enough elements");
         assertNotNull(names[Executrix.DIR], "names array has null DIR");
@@ -72,16 +73,16 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testExecutrixUniqueBase() {
-        this.e.setInFileEnding(".in");
-        this.e.setOutFileEnding(".out");
-        this.e.setOrder("NORMAL");
+        e.setInFileEnding(".in");
+        e.setOutFileEnding(".out");
+        e.setOrder("NORMAL");
 
         final int COUNT = 1000;
         final Set<String> basePathSet = Collections.synchronizedSet(new HashSet<>(COUNT));
 
         // Generate COUNT sets of names
         IntStream.range(0, COUNT).parallel().forEach(number -> {
-            final String[] name = this.e.makeTempFilenames();
+            final String[] name = e.makeTempFilenames();
             assertNotNull(name[Executrix.DIR], "name null DIR");
             assertNotNull(name[Executrix.BASE], "name null BASE");
             assertNotNull(name[Executrix.BASE_PATH], "name null BASE_PATH");
@@ -92,7 +93,7 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testReadWrite() throws Exception {
-        final String TMPDIR = this.e.getTmpDir();
+        final String TMPDIR = e.getTmpDir();
         assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
         byte[] data = Executrix.readFile(TMPDIR + "/foo.dat");
         assertNotNull(data, "Data must be read");
@@ -182,12 +183,12 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testReadWriteTempDir() throws IOException {
-        String[] names = this.e.writeDataToNewTempDir("aaa".getBytes());
+        String[] names = e.writeDataToNewTempDir("aaa".getBytes());
         assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
 
-        names = this.e.writeDataToNewTempDir("aaa".getBytes(), 0, 1);
+        names = e.writeDataToNewTempDir("aaa".getBytes(), 0, 1);
         assertNotNull(names, "names on temp dir write");
         readAndNuke(names[Executrix.INPATH]);
         Executrix.cleanupDirectory(names[Executrix.DIR]);
@@ -195,7 +196,7 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testCopyFile() throws Exception {
-        final String TMPDIR = this.e.getTmpDir();
+        final String TMPDIR = e.getTmpDir();
         try {
             assertTrue(Executrix.writeDataToFile("aaa".getBytes(), 0, 3, TMPDIR + "/foo.dat", false), "File written");
             Executrix.copyFile(TMPDIR + "/foo.dat", TMPDIR + "/bar.dat");
@@ -242,7 +243,7 @@ class ExecutrixTest extends UnitTest {
 
     @Test
     void testWriteWithCleanup() throws Exception {
-        final String TMPDIR = this.e.getTmpDir();
+        final String TMPDIR = e.getTmpDir();
         assertTrue(Executrix.writeDataToFile("abc".getBytes(), TMPDIR + "/foo/bar/baz.dat"), "File Written in subdir");
         byte[] data = Executrix.readFile(TMPDIR + "/foo/bar/baz.dat");
         assertNotNull(data, "Data read from subdir");
@@ -257,7 +258,7 @@ class ExecutrixTest extends UnitTest {
     @Test
     void testExecute() throws IOException {
 
-        final String[] names = this.e.makeTempFilenames();
+        final String[] names = e.makeTempFilenames();
         logger.debug("Names for testExecute is " + Arrays.asList(names));
 
         final File tdir = new File(names[Executrix.DIR]);
@@ -268,17 +269,15 @@ class ExecutrixTest extends UnitTest {
         final byte[] data = Executrix.readDataFromFile(names[Executrix.INPATH]);
         assertNotNull(data, "Data must be read from " + names[Executrix.INPATH]);
 
-        final String cyg = System.getProperty("CYGHOME");
-        final boolean cyghome = cyg != null && cyg.contains(":");
-        final String cmd = (this.isWindows ? (cyghome ? "/bin/cp" : "copy") : "cp") + " <INPUT_NAME> <OUTPUT_NAME>";
-        String[] c = this.e.getCommand(cmd, names);
+        final String cmd = "cp <INPUT_NAME> <OUTPUT_NAME>";
+        String[] c = e.getCommand(cmd, names);
         assertNotNull(c, "Command returned");
-        assertEquals((this.isWindows ? "cmd" : "/bin/sh"), c[0], "Command runner");
+        assertEquals("/bin/sh", c[0], "Command runner");
 
-        this.e.setCommand(cmd);
-        c = this.e.getCommand(names);
+        e.setCommand(cmd);
+        c = e.getCommand(names);
         assertNotNull(c, "Command returned");
-        assertEquals((this.isWindows ? "cmd" : "/bin/sh"), c[0], "Command runner");
+        assertEquals("/bin/sh", c[0], "Command runner");
 
         logger.debug("Command to exec is " + Arrays.asList(c));
 
@@ -286,52 +285,52 @@ class ExecutrixTest extends UnitTest {
         final StringBuffer out = new StringBuffer();
         final StringBuffer err = new StringBuffer();
 
-        pstat = this.e.execute(c, out, err);
+        pstat = e.execute(c, out, err);
         logger.debug("Stdout: " + out);
         logger.debug("Stderr: " + err);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c, out);
+        pstat = e.execute(c, out);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c, out, "UTF-8");
+        pstat = e.execute(c, out, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c, out, err, "UTF-8");
+        pstat = e.execute(c, out, err, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         final StringBuilder sout = new StringBuilder();
         final StringBuilder serr = new StringBuilder();
 
-        pstat = this.e.execute(c, sout);
+        pstat = e.execute(c, sout);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c, sout, serr);
+        pstat = e.execute(c, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c, sout, serr, "UTF-8");
+        pstat = e.execute(c, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
         final Map<String, String> env = new HashMap<>();
         env.put("FOO", "BAR");
 
-        pstat = this.e.execute(c, sout, serr, "UTF-8", env);
+        pstat = e.execute(c, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = this.e.execute(c);
+        pstat = e.execute(c);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        this.e.setProcessMaxMillis(0); // wait forever
-        pstat = this.e.execute(c, sout, serr, "UTF-8", env);
+        e.setProcessMaxMillis(0); // wait forever
+        pstat = e.execute(c, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
@@ -351,26 +350,26 @@ class ExecutrixTest extends UnitTest {
         final StringBuilder sout = new StringBuilder();
         final StringBuilder serr = new StringBuilder();
 
-        pstat = this.e.execute(cmd, data);
+        pstat = e.execute(cmd, data);
         assertTrue(pstat >= 0, "Process return value");
 
-        pstat = this.e.execute(cmd, "".getBytes(StandardCharsets.UTF_8), sout);
+        pstat = e.execute(cmd, "".getBytes(StandardCharsets.UTF_8), sout);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals("", sout.toString());
         sout.setLength(0);
 
-        pstat = this.e.execute(cmd, data, sout);
+        pstat = e.execute(cmd, data, sout);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals(expected, sout.toString().trim());
         sout.setLength(0);
 
-        pstat = this.e.execute(cmd, data, sout, serr);
+        pstat = e.execute(cmd, data, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
         assertTrue(sout.toString().startsWith("bbb"));
         assertEquals(expected, sout.toString().trim());
         sout.setLength(0);
 
-        pstat = this.e.execute(cmd, data, sout, serr, "UTF-8");
+        pstat = e.execute(cmd, data, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         assertTrue(sout.toString().startsWith("bbb"));
         assertEquals(expected, sout.toString().trim());
@@ -379,14 +378,14 @@ class ExecutrixTest extends UnitTest {
         final Map<String, String> env = new HashMap<>();
         env.put("FOO", "BAR");
 
-        pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
+        pstat = e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
         sout.setLength(0);
 
-        this.e.setProcessMaxMillis(0); // wait forever
-        pstat = this.e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
+        e.setProcessMaxMillis(0); // wait forever
+        pstat = e.execute(new String[] {cmd}, data, sout, serr, "UTF-8", env);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals("", serr.toString());
         assertEquals(expected, sout.toString().trim());
@@ -403,21 +402,21 @@ class ExecutrixTest extends UnitTest {
         final StringBuilder sout = new StringBuilder();
         final StringBuilder serr = new StringBuilder();
 
-        pstat = this.e.execute(cmd);
+        pstat = e.execute(cmd);
         assertTrue(pstat >= 0, "Process return value");
 
-        pstat = this.e.execute(cmd, sout);
+        pstat = e.execute(cmd, sout);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals(expected, sout.toString().trim());
         sout.setLength(0);
 
-        pstat = this.e.execute(cmd, sout, serr);
+        pstat = e.execute(cmd, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
         assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
         sout.setLength(0);
 
-        pstat = this.e.execute(cmd, sout, serr, "UTF-8");
+        pstat = e.execute(cmd, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
         assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());

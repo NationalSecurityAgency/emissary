@@ -51,6 +51,7 @@ import static emissary.core.constants.Configurations.SERVICE_DESCRIPTION;
 import static emissary.core.constants.Configurations.SERVICE_KEY;
 import static emissary.core.constants.Configurations.SERVICE_NAME;
 import static emissary.core.constants.Configurations.SERVICE_PROXY;
+import static emissary.core.constants.Configurations.SERVICE_PROXY_DENY;
 import static emissary.core.constants.Configurations.SERVICE_QUALITY;
 import static emissary.core.constants.Configurations.SERVICE_TYPE;
 
@@ -85,6 +86,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * file.
      */
     protected List<String> keys = new ArrayList<>();
+
+    /**
+     * List of denied places in SERVICE_PROXY_DENY
+     */
+    protected List<String> denyList = new ArrayList<>();
 
     // Items that are going to be deprecated, but here now to
     // make the transition easier, for compatibility
@@ -293,7 +299,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     }
 
     /**
-     * Get a local reference to the directpry.
+     * Get a local reference to the directory.
      *
      * @param theDir key for the directory to use, if null will look up default name
      * @return true if it worked
@@ -437,6 +443,11 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             for (String sp : configG.findEntries(SERVICE_PROXY)) {
                 DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
                 keys.add(de.getFullKey());
+            }
+            // pick up the denied proxies(save full 4-tuple keys!)
+            for (String sp : configG.findEntries(SERVICE_PROXY_DENY)) {
+                DirectoryEntry de = new DirectoryEntry(sp, serviceName, serviceType, locationPart, serviceDescription, serviceCost, serviceQuality);
+                denyList.add(de.getDataType());
             }
         } else {
             // May be configured the new way, but warn if there is a mixture of
@@ -1123,6 +1134,10 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
         // Nothing found?
         return null;
+    }
+
+    public boolean isDenied(String s) {
+        return denyList.contains(s);
     }
 
     /**

@@ -5,16 +5,15 @@ import emissary.client.EmissaryResponse;
 import emissary.test.core.junit5.UnitTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.NoHttpResponseException;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -66,11 +65,9 @@ class HeartbeatManagerTest extends UnitTest {
         CloseableHttpClient mockClient = mock(CloseableHttpClient.class);
         CloseableHttpResponse mockResponse = mock(CloseableHttpResponse.class);
         HttpEntity mockHttpEntity = mock(HttpEntity.class);
-        StatusLine mockStatusLine = mock(StatusLine.class);
 
         when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenReturn(mockResponse);
-        when(mockResponse.getStatusLine()).thenReturn(mockStatusLine);
-        when(mockStatusLine.getStatusCode()).thenReturn(401);
+        when(mockResponse.getCode()).thenReturn(401);
         when(mockResponse.getEntity()).thenReturn(mockHttpEntity);
         String responseString = "Unauthorized heartbeat man";
         when(mockHttpEntity.getContent()).thenReturn(IOUtils.toInputStream(responseString, StandardCharsets.UTF_8));

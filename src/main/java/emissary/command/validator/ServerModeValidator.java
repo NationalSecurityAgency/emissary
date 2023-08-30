@@ -1,16 +1,13 @@
 package emissary.command.validator;
 
-import com.beust.jcommander.IParameterValidator;
-import com.beust.jcommander.ParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServerModeValidator implements IParameterValidator {
+public class ServerModeValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerModeValidator.class);
 
-    @Override
-    public void validate(String name, String value) throws ParameterException {
+    public void validate(String name, String value) {
         switch (value) {
             case "cluster":
             case "standalone":

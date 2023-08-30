@@ -22,6 +22,7 @@ public class Configurations {
     public static final String SERVICE_QUALITY = "SERVICE_QUALITY";
     public static final String SERVICE_PROXY = "SERVICE_PROXY";
     public static final String SERVICE_KEY = "SERVICE_KEY";
+    public static final String SERVICE_PROXY_DENY = "SERVICE_PROXY_DENY";
 
     /**
      * The list of reserved service config keys for service/place creation
@@ -34,6 +35,7 @@ public class Configurations {
                     SERVICE_KEY,
                     SERVICE_NAME,
                     SERVICE_PROXY,
+                    SERVICE_PROXY_DENY,
                     SERVICE_QUALITY,
                     SERVICE_TYPE));
 

@@ -3,9 +3,9 @@ name: Lint Codebase
 
 on:
   push:
-    branches: [master, release-*]
+    branches: [ master, release/**, patch/** ]
   pull_request:
-    branches: [master, release-*]
+    branches: [ master, release/**, patch/** ]
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
         if: ${{ contains(github.event_name, 'pull_request') }}
 
       - name: Lint Code Base
-        uses: github/super-linter/slim@v4.10.0
+        uses: super-linter/super-linter/slim@v5.2.1
         env:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

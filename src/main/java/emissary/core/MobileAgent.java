@@ -332,7 +332,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     }
 
     /**
-     * Do work now that we have arrived a the specified place
+     * Do work now that we have arrived at the specified place
      *
      * @param place the place we are asking to work for us
      * @param payloadArg the data for the place to operate on

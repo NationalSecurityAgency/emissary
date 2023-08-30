@@ -45,9 +45,7 @@ public class DropOffUtil {
 
     protected static final String SEPARATOR = FileSystems.getDefault().getSeparator();
     protected static final String OS_NAME = System.getProperty("os.name").toUpperCase();
-    protected static boolean osIsWindows = (OS_NAME.indexOf("WINDOWS") >= 0);
 
-    protected String winRoot;
     protected String unixRoot;
 
     protected String placeOutputData;
@@ -122,7 +120,6 @@ public class DropOffUtil {
 
         if (actualConfigG != null) {
             this.placeOutputData = actualConfigG.findStringEntry("OUTPUT_DATA", "outputData");
-            this.winRoot = actualConfigG.findStringEntry("WIN_ROOT", null);
             this.unixRoot = actualConfigG.findStringEntry("UNIX_ROOT", null);
             this.executrix = new Executrix(actualConfigG);
             this.idTokens = actualConfigG.findEntries("ID_PARAMETER");
@@ -181,15 +178,6 @@ public class DropOffUtil {
         synchronized (DATE_PATTERN) {
             return DATE_PATTERN.format(d);
         }
-    }
-
-    /**
-     * This method is really only for debugging/testing. It can force this utility to act like it's on windwos when it's not
-     *
-     * @param value set the value of osIsWindows
-     */
-    public void setWindows(final boolean value) {
-        osIsWindows = value;
     }
 
     /**
@@ -328,10 +316,6 @@ public class DropOffUtil {
      * %D% = Two digit day of month
      * %J% = Three digit ordinal day of the year
      * </pre>
-     *
-     * <b>Note for Windows Users:</b> Since windows filesystems seem to strip trailing dots from directory names, we are
-     * going to be proactive about it and detect that there is a . before a / or \ and we will replace that dot, and only
-     * that dot, with an underscore. This will provide consistency across platforms.
      *
      * @param specArg the incoming specification
      * @param d the payload we are making a path for
@@ -476,12 +460,7 @@ public class DropOffUtil {
         String answer = sb.toString();
 
         // Set the proper path separator
-        if (osIsWindows) {
-            answer = answer.replace('/', '\\');
-        } else {
-            answer = answer.replace('\\', '/');
-        }
-
+        answer = answer.replace('\\', '/');
         answer = answer.replaceAll("\\.([/\\\\])", "_$1");
 
         return answer;
@@ -542,12 +521,7 @@ public class DropOffUtil {
     }
 
     public String getRootPath() {
-        // move between Windows and Unix paths
-        if (osIsWindows) {
-            return this.winRoot;
-        } else {
-            return this.unixRoot;
-        }
+        return this.unixRoot;
     }
 
     public String getSubDirName(final IBaseDataObject d) {

@@ -24,7 +24,7 @@ import emissary.spi.SPILoader;
 
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
