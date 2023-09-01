@@ -21,7 +21,7 @@
   </appender>
 
   <!-- Enable output metrics logging by creating an environment variable of "LogObjectMetrics=true" -->
-  <if condition='${LogObjectMetrics} == true'>
+  <if condition="&quot;${LogObjectMetrics}&quot;.equals(&quot;true&quot;)">
     <then>
       <appender name="OBJECT-METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -29,7 +29,6 @@
           <includeMdc>false</includeMdc>
           <fieldNames>
             <version>[ignore]</version>
-            <logValue>[ignore]</logValue>
             <logger>[ignore]</logger>
             <thread>[ignore]</thread>
             <levelValue>[ignore]</levelValue>
