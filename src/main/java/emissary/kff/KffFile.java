@@ -16,25 +16,24 @@ import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 
 /**
+ * <p>
  * KffFile provides access to the known file filter data. The NIST/NSRL data is a CSV file with other information. It
  * must be preprocessed in order for this class to access it. The input file for this class must consist of a sorted
  * list of known values, where a known value is the CRC32 appended to the SHA-1. This file must be a binary file, so
  * each record will be 24 bytes long (20-byte SHA + 4-byte CRC). The CRC should be big endian.
- *
+ * </p>
+ * <p>
  * Implementation notes: The binary input file is too big to read into memory, so we implement a binary search on the
  * file itself. This is why the records must be sorted, and it will improve performance if only unique records are
  * generated as well. This class assumes JDK1.4+ and memory maps the file. For earlier versions of the JDK, we can seek
  * through the RandomAccessFile instead but performance isn't as good. The file cannot be larger than 2^31 (2 GB)
  * because that is the maximum length of the mapped ByteBuffer.
- *
- * Update: 11/27/2006 Having out-of-memory issues with all the memory mapping we're trying to do, (multiple KFFs, plus
- * HotSpot), so try using just RandomAccessFile instead.
+ * </p>
  */
 public class KffFile implements KffFilter {
     private final Logger logger;
 
     /** File containing SHA-1/CRC32 results of known files */
-    // protected RandomAccessFile knownFile;
     protected SeekableByteChannelFactory knownFileFactory;
 
     /** Byte buffer that is mapped to the above file */
@@ -44,7 +43,7 @@ public class KffFile implements KffFilter {
     private int bSearchInitHigh;
 
     public static final int DEFAULT_RECORD_LENGTH = 24;
-    protected int recordLength = DEFAULT_RECORD_LENGTH;
+    protected int recordLength;
 
     /** String logical name for this filter */
     protected String filterName = "UNKNOWN";
@@ -86,11 +85,12 @@ public class KffFile implements KffFilter {
         logger = LoggerFactory.getLogger(this.getClass());
 
         // Open file in read-only mode
-        // knownFile = new RandomAccessFile(filename, "r");
         knownFileFactory = FileChannelFactory.create(Paths.get(filename));
 
         // Initial high value for binary search is the largest index
-        bSearchInitHigh = ((int) knownFileFactory.create().size() / recordLength) - 1;
+        try (SeekableByteChannel sbc = knownFileFactory.create()) {
+            bSearchInitHigh = ((int) sbc.size() / recordLength) - 1;
+        }
 
         logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
     }
