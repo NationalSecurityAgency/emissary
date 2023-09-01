@@ -291,15 +291,15 @@ recommend using the sample keystore in production environments.  To use your own
 Standalone
 
 ```
-./emissary server -p 8443 --ssl
+./emissary server -p 8443 --ssl --disableSniHostCheck
 ```
 
 Clustered
 ```
-./emissary server -p 8443 --ssl --mode cluster
-./emissary server -p 9443 --ssl --mode cluster
+./emissary server -p 8443 --ssl --disableSniHostCheck --mode cluster
+./emissary server -p 9443 --ssl --disableSniHostCheck --mode cluster
 mkdir ~/Desktop/feed1
-./emissary feed -p 7443 --ssl -i ~/Desktop/feed1/
+./emissary feed -p 7443 --ssl --disableSniHostCheck -i ~/Desktop/feed1/
 ````
 
 ## Contact Us

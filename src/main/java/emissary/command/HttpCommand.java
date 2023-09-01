@@ -46,6 +46,10 @@ public abstract class HttpCommand extends BaseCommand {
             description = "run node with SSL enabled, reads keystore and keytstorepass from HTTPConnectionFactory.cfg\nDefault: ${DEFAULT-VALUE}")
     private boolean sslEnabled = false;
 
+    @Option(names = {"--disableSniHostCheck"},
+            description = "disable SNI hostname check when there is an SNI certificate\nDefault: ${DEFAULT-VALUE}")
+    private boolean sniDisabled = false;
+
     public int getDefaultPort() {
         return DEFAULT_PORT;
     }
@@ -68,6 +72,14 @@ public abstract class HttpCommand extends BaseCommand {
 
     public boolean isSslEnabled() {
         return sslEnabled;
+    }
+
+    public boolean isSniHostCheckEnabled() {
+        return !isSniHostCheckDisabled();
+    }
+
+    public boolean isSniHostCheckDisabled() {
+        return sniDisabled;
     }
 
     @Override
