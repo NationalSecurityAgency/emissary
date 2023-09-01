@@ -3,6 +3,7 @@ package emissary.client;
 import emissary.client.response.BaseEntity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import javax.ws.rs.core.MediaType;
 
 public class EmissaryResponse {
 

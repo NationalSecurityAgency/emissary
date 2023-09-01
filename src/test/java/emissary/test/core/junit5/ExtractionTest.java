@@ -9,6 +9,7 @@ import emissary.util.io.ResourceReader;
 import emissary.util.xml.JDOMUtil;
 
 import com.google.errorprone.annotations.ForOverride;
+import jakarta.xml.bind.DatatypeConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import javax.xml.bind.DatatypeConverter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

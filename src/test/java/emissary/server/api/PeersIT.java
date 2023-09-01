@@ -12,6 +12,7 @@ import emissary.server.EmissaryServer;
 import emissary.server.mvc.EndpointTestBase;
 
 import com.google.common.collect.Sets;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ws.rs.core.Response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;

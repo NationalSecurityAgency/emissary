@@ -6,6 +6,9 @@ import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.server.mvc.EndpointTestBase;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,9 +18,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.Collections;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.DIRECTORY_NAME;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;

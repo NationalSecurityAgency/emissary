@@ -4,6 +4,7 @@ import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import javax.ws.rs.core.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
