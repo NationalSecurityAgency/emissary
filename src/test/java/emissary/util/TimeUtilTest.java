@@ -159,9 +159,14 @@ class TimeUtilTest extends UnitTest {
 
     @Test
     void testConvertHexDate() {
-        String cellContents = "0x00009FF700F77536";
-        String cellContents2 = "0x0000A07800E93033";
-        assertEquals("2012-02-14 15:00:57.993", TimeUtil.convertHexDate(cellContents), "convertHexDate did not match");
-        assertEquals("2012-06-22 14:09:00.757", TimeUtil.convertHexDate(cellContents2), "convertHexDate did not match");
+        String hexDate1 = "0x00009FF700F77536";
+        String hexDate2 = "0x0000A07800E93033";
+        assertEquals("2012-02-14 15:00:57.993", TimeUtil.convertHexDate(hexDate1), "convertHexDate conversion did not match");
+        assertEquals("2012-06-22 14:09:00.757", TimeUtil.convertHexDate(hexDate2), "convertHexDate conversion did not match");
+
+        String invalidHexDate1 = "0x00009FF700F7753"; // too few characters
+        String invalidHexDate2 = "0x00009FF_00F77536"; // format doesn't support any non-hex characters
+        assertThrows(IllegalArgumentException.class, () -> TimeUtil.convertHexDate(invalidHexDate1));
+        assertThrows(IllegalArgumentException.class, () -> TimeUtil.convertHexDate(invalidHexDate2));
     }
 }
