@@ -21,6 +21,7 @@ jobs:
         with:
           # Full git history is needed to get a proper list of changed files within super-linter
           fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Lint Code Base
         uses: github/super-linter/slim@v4.10.0
@@ -28,12 +29,13 @@ jobs:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # setting this to false means that only changed files will be scanned in each commit
-          VALIDATE_ALL_CODEBASE: ${{ !contains(github.event_name, 'pull_request') }}
+          VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
           # Enable Linters to run
           VALIDATE_GITHUB_ACTIONS: true
           # VALIDATE_GOOGLE_JAVA_FORMAT: true
           JAVA_FILE_NAME: ../../contrib/checkstyle.xml
           VALIDATE_DOCKERFILE_HADOLINT: true
+          DOCKERFILE_HADOLINT_FILE_NAME: ../../contrib/docker/.hadolint.yaml
           # VALIDATE_MARKDOWN: true
           VALIDATE_XML: true
           VALIDATE_YAML: true
