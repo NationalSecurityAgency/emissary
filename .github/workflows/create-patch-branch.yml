@@ -2,6 +2,11 @@ name: 'Create a Patch Branch'
 
 on:
   workflow_dispatch:
+    inputs:
+      cherrypick_commits:
+        description: "List of space delimited commits to cherry pick"
+        required: false
+        default: ""
 
 env:
   JAVA_VERSION: '11'
@@ -14,7 +19,7 @@ jobs:
       - name: Check patch release type is using correct branch
         if: ${{ !startsWith(github.ref_name, 'release/') }}
         run: |
-          echo "Cannot create a patch branch, please target a branch that starts with 'release/'"
+          echo "Cannot create a patch branch, please target a branch the starts with 'release/'"
           exit 1
 
   patch:
@@ -22,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      branch: ${{ steps.set_output.outputs.patch_branch }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3.3.0
@@ -43,6 +50,9 @@ jobs:
           echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' )" >> "$GITHUB_ENV"
           echo "PATCH_BRANCH=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F. '{print "patch/"$1"."$2".x"}')" >> "$GITHUB_ENV"
 
+      - id: set_output
+        run: echo "patch_branch=${{ env.PATCH_BRANCH }}" >> "$GITHUB_OUTPUT"
+
       - name: Fail for milestone versions
         if: ${{ contains(env.PROJECT_VERSION, '-M') }}
         run: |
@@ -59,3 +69,11 @@ jobs:
           git add .
           git commit -m "[github-actions](${{ github.actor }}) prepare for next patch iteration"
           git push -u origin ${{ env.PATCH_BRANCH }}
+
+  cherry_pick:
+    if: ${{ github.event.inputs.cherrypick_commits != '' }}
+    needs: patch
+    uses: ./.github/workflows/cherrypick.yml
+    with:
+      branch: ${{ needs.patch.outputs.branch }}
+      commits: ${{ github.event.inputs.cherrypick_commits }}
