@@ -49,7 +49,7 @@ public class EmissaryClient {
     public static final String JETTY_USER_FILE_PROPERTY_NAME = "emissary.jetty.users.file";
     public static final int DEFAULT_CONNECTION_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(100L); // 2 X 50 min
     public static final int DEFAULT_CONNECTION_MANAGER_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(2L);
-    public static final int DEFAULT_SO_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(1L);
+    public static final int DEFAULT_SOCKET_TIMEOUT = (int) TimeUnit.MINUTES.toMillis(1L);
     public static final int DEFAULT_RETRIES = 3;
     public static final String DEFAULT_USERNAME = "emissary";
     public static final String DEFAULT_PASSWORD = "password";
@@ -76,7 +76,7 @@ public class EmissaryClient {
     // How long to wait for a connection from the pool (ms)
     protected static int connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
     // How long to wait on a data read in a connection (ms)
-    protected static int socketTimeout = DEFAULT_SO_TIMEOUT;
+    protected static int socketTimeout = DEFAULT_SOCKET_TIMEOUT;
     // class is thread-safe
     protected static final AuthCache AUTH_CACHE = new BasicAuthCache();
 
@@ -99,7 +99,7 @@ public class EmissaryClient {
             username = c.findStringEntry("username", DEFAULT_USERNAME);
             connectionTimeout = c.findIntEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
             connectionManagerTimeout = c.findIntEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
-            socketTimeout = c.findIntEntry("soTimeout", DEFAULT_SO_TIMEOUT);
+            socketTimeout = c.findIntEntry("socketTimeout", DEFAULT_SOCKET_TIMEOUT);
             CONTEXT = c.findStringEntry("context", DEFAULT_CONTEXT);
         } catch (IOException iox) {
             LOGGER.warn("Cannot read EmissaryClient properties, configuring defaults: {}", iox.getMessage());
@@ -107,7 +107,7 @@ public class EmissaryClient {
             username = DEFAULT_USERNAME;
             connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
             connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
-            socketTimeout = DEFAULT_SO_TIMEOUT;
+            socketTimeout = DEFAULT_SOCKET_TIMEOUT;
             CONTEXT = DEFAULT_CONTEXT;
         }
 
