@@ -694,14 +694,6 @@
             <groups>java.,javax.,*</groups>
             <removeUnused>true</removeUnused>
           </configuration>
-          <!-- Remove dependencies block once impsort upgraded to 1.8.0 -->
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>3.5.1</version>
-            </dependency>
-          </dependencies>
           <executions>
             <execution>
               <id>sort-java-imports</id>
@@ -1459,7 +1451,6 @@
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
             <version>${dep.impsort.version}</version>
-            <!--TODO update to latest once we move past JDK11 -->
             <configuration>
               <groups>emissary,*,java</groups>
               <staticGroups>*</staticGroups>
