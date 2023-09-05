@@ -431,7 +431,7 @@ public final class IBaseDataObjectXmlCodecs {
      * object.
      */
     public static final ElementDecoder DEFAULT_STRING_OBJECT_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, String.class, Object.class);
+        final Method method = getIbdoMethod(ibdoMethodName, String.class, CharSequence.class);
 
         for (final Element element : elements) {
             final Element nameElement = element.getChild(NAME);
