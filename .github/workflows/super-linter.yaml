@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref }}
 
       - name: Lint Code Base
-        uses: github/super-linter/slim@v4.10.0
+        uses: github/super-linter/slim@v5.0.0
         env:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
