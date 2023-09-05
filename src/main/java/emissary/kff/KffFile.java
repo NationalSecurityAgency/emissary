@@ -1,37 +1,40 @@
 package emissary.kff;
 
+import emissary.core.channels.FileChannelFactory;
+import emissary.core.channels.SeekableByteChannelFactory;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import javax.annotation.Nonnull;
 
 /**
+ * <p>
  * KffFile provides access to the known file filter data. The NIST/NSRL data is a CSV file with other information. It
  * must be preprocessed in order for this class to access it. The input file for this class must consist of a sorted
  * list of known values, where a known value is the CRC32 appended to the SHA-1. This file must be a binary file, so
  * each record will be 24 bytes long (20-byte SHA + 4-byte CRC). The CRC should be big endian.
- *
+ * </p>
+ * <p>
  * Implementation notes: The binary input file is too big to read into memory, so we implement a binary search on the
  * file itself. This is why the records must be sorted, and it will improve performance if only unique records are
  * generated as well. This class assumes JDK1.4+ and memory maps the file. For earlier versions of the JDK, we can seek
  * through the RandomAccessFile instead but performance isn't as good. The file cannot be larger than 2^31 (2 GB)
  * because that is the maximum length of the mapped ByteBuffer.
- *
- * Update: 11/27/2006 Having out-of-memory issues with all the memory mapping we're trying to do, (multiple KFFs, plus
- * HotSpot), so try using just RandomAccessFile instead.
+ * </p>
  */
 public class KffFile implements KffFilter {
     private final Logger logger;
 
     /** File containing SHA-1/CRC32 results of known files */
-    protected RandomAccessFile knownFile;
+    protected SeekableByteChannelFactory knownFileFactory;
 
     /** Byte buffer that is mapped to the above file */
     protected ByteBuffer mappedBuf;
@@ -39,8 +42,8 @@ public class KffFile implements KffFilter {
     /** Initial value of high index for binary search */
     private int bSearchInitHigh;
 
-    protected int RECORD_LENGTH = 24;
-    protected int recordLength = RECORD_LENGTH;
+    public static final int DEFAULT_RECORD_LENGTH = 24;
+    protected int recordLength;
 
     /** String logical name for this filter */
     protected String filterName = "UNKNOWN";
@@ -59,7 +62,7 @@ public class KffFile implements KffFilter {
      * @throws IOException if thrown by file I/O
      */
     public KffFile(String filename, String filterName, FilterType ftype) throws IOException {
-        this(filename, filterName, ftype, 24);
+        this(filename, filterName, ftype, DEFAULT_RECORD_LENGTH);
     }
 
 
@@ -82,10 +85,12 @@ public class KffFile implements KffFilter {
         logger = LoggerFactory.getLogger(this.getClass());
 
         // Open file in read-only mode
-        knownFile = new RandomAccessFile(filename, "r");
+        knownFileFactory = FileChannelFactory.create(Paths.get(filename));
 
         // Initial high value for binary search is the largest index
-        bSearchInitHigh = ((int) knownFile.length() / recordLength) - 1;
+        try (SeekableByteChannel sbc = knownFileFactory.create()) {
+            bSearchInitHigh = ((int) sbc.size() / recordLength) - 1;
+        }
 
         logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
     }
@@ -147,33 +152,34 @@ public class KffFile implements KffFilter {
 
         /* Buffer to hold a record */
         byte[] rec = new byte[recordLength];
-
+        ByteBuffer byteBuffer = ByteBuffer.wrap(rec);
         // Search until the indexes cross
-        while (low <= high) {
-            // Calculate the midpoint
-            int mid = (low + high) >> 1;
+        try (SeekableByteChannel knownFile = knownFileFactory.create()) {
+            while (low <= high) {
+                byteBuffer.clear();
 
-            try {
-                knownFile.seek(rec.length * (long) mid);
-                int count = knownFile.read(rec);
+                // Calculate the midpoint
+                int mid = (low + high) >> 1;
+
+                knownFile.position(rec.length * (long) mid);
+                int count = IOUtils.read(knownFile, byteBuffer);
                 if (count != rec.length) {
-                    logger.warn("Short read on KffFile at {} read {} expected {}", (rec.length * mid), count, rec.length);
+                    logger.warn("Short read on KffFile at {} read {} expected {}", (recordLength * mid), count, recordLength);
                     return false;
                 }
-            } catch (IOException x) {
-                logger.warn("Exception reading KffFile: {}", x.getMessage());
-                return false;
+                // Compare the record with the target. Adjust the indexes accordingly.
+                int c = compare(rec, hash, crc);
+                if (c < 0) {
+                    high = mid - 1;
+                } else if (c > 0) {
+                    low = mid + 1;
+                } else {
+                    return true;
+                }
             }
-
-            // Compare the record with the target. Adjust the indexes accordingly.
-            int c = compare(rec, hash, crc);
-            if (c < 0) {
-                high = mid - 1;
-            } else if (c > 0) {
-                low = mid + 1;
-            } else {
-                return true;
-            }
+        } catch (IOException e) {
+            logger.warn("Exception reading KffFile: {}", e.getMessage());
+            return false;
         }
 
         // not found
