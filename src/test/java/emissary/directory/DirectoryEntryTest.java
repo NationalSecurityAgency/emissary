@@ -86,16 +86,6 @@ class DirectoryEntryTest extends UnitTest {
         final int newExp = DirectoryEntry.calculateExpense(cost + 100, quality);
         assertEquals(newExp, this.d.getExpense(), "Expense computation on cost increment");
         assertTrue(this.d.toString().contains("$" + newExp), "Correct expense in key");
-
-        final int origWeight = this.d.getPathWeight();
-        this.d.addPathWeight(100);
-        assertEquals(100 + origWeight, this.d.getPathWeight(), "Path weight incrememented");
-
-        this.d.addPathWeight(-100000);
-        assertEquals(0, this.d.getPathWeight(), "Path weight cannot be negative");
-
-        this.d.setPathWeight(-1);
-        assertEquals(0, this.d.getPathWeight(), "Path weight cannot be negative");
     }
 
     @Test
@@ -156,7 +146,6 @@ class DirectoryEntryTest extends UnitTest {
         assertEquals(this.d.getDescription(), copy.getDescription(), "Copied desc");
         assertEquals(this.d.toString(), copy.toString(), "Copied tostring");
         assertEquals(this.d.getFullKey(), copy.getFullKey(), "Full key");
-        assertEquals(this.d.getPathWeight(), copy.getPathWeight(), "Copied path weight");
     }
 
     @Test

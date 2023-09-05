@@ -820,13 +820,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
             logger.debug("Permanent failure of remote {}", key);
             count += removePlaces(Collections.singletonList(hmKey));
         } else {
-            // Change the weight of the paths for all places matching the
+            // Change the cost for all places matching the
             // failed directory. This has the effect of causing them
             // not to be chosen as much.
             final List<DirectoryEntry> list = this.entryMap.collectAllMatching(hmKey);
-            for (final DirectoryEntry e : list) {
-                e.addPathWeight(-20);
-            }
             this.observerManager.placeCostChangeEntries(list);
         }
 
