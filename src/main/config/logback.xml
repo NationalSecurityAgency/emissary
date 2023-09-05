@@ -50,7 +50,7 @@
   </if>
 
   <!-- Enable output metrics logging by creating an environment variable of "ObjectTrace=true" -->
-  <if condition='${ObjectTrace} == true'>
+  <if condition="&quot;${ObjectTrace}&quot;.equals(&quot;true&quot;)">
     <then>
       <appender name="OBJECT-TRACE" class="emissary.util.ObjectTracingLogbackAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
