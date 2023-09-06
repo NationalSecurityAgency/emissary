@@ -29,6 +29,7 @@
           <includeMdc>false</includeMdc>
           <fieldNames>
             <version>[ignore]</version>
+            <logValue>[ignore]</logValue>
             <logger>[ignore]</logger>
             <thread>[ignore]</thread>
             <levelValue>[ignore]</levelValue>
@@ -57,7 +58,6 @@
           <includeMdc>false</includeMdc>
           <fieldNames>
             <version>[ignore]</version>
-            <logValue>[ignore]</logValue>
             <logger>[ignore]</logger>
             <thread>[ignore]</thread>
             <levelValue>[ignore]</levelValue>
