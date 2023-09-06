@@ -6,7 +6,6 @@ import emissary.kff.KffDataObjectHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Hashing place to hash payload unless hashes are set or skip flag is set. This place is intended to execute in the
@@ -21,8 +20,6 @@ public class KffHashPlace extends ServiceProviderPlace {
     private static final String TRUE = "TRUE";
 
     public static final String SKIP_KFF_HASH = "SKIP_KFF_HASH";
-
-    private boolean useSbc = false;
 
     public KffHashPlace(String thePlaceLocation) throws IOException {
         super(thePlaceLocation);
@@ -51,7 +48,6 @@ public class KffHashPlace extends ServiceProviderPlace {
     @Override
     protected void setupPlace(String theDir, String placeLocation) throws IOException {
         super.setupPlace(theDir, placeLocation);
-        useSbc = configG.findBooleanEntry("USE_SBC", useSbc);
         initKff();
     }
 
@@ -62,11 +58,7 @@ public class KffHashPlace extends ServiceProviderPlace {
             return;
         }
 
-        try {
-            kff.hash(payload, useSbc);
-        } catch (final NoSuchAlgorithmException | IOException e) {
-            logger.error("KffHashPlace failed to hash data for {} - this shouldn't happen", payload.shortName(), e);
-        }
+        kff.hash(payload);
     }
 
 }

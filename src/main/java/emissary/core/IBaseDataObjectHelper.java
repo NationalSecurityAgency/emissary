@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -173,11 +172,7 @@ public final class IBaseDataObjectHelper {
         KffDataObjectHandler.parentToChild(childIBaseDataObject);
 
         // Hash the new child data, overwrites parent hashes if any
-        try {
-            kffDataObjectHandler.hash(childIBaseDataObject, true);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            // Do not add the hash parameters
-        }
+        kffDataObjectHandler.hash(childIBaseDataObject);
     }
 
     /**
