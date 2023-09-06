@@ -29,7 +29,6 @@
           <includeMdc>false</includeMdc>
           <fieldNames>
             <version>[ignore]</version>
-            <logValue>[ignore]</logValue>
             <logger>[ignore]</logger>
             <thread>[ignore]</thread>
             <levelValue>[ignore]</levelValue>
@@ -52,7 +51,7 @@
   <!-- Enable output metrics logging by creating an environment variable of "ObjectTrace=true" -->
   <if condition="&quot;${ObjectTrace}&quot;.equals(&quot;true&quot;)">
     <then>
-      <appender name="OBJECT-TRACE" class="emissary.util.ObjectTracingLogbackAppender">
+      <appender name="OBJECT-TRACE" class="emissary.util.CustomRolloverLogbackAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
           <customFields>{"node":"${emissary.node.name}"}</customFields>
           <includeMdc>false</includeMdc>

@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class ObjectTracingLogbackAppender<E> extends RollingFileAppender<E> {
+public class CustomRolloverLogbackAppender<E> extends RollingFileAppender<E> {
     private long start = System.currentTimeMillis();
     private int rolloverTime = 15;
     private boolean isConfigured = false;
 
-    protected static final Logger logger = LoggerFactory.getLogger(ObjectTracingLogbackAppender.class);
+    protected static final Logger logger = LoggerFactory.getLogger(CustomRolloverLogbackAppender.class);
 
     public void configure() {
         try {
             Configurator configG = ConfigUtil.getConfigInfo(getClass());
             rolloverTime = configG.findIntEntry("ROLLOVER_TIME_MINUTES", rolloverTime);
         } catch (IOException e) {
-            logger.error("Could not read from the config for the ObjectTracingLogbackAppender ", e);
+            logger.error("Could not read from the config for the CustomRolloverLogbackAppender ", e);
         }
     }
 
