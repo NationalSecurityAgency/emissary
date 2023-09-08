@@ -152,16 +152,6 @@ public class DropOffUtil {
     }
 
     /**
-     * This method is deprecated, the casename is ignored. Use the no-arg version
-     *
-     * @param casename ignored value
-     */
-    @Deprecated
-    public String generateBuildFileName(final String casename) {
-        return generateBuildFileName();
-    }
-
-    /**
      * Generate a new random build file name using the configured prefix and stragety
      */
     public String generateBuildFileName() {
@@ -652,70 +642,6 @@ public class DropOffUtil {
         }
         final int pos = Math.max(fpos, rpos);
         return fullName.substring(0, pos + 1) + "." + fullName.substring(pos + 1);
-    }
-
-    /**
-     * Get the file type from the metadata or the form string passed in
-     *
-     * @param metaData map of payload metadata
-     * @return the file type (also added to metaData if not present)
-     */
-    @Deprecated
-    public String getFileType(final Map<String, String> metaData) {
-        return getFileType(metaData, null);
-    }
-
-    /**
-     * Get the file type from the metadata or the form string passed in
-     *
-     * @param metaData map of payload metadata
-     * @param formsArg space separated string of current forms
-     * @return the file type (also added to metaData if not present)
-     */
-    @Deprecated
-    public String getFileType(final Map<String, String> metaData, final String formsArg) {
-        String forms = formsArg;
-        if (forms == null) {
-            forms = metaData.get(FileTypeCheckParameter.POPPED_FORMS.getFieldName());
-            if (forms == null) {
-                forms = "";
-            }
-        }
-
-        String fileType;
-        if (metaData.containsKey(FileTypeCheckParameter.FILETYPE.getFieldName())) {
-            fileType = metaData.get(FileTypeCheckParameter.FILETYPE.getFieldName());
-        } else if (metaData.containsKey(FileTypeCheckParameter.FINAL_ID.getFieldName())) {
-            fileType = metaData.get(FileTypeCheckParameter.FINAL_ID.getFieldName());
-            logger.debug("FINAL_ID FileType is ({})", fileType);
-            metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
-        } else {
-            if (forms.contains(" ")) {
-                fileType = forms.substring(0, forms.indexOf(" ")).trim();
-                metaData.put(FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName(), forms);
-            } else {
-                fileType = forms;
-            }
-            if (StringUtils.isEmpty(fileType)) {
-                if (metaData.containsKey(FileTypeCheckParameter.FONT_ENCODING.getFieldName())) {
-                    fileType = TEXT;
-                } else {
-                    fileType = UNKNOWN;
-                }
-            }
-
-            metaData.put(FileTypeCheckParameter.FILETYPE.getFieldName(), fileType);
-        }
-
-        if (UNKNOWN.equals(fileType) && forms.contains("MSWORD")) {
-            fileType = "MSWORD_FRAGMENT";
-        }
-
-        if ("QUOTED-PRINTABLE".equals(fileType) || fileType.startsWith(PREFIXES_LANG) || fileType.startsWith("ENCODING(")) {
-            fileType = TEXT;
-        }
-
-        return fileType;
     }
 
     /**
