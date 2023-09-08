@@ -182,13 +182,6 @@ public class Startup {
         this.node = node;
     }
 
-    @Deprecated
-    public Startup(final String startupConfigFile) throws IOException {
-        // Read in startup config file specifying place/host setup
-        this(new ServiceConfigGuide(startupConfigFile), new EmissaryNode());
-
-    }
-
     public boolean bootstrap() {
 
         //
