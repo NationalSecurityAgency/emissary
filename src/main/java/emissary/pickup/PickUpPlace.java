@@ -17,6 +17,7 @@ import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
 import emissary.util.ClassComparator;
+import emissary.util.ObjectTracing;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
@@ -74,6 +75,9 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
+
+    private boolean useObjectTraceLogger = false;
+    protected ObjectTracing objectTracingUtil;
 
     public PickUpPlace() throws IOException {
         super();
@@ -178,6 +182,13 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         }
 
         ALWAYS_COPY_METADATA_VALS = configG.findEntriesAsSet("ALWAYS_COPY_METADATA");
+
+        // Setup objectTraceLogger
+        useObjectTraceLogger = configG.findBooleanEntry("USE_OBJECT_TRACE_LOGGER", useObjectTraceLogger);
+        if (useObjectTraceLogger) {
+            objectTracingUtil = new ObjectTracing();
+            logger.info("Setting up the object trace logger");
+        }
     }
 
     /**
@@ -550,6 +561,12 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
                 (simpleMode ? "simple" : ""));
+
+        // If object tracing log that agent is being deployed for fixedName (filename)
+        if (useObjectTraceLogger) {
+            objectTracingUtil.emitLifecycleEvent(d, ObjectTracing.Stage.PickUp);
+        }
+
         assignToPooledAgent(d, -1L);
         return true;
     }
