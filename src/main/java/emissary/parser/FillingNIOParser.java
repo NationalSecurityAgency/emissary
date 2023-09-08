@@ -3,7 +3,6 @@ package emissary.parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
@@ -20,11 +19,6 @@ public abstract class FillingNIOParser extends NIOSessionParser {
 
     public FillingNIOParser(SeekableByteChannel channel) {
         super(channel);
-    }
-
-    @Deprecated
-    public FillingNIOParser(RandomAccessFile raf) {
-        this(raf.getChannel());
     }
 
     /**
