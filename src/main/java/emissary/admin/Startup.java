@@ -286,7 +286,7 @@ public class Startup {
             if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
                 logger.info("Doing local startup for directory {} ", thePlaceLocation);
                 final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null);
+                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, new EmissaryNode());
                 if (p != null) {
                     dirStarts.put(host, thePlaceLocation);
                     localDirectoriesArg.put(host, p.toString());
