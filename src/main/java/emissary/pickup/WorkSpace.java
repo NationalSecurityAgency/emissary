@@ -370,22 +370,6 @@ public class WorkSpace implements Runnable {
     }
 
     /**
-     * Set the directory to monitor at the default priority
-     *
-     * @deprecated see addDirectory
-     */
-    @Deprecated
-    public void setDirectory(final String dir) {
-        final String dirWithTrailingSlash;
-        if (dir.endsWith("/")) {
-            dirWithTrailingSlash = dir;
-        } else {
-            dirWithTrailingSlash = dir + "/";
-        }
-        addDirectory(new PriorityDirectory(dirWithTrailingSlash, Priority.DEFAULT));
-    }
-
-    /**
      * Add directory at specified priority to be monitored
      */
     public void addDirectory(final String dir, final int priority) {
@@ -398,16 +382,6 @@ public class WorkSpace implements Runnable {
     public void addDirectory(final PriorityDirectory dir) {
         this.myDirectories.add(dir);
         logger.debug("Adding input directory {}", dir);
-    }
-
-    /**
-     * Get the name of the directory being monitored
-     *
-     * @deprecated see getDirectories
-     */
-    @Deprecated
-    public String getDirectory() {
-        return getDirectories().toString();
     }
 
     public List<String> getDirectories() {
