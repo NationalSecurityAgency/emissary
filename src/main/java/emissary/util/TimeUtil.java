@@ -14,7 +14,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -22,11 +21,11 @@ import javax.annotation.Nullable;
 public class TimeUtil {
 
     private static final ZoneId GMT = ZoneId.of("GMT");
-    private static final DateTimeFormatter DATE_WITH_SLASHES = DateTimeFormatter.ofPattern("yyyy-MM-dd/HH/mm").withZone(GMT);
-    private static final DateTimeFormatter DATE_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(GMT);
-    private static final DateTimeFormatter DATE_FULL_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX").withZone(GMT);
-    private static final DateTimeFormatter DATE_ORDINAL = DateTimeFormatter.ofPattern("yyyyDDD").withZone(GMT);
-    private static final DateTimeFormatter DATE_ISO_8601_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final DateTimeFormatter DATE_WITH_SLASHES = DateTimeFormatter.ofPattern("yyyy-MM-dd/HH/mm").withZone(GMT);
+    public static final DateTimeFormatter DATE_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(GMT);
+    public static final DateTimeFormatter DATE_FULL_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX").withZone(GMT);
+    public static final DateTimeFormatter DATE_ORDINAL = DateTimeFormatter.ofPattern("yyyyDDD").withZone(GMT);
+    public static final DateTimeFormatter DATE_ISO_8601_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final String ISO_8601_TIME_DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String HEX_REGEX = "^0x([0-9A-Fa-f]{8})([0-9A-Fa-f]{8})";
     private static final Pattern HEX_DATE_PATTERN = Pattern.compile(HEX_REGEX);
@@ -93,16 +92,6 @@ public class TimeUtil {
     }
 
     /**
-     * Get specified date/time as a slash separated path component
-     *
-     * @deprecated replaced by {@link #getDateAsPath(TemporalAccessor)}
-     */
-    @Deprecated
-    public static String getDateAsPath(final Date date) {
-        return getDateAsPath(date.toInstant());
-    }
-
-    /**
      * Get specified date/time as a slash separated path component (yyyy-MM-dd/HH/mm)
      *
      * @param date to format
@@ -125,16 +114,6 @@ public class TimeUtil {
      */
     public static String getCurrentDateOrdinal() {
         return getDateOrdinal(ZonedDateTime.now(GMT));
-    }
-
-    /**
-     * Get current date as yyyyjjj
-     *
-     * @deprecated replaced by {@link #getDateOrdinal(TemporalAccessor)}
-     */
-    @Deprecated
-    public static String getDateOrdinal(@Nullable Date date) {
-        return date == null ? null : getDateOrdinal(date.toInstant());
     }
 
     /**
@@ -169,16 +148,6 @@ public class TimeUtil {
     }
 
     /**
-     * Get specified date object as ISO-8601 string
-     *
-     * @deprecated replaced by {@link #getDateAsISO8601(TemporalAccessor)}
-     */
-    @Deprecated
-    public static String getDateAsISO8601(@Nullable final Date date) {
-        return date == null ? null : getDateAsISO8601(date.toInstant());
-    }
-
-    /**
      * Get specified date object as ISO-8601 string (yyyy-MM-dd HH:mm:ss)
      *
      * @param date to format
@@ -200,16 +169,6 @@ public class TimeUtil {
     }
 
     /**
-     * Get specified date object as a full ISO-8601 string yyyy-MM-dd'T'HH:mm:ss'Z'
-     *
-     * @deprecated replaced by {@link #getDateAsFullISO8601(TemporalAccessor)}
-     */
-    @Deprecated
-    public static String getDateAsFullISO8601(@Nullable final Date date) {
-        return date == null ? null : getDateAsFullISO8601(date.toInstant());
-    }
-
-    /**
      * Get specified date object as a full ISO-8601 string (yyyy-MM-dd'T'HH:mm:ss'Z')
      *
      * @param date to format
@@ -218,30 +177,6 @@ public class TimeUtil {
      */
     public static String getDateAsFullISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_FULL_ISO_8601.format(date);
-    }
-
-    /**
-     * Get Date object from ISO-8601 formatted string
-     *
-     * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
-     */
-    @Deprecated
-    public static Date getDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
-        return dateString == null ? null : Date.from(getZonedDateFromISO8601(dateString).toInstant());
-    }
-
-    /**
-     * Get Date object from ISO-8601 formatted string ("yyyy-MM-dd HH:mm:ss")
-     *
-     * @param dateString the string representation of the date in the format yyyy-MM-dd HH:mm:ss
-     * @return ZonedDateTime parsed from the string
-     * @throws DateTimeParseException if string is not in the proper format
-     *
-     * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
-     */
-    @Deprecated
-    public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
-        return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
     }
 
     /**
