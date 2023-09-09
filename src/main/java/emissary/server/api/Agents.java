@@ -37,7 +37,6 @@ public class Agents {
 
     public static final String AGENTS_ENDPOINT = "api/agents";
 
-    @Deprecated
     public static final String AGENTS_CLUSTER_ENDPOINT = "api/cluster/agents";
 
     @GET
@@ -50,7 +49,6 @@ public class Agents {
     @GET
     @Path("/v1/agents")
     @Produces(MediaType.APPLICATION_JSON)
-    @Deprecated
     public Response agentsV1() {
         return Response.ok().entity(lookupAgents()).build();
     }
@@ -72,7 +70,6 @@ public class Agents {
     @GET
     @Path("/cluster/agents")
     @Produces(MediaType.APPLICATION_JSON)
-    @Deprecated
     public Response clusterAgents() {
         try {
             // Get our local information first
