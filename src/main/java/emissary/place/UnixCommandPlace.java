@@ -428,10 +428,4 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         return;
     }
 
-    /**
-     * Run the class
-     */
-    public static void main(String[] argv) {
-        mainRunner(UnixCommandPlace.class, argv);
-    }
 }

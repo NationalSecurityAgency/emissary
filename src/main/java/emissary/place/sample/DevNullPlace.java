@@ -39,10 +39,4 @@ public class DevNullPlace extends ServiceProviderPlace implements EmptyFormPlace
         logger.debug("Nuked {} of {} current form values leaving {}", (after - before), before, tData.getAllCurrentForms());
     }
 
-    /**
-     * Test run
-     */
-    public static void main(String[] argv) {
-        mainRunner(DevNullPlace.class.getName(), argv);
-    }
 }

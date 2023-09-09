@@ -541,10 +541,4 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         this.outputFilters.add(filter);
     }
 
-    /**
-     * Run the command line interface
-     */
-    public static void main(final String[] argv) throws Exception {
-        mainRunner(DropOffPlace.class.getName(), argv);
-    }
 }

@@ -129,7 +129,4 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
         }
     }
 
-    public static void main(String[] args) {
-        mainRunner(FilePickUpPlace.class.getName(), args);
-    }
 }
