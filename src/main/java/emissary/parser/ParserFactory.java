@@ -3,16 +3,12 @@ package emissary.parser;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Factory;
-import emissary.util.WindowedSeekableByteChannel;
 import emissary.util.shell.Executrix;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,53 +107,6 @@ public class ParserFactory {
     }
 
     /**
-     * Make a session parser with the data
-     *
-     * @param data the bytes to parse
-     * @return SessionParser implementation
-     */
-    @Deprecated
-    public SessionParser makeSessionParser(byte[] data) {
-        try {
-            WindowedSeekableByteChannel channel = new WindowedSeekableByteChannel(Channels.newChannel(new ByteArrayInputStream(data)), 1024 * 1024);
-            return makeSessionParser(channel);
-        } catch (IOException ex) {
-            logger.warn("Unable to instantiate channel");
-            throw new RuntimeException("Failed to instantiate WindowedSeekableByteChannel from byte[]", ex);
-        }
-    }
-
-    /**
-     * Make a session parser with the data of the specified data type
-     *
-     * @param type the data type
-     * @param data the bytes to parse
-     * @return SessionParser implementation
-     */
-    @Deprecated
-    public SessionParser makeSessionParser(String type, byte[] data) {
-        try {
-            WindowedSeekableByteChannel channel = new WindowedSeekableByteChannel(Channels.newChannel(new ByteArrayInputStream(data)), 1024 * 1024);
-            return makeSessionParser(type, channel);
-        } catch (IOException ex) {
-            logger.warn("Unable to instantiate channel");
-            throw new RuntimeException("Failed to instantiate WindowedSeekableByteChannel from byte[]", ex);
-        }
-    }
-
-    /**
-     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a byte[]
-     * parser will be produced if there is one available.
-     *
-     * @param raf the data to be parsed
-     * @return SessionParser implementation
-     */
-    @Deprecated
-    public SessionParser makeSessionParser(RandomAccessFile raf) {
-        return makeSessionParser(raf.getChannel());
-    }
-
-    /**
      * Make a session parser with the data in channel. If no NIO parser is configured for the type of this data, a standard
      * byte[] parser will be produced if there is one available and the size of the data in the channel is less than the
      * configured MAX_NIO_FALLBACK_SIZE. Otherwise the default NIO parser will be used.
@@ -189,20 +138,6 @@ public class ParserFactory {
         }
         return sp;
     }
-
-    /**
-     * Make a session parser with the data in the file. If no RAF parser is configured for the type of this data, a standard
-     * byte[] parser will be produced if there is one available.
-     *
-     * @param type the type of data
-     * @param raf the data to be parsed
-     * @return SessionParser implementation
-     */
-    @Deprecated
-    public SessionParser makeSessionParser(String type, RandomAccessFile raf) {
-        return makeSessionParser(type, raf.getChannel());
-    }
-
 
     /**
      * Make a session parser for the specified data type with the args
