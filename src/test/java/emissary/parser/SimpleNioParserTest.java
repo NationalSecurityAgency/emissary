@@ -33,7 +33,7 @@ class SimpleNioParserTest extends UnitTest {
         // They will have to look here :-)
         try {
             SimpleNioParser sp = new SimpleNioParser(channel);
-            assertTrue(sp instanceof SessionParser, "SimpleParser interface definition");
+            assertTrue(sp instanceof SessionParser, "SessionParser interface definition");
         } catch (ParserException ex) {
             fail("SimpleNioParser is not a SessionParser", ex);
         }

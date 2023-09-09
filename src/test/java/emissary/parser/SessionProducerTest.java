@@ -4,17 +4,19 @@ import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SuppressWarnings("deprecation")
-// TODO: either remove these tests or test the new Parser
 class SessionProducerTest extends UnitTest {
     @Test
     void testBasicSetup() throws Exception {
-        SimpleParser parser = new SimpleParser("This is a test".getBytes());
+        SessionParser parser = Mockito.mock(SessionParser.class);
+        DecomposedSession d = new DecomposedSession();
+        d.setData("This is a test".getBytes());
+        Mockito.when(parser.getNextSession()).thenReturn(d);
         SessionProducer sp = new SessionProducer(parser, "UNKNOWN");
         IBaseDataObject payload = sp.getNextSession("name");
         assertEquals("This is a test", new String(payload.data()), "Parser/Producer should create payload object with correct data");
@@ -22,7 +24,7 @@ class SessionProducerTest extends UnitTest {
 
     @Test
     void testZoneAssignments() {
-        SimpleParser parser = new SimpleParser("This is a test".getBytes());
+        SessionParser parser = Mockito.mock(SessionParser.class);
         SessionProducer sp = new SessionProducer(parser, "UNKNOWN");
         DecomposedSession d = new DecomposedSession();
         d.setHeader("The Header".getBytes());
@@ -41,7 +43,7 @@ class SessionProducerTest extends UnitTest {
 
     @Test
     void testAlternateViewAssignment() {
-        SimpleParser parser = new SimpleParser("This is a test".getBytes());
+        SessionParser parser = Mockito.mock(SessionParser.class);
         SessionProducer sp = new SessionProducer(parser, "UNKNOWN");
         DecomposedSession d = new DecomposedSession();
         d.addMetaData("FOO", "BAR");

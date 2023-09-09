@@ -16,11 +16,11 @@ import javax.annotation.Nullable;
 
 /**
  * Provide a factory for getting the proper type of input parser Provide the implementing classes for that match the
- * configured Data Identifier Engine in both PARSER_IMPL_[type] and PARSER_NIO_IMPL_[type] variants if available. All
- * configured parsers must implement emissary.parser.SessionParser.
+ * configured Data Identifier Engine in PARSER_NIO_IMPL_[type] variants if available. All configured parsers must
+ * implement emissary.parser.SessionParser.
  *
- * When no proper mappings are found or the specified parser cannot be instantiated, the SimpleParser and
- * SimpleNioParser are used instead. If these cannot be instantiated, then something is likely seriously wrong.
+ * When no proper mappings are found or the specified parser cannot be instantiated, the SimpleNioParser is used
+ * instead. If these cannot be instantiated, then something is likely seriously wrong.
  *
  * If an NIO parser is requested, see makeSessionParser(FileChannel), but cannot be found for the data type, the Channel
  * is evaluated and if under MAX_NIO_FALLBACK_SIZE, then the bytes are consumed and a standard parser is produced if one
