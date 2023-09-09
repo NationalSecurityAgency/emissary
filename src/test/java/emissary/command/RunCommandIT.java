@@ -45,7 +45,7 @@ class RunCommandIT extends UnitTest {
     }
 
     @Test
-    void testClassIsRunWhenFound() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testClassIsRunWhenFound() throws Exception {
         String clazzName = "emissary.command.RunCommandIT";
         RunCommand cmd = RunCommand.parse(RunCommand.class, clazzName);
 
@@ -55,7 +55,7 @@ class RunCommandIT extends UnitTest {
     }
 
     @Test
-    void testClassIsRunWhenFoundWithArgs() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testClassIsRunWhenFoundWithArgs() throws Exception {
         String clazzName = "emissary.command.RunCommandIT";
         String arg1 = "asdf";
         String arg2 = "dkdke";
@@ -68,7 +68,7 @@ class RunCommandIT extends UnitTest {
     }
 
     @Test
-    void testFlagArgsPassedThrough() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testFlagArgsPassedThrough() throws Exception {
         String clazzName = "emissary.command.RunCommandIT";
         String stopPicocliProcessing = "--";
         String arg1 = "-f";

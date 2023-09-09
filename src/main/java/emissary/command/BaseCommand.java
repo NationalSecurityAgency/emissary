@@ -3,6 +3,7 @@ package emissary.command;
 import emissary.command.converter.PathExistsConverter;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.config.ConfigUtil;
+import emissary.core.EmissaryException;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
@@ -145,9 +146,13 @@ public abstract class BaseCommand implements EmissaryCommand {
      * @param clazz the Class of return type class
      * @param args vararg of Strings
      */
-    public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
-        T cmd = clazz.cast(Class.forName(clazz.getName()).newInstance());
+    public static <T extends EmissaryCommand> T parse(Class<T> clazz, String... args) throws EmissaryException {
+        T cmd;
+        try {
+            cmd = clazz.cast(Class.forName(clazz.getName()).getDeclaredConstructor().newInstance());
+        } catch (ReflectiveOperationException e) {
+            throw new EmissaryException("Cannot construct command", e);
+        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream(baos);
         PrintStream old = System.out;
@@ -177,8 +182,7 @@ public abstract class BaseCommand implements EmissaryCommand {
      * @param clazz the Class of return type class
      * @param args vararg of Strings
      */
-    public static <T extends EmissaryCommand> T parse(Class<T> clazz, List<String> args) throws InstantiationException, IllegalAccessException,
-            ClassNotFoundException {
+    public static <T extends EmissaryCommand> T parse(Class<T> clazz, List<String> args) throws EmissaryException {
         return parse(clazz, args.toArray(new String[0]));
     }
 

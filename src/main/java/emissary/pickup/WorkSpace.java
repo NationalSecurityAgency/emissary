@@ -227,7 +227,7 @@ public class WorkSpace implements Runnable {
                     logger.info("Workspace is up and running");
                     this.jettyStartedHere = true;
                 }
-            } catch (EmissaryException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            } catch (EmissaryException e) {
                 logger.error("Error starting EmissaryServer! WorkSpace will not start!", e);
             }
         } else {
