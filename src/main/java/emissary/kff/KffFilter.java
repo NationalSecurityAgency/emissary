@@ -8,7 +8,7 @@ public interface KffFilter {
     /**
      * Types of filter
      */
-    public static enum FilterType {
+    enum FilterType {
         Unknown, Ignore, Duplicate
     }
 

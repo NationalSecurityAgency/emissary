@@ -57,7 +57,7 @@ public class MoveSpool implements Runnable {
     IDirectoryPlace localDirectory = null;
 
     // Methods for using the spool to dispatch
-    public static enum Method {
+    public enum Method {
         ARRIVE, GO
     }
 

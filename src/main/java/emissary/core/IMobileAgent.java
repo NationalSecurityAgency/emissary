@@ -125,7 +125,7 @@ public interface IMobileAgent extends Serializable, Runnable {
      * 
      * @return default value of 1
      */
-    default public int payloadCount() {
+    default int payloadCount() {
         return 1;
     }
 
