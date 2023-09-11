@@ -50,13 +50,13 @@ public class ReadOutputLogger extends ProcessReader {
                 }
             } while (aLine != null && !this.finished);
         } catch (IOException iox) {
-            ; // ignore
+            // ignore
         }
         try {
             this.inputReader.close();
             this.bufferedReader.close();
         } catch (IOException iox) {
-            ; // ignore
+            // ignore
         }
     }
 

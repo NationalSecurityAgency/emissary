@@ -166,7 +166,6 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     protected File findFileInHoldingArea(File f, @Nullable String eatPrefix) {
         if (holdingArea != null) {
             String fpart = f.getName();
-            ;
             if (eatPrefix != null) {
                 fpart = f.getPath().substring(eatPrefix.length());
             }

@@ -12,7 +12,7 @@ public class DiffCheckConfiguration {
      * Possible configuration options
      */
     public enum DiffCheckOptions {
-        DATA, TIMESTAMP, INTERNAL_ID, TRANSFORM_HISTORY;
+        DATA, TIMESTAMP, INTERNAL_ID, TRANSFORM_HISTORY
     }
 
     /**
