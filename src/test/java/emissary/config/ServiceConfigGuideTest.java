@@ -305,13 +305,14 @@ class ServiceConfigGuideTest extends UnitTest {
                         + "BOOLEANQ = \"BOGUS\"\n" + "SZP = \"123\"\n" + "SZB = \"123b\"\n" + "SZK = \"123k\"\n" + "SZM = \"123m\"\n"
                         + "SZG = \"123g\"\n" + "SZT = \"123t\"\n" + "SZQ = \"red balloons\"\n" + "SZ1 = \"111\"\n" + "SZ2 = \"222\"\n"
                         + "SZ3 = \"333\"\n" + "SZ4 = \"444\"\n" + "SZ5 = \"555\"\n" + "SZ6 = \"666\"\n" + "SZ7 = \"777\"\n" + "SZ8 = \"888\"\n"
-                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n").getBytes();
+                        + "SZ9 = \"999\"\n" + "SZ0 = \"000\"\n" + "STRING = \"chars\"\n" + "LONG2 = 12345678901234").getBytes();
         final ByteArrayInputStream str = new ByteArrayInputStream(configData);
         final Configurator c = ConfigUtil.getConfigInfo(str);
         assertEquals(123, c.findIntEntry("INTEGER", 456), "Int entry with def");
         assertEquals(456, c.findIntEntry("BLUBBER", 456), "Int entry no val");
 
         assertEquals(123456L, c.findLongEntry("LONG", 456L), "Long entry with def");
+        assertEquals(12345678901234L, c.findLongEntry("LONG2", 456L), "Long entry with def");
         assertEquals(456L, c.findLongEntry("BLUBBER", 456L), "Long entry no val");
 
         final double d = 12345678;

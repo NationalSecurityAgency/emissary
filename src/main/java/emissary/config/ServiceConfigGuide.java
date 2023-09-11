@@ -232,7 +232,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
             nextToken = in.nextToken();
             if (nextToken == StreamTokenizer.TT_NUMBER) {
-                sval = Integer.toString((int) in.nval);
+                sval = Long.toString((long) in.nval);
             } else {
                 sval = in.sval;
             }
