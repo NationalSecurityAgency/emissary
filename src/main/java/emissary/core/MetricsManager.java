@@ -38,10 +38,10 @@ public class MetricsManager {
     public static final String DEFAULT_NAMESPACE_NAME = "MetricsManager";
 
     @SuppressWarnings("rawtypes")
-    public static final SortedMap<String, Gauge> EMPTY_GUAGES = new TreeMap<String, Gauge>();
-    public static final SortedMap<String, Counter> EMPTY_COUNTERS = new TreeMap<String, Counter>();
-    public static final SortedMap<String, Histogram> EMPTY_HISTOGRAMS = new TreeMap<String, Histogram>();
-    public static final SortedMap<String, Meter> EMPTY_METERS = new TreeMap<String, Meter>();
+    public static final SortedMap<String, Gauge> EMPTY_GUAGES = new TreeMap<>();
+    public static final SortedMap<String, Counter> EMPTY_COUNTERS = new TreeMap<>();
+    public static final SortedMap<String, Histogram> EMPTY_HISTOGRAMS = new TreeMap<>();
+    public static final SortedMap<String, Meter> EMPTY_METERS = new TreeMap<>();
 
     protected static final Logger logger = LoggerFactory.getLogger(MetricsManager.class);
 
@@ -76,7 +76,7 @@ public class MetricsManager {
     }
 
     public void logMetrics(final Map<String, Timer> stats) {
-        final SortedMap<String, Timer> m = new TreeMap<String, Timer>();
+        final SortedMap<String, Timer> m = new TreeMap<>();
         m.putAll(stats);
         this.reporter.report(EMPTY_GUAGES, EMPTY_COUNTERS, EMPTY_HISTOGRAMS, EMPTY_METERS, m);
     }

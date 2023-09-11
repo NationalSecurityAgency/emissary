@@ -162,7 +162,7 @@ public class MagicNumber {
 
         if (!substitute)
             return desc;
-        Stack<Character> stack = new Stack<Character>();
+        Stack<Character> stack = new Stack<>();
         for (int i = (desc.length() - 1); i >= 0; --i)
             stack.push(desc.charAt(i));
         StringBuilder sb = new StringBuilder();
@@ -358,7 +358,7 @@ public class MagicNumber {
      */
     public void addDependencyLayer(MagicNumber[] dependencyLayer) {
         if (dependencies == null)
-            dependencies = new ArrayList<MagicNumber[]>();
+            dependencies = new ArrayList<>();
         dependencies.add(dependencyLayer);
     }
 

@@ -17,7 +17,7 @@ public class UnixFile {
     private static Logger log = LoggerFactory.getLogger(UnixFile.class);
 
     /** The magic number configuration file. The file which contains all magic number entries */
-    private List<File> magicFiles = new ArrayList<File>();
+    private List<File> magicFiles = new ArrayList<>();
 
     /** The Magic number helper class */
     private MagicNumberUtil util = new MagicNumberUtil();

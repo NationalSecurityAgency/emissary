@@ -14,19 +14,19 @@ import java.util.Map;
  */
 public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements IPickUpSpace {
     // List of workspace instances to interact with
-    protected List<String> openSpaceNames = new ArrayList<String>();
+    protected List<String> openSpaceNames = new ArrayList<>();
 
     // Map of how many consecutive take errors by workspace name
-    protected Map<String, Integer> numConsecutiveTakeErrors = new HashMap<String, Integer>();
+    protected Map<String, Integer> numConsecutiveTakeErrors = new HashMap<>();
 
     // Comms adapter
     protected WorkSpaceAdapter tpa = new WorkSpaceAdapter();
 
     // Map of last bundle size by workspace name
-    protected Map<String, Integer> lastBundleSize = new HashMap<String, Integer>();
+    protected Map<String, Integer> lastBundleSize = new HashMap<>();
 
     // Map of pending bundles to workspace name to facilitate replying
-    protected Map<String, String> pendingBundles = new HashMap<String, String>();
+    protected Map<String, String> pendingBundles = new HashMap<>();
 
     // Number of consecutive take errors that cause space to close
     protected int TAKE_ERROR_MAX = 10;
@@ -119,7 +119,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
      */
     @Override
     public List<String> getSpaceNames() {
-        return new ArrayList<String>(openSpaceNames);
+        return new ArrayList<>(openSpaceNames);
     }
 
     /**
@@ -144,7 +144,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
         }
 
         // Keep track of space we may have to close
-        List<String> closers = new ArrayList<String>();
+        List<String> closers = new ArrayList<>();
 
         // We will take up to one bundle per workspace
         int countTaken = 0;
@@ -185,7 +185,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
      * @param forceClosers additional spaces to close
      */
     protected void cleanupFailedSpaces(List<String> forceClosers) {
-        List<String> closers = new ArrayList<String>(forceClosers);
+        List<String> closers = new ArrayList<>(forceClosers);
         for (String s : openSpaceNames) {
             if (getNumConsecutiveTakeErrors(s) > TAKE_ERROR_MAX) {
                 logger.error("Closing down space " + s + " due to repeated errors");

@@ -28,7 +28,7 @@ public class DataIdentifier {
     protected int DATA_ID_STR_SZ = 100;
 
     // Things we know how to identify
-    protected Map<String, String> TYPES = new HashMap<String, String>();
+    protected Map<String, String> TYPES = new HashMap<>();
 
     /**
      * Create the id engine

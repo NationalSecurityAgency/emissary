@@ -46,7 +46,7 @@ public class SessionProducer {
      */
     public SessionProducer(SessionParser sp, String initialForm) {
         this.sp = sp;
-        this.initialForms = new ArrayList<String>();
+        this.initialForms = new ArrayList<>();
         this.initialForms.add(initialForm);
     }
 

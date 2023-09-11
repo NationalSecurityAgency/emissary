@@ -28,7 +28,7 @@ public class KffResult implements Serializable {
     long crc32 = -1L;
     String ssdeep = null;
 
-    Map<String, byte[]> hashComp = new TreeMap<String, byte[]>();
+    Map<String, byte[]> hashComp = new TreeMap<>();
 
     /**
      * Create an empty result object
@@ -233,7 +233,7 @@ public class KffResult implements Serializable {
      * Get names of all algorithm results present
      */
     public Set<String> getResultNames() {
-        return new TreeSet<String>(hashComp.keySet());
+        return new TreeSet<>(hashComp.keySet());
     }
 
     /**

@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
  */
 public class PickupQueue {
     // Data structure for the bundles
-    protected final LinkedList<WorkBundle> queue = new LinkedList<WorkBundle>();
+    protected final LinkedList<WorkBundle> queue = new LinkedList<>();
 
     // Our logger
     private static final Logger logger = LoggerFactory.getLogger(PickupQueue.class);

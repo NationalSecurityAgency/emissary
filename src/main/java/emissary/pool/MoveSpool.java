@@ -30,7 +30,7 @@ public class MoveSpool implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MoveSpool.class);
 
     // The payload FIFO
-    protected final LinkedList<SpoolItem> spool = new LinkedList<SpoolItem>();
+    protected final LinkedList<SpoolItem> spool = new LinkedList<>();
 
     // Reference to the agent pool
     protected AgentPool pool;
@@ -45,7 +45,7 @@ public class MoveSpool implements Runnable {
     public static final String NAMESPACE_NAME = "ArrivalSpool";
 
     // Stats on how many moves and for what types arrived here
-    public final Map<String, Integer> moveCountMap = new HashMap<String, Integer>();
+    public final Map<String, Integer> moveCountMap = new HashMap<>();
 
     // Stats collection
     private int highWaterMark = 0;
@@ -345,7 +345,7 @@ public class MoveSpool implements Runnable {
      */
     public Map<String, Integer> getMoveCountMap() {
         synchronized (moveCountMap) {
-            return new HashMap<String, Integer>(moveCountMap);
+            return new HashMap<>(moveCountMap);
         }
     }
 

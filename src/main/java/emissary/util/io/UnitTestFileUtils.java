@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 public class UnitTestFileUtils {
     public static void cleanupDirectoryRecursively(Path path) throws IOException {
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+        Files.walkFileTree(path, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);

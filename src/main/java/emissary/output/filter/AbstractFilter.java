@@ -211,7 +211,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
             return;
         }
 
-        final List<String> configPreferences = new ArrayList<String>();
+        final List<String> configPreferences = new ArrayList<>();
 
         if (getFilterName() != null) {
             configPreferences.add(this.getClass().getPackage().getName() + "." + getFilterName() + ConfigUtil.CONFIG_FILE_ENDING);
@@ -412,7 +412,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
         if (canOutput && this.logger.isDebugEnabled()) {
-            final Set<String> outputFor = new HashSet<String>();
+            final Set<String> outputFor = new HashSet<>();
             for (final String s : this.outputTypes) {
                 if (types.contains(s)) {
                     outputFor.add(s);
@@ -440,7 +440,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     protected Set<String> getTypesToCheckForNamedView(final IBaseDataObject d, final String viewName) {
-        final Set<String> checkTypes = new HashSet<String>();
+        final Set<String> checkTypes = new HashSet<>();
         final String lang = this.dropOffUtil.getLanguage(d);
         final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
@@ -500,6 +500,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     @Override
     public Collection<String> getOutputTypes() {
-        return new HashSet<String>(this.outputTypes);
+        return new HashSet<>(this.outputTypes);
     }
 }

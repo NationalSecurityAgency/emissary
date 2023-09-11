@@ -89,7 +89,7 @@ public class KffDataObjectHandler {
      * @return parameter entries suitable for a BaseDataObject
      */
     public Map<String, String> hashData(@Nullable byte[] data, String name, @Nullable String prefix) {
-        Map<String, String> results = new HashMap<String, String>();
+        Map<String, String> results = new HashMap<>();
 
         if (prefix == null) {
             prefix = "";

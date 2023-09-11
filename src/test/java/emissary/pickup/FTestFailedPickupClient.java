@@ -31,8 +31,8 @@ class FTestFailedPickupClient extends FunctionalTest {
     private File holdarea;
     private File outarea;
 
-    private List<File> workingFiles = new ArrayList<File>();
-    private List<String> workingFilePaths = new ArrayList<String>();
+    private List<File> workingFiles = new ArrayList<>();
+    private List<String> workingFilePaths = new ArrayList<>();
 
     @Override
     @BeforeEach

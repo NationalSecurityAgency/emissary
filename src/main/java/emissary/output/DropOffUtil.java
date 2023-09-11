@@ -504,7 +504,7 @@ public class DropOffUtil {
      * @return id
      */
     public String[] getExistingIds(final IBaseDataObject d) {
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         for (final String s : this.idTokens) {
             if (!StringUtils.isBlank(d.getStringParameter(s))) {
                 values.add(d.getStringParameter(s));
@@ -1006,7 +1006,7 @@ public class DropOffUtil {
 
         // Keep track of parent's filetype to output
         // relies on the attachments being sorted
-        final Map<String, String> parentTypes = new HashMap<String, String>();
+        final Map<String, String> parentTypes = new HashMap<>();
         final IBaseDataObject tld = payloadList.get(0);
         final List<String> extended_filetypes = new ArrayList<>();
         parentTypes.put("1", tld.getFileType());

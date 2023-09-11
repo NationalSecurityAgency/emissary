@@ -48,7 +48,7 @@ public class FileComparator implements Comparator<File>, Serializable {
 
         File dir = new File(args[0]);
         File[] fileList = dir.listFiles();
-        List<File> fileVector = new ArrayList<File>();
+        List<File> fileVector = new ArrayList<>();
         for (int i = 0; i < fileList.length; i++) {
             // System.out.println(fileList[i].getName() + " " + fileList[i].length());
             fileVector.add(fileList[i]);

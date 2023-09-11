@@ -20,13 +20,13 @@ import javax.annotation.Nullable;
 public class KffChain {
     private static final Logger logger = LoggerFactory.getLogger(KffChain.class);
 
-    protected List<KffFilter> list = new ArrayList<KffFilter>();
+    protected List<KffFilter> list = new ArrayList<>();
 
     // Smaller than this and we don't report a hit
     protected int KFF_MIN_DATA_SIZE = 0;
 
     // The algorithms to compute
-    protected List<String> algorithms = new ArrayList<String>();
+    protected List<String> algorithms = new ArrayList<>();
 
     /**
      * Construct an empty KFF Chain
@@ -109,7 +109,7 @@ public class KffChain {
      * @see java.security.MessageDigest#getInstance(String)
      */
     public List<String> getAlgorithms() {
-        List<String> list = new ArrayList<String>(algorithms);
+        List<String> list = new ArrayList<>(algorithms);
         return list;
     }
 

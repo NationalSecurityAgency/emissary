@@ -16,7 +16,7 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
     protected int pollingInterval = 30000;
 
     // List of FileDataServer objects
-    protected List<FileDataServer> theDataServer = new ArrayList<FileDataServer>();
+    protected List<FileDataServer> theDataServer = new ArrayList<>();
 
     // How many files the FileDataServer should group
     protected int BUNDLE_SIZE = 20;

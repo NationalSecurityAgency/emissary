@@ -53,8 +53,8 @@ public class MagicMath {
     }
 
     public static byte[] parseEscapedString(String s) {
-        List<Number> array = new ArrayList<Number>();
-        Stack<Character> chars = new Stack<Character>();
+        List<Number> array = new ArrayList<>();
+        Stack<Character> chars = new Stack<>();
         for (int i = (s.length() - 1); i >= 0; i--)
             chars.push(s.charAt(i));
         while (!chars.empty()) {

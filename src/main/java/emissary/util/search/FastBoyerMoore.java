@@ -196,7 +196,7 @@ public class FastBoyerMoore {
             final byte[] dataBytes = dataString.toString().getBytes();
 
             // A vector for holding the results.
-            final List<int[]> result = new ArrayList<int[]>();
+            final List<int[]> result = new ArrayList<>();
             scanner.setData(dataBytes);
             scanner.scan(0, dataBytes.length, result);
             for (int i = 0; i < result.size(); i++) {
@@ -247,7 +247,7 @@ public class FastBoyerMoore {
                 final byte[] dataBytes = dataString.toString().getBytes();
 
                 // A vector for holding the results.
-                final List<int[]> hits = new ArrayList<int[]>();
+                final List<int[]> hits = new ArrayList<>();
                 /*
                  * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
                  * general this should be used more effediently (with a boyer more algorithm or something.
@@ -282,7 +282,7 @@ public class FastBoyerMoore {
                 final byte[] dataBytes = dataString.toString().getBytes();
 
                 // A vector for holding the results.
-                final List<int[]> hits = new ArrayList<int[]>();
+                final List<int[]> hits = new ArrayList<>();
                 /*
                  * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in
                  * general this should be used more effediently (with a boyer more algorithm or something.
