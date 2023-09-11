@@ -163,7 +163,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             logger.info("Alert: Completed data will be deleted from the system due to DONE_AREA setting");
         }
 
-        logger.debug("Pickup Canonical HOLD => {}, Pickup Canonical DONE => {}, Pickup Canonical ERROR => {}" + holdingArea, doneArea, errorArea);
+        logger.debug("Pickup Canonical HOLD => {}, Pickup Canonical DONE => {}, Pickup Canonical ERROR => {}", holdingArea, doneArea, errorArea);
 
         initialFormValues = configG.findEntries("INITIAL_FORM");
         if (initialFormValues.size() < 1) {
