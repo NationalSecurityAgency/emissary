@@ -20,8 +20,6 @@ public class BackwardsTreeScanner {
 
     // The internal structure of the offset-keyword id array
     // contained in the hit vectors
-    // public static final int OFFSET = 0;
-    // public static final int ID = 1;
 
     /** Root node of tree state diagram. Always start a search from here! */
     private State root = new State((byte) 0);

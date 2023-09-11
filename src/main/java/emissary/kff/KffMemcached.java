@@ -181,30 +181,10 @@ public class KffMemcached implements KffFilter {
         // Finally, setup the client. ConnectionFactoryBuilder ultimately
         // creates a DefaultConnectionFactory with the values set below
         ConnectionFactoryBuilder cfb = new ConnectionFactoryBuilder();
-
-        // There are a number of options that can be set here. Documenting
-        // all of them and why or why not they are being set
-
-        // cfb.setAuthDescriptor(null); // Not using auth
         cfb.setDaemon(true); // Just to keep the process from hanging
         cfb.setFailureMode(failMode); // How to handle operations when they fail
-        // cfb.setHashAlg(null); // We assume a fixed server set here so we do not modify the default hash algorithm
-        // cfb.setInitialObservers(null); // This is where we would hook callbacks to manage the server set
-        // cfb.setLocatorType(null); // Use default
         cfb.setMaxReconnectDelay(60); // At most, wait 1 minute for attempting to reconnect to a server
-        // cfb.setOpFact(null); // Use default
-        // cfb.setOpQueueFactory(null); // Use default
-        // cfb.setOpQueueMaxBlockTime(0); // Use default
         cfb.setOpTimeout(opTimeoutMillis); // Use the same for the connection as the concurrent Future object
-        // cfb.setProtocol(null); // Use ASCII protocol (default)
-        // cfb.setReadBufferSize(0); // Use default
-        // cfb.setReadOpQueueFactory(null); // Use default
-        // cfb.setShouldOptimize(false); // Use default
-        // cfb.setTimeoutExceptionThreshold(3); // Setting this is only useful if you are going to shutdown the bad
-        // nodes
-        // cfb.setTranscoder(null); // Use default
-        // cfb.setUseNagleAlgorithm(false); // Use default
-        // cfb.setWriteOpQueueFactory(null); // Use default
 
         if (useBinaryProtocol) {
             cfb.setProtocol(Protocol.BINARY);

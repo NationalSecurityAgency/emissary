@@ -55,10 +55,6 @@ public final class Version {
                         }
                     }
                 }
-                // else
-                // {
-                // System.out.println("No lines to read");
-                // }
             }
         } catch (IOException iox) {
             // System.out.println("Bad read: " + iox);

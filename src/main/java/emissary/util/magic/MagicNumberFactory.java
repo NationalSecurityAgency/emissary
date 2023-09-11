@@ -212,8 +212,6 @@ public class MagicNumberFactory {
             item.offsetUnary = resolveOffsetUnary(columns, item);
             item.offset = resolveOffset(columns, item);
         } catch (Exception e) {
-            // log.error ("original entry \t: {}", entry);
-            // log.error ("Error on column 0\t: {}", columns[0], e);
             throw new ParseException("Error on column 0:" + columns[0] + ". " + e.getMessage());
         }
         try {
@@ -238,8 +236,6 @@ public class MagicNumberFactory {
             item.value = resolveValue(columns, item);
             item.dataTypeLength = item.value.length;
         } catch (Exception e) {
-            // log.error ("original entry \t: {}", entry);
-            // log.error ("Error on column 2\t: {}", columns[2], e);
             throw new ParseException("Error on column 2:" + columns[2] + ". " + e.getMessage());
         }
         // column D parsing
