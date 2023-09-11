@@ -5,12 +5,15 @@ import emissary.place.IServiceProviderPlace;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class TransformHistory {
+public class TransformHistory implements Serializable {
+
+    private static final long serialVersionUID = -7252497842562281631L;
 
     private final List<History> history;
 
