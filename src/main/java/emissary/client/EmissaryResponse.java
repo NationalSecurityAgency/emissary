@@ -119,7 +119,7 @@ public class EmissaryResponse {
         return r;
     }
 
-    public static class EmissaryResponseResponseHandler implements HttpClientResponseHandler<EmissaryResponse> {
+    public static class EmissaryResponseHandler implements HttpClientResponseHandler<EmissaryResponse> {
 
         @Override
         public EmissaryResponse handleResponse(ClassicHttpResponse response) throws IOException {

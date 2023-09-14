@@ -1,6 +1,6 @@
 package emissary.client;
 
-import emissary.client.EmissaryResponse.EmissaryResponseResponseHandler;
+import emissary.client.EmissaryResponse.EmissaryResponseHandler;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
@@ -204,7 +204,7 @@ public class EmissaryClient {
             // to use a different context and request config per request
             method.setConfig(requestConfig);
             CloseableHttpClient thisClient = getHttpClient();
-            return thisClient.execute(method, localContext, new EmissaryResponseResponseHandler());
+            return thisClient.execute(method, localContext, new EmissaryResponseHandler());
         } catch (IOException e) {
             LOGGER.debug("Problem processing request:", e);
             BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());
