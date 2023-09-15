@@ -128,7 +128,7 @@ public final class Ssdeep {
         public SsContext(final SeekableByteChannelFactory sbcf) {
             long expectedInputLength = 0;
 
-            try (final SeekableByteChannel sbc = sbcf.create();) {
+            try (final SeekableByteChannel sbc = sbcf.create()) {
                 expectedInputLength = sbc.size();
             } catch (final IOException ioe) {
                 // Ignore
@@ -283,7 +283,7 @@ public final class Ssdeep {
             beginHashing();
             final RollingState rollState = new RollingState();
 
-            try (final InputStream is = Channels.newInputStream(sbcf.create());) {
+            try (final InputStream is = Channels.newInputStream(sbcf.create())) {
                 final byte[] b = new byte[1024];
 
                 int bytesRead;

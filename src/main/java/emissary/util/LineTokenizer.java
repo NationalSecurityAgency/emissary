@@ -181,7 +181,6 @@ public class LineTokenizer {
 
         for (; end < data.length && data[end] != delim; end++) {
         }
-        ;
 
         byte[] tok = new byte[end - index];
         System.arraycopy(data, index, tok, 0, end - index);
