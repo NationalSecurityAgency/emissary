@@ -150,7 +150,7 @@ public class UnitTest {
         // setup the environment stuff
         try {
             ServerCommand.parse(ServerCommand.class, "-m", "cluster").setupCommand();
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        } catch (EmissaryException e) {
             logger.error("Unable to setup Emissary environment", e);
             fail("Unable to setup Emissary environment");
         }

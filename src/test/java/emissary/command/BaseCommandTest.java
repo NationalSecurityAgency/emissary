@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class BaseCommandTest extends UnitTest {
 
     @Test
-    void testFlavor() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testFlavor() throws Exception {
         String flavorString = "NORMAL,cluster";
         List<String> args = new ArrayList<>();
         args.add("-b");

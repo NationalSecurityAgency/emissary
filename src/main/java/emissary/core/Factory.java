@@ -99,7 +99,7 @@ public class Factory {
             // directly. When this succeeds, it can avoid the
             // overhead of calling getConstructor() on the Class
             // object.
-            return ClassLookupCache.lookup(className).newInstance();
+            return ClassLookupCache.lookup(className).getDeclaredConstructor().newInstance();
         } catch (Throwable e) {
             // The simple approach failed, so we'll fall back on a
             // more complicated approach that probably has more

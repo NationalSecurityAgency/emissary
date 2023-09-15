@@ -106,9 +106,9 @@ public class EmissaryResponse {
     private <T extends BaseEntity> T makeErrorEntity(String msg, Class<T> mapper) {
         T r = null;
         try {
-            Object c = Class.forName(mapper.getName()).newInstance();
+            Object c = Class.forName(mapper.getName()).getDeclaredConstructor().newInstance();
             r = mapper.cast(c);
-        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+        } catch (ReflectiveOperationException e) {
             logger.error("Problem creating new {}", mapper.getName(), e);
         }
         if (r != null) {

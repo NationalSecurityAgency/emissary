@@ -27,7 +27,7 @@ class ServerCommandIT extends UnitTest {
     }
 
     @Test
-    void testModeAddedToFlavors() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+    void testModeAddedToFlavors() throws Exception {
         ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-b ", PROJECT_BASE_SLASH + "/", "-m", "standalone");
         assertEquals("STANDALONE", cmd.getFlavor());
     }
