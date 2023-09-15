@@ -82,7 +82,7 @@ public class JNI implements Serializable {
             try {
                 this.theDir = (IDirectoryPlace) Namespace.lookup(theDir);
             } catch (NamespaceException ne) {
-                logger.debug("Cannot get directory using {}: {}", theDir, ne);
+                logger.debug("Cannot get directory using {}: {}", theDir, ne.getLocalizedMessage());
             }
         }
 
@@ -276,7 +276,7 @@ public class JNI implements Serializable {
             System.load(fullPathName);
             logger.debug("LINK SUCCESS for {}", fullPathName);
         } catch (UnsatisfiedLinkError e) {
-            logger.debug("Unable to link retrieved {}:{}", fullPathName, e);
+            logger.debug("Unable to link retrieved {}:{}", fullPathName, e.getLocalizedMessage());
 
             // We have done all we can. Throw an exception and return
             throw (new UnsatisfiedLinkError("Cannot link with retrieved library " + fullPathName + ":" + e));
