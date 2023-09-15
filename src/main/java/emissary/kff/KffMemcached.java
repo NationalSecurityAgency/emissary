@@ -134,7 +134,7 @@ public class KffMemcached implements KffFilter {
 
         // Load up the list of servers
         Set<String> serversFromConfig = configG.findEntriesAsSet("MEMCACHED_SERVER");
-        List<InetSocketAddress> servers = new LinkedList<InetSocketAddress>();
+        List<InetSocketAddress> servers = new LinkedList<>();
         for (String serverFromConfig : serversFromConfig) {
             // Transform to an InetSocketAddress
             if (serverFromConfig.contains(":")) {

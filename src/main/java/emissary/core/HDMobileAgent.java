@@ -30,7 +30,7 @@ public class HDMobileAgent extends MobileAgent {
     static final long serialVersionUID = 786319119844306571L;
 
     // What we carry around with us
-    protected List<IBaseDataObject> payloadList = Collections.synchronizedList(new ArrayList<IBaseDataObject>());
+    protected List<IBaseDataObject> payloadList = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Still have the uncaught exception handler but not really in a true ThreadGroup
@@ -218,7 +218,7 @@ public class HDMobileAgent extends MobileAgent {
                     atPlaceHD(currentPlace, this.payloadList);
                 } else {
                     // Add the primary payload object to a list
-                    final List<IBaseDataObject> toBeProcessed = new ArrayList<IBaseDataObject>();
+                    final List<IBaseDataObject> toBeProcessed = new ArrayList<>();
                     toBeProcessed.add(mypayload);
 
                     // Add any other payload that has the same current form

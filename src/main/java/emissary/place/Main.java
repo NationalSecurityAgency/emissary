@@ -85,21 +85,21 @@ public class Main {
     /** Regex for which metadata to print out */
     protected String[] metaPatterns;
     /** hash of parameters/values to set before process */
-    protected HashMap<String, String> params = new HashMap<String, String>();
+    protected HashMap<String, String> params = new HashMap<>();
     /** Set to turn off Emissary node context and directory setup */
     protected boolean runWithoutContext = false;
     /** The command line options */
     protected Options options = getStandardOptions();
     /** set of alt views to print after processing */
-    protected Set<String> viewsToPrint = new HashSet<String>();
+    protected Set<String> viewsToPrint = new HashSet<>();
     /** Class name of parser to run on input data */
     protected String parserName = SimpleParser.class.getName();
     /** Number of threads to use to process input files */
     protected int numThreads = 1;
     /** The workers that call the place */
-    List<Worker> workers = new ArrayList<Worker>();
+    List<Worker> workers = new ArrayList<>();
     /** Queue of payload object for workers to pull from */
-    protected final LinkedList<IBaseDataObject> workQueue = new LinkedList<IBaseDataObject>();
+    protected final LinkedList<IBaseDataObject> workQueue = new LinkedList<>();
     /** hashing support */
     protected KffDataObjectHandler kff = null;
     /** loop on input */
@@ -348,7 +348,7 @@ public class Main {
      * @return the list of file arguments or an empty list
      */
     public List<String> getFileArgs() {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (int i = 0; fileArgs != null && i < fileArgs.length; i++) {
             l.add(fileArgs[i]);
         }
@@ -914,7 +914,7 @@ public class Main {
      * Called by the Worker consumer to process the given payload
      */
     public void processPayload(IBaseDataObject payload) {
-        List<IBaseDataObject> attachments = new ArrayList<IBaseDataObject>();
+        List<IBaseDataObject> attachments = new ArrayList<>();
         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
         try {
             boolean shouldContinue = preProcessHook(payload, attachments);

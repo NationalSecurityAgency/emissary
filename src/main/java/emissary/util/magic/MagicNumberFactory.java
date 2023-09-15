@@ -60,10 +60,10 @@ public class MagicNumberFactory {
     public static List<MagicNumber> buildMagicNumberList(byte[] configData, @Nullable List<String> zeroDepthErrorList,
             @Nullable Map<String, List<String>> continuationErrorMap, boolean swallowParseException) {
 
-        List<MagicNumber> magicNumberList = new ArrayList<MagicNumber>();
+        List<MagicNumber> magicNumberList = new ArrayList<>();
         MagicNumber finger = null;
         int currentDepth = -1;
-        List<MagicNumber> extensions = new ArrayList<MagicNumber>();
+        List<MagicNumber> extensions = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(configData), MagicNumber.DEFAULT_CHARSET))) {
             String s;
             int counter = 0;
@@ -78,11 +78,11 @@ public class MagicNumberFactory {
                     if (depth == 0 && extensions.size() > 0) {
                         if (finger == null) {
                             extensions = null;
-                            extensions = new ArrayList<MagicNumber>();
+                            extensions = new ArrayList<>();
                         } else {
                             addExtensionsLayer(extensions, finger);
                             extensions = null;
-                            extensions = new ArrayList<MagicNumber>();
+                            extensions = new ArrayList<>();
                             finger = null;
                         }
                     }
@@ -111,7 +111,7 @@ public class MagicNumberFactory {
                             currentDepth = depth;
                             addExtensionsLayer(extensions, finger);
                             extensions = null;
-                            extensions = new ArrayList<MagicNumber>();
+                            extensions = new ArrayList<>();
                             parseAndStore(extensions, s, swallowParseException);
                         }
                     }
@@ -133,7 +133,7 @@ public class MagicNumberFactory {
                         String signature = mItem.toString();
                         List<String> failedExtensions = continuationErrorMap.get(signature);
                         if (failedExtensions == null) {
-                            failedExtensions = new ArrayList<String>();
+                            failedExtensions = new ArrayList<>();
                             continuationErrorMap.put(mItem.toString(), failedExtensions);
                         }
                         failedExtensions.add("[MAGIC LINE# " + counter + "] " + s);

@@ -80,7 +80,7 @@ public final class MagicNumberUtil {
     private static final Logger log = LoggerFactory.getLogger(MagicNumberUtil.class);
 
     /** The magic number instances */
-    private final List<MagicNumber> magicNumbers = new ArrayList<MagicNumber>();
+    private final List<MagicNumber> magicNumbers = new ArrayList<>();
 
     /**
      * Log flag for storing parse errors - they will just be discarded. Switching this on will allow erroneous entries to be
@@ -96,13 +96,13 @@ public final class MagicNumberUtil {
      * Log data structure for continuations. Maps entries with depth 0 with a List of continuation entries containing the
      * errors
      */
-    private final Map<String, List<String>> extErrorMap = new TreeMap<String, List<String>>();
+    private final Map<String, List<String>> extErrorMap = new TreeMap<>();
 
     /**
      * Log data structure for entries with a depth of '0' - these are the important entries. Just maintains a simple list of
      * these entries
      */
-    private final List<String> errorList = new ArrayList<String>();
+    private final List<String> errorList = new ArrayList<>();
 
     /**
      * Private Constructor

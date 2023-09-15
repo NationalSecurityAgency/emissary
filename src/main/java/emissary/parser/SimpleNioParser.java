@@ -52,7 +52,7 @@ public class SimpleNioParser extends NIOSessionParser {
                 Map<String, Object> md = session.getMetaData();
                 if (md != null) {
                     Map<String, String> cooked = cookMetaRecords(md);
-                    d.setMetaData(new HashMap<String, Object>()); // clear
+                    d.setMetaData(new HashMap<>()); // clear
                     for (Map.Entry<String, String> entry : cooked.entrySet()) {
                         d.addMetaData(entry.getKey(), entry.getValue());
                     }

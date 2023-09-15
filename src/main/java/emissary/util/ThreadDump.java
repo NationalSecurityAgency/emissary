@@ -26,7 +26,7 @@ public class ThreadDump {
 
     public ThreadInfo[] getThreadInfo(final boolean excludeSystem) {
         final ThreadInfo[] t = getThreadInfo();
-        final List<ThreadInfo> l = new ArrayList<ThreadInfo>();
+        final List<ThreadInfo> l = new ArrayList<>();
         if (excludeSystem) {
             for (final ThreadInfo ti : t) {
                 if (ti == null) {

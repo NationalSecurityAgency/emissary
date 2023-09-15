@@ -29,8 +29,8 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private File outarea1;
     private File holdarea;
 
-    private List<File> workingFiles = new ArrayList<File>();
-    private List<String> workingFilePaths = new ArrayList<String>();
+    private List<File> workingFiles = new ArrayList<>();
+    private List<String> workingFilePaths = new ArrayList<>();
 
     @Override
     @BeforeEach

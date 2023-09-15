@@ -68,7 +68,7 @@ public class WhatCommand extends BaseCommand {
     private boolean recursive = false;
 
     protected List<IServiceProviderPlace> places;
-    protected List<String> placeLabels = new ArrayList<String>();
+    protected List<String> placeLabels = new ArrayList<>();
     protected Set<String> textPlaces;
     // protected DropOffUtil dropOffUtil;
     private ParserFactory parserFactory;
@@ -97,7 +97,7 @@ public class WhatCommand extends BaseCommand {
             parserFactory = new ParserFactory();
             final Configurator configG = ConfigUtil.getConfigInfo(this.getClass());
             final List<String> placeNames = configG.findEntries("PLACE");
-            this.places = new ArrayList<IServiceProviderPlace>();
+            this.places = new ArrayList<>();
             for (final String entry : placeNames) {
                 final String[] parts = entry.split("/");
                 final String instanceName = parts[0];
@@ -217,7 +217,7 @@ public class WhatCommand extends BaseCommand {
     private Identification runEngines(@Nullable final IBaseDataObject b) {
 
         final Identification ident = new Identification();
-        final List<String> typesFound = new ArrayList<String>();
+        final List<String> typesFound = new ArrayList<>();
 
         if (b != null && b.dataLength() == 0) {
             ident.addType(Form.EMPTY);
