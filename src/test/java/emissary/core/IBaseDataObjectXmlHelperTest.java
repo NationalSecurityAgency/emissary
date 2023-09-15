@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -81,7 +82,8 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         expectedIbdo.setTransactionId("TransactionId");
         expectedIbdo.setWorkBundleId("WorkBundleId");
         expectedIbdo.putParameter("Parameter1Key", "Parameter1Value");
-        expectedIbdo.putParameter("Parameter2Key", "Parameter2Value");
+        expectedIbdo.putParameter("Parameter2Key", Arrays.asList("Parameter2Value1", "Parameter2Value2"));
+        expectedIbdo.putParameter("Parameter3Key", Arrays.asList(10L, 20L));
         expectedIbdo.addAlternateView("AlternateView1Key", "AlternateView1Value".getBytes(StandardCharsets.ISO_8859_1));
         expectedIbdo.addAlternateView("AlternateView2Key", "AlternateView2Value".getBytes(StandardCharsets.ISO_8859_1));
 

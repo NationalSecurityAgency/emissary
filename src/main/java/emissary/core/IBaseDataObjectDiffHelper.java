@@ -11,6 +11,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,7 +59,7 @@ public class IBaseDataObjectDiffHelper {
 
         diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
         // TreeMap automatically sorts parameters by key
-        diff(new TreeMap<>(ibdo1.getParameters()), new TreeMap<>(ibdo2.getParameters()), "parameters", differences);
+        diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
         diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
         diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
         diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
@@ -223,5 +224,27 @@ public class IBaseDataObjectDiffHelper {
                 !map1.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), map2.get(e.getKey())))) {
             differences.add(identifier + ARE_NOT_EQUAL);
         }
+    }
+
+    /**
+     * This method converts the IBDO parameter map of Object values to a map of String values for better comparison.
+     * 
+     * @param map IBDO parameter map
+     * @return a map that has only Strings as it values.
+     */
+    public static Map<String, Collection<String>> convertMap(final Map<String, Collection<Object>> map) {
+        Map<String, Collection<String>> newMap = new TreeMap<>();
+
+        for (Map.Entry<String, Collection<Object>> e : map.entrySet()) {
+            final List<String> list = new ArrayList<>();
+
+            for (Object o : e.getValue()) {
+                list.add(o.toString());
+            }
+
+            newMap.put(e.getKey(), list);
+        }
+
+        return newMap;
     }
 }

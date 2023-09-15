@@ -60,7 +60,7 @@ public final class IbdoMethodNames {
     /**
      * The IBaseDataObject set method name for Parameter.
      */
-    public static final String SET_PARAMETER = "putParameter";
+    public static final String SET_PARAMETER = "appendParameter";
     /**
      * The IBaseDataObject set method name for Priority.
      */
