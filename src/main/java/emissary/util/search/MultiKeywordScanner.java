@@ -18,16 +18,6 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
 
     public MultiKeywordScanner() {}
 
-    /**
-     * Case insensitive was never implemented
-     */
-    @Deprecated
-    public MultiKeywordScanner(final boolean caseSensitive) {
-        if (!caseSensitive) {
-            logger.error("Case-insensitive MultiKeywordScanner is not implemented");
-        }
-    }
-
     @Override
     public void loadKeywords(final String[] keywordsArg) {
         this.keywords = keywordsArg;
