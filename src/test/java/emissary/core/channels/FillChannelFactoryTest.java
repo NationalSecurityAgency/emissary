@@ -1,12 +1,12 @@
 package emissary.core.channels;
 
 import org.apache.commons.io.IOUtils;
-import org.bouncycastle.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FillChannelFactoryTest {
     @Test
-    void testCreate() throws IOException {
+    void testCreate() {
         assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.create(-1, (byte) 0));
     }
 

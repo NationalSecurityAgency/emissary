@@ -46,7 +46,6 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.bcprov-jdk15on.version>1.67</dep.bcprov-jdk15on.version>
     <dep.commons-cli.version>1.5.0</dep.commons-cli.version>
     <dep.commons-codec.version>1.15</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
@@ -319,12 +318,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>${dep.bcprov-jdk15on.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
         <version>${dep.junit-jupiter.version}</version>
@@ -550,11 +543,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.bouncycastle</groupId>
-      <artifactId>bcprov-jdk15on</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
