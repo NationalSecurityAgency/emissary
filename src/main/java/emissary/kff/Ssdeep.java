@@ -520,10 +520,6 @@ public final class Ssdeep {
         for (int s1Pos = 0; s1Pos <= lastS1Pos; s1Pos++) {
             final int s2Pos = indexOfSubSequence(s2, s1, s1Pos, length);
             if (s2Pos != -1) {
-                // if (logger.isDebugEnabled()) {
-                // logger.debug("found common sequence {} in {} at {} and {} at {}", new String(s1, s1Pos, length), new String(s1),
-                // s1Pos, new String(s2), s2Pos);
-                // }
                 return true;
             }
         }
@@ -608,9 +604,6 @@ public final class Ssdeep {
         // The two strings must have a common substring of length
         // ROLLING_WINDOW_SIZE to be candidates.
         if (!hasCommonSequence(s1, s2, ROLLING_WINDOW_SIZE)) {
-            // if (logger.isDebugEnabled()) {
-            // logger.debug("no common substring for '{}' and '{}'", new String(s1), new String(s2));
-            // }
             return 0;
         }
 

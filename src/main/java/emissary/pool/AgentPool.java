@@ -161,9 +161,6 @@ public class AgentPool extends GenericObjectPool<IMobileAgent> {
         // impact on the global namespace, most weirdly for the caller
         // of this method since the reference they hold is obsoleted by
         // making this call
-        // close(); // shutdown and unbind
-        // logger.info("AgentPool#resetFactory caused Namespace registered instance to change");
-        // new AgentPool(factory, getMaxActive(), getPoolName()); // reload and bind
         this.factory = factory;
         emptyPool();
         fillPool();

@@ -589,8 +589,6 @@ public class EmissaryServer {
         csrfFilter(application);
 
         ServletHolder apiHolder = new ServletHolder(new ServletContainer(application));
-        // apiHolder.setInitOrder(0);
-        // apiHolder.setInitParameter(ServerProperties.PROVIDER_PACKAGES, "resource");
 
         ServletContextHandler apiHolderContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         apiHolderContext.addServlet(apiHolder, "/*");

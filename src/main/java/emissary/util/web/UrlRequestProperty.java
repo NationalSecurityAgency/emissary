@@ -78,8 +78,6 @@ public class UrlRequestProperty {
      */
     public void setAuthHeader(final String user, final String password) {
         this.key = "Authorization";
-        // String catvalue = user + ":" + password;
-        // value = emissary.util.Base64.encode(catvalue.getBytes());
     }
 
     /**
