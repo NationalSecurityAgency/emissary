@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
@@ -42,16 +41,6 @@ public abstract class NIOSessionParser extends SessionParser {
 
     /** When we grow the chunk buffer to accomodate additional data, we will grow the buffer by this increment */
     protected int chunkAllocationIncrement = (10 * 1024 * 1024) + 100;
-
-    /**
-     * Create the parser with the supplied data source
-     * 
-     * @param raf the source of data
-     */
-    @Deprecated
-    public NIOSessionParser(RandomAccessFile raf) {
-        this(raf.getChannel());
-    }
 
     /**
      * Create the parser with the supplied data source
