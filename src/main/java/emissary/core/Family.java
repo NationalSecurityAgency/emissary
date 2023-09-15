@@ -61,18 +61,11 @@ public class Family {
     }
 
     /**
-     * Return the separator string from a method
-     */
-    public static String sep() {
-        return SEP;
-    }
-
-    /**
-     * Return the separator string for the specified birthorder e.g. sep(5) ==&gt; "-att-5"
+     * Return the separator string for the specified birthorder e.g. getSep(5) ==&gt; "-att-5"
      * 
      * @param birthorder the number for the attachment to name
      */
-    public static String sep(final int birthorder) {
+    public static String getSep(final int birthorder) {
         return SEP + birthorder;
     }
 

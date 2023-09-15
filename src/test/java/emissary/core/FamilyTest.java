@@ -10,13 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FamilyTest extends UnitTest {
 
     @Test
-    void testSepValue() {
-        assertEquals(Family.SEP + "5", Family.sep(5), "Separator birthorder appended");
-    }
-
-    @Test
-    void testSepAsMethod() {
-        assertEquals(Family.SEP, Family.sep(), "Separator birthorder appended");
+    void testGetSep() {
+        assertEquals(Family.SEP + "5", Family.getSep(5), "Unexpected separator birthorder");
     }
 
     @Test
