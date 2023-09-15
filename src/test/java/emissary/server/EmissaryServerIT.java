@@ -27,7 +27,7 @@ class EmissaryServerIT extends UnitTest {
         assertEquals(10, pool.getMinThreads());
         assertEquals(250, pool.getMaxThreads());
         assertEquals(50, pool.getLowThreadsThreshold());
-        assertEquals(new Long(TimeUnit.MINUTES.toMillis(15)).intValue(), pool.getIdleTimeout());
+        assertEquals(Long.valueOf(TimeUnit.MINUTES.toMillis(15)).intValue(), pool.getIdleTimeout());
         assertEquals(9, pool.getThreadsPriority());
     }
 
