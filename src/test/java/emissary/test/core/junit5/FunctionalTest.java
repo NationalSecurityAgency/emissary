@@ -62,17 +62,9 @@ public abstract class FunctionalTest extends UnitTest {
     }
 
     /**
-     * Start a localhost jetty on the specified port using jetty.xml in the local package
+     * Start a localhost jetty on the specified port. Create a emissary/test123 user in a /tmp/jetty-users.properties
      */
     protected void startJetty(int port) throws Exception {
-        startJetty(port, "jetty");
-    }
-
-    /**
-     * Start a localhost jetty on the specified port Create a emissary/test123 user in a /tmp/jetty-users.properties but use
-     * the runtime package "xrez".xml file
-     */
-    protected void startJetty(int port, String xrez) throws Exception {
         String PROJECT_BASE = System.getenv(ConfigUtil.PROJECT_BASE_ENV);
         // Set up a password file
         File realmFile = new File(PROJECT_BASE + "/config", "jetty-users.properties");
@@ -81,11 +73,6 @@ public abstract class FunctionalTest extends UnitTest {
         }
 
         String nodeName = "localhost";
-        // System.setProperty(EmissaryNode.NODE_NAME_PROPERTY, nodeName);
-        // System.setProperty(EmissaryNode.NODE_PORT_PROPERTY, "" + port);
-        // ResourceReader rr = new ResourceReader();
-        // String xmlName = rr.getXmlName(thisPackage, xrez);
-        // Resource jettyxml = Resource.newSystemResource(xmlName);
         String[] args = new String[] {"-b", PROJECT_BASE, "-p", Integer.toString(port), "-h", nodeName, "--mobileAgents", Integer.toString(3)};
         try {
             ServerCommand cmd = ServerCommand.parse(ServerCommand.class, args);
