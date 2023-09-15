@@ -57,7 +57,7 @@ public abstract class IdentificationTest extends UnitTest {
 
         try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
             byte[] data = IOUtils.toByteArray(doc);
-            String expectedAnswer = resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
+            String expectedAnswer = resolveFormForResource(resource);
             IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
             processPreHook(payload, resource);
             place.agentProcessHeavyDuty(payload);
@@ -69,6 +69,16 @@ public abstract class IdentificationTest extends UnitTest {
             logger.error("Error running test {}", resource, ex);
             fail("Cannot run test " + resource, ex);
         }
+    }
+
+    /**
+     * Resolves the expected form for the test resource.
+     *
+     * @param resource complete file path of the test resource
+     * @return form expected for the resource
+     */
+    protected String resolveFormForResource(String resource) {
+        return resource.replaceAll("^.*/([^/@]+)(@\\d+)?\\.dat$", "$1");
     }
 
     protected void processPreHook(IBaseDataObject payload, String resource) {
