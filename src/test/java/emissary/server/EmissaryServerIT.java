@@ -33,7 +33,7 @@ class EmissaryServerIT extends UnitTest {
 
     @Test
     void testSSLWorks() throws Exception {
-        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-p", "3443", "--ssl");
+        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "-p", "3443", "--ssl", "--disableSniHostCheck");
         EmissaryServer server = new EmissaryServer(cmd);
         try {
             server.startServer();

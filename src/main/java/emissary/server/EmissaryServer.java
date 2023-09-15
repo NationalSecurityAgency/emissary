@@ -25,6 +25,7 @@ import emissary.spi.SPILoader;
 import ch.qos.logback.classic.ViewStatusMessagesServlet;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
@@ -61,7 +62,6 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -652,7 +652,7 @@ public class EmissaryServer {
     }
 
     @VisibleForTesting
-    protected Server configureServer() throws IOException, GeneralSecurityException {
+    protected Server configureServer() throws IOException {
         int maxThreads = 250;
         int minThreads = 10;
         int lowThreads = 50;
@@ -664,27 +664,82 @@ public class EmissaryServer {
         threadPool.setThreadsPriority(threadsPriority);
 
         Server server = new Server(threadPool);
-
-        ServerConnector connector = cmd.isSslEnabled() ? getServerConnector(server) : new ServerConnector(server);
-        connector.setHost(cmd.getHost());
-        connector.setPort(cmd.getPort());
-
-        server.setConnectors(new Connector[] {connector});
-
+        server.setConnectors(new Connector[] {
+                createServerConnector(server)
+        });
         return server;
     }
 
-    private ServerConnector getServerConnector(Server server) throws IOException, KeyStoreException, NoSuchAlgorithmException, CertificateException {
-        ServerConnector connector;
+    /**
+     * Create a server connector, insecure (http) or secure (https) depending on {@link ServerCommand#isSslEnabled()}
+     *
+     * @param server the Jetty HTTP Servlet Server
+     * @return server connector that is the primary connector for the Jetty server over TCP/IP
+     * @throws IOException if there is an error
+     */
+    private ServerConnector createServerConnector(Server server) throws IOException {
+        ServerConnector connector = cmd.isSslEnabled() ? createHttpsConnector(server) : createHttpConnector(server);
+        connector.setHost(cmd.getHost());
+        connector.setPort(cmd.getPort());
+        return connector;
+    }
+
+    /**
+     * Create an insecure http connector
+     *
+     * @param server the Jetty HTTP Servlet Server
+     * @return server connector that is the primary connector for the Jetty server over TCP/IP
+     */
+    private ServerConnector createHttpConnector(Server server) {
+        return new ServerConnector(server);
+    }
+
+    /**
+     * Create a secure https connector
+     *
+     * @param server the Jetty HTTP Servlet Server
+     * @return ServerConnector is the primary connector for the Jetty server over TCP/IP
+     * @throws IOException if there is an error
+     */
+    private ServerConnector createHttpsConnector(Server server) throws IOException {
         HttpConfiguration http_config = new HttpConfiguration();
         http_config.setSecureScheme("https");
         http_config.setSecurePort(cmd.getPort());
 
         HttpConfiguration https_config = new HttpConfiguration(http_config);
-        https_config.addCustomizer(new SecureRequestCustomizer());
+        https_config.addCustomizer(createSecureRequestCustomizer());
 
-        // Get keystore and truststore config from HttpConnectionFactory.cfg (probably flavored with -SSL)
-        // only jks files are supported, but could be expanded
+        return new ServerConnector(server,
+                new SslConnectionFactory(getSslContextFactory(), HttpVersion.HTTP_1_1.asString()),
+                new HttpConnectionFactory(https_config));
+    }
+
+    /**
+     * SecureRequestCustomizer extracts the attribute from an SSLContext and sets them on the request according to Servlet
+     * Specification Requirements. Jetty defaults for the SecureRequestCustomizer are:
+     * <ul>
+     * <li>isSniRequired() => false // Server Name Indication (SNI) is required
+     * <li>isSniHostCheck() => true // SNI Host name must match when there is an SNI certificate
+     * <li>getStsMaxAge() => -1 (no max age) // Strict-Transport-Security (STS) max age
+     * <li>isStsIncludeSubDomains() => false // include-subdomain property is sent with any STS header
+     * </ul>
+     * 
+     * @return a secure request customizer
+     */
+    private SecureRequestCustomizer createSecureRequestCustomizer() {
+        SecureRequestCustomizer secureRequestCustomizer = new SecureRequestCustomizer();
+        secureRequestCustomizer.setSniHostCheck(cmd.isSniHostCheckEnabled());
+        return secureRequestCustomizer;
+    }
+
+    /**
+     * Create a {@link SslContextFactory.Server} using keystore and truststore config from HttpConnectionFactory.cfg,
+     * probably flavored with '-SSL'. Note: only jks files are supported, but could be expanded
+     *
+     * @return SslContextFactory that is used to configure SSL parameters to be used by server connectors
+     * @throws IOException if there is an error getting the context factory
+     */
+    private SslContextFactory.Server getSslContextFactory() throws IOException {
         Configurator httpConnFactCfg = ConfigUtil.getConfigInfo(HTTPConnectionFactory.class);
         String keystore = httpConnFactCfg.findStringEntry("javax.net.ssl.keyStore", "no-keystore");
         System.setProperty("javax.net.ssl.keyStore", keystore);
@@ -694,19 +749,21 @@ public class EmissaryServer {
         System.setProperty("javax.net.ssl.trustStore", trustStore);
         String trustStorePass = httpConnFactCfg.findStringEntry("javax.net.ssl.trustStorePassword", keystorePass);
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePass);
-        // setup context to add to connector
-        SslContextFactory sslContextFactory = new SslContextFactory.Server();
+
+        SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
         sslContextFactory.setKeyStorePath(keystore);
         sslContextFactory.setKeyStorePassword(keystorePass);
-        KeyStore trustStoreInstance = KeyStore.getInstance("JKS");
-        try (final InputStream is = Files.newInputStream(Paths.get(trustStore))) {
-            trustStoreInstance.load(is, trustStorePass.toCharArray());
-        }
-        sslContextFactory.setTrustStore(trustStoreInstance);
 
-        connector = new ServerConnector(server,
-                new SslConnectionFactory(sslContextFactory, "http/1.1"),
-                new HttpConnectionFactory(https_config));
-        return connector;
+        KeyStore trustStoreInstance;
+        try (final InputStream is = Files.newInputStream(Paths.get(trustStore))) {
+            trustStoreInstance = KeyStore.getInstance("JKS");
+            trustStoreInstance.load(is, trustStorePass.toCharArray());
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException e) {
+            throw new IOException("There was an issue loading the truststore", e);
+        }
+
+        sslContextFactory.setTrustStore(trustStoreInstance);
+        return sslContextFactory;
     }
+
 }

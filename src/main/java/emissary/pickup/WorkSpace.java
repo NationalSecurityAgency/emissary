@@ -216,6 +216,9 @@ public class WorkSpace implements Runnable {
             if (this.feedCommand.isSslEnabled()) {
                 args.add("--ssl");
             }
+            if (this.feedCommand.isSniHostCheckDisabled()) {
+                args.add("--disableSniHostCheck");
+            }
             try {
                 // To ensure the feed command starts correctly, depends on a node-{feedCommand.getPort}.cfg file
                 ServerCommand cmd = BaseCommand.parse(ServerCommand.class, args);
