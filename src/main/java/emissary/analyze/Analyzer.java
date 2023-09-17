@@ -1,19 +1,25 @@
 package emissary.analyze;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObjectHelper;
 import emissary.place.ServiceProviderPlace;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Base class for analyzers
  */
 public abstract class Analyzer extends ServiceProviderPlace {
-    protected List<String> PREFERRED_VIEWS;
-    protected String ANALYZED_DATA_NAME;
+    protected List<String> preferredViews;
+    protected String analyzedDataName;
+    protected List<Pattern> perferredViewPatternList;
+
+    protected boolean findPreferredViewByRegex;
+
 
     /**
      * Create the place
@@ -58,8 +64,12 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * </ul>
      */
     protected void configureAnalyzer() {
-        this.PREFERRED_VIEWS = configG.findEntries("PREFERRED_VIEW", "TEXT");
-        this.ANALYZED_DATA_NAME = configG.findStringEntry("ANALYZED_DATA_NAME", null);
+        this.preferredViews = configG.findEntries("PREFERRED_VIEW", "TEXT");
+        this.findPreferredViewByRegex = configG.findBooleanEntry("FIND_PREFERRED_VIEW_BY_REGEX", false);
+        if (findPreferredViewByRegex) {
+            perferredViewPatternList = preferredViews.stream().map(Pattern::compile).collect(Collectors.toList());
+        }
+        this.analyzedDataName = configG.findStringEntry("ANALYZED_DATA_NAME", null);
     }
 
     /**
@@ -68,14 +78,12 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * @param payload the payload to pull data from
      */
     protected byte[] getPreferredData(final IBaseDataObject payload) {
-        final Set<String> altViewNames = payload.getAlternateViewNames();
 
-        for (final String view : this.PREFERRED_VIEWS) {
-            if (altViewNames.contains(view)) {
-                return payload.getAlternateView(view);
-            }
+        if (findPreferredViewByRegex) {
+            return IBaseDataObjectHelper.findPreferredDataByRegex(payload, perferredViewPatternList);
+        } else {
+            return IBaseDataObjectHelper.getPreferredData(payload, preferredViews);
         }
-        return payload.data();
     }
 
     /**
@@ -86,11 +94,11 @@ public abstract class Analyzer extends ServiceProviderPlace {
      * @return true if the data was stored, false if not. See ANALYZED_DATA_NAME config element
      */
     protected boolean setPreferredData(final IBaseDataObject payload, final byte[] analyzedData) {
-        if (this.ANALYZED_DATA_NAME != null) {
-            if ("base".equals(this.ANALYZED_DATA_NAME)) {
+        if (this.analyzedDataName != null) {
+            if ("base".equals(this.analyzedDataName)) {
                 payload.setData(analyzedData);
             } else {
-                payload.addAlternateView(this.ANALYZED_DATA_NAME, analyzedData);
+                payload.addAlternateView(this.analyzedDataName, analyzedData);
             }
             return true;
         }

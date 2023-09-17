@@ -12,10 +12,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /**
@@ -214,5 +217,41 @@ public final class IBaseDataObjectHelper {
                 child.setNumSiblings(totalNumSiblings);
             }
         }
+    }
+
+    /**
+     * Search for the first preferred view by regular expression or use the primary data if none match
+     *
+     * @param payload the payload to pull data from
+     */
+    public static byte[] findPreferredDataByRegex(final IBaseDataObject payload, List<Pattern> preferredViewNamePatterns) {
+        return Optional.ofNullable(preferredViewNamePatterns).orElse(Collections.emptyList()).stream()
+                .map(preferredViewNamePattern -> findFirstAlternameViewNameByRegex(payload, preferredViewNamePattern))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(payload::getAlternateView)
+                .findFirst().orElse(payload.data());
+    }
+
+    private static Optional<String> findFirstAlternameViewNameByRegex(IBaseDataObject payload, Pattern preferredViewNamePattern) {
+        return payload.getAlternateViewNames().stream()
+                .filter(altViewName -> preferredViewNamePattern.matcher(altViewName).find())
+                .findFirst();
+    }
+
+    /**
+     * Search for the first preferred view that is present or use the primary data if none
+     *
+     * @param payload the payload to pull data from
+     */
+    public static byte[] getPreferredData(final IBaseDataObject payload, List<String> preferredViews) {
+        final Set<String> altViewNames = payload.getAlternateViewNames();
+
+        for (final String view : preferredViews) {
+            if (altViewNames.contains(view)) {
+                return payload.getAlternateView(view);
+            }
+        }
+        return payload.data();
     }
 }
