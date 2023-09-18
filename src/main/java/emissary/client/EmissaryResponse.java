@@ -8,6 +8,8 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,5 +119,15 @@ public class EmissaryResponse {
         return r;
     }
 
+    public static class EmissaryResponseHandler implements HttpClientResponseHandler<EmissaryResponse> {
+
+        @Override
+        public EmissaryResponse handleResponse(ClassicHttpResponse response) throws IOException {
+            HttpEntity entity = response.getEntity();
+            EmissaryResponse er = new EmissaryResponse(response);
+            EntityUtils.consume(entity);
+            return er;
+        }
+    }
 
 }

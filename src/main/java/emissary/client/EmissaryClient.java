@@ -1,5 +1,6 @@
 package emissary.client;
 
+import emissary.client.EmissaryResponse.EmissaryResponseHandler;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
@@ -18,12 +19,9 @@ import org.apache.hc.client5.http.entity.EntityBuilder;
 import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.apache.hc.core5.util.Timeout;
 import org.eclipse.jetty.http.HttpStatus;
@@ -192,7 +190,6 @@ public class EmissaryClient {
         } catch (URISyntaxException e) {
             LOGGER.debug("Sending {} and failed to retrieve URI", method.getMethod());
         }
-        EmissaryResponse er;
 
         HttpClientContext localContext = HttpClientContext.create();
         localContext.setAttribute(HttpClientContext.AUTH_CACHE, EmissaryClient.AUTH_CACHE);
@@ -207,12 +204,7 @@ public class EmissaryClient {
             // to use a different context and request config per request
             method.setConfig(requestConfig);
             CloseableHttpClient thisClient = getHttpClient();
-            try (CloseableHttpResponse response = thisClient.execute(method, localContext)) {
-                HttpEntity entity = response.getEntity();
-                er = new EmissaryResponse(response);
-                EntityUtils.consume(entity);
-            }
-            return er;
+            return thisClient.execute(method, localContext, new EmissaryResponseHandler());
         } catch (IOException e) {
             LOGGER.debug("Problem processing request:", e);
             BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());

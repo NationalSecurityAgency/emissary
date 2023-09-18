@@ -49,7 +49,7 @@ class HeartbeatManagerTest extends UnitTest {
         // peer didn't respond before the timeout, throws org.apache.http.NoHttpResponseException which is still and
         // IOException
         CloseableHttpClient mockClient = mock(CloseableHttpClient.class);
-        when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenThrow(
+        when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class), any())).thenThrow(
                 new NoHttpResponseException("localhost:1222 failed to respond"));
 
         EmissaryClient client = new EmissaryClient(mockClient);
@@ -66,7 +66,6 @@ class HeartbeatManagerTest extends UnitTest {
         CloseableHttpResponse mockResponse = mock(CloseableHttpResponse.class);
         HttpEntity mockHttpEntity = mock(HttpEntity.class);
 
-        when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class))).thenReturn(mockResponse);
         when(mockResponse.getCode()).thenReturn(401);
         when(mockResponse.getEntity()).thenReturn(mockHttpEntity);
         String responseString = "Unauthorized heartbeat man";
@@ -74,6 +73,9 @@ class HeartbeatManagerTest extends UnitTest {
         BasicHeader header1 = new BasicHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
         Header[] headers = new Header[] {header1};
         when(mockResponse.getHeaders(any())).thenReturn(headers);
+
+        EmissaryResponse resp = new EmissaryResponse(mockResponse);
+        when(mockClient.execute(any(HttpUriRequest.class), any(HttpContext.class), any())).thenReturn(resp);
 
         EmissaryClient client = new EmissaryClient(mockClient);
 
