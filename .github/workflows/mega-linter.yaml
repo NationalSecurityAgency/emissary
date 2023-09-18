@@ -1,5 +1,5 @@
 ---
-name: Lint Codebase
+name: Mega Lint Codebase
 
 on:
   push:
@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   super-linter:
-    name: Super-Linter
+    name: MegaLinter
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -24,7 +24,7 @@ jobs:
           ref: ${{ github.head_ref || github.ref }}
 
       - name: Lint Code Base
-        uses: github/super-linter/slim@v5.0.0
+        uses: oxsecurity/megalinter@v7
         env:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
