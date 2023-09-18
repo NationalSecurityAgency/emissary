@@ -3,9 +3,9 @@ name: Mega Lint Codebase
 
 on:
   push:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
   pull_request:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
 
 permissions:
   contents: read
