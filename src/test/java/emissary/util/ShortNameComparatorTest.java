@@ -41,10 +41,10 @@ class ShortNameComparatorTest extends UnitTest {
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "1"));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3"));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.b));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(2)));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(1)));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(2)));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(1)));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "2"));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.sep(1) + Family.sep(1)));
+        l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(1) + Family.getSep(1)));
     }
 
     private void checkList(final List<IBaseDataObject> l) {
@@ -52,9 +52,9 @@ class ShortNameComparatorTest extends UnitTest {
         assertEquals(this.ba + "1", l.get(1).shortName(), "Ordering of sort");
         assertEquals(this.ba + "2", l.get(2).shortName(), "Ordering of sort");
         assertEquals(this.ba + "3", l.get(3).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.sep(1), l.get(4).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.sep(1) + Family.sep(1), l.get(5).shortName(), "Ordering of sort");
-        assertEquals(this.ba + "3" + Family.sep(2), l.get(6).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.getSep(1), l.get(4).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.getSep(1) + Family.getSep(1), l.get(5).shortName(), "Ordering of sort");
+        assertEquals(this.ba + "3" + Family.getSep(2), l.get(6).shortName(), "Ordering of sort");
     }
 
     @Test
