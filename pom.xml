@@ -69,7 +69,7 @@
     <dep.jaxb.runtime.version>2.3.8</dep.jaxb.runtime.version>
     <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
     <dep.jersey.version>2.40</dep.jersey.version>
-    <dep.jetty.version>10.0.16</dep.jetty.version>
+    <dep.jetty.version>10.0.15</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
     <dep.junit.version>4.13.2</dep.junit.version>
