@@ -1,6 +1,7 @@
 package emissary.kff;
 
 import emissary.core.IBaseDataObject;
+import emissary.core.IBaseDataObject.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
 
 import org.slf4j.Logger;
@@ -193,9 +194,9 @@ public class KffDataObjectHandler {
 
         // Compute and add the hashes
         if (useSbc && d.getChannelSize() > 0) {
-            d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""));
+            d.putParameters(hashData(d.getChannelFactory(), d.shortName(), ""), MergePolicy.DROP_EXISTING);
         } else if (!useSbc && d.dataLength() > 0) {
-            d.putParameters(hashData(d.data(), d.shortName()));
+            d.putParameters(hashData(d.data(), d.shortName()), MergePolicy.DROP_EXISTING);
         } else {
             return;
         }
