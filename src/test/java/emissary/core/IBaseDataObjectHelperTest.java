@@ -358,8 +358,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
-    void testGetPreferredData() {
-
+    void testFindPreferredDataByRegex() {
         byte[] view1Bytes = "altview test bytes".getBytes(StandardCharsets.UTF_8);
         ibdo1.addAlternateView("view1", view1Bytes);
 
@@ -368,27 +367,26 @@ class IBaseDataObjectHelperTest extends UnitTest {
         byte[] primaryViewBytes = "primary view test bytes".getBytes(StandardCharsets.UTF_8);
         ibdo1.setData(primaryViewBytes);
 
-        List<Pattern> preferredView = Stream.of("view1", "view2", "view3").map(Pattern::compile).collect(Collectors.toList());
-        byte[] preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, preferredView);
+        byte[] preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, compileAsPatterns("view1", "view2", "view3"));
         assertEquals(view1Bytes, preferredData);
 
-        preferredView = Stream.of("view1").map(Pattern::compile).collect(Collectors.toList());
-        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, preferredView);
+        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, compileAsPatterns("view1"));
         assertEquals(view1Bytes, preferredData, "Expected to find an alternate view and return alternate view bytes");
 
-        preferredView = Stream.of("^view[12]").map(Pattern::compile).collect(Collectors.toList());
-        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, preferredView);
+        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, compileAsPatterns("^view[12]"));
         assertEquals(view1Bytes, preferredData, "Expected to find an alternate view by regex and return alternate view bytes");
 
-        preferredView = Stream.of("view_1", "view2", "view3").map(Pattern::compile).collect(Collectors.toList());
-        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, preferredView);
+        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, compileAsPatterns("view_1", "view2", "view3"));
         assertEquals(primaryViewBytes, preferredData, "Expected to not find an alternate view and return the default primary view bytes");
 
-        preferredView = Stream.of("^view[4]").map(Pattern::compile).collect(Collectors.toList());
-        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, preferredView);
+        preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, compileAsPatterns("^view[4]"));
         assertEquals(primaryViewBytes, preferredData, "Expected to not find an alternate view by regex and return the default primary view bytes");
 
         preferredData = IBaseDataObjectHelper.findPreferredDataByRegex(ibdo1, null);
         assertEquals(primaryViewBytes, preferredData, "Expected a null pattern to return the default primary view bytes");
+    }
+
+    static List<Pattern> compileAsPatterns(String... values) {
+        return Stream.of(values).map(Pattern::compile).collect(Collectors.toList());
     }
 }

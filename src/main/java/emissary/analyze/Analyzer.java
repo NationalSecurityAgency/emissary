@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public abstract class Analyzer extends ServiceProviderPlace {
     protected List<String> preferredViews;
     protected String analyzedDataName;
-    protected List<Pattern> perferredViewPatternList;
+    protected List<Pattern> preferredViewPatternList;
 
     protected boolean findPreferredViewByRegex;
 
@@ -67,7 +67,7 @@ public abstract class Analyzer extends ServiceProviderPlace {
         this.preferredViews = configG.findEntries("PREFERRED_VIEW", "TEXT");
         this.findPreferredViewByRegex = configG.findBooleanEntry("FIND_PREFERRED_VIEW_BY_REGEX", false);
         if (findPreferredViewByRegex) {
-            perferredViewPatternList = preferredViews.stream().map(Pattern::compile).collect(Collectors.toList());
+            preferredViewPatternList = preferredViews.stream().map(Pattern::compile).collect(Collectors.toList());
         }
         this.analyzedDataName = configG.findStringEntry("ANALYZED_DATA_NAME", null);
     }
@@ -80,9 +80,9 @@ public abstract class Analyzer extends ServiceProviderPlace {
     protected byte[] getPreferredData(final IBaseDataObject payload) {
 
         if (findPreferredViewByRegex) {
-            return IBaseDataObjectHelper.findPreferredDataByRegex(payload, perferredViewPatternList);
+            return IBaseDataObjectHelper.findPreferredDataByRegex(payload, preferredViewPatternList);
         } else {
-            return IBaseDataObjectHelper.getPreferredData(payload, preferredViews);
+            return IBaseDataObjectHelper.findPreferredData(payload, preferredViews);
         }
     }
 

@@ -244,7 +244,7 @@ public final class IBaseDataObjectHelper {
      *
      * @param payload the payload to pull data from
      */
-    public static byte[] getPreferredData(final IBaseDataObject payload, List<String> preferredViews) {
+    public static byte[] findPreferredData(final IBaseDataObject payload, List<String> preferredViews) {
         final Set<String> altViewNames = payload.getAlternateViewNames();
 
         for (final String view : preferredViews) {
