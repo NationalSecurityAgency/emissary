@@ -114,7 +114,7 @@ class KffFileTest extends UnitTest {
 
         List<KffFileCheckTask> callables = createCallableTasksForParallelExecution(testInputs);
 
-        logger.info("testing {} invocations, with {} that should return true", callables.size(), numberOfKffEntriesInTestFile);
+        logger.debug("testing {} invocations, with {} that should return true", callables.size(), numberOfKffEntriesInTestFile);
 
         ExecutorService executorService = null;
         try {
@@ -272,7 +272,7 @@ class KffFileTest extends UnitTest {
         public Boolean call() throws Exception {
             boolean actual = kffFile.check("ignored param", csr);
             // increase this log level to view stream of executions and results
-            LOGGER.info("expected {}, got {}", expectedResult, actual);
+            LOGGER.debug("expected {}, got {}", expectedResult, actual);
             return expectedResult.equals(actual);
         }
     }

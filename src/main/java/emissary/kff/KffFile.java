@@ -178,8 +178,7 @@ public class KffFile implements KffFilter {
                 }
             }
         } catch (IOException e) {
-            logger.warn("Exception reading KffFile: {}", e.getMessage());
-            return false;
+            logger.warn("Exception reading KffFile", e);
         }
 
         // not found
