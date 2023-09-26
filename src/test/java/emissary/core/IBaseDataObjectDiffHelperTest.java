@@ -3,6 +3,7 @@ package emissary.core;
 import emissary.core.channels.AbstractSeekableByteChannel;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class IBaseDataObjectDiffHelperTest {
+class IBaseDataObjectDiffHelperTest extends UnitTest {
 
     private IBaseDataObject ibdo1;
     private IBaseDataObject ibdo2;
