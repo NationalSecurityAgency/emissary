@@ -306,17 +306,6 @@ public interface IBaseDataObject {
     void appendParameter(String key, Iterable<? extends CharSequence> values);
 
     /**
-     * Append data to the specified metadata element
-     *
-     * @param key name of the metadata element
-     * @param value the value to append
-     * @param sep ignored
-     * @deprecated use {@link #appendParameter(String, CharSequence)}
-     */
-    @Deprecated
-    void appendParameter(String key, CharSequence value, String sep);
-
-    /**
      * Append data to the specified metadata element if it doesn't exist
      *
      * @param key name of the metadata element
@@ -677,16 +666,6 @@ public interface IBaseDataObject {
      * @return string value of processing errors
      */
     String getProcessingError();
-
-    /**
-     * Replace history with the new history
-     * 
-     * @param list of new history strings to use
-     * @deprecated See {@link #setHistory(TransformHistory)}
-     */
-    @Deprecated
-    void setHistory(List<String> list);
-
 
     /**
      * Replace history with the new history

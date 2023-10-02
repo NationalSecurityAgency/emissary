@@ -736,12 +736,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    @Deprecated
-    public void setHistory(final List<String> newHistory) {
-        this.history.set(newHistory);
-    }
-
-    @Override
     public void setHistory(TransformHistory newHistory) {
         this.history.set(newHistory);
     }
@@ -980,12 +974,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
         this.parameters.put(n, value);
         return true;
-    }
-
-    @Override
-    @Deprecated
-    public void appendParameter(final String key, final CharSequence value, final String sep) {
-        appendParameter(key, value);
     }
 
     @Override
