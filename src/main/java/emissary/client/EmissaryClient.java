@@ -22,9 +22,9 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 import org.apache.hc.core5.util.Timeout;
-import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.security.Password;
 import org.glassfish.jersey.server.filter.CsrfProtectionFilter;
 import org.slf4j.Logger;
@@ -207,7 +207,7 @@ public class EmissaryClient {
             return thisClient.execute(method, localContext, new EmissaryResponseHandler());
         } catch (IOException e) {
             LOGGER.debug("Problem processing request:", e);
-            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR_500, e.getMessage());
+            BasicClassicHttpResponse response = new BasicClassicHttpResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             response.setEntity(EntityBuilder.create().setText(e.getClass() + ": " + e.getMessage()).setContentEncoding(MediaType.TEXT_PLAIN).build());
             return new EmissaryResponse(response);
         }

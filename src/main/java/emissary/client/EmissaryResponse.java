@@ -8,9 +8,9 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class EmissaryResponse {
             return null;
         }
         try {
-            if (status == HttpStatus.OK_200) {
+            if (status == HttpStatus.SC_OK) {
                 return content.toString();
             } else {
                 return "Bad request -> status: " + status + " message: " + content;
@@ -94,7 +94,7 @@ public class EmissaryResponse {
             return null;
         }
         try {
-            if (status == HttpStatus.OK_200) {
+            if (status == HttpStatus.SC_OK) {
                 return objectMapper.readValue(content.toString(), mapper);
             } else {
                 return makeErrorEntity(content.toString(), mapper);
