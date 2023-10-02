@@ -6,6 +6,7 @@ import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.IMobileAgent;
 import emissary.core.NamespaceException;
+import emissary.core.channels.InMemoryChannelFactory;
 import emissary.log.MDCConstants;
 import emissary.parser.ParserEOFException;
 import emissary.parser.ParserException;
@@ -642,8 +643,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         int sessionNum = 0;
 
         // Get the right type of session parser
-        SessionParser sp = parserFactory.makeSessionParser(data);
-        logger.debug("Using session parser from byte ident {}", sp.getClass().getName());
+        SessionParser sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());
 
         // .. and a session producer to crank out the data objects...
         SessionProducer dof = new SessionProducer(sp, myKey, null);
