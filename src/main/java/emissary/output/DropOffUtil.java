@@ -33,11 +33,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
+import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 
 public class DropOffUtil {
@@ -81,6 +84,8 @@ public class DropOffUtil {
 
     private static final String DEFAULT_EVENT_DATE_TO_NOW = "DEFAULT_EVENT_DATE_TO_NOW";
     protected boolean defaultEventDateToNow = true;
+
+    private final Pattern JUST_FILENAME_PATTERN = Pattern.compile("(^|\\\\|/)[^\\\\/]+$");
 
     /**
      * Create with the default configuration
@@ -969,25 +974,32 @@ public class DropOffUtil {
     }
 
     /**
-     * Extracts from the provided {@link IBaseDataObject} the last file extension from each value in the "Original-Filename"
-     * parameter, if that value contains "." before its last character. If one or more file extensions are extracted, the
-     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
+     * Extracts from the provided {@link IBaseDataObject} the last file extension from each filename, if that value contains
+     * "." before its last few characters. If one or more file extensions are extracted, the IBaseDataObject's "FILEXT"
+     * parameter is set as the unique set of extracted file extensions, converted to lowercase.
      *
      * @param p IBaseDataObject to process
      *
      */
     void extractUniqueFileExtensions(IBaseDataObject p) {
-        if (p.hasParameter(ORIGINAL_FILENAME)) {
-            final Set<String> extensions = new HashSet<>();
-            for (Object filename : p.getParameter(ORIGINAL_FILENAME)) {
-                final String fn = (String) filename;
-                if (StringUtils.isNotEmpty(fn) && fn.lastIndexOf('.') > -1) {
-                    final int pos = fn.lastIndexOf('.') + 1;
-                    if (pos < fn.length()) {
-                        final String fext = fn.substring(pos).toLowerCase();
-                        if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                            extensions.add(fext);
-                        }
+        List<String> filenames = getBestFilenames(p);
+        final Set<String> extensions = new HashSet<>();
+        for (String filename : filenames) {
+
+            // if what we have is a full filepath, extract just the filename (text after the file path separator)
+            Matcher matcher = JUST_FILENAME_PATTERN.matcher(filename);
+            String justFilename = filename;
+            if (matcher.find()) {
+                justFilename = matcher.group(0);
+            }
+
+            // get the text after the last period
+            if (justFilename.lastIndexOf('.') > -1) {
+                final int pos = justFilename.lastIndexOf('.') + 1;
+                if (pos < justFilename.length()) {
+                    final String fext = justFilename.substring(pos).toLowerCase();
+                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
+                        extensions.add(fext);
                     }
                 }
             }
@@ -995,6 +1007,31 @@ public class DropOffUtil {
                 p.setParameter("FILEXT", extensions);
             }
         }
+    }
+
+    /**
+     * Checks the Original-Filename and FILE_ABSOLUTEPATH for the filename of the object. Returns a list with of the
+     * non-empty strings found in these fields. If nothing is found in either field, return an empty list.
+     *
+     * @param d The IBDO
+     * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
+     */
+    public static List<String> getBestFilenames(IBaseDataObject d) {
+        String[] fieldsToTry = {ORIGINAL_FILENAME, FILE_ABSOLUTEPATH};
+
+        List<String> filenames = new ArrayList<>();
+
+        for (String ibdoField : fieldsToTry) {
+            if (d.hasParameter(ibdoField)) {
+                for (Object filename : d.getParameter(ibdoField)) {
+                    String stringFileName = (String) filename;
+                    if (StringUtils.isNotEmpty(stringFileName)) {
+                        filenames.add(stringFileName);
+                    }
+                }
+            }
+        }
+        return filenames;
     }
 
     /**

@@ -11,6 +11,7 @@ public class Parameters {
     public static final String INPUT_FILENAME = "INPUT_FILENAME";
     public static final String ORIGINAL_FILENAME = "Original-Filename";
     public static final String SUMMARY = "SUMMARY";
+    public static final String FILE_ABSOLUTEPATH = "FILE_ABSOLUTEPATH";
 
     // Common parameter prefixes
 
