@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -34,7 +34,7 @@ class RollManagerTest extends UnitTest {
         RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         Roller r = new Roller(1, TimeUnit.DAYS, 1, new RollableTest());
         RollTestObserver o = new RollTestObserver();
-        r.addObserver(o);
+        r.addPropertyChangeListener(o);
         rm.addRoller(r);
         r.incrementProgress();
         Assertions.assertNotNull(o.o, "Roller notified");
@@ -85,14 +85,14 @@ class RollManagerTest extends UnitTest {
         assertFalse(rm.exec.getQueue().contains(r));
     }
 
-    static class RollTestObserver implements Observer {
-        Observable o;
-        Object arg;
+    static class RollTestObserver implements PropertyChangeListener {
+        Object o;
+        String prop;
 
         @Override
-        public void update(Observable o, Object arg) {
-            this.o = o;
-            this.arg = arg;
+        public void propertyChange(PropertyChangeEvent evt) {
+            this.prop = evt.getPropertyName();
+            this.o = evt.getNewValue();
         }
 
     }

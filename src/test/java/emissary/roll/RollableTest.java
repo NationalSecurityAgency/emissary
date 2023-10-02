@@ -2,13 +2,13 @@ package emissary.roll;
 
 import emissary.test.core.junit5.UnitTest;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class RollableTest extends UnitTest implements Rollable, Observer {
+public class RollableTest extends UnitTest implements Rollable, PropertyChangeListener {
     boolean wasRolled;
     long updateCount;
     ArrayBlockingQueue<Object> x = new ArrayBlockingQueue<>(1);
@@ -36,9 +36,9 @@ public class RollableTest extends UnitTest implements Rollable, Observer {
 
     @SuppressWarnings("unused")
     @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Roller) {
-            Roller r = (Roller) o;
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getNewValue() instanceof Roller) {
+            Roller r = (Roller) evt.getNewValue();
 
             updateCount++;
         }

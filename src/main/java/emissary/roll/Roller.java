@@ -3,7 +3,8 @@ package emissary.roll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Observable;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,12 +12,14 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Stateful object for the RollManager to track progress of a provided Rollable.
  */
-public class Roller extends Observable implements Runnable {
+public class Roller implements Runnable {
 
     static final Logger log = LoggerFactory.getLogger(Roller.class);
 
     /** Constant to refer to roll interval in config files **/
     public static final String CFG_ROLL_INTERVAL = "ROLL_INTERVAL";
+
+    private final PropertyChangeSupport support;
 
     private final long max;
     private volatile long progress;
@@ -32,10 +35,19 @@ public class Roller extends Observable implements Runnable {
         this.t = t;
         this.period = period;
         this.r = r;
+        this.support = new PropertyChangeSupport(this);
     }
 
     public Roller(TimeUnit t, long period, Rollable r) {
         this(0, t, period, r);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        support.addPropertyChangeListener(pcl);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener pcl) {
+        support.removePropertyChangeListener(pcl);
     }
 
     public final long incrementProgress() {
@@ -47,8 +59,7 @@ public class Roller extends Observable implements Runnable {
             lock.lock();
             progress += val;
             if (progress >= max) {
-                setChanged();
-                notifyObservers();
+                support.firePropertyChange("roll", null, this);
             }
             return progress;
         } finally {
