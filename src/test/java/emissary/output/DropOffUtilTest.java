@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static emissary.core.Form.TEXT;
-import static emissary.core.Form.UNKNOWN;
 import static emissary.core.constants.Parameters.EVENT_DATE;
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
@@ -475,56 +474,6 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
 
         assertNull(this.util.getEventDate(d, tld));
-    }
-
-    @Deprecated
-    @Test
-    void testDeprecatedGetFileType() {
-        Map<String, String> metadata = new HashMap<>();
-        testDeprecatedFileType(metadata, UNKNOWN, null);
-
-        String poppedForms = "myPoppedForms";
-        setupDeprecatedMetadata(metadata, poppedForms, DropOffUtil.FileTypeCheckParameter.POPPED_FORMS);
-        testDeprecatedFileType(metadata, poppedForms, null);
-
-        String formsArg = "myFile";
-        setupDeprecatedMetadata(metadata, formsArg, DropOffUtil.FileTypeCheckParameter.FILETYPE);
-        testDeprecatedFileType(metadata, formsArg, formsArg);
-
-        String finalId = "myFinalId";
-        setupDeprecatedMetadata(metadata, finalId, DropOffUtil.FileTypeCheckParameter.FINAL_ID);
-        formsArg = "differentFileType";
-        testDeprecatedFileType(metadata, finalId, formsArg);
-
-        formsArg = "myFile  ";
-        metadata.clear();
-        testDeprecatedFileType(metadata, "myFile", formsArg);
-        assertEquals(formsArg,
-                metadata.get(DropOffUtil.FileTypeCheckParameter.COMPLETE_FILETYPE.getFieldName()));
-
-        formsArg = "";
-        String fontEncoding = "fontEncoding";
-        setupDeprecatedMetadata(metadata, fontEncoding, DropOffUtil.FileTypeCheckParameter.FONT_ENCODING);
-        testDeprecatedFileType(metadata, TEXT, formsArg);
-
-        metadata.clear();
-        formsArg = " MSWORD";
-        testDeprecatedFileType(metadata, "MSWORD_FRAGMENT", formsArg);
-
-        metadata.clear();
-        formsArg = "QUOTED-PRINTABLE";
-        testDeprecatedFileType(metadata, TEXT, formsArg);
-    }
-
-    private void setupDeprecatedMetadata(Map<String, String> metadata, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
-        metadata.clear();
-        metadata.put(fileTypeCheckParameter.getFieldName(), fieldValue);
-    }
-
-    private void testDeprecatedFileType(Map<String, String> metadata, String expectedResults, String formsArg) {
-        String fileType;
-        fileType = util.getFileType(metadata, formsArg);
-        assertEquals(expectedResults, fileType);
     }
 
     @Test
