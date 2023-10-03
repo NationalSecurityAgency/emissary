@@ -3,28 +3,26 @@ name: Lint Codebase
 
 on:
   push:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
   pull_request:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
 
 permissions:
   contents: read
   statuses: write
 
 jobs:
-  super-linter:
-    name: Super-Linter
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3.3.0
         with:
-          # Full git history is needed to get a proper list of changed files within super-linter
           fetch-depth: 0
-          ref: ${{ github.head_ref || github.ref }}
 
       - name: Lint Code Base
-        uses: github/super-linter/slim@v5.0.0
+        uses: oxsecurity/megalinter@v7
         env:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,3 +38,4 @@ jobs:
           VALIDATE_XML: true
           VALIDATE_YAML: true
           FILTER_REGEX_EXCLUDE: .*contrib/helm.*
+          GITHUB_COMMENT_REPORTER: false
