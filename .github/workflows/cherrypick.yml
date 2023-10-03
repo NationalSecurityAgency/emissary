@@ -1,3 +1,4 @@
+---
 name: "Cherry pick commit(s) to a branch"
 
 on:

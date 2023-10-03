@@ -1,10 +1,10 @@
 name: Java CI with Maven
 
-on:
+on: # yamllint disable-line rule:truthy
   push:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
   pull_request:
-    branches: [ master, release/**, patch/** ]
+    branches: [master, release/**, patch/**]
 
 jobs:
   build:
@@ -26,18 +26,18 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3.3.0
+      - name: Checkout repo
+        uses: actions/checkout@v3.3.0
 
-    - name: Configure Java & Maven
-      uses: actions/setup-java@v3
-      with:
-        java-version: '${{ matrix.java }}'
-        cache: 'maven'
-        distribution: 'corretto'
+      - name: Configure Java & Maven
+        uses: actions/setup-java@v3
+        with:
+          java-version: '${{ matrix.java }}'
+          cache: 'maven'
+          distribution: 'corretto'
 
-    - name: Build with Maven
-      run: mvn -B -e -ntp "-Dstyle.color=always" verify
+      - name: Build with Maven
+        run: mvn -B -e -ntp "-Dstyle.color=always" verify
 
-    - name: Verify Changed Files
-      run: contrib/ci/detect-changes.sh
+      - name: Verify Changed Files
+        run: contrib/ci/detect-changes.sh

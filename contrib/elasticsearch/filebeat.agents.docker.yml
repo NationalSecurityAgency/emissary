@@ -1,8 +1,9 @@
+---
 filebeat.inputs:
-- type: log
-  paths: /var/log/emissary/*.json
-  json.keys_under_root: true
-  json.overwrite_keys: true
+  - type: log
+    paths: /var/log/emissary/*.json
+    json.keys_under_root: true
+    json.overwrite_keys: true
 
 output.elasticsearch:
   index: 'emissary-test-%{[agent.version]}-%{+yyyy.MM.dd}'
@@ -14,6 +15,5 @@ output.elasticsearch:
   ssl.key: "/etc/tls/http.key.pem"
 
 setup.template:
-    name: "emissary-test"
-    pattern: "emissary-test-*"
-
+  name: "emissary-test"
+  pattern: "emissary-test-*"
