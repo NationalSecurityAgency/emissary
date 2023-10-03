@@ -36,3 +36,6 @@ nbactions*.xml
 
 # Formatter cache
 .cache
+
+# Linter reports
+megalinter-reports

@@ -1,6 +1,7 @@
+---
 name: "Cherry pick commit(s) to a branch"
 
-on:
+on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       cherrypick_commits:

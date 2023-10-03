@@ -1,17 +1,17 @@
 # This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+---
+name: "Maven: Publish Packages to GitHub"
 
-name: 'Maven: Publish Packages to GitHub'
-
-on:
+on: # yamllint disable-line rule:truthy
   workflow_dispatch:
 # Release trigger does not work because the release job uses GITHUB_TOKEN
 #   release:
 #     types: [created]
 
 env:
-  JAVA_VERSION: '11'
-  JAVA_DISTRIBUTION: 'corretto'
+  JAVA_VERSION: "11"
+  JAVA_DISTRIBUTION: "corretto"
 
 jobs:
   publish:
@@ -27,7 +27,7 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-          cache: 'maven'
+          cache: "maven"
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
       - name: Build with Maven
