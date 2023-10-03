@@ -76,4 +76,7 @@ public abstract class Pausable extends Thread implements IPausable {
         }
         return false;
     }
+
+    @Override
+    public abstract void run();
 }
