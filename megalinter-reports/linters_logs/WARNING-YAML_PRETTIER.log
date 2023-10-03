@@ -1,0 +1,18 @@
+Results of prettier linter (version 3.0.3)
+See documentation on https://megalinter.io/7.4.0/descriptors/yaml_prettier/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+Checking formatting...
+[warn] .github/workflows/codeql-analysis.yml
+[warn] .github/workflows/create-patch-branch.yml
+[warn] .github/workflows/dependency-review.yml
+[warn] .github/workflows/maven-ci.yml
+[warn] .github/workflows/maven-publish.yml
+[warn] .github/workflows/maven-release.yml
+[warn] .github/workflows/maven-version.yml
+[warn] contrib/docker/docker-compose.yml
+[warn] contrib/elasticsearch/filebeat.agents.docker.yml
+[warn] Code style issues found in 9 files. Run Prettier to fix.
+

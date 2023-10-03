@@ -1,0 +1,21 @@
+Results of yamllint linter (version 1.32.0)
+See documentation on https://megalinter.io/7.4.0/descriptors/yaml_yamllint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+.github/workflows/cherrypick.yml
+  4:1       warning  truthy value should be one of [false, true]  (truthy)
+
+.github/workflows/codeql-analysis.yml
+  50:9      warning  comment not indented like content  (comments-indentation)
+
+.github/workflows/create-patch-branch.yml
+  1:1       warning  missing document start "---"  (document-start)
+  3:1       warning  truthy value should be one of [false, true]  (truthy)
+  79:61     error    no new line character at the end of file  (new-line-at-end-of-file)
+
+.github/workflows/maven-ci.yml
+  1:1       warning  missing document start "---"  (document-start)
+
+
