@@ -38,3 +38,4 @@ jobs:
           VALIDATE_XML: true
           VALIDATE_YAML: true
           FILTER_REGEX_EXCLUDE: .*contrib/helm.*
+          GITHUB_COMMENT_REPORTER: false
