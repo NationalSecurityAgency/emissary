@@ -1,5 +1,5 @@
 ---
-name: Mega Lint Codebase
+name: Lint Codebase
 
 on:
   push:
@@ -12,8 +12,8 @@ permissions:
   statuses: write
 
 jobs:
-  super-linter:
-    name: MegaLinter
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
