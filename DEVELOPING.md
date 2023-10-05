@@ -293,6 +293,16 @@ additional things to consider when developing:
 * If you fix a bug, add a test.
 * If you answer a question, add some documentation.
 
+### Local Mega Linter validation and auto fix
+The project leverages [MegaLinter](https://github.com/marketplace/actions/megalinter) as a GitHub action to run across 
+changed files in PR's and the entire codebase on merge. To run the same linting rule set local following the following steps.
+Instructions are derived from [MegaLinter Runner Documentation](https://megalinter.io/latest/mega-linter-runner/)
+
+1) Install [Node Package Manager (NPM)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+2) Install mega-linter-runner for current users `npm install mega-linter-runner --save-dev`
+3) Run MegaLinter from project root using project configuration `mega-linter-runner .mega-linter.yml .`
+* To have MegaLinter attempt to fix errors add the `--fix` option to the command: `mega-linter-runner .mega-linter.yml --fix .`
+
 ## Helpful Commands
 
 ### Cleaning
