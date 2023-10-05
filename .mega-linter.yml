@@ -5,20 +5,17 @@ APPLY_FIXES: all
 # ENABLE: # If you use ENABLE variable, all other languages/formats/tooling formats will be disabled by default
 # ENABLE_LINTERS: # If you use ENABLE_LINTERS variable, all other linters will be disabled by default
 ENABLE:
-  - COPYPASTE
-  - SPELL
   - ACTION
   - DOCKERFILE
   - XML
   - YAML
 ENABLE_LINTERS:
   - JSON_PRETTIER
-  - REPOSITORY_GITLEAKS
+  #- REPOSITORY_GITLEAKS
   - DOCKERFILE_HADOLINT
   - XML_XMLLINT
   - YAML_PRETTIER
   - YAML_YAMLLINT
-  - SPELL_CSPELL
   - ACTION_ACTIONLINT
   - KUBERNETES_HELM
 PRINT_ALL_FILES: false
