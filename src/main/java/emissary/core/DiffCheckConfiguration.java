@@ -1,6 +1,7 @@
 package emissary.core;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -12,13 +13,13 @@ public class DiffCheckConfiguration {
      * Possible configuration options
      */
     public enum DiffCheckOptions {
-        DATA, TIMESTAMP, INTERNAL_ID, TRANSFORM_HISTORY
+        DATA, TIMESTAMP, INTERNAL_ID, TRANSFORM_HISTORY, KEY_VALUE_PARAMETER_DIFF, DETAILED_PARAMETER_DIFF
     }
 
     /**
      * Stateful field of 'enabled' options
      */
-    private final EnumSet<DiffCheckOptions> enabled;
+    private final Set<DiffCheckOptions> enabled;
 
     /**
      * Start building a new configuration
@@ -75,6 +76,24 @@ public class DiffCheckConfiguration {
     }
 
     /**
+     * Check if parameter diff should produce detailed output
+     * 
+     * @return if performing a detailed parameter diff
+     */
+    public boolean performDetailedParameterDiff() {
+        return enabled.contains(DiffCheckOptions.DETAILED_PARAMETER_DIFF);
+    }
+
+    /**
+     * Check if parameter diff should produce non-matching key/value output
+     * 
+     * @return if performing a key/value parameter diff
+     */
+    public boolean performKeyValueParameterDiff() {
+        return enabled.contains(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);
+    }
+
+    /**
      * Accessor for enabled options
      * 
      * @return the enabled options
@@ -89,7 +108,7 @@ public class DiffCheckConfiguration {
      * @param enabled set of pre-configured options
      */
     private DiffCheckConfiguration(final EnumSet<DiffCheckOptions> enabled) {
-        this.enabled = enabled;
+        this.enabled = Collections.unmodifiableSet(enabled);
     }
 
     /**
@@ -120,6 +139,11 @@ public class DiffCheckConfiguration {
         public DiffCheckConfiguration explicit(final DiffCheckOptions... options) {
             reset();
             building.addAll(Arrays.asList(options));
+
+            if (building.contains(DiffCheckOptions.DETAILED_PARAMETER_DIFF) && building.contains(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF)) {
+                throw new IllegalArgumentException("Cannot contain DETAILED_PARAMETER_DIFF and KEY_VALUE_PARAMETER_DIFF!");
+            }
+
             return build();
         }
 
@@ -217,6 +241,48 @@ public class DiffCheckConfiguration {
          */
         public DiffCheckBuilder disableTransformHistory() {
             building.remove(DiffCheckOptions.TRANSFORM_HISTORY);
+            return this;
+        }
+
+        /**
+         * Enable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableKeyValueParameterDiff() {
+            building.add(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);
+            building.remove(DiffCheckOptions.DETAILED_PARAMETER_DIFF);
+            return this;
+        }
+
+        /**
+         * Disable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableKeyValueParameterDiff() {
+            building.remove(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);
+            return this;
+        }
+
+        /**
+         * Enable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder enableDetailedParameterDiff() {
+            building.add(DiffCheckOptions.DETAILED_PARAMETER_DIFF);
+            building.remove(DiffCheckOptions.KEY_VALUE_PARAMETER_DIFF);
+            return this;
+        }
+
+        /**
+         * Disable transform history for diff checking
+         * 
+         * @return the builder
+         */
+        public DiffCheckBuilder disableDetailedParameterDiff() {
+            building.remove(DiffCheckOptions.DETAILED_PARAMETER_DIFF);
             return this;
         }
     }
