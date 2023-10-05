@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ChannelTestHelper {
+public class ChannelTestHelper extends UnitTest {
     private ChannelTestHelper() {};
 
     public static void checkByteArrayAgainstSbc(final byte[] bytesToVerify, final SeekableByteChannelFactory sbcf)

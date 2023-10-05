@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class AbstractSeekableByteChannelTest {
+class AbstractSeekableByteChannelTest extends UnitTest {
     private static class TestSeekableByteChannel extends AbstractSeekableByteChannel {
         private final long size;
 
