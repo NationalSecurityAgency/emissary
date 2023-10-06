@@ -11,7 +11,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +23,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -146,33 +140,6 @@ class DropOffPlaceTest extends UnitTest {
             rootLogger.detachAppender(appender);
             appender.stop();
         }
-    }
-
-    @Test
-    void testOutputObjectMetric() throws ParseException, JsonProcessingException {
-        // Setup
-        final IBaseDataObject tld = DataObjectFactory.getInstance();
-        tld.setId("TEST-UUID-VALUE");
-        tld.setFileType("test-type");
-        tld.setParameter("FLOW", "test-flow");
-        Date currentData = new Date();
-        Date upstreamDropOff = new Date(currentData.getTime() - (30 * 60000));
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        tld.setParameter("UPSTREAM-DROPOFF", df.format(upstreamDropOff));
-        List<String> tldMetricsFields = new ArrayList<>();
-        tldMetricsFields.add("FILETYPE");
-        tldMetricsFields.add("FLOW");
-
-        // Run
-        Map<String, String> outputMap = place.outputObjectMetrics(tld, tldMetricsFields);
-
-        // Verify
-        assertTrue(outputMap.containsKey("FILETYPE"));
-        assertEquals("test-type", outputMap.get("FILETYPE"));
-        assertTrue(outputMap.containsKey("FLOW"));
-        assertEquals("test-flow", outputMap.get("FLOW"));
-        assertTrue(outputMap.containsKey("ProcessingLatency"));
-        assertTrue(outputMap.containsKey("InternalId"));
     }
 
     public static void cleanupDirectoryRecursively(Path path) throws IOException {

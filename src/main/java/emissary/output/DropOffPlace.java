@@ -13,12 +13,7 @@ import emissary.util.DataUtil;
 import emissary.util.DisposeHelper;
 import emissary.util.ShortNameComparator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,25 +23,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static net.logstash.logback.marker.Markers.appendEntries;
-
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
  * that controls which types of output are desired and called the appropriate output helper for the desired output.
  **/
 public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace {
 
-    private static Logger objectMetricsLog = null;
     protected boolean doSynchronized = false;
     protected Set<String> elideContentForms;
     protected Set<String> noNukeForms;
     protected List<IDropOffFilter> outputFilters = new ArrayList<>();
     protected boolean failurePolicyTerminate = true;
     protected DropOffUtil dropOffUtil;
-    private boolean outputObjectMetrics = false;
-    private List<String> objectMetricsFields = new ArrayList<>();
-    private String outputObjectMetricsLatency;
-    private DateTimeFormatter latencyDateTimeFormatter;
     private boolean outputCompletionPayloadSize = false;
 
     /**
@@ -96,17 +84,11 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
         this.dropOffUtil = new DropOffUtil(configG);
         this.doSynchronized = configG.findBooleanEntry("SYNCHRONIZED_PROCESS", false);
         this.failurePolicyTerminate = configG.findBooleanEntry("FAILURE_TERMINATES_CHAIN", true);
-        this.outputObjectMetrics = configG.findBooleanEntry("OUTPUT_OBJECT_METRICS", false);
-        this.objectMetricsFields = configG.findEntries("OBJECT_METRICS_FIELDS");
-        this.outputObjectMetricsLatency = configG.findStringEntry("OBJECT_METRICS_LATENCY", "");
-        String outputTldMetricsLatencyFormat = configG.findStringEntry("OBJECT_METRICS_LATENCY_FORMAT", "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        this.latencyDateTimeFormatter = DateTimeFormatter.ofPattern(outputTldMetricsLatencyFormat);
         this.outputCompletionPayloadSize = configG.findBooleanEntry("OUTPUT_COMPLETION_PAYLOAD_SIZE", false);
         // Build and store all the filter that are desired IN THE ORDER SPECIFIED
         final List<String> filterClasses = configG.findEntries("OUTPUT_FILTER");
         initializeFilters(filterClasses);
 
-        objectMetricsLog = LoggerFactory.getLogger("objectMetrics");
     }
 
     /**
@@ -242,9 +224,6 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             // Just report the TLD object ID
             final IBaseDataObject tld = payloadList.get(0);
 
-            if (outputObjectMetrics) {
-                objectMetricsLog.info(appendEntries(outputObjectMetrics(tld, objectMetricsFields)), "Finished DropOff");
-            }
 
             if (outputCompletionPayloadSize && tld.data() != null) {
                 logger.info(
@@ -497,35 +476,6 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             }
         }
         return null;
-    }
-
-    /**
-     * Create a one line json output of specified parameters
-     *
-     * @param ibdo IBaseDataObject for the Top Level Document
-     * @param outputParams List of parameters to output
-     */
-    protected Map<String, String> outputObjectMetrics(IBaseDataObject ibdo, List<String> outputParams) {
-        // Create output map
-        Map<String, String> jsonMap = new HashMap<>();
-        jsonMap.put("InternalId", ibdo.getInternalId().toString());
-
-        long processingLatency;
-        if (outputObjectMetricsLatency.isEmpty() || !ibdo.hasParameter(outputObjectMetricsLatency)) {
-            processingLatency = Instant.now().toEpochMilli() - ibdo.getCreationTimestamp().getTime();
-        } else {
-            processingLatency = Instant.now().toEpochMilli()
-                    - Instant.from(latencyDateTimeFormatter.parse(ibdo.getStringParameter(outputObjectMetricsLatency))).toEpochMilli();
-        }
-        jsonMap.put("ProcessingLatency", String.valueOf(processingLatency));
-
-        // Add other specified Parameters
-        for (String param : outputParams) {
-            if (ibdo.hasParameter(param)) {
-                jsonMap.put(param, ibdo.getStringParameter(param));
-            }
-        }
-        return jsonMap;
     }
 
     public DropOffUtil getDropOffUtil() {
