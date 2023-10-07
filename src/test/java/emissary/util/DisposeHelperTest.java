@@ -2,7 +2,6 @@ package emissary.util;
 
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
-import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DisposeHelperTest extends UnitTest {
+class DisposeHelperTest {
 
     private static final Runnable FIRST = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestFirstRunnable");
     private static final Runnable SECOND = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestSecondRunnable");
@@ -48,7 +47,7 @@ class DisposeHelperTest extends UnitTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void detach() {
         logger.detachAppender(appender);
         rLogger.detachAppender(appender);
     }
