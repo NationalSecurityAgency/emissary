@@ -47,7 +47,7 @@ class DisposeHelperTest {
     }
 
     @AfterEach
-    void tearDown() {
+    void detach() {
         logger.detachAppender(appender);
         rLogger.detachAppender(appender);
     }

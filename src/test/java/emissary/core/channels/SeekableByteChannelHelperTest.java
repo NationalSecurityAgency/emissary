@@ -1,6 +1,7 @@
 package emissary.core.channels;
 
 import emissary.core.BaseDataObject;
+import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SeekableByteChannelHelperTest {
+class SeekableByteChannelHelperTest extends UnitTest {
 
     private static final String TEST_STRING = "test data";
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);

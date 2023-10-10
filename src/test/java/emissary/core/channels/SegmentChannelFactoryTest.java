@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SegmentChannelFactoryTest {
+class SegmentChannelFactoryTest extends UnitTest {
     @Test
     void testCreate() throws IOException {
         final byte[] bytes = new byte[10];
