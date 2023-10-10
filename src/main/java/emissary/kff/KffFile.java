@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -36,7 +35,7 @@ public class KffFile implements KffFilter {
     protected ByteBuffer mappedBuf;
 
     /** Initial value of high index for binary search */
-    private int bSearchInitHigh;
+    private long bSearchInitHigh;
 
     public static final int DEFAULT_RECORD_LENGTH = 24;
     protected final int recordLength;
@@ -83,7 +82,7 @@ public class KffFile implements KffFilter {
         knownFile = new RandomAccessFile(filename, "r");
 
         // Initial high value for binary search is largest index
-        bSearchInitHigh = ((int) knownFile.length() / recordLength) - 1;
+        bSearchInitHigh = (knownFile.length() / (long) recordLength) - 1;
 
         logger.debug("KFF File {} has {} records", filename, (bSearchInitHigh + 1));
     }
@@ -189,7 +188,7 @@ public class KffFile implements KffFilter {
      * @param crc CRC to compare to record
      * @return &lt;0 if given value is less than record, &gt;0 if given value is greater than record, 0 if they match
      */
-    private int compare(byte[] record, byte[] hash, long crc) {
+    private int compare(@Nonnull byte[] record, @Nonnull byte[] hash, long crc) {
         int i;
 
         // Compare the hashes first. We can't compare the bytes directly because a Java byte is signed and may generate the
@@ -223,31 +222,9 @@ public class KffFile implements KffFilter {
     public boolean check(String fname, ChecksumResults csum) throws Exception {
         byte[] hash = csum.getHash(myPreferredAlgorithm);
         if (hash == null) {
-            logger.warn("Filter cannot be used, {} not computed on {}" , myPreferredAlgorithm, fname);
+            logger.warn("Filter cannot be used, {} not computed on {}", myPreferredAlgorithm, fname);
             return false;
         }
-        return binaryFileSearch(csum.getHash(myPreferredAlgorithm), csum.getCrc());
-    }
-
-    public static void main(String[] args) throws Exception {
-        KffChain kff = new KffChain();
-        KffFile kfile = new KffFile(args[0], "TEST", FilterType.Ignore);
-        kfile.setPreferredAlgorithm("SHA-1");
-        kff.addFilter(kfile);
-        kff.addAlgorithm("CRC32");
-        kff.addAlgorithm("SSDEEP");
-        kff.addAlgorithm("MD5");
-        kff.addAlgorithm("SHA-1");
-        kff.addAlgorithm("SHA-256");
-
-        for (int i = 1; i < args.length; i++) {
-            try (FileInputStream is = new FileInputStream(args[i])) {
-                byte[] buffer = new byte[is.available()];
-                is.read(buffer);
-
-                KffResult r = kff.check(args[i], buffer);
-                System.out.println(args[i] + ": " + r.isKnown() + " - " + r.getShaString() + " - " + r.getCrc32());
-            }
-        }
+        return binaryFileSearch(hash, csum.getCrc());
     }
 }
