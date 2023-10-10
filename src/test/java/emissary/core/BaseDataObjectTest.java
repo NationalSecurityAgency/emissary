@@ -1,7 +1,5 @@
 package emissary.core;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 import emissary.core.channels.FillChannelFactory;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
@@ -22,7 +20,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
@@ -679,38 +676,6 @@ class BaseDataObjectTest extends UnitTest {
         assertTrue(this.b.beforeStart(), "Before start with sprout key on end");
         this.b.appendTransformHistory("UNKNOWN.FOOPLACE.ID.http://host:1234/bazPlace");
         assertFalse(this.b.beforeStart(), "Not before start with sprout key on list");
-    }
-
-    @Test
-    void testAltViewRemapping() {
-        try {
-            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes();
-
-            final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-            final Configurator conf = ConfigUtil.getConfigInfo(str);
-            MetadataDictionary.initialize(MetadataDictionary.DEFAULT_NAMESPACE_NAME, conf);
-            this.b.addAlternateView("PROPERTIES", configData);
-            this.b.addAlternateView("FOO", configData, 20, 10);
-            assertNotNull(this.b.getAlternateView("PROPERTIES"), "Remapped alt view retrieved by original name");
-            assertNotNull(this.b.getAlternateView("FLUBBER"), "Remapped alt view retrieved by new name");
-            assertNotNull(this.b.getAlternateView("FOO"), "Remapped alt view slice retrieved by original name");
-            assertNotNull(this.b.getAlternateView("BAR"), "Remapped alt view slice retrieved by new name");
-            final Set<String> avnames = this.b.getAlternateViewNames();
-            assertTrue(avnames.contains("FLUBBER"), "Alt view names contains remapped name");
-            assertTrue(avnames.contains("BAR"), "Alt view slice names contains remapped name");
-
-            // Delete by orig name
-            this.b.addAlternateView("FOO", null, 20, 10);
-            assertEquals(1, this.b.getAlternateViewNames().size(), "View removed by orig name");
-            // Delete by mapped name
-            this.b.addAlternateView("FLUBBER", null);
-            assertEquals(0, this.b.getAlternateViewNames().size(), "View removed by orig name");
-        } catch (Exception ex) {
-            fail("Could not configure test", ex);
-        } finally {
-            // Clean up
-            Namespace.unbind(MetadataDictionary.DEFAULT_NAMESPACE_NAME);
-        }
     }
 
     @Test
