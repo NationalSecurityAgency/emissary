@@ -3,6 +3,7 @@ package emissary.kff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -139,8 +140,8 @@ public class KffFile implements KffFilter {
     private boolean binaryFileSearch(@Nonnull byte[] hash, long crc) {
 
         // Initialize indexes for binary search
-        int low = 0;
-        int high = bSearchInitHigh;
+        long low = 0;
+        long high = bSearchInitHigh;
 
         /* Buffer to hold a record */
         byte[] rec = new byte[recordLength];
@@ -150,15 +151,11 @@ public class KffFile implements KffFilter {
             // Search until the indexes cross
             while (low <= high) {
                 // Calculate the midpoint
-                int mid = (low + high) >> 1;
+                long mid = (low + high) >> 1;
 
                 // Multiply the index by the record length to get the buffer position and read the record
                 knownFile.seek(recordLength * mid);
-                int count = knownFile.read(rec);
-                if (count != recordLength) {
-                    logger.warn("Short read on KffFile at {} read {} expected {}", (recordLength * mid), count, recordLength);
-                    return false;
-                }
+                knownFile.readFully(rec);
 
                 // Compare the record with the target. Adjust the indexes accordingly.
                 int c = compare(rec, hash, crc);
@@ -170,6 +167,9 @@ public class KffFile implements KffFilter {
                     return true;
                 }
             }
+        } catch (EOFException e) {
+            // this shouldn't happen if we're synchronizing calls correctly
+            logger.warn("EOFException reading KffFile: {}", e.getLocalizedMessage());
         } catch (IOException e) {
             logger.warn("Exception reading KffFile", e);
         } finally {
@@ -223,7 +223,7 @@ public class KffFile implements KffFilter {
     public boolean check(String fname, ChecksumResults csum) throws Exception {
         byte[] hash = csum.getHash(myPreferredAlgorithm);
         if (hash == null) {
-            logger.warn("Filter cannot be used, " + myPreferredAlgorithm + " not computed on " + fname);
+            logger.warn("Filter cannot be used, {} not computed on {}" , myPreferredAlgorithm, fname);
             return false;
         }
         return binaryFileSearch(csum.getHash(myPreferredAlgorithm), csum.getCrc());
