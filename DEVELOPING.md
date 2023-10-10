@@ -300,8 +300,8 @@ Instructions are derived from [MegaLinter Runner Documentation](https://megalint
 
 1) Install [Node Package Manager (NPM)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 2) Install mega-linter-runner for current users `npm install mega-linter-runner --save-dev`
-3) Run MegaLinter from project root using project configuration `mega-linter-runner .mega-linter.yml .`
-* To have MegaLinter attempt to fix errors add the `--fix` option to the command: `mega-linter-runner .mega-linter.yml --fix .`
+3) Run MegaLinter from project root using project configuration `mega-linter-runner  -e 'LINTER_RULES_PATH=.github/linters' .`
+* To have MegaLinter attempt to fix errors add the `--fix` option to the command: `mega-linter-runner  -e 'LINTER_RULES_PATH=.github/linters' --fix . `
 
 ## Helpful Commands
 
