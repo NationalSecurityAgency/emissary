@@ -29,7 +29,6 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import static emissary.kff.KffFile.DEFAULT_RECORD_LENGTH;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -85,12 +84,6 @@ class KffFileTest extends UnitTest {
         } catch (Exception e) {
             fail(e);
         }
-    }
-
-    @Test
-    void testKffFileMain() {
-        String[] args = {resourcePath, resourcePath};
-        assertDoesNotThrow(() -> KffFile.main(args));
     }
 
     /**
