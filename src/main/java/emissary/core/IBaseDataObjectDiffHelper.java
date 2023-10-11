@@ -223,7 +223,7 @@ public class IBaseDataObjectDiffHelper {
      * @param map1 the first map to compare.
      * @param map2 the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
-     * @param differences the string list differences are to be added to.
+     * @param differences the string list of differences to be added to.
      */
     public static void diff(final Map<String, byte[]> map1, final Map<String, byte[]> map2, final String identifier,
             final List<String> differences) {
@@ -238,6 +238,14 @@ public class IBaseDataObjectDiffHelper {
         }
     }
 
+    /**
+     * This method compares two maps and adds only the key/value pairs that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
     public static void keyValueMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
             final String identifier, final List<String> differences) {
         final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
@@ -253,10 +261,18 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1.isEmpty() || !p2.isEmpty()) {
-            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys/Valus", p1, p2));
+            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
         }
     }
 
+    /**
+     * This method compares two maps and adds only the keys that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
     public static void minimalMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
             final String identifier, final List<String> differences) {
         final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
