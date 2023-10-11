@@ -879,6 +879,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             }
 
             final Object value = entry.getValue();
+
+            if ((policy == MergePolicy.DROP_EXISTING)) {
+                // store the provided value for this key, discarding any previously-stored value
+                setParameter(name, value);
+                continue;
+            }
+
             if (value instanceof Iterable) {
                 for (final Object v : (Iterable<?>) value) {
                     if (policy == MergePolicy.KEEP_ALL || policy == MergePolicy.KEEP_EXISTING) {

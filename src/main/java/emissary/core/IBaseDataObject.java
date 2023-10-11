@@ -18,7 +18,7 @@ public interface IBaseDataObject {
      * Define the merge policy values for parameter handling
      */
     enum MergePolicy {
-        DISTINCT, KEEP_EXISTING, KEEP_ALL
+        DISTINCT, KEEP_EXISTING, KEEP_ALL, DROP_EXISTING
     }
 
     /**
