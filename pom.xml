@@ -829,7 +829,7 @@
                     <excludes>
                       <exclude>ch.qos.logback:*:(,1.2.9)</exclude>
                       <exclude>log4j</exclude>
-                      <exclude>org.apache.logging.log4j:*:(,2.17.0)</exclude>
+                      <exclude>org.apache.logging.log4j:*:(,2.17.1)</exclude>
                       <exclude>javax.servlet</exclude>
                     </excludes>
                     <searchTransitive>true</searchTransitive>
