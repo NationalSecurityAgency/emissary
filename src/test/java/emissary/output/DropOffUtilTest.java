@@ -608,11 +608,11 @@ class DropOffUtilTest extends UnitTest {
 
         // tests a combination of either FILE_ABSOLUTEPATH and Original-Filename, neither, and both set at once
         String[] fileAbsolutepaths = {"D:\\Users\\jdoe\\Documents\\Taxes 2023.csv", "", "/paper.abc.zzz",
-                "/home/jdoe/SHARED_D.IR/cat.mov", ""};
+                "/home/jdoe/SHARED_D.IR/cat.mov", "/home/user/.bashrc", ""};
         String[] originalFilenames = {"", "D:\\Users\\jdoe\\interesting.folder\\a.table", "flowers.456.123",
-                "/home/jdoe/SHARED_D.IR/cat", ""};
+                "/home/jdoe/SHARED_D.IR/cat", "taxes.thisfileextensionistoolong", ""};
 
-        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {""}};
+        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {"bashrc"}, {""}};
 
         final IBaseDataObject ibdo = new BaseDataObject();
 
