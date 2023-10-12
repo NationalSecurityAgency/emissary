@@ -23,6 +23,7 @@ import java.util.Set;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
 import static emissary.core.constants.Parameters.EVENT_DATE;
+import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
@@ -39,7 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DropOffUtilTest extends UnitTest {
     private DropOffUtil util = null;
     private IBaseDataObject payload = null;
-    static final String FILEXT = "FILEXT";
 
     @BeforeEach
     public void createUtil() {
@@ -612,7 +612,7 @@ class DropOffUtilTest extends UnitTest {
         String[] originalFilenames = {"", "D:\\Users\\jdoe\\interesting.folder\\a.table", "flowers.456.123",
                 "/home/jdoe/SHARED_D.IR/cat", "taxes.thisfileextensionistoolong", ""};
 
-        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {"bashrc"}, {""}};
+        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {"bashrc"}, {}};
 
         final IBaseDataObject ibdo = new BaseDataObject();
 
@@ -620,15 +620,16 @@ class DropOffUtilTest extends UnitTest {
             ibdo.setParameter(FILE_ABSOLUTEPATH, fileAbsolutepaths[i]);
             ibdo.setParameter(ORIGINAL_FILENAME, originalFilenames[i]);
             util.extractUniqueFileExtensions(ibdo);
+            if (extensions[i].length == 0) {
+                assertFalse(ibdo.hasParameter(FILEXT));
+            }
             for (String extension : extensions[i]) {
                 assertEquals(extensions[i].length, ibdo.getParameter(FILEXT).size(), "Only "
                         + extensions[i].length + " file extensions should have been extracted");
                 assertTrue(ibdo.getParameter(FILEXT).contains(extension), "FILEXT should be extracted");
             }
             // reset for the next test
-            ibdo.setParameter(FILEXT, "");
-            ibdo.setParameter(FILE_ABSOLUTEPATH, "");
-            ibdo.setParameter(ORIGINAL_FILENAME, "");
+            ibdo.clearParameters();
         }
     }
 
@@ -641,7 +642,7 @@ class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    void testGetBestFilename() {
+    void testGetFullFilepathsFromParams() {
         IBaseDataObject ibdo = new BaseDataObject();
         List<String> bestFilenames;
 

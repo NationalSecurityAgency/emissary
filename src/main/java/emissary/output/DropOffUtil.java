@@ -39,6 +39,7 @@ import javax.annotation.Nullable;
 import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
+import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 
@@ -84,7 +85,7 @@ public class DropOffUtil {
     private static final String DEFAULT_EVENT_DATE_TO_NOW = "DEFAULT_EVENT_DATE_TO_NOW";
     protected boolean defaultEventDateToNow = true;
 
-    private static List<String> DEFAULT_FILENAME_FIELDS;
+    private static List<String> defaultFilenameFields;
 
     /**
      * Create with the default configuration
@@ -150,13 +151,13 @@ public class DropOffUtil {
                 this.maxFilextLen = Integer.MAX_VALUE;
             }
 
-            DEFAULT_FILENAME_FIELDS = new ArrayList<>();
-            List<String> defaultFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
-            if (!defaultFilenameFields.isEmpty()) {
-                DEFAULT_FILENAME_FIELDS.addAll(defaultFilenameFields);
+            defaultFilenameFields = new ArrayList<>();
+            List<String> configuredFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
+            if (!configuredFilenameFields.isEmpty()) {
+                defaultFilenameFields.addAll(configuredFilenameFields);
             } else {
-                DEFAULT_FILENAME_FIELDS.add(ORIGINAL_FILENAME);
-                DEFAULT_FILENAME_FIELDS.add(FILE_ABSOLUTEPATH);
+                defaultFilenameFields.add(ORIGINAL_FILENAME);
+                defaultFilenameFields.add(FILE_ABSOLUTEPATH);
             }
         } else {
             logger.debug("Configuration is null for DropOffUtil, using defaults");
@@ -984,7 +985,7 @@ public class DropOffUtil {
     /**
      * Utilizes the static methods getFullFilepathsFromParams and getFileExtensions to extract the file extensions from all
      * the filenames of the object of a given {@link IBaseDataObject}. If one or more file extensions are extracted, the
-     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
+     * IBaseDataObject's FILEXT parameter is set as the unique set of extracted file extensions, converted to lowercase.
      *
      * @param p IBaseDataObject to process
      *
@@ -993,7 +994,7 @@ public class DropOffUtil {
         List<String> filenames = getFullFilepathsFromParams(p);
         Set<String> extensions = getFileExtensions(filenames, this.maxFilextLen);
         if (!extensions.isEmpty()) {
-            p.setParameter("FILEXT", extensions);
+            p.setParameter(FILEXT, extensions);
         }
     }
 
@@ -1028,7 +1029,7 @@ public class DropOffUtil {
 
         List<String> filenames = new ArrayList<>();
 
-        for (String ibdoField : DEFAULT_FILENAME_FIELDS) {
+        for (String ibdoField : defaultFilenameFields) {
             if (d.hasParameter(ibdoField)) {
                 for (Object filename : d.getParameter(ibdoField)) {
                     String stringFileName = (String) filename;
