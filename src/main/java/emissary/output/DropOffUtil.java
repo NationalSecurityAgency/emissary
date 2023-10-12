@@ -8,6 +8,7 @@ import emissary.util.ShortNameComparator;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import static emissary.core.Form.PREFIXES_LANG;
@@ -85,7 +84,7 @@ public class DropOffUtil {
     private static final String DEFAULT_EVENT_DATE_TO_NOW = "DEFAULT_EVENT_DATE_TO_NOW";
     protected boolean defaultEventDateToNow = true;
 
-    private final Pattern JUST_FILENAME_PATTERN = Pattern.compile("(^|\\\\|/)[^\\\\/]+$");
+    private static List<String> DEFAULT_FILENAME_FIELDS;
 
     /**
      * Create with the default configuration
@@ -149,6 +148,15 @@ public class DropOffUtil {
             this.maxFilextLen = actualConfigG.findIntEntry("MAX_FILEXT_LEN", this.maxFilextLen);
             if (this.maxFilextLen < 0) {
                 this.maxFilextLen = Integer.MAX_VALUE;
+            }
+
+            DEFAULT_FILENAME_FIELDS = new ArrayList<>();
+            List<String> defaultFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
+            if (!defaultFilenameFields.isEmpty()) {
+                DEFAULT_FILENAME_FIELDS.addAll(defaultFilenameFields);
+            } else {
+                DEFAULT_FILENAME_FIELDS.add(ORIGINAL_FILENAME);
+                DEFAULT_FILENAME_FIELDS.add(FILE_ABSOLUTEPATH);
             }
         } else {
             logger.debug("Configuration is null for DropOffUtil, using defaults");
@@ -974,39 +982,39 @@ public class DropOffUtil {
     }
 
     /**
-     * Extracts from the provided {@link IBaseDataObject} the last file extension from each filename, if that value contains
-     * "." before its last few characters. If one or more file extensions are extracted, the IBaseDataObject's "FILEXT"
-     * parameter is set as the unique set of extracted file extensions, converted to lowercase.
+     * Utilizes the static methods getFullFilepathsFromParams and getFileExtensions to extract the file extensions from all
+     * the filenames of the object of a given {@link IBaseDataObject}. If one or more file extensions are extracted, the
+     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
      *
      * @param p IBaseDataObject to process
      *
      */
     void extractUniqueFileExtensions(IBaseDataObject p) {
-        List<String> filenames = getBestFilenames(p);
+        List<String> filenames = getFullFilepathsFromParams(p);
+        Set<String> extensions = getFileExtensions(filenames, this.maxFilextLen);
+        if (!extensions.isEmpty()) {
+            p.setParameter("FILEXT", extensions);
+        }
+    }
+
+    /**
+     * Given a list of filenames, extract and return a set of non-blank file extensions converted to lowercase.
+     *
+     * @param filenames The list of filenames to examine
+     * @param maxFilextLen The maximum size we want a file extension to be
+     * @return A set of unique file extensions from the filename list
+     */
+    public static Set<String> getFileExtensions(List<String> filenames, int maxFilextLen) {
         final Set<String> extensions = new HashSet<>();
         for (String filename : filenames) {
 
-            // if what we have is a full filepath, extract just the filename (text after the file path separator)
-            Matcher matcher = JUST_FILENAME_PATTERN.matcher(filename);
-            String justFilename = filename;
-            if (matcher.find()) {
-                justFilename = matcher.group(0);
-            }
-
-            // get the text after the last period
-            if (justFilename.lastIndexOf('.') > -1) {
-                final int pos = justFilename.lastIndexOf('.') + 1;
-                if (pos < justFilename.length()) {
-                    final String fext = justFilename.substring(pos).toLowerCase();
-                    if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                        extensions.add(fext);
-                    }
-                }
-            }
-            if (!extensions.isEmpty()) {
-                p.setParameter("FILEXT", extensions);
+            // add the file extension if it is smaller than maxFileextLen
+            final String fext = FilenameUtils.getExtension(filename);
+            if (StringUtils.isNotBlank(fext) && fext.length() <= maxFilextLen) {
+                extensions.add(fext.toLowerCase());
             }
         }
+        return extensions;
     }
 
     /**
@@ -1016,16 +1024,15 @@ public class DropOffUtil {
      * @param d The IBDO
      * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
      */
-    public static List<String> getBestFilenames(IBaseDataObject d) {
-        String[] fieldsToTry = {ORIGINAL_FILENAME, FILE_ABSOLUTEPATH};
+    public static List<String> getFullFilepathsFromParams(IBaseDataObject d) {
 
         List<String> filenames = new ArrayList<>();
 
-        for (String ibdoField : fieldsToTry) {
+        for (String ibdoField : DEFAULT_FILENAME_FIELDS) {
             if (d.hasParameter(ibdoField)) {
                 for (Object filename : d.getParameter(ibdoField)) {
                     String stringFileName = (String) filename;
-                    if (StringUtils.isNotEmpty(stringFileName)) {
+                    if (StringUtils.isNotBlank(stringFileName)) {
                         filenames.add(stringFileName);
                     }
                 }

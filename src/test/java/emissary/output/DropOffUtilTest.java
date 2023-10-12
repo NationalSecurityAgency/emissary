@@ -603,38 +603,33 @@ class DropOffUtilTest extends UnitTest {
     }
 
     @Test
-    void testExtractFullFilepaths() {
+    void testExtractFileExtensionsWithFullFilepaths() {
         DropOffUtil util = new DropOffUtil();
 
+        // tests a combination of either FILE_ABSOLUTEPATH and Original-Filename, neither, and both set at once
+        String[] fileAbsolutepaths = {"D:\\Users\\jdoe\\Documents\\Taxes 2023.csv", "", "/paper.abc.zzz",
+                "/home/jdoe/SHARED_D.IR/cat.mov", ""};
+        String[] originalFilenames = {"", "D:\\Users\\jdoe\\interesting.folder\\a.table", "flowers.456.123",
+                "/home/jdoe/SHARED_D.IR/cat", ""};
+
+        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {""}};
+
         final IBaseDataObject ibdo = new BaseDataObject();
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "D:\\Users\\jdoe\\Documents\\Taxes 2023.csv");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("csv", ibdo.getStringParameter(FILEXT), "FILEXT should be extracted");
-        ibdo.setParameter(FILEXT, "");
 
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "D:\\Users\\jdoe\\interesting.folder\\a.table");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("table", ibdo.getStringParameter(FILEXT), "FILEXT should be extracted");
-        ibdo.setParameter(FILEXT, "");
-
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "/paper.abc.zzz");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("zzz", ibdo.getStringParameter(FILEXT), "FILEXT should be extracted");
-        ibdo.setParameter(FILEXT, "");
-
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "flowers.456.123");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("123", ibdo.getStringParameter(FILEXT), "FILEXT should be extracted");
-        ibdo.setParameter(FILEXT, "");
-
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "/home/jdoe/SHARED_D.IR/cat.mov");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("mov", ibdo.getStringParameter(FILEXT), "FILEXT should be extracted");
-        ibdo.setParameter(FILEXT, "");
-
-        ibdo.setParameter(FILE_ABSOLUTEPATH, "/home/jdoe/SHARED_D.IR/cat");
-        util.extractUniqueFileExtensions(ibdo);
-        assertEquals("", ibdo.getStringParameter(FILEXT), "FILEXT should not be extracted if there is no period in the filename");
+        for (int i = 0; i < fileAbsolutepaths.length; i++) {
+            ibdo.setParameter(FILE_ABSOLUTEPATH, fileAbsolutepaths[i]);
+            ibdo.setParameter(ORIGINAL_FILENAME, originalFilenames[i]);
+            util.extractUniqueFileExtensions(ibdo);
+            for (String extension : extensions[i]) {
+                assertEquals(extensions[i].length, ibdo.getParameter(FILEXT).size(), "Only "
+                        + extensions[i].length + " file extensions should have been extracted");
+                assertTrue(ibdo.getParameter(FILEXT).contains(extension), "FILEXT should be extracted");
+            }
+            // reset for the next test
+            ibdo.setParameter(FILEXT, "");
+            ibdo.setParameter(FILE_ABSOLUTEPATH, "");
+            ibdo.setParameter(ORIGINAL_FILENAME, "");
+        }
     }
 
     @Test
@@ -652,16 +647,16 @@ class DropOffUtilTest extends UnitTest {
 
         ibdo.setParameter(ORIGINAL_FILENAME, "");
         ibdo.setParameter(FILE_ABSOLUTEPATH, "");
-        bestFilenames = DropOffUtil.getBestFilenames(ibdo);
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
         assertEquals(0, bestFilenames.size(), "No filename should have been found");
 
         ibdo.setParameter(FILE_ABSOLUTEPATH, "theOtherFile.csv");
-        bestFilenames = DropOffUtil.getBestFilenames(ibdo);
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
         assertEquals(1, bestFilenames.size(), "There should be one filename extracted");
         assertEquals("theOtherFile.csv", bestFilenames.get(0), "The FILE_ABSOLUTEPATH should have been extracted");
 
         ibdo.setParameter(ORIGINAL_FILENAME, "file.docx");
-        bestFilenames = DropOffUtil.getBestFilenames(ibdo);
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
         assertEquals(2, bestFilenames.size(), "There should be two filenames extracted");
         assertEquals("file.docx", bestFilenames.get(0), "The Original-Filename should have been extracted");
         assertEquals("theOtherFile.csv", bestFilenames.get(1), "The Original-Filename should have been extracted");
