@@ -66,14 +66,13 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     /**
-     * Three-letter time zone IDs often point to multiple timezones. Java 8 uses the timezone over the offset causing
-     * problems with the datetime in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it would
-     * take some time to transition, a regex strips out the short timezone if there is an offset present.
+     * Three-letter time zone IDs often point to multiple timezones. With Java 9+, there are no longer inconsistencies with
+     * parsing timezones with offsets.
      * <p>
      * See {@link java.util.TimeZone} and {@link java.time.ZoneId#SHORT_IDS}
      */
     @Test
-    void stripThreeLetterTimeZonesWhenThereIsAnOffset() {
+    void parseOffsetWhenThereIsAThreeLetterTimeZone() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][[(]z[)]]]");
 
         // without offset we expect the default ZoneId

@@ -46,22 +46,11 @@ public class FlexibleDateTimeParser {
     private static final String SPACE = " ";
     private static final String EMPTY = "";
 
-    /*
-     * Three-letter time zone IDs often point to multiple time zones. Java 8 uses the time zone over the offset causing
-     * problems with the date/time in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it
-     * would take some time to transition, a regex is used to strip out the short time zone if there is an offset present.
-     * See java.util.TimeZone and java.time.ZoneId#SHORT_IDS for more info.
-     */
-    private static final String SHORT_TZ_PATTERN = "(\\()?([A-Z]{3})(\\))?"; // (XXX) or XXX
-    private static final String OFFSET_PATTERN = "[ ]?[+-]\\d{2}(:?\\d{2}(:?\\d{2})?)?[ ]?"; // +00 +00:00 +0000
-    private static final String REMOVE_STZ = "|(?<=" + OFFSET_PATTERN + ")" + SHORT_TZ_PATTERN + "|" + SHORT_TZ_PATTERN + "(?=" + OFFSET_PATTERN
-            + ")";
-
     /* Remove all tabs and extra spaces */
     private static final Pattern REPLACE = Pattern.compile("\t+|[ ]+", Pattern.DOTALL);
 
     /* Remove other junk */
-    private static final Pattern REMOVE = Pattern.compile("<.+?>|=0D$" + REMOVE_STZ, Pattern.DOTALL);
+    private static final Pattern REMOVE = Pattern.compile("<.+?>|=0D$", Pattern.DOTALL);
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
