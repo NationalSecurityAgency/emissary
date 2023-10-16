@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 
 import static emissary.core.Form.PREFIXES_LANG;
@@ -86,6 +87,7 @@ public class DropOffUtil {
     protected boolean defaultEventDateToNow = true;
 
     private static List<String> defaultFilenameFields;
+    private static final ReentrantLock filenameFieldsLock = new ReentrantLock();
 
     /**
      * Create with the default configuration
@@ -151,13 +153,23 @@ public class DropOffUtil {
                 this.maxFilextLen = Integer.MAX_VALUE;
             }
 
-            defaultFilenameFields = new ArrayList<>();
-            List<String> configuredFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
-            if (!configuredFilenameFields.isEmpty()) {
-                defaultFilenameFields.addAll(configuredFilenameFields);
-            } else {
-                defaultFilenameFields.add(ORIGINAL_FILENAME);
-                defaultFilenameFields.add(FILE_ABSOLUTEPATH);
+            try {
+                filenameFieldsLock.lockInterruptibly();
+
+                defaultFilenameFields = new ArrayList<>();
+                List<String> configuredFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
+                if (!configuredFilenameFields.isEmpty()) {
+                    defaultFilenameFields.addAll(configuredFilenameFields);
+                } else {
+                    defaultFilenameFields.add(ORIGINAL_FILENAME);
+                    defaultFilenameFields.add(FILE_ABSOLUTEPATH);
+                }
+            } catch (InterruptedException e) {
+                logger.debug("A thread with a reentrant lock was interrupted");
+            } finally {
+                if (filenameFieldsLock.isHeldByCurrentThread()) {
+                    filenameFieldsLock.unlock();
+                }
             }
         } else {
             logger.debug("Configuration is null for DropOffUtil, using defaults");
@@ -1029,14 +1041,23 @@ public class DropOffUtil {
 
         List<String> filenames = new ArrayList<>();
 
-        for (String ibdoField : defaultFilenameFields) {
-            if (d.hasParameter(ibdoField)) {
-                for (Object filename : d.getParameter(ibdoField)) {
-                    String stringFileName = (String) filename;
-                    if (StringUtils.isNotBlank(stringFileName)) {
-                        filenames.add(stringFileName);
+        try {
+            filenameFieldsLock.lockInterruptibly();
+            for (String ibdoField : defaultFilenameFields) {
+                if (d.hasParameter(ibdoField)) {
+                    for (Object filename : d.getParameter(ibdoField)) {
+                        String stringFileName = (String) filename;
+                        if (StringUtils.isNotBlank(stringFileName)) {
+                            filenames.add(stringFileName);
+                        }
                     }
                 }
+            }
+        } catch (InterruptedException e) {
+            logger.debug("A thread with a reentrant lock was interrupted");
+        } finally {
+            if (filenameFieldsLock.isHeldByCurrentThread()) {
+                filenameFieldsLock.unlock();
             }
         }
         return filenames;
