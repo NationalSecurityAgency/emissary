@@ -88,6 +88,12 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("Mon, 4 Jan 2016 18:20:30 EST +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30EST+0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30EST +0000", EXPECTED_FULL, pattern);
+
+        // additional tests with ambiguous abbreviations -- they should continue to be ignored and have consistent
+        // behavior
+        test("Mon, 4 Jan 2016 18:20:30 +0000 CST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 ACT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 BST", EXPECTED_FULL, pattern);
     }
 
     @Test
