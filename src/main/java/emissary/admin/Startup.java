@@ -69,7 +69,7 @@ public class Startup {
     protected final Map<String, List<String>> placeLists = new ConcurrentHashMap<>();
     protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<>();
 
-    // sets to verify no invisible place start-ups
+    // sets to keep track of possible invisible place startup
     protected Set<String> activeDirPlaces = new LinkedHashSet<>();
     protected Set<String> placeAlreadyStarted = new LinkedHashSet<>();
 
@@ -169,7 +169,9 @@ public class Startup {
         // the pickup places here.
         startPickUpPlaces();
 
-        verifyNoInvisiblePlacesStarted();
+        if (!verifyNoInvisiblePlacesStarted()) {
+            // TODO: If invisible places are started, shutdown the EmissaryServer
+        }
     }
 
 
@@ -506,8 +508,10 @@ public class Startup {
     /**
      * Verifies the active directory places vs places started up. Log if any places are started without being announced in
      * start-up.
+     * 
+     * @return true if no invisible places started, false if yes
      */
-    private void verifyNoInvisiblePlacesStarted() {
+    public boolean verifyNoInvisiblePlacesStarted() {
         try {
             IDirectoryPlace dirPlace = DirectoryPlace.lookup();
             List<DirectoryEntry> dirEntries = dirPlace.getEntries();
@@ -539,6 +543,9 @@ public class Startup {
         // if any places are left in active dir keys, they are places not announced on startup
         if (!activeDirPlaces.isEmpty()) {
             logger.warn("{} place(s) started up without being announced! {}", activeDirPlaces.size(), activeDirPlaces);
+            return false;
         }
+
+        return true;
     }
 }
