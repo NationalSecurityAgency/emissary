@@ -11,9 +11,18 @@
   <main class="container">
     <h2>Directory Listing</h2>
     <h6>{{directory-label}}</h6>
-    <p/>
-    <h4>Directory Entries</h4>
-    <table class="table table-striped">
+    <p></p>
+      <div class="row">
+          <div class="col-md-10">
+              <h4>Directory Entries</h4>
+          </div>
+          <div class="col-md-2">
+              <label>
+                  <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for Place...">
+              </label>
+          </div>
+      </div>
+    <table class="table table-striped" id="tableToSearch">
        <thead>
           <tr>
               <th>Key</th>
@@ -38,6 +47,7 @@
        {{/entrykeys}}
        </tbody>
     </table>
+      <p id="empty-message" style="display: none; width: 99%; text-align: center;"><b><i>No places found in table...</i></b></p>
 
     <h4>Peer Directories</h4>
     <ul>
