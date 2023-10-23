@@ -663,6 +663,17 @@ class DropOffUtilTest extends UnitTest {
         assertEquals("theOtherFile.csv", bestFilenames.get(1), "The Original-Filename should have been extracted");
     }
 
+    @Test
+    void getFullFilepathsFromParamsCustomFields() {
+        IBaseDataObject ibdo = new BaseDataObject();
+        ibdo.setParameter("CustomField", "customName.txt");
+        ibdo.setParameter(ORIGINAL_FILENAME, "groceries.xml");
+        List<String> bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo, new String[] {"CustomField"});
+
+        assertEquals(1, bestFilenames.size(), "Only one filename should have been extracted");
+        assertEquals("customName.txt", bestFilenames.get(0), "Only the value in CustomField should have been extracted");
+    }
+
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
         bdo.clearParameters();
         bdo.putParameter(fileTypeCheckParameter.getFieldName(), fieldValue);

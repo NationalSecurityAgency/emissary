@@ -85,8 +85,6 @@ public class DropOffUtil {
     private static final String DEFAULT_EVENT_DATE_TO_NOW = "DEFAULT_EVENT_DATE_TO_NOW";
     protected boolean defaultEventDateToNow = true;
 
-    private static List<String> defaultFilenameFields;
-
     /**
      * Create with the default configuration
      */
@@ -151,14 +149,6 @@ public class DropOffUtil {
                 this.maxFilextLen = Integer.MAX_VALUE;
             }
 
-            defaultFilenameFields = new ArrayList<>();
-            List<String> configuredFilenameFields = actualConfigG.findEntries("FILENAME_FIELDS");
-            if (!configuredFilenameFields.isEmpty()) {
-                defaultFilenameFields.addAll(configuredFilenameFields);
-            } else {
-                defaultFilenameFields.add(ORIGINAL_FILENAME);
-                defaultFilenameFields.add(FILE_ABSOLUTEPATH);
-            }
         } else {
             logger.debug("Configuration is null for DropOffUtil, using defaults");
             this.executrix = new Executrix();
@@ -1019,17 +1009,29 @@ public class DropOffUtil {
     }
 
     /**
-     * Checks the Original-Filename and FILE_ABSOLUTEPATH for the filename of the object. Returns a list with of the
-     * non-empty strings found in these fields. If nothing is found in either field, return an empty list.
+     * Checks the Original-Filename and FILE_ABSOLUTEPATH for the filename of the object. Returns a list with the non-empty
+     * strings found in these fields. If nothing is found in either field, return an empty list.
      *
      * @param d The IBDO
      * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
      */
     public static List<String> getFullFilepathsFromParams(IBaseDataObject d) {
+        return getFullFilepathsFromParams(d, new String[] {ORIGINAL_FILENAME, FILE_ABSOLUTEPATH});
+    }
+
+    /**
+     * Uses the specified list of fields to check for filenames of the object. Returns a list with the non-empty strings
+     * found in these fields. If nothing is found in either field, return an empty list.
+     *
+     * @param d The IBDO
+     * @param filenameFields The list of fields on the IBDO to check
+     * @return The list of filenames found in the list of fields on the IBDO
+     */
+    public static List<String> getFullFilepathsFromParams(IBaseDataObject d, String[] filenameFields) {
 
         List<String> filenames = new ArrayList<>();
 
-        for (String ibdoField : defaultFilenameFields) {
+        for (String ibdoField : filenameFields) {
             if (d.hasParameter(ibdoField)) {
                 for (Object filename : d.getParameter(ibdoField)) {
                     String stringFileName = (String) filename;
