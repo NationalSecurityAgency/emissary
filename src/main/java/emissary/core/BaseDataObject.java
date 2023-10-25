@@ -372,14 +372,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Returns a new InputStream to the data that this BaseDataObject contains.
-     * 
-     * NOTE 1: Mutating the data elements of this IBaseDataObject while reading from the InputStream will have indeterminate
-     * results.
-     * 
-     * NOTE 2: The calling code is responsible for closing the returned InputStream.
-     * 
-     * @return a new InputStream to the data that this BaseDataObject contains.
+     * {@inheritDoc}
      */
     @Override
     public InputStream newInputStream() {

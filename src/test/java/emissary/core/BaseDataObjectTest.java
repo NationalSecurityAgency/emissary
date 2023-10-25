@@ -1420,23 +1420,23 @@ class BaseDataObjectTest extends UnitTest {
 
         ibdo.setData(bytes1);
 
-        final InputStream bytesInputStream = ibdo.newInputStream();
-        final ByteArrayOutputStream bytesOutputStream = new ByteArrayOutputStream();
+        try (final InputStream bytesInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
+            IOUtils.copy(bytesInputStream, byteArrayOutputStream);
 
-        IOUtils.copy(bytesInputStream, bytesOutputStream);
-
-        assertArrayEquals(bytes1, bytesOutputStream.toByteArray());
+            assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());
+        }
 
         final byte[] bytes2 = new byte[] {4, 5, 6, 7};
         final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(bytes2);
 
         ibdo.setChannelFactory(sbcf);
 
-        final InputStream sbcfInputStream = ibdo.newInputStream();
+        try (final InputStream sbcfInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            IOUtils.copy(sbcfInputStream, byteArrayOutputStream);
 
-        bytesOutputStream.reset();
-        IOUtils.copy(sbcfInputStream, bytesOutputStream);
-
-        assertArrayEquals(bytes2, bytesOutputStream.toByteArray());
+            assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());
+        }
     }
 }
