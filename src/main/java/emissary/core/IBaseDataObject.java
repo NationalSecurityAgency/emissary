@@ -4,6 +4,7 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Date;
@@ -65,6 +66,18 @@ public interface IBaseDataObject {
      * @param sbcf the new channel factory to set on this object
      */
     void setChannelFactory(final SeekableByteChannelFactory sbcf);
+
+    /**
+     * Returns a new InputStream to the data that this BaseDataObject contains.
+     * 
+     * NOTE 1: Mutating the data elements of this IBaseDataObject while reading from the InputStream will have indeterminate
+     * results.
+     * 
+     * NOTE 2: The calling code is responsible for closing the returned InputStream.
+     * 
+     * @return a new InputStream to the data that this BaseDataObject contains.
+     */
+    InputStream newInputStream();
 
     /**
      * Returns the seekable byte channel factory containing a reference to the data
