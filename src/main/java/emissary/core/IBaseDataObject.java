@@ -69,13 +69,13 @@ public interface IBaseDataObject {
 
     /**
      * Returns a new InputStream to the data that this BaseDataObject contains.
-     * 
+     * <p>
      * NOTE 1: Mutating the data elements of this IBaseDataObject while reading from the InputStream will have indeterminate
      * results.
-     * 
+     * <p>
      * NOTE 2: The calling code is responsible for closing the returned InputStream.
      * 
-     * @return a new InputStream to the data that this BaseDataObject contains.
+     * @return a new stream that reads the data that this object contains, or null if this object has no data.
      */
     InputStream newInputStream();
 
