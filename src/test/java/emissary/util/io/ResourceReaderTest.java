@@ -73,6 +73,7 @@ class ResourceReaderTest extends UnitTest {
         assertEquals("emissary/util/Version.cfg", rr.getConfigDataName(Version.class), "Resource config naming");
         assertEquals("emissary/util/io/foo", rr.getResourceName(this.getClass().getPackage(), "foo"), "Resource package naming");
         assertEquals("emissary/util/io/foo.xml", rr.getXmlName(this.getClass().getPackage(), "foo"), "Resource package naming");
+        assertEquals("emissary/util/io/sample.dat", rr.getResourceName(this.thisPackage, "sample.dat"), "Sample file with extension naming");
     }
 
 }

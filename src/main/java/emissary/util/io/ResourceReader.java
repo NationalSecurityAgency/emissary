@@ -106,7 +106,7 @@ public class ResourceReader {
      * Get the resource name
      */
     public String getResourceName(Package pkg, String name) {
-        return (pkg.getName() + "/" + name).replace('.', '/');
+        return (pkg.getName().replace('.', '/') + "/" + name);
     }
 
     /**
