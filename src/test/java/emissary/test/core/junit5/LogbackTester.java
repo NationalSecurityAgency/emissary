@@ -60,6 +60,10 @@ public class LogbackTester implements Closeable {
     }
 
 
+    /**
+     * @deprecated Consider using the {@link #checkLogList(List)} overload instead of this version
+     */
+    @Deprecated    
     public void checkLogList(final Level[] levels, final String[] messages, final boolean[] throwables) {
         Validate.notNull(levels, "Required: levels != null");
         Validate.notNull(messages, "Required: messages != null");
