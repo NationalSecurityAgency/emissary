@@ -40,7 +40,7 @@ public class LogbackTesterTest extends UnitTest {
         events.add(event2);
         logger.warn("Not good news.", new Exception("worse news"));
         AssertionFailedError thrownException =
-                assertThrows(AssertionFailedError.class, () -> logBackTester.checkLogList(events), "Expected and exception.");
+                assertThrows(AssertionFailedError.class, () -> logBackTester.checkLogList(events), "Expected an exception.");
         assertTrue(thrownException.getMessage().startsWith("Messages not equal"));
     }
 
