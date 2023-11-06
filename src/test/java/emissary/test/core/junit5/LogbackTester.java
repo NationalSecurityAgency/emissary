@@ -39,7 +39,7 @@ public class LogbackTester implements Closeable {
     public void checkLogList(List<SimplifiedLogEvent> events) {
         Validate.notNull(events, "Required: events != null");
 
-        assertEquals(events.size(), appender.list.size(), "Expected lengths do not match number of log messages");
+        assertEquals(events.size(), appender.list.size(), "Expected event count does not match actual event count");
 
         for (int i = 0; i < appender.list.size(); i++) {
             final ILoggingEvent item = appender.list.get(i);
