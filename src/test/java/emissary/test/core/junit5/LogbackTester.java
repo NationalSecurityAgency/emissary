@@ -49,7 +49,7 @@ public class LogbackTester implements Closeable {
             if (event.throwable.isEmpty()) {
                 assertNull(item.getThrowableProxy(), "Expected no exception for element " + i);
             } else {
-                assertNotNull(item.getThrowableProxy(), "Expected an exception for element" + i);
+                assertNotNull(item.getThrowableProxy(), "Expected an exception for element " + i);
                 Throwable expected = event.throwable.get();
                 IThrowableProxy proxy = item.getThrowableProxy();
                 assertEquals(expected.getClass().getName(), proxy.getClassName(), "Exception class name not equal for element " + i);
