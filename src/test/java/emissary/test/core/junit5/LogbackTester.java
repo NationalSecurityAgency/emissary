@@ -47,7 +47,7 @@ public class LogbackTester implements Closeable {
             assertEquals(event.level, item.getLevel(), "Levels not equal for element " + i);
             assertEquals(event.message, item.getFormattedMessage(), "Messages not equal for element " + i);
             if (event.throwable.isEmpty()) {
-                assertNull(item.getThrowableProxy(), "Expected no exception for element" + i);
+                assertNull(item.getThrowableProxy(), "Expected no exception for element " + i);
             } else {
                 assertNotNull(item.getThrowableProxy(), "Expected an exception for element" + i);
                 Throwable expected = event.throwable.get();
