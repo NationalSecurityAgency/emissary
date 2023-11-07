@@ -12,6 +12,7 @@ import emissary.test.core.junit5.UnitTest;
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
@@ -1404,6 +1407,36 @@ class BaseDataObjectTest extends UnitTest {
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
             logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+        }
+    }
+
+    @Test
+    void testNewInputStream() throws IOException {
+        final IBaseDataObject ibdo = new BaseDataObject();
+
+        assertNull(ibdo.newInputStream());
+
+        final byte[] bytes1 = new byte[] {0, 1, 2, 3};
+
+        ibdo.setData(bytes1);
+
+        try (final InputStream bytesInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
+            IOUtils.copy(bytesInputStream, byteArrayOutputStream);
+
+            assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());
+        }
+
+        final byte[] bytes2 = new byte[] {4, 5, 6, 7};
+        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(bytes2);
+
+        ibdo.setChannelFactory(sbcf);
+
+        try (final InputStream sbcfInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            IOUtils.copy(sbcfInputStream, byteArrayOutputStream);
+
+            assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());
         }
     }
 }

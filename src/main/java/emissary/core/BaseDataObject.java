@@ -15,10 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.rmi.Remote;
 import java.util.ArrayList;
@@ -367,6 +369,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             default:
                 return null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream newInputStream() {
+        final SeekableByteChannelFactory sbcf = getChannelFactory();
+
+        return sbcf == null ? null : Channels.newInputStream(sbcf.create());
     }
 
     /**
