@@ -12,10 +12,15 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class IBaseDataObjectDiffHelper {
 
@@ -58,8 +63,15 @@ public class IBaseDataObjectDiffHelper {
         }
 
         diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
-        // TreeMap automatically sorts parameters by key
-        diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+
+        if (options.performDetailedParameterDiff()) {
+            diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+        } else if (options.performKeyValueParameterDiff()) {
+            keyValueMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+        } else {
+            minimalMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+        }
+
         diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
         diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
         diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
@@ -211,7 +223,7 @@ public class IBaseDataObjectDiffHelper {
      * @param map1 the first map to compare.
      * @param map2 the second map to compare.
      * @param identifier an identifier to describe the context of this map comparison.
-     * @param differences the string list differences are to be added to.
+     * @param differences the string list of differences to be added to.
      */
     public static void diff(final Map<String, byte[]> map1, final Map<String, byte[]> map2, final String identifier,
             final List<String> differences) {
@@ -223,6 +235,60 @@ public class IBaseDataObjectDiffHelper {
         if (map1.size() != map2.size() ||
                 !map1.entrySet().stream().allMatch(e -> Arrays.equals(e.getValue(), map2.get(e.getKey())))) {
             differences.add(identifier + ARE_NOT_EQUAL);
+        }
+    }
+
+    /**
+     * This method compares two maps and adds only the key/value pairs that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
+    public static void keyValueMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
+            final String identifier, final List<String> differences) {
+        final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
+        final Set<Entry<String, Collection<String>>> p2Entries = new HashSet<>(parameter2.entrySet());
+        final Map<String, Collection<String>> p1 = new HashMap<>(parameter1);
+        final Map<String, Collection<String>> p2 = new HashMap<>(parameter2);
+
+        for (Entry<String, Collection<String>> p1Entry : p1Entries) {
+            if (p2Entries.contains(p1Entry)) {
+                p1.remove(p1Entry.getKey());
+                p2.remove(p1Entry.getKey());
+            }
+        }
+
+        if (!p1.isEmpty() || !p2.isEmpty()) {
+            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
+        }
+    }
+
+    /**
+     * This method compares two maps and adds only the keys that differ to the provided string list.
+     * 
+     * @param parameter1 the first map to compare.
+     * @param parameter2 the second map to compare.
+     * @param identifier an identifier to describe the context of this map comparison.
+     * @param differences the string list of differences to be added to.
+     */
+    public static void minimalMapDiff(final Map<String, Collection<String>> parameter1, final Map<String, Collection<String>> parameter2,
+            final String identifier, final List<String> differences) {
+        final Set<Entry<String, Collection<String>>> p1Entries = new HashSet<>(parameter1.entrySet());
+        final Set<Entry<String, Collection<String>>> p2Entries = new HashSet<>(parameter2.entrySet());
+        final Set<String> p1Keys = new TreeSet<>(parameter1.keySet());
+        final Set<String> p2Keys = new TreeSet<>(parameter2.keySet());
+
+        for (Entry<String, Collection<String>> p1Entry : p1Entries) {
+            if (p2Entries.contains(p1Entry)) {
+                p1Keys.remove(p1Entry.getKey());
+                p2Keys.remove(p1Entry.getKey());
+            }
+        }
+
+        if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {
+            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
         }
     }
 
