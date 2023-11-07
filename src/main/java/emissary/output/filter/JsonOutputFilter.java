@@ -4,6 +4,7 @@ import emissary.config.Configurator;
 import emissary.core.IBaseDataObject;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.directory.DirectoryEntry;
+import emissary.output.io.DateFilterFilenameGenerator;
 import emissary.util.TimeUtil;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -68,7 +69,13 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         this.blacklistValues = this.filterConfig.findStringMatchMultiMap("BLACKLIST_VALUE_");
         this.stripPrefixes = this.filterConfig.findEntriesAsSet("STRIP_PARAM_PREFIX");
         this.emitPayload = this.filterConfig.findBooleanEntry("EMIT_PAYLOAD", true);
+        initFilenameGenerator();
         initJsonMapper();
+    }
+
+    @Override
+    protected void initFilenameGenerator() {
+        this.fileNameGenerator = new DateFilterFilenameGenerator("json");
     }
 
     /**
