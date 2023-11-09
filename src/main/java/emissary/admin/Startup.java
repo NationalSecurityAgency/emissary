@@ -515,9 +515,11 @@ public class Startup {
         try {
             IDirectoryPlace dirPlace = DirectoryPlace.lookup();
             List<DirectoryEntry> dirEntries = dirPlace.getEntries();
-            for (DirectoryEntry currentDir : dirEntries) {
-                // add place names of active directories
-                activeDirPlaces.add(currentDir.getLocalPlace().getPlaceName());
+            for (DirectoryEntry entry : dirEntries) {
+                // add place names of active places. getLocalPlace() returns null for any place that failed to start
+                if (entry.getLocalPlace() != null) {
+                    activeDirPlaces.add(entry.getLocalPlace().getPlaceName());
+                }
             }
 
             // remove DirectoryPlace from activeDirPlaces. DirectoryPlace is started up automatically in order to
