@@ -1,0 +1,17 @@
+{
+    "name": "Emissary-Java-11",
+    "image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "VERSION": "11",
+            "INSTALL_MAVEN": "true",
+            "MAVEN_VERSION": "3.6.3",
+            "INSTALL_GRADLE": "false"
+        }
+    },
+    "extensions": [
+		"SonarSource.sonarlint-vscode",
+		"vscjava.vscode-java-pack",
+		"streetsidesoftware.code-spell-checker"
+	]
+  }

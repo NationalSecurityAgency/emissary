@@ -266,6 +266,11 @@ PROJECT_BASE = ${project_loc}/target-eclipse
 
 Unfortunately you will have to do this for every test, that's Eclipse with the M2E plugin for you.
 
+### GitHub Codespaces (VsCode)
+A [devcontainer.json](.devcontainer/devcontainer.json) file is provided to open the repository in GitHub Codespaces for contributions or PR reviews. 
+The codespace is configured to install java 11, maven, and native software to enable builds with all unit test's passing.
+A few helpful VsCode extensions are installed as well as a maven settings file to enable dependency pulls.
+
 ### Netbeans
 
 Unfortunately, we could not find a system property [Netbeans](https://netbeans.org/) sets when running
