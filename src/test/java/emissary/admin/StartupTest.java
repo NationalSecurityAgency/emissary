@@ -1,8 +1,10 @@
 package emissary.admin;
 
 import emissary.core.Namespace;
+import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
 import emissary.pickup.file.FilePickUpClient;
 import emissary.pickup.file.FilePickUpPlace;
 import emissary.place.CoordinationPlace;
@@ -12,6 +14,8 @@ import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.ResourceReader;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +26,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class StartupTest extends UnitTest {
     @Test
@@ -78,6 +84,29 @@ class StartupTest extends UnitTest {
 
         // teardown
         dirTeardown();
+    }
+
+    @Test
+    void verifyNoInvisiblePlacesStartedHandlesNullLocalPlace() throws IOException {
+        // setup node, startup, and DirectoryPlace
+        EmissaryNode node = new EmissaryNode();
+        Startup startup = new Startup(node.getNodeConfigurator(), node);
+
+        try (MockedStatic<DirectoryPlace> dirPlace = Mockito.mockStatic(DirectoryPlace.class)) {
+
+            DirectoryEntry entry = mock(DirectoryEntry.class);
+            when(entry.getLocalPlace()).thenReturn(null);
+
+            List<DirectoryEntry> dirEntries = new ArrayList<>();
+            dirEntries.add(0, entry);
+
+            IDirectoryPlace directoryPlace = mock(IDirectoryPlace.class);
+            when(directoryPlace.getEntries()).thenReturn(dirEntries);
+
+            dirPlace.when(DirectoryPlace::lookup).thenReturn(directoryPlace);
+
+            assertTrue(startup.verifyNoInvisiblePlacesStarted());
+        }
     }
 
     private DirectoryPlace master = null;
