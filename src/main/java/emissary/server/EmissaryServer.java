@@ -12,6 +12,7 @@ import emissary.core.MetricsManager;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
+import emissary.core.Sentinel;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
@@ -364,6 +365,13 @@ public class EmissaryServer {
             rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
+        }
+
+        try {
+            Sentinel rw = Sentinel.lookup();
+            rw.quit();
+        } catch (Exception ex) {
+            LOG.warn("No sentinel available");
         }
 
         try {
