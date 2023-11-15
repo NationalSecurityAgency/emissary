@@ -475,9 +475,9 @@ public final class IBaseDataObjectXmlCodecs {
      * An implementation of an XML element encoder for SeekableByteChannel's that produces a SHA256 hash value.
      */
     public static final ElementEncoder<SeekableByteChannelFactory> SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER =
-            new HashSeekableByteChannelFactoryEncoder();
+            new Sha256SeekableByteChannelFactoryEncoder();
 
-    private static class HashSeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
+    private static class Sha256SeekableByteChannelFactoryEncoder implements ElementEncoder<SeekableByteChannelFactory> {
         @Override
         public void encode(final List<SeekableByteChannelFactory> values, final Element parentElement, final String childElementName) {
             for (final SeekableByteChannelFactory value : values) {
@@ -571,7 +571,7 @@ public final class IBaseDataObjectXmlCodecs {
         @Override
         public void encode(final List<Boolean> values, final Element parentElement, final String childElementName) {
             for (final boolean value : values) {
-                if ((Boolean) PRIMITVE_NAME_DEFAULT_MAP.get(childElementName) != value) {
+                if (!((Boolean) PRIMITVE_NAME_DEFAULT_MAP.get(childElementName)).equals(value)) {
                     parentElement.addContent(AbstractJDOMUtil.simpleElement(childElementName, value));
                 }
             }
@@ -620,6 +620,36 @@ public final class IBaseDataObjectXmlCodecs {
         }
     }
 
+    public static final ElementEncoder<Map<String, byte[]>> SHA256_STRING_BYTE_ARRAY_ENCODER = new Sha256StringByteArrayEncoder();
+
+    private static class Sha256StringByteArrayEncoder implements ElementEncoder<Map<String, byte[]>> {
+        @Override
+        public void encode(final List<Map<String, byte[]>> values, final Element parentElement, final String childElementName) {
+            for (final Map<String, byte[]> value : values) {
+                for (final Entry<String, byte[]> view : value.entrySet()) {
+                    final Element metaElement = new Element(IbdoXmlElementNames.VIEW);
+
+                    parentElement.addContent(metaElement);
+                    metaElement.addContent(preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey())));
+                    metaElement.addContent(preserve(protectedElementHash(IbdoXmlElementNames.VALUE, view.getValue())));
+                }
+            }
+        }
+
+        private static Element protectedElementHash(final String name, final byte[] bytes) {
+            final Element element = new Element(name);
+
+            if (ByteUtil.hasNonPrintableValues(bytes)) {
+                element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
+                element.addContent(ByteUtil.sha256Bytes(bytes));
+            } else {
+                element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+            }
+
+            return element;
+        }
+    }
+
     /**
      * The default set of XML element decoders.
      */
@@ -652,7 +682,7 @@ public final class IBaseDataObjectXmlCodecs {
             DEFAULT_BYTE_ARRAY_ENCODER,
             DEFAULT_INTEGER_ENCODER,
             SHA256_SEEKABLE_BYTE_CHANNEL_FACTORY_ENCODER,
-            DEFAULT_STRING_BYTE_ARRAY_ENCODER,
+            SHA256_STRING_BYTE_ARRAY_ENCODER,
             DEFAULT_STRING_ENCODER,
             DEFAULT_STRING_OBJECT_ENCODER);
 
@@ -675,13 +705,26 @@ public final class IBaseDataObjectXmlCodecs {
         return elementValue.getBytes(StandardCharsets.UTF_8);
     }
 
-    private static Element preserve(final Element element) {
+    /**
+     * Adds preservation attributes to an XML element.
+     * 
+     * @param element to add preservation attributes to.
+     * @return the element passed in with the preservation elements added.
+     */
+    public static Element preserve(final Element element) {
         element.setAttribute("space", "preserve", XML_NAMESPACE);
 
         return element;
     }
 
-    private static Element protectedElement(final String name, final String string) {
+    /**
+     * Creates a protected XML string element.
+     * 
+     * @param name of the XML element
+     * @param string value of the XML element
+     * @return the protected XML element.
+     */
+    public static Element protectedElement(final String name, final String string) {
         return protectedElementBase64(name, string.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -694,7 +737,7 @@ public final class IBaseDataObjectXmlCodecs {
      * @param bytes to wrap, if they contain unsafe characters
      * @return the created element
      */
-    private static Element protectedElementBase64(final String name, final byte[] bytes) {
+    public static Element protectedElementBase64(final String name, final byte[] bytes) {
         final Element element = new Element(name);
 
         if (ByteUtil.hasNonPrintableValues(bytes)) {
@@ -714,11 +757,14 @@ public final class IBaseDataObjectXmlCodecs {
     /**
      * Gets the requested method object from the IBaseDataObject class.
      * 
-     * @throws SecurityException
-     * @throws NoSuchMethodException
+     * @param methodName name of the ibdo method
+     * @param parameterTypes list of ibdo method parameter types
+     * @throws SecurityException if a security manager is present and encounters a problem.
+     * @throws NoSuchMethodException if a matching method is not found
+     * @return the ibdo method object
      */
-    private static Method getIbdoMethod(final String name, final Class<?>... parameterTypes)
+    public static Method getIbdoMethod(final String methodName, final Class<?>... parameterTypes)
             throws NoSuchMethodException, SecurityException {
-        return IBaseDataObject.class.getDeclaredMethod(name, parameterTypes);
+        return IBaseDataObject.class.getDeclaredMethod(methodName, parameterTypes);
     }
 }

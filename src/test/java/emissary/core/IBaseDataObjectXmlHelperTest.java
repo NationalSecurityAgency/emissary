@@ -21,7 +21,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
+import java.util.TreeMap;
 
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_ENCODERS;
@@ -150,6 +152,10 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
                 actualChildren, SHA256_ELEMENT_ENCODERS);
 
         expectedIbdo.setData(ByteUtil.sha256Bytes(bytes).getBytes(StandardCharsets.ISO_8859_1));
+
+        for (Entry<String, byte[]> entry : new TreeMap<>(expectedIbdo.getAlternateViews()).entrySet()) {
+            expectedIbdo.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.ISO_8859_1));
+        }
 
         final String sha256Diff = PlaceComparisonHelper.checkDifferences(expectedIbdo, sha256ActualIbdo, expectedChildren,
                 actualChildren, "testSha256Conversion", DiffCheckConfiguration.onlyCheckData());

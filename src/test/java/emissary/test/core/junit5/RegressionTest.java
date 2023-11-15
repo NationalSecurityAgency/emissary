@@ -14,6 +14,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -141,6 +143,10 @@ public abstract class RegressionTest extends ExtractionTest {
             final String tname) {
         if (!IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
             return;
+        }
+
+        for (Entry<String, byte[]> entry : new TreeMap<>(payload.getAlternateViews()).entrySet()) {
+            payload.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.ISO_8859_1));
         }
 
         if (payload.data() != null && ByteUtil.hasNonPrintableValues(payload.data())) {
