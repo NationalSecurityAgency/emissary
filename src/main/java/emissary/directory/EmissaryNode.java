@@ -7,7 +7,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.core.MetricsManager;
 import emissary.core.ResourceWatcher;
-import emissary.core.Sentinel;
+import emissary.core.sentinel.Sentinel;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
