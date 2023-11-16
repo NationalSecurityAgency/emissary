@@ -8,6 +8,8 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.sentinel.rules.Notify;
 import emissary.core.sentinel.rules.Rule;
+import emissary.directory.DirectoryPlace;
+import emissary.directory.KeyManipulator;
 import emissary.pool.MobileAgentFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -131,17 +133,18 @@ public class Sentinel implements Runnable {
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (this.enabled) {
-            this.pollingInterval = config.findIntEntry("POLLING_INTERVAL", 5);
+            this.pollingInterval = config.findIntEntry("POLLING_INTERVAL_MINUTES", 5);
 
             logger.trace("Loading rules...");
             for (String ruleId : config.findEntries("RULE_ID")) {
                 try {
+                    validate(ruleId);
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", Notify.class.getName());
-                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, map.get("TIME_LIMIT"), map.get("THRESHOLD"));
+                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
                     this.rules.put(ruleId, ruleImpl);
                 } catch (Exception e) {
-                    logger.warn("Unable to configure Sentinel for: {}", ruleId);
+                    logger.warn("Unable to configure Sentinel for {}: {}", ruleId, e.getMessage());
                 }
             }
 
@@ -149,6 +152,17 @@ public class Sentinel implements Runnable {
             if (!this.rules.containsKey(DEFAULT_RULE)) {
                 logger.warn("Default rule not found, creating one...");
                 this.rules.put(DEFAULT_RULE, new Notify(DEFAULT_RULE, 60L, 1.0));
+            }
+        }
+    }
+
+    protected void validate(String place) throws NamespaceException {
+        // validate that the place exists
+        if (!DEFAULT_RULE.equalsIgnoreCase(place)) {
+            DirectoryPlace directoryPlace = Namespace.lookup(DirectoryPlace.class).iterator().next();
+            if (directoryPlace.getEntries().stream()
+                    .noneMatch(entry -> place.equalsIgnoreCase(KeyManipulator.getServiceClassname(entry.getFullKey())))) {
+                throw new IllegalStateException("Place not found in the directory");
             }
         }
     }
