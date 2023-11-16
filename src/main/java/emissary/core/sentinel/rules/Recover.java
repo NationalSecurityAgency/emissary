@@ -26,7 +26,7 @@ public class Recover extends Rule {
      */
     @Override
     public void action(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) {
-        logger.warn("Sentinel detected locked agent(s) running [{}], attempting recovery...", placeSimpleName);
+        logger.warn("Sentinel detected {} locked agent(s) running [{}], attempting recovery...", counter, placeSimpleName);
         List<String> agentNames = tracker.values().stream()
                 .filter(t -> t.getPlaceSimpleName().equalsIgnoreCase(placeSimpleName))
                 .map(Sentinel.Tracker::getAgentName)

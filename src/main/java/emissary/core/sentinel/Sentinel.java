@@ -40,10 +40,10 @@ public class Sentinel implements Runnable {
     final Map<String, Rule> rules = new ConcurrentHashMap<>();
 
     // key: agent name, value: how long Sentinel has observed the mobile agent
-    final Map<String, Tracker> tracker = new ConcurrentHashMap<>();
+    final Map<String, Tracker> trackers = new ConcurrentHashMap<>();
 
     // key: place simple name, value: number of agents in place
-    final Map<String, Integer> counter = new ConcurrentHashMap<>();
+    final Map<String, Integer> placeAgentCounts = new ConcurrentHashMap<>();
 
     Configurator config;
 
@@ -173,7 +173,7 @@ public class Sentinel implements Runnable {
      * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
      */
     protected void watch() throws NamespaceException {
-        counter.clear();
+        placeAgentCounts.clear();
         List<String> agentKeys =
                 Namespace.keySet().stream().filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().collect(Collectors.toList());
         for (String agentKey : agentKeys) {
@@ -191,7 +191,7 @@ public class Sentinel implements Runnable {
     protected void watch(String agentKey) throws NamespaceException {
         logger.trace("Searching for agent [{}]", agentKey);
         IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agentKey);
-        Tracker trackedAgent = tracker.computeIfAbsent(mobileAgent.getName(), Tracker::new);
+        Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
         if (mobileAgent.isInUse()) {
             if (!Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getPlaceName())
                     && !Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())) {
@@ -201,7 +201,7 @@ public class Sentinel implements Runnable {
             }
             trackedAgent.incrementTimer(pollingInterval);
             String placeSimpleName = getPlaceSimpleName(mobileAgent.getLastPlaceProcessed());
-            counter.put(placeSimpleName, counter.getOrDefault(placeSimpleName, 0) + 1);
+            placeAgentCounts.put(placeSimpleName, placeAgentCounts.getOrDefault(placeSimpleName, 0) + 1);
             logger.debug("Agent acquired {}", trackedAgent);
         } else {
             trackedAgent.clear();
@@ -215,11 +215,11 @@ public class Sentinel implements Runnable {
      * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
      */
     protected void check() throws NamespaceException {
-        logger.debug("Checking agents {}", counter);
-        for (Map.Entry<String, Integer> item : counter.entrySet()) {
+        logger.debug("Checking agents {}", placeAgentCounts);
+        for (Map.Entry<String, Integer> item : placeAgentCounts.entrySet()) {
             Rule rule = rules.getOrDefault(item.getKey(), rules.get(DEFAULT_RULE));
             logger.trace("Found {} for {}", rule, item.getKey());
-            rule.run(tracker, item.getKey(), item.getValue());
+            rule.run(trackers, item.getKey(), item.getValue());
         }
     }
 
@@ -304,7 +304,7 @@ public class Sentinel implements Runnable {
                     .add("agentId='" + agentId + "'")
                     .add("shortName='" + shortName + "'")
                     .add("placeName='" + placeName + "'")
-                    .add("timer=" + timer)
+                    .add("timer=" + timer + " minute(s)")
                     .toString();
         }
     }

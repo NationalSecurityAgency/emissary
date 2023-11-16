@@ -49,32 +49,35 @@ public abstract class Rule {
         return threshold;
     }
 
-    public void run(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) throws NamespaceException {
-        if (condition(tracker, placeSimpleName, counter)) {
-            action(tracker, placeSimpleName, counter);
+    public void run(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer count) throws NamespaceException {
+        if (condition(tracker, placeSimpleName, count)) {
+            action(tracker, placeSimpleName, count);
         }
     }
 
-    public boolean condition(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) throws NamespaceException {
-        return overThreshold(counter) && overTimeLimit(tracker, placeSimpleName);
+    public boolean condition(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) throws NamespaceException {
+        return overThreshold(count) && overTimeLimit(trackers, placeSimpleName);
     }
 
-    public abstract void action(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter);
+    public abstract void action(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count);
 
-    protected boolean overThreshold(Integer counter) throws NamespaceException {
+    protected boolean overThreshold(Integer count) throws NamespaceException {
         int poolSize = AgentPool.lookup().getCurrentPoolSize();
-        logger.trace("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, counter, poolSize,
-                threshold);
-        return (double) counter / poolSize >= getThreshold();
+        logger.trace("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, count, poolSize, threshold);
+        return (double) count / poolSize >= getThreshold();
     }
 
-    protected boolean overTimeLimit(Map<String, Sentinel.Tracker> tracker, String placeSimpleName) {
-        long maxTimeInPlace = tracker.values().stream()
+    protected boolean overTimeLimit(Map<String, Sentinel.Tracker> trackers, String placeSimpleName) {
+        long maxTimeInPlace = getMaxTimeInPlace(trackers, placeSimpleName);
+        logger.trace("Testing time limit for place={}, maxTimeInPlace={}, timeLimit={}", place, maxTimeInPlace, timeLimit);
+        return maxTimeInPlace >= getTimeLimit();
+    }
+
+    protected long getMaxTimeInPlace(Map<String, Sentinel.Tracker> trackers, String placeSimpleName) {
+        return trackers.values().stream()
                 .filter(t -> StringUtils.equalsIgnoreCase(t.getPlaceSimpleName(), placeSimpleName))
                 .map(Sentinel.Tracker::getTimer)
                 .max(Comparator.naturalOrder()).orElse(0L);
-        logger.trace("Testing time limit for place={}, timeLimit={}, maxTimeInPlace={}", place, maxTimeInPlace, timeLimit);
-        return maxTimeInPlace >= getTimeLimit();
     }
 
     @Override

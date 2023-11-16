@@ -16,12 +16,13 @@ public class Notify extends Rule {
     /**
      * Log the problem agents/threads
      *
-     * @param tracker the listing of agents, places, and filenames that's currently processing
+     * @param trackers the listing of agents, places, and filenames that's currently processing
      * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param counter number of mobile agents stuck on the place
+     * @param count number of mobile agents stuck on the place
      */
     @Override
-    public void action(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) {
-        logger.warn("Sentinel detected locked agent(s) running [{}]", placeSimpleName);
+    public void action(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
+        logger.warn("Sentinel detected {} locked agent(s) running [{}]", count, placeSimpleName);
+        logger.debug("{}", trackers);
     }
 }
