@@ -2,6 +2,7 @@ package emissary.util;
 
 import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
+import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -22,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DisposeHelperTest {
 
+    static {
+        UnitTest.setupSystemProperties();
+    }
     private static final Runnable FIRST = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestFirstRunnable");
     private static final Runnable SECOND = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestSecondRunnable");
     private static final Runnable THIRD = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestThirdRunnable");
@@ -36,6 +40,7 @@ class DisposeHelperTest {
 
     private IBaseDataObject bdo;
     private static final String TEST_BDO_NAME = "DisposeHelperTestBdo";
+
 
     @BeforeEach
     void setup() {
