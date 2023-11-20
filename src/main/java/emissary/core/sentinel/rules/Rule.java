@@ -26,10 +26,10 @@ public abstract class Rule {
     private final double threshold;
 
     public Rule(String place, long timeLimit, double threshold) {
+        logger.trace("Creating rule for place={}, timeLimit={}, threshold={}", place, timeLimit, threshold);
         this.place = place;
         this.timeLimit = timeLimit;
         this.threshold = threshold;
-        logger.trace("Loaded {}", this);
     }
 
     public Rule(String place, String timeLimit, String threshold) {

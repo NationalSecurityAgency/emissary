@@ -93,7 +93,7 @@ public class Sentinel implements Runnable {
      */
     @Override
     public void run() {
-        logger.debug("Sentinel is starting");
+        logger.info("Sentinel is starting");
 
         while (!this.timeToQuit) {
             // Delay this loop
@@ -142,6 +142,7 @@ public class Sentinel implements Runnable {
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", Notify.class.getName());
                     Rule ruleImpl = (Rule) Factory.create(rule, ruleId, map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
+                    logger.info("Sentinel loaded {}", ruleImpl);
                     this.rules.put(ruleId, ruleImpl);
                 } catch (Exception e) {
                     logger.warn("Unable to configure Sentinel for {}: {}", ruleId, e.getMessage());
