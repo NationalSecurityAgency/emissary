@@ -9,6 +9,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -23,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DisposeHelperTest {
 
-    static {
-        UnitTest.setupSystemProperties();
-    }
     private static final Runnable FIRST = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestFirstRunnable");
     private static final Runnable SECOND = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestSecondRunnable");
     private static final Runnable THIRD = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestThirdRunnable");
@@ -41,6 +39,10 @@ class DisposeHelperTest {
     private IBaseDataObject bdo;
     private static final String TEST_BDO_NAME = "DisposeHelperTestBdo";
 
+    @BeforeAll
+    static void setupClass() {
+        UnitTest.setupSystemProperties();
+    }
 
     @BeforeEach
     void setup() {
