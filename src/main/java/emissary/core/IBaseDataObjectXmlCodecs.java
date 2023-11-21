@@ -631,22 +631,9 @@ public final class IBaseDataObjectXmlCodecs {
 
                     parentElement.addContent(metaElement);
                     metaElement.addContent(preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey())));
-                    metaElement.addContent(preserve(protectedElementHash(IbdoXmlElementNames.VALUE, view.getValue())));
+                    metaElement.addContent(preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue())));
                 }
             }
-        }
-
-        private static Element protectedElementHash(final String name, final byte[] bytes) {
-            final Element element = new Element(name);
-
-            if (ByteUtil.hasNonPrintableValues(bytes)) {
-                element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
-                element.addContent(ByteUtil.sha256Bytes(bytes));
-            } else {
-                element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
-            }
-
-            return element;
         }
     }
 
@@ -729,12 +716,12 @@ public final class IBaseDataObjectXmlCodecs {
     }
 
     /**
-     * Creates a 'protected' element which can be encoded with base64 if it contains unsafe characters
+     * Creates a 'protected' element which can be encoded with base64 if it contains non-printable characters
      * 
-     * See method source for specific definition of 'unsafe'.
+     * See method source for specific definition of 'non-printable'.
      * 
      * @param name of the element
-     * @param bytes to wrap, if they contain unsafe characters
+     * @param bytes to wrap, if they contain non-printable characters
      * @return the created element
      */
     public static Element protectedElementBase64(final String name, final byte[] bytes) {
@@ -747,6 +734,28 @@ public final class IBaseDataObjectXmlCodecs {
 
             element.setAttribute(ENCODING_ATTRIBUTE_NAME, BASE64);
             element.addContent(base64String);
+        } else {
+            element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
+        }
+
+        return element;
+    }
+
+    /**
+     * Creates a 'protected' element which can be hashed with sha256 if it contains non-printable characters
+     * 
+     * See method source for specific definition of 'non-printable'.
+     * 
+     * @param name of the element
+     * @param bytes to wrap, if they contain non-printable characters.
+     * @return the created element
+     */
+    public static Element protectedElementSha256(final String name, final byte[] bytes) {
+        final Element element = new Element(name);
+
+        if (ByteUtil.hasNonPrintableValues(bytes)) {
+            element.setAttribute(IBaseDataObjectXmlCodecs.ENCODING_ATTRIBUTE_NAME, IBaseDataObjectXmlCodecs.SHA256);
+            element.addContent(ByteUtil.sha256Bytes(bytes));
         } else {
             element.addContent(new String(bytes, StandardCharsets.ISO_8859_1));
         }
