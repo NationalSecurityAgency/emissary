@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DisposeHelperTest {
+class DisposeHelperTest extends UnitTest {
 
     private static final Runnable FIRST = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestFirstRunnable");
     private static final Runnable SECOND = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestSecondRunnable");
@@ -41,7 +41,7 @@ class DisposeHelperTest {
 
     @BeforeAll
     static void setupClass() {
-        UnitTest.setupSystemProperties();
+        setupSystemProperties();
     }
 
     @BeforeEach
