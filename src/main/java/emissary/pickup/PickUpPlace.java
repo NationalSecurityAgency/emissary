@@ -77,7 +77,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
 
-    private boolean useObjectTraceLogger = false;
+    protected boolean useObjectTraceLogger = false;
     protected ObjectTracing objectTracingUtil;
 
     public PickUpPlace() throws IOException {
@@ -491,6 +491,9 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         boolean success = true;
         logger.debug("Starting processDataFile in PickUpPlace for {}", theFile);
 
+        if (useObjectTraceLogger) {
+            objectTracingUtil.emitLifecycleEvent(fixedName, ObjectTracing.Stage.PickUp);
+        }
 
         // Handle oversize data quickly without reading the file
         if (isOversize) {
@@ -562,11 +565,6 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         dataObjectCreated(d, theFile);
         logger.info("**Deploying an agent for {} and object {} forms={} simple={}", fixedName, d.getInternalId(), d.getAllCurrentForms(),
                 (simpleMode ? "simple" : ""));
-
-        // If object tracing log that agent is being deployed for fixedName (filename)
-        if (useObjectTraceLogger) {
-            objectTracingUtil.emitLifecycleEvent(d, ObjectTracing.Stage.PickUp);
-        }
 
         assignToPooledAgent(d, -1L);
         return true;

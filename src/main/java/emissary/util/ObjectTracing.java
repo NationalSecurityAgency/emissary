@@ -30,4 +30,15 @@ public class ObjectTracing {
 
         objectTraceLogger.info(appendEntries(jsonMap), "");
     }
+
+    public void emitLifecycleEvent(String filename, ObjectTracing.Stage stage) {
+
+        Map<String, String> jsonMap = new HashMap<>();
+
+        // add our fields
+        jsonMap.put("inputFileName", filename);
+        jsonMap.put("stage", String.valueOf(stage));
+
+        objectTraceLogger.info(appendEntries(jsonMap), "");
+    }
 }
