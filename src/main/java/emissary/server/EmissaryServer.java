@@ -58,7 +58,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -119,7 +118,7 @@ public class EmissaryServer {
     /**
      * Creates and starts a server that is bound into the local Namespace using DEFAULT_NAMESPACE_NAME and returned
      *
-     * 
+     *
      */
     public Server startServer() {
         // do what StartJetty and then JettyServer did to start
@@ -157,18 +156,18 @@ public class EmissaryServer {
             handlers.addHandler(emissaryHandler); // not secured, no endpoints and must be loaded first
             handlers.addHandler(security);
 
-            Server server = configureServer();
-            server.setHandler(handlers);
-            server.addBean(loginService);
-            server.setStopAtShutdown(true);
-            server.setStopTimeout(10000L);
-            if (this.cmd.shouldDumpJettyBeans()) {
-                LOG.info(server.dump());
+            Server configuredServer = configureServer();
+            configuredServer.setHandler(handlers);
+            configuredServer.addBean(loginService);
+            configuredServer.setStopAtShutdown(true);
+            configuredServer.setStopTimeout(10000L);
+            if (this.cmd.shouldDumpJettyBeans() && LOG.isInfoEnabled()) {
+                LOG.info(configuredServer.dump());
             }
-            this.server = server;
+            this.server = configuredServer;
             bindServer(); // emissary specific
 
-            server.start();
+            configuredServer.start();
             // server.join(); // don't join so we can shutdown
 
             String serverLocation = cmd.getScheme() + "://" + cmd.getHost() + ":" + cmd.getPort();
@@ -194,10 +193,9 @@ public class EmissaryServer {
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
-            return server;
+            return configuredServer;
         } catch (Throwable t) {
             String errorMsg = "Emissary server didn't start";
-            LOG.error(errorMsg, t);
             throw new RuntimeException(errorMsg, t);
         }
     }
@@ -486,10 +484,10 @@ public class EmissaryServer {
             if (s != null && s.isStarted()) {
                 started = true;
             } else {
-                LOG.debug("Server found but not started, name=" + name);
+                LOG.debug("Server found but not started, name={}", name);
             }
         } catch (NamespaceException ex) {
-            LOG.debug("No server found using name=" + name);
+            LOG.debug("No server found using name={}", name);
         }
         return started;
     }
@@ -546,7 +544,7 @@ public class EmissaryServer {
         return new HashLoginService("EmissaryRealm", jettyUsersFile);
     }
 
-    private void bindServer() throws UnknownHostException, AttributeInUseException {
+    private void bindServer() throws AttributeInUseException {
         if (Namespace.exists(getDefaultNamespaceName())) {
             LOG.error("EmissaryServer already bound to namespace. This should NEVER happen.");
             throw new AttributeInUseException("EmissaryServer was already bound to the namespace using serverName: " + DEFAULT_NAMESPACE_NAME);
@@ -661,11 +659,11 @@ public class EmissaryServer {
         threadPool.setLowThreadsThreshold(lowThreads);
         threadPool.setThreadsPriority(threadsPriority);
 
-        Server server = new Server(threadPool);
-        server.setConnectors(new Connector[] {
-                createServerConnector(server)
+        Server configuredServer = new Server(threadPool);
+        configuredServer.setConnectors(new Connector[] {
+                createServerConnector(configuredServer)
         });
-        return server;
+        return configuredServer;
     }
 
     /**
@@ -700,16 +698,16 @@ public class EmissaryServer {
      * @throws IOException if there is an error
      */
     private ServerConnector createHttpsConnector(Server server) throws IOException {
-        HttpConfiguration http_config = new HttpConfiguration();
-        http_config.setSecureScheme("https");
-        http_config.setSecurePort(cmd.getPort());
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setSecureScheme("https");
+        httpConfig.setSecurePort(cmd.getPort());
 
-        HttpConfiguration https_config = new HttpConfiguration(http_config);
-        https_config.addCustomizer(createSecureRequestCustomizer());
+        HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+        httpsConfig.addCustomizer(createSecureRequestCustomizer());
 
         return new ServerConnector(server,
                 new SslConnectionFactory(getSslContextFactory(), HttpVersion.HTTP_1_1.asString()),
-                new HttpConnectionFactory(https_config));
+                new HttpConnectionFactory(httpsConfig));
     }
 
     /**
@@ -721,7 +719,7 @@ public class EmissaryServer {
      * <li>getStsMaxAge() => -1 (no max age) // Strict-Transport-Security (STS) max age
      * <li>isStsIncludeSubDomains() => false // include-subdomain property is sent with any STS header
      * </ul>
-     * 
+     *
      * @return a secure request customizer
      */
     private SecureRequestCustomizer createSecureRequestCustomizer() {
