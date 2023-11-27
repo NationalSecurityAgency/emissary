@@ -36,10 +36,24 @@ public abstract class Rule {
                 StringUtils.isBlank(threshold) ? 1.0 : Double.parseDouble(threshold));
     }
 
+    /**
+     * Check the rule conditions
+     *
+     * @param trackers the listing of agents, places, and filenames that's currently processing
+     * @param placeSimpleName the place name currently processing on one or more mobile agents
+     * @param count number of mobile agents stuck on the place
+     * @return true if conditions are met, false otherwise
+     */
     public boolean condition(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
         return overThreshold(count) && overTimeLimit(trackers, placeSimpleName);
     }
 
+    /**
+     * Check to see if the number of places in mobile agents are over the configured threshold
+     * 
+     * @param count number of mobile agents stuck on the place
+     * @return true if the number of mobile agents stuck on the place is over the threshold, false otherwise
+     */
     protected boolean overThreshold(Integer count) {
         try {
             int poolSize = AgentPool.lookup().getCurrentPoolSize();
@@ -50,6 +64,13 @@ public abstract class Rule {
         }
     }
 
+    /**
+     * Check to see if the places in mobile agents are over the configured time limit
+     *
+     * @param trackers the listing of agents, places, and filenames that's currently processing
+     * @param placeSimpleName the place name currently processing on one or more mobile agents
+     * @return true if the places in mobile agents are over the configured time limit, false otherwise
+     */
     protected abstract boolean overTimeLimit(Map<String, Sentinel.Tracker> trackers, String placeSimpleName);
 
     @Override

@@ -32,7 +32,6 @@ public class Protocol {
     protected boolean enabled = false;
     protected Action action;
     protected final Map<String, Rule> rules = new ConcurrentHashMap<>(); // key: place, value: rule
-    protected final Map<String, Integer> placeAgentCounts = new ConcurrentHashMap<>(); // key: place, value: number of agents in place
 
     public Protocol(String conf) {
         configure(conf);
@@ -46,7 +45,7 @@ public class Protocol {
      * Run the configured rules over the watched mobile-agents
      */
     public void run(Map<String, Sentinel.Tracker> trackers) {
-        placeAgentCounts.clear();
+        Map<String, Integer> placeAgentCounts = new ConcurrentHashMap<>();
         for (Sentinel.Tracker tracker : trackers.values()) {
             String placeKey = getPlaceKey(tracker);
             if (StringUtils.isNotBlank(placeKey)) {
@@ -61,14 +60,31 @@ public class Protocol {
         }
     }
 
+    /**
+     * Get the place key, i.e. the simple name
+     *
+     * @param tracker agents, places, and filenames that's currently processing
+     * @return the place key
+     */
     public String getPlaceKey(Sentinel.Tracker tracker) {
         return getPlaceSimpleName(tracker.getPlaceName());
     }
 
+    /**
+     * Get the simple name of a place, looks for the position in a string after the last '/'
+     *
+     * @param place the place name
+     * @return the simple place name
+     */
     public static String getPlaceSimpleName(String place) {
         return StringUtils.substringAfterLast(place, "/");
     }
 
+    /**
+     * Get the Configurator
+     *
+     * @param conf the location of the configuration file
+     */
     protected void configure(String conf) {
         try {
             this.config = ConfigUtil.getConfigInfo(conf);
@@ -78,6 +94,9 @@ public class Protocol {
         }
     }
 
+    /**
+     * Initialize rule set and action
+     */
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (enabled) {
@@ -106,6 +125,13 @@ public class Protocol {
         }
     }
 
+    /**
+     * Validate the place exists in the {@link Namespace}
+     *
+     * @param place the name of the place
+     * @throws NamespaceException if the directory place does not exist
+     * @throws IllegalStateException if the place cannot be found
+     */
     protected void validate(String place) throws NamespaceException {
         // validate that the place exists
         if (!DEFAULT_RULE.equalsIgnoreCase(place)) {
@@ -117,9 +143,16 @@ public class Protocol {
         }
     }
 
-    protected void check(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer count) {
-        if (rules.values().stream().allMatch(rule -> rule.condition(tracker, placeSimpleName, count))) {
-            action.trigger(tracker, placeSimpleName, count);
+    /**
+     * Check the configured rules against the Sentinel tracking objects
+     *
+     * @param trackers the listing of agents, places, and filenames that's currently processing
+     * @param placeSimpleName the place name currently processing on one or more mobile agents
+     * @param count number of mobile agents stuck on the place
+     */
+    protected void check(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
+        if (rules.values().stream().allMatch(rule -> rule.condition(trackers, placeSimpleName, count))) {
+            action.trigger(trackers, placeSimpleName, count);
         }
     }
 

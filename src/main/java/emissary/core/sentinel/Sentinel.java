@@ -119,7 +119,7 @@ public class Sentinel implements Runnable {
     }
 
     /**
-     * Initialize rule set
+     * Initialize Protocols
      */
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);

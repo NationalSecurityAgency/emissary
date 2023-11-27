@@ -24,6 +24,13 @@ public class AnyMaxTime extends Rule {
         super(place, timeLimit, threshold);
     }
 
+    /**
+     * Check to see if ANY places in mobile agents are over the configured time limit
+     *
+     * @param trackers the listing of agents, places, and filenames that's currently processing
+     * @param placeSimpleName the place name currently processing on one or more mobile agents
+     * @return true if any places in mobile agents are over the configured time limit, false otherwise
+     */
     protected boolean overTimeLimit(Map<String, Sentinel.Tracker> trackers, String placeSimpleName) {
         return trackers.values().stream()
                 .filter(t -> StringUtils.equalsIgnoreCase(t.getPlaceSimpleName(), placeSimpleName))

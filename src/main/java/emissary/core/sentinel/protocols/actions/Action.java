@@ -13,7 +13,7 @@ public abstract class Action {
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * Try to terminate the JVM
+     * Take action when rule conditions are met
      *
      * @param trackers the listing of agents, places, and filenames that's currently processing
      * @param placeSimpleName the place name currently processing on one or more mobile agents
