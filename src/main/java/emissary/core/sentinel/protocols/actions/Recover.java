@@ -1,4 +1,4 @@
-package emissary.core.sentinel.rules;
+package emissary.core.sentinel.protocols.actions;
 
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
@@ -8,14 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Recover extends Rule {
-    public Recover(String place, long timeLimit, double threshold) {
-        super(place, timeLimit, threshold);
-    }
-
-    public Recover(String place, String timeLimit, String threshold) {
-        super(place, timeLimit, threshold);
-    }
+public class Recover extends Action {
 
     /**
      * Attempts to recover the mobile agents by interrupting the thread
@@ -25,7 +18,7 @@ public class Recover extends Rule {
      * @param counter number of mobile agents stuck on the place
      */
     @Override
-    public void action(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) {
+    public void trigger(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) {
         logger.warn("Sentinel detected {} locked agent(s) running [{}], attempting recovery...", counter, placeSimpleName);
         List<String> agentNames = tracker.values().stream()
                 .filter(t -> t.getPlaceSimpleName().equalsIgnoreCase(placeSimpleName))

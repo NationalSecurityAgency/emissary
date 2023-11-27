@@ -1,18 +1,11 @@
-package emissary.core.sentinel.rules;
+package emissary.core.sentinel.protocols.actions;
 
 import emissary.core.sentinel.Sentinel;
 import emissary.server.EmissaryServer;
 
 import java.util.Map;
 
-public class Kill extends Rule {
-    public Kill(String place, long timeLimit, double threshold) {
-        super(place, timeLimit, threshold);
-    }
-
-    public Kill(String place, String timeLimit, String threshold) {
-        super(place, timeLimit, threshold);
-    }
+public class Kill extends Action {
 
     /**
      * Force a shutdown of the system
@@ -22,7 +15,7 @@ public class Kill extends Rule {
      * @param count number of mobile agents stuck on the place
      */
     @Override
-    public void action(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
+    public void trigger(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
         logger.error("Sentinel detected {} unrecoverable agent(s) running [{}], initiating forceful shutdown...", count, placeSimpleName);
         logger.debug("{}", trackers);
         EmissaryServer.stopServerForce();

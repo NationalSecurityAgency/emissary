@@ -2,14 +2,10 @@ package emissary.core.sentinel;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
-import emissary.core.Factory;
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
-import emissary.core.sentinel.rules.Notify;
-import emissary.core.sentinel.rules.Rule;
-import emissary.directory.DirectoryPlace;
-import emissary.directory.KeyManipulator;
+import emissary.core.sentinel.protocols.Protocol;
 import emissary.pool.MobileAgentFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,22 +27,16 @@ import java.util.stream.Collectors;
  */
 public class Sentinel implements Runnable {
 
-    protected static final Logger logger = LoggerFactory.getLogger(Sentinel.class);
+    protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public static final String DEFAULT_NAMESPACE_NAME = "Sentinel";
 
-    protected static final String DEFAULT_RULE = "DEFAULT";
-
-    // key: place, value: rule (time limits, thresholds)
-    final Map<String, Rule> rules = new ConcurrentHashMap<>();
-
     // key: agent name, value: how long Sentinel has observed the mobile agent
-    final Map<String, Tracker> trackers = new ConcurrentHashMap<>();
+    protected final Map<String, Tracker> trackers = new ConcurrentHashMap<>();
 
-    // key: place simple name, value: number of agents in place
-    final Map<String, Integer> placeAgentCounts = new ConcurrentHashMap<>();
+    protected final Map<String, Protocol> protocols = new ConcurrentHashMap<>();
 
-    Configurator config;
+    protected Configurator config;
 
     // how many minutes to sleep before checking the mobile agents
     protected long pollingInterval = 5;
@@ -112,7 +103,7 @@ public class Sentinel implements Runnable {
 
     @Override
     public String toString() {
-        return "Watching agents with " + rules.values();
+        return "Watching agents with " + protocols.values();
     }
 
     /**
@@ -135,35 +126,23 @@ public class Sentinel implements Runnable {
         if (this.enabled) {
             this.pollingInterval = config.findIntEntry("POLLING_INTERVAL_MINUTES", 5);
 
-            logger.trace("Loading rules...");
-            for (String ruleId : config.findEntries("RULE_ID")) {
+            logger.trace("Sentinel protocols initializing...");
+            for (Map.Entry<String, String> proto : config.findStringMatchMap("PROTOCOL_", true, true).entrySet()) {
                 try {
-                    validate(ruleId);
-                    Map<String, String> map = config.findStringMatchMap(ruleId + "_");
-                    String rule = map.getOrDefault("RULE", Notify.class.getName());
-                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
-                    logger.info("Sentinel loaded {}", ruleImpl);
-                    this.rules.put(ruleId, ruleImpl);
+                    String protocolId = proto.getKey();
+                    String config = proto.getValue();
+                    Protocol protocol = new Protocol(config);
+                    logger.info("Sentinel initiated {}", protocol);
+                    if (protocol.isEnabled()) {
+                        this.protocols.put(protocolId, protocol);
+                    }
                 } catch (Exception e) {
-                    logger.warn("Unable to configure Sentinel for {}: {}", ruleId, e.getMessage());
+                    logger.warn("Unable to configure Sentinel Protocol {}: {}", proto, e.getMessage());
                 }
             }
-
-            // if no rules, create a default one
-            if (!this.rules.containsKey(DEFAULT_RULE)) {
-                logger.warn("Default rule not found, creating one...");
-                this.rules.put(DEFAULT_RULE, new Notify(DEFAULT_RULE, 60L, 1.0));
-            }
-        }
-    }
-
-    protected void validate(String place) throws NamespaceException {
-        // validate that the place exists
-        if (!DEFAULT_RULE.equalsIgnoreCase(place)) {
-            DirectoryPlace directoryPlace = Namespace.lookup(DirectoryPlace.class).iterator().next();
-            if (directoryPlace.getEntries().stream()
-                    .noneMatch(entry -> place.equalsIgnoreCase(KeyManipulator.getServiceClassname(entry.getFullKey())))) {
-                throw new IllegalStateException("Place not found in the directory");
+            if (this.protocols.isEmpty()) {
+                this.enabled = false;
+                logger.warn("Sentinel initializing failed: no protocols found");
             }
         }
     }
@@ -174,13 +153,14 @@ public class Sentinel implements Runnable {
      * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
      */
     protected void watch() throws NamespaceException {
-        placeAgentCounts.clear();
-        List<String> agentKeys =
-                Namespace.keySet().stream().filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME)).sorted().collect(Collectors.toList());
+        List<String> agentKeys = Namespace.keySet().stream()
+                .filter(k -> k.startsWith(MobileAgentFactory.AGENT_NAME))
+                .sorted()
+                .collect(Collectors.toList());
         for (String agentKey : agentKeys) {
             watch(agentKey);
         }
-        check();
+        protocols.values().forEach(protocol -> protocol.run(trackers));
     }
 
     /**
@@ -201,31 +181,11 @@ public class Sentinel implements Runnable {
                 trackedAgent.resetTimer();
             }
             trackedAgent.incrementTimer(pollingInterval);
-            String placeSimpleName = getPlaceSimpleName(mobileAgent.getLastPlaceProcessed());
-            placeAgentCounts.put(placeSimpleName, placeAgentCounts.getOrDefault(placeSimpleName, 0) + 1);
             logger.debug("Agent acquired {}", trackedAgent);
         } else {
             trackedAgent.clear();
             logger.debug("Agent not in use [{}]", agentKey);
         }
-    }
-
-    /**
-     * Run the configured rules over the watched mobile-agents
-     *
-     * @throws NamespaceException if there is a problem looking up resources in the {@link Namespace}
-     */
-    protected void check() throws NamespaceException {
-        logger.debug("Checking agents {}", placeAgentCounts);
-        for (Map.Entry<String, Integer> item : placeAgentCounts.entrySet()) {
-            Rule rule = rules.getOrDefault(item.getKey(), rules.get(DEFAULT_RULE));
-            logger.trace("Found {} for {}", rule, item.getKey());
-            rule.run(trackers, item.getKey(), item.getValue());
-        }
-    }
-
-    protected static String getPlaceSimpleName(String lastPlaceProcessed) {
-        return StringUtils.substringAfterLast(lastPlaceProcessed, "/");
     }
 
     public static class Tracker {
@@ -272,7 +232,7 @@ public class Sentinel implements Runnable {
         }
 
         public String getPlaceSimpleName() {
-            return Sentinel.getPlaceSimpleName(this.placeName);
+            return Protocol.getPlaceSimpleName(this.placeName);
         }
 
         public long getTimer() {
