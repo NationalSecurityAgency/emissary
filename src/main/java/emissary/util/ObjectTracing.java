@@ -21,14 +21,7 @@ public class ObjectTracing {
     public ObjectTracing() {}
 
     public void emitLifecycleEvent(IBaseDataObject d, ObjectTracing.Stage stage) {
-
-        Map<String, String> jsonMap = new HashMap<>();
-
-        // add our fields
-        jsonMap.put("inputFileName", d.getFilename());
-        jsonMap.put("stage", String.valueOf(stage));
-
-        objectTraceLogger.info(appendEntries(jsonMap), "");
+        emitLifecycleEvent(d.getFilename(), stage);
     }
 
     public void emitLifecycleEvent(String filename, ObjectTracing.Stage stage) {
