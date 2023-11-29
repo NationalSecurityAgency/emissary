@@ -73,7 +73,7 @@
     <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
     <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
     <dep.junit.version>4.13.2</dep.junit.version>
-    <dep.logback.version>1.3.8</dep.logback.version>
+    <dep.logback.version>1.3.12</dep.logback.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
     <dep.mockito.version>5.4.0</dep.mockito.version>
