@@ -5,19 +5,14 @@ import emissary.server.EmissaryServer;
 
 import java.util.Map;
 
+/**
+ * Force a shutdown of the system
+ */
 public class Kill extends Action {
 
-    /**
-     * Force a shutdown of the system
-     *
-     * @param trackers the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param count number of mobile agents stuck on the place
-     */
     @Override
-    public void trigger(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
-        logger.error("Sentinel detected {} unrecoverable agent(s) running [{}], initiating forceful shutdown...", count, placeSimpleName);
-        logger.debug("{}", trackers);
+    public void trigger(Map<String, Sentinel.Tracker> trackers) {
+        logger.error("Sentinel detected unrecoverable agents {}, initiating forceful shutdown...", trackers.values());
         EmissaryServer.stopServerForce();
     }
 }

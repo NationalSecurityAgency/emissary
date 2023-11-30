@@ -23,15 +23,22 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static emissary.core.sentinel.Sentinel.Tracker.getPlaceSimpleName;
+
+/**
+ * This protocol buckets places that are running in mobile agents and then looks at max and min time in place and the
+ * number of agents that are potentially "stuck." After places are bucketed, the place stats are run against the
+ * configured rules to determine if all conditions are met. Once all rule conditions are met, then the configured action
+ * will be triggered, i.e. log/notify.
+ */
 public class Protocol {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    protected static final String DEFAULT_RULE = "DEFAULT";
     protected Configurator config;
     protected boolean enabled = false;
+    protected final Map<String, Rule> rules = new ConcurrentHashMap<>();
     protected Action action;
-    protected final Map<String, Rule> rules = new ConcurrentHashMap<>(); // key: place, value: rule
 
     public Protocol(String conf) {
         configure(conf);
@@ -45,18 +52,20 @@ public class Protocol {
      * Run the configured rules over the watched mobile-agents
      */
     public void run(Map<String, Sentinel.Tracker> trackers) {
-        Map<String, Integer> placeAgentCounts = new ConcurrentHashMap<>();
+
+        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
         for (Sentinel.Tracker tracker : trackers.values()) {
             String placeKey = getPlaceKey(tracker);
             if (StringUtils.isNotBlank(placeKey)) {
-                placeAgentCounts.put(placeKey, placeAgentCounts.getOrDefault(placeKey, 0) + 1);
+                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
             }
         }
-        logger.debug("Checking agents {}", placeAgentCounts);
-        for (Map.Entry<String, Integer> item : placeAgentCounts.entrySet()) {
-            Rule rule = rules.getOrDefault(item.getKey(), rules.get(DEFAULT_RULE));
-            logger.trace("Found {} for {}", rule, item.getKey());
-            check(trackers, item.getKey(), item.getValue());
+
+        if (!placeAgentStats.isEmpty()) {
+            logger.debug("Running rules on agents {}", placeAgentStats);
+            if (rules.values().stream().allMatch(rule -> rule.condition(placeAgentStats.values()))) {
+                action.trigger(trackers);
+            }
         }
     }
 
@@ -71,16 +80,6 @@ public class Protocol {
     }
 
     /**
-     * Get the simple name of a place, looks for the position in a string after the last '/'
-     *
-     * @param place the place name
-     * @return the simple place name
-     */
-    public static String getPlaceSimpleName(String place) {
-        return StringUtils.substringAfterLast(place, "/");
-    }
-
-    /**
      * Get the Configurator
      *
      * @param conf the location of the configuration file
@@ -90,7 +89,7 @@ public class Protocol {
             this.config = ConfigUtil.getConfigInfo(conf);
             init();
         } catch (IOException e) {
-            logger.warn("Cannot read " + conf + ", skipping");
+            logger.warn("Cannot read " + conf + ", skipping!!");
         }
     }
 
@@ -100,14 +99,18 @@ public class Protocol {
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (enabled) {
+
+            String action = config.findStringEntry("ACTION", Notify.class.getName());
+            this.action = (Action) Factory.create(action);
+
             logger.trace("Loading rules...");
             for (String ruleId : config.findEntries("RULE_ID")) {
                 try {
-                    validate(ruleId);
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
-                    logger.debug("Sentinel loaded {}", ruleImpl);
+                    Rule ruleImpl =
+                            (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
+                    logger.debug("Sentinel loaded rule {}", ruleImpl);
                     this.rules.put(ruleId, ruleImpl);
                 } catch (Exception e) {
                     logger.warn("Unable to configure Sentinel for {}: {}", ruleId, e.getMessage());
@@ -117,11 +120,7 @@ public class Protocol {
             // if no rules then disable protocol
             if (this.rules.isEmpty()) {
                 this.enabled = false;
-                return;
             }
-
-            String action = config.findStringEntry("ACTION", Notify.class.getName());
-            this.action = (Action) Factory.create(action);
         }
     }
 
@@ -132,35 +131,57 @@ public class Protocol {
      * @throws NamespaceException if the directory place does not exist
      * @throws IllegalStateException if the place cannot be found
      */
-    protected void validate(String place) throws NamespaceException {
+    protected String validate(String place) throws NamespaceException {
         // validate that the place exists
-        if (!DEFAULT_RULE.equalsIgnoreCase(place)) {
-            DirectoryPlace directoryPlace = Namespace.lookup(DirectoryPlace.class).iterator().next();
-            if (directoryPlace.getEntries().stream()
-                    .noneMatch(entry -> place.equalsIgnoreCase(KeyManipulator.getServiceClassname(entry.getFullKey())))) {
-                throw new IllegalStateException("Place not found in the directory");
-            }
+        DirectoryPlace directoryPlace = Namespace.lookup(DirectoryPlace.class).iterator().next();
+        if (directoryPlace.getEntries().stream()
+                .noneMatch(entry -> KeyManipulator.getServiceClassname(entry.getFullKey()).matches(place))) {
+            throw new IllegalStateException("Place not found in the directory");
         }
-    }
-
-    /**
-     * Check the configured rules against the Sentinel tracking objects
-     *
-     * @param trackers the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param count number of mobile agents stuck on the place
-     */
-    protected void check(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
-        if (rules.values().stream().allMatch(rule -> rule.condition(trackers, placeSimpleName, count))) {
-            action.trigger(trackers, placeSimpleName, count);
-        }
+        return place;
     }
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", Protocol.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", "[", "]")
                 .add("rules=" + rules)
                 .add("action=" + action)
                 .toString();
     }
+
+    public static class PlaceAgentStats {
+
+        private final String place;
+        private int count;
+        private long maxTimeInPlace = -1;
+        private long minTimeInPlace = -1;
+
+        public PlaceAgentStats(String place) {
+            this.place = place;
+        }
+
+        public String getPlace() {
+            return place;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public long getMaxTimeInPlace() {
+            return maxTimeInPlace;
+        }
+
+        public long getMinTimeInPlace() {
+            return minTimeInPlace;
+        }
+
+        public PlaceAgentStats update(long timer) {
+            this.count++;
+            this.minTimeInPlace = this.minTimeInPlace < 0 ? timer : Math.min(this.minTimeInPlace, timer);
+            this.maxTimeInPlace = Math.max(this.maxTimeInPlace, timer);
+            return this;
+        }
+    }
+
 }

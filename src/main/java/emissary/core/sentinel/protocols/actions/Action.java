@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-public abstract class Action {
+public class Action {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -16,13 +16,14 @@ public abstract class Action {
      * Take action when rule conditions are met
      *
      * @param trackers the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param count number of mobile agents stuck on the place
      */
-    public abstract void trigger(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count);
+    public void trigger(Map<String, Sentinel.Tracker> trackers) {
+
+    }
 
     @Override
     public String toString() {
-        return getClass().getName();
+        return getClass().getSimpleName();
     }
+
 }

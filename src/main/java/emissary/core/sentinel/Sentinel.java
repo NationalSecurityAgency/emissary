@@ -14,16 +14,18 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Track mobile agents and log any suspicious behavior
+ * Track mobile agents and take action on suspicious behavior
  */
 public class Sentinel implements Runnable {
 
@@ -34,8 +36,10 @@ public class Sentinel implements Runnable {
     // key: agent name, value: how long Sentinel has observed the mobile agent
     protected final Map<String, Tracker> trackers = new ConcurrentHashMap<>();
 
-    protected final Map<String, Protocol> protocols = new ConcurrentHashMap<>();
+    // protocols contain an action to perform when the set of rule conditions are met
+    protected final Set<Protocol> protocols = new LinkedHashSet<>();
 
+    // the default configuration Sentinel.cfg
     protected Configurator config;
 
     // how many minutes to sleep before checking the mobile agents
@@ -44,6 +48,7 @@ public class Sentinel implements Runnable {
     // Loop control
     protected boolean timeToQuit = false;
 
+    // turn on/off sentinel
     protected boolean enabled = false;
 
     /**
@@ -84,8 +89,7 @@ public class Sentinel implements Runnable {
      */
     @Override
     public void run() {
-        logger.info("Sentinel is starting");
-
+        logger.info("Sentinel is watching");
         while (!this.timeToQuit) {
             // Delay this loop
             try {
@@ -98,12 +102,12 @@ public class Sentinel implements Runnable {
             }
         }
         Namespace.unbind(DEFAULT_NAMESPACE_NAME);
-        logger.info("Sentinel stopped.");
+        logger.info("Sentinel stopped");
     }
 
     @Override
     public String toString() {
-        return "Watching agents with " + protocols.values();
+        return "Watching agents with " + protocols;
     }
 
     /**
@@ -127,22 +131,22 @@ public class Sentinel implements Runnable {
             this.pollingInterval = config.findIntEntry("POLLING_INTERVAL_MINUTES", 5);
 
             logger.trace("Sentinel protocols initializing...");
-            for (Map.Entry<String, String> proto : config.findStringMatchMap("PROTOCOL_", true, true).entrySet()) {
+            for (String config : config.findEntries("PROTOCOL")) {
                 try {
-                    String protocolId = proto.getKey();
-                    String config = proto.getValue();
                     Protocol protocol = new Protocol(config);
-                    logger.info("Sentinel initiated {}", protocol);
                     if (protocol.isEnabled()) {
-                        this.protocols.put(protocolId, protocol);
+                        logger.info("Sentinel protocol initialized {}", protocol);
+                        this.protocols.add(protocol);
+                    } else {
+                        logger.debug("Sentinel protocol disabled {}", protocol);
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to configure Sentinel Protocol {}: {}", proto, e.getMessage());
+                    logger.warn("Unable to configure Sentinel Protocol[{}]: {}", config, e.getMessage());
                 }
             }
             if (this.protocols.isEmpty()) {
                 this.enabled = false;
-                logger.warn("Sentinel initializing failed: no protocols found");
+                logger.warn("Sentinel initialization failed: no protocols found");
             }
         }
     }
@@ -160,7 +164,7 @@ public class Sentinel implements Runnable {
         for (String agentKey : agentKeys) {
             watch(agentKey);
         }
-        protocols.values().forEach(protocol -> protocol.run(trackers));
+        protocols.forEach(protocol -> protocol.run(trackers));
     }
 
     /**
@@ -174,17 +178,17 @@ public class Sentinel implements Runnable {
         IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agentKey);
         Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
         if (mobileAgent.isInUse()) {
-            if (!Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getPlaceName())
-                    && !Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())) {
+            if (!Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())
+                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getPlaceName())) {
                 trackedAgent.setAgentId(mobileAgent.agentID());
                 trackedAgent.setPlaceName(mobileAgent.getLastPlaceProcessed());
                 trackedAgent.resetTimer();
             }
             trackedAgent.incrementTimer(pollingInterval);
-            logger.debug("Agent acquired {}", trackedAgent);
+            logger.trace("Agent acquired {}", trackedAgent);
         } else {
             trackedAgent.clear();
-            logger.debug("Agent not in use [{}]", agentKey);
+            logger.trace("Agent not in use [{}]", agentKey);
         }
     }
 
@@ -214,13 +218,17 @@ public class Sentinel implements Runnable {
             } else {
                 this.agentId = agentId;
                 if (StringUtils.contains(agentId, "Agent-")) {
-                    this.shortName = StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
+                    this.shortName = getShortName(agentId);
                 }
             }
         }
 
         public String getShortName() {
             return shortName;
+        }
+
+        public static String getShortName(String agentId) {
+            return StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
         }
 
         public String getPlaceName() {
@@ -232,7 +240,19 @@ public class Sentinel implements Runnable {
         }
 
         public String getPlaceSimpleName() {
-            return Protocol.getPlaceSimpleName(this.placeName);
+            return getPlaceSimpleName(this.placeName);
+        }
+
+        public String getPlaceAndShortName() {
+            return getPlaceAndShortName(this.placeName, this.shortName);
+        }
+
+        public static String getPlaceSimpleName(String place) {
+            return StringUtils.defaultString(StringUtils.substringAfterLast(place, "/"), "");
+        }
+
+        public static String getPlaceAndShortName(String place, String shortName) {
+            return getPlaceSimpleName(place) + "/" + shortName;
         }
 
         public long getTimer() {
@@ -260,11 +280,10 @@ public class Sentinel implements Runnable {
 
         @Override
         public String toString() {
-            return new StringJoiner(", ", Tracker.class.getSimpleName() + "[", "]")
+            return new StringJoiner(", ", "[", "]")
                     .add("agentName='" + agentName + "'")
-                    .add("agentId='" + agentId + "'")
-                    .add("shortName='" + shortName + "'")
                     .add("placeName='" + placeName + "'")
+                    .add("shortName='" + shortName + "'")
                     .add("timer=" + timer + " minute(s)")
                     .toString();
         }

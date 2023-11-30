@@ -8,21 +8,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Attempts to recover the mobile agents by interrupting the thread
+ */
 public class Recover extends Action {
 
-    /**
-     * Attempts to recover the mobile agents by interrupting the thread
-     *
-     * @param tracker the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param counter number of mobile agents stuck on the place
-     */
     @Override
-    public void trigger(Map<String, Sentinel.Tracker> tracker, String placeSimpleName, Integer counter) {
-        logger.warn("Sentinel detected {} locked agent(s) running [{}], attempting recovery...", counter, placeSimpleName);
+    public void trigger(Map<String, Sentinel.Tracker> tracker) {
+        logger.warn("Sentinel detected locked agents, attempting recovery...");
         List<String> agentNames = tracker.values().stream()
-                .filter(t -> t.getPlaceSimpleName().equalsIgnoreCase(placeSimpleName))
+                // .filter(t -> t.getPlaceSimpleName().equalsIgnoreCase(placeSimpleName))
                 .map(Sentinel.Tracker::getAgentName)
+                .sorted()
                 .collect(Collectors.toList());
 
         for (String agentName : agentNames) {
@@ -35,4 +32,5 @@ public class Recover extends Action {
             }
         }
     }
+
 }

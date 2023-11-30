@@ -1,7 +1,7 @@
 package emissary.core.sentinel.protocols.rules;
 
 import emissary.core.NamespaceException;
-import emissary.core.sentinel.Sentinel;
+import emissary.core.sentinel.protocols.Protocol;
 import emissary.pool.AgentPool;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,14 +9,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
+import java.util.Collection;
 import java.util.StringJoiner;
+import java.util.regex.Pattern;
 
 public abstract class Rule {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    protected final String place;
+    // the place name to test the condition
+    protected final Pattern place;
 
     // how long to wait before alerting on stuck agents
     protected final long timeLimit;
@@ -26,7 +28,7 @@ public abstract class Rule {
 
     public Rule(String place, long timeLimit, double threshold) {
         logger.trace("Creating rule for place={}, timeLimit={}, threshold={}", place, timeLimit, threshold);
-        this.place = place;
+        this.place = Pattern.compile(place);
         this.timeLimit = timeLimit;
         this.threshold = threshold;
     }
@@ -39,26 +41,33 @@ public abstract class Rule {
     /**
      * Check the rule conditions
      *
-     * @param trackers the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
-     * @param count number of mobile agents stuck on the place
+     * @param placeAgentStats collection of the stats of a place that is currently processing
      * @return true if conditions are met, false otherwise
      */
-    public boolean condition(Map<String, Sentinel.Tracker> trackers, String placeSimpleName, Integer count) {
-        return overThreshold(count) && overTimeLimit(trackers, placeSimpleName);
+    public boolean condition(Collection<Protocol.PlaceAgentStats> placeAgentStats) {
+        return placeAgentStats.stream().filter(p -> place.matcher(p.getPlace()).matches()).anyMatch(p -> overThreshold(p) && overTimeLimit(p));
     }
 
     /**
      * Check to see if the number of places in mobile agents are over the configured threshold
-     * 
-     * @param count number of mobile agents stuck on the place
+     *
+     * @param placeAgentStats the stats of a place that is currently processing
      * @return true if the number of mobile agents stuck on the place is over the threshold, false otherwise
      */
-    protected boolean overThreshold(Integer count) {
+    protected boolean overThreshold(Protocol.PlaceAgentStats placeAgentStats) {
+        int poolSize = getAgentCount();
+        logger.debug("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, placeAgentStats.getCount(), poolSize, threshold);
+        return (double) placeAgentStats.getCount() / poolSize >= this.threshold;
+    }
+
+    /**
+     * Get the total number of agents, idle and active. Override this method to
+     * 
+     * @return the total number of agents
+     */
+    protected int getAgentCount() {
         try {
-            int poolSize = AgentPool.lookup().getCurrentPoolSize();
-            logger.trace("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, count, poolSize, threshold);
-            return (double) count / poolSize >= this.threshold;
+            return AgentPool.lookup().getCurrentPoolSize();
         } catch (NamespaceException ne) {
             throw new IllegalStateException(ne);
         }
@@ -67,11 +76,10 @@ public abstract class Rule {
     /**
      * Check to see if the places in mobile agents are over the configured time limit
      *
-     * @param trackers the listing of agents, places, and filenames that's currently processing
-     * @param placeSimpleName the place name currently processing on one or more mobile agents
+     * @param placeAgentStats the stats of a place that is currently processing
      * @return true if the places in mobile agents are over the configured time limit, false otherwise
      */
-    protected abstract boolean overTimeLimit(Map<String, Sentinel.Tracker> trackers, String placeSimpleName);
+    protected abstract boolean overTimeLimit(Protocol.PlaceAgentStats placeAgentStats);
 
     @Override
     public String toString() {
@@ -81,4 +89,5 @@ public abstract class Rule {
                 .add("threshold=" + threshold)
                 .toString();
     }
+
 }
