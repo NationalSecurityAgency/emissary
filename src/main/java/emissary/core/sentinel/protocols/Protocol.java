@@ -89,7 +89,7 @@ public class Protocol {
             this.config = ConfigUtil.getConfigInfo(conf);
             init();
         } catch (IOException e) {
-            logger.warn("Cannot read " + conf + ", skipping!!");
+            logger.warn("Cannot read {}, skipping!!", conf);
         }
     }
 
@@ -100,20 +100,22 @@ public class Protocol {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (enabled) {
 
-            String action = config.findStringEntry("ACTION", Notify.class.getName());
-            this.action = (Action) Factory.create(action);
+            this.action = (Action) Factory.create(config.findStringEntry("ACTION", Notify.class.getName()));
 
             logger.trace("Loading rules...");
             for (String ruleId : config.findEntries("RULE_ID")) {
                 try {
+                    if (this.rules.containsKey(ruleId)) {
+                        logger.warn("Sentinel rule with ID[{}] already exists, this may result in unexpected behavior", ruleId);
+                    }
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
                     Rule ruleImpl = (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
                             map.get("PLACE_THRESHOLD"));
-                    logger.debug("Sentinel loaded rule {}", ruleImpl);
+                    logger.debug("Sentinel loaded rule[{}] - {}", ruleId, ruleImpl);
                     this.rules.put(ruleId, ruleImpl);
                 } catch (Exception e) {
-                    logger.warn("Unable to configure Sentinel for {}: {}", ruleId, e.getMessage());
+                    logger.warn("Sentinel rule[{}] is invalid: {}", ruleId, e.getMessage());
                 }
             }
 

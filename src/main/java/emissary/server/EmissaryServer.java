@@ -318,8 +318,8 @@ public class EmissaryServer {
         }
 
         try {
-            Sentinel rw = Sentinel.lookup();
-            rw.quit();
+            Sentinel sentinel = Sentinel.lookup();
+            sentinel.quit();
         } catch (Exception ex) {
             LOG.warn("No sentinel available");
         }

@@ -9,6 +9,7 @@ import emissary.core.sentinel.protocols.Protocol;
 import emissary.pool.MobileAgentFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ThreadUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +69,13 @@ public class Sentinel implements Runnable {
     }
 
     /**
+     * Start up the Sentinel thread
+     */
+    public static void start() {
+        new Sentinel();
+    }
+
+    /**
      * Lookup the default Sentinel in the {@link Namespace}
      *
      * @return The registered Sentinel
@@ -82,6 +90,7 @@ public class Sentinel implements Runnable {
     public void quit() {
         logger.info("Stopping Sentinel...");
         this.timeToQuit = true;
+        ThreadUtils.findThreadsByName(DEFAULT_NAMESPACE_NAME).forEach(Thread::interrupt);
     }
 
     /**
@@ -135,7 +144,7 @@ public class Sentinel implements Runnable {
                 try {
                     Protocol protocol = new Protocol(config);
                     if (protocol.isEnabled()) {
-                        logger.info("Sentinel protocol initialized {}", protocol);
+                        logger.debug("Sentinel protocol initialized {}", protocol);
                         this.protocols.add(protocol);
                     } else {
                         logger.debug("Sentinel protocol disabled {}", protocol);
@@ -145,8 +154,10 @@ public class Sentinel implements Runnable {
                 }
             }
             if (this.protocols.isEmpty()) {
+                logger.warn("Sentinel initialization failed due to no protocols found, disabling");
                 this.enabled = false;
-                logger.warn("Sentinel initialization failed: no protocols found");
+            } else {
+                logger.info("Sentinel initialized protocols {}", protocols);
             }
         }
     }

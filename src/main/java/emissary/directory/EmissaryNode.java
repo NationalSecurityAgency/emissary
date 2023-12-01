@@ -272,7 +272,6 @@ public class EmissaryNode {
         }
 
         // The mobile agent watcher
-        Sentinel sentinel = new Sentinel();
-        logger.debug("Started Sentinel...{}", sentinel);
+        Sentinel.start();
     }
 }

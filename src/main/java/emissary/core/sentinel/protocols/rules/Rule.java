@@ -28,6 +28,15 @@ public abstract class Rule {
 
     public Rule(String place, long timeLimit, double threshold) {
         logger.trace("Creating rule for place={}, timeLimit={}, threshold={}", place, timeLimit, threshold);
+        if (StringUtils.isBlank(place)) {
+            throw new IllegalArgumentException("Invalid place pattern [" + place + "]");
+        }
+        if (timeLimit <= 0) {
+            throw new IllegalArgumentException("Invalid timeLimit [" + timeLimit + "], must be greater than 0");
+        }
+        if (threshold <= 0.0 || threshold > 1.0) {
+            throw new IllegalArgumentException("Invalid threshold [" + threshold + "], expected a value > 0.0 or <= 1.0");
+        }
         this.place = Pattern.compile(place);
         this.timeLimit = timeLimit;
         this.threshold = threshold;

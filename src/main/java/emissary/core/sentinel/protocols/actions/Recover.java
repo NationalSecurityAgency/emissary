@@ -17,7 +17,6 @@ public class Recover extends Action {
     public void trigger(Map<String, Sentinel.Tracker> tracker) {
         logger.warn("Sentinel detected locked agents, attempting recovery...");
         List<String> agentNames = tracker.values().stream()
-                // .filter(t -> t.getPlaceSimpleName().equalsIgnoreCase(placeSimpleName))
                 .map(Sentinel.Tracker::getAgentName)
                 .sorted()
                 .collect(Collectors.toList());
