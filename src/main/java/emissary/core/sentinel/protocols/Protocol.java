@@ -108,8 +108,8 @@ public class Protocol {
                 try {
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-                    Rule ruleImpl =
-                            (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"), map.get("THRESHOLD"));
+                    Rule ruleImpl = (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
+                            map.get("PLACE_THRESHOLD"));
                     logger.debug("Sentinel loaded rule {}", ruleImpl);
                     this.rules.put(ruleId, ruleImpl);
                 } catch (Exception e) {

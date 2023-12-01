@@ -318,6 +318,13 @@ public class EmissaryServer {
         }
 
         try {
+            Sentinel rw = Sentinel.lookup();
+            rw.quit();
+        } catch (Exception ex) {
+            LOG.warn("No sentinel available");
+        }
+
+        try {
             if (force) {
                 AgentPool.lookup().kill();
             } else {
@@ -365,13 +372,6 @@ public class EmissaryServer {
             rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
-        }
-
-        try {
-            Sentinel rw = Sentinel.lookup();
-            rw.quit();
-        } catch (Exception ex) {
-            LOG.warn("No sentinel available");
         }
 
         try {
