@@ -137,12 +137,12 @@ public class Sentinel implements Runnable {
     protected void init() {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (this.enabled) {
-            this.pollingInterval = config.findIntEntry("POLLING_INTERVAL_MINUTES", 5);
+            this.pollingInterval = this.config.findIntEntry("POLLING_INTERVAL_MINUTES", 5);
 
             logger.trace("Sentinel protocols initializing...");
-            for (String config : config.findEntries("PROTOCOL")) {
+            for (String protocolConfig : this.config.findEntries("PROTOCOL")) {
                 try {
-                    Protocol protocol = new Protocol(config);
+                    Protocol protocol = new Protocol(protocolConfig);
                     if (protocol.isEnabled()) {
                         logger.debug("Sentinel protocol initialized {}", protocol);
                         this.protocols.add(protocol);
@@ -150,7 +150,7 @@ public class Sentinel implements Runnable {
                         logger.debug("Sentinel protocol disabled {}", protocol);
                     }
                 } catch (Exception e) {
-                    logger.warn("Unable to configure Sentinel Protocol[{}]: {}", config, e.getMessage());
+                    logger.warn("Unable to configure Sentinel Protocol[{}]: {}", protocolConfig, e.getMessage());
                 }
             }
             if (this.protocols.isEmpty()) {
