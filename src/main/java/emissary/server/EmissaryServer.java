@@ -12,6 +12,7 @@ import emissary.core.MetricsManager;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
+import emissary.core.sentinel.Sentinel;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
@@ -312,6 +313,13 @@ public class EmissaryServer {
             LOG.info("Done pausing server");
         } catch (Exception ex) {
             LOG.error("Error pausing server", ex);
+        }
+
+        try {
+            Sentinel sentinel = Sentinel.lookup();
+            sentinel.quit();
+        } catch (Exception ex) {
+            LOG.warn("No sentinel available");
         }
 
         try {

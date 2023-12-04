@@ -7,6 +7,7 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.core.MetricsManager;
 import emissary.core.ResourceWatcher;
+import emissary.core.sentinel.Sentinel;
 import emissary.pool.AgentPool;
 import emissary.pool.MobileAgentFactory;
 import emissary.pool.MoveSpool;
@@ -269,5 +270,8 @@ public class EmissaryNode {
         } catch (IOException iox) {
             throw new EmissaryException("Unable to configure Emissary Node services", iox);
         }
+
+        // The mobile agent watcher
+        Sentinel.start();
     }
 }
