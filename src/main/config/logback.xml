@@ -21,7 +21,7 @@
   </appender>
 
   <!-- Enable output metrics logging by creating an environment variable of "ObjectTrace=true" -->
-  <if condition="&quot;${ObjectTrace}&quot;.equals(&quot;true&quot;)">
+  <if condition="&quot;${LOG_OBJECT_TRACE}&quot;.equals(&quot;true&quot;)">
     <then>
       <appender name="OBJECT-TRACE" class="emissary.util.CustomRolloverLogbackAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -36,9 +36,9 @@
             <message>[ignore]</message>
           </fieldNames>
         </encoder>
-        <file>logs/${emissary.node.name}-${emissary.node.port}-object-trace.log</file>
+        <file>localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-          <fileNamePattern>logs/${emissary.node.name}-${emissary.node.port}-object-trace.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
+          <fileNamePattern>localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
         </rollingPolicy>
       </appender>
 

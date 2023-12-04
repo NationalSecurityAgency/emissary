@@ -17,8 +17,9 @@ import emissary.place.AgentsNotSupportedPlace;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.pool.AgentPool;
+import emissary.spi.ObjectTracing;
+import emissary.spi.ObjectTracingService;
 import emissary.util.ClassComparator;
-import emissary.util.ObjectTracing;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
@@ -77,8 +78,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
 
-    protected boolean useObjectTraceLogger = false;
-    protected ObjectTracing objectTracingUtil;
+    private boolean useObjectTraceLogger = false;
 
     public PickUpPlace() throws IOException {
         super();
@@ -184,12 +184,8 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
 
         ALWAYS_COPY_METADATA_VALS = configG.findEntriesAsSet("ALWAYS_COPY_METADATA");
 
-        // Setup objectTraceLogger
+        // Whether or not to use the objectTrace logger
         useObjectTraceLogger = configG.findBooleanEntry("USE_OBJECT_TRACE_LOGGER", useObjectTraceLogger);
-        if (useObjectTraceLogger) {
-            objectTracingUtil = new ObjectTracing();
-            logger.info("Setting up the object trace logger");
-        }
     }
 
     /**
@@ -491,9 +487,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         boolean success = true;
         logger.debug("Starting processDataFile in PickUpPlace for {}", theFile);
 
-        if (useObjectTraceLogger) {
-            objectTracingUtil.emitLifecycleEvent(fixedName, ObjectTracing.Stage.PickUp);
-        }
+        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
 
         // Handle oversize data quickly without reading the file
         if (isOversize) {
