@@ -60,7 +60,7 @@ public class Startup {
     protected final Set<String> failedPlaces = ConcurrentHashMap.newKeySet();
 
     // Collection of the places as they finish coming up
-    protected final Map<String, String> places = new ConcurrentHashMap<>();
+    protected static final Map<String, String> places = new ConcurrentHashMap<>();
 
     // Collection of places that are being started
     protected final Set<String> placesToStart = ConcurrentHashMap.newKeySet();
@@ -70,8 +70,11 @@ public class Startup {
     protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<>();
 
     // sets to keep track of possible invisible place startup
-    protected Set<String> activeDirPlaces = new LinkedHashSet<>();
-    protected Set<String> placeAlreadyStarted = new LinkedHashSet<>();
+    protected static Set<String> activeDirPlaces = new LinkedHashSet<>();
+    protected static Set<String> placeAlreadyStarted = new LinkedHashSet<>();
+
+    // invisible place startups occurred in strict mode
+    protected static boolean invisPlacesStartedInStrictMode = false;
 
     /**
      * n return the full DNS name and port without the protocol part
@@ -169,8 +172,8 @@ public class Startup {
         // the pickup places here.
         startPickUpPlaces();
 
-        if (!verifyNoInvisiblePlacesStarted()) {
-            // TODO: If invisible places are started, shutdown the EmissaryServer
+        if (!verifyNoInvisiblePlacesStarted() && node.isStrictStartupMode()) {
+            invisPlacesStartedInStrictMode = true;
         }
     }
 
@@ -245,7 +248,7 @@ public class Startup {
 
         if (hashListSize(m) > 0) {
             for (final List<String> placeList : m.values()) {
-                final boolean status = placeSetup(directoryAction, this.localDirectories, this.places, placeList);
+                final boolean status = placeSetup(directoryAction, this.localDirectories, places, placeList);
 
                 if (!status) {
                     logger.warn("Startup: places setup failed!");
@@ -418,7 +421,7 @@ public class Startup {
                 numPlacesExpected = this.placesToStart.size();
             }
 
-            numPlacesFound = this.places.size();
+            numPlacesFound = places.size();
 
             if (numPlacesFound >= numPlacesExpected) {
 
@@ -511,7 +514,7 @@ public class Startup {
      * 
      * @return true if no invisible places started, false if yes
      */
-    public boolean verifyNoInvisiblePlacesStarted() {
+    public static boolean verifyNoInvisiblePlacesStarted() {
         try {
             IDirectoryPlace dirPlace = DirectoryPlace.lookup();
             List<DirectoryEntry> dirEntries = dirPlace.getEntries();
@@ -549,5 +552,15 @@ public class Startup {
         }
 
         return true;
+    }
+
+    // get invisibly started places
+    public static Set<String> getInvisPlaces() {
+        return activeDirPlaces;
+    }
+
+    // get if invisible places are started while in strict mode
+    public static boolean isInvisPlacesStartedInStrictMode() {
+        return invisPlacesStartedInStrictMode;
     }
 }

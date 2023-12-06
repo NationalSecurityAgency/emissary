@@ -1,5 +1,6 @@
 package emissary.server;
 
+import emissary.admin.Startup;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.client.HTTPConnectionFactory;
@@ -12,7 +13,6 @@ import emissary.core.MetricsManager;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.core.ResourceWatcher;
-import emissary.core.sentinel.Sentinel;
 import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
@@ -194,6 +194,13 @@ public class EmissaryServer {
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
+
+            // check if invisible place start-ups occurred on strict server start-up, and shut down server if so.
+            if (Startup.isInvisPlacesStartedInStrictMode() && this.server.isStarted()) {
+                EmissaryServer.stopServer(true);
+                LOG.info("Server shut down due to invisible place startups on strict-mode: {}", Startup.getInvisPlaces());
+            }
+
             return configuredServer;
         } catch (Throwable t) {
             String errorMsg = "Emissary server didn't start";
@@ -313,13 +320,6 @@ public class EmissaryServer {
             LOG.info("Done pausing server");
         } catch (Exception ex) {
             LOG.error("Error pausing server", ex);
-        }
-
-        try {
-            Sentinel sentinel = Sentinel.lookup();
-            sentinel.quit();
-        } catch (Exception ex) {
-            LOG.warn("No sentinel available");
         }
 
         try {
