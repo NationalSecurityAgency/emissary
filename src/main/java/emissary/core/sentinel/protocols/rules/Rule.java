@@ -92,10 +92,11 @@ public abstract class Rule {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", getClass().getSimpleName() + "[", "]")
-                .add("place=" + place)
-                .add("timeLimit=" + timeLimit)
-                .add("threshold=" + threshold)
+        return new StringJoiner(", ", "{", "}")
+                .add("\"rule\":\"" + getClass().getSimpleName() + "\"")
+                .add("\"place\":\"" + place + "\"")
+                .add("\"timeLimit\":\"" + timeLimit + "\"")
+                .add("\"threshold\":\"" + threshold + "\"")
                 .toString();
     }
 

@@ -190,9 +190,9 @@ public class Sentinel implements Runnable {
         Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
         if (mobileAgent.isInUse()) {
             if (!Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())
-                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getPlaceName())) {
+                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getServiceKey())) {
                 trackedAgent.setAgentId(mobileAgent.agentID());
-                trackedAgent.setPlaceName(mobileAgent.getLastPlaceProcessed());
+                trackedAgent.setServiceKey(mobileAgent.getLastPlaceProcessed());
                 trackedAgent.resetTimer();
             }
             trackedAgent.incrementTimer(pollingInterval);
@@ -203,11 +203,11 @@ public class Sentinel implements Runnable {
         }
     }
 
-    public static class Tracker {
+    public static class Tracker implements Comparable<Tracker> {
         private final String agentName;
         private String agentId;
         private String shortName;
-        private String placeName;
+        private String serviceKey;
         private long timer = -1;
 
         public Tracker(String agentName) {
@@ -242,28 +242,28 @@ public class Sentinel implements Runnable {
             return StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
         }
 
+        public String getServiceKey() {
+            return serviceKey;
+        }
+
+        public void setServiceKey(String serviceKey) {
+            this.serviceKey = serviceKey;
+        }
+
         public String getPlaceName() {
-            return placeName;
-        }
-
-        public void setPlaceName(String placeName) {
-            this.placeName = placeName;
-        }
-
-        public String getPlaceSimpleName() {
-            return getPlaceSimpleName(this.placeName);
+            return getPlaceName(this.serviceKey);
         }
 
         public String getPlaceAndShortName() {
-            return getPlaceAndShortName(this.placeName, this.shortName);
+            return getPlaceAndShortName(this.serviceKey, this.shortName);
         }
 
-        public static String getPlaceSimpleName(String place) {
-            return StringUtils.defaultString(StringUtils.substringAfterLast(place, "/"), "");
+        public static String getPlaceName(String serviceKey) {
+            return StringUtils.defaultString(StringUtils.substringAfterLast(serviceKey, "/"), "");
         }
 
-        public static String getPlaceAndShortName(String place, String shortName) {
-            return getPlaceSimpleName(place) + "/" + shortName;
+        public static String getPlaceAndShortName(String serviceKey, String shortName) {
+            return getPlaceName(serviceKey) + "/" + shortName;
         }
 
         public long getTimer() {
@@ -285,17 +285,22 @@ public class Sentinel implements Runnable {
         public void clear() {
             this.agentId = "";
             this.shortName = "";
-            this.placeName = "";
+            this.serviceKey = "";
             resetTimer();
         }
 
         @Override
+        public int compareTo(Tracker o) {
+            return this.agentName.compareTo(o.agentName);
+        }
+
+        @Override
         public String toString() {
-            return new StringJoiner(", ", "[", "]")
-                    .add("agentName='" + agentName + "'")
-                    .add("placeName='" + placeName + "'")
-                    .add("shortName='" + shortName + "'")
-                    .add("timer=" + timer + " minute(s)")
+            return new StringJoiner(", ", "{", "}")
+                    .add("\"agentName\":\"" + agentName + "\"")
+                    .add("\"placeName\":\"" + serviceKey + "\"")
+                    .add("\"shortName\":\"" + shortName + "\"")
+                    .add("\"timer\":" + timer)
                     .toString();
         }
     }

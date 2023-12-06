@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static emissary.core.sentinel.Sentinel.Tracker.getPlaceSimpleName;
+import static emissary.core.sentinel.Sentinel.Tracker.getPlaceName;
 
 /**
  * This protocol buckets places that are running in mobile agents and then looks at max and min time in place and the
@@ -40,6 +40,8 @@ public class Protocol {
     protected final Map<String, Rule> rules = new ConcurrentHashMap<>();
     protected Action action;
 
+    Protocol() {}
+
     public Protocol(String conf) {
         configure(conf);
     }
@@ -53,14 +55,7 @@ public class Protocol {
      */
     public void run(Map<String, Sentinel.Tracker> trackers) {
 
-        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
-        for (Sentinel.Tracker tracker : trackers.values()) {
-            String placeKey = getPlaceKey(tracker);
-            if (StringUtils.isNotBlank(placeKey)) {
-                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
-            }
-        }
-
+        Map<String, PlaceAgentStats> placeAgentStats = generatePlaceAgentStats(trackers);
         if (!placeAgentStats.isEmpty()) {
             logger.debug("Running rules on agents {}", placeAgentStats);
             if (rules.values().stream().allMatch(rule -> rule.condition(placeAgentStats.values()))) {
@@ -76,7 +71,7 @@ public class Protocol {
      * @return the place key
      */
     public String getPlaceKey(Sentinel.Tracker tracker) {
-        return getPlaceSimpleName(tracker.getPlaceName());
+        return getPlaceName(tracker.getServiceKey());
     }
 
     /**
@@ -87,7 +82,7 @@ public class Protocol {
     protected void configure(String conf) {
         try {
             this.config = ConfigUtil.getConfigInfo(conf);
-            init();
+            init(this.config);
         } catch (IOException e) {
             logger.warn("Cannot read {}, skipping!!", conf);
         }
@@ -96,7 +91,7 @@ public class Protocol {
     /**
      * Initialize rule set and action
      */
-    protected void init() {
+    protected void init(Configurator config) {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (enabled) {
 
@@ -143,11 +138,22 @@ public class Protocol {
         return place;
     }
 
+    protected Map<String, PlaceAgentStats> generatePlaceAgentStats(Map<String, Sentinel.Tracker> trackers) {
+        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
+        for (Sentinel.Tracker tracker : trackers.values()) {
+            String placeKey = getPlaceKey(tracker);
+            if (StringUtils.isNotBlank(placeKey)) {
+                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
+            }
+        }
+        return placeAgentStats;
+    }
+
     @Override
     public String toString() {
-        return new StringJoiner(", ", "[", "]")
-                .add("rules=" + rules)
-                .add("action=" + action)
+        return new StringJoiner(", ", "{", "}")
+                .add("\"rules\":" + rules.values())
+                .add("\"action\":" + action)
                 .toString();
     }
 

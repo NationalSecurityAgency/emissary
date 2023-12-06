@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class Action {
+public abstract class Action {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -17,13 +19,15 @@ public class Action {
      *
      * @param trackers the listing of agents, places, and filenames that's currently processing
      */
-    public void trigger(Map<String, Sentinel.Tracker> trackers) {
+    public abstract void trigger(Map<String, Sentinel.Tracker> trackers);
 
+    public List<Sentinel.Tracker> format(Map<String, Sentinel.Tracker> trackers) {
+        return trackers.values().stream().sorted().collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return "\"" + getClass().getSimpleName() + "\"";
     }
 
 }
