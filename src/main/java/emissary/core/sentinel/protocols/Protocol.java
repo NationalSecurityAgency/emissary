@@ -59,6 +59,7 @@ public class Protocol {
         if (!placeAgentStats.isEmpty()) {
             logger.debug("Running rules on agents {}", placeAgentStats);
             if (rules.values().stream().allMatch(rule -> rule.condition(placeAgentStats.values()))) {
+                logger.warn("Sentinel rules matched -- {}", rules.values());
                 action.trigger(trackers);
             }
         }

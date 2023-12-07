@@ -1,8 +1,5 @@
 package emissary.core.sentinel.protocols;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.Namespace;
@@ -17,6 +14,8 @@ import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
 import emissary.test.core.junit5.UnitTest;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
