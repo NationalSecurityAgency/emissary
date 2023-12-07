@@ -40,7 +40,9 @@ class ProtocolTest extends UnitTest {
     Map<String, Sentinel.Tracker> trackers;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
+
         protocol = new Protocol();
         protocol.action = action;
         protocol.rules.put("RULE1", rule1);

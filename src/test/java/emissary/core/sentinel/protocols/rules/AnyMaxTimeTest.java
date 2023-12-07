@@ -13,7 +13,8 @@ class AnyMaxTimeTest extends UnitTest {
     Protocol.PlaceAgentStats placeAgentStats;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
+        super.setUp();
         placeAgentStats = new Protocol.PlaceAgentStats("TestPlace");
         for (int i = 1; i < 6; ++i) {
             placeAgentStats.update(i);

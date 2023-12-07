@@ -191,9 +191,9 @@ public class Sentinel implements Runnable {
         if (mobileAgent.isInUse()) {
             if (!Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())
                     || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getServiceKey())) {
+                trackedAgent.clear();
                 trackedAgent.setAgentId(mobileAgent.agentID());
                 trackedAgent.setServiceKey(mobileAgent.getLastPlaceProcessed());
-                trackedAgent.resetTimer();
             }
             trackedAgent.incrementTimer(pollingInterval);
             logger.trace("Agent acquired {}", trackedAgent);
@@ -224,8 +224,7 @@ public class Sentinel implements Runnable {
 
         public void setAgentId(String agentId) {
             if (StringUtils.contains(agentId, "No_AgentID_Set")) {
-                this.agentId = "";
-                this.shortName = "";
+                clear();
             } else {
                 this.agentId = agentId;
                 if (StringUtils.contains(agentId, "Agent-")) {
@@ -263,7 +262,7 @@ public class Sentinel implements Runnable {
         }
 
         public static String getPlaceAndShortName(String serviceKey, String shortName) {
-            return getPlaceName(serviceKey) + "/" + shortName;
+            return (StringUtils.isBlank(serviceKey) || StringUtils.isBlank(shortName)) ? "" : (getPlaceName(serviceKey) + "/" + shortName);
         }
 
         public long getTimer() {
