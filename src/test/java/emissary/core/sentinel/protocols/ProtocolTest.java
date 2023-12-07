@@ -15,10 +15,13 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -86,10 +89,15 @@ class ProtocolTest extends UnitTest {
         config.addEntry("LONG_RUNNING_PLACE_THRESHOLD", "1.0");
         config.addEntry("LONG_RUNNING_TIME_LIMIT_MINUTES", "60");
 
-        protocol.init(config);
-        assertEquals(Notify.class, protocol.action.getClass());
-        assertEquals(AllMaxTime.class, protocol.rules.get("LONG_RUNNING").getClass());
-
+        DirectoryPlace dir = mock(DirectoryPlace.class);
+        when(dir.getEntries()).thenReturn(
+                List.of(new DirectoryEntry("UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace", "This is a place", 10, 90)));
+        try (MockedStatic<Namespace> namespace = Mockito.mockStatic(Namespace.class)) {
+            namespace.when(() -> Namespace.lookup(DirectoryPlace.class)).thenReturn(Set.of(dir));
+            protocol.init(config);
+            assertEquals(Notify.class, protocol.action.getClass());
+            assertEquals(AllMaxTime.class, protocol.rules.get("LONG_RUNNING").getClass());
+        }
     }
 
     @Test
@@ -100,12 +108,12 @@ class ProtocolTest extends UnitTest {
     @Test
     void validate() throws NamespaceException {
         DirectoryPlace dir = mock(DirectoryPlace.class);
-        Namespace.bind("DirectoryPlace", dir);
-
-        when(dir.getEntries())
-                .thenReturn(List.of(new DirectoryEntry("UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace", "This is a place", 10, 90)));
-
-        assertEquals("thePlace", protocol.validate("thePlace"));
-        assertThrows(IllegalStateException.class, () -> protocol.validate("noPlace"));
+        when(dir.getEntries()).thenReturn(
+                List.of(new DirectoryEntry("UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace", "This is a place", 10, 90)));
+        try (MockedStatic<Namespace> namespace = Mockito.mockStatic(Namespace.class)) {
+            namespace.when(() -> Namespace.lookup(DirectoryPlace.class)).thenReturn(Set.of(dir));
+            assertEquals("thePlace", protocol.validate("thePlace"));
+            assertThrows(IllegalStateException.class, () -> protocol.validate("noPlace"));
+        }
     }
 }
