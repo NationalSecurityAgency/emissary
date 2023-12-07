@@ -177,6 +177,7 @@ public abstract class RegressionTest extends ExtractionTest {
 
     /**
      * Generates a SHA 256 hash of the provided bytes if they contain any non-printable characters
+     * 
      * @param bytes the bytes to evaluate
      * @return a value optionally containing the generated hash
      */
