@@ -8,6 +8,7 @@ import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.util.ByteUtil;
 
 import com.google.errorprone.annotations.ForOverride;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jdom2.Document;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -15,6 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -141,45 +143,49 @@ public abstract class RegressionTest extends ExtractionTest {
     @Override
     protected void checkAnswersPreHook(final Document answers, final IBaseDataObject payload, final List<IBaseDataObject> attachments,
             final String tname) {
+
         if (!IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
             return;
         }
 
+        // touch up alternate views to match how their bytes would have encoded into the answer file
         for (Entry<String, byte[]> entry : new TreeMap<>(payload.getAlternateViews()).entrySet()) {
-            payload.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.ISO_8859_1));
+            Optional<String> viewSha256 = hashBytesIfNonPrintable(entry.getValue());
+            viewSha256.ifPresent(s -> payload.addAlternateView(entry.getKey(), s.getBytes(StandardCharsets.ISO_8859_1)));
         }
 
-        if (payload.data() != null && ByteUtil.hasNonPrintableValues(payload.data())) {
-            final String hash = ByteUtil.sha256Bytes(payload.data());
-
-            if (hash != null) {
-                payload.setData(hash.getBytes(StandardCharsets.UTF_8));
-            }
-        }
+        // touch up primary view if necessary
+        Optional<String> payloadSha256 = hashBytesIfNonPrintable(payload.data());
+        payloadSha256.ifPresent(s -> payload.setData(s.getBytes(StandardCharsets.UTF_8)));
 
         if (payload.getExtractedRecords() != null) {
             for (final IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
-                if (ByteUtil.hasNonPrintableValues(extractedRecord.data())) {
-                    final String hash = ByteUtil.sha256Bytes(extractedRecord.data());
-
-                    if (hash != null) {
-                        extractedRecord.setData(hash.getBytes(StandardCharsets.UTF_8));
-                    }
-                }
+                Optional<String> recordSha256 = hashBytesIfNonPrintable(extractedRecord.data());
+                recordSha256.ifPresent(s -> extractedRecord.setData(s.getBytes(StandardCharsets.UTF_8)));
             }
         }
 
         if (attachments != null) {
             for (final IBaseDataObject attachment : attachments) {
                 if (ByteUtil.hasNonPrintableValues(attachment.data())) {
-                    final String hash = ByteUtil.sha256Bytes(attachment.data());
-
-                    if (hash != null) {
-                        attachment.setData(hash.getBytes(StandardCharsets.UTF_8));
-                    }
+                    Optional<String> attachmentSha256 = hashBytesIfNonPrintable(attachment.data());
+                    attachmentSha256.ifPresent(s -> attachment.setData(s.getBytes(StandardCharsets.UTF_8)));
                 }
             }
         }
+    }
+
+    /**
+     * Generates a SHA 256 hash of the provided bytes if they contain any non-printable characters
+     * @param bytes the bytes to evaluate
+     * @return a value optionally containing the generated hash
+     */
+    private Optional<String> hashBytesIfNonPrintable(byte[] bytes) {
+        if (ArrayUtils.isNotEmpty(bytes) && ByteUtil.hasNonPrintableValues(bytes)) {
+            return Optional.ofNullable(ByteUtil.sha256Bytes(bytes));
+        }
+
+        return Optional.empty();
     }
 
     // Everything above can be overridden by extending classes to modify behaviour as they see fit.
