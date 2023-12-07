@@ -1,8 +1,15 @@
 package emissary.core.sentinel;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import emissary.config.ConfigUtil;
 import emissary.core.IMobileAgent;
 import emissary.core.Namespace;
+import emissary.core.sentinel.protocols.Protocol;
+import emissary.core.sentinel.protocols.actions.Notify;
+import emissary.core.sentinel.protocols.rules.AllMaxTime;
+import emissary.core.sentinel.protocols.rules.AnyMaxTime;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -102,6 +109,26 @@ class SentinelTest extends UnitTest {
         assertEquals("MobileAgent-01", sorted.get(0).getAgentName());
         assertEquals("MobileAgent-10", sorted.get(1).getAgentName());
         assertEquals("MobileAgent-20", sorted.get(2).getAgentName());
+    }
+
+    @Test
+    void trackerValidJson() {
+        ObjectMapper mapper = new ObjectMapper();
+        try (JsonParser parser = mapper.getFactory().createParser(new Sentinel.Tracker("MobileAgent-01").toString())) {
+            mapper.readTree(parser);
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    void trackerValidJson2() {
+        ObjectMapper mapper = new ObjectMapper();
+        try (JsonParser parser = mapper.getFactory().createParser(new Sentinel.Tracker("MobileAgent-01").toString())) {
+            mapper.readTree(parser);
+        } catch (IOException e) {
+            fail(e);
+        }
     }
 
     private static class SentinelTester extends Sentinel {

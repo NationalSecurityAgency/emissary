@@ -1,5 +1,8 @@
 package emissary.core.sentinel.protocols;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.Namespace;
@@ -8,6 +11,7 @@ import emissary.core.sentinel.Sentinel;
 import emissary.core.sentinel.protocols.actions.Action;
 import emissary.core.sentinel.protocols.actions.Notify;
 import emissary.core.sentinel.protocols.rules.AllMaxTime;
+import emissary.core.sentinel.protocols.rules.AnyMaxTime;
 import emissary.core.sentinel.protocols.rules.Rule;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
@@ -18,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +31,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -118,4 +124,20 @@ class ProtocolTest extends UnitTest {
             assertThrows(IllegalStateException.class, () -> protocol.validate("noPlace"));
         }
     }
+
+    @Test
+    void protocolValidJson() {
+        Protocol protocol = new Protocol();
+        protocol.action = new Notify();
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("thisPlace", 20, 0.75));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("thatPlace", 10, 0.5));
+
+        ObjectMapper mapper = new ObjectMapper();
+        try (JsonParser parser = mapper.getFactory().createParser(protocol.toString())) {
+            mapper.readTree(parser);
+        } catch (IOException e) {
+            fail(e);
+        }
+    }
+
 }
