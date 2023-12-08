@@ -201,20 +201,6 @@ or in offline mode:
 ./emissary config --place emissary.place.sample.ToLowerPlace --offline --detailed
 ```
 
-#### Run
-
-The Run command is a simple command to execute the main method of the given class.  For example
-
-```
-./emissary run emissary.config.ConfigUtil  <path_to_some_cfg_file>
-```
-
-If you need to pass flags to the main method, use *--* to stop parsing flags and simply pass them along.
-
-```
-./emissary run emissary.config.ExtractResource -- -o outputdir somefile
-```
-
 #### Server (Cluster)
 
 Emissary is fun in standalone, but running cluster is more appropriate for real work.  The way to run clustered
