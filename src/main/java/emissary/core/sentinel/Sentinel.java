@@ -253,17 +253,8 @@ public class Sentinel implements Runnable {
             return getPlaceName(this.directoryEntryKey);
         }
 
-        public String getPlaceAndShortName() {
-            return getPlaceAndShortName(this.directoryEntryKey, this.shortName);
-        }
-
         public static String getPlaceName(String directoryEntryKey) {
             return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, "/"), "");
-        }
-
-        public static String getPlaceAndShortName(String directoryEntryKey, String shortName) {
-            return (StringUtils.isBlank(directoryEntryKey) || StringUtils.isBlank(shortName)) ? ""
-                    : (getPlaceName(directoryEntryKey) + "/" + shortName);
         }
 
         public long getTimer() {
@@ -300,7 +291,7 @@ public class Sentinel implements Runnable {
                     .add("\"agentName\":\"" + agentName + "\"")
                     .add("\"placeName\":\"" + directoryEntryKey + "\"")
                     .add("\"shortName\":\"" + shortName + "\"")
-                    .add("\"timer\":" + timer)
+                    .add("\"timeInMinutes\":" + timer)
                     .toString();
         }
     }

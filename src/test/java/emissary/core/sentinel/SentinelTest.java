@@ -58,7 +58,6 @@ class SentinelTest extends UnitTest {
         assertEquals(0, tracker.getTimer());
         assertEquals(placename, tracker.getPlaceName());
         assertEquals(shortname, tracker.getShortName());
-        assertEquals(placename + "/" + shortname, tracker.getPlaceAndShortName());
     }
 
     @Test
@@ -89,7 +88,6 @@ class SentinelTest extends UnitTest {
         assertEquals("", tracker.getDirectoryEntryKey());
         assertEquals("", tracker.getPlaceName());
         assertEquals("", tracker.getShortName());
-        assertEquals("", tracker.getPlaceAndShortName());
     }
 
     @Test

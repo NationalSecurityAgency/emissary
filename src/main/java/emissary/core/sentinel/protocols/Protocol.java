@@ -66,16 +66,6 @@ public class Protocol {
     }
 
     /**
-     * Get the place key, i.e. the simple name
-     *
-     * @param tracker agents, places, and filenames that's currently processing
-     * @return the place key
-     */
-    public String getPlaceKey(Sentinel.Tracker tracker) {
-        return getPlaceName(tracker.getDirectoryEntryKey());
-    }
-
-    /**
      * Get the Configurator
      *
      * @param conf the location of the configuration file
@@ -142,7 +132,7 @@ public class Protocol {
     protected Map<String, PlaceAgentStats> generatePlaceAgentStats(Map<String, Sentinel.Tracker> trackers) {
         Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
         for (Sentinel.Tracker tracker : trackers.values()) {
-            String placeKey = getPlaceKey(tracker);
+            String placeKey = tracker.getPlaceName();
             if (StringUtils.isNotBlank(placeKey)) {
                 placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
             }

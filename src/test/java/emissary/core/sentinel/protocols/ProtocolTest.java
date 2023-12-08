@@ -109,7 +109,7 @@ class ProtocolTest extends UnitTest {
 
     @Test
     void getPlaceKey() {
-        assertEquals("thePlace", protocol.getPlaceKey(trackers.get("Agent-01")));
+        assertEquals("thePlace", trackers.get("Agent-01").getPlaceName());
     }
 
     @Test
