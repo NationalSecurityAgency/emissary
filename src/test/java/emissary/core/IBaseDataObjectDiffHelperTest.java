@@ -151,9 +151,44 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
 
     @Test
     void testDiffParameters() {
+        final DiffCheckConfiguration checkKeyValueDiffParameter = DiffCheckConfiguration.configure().enableKeyValueParameterDiff().build();
+        final DiffCheckConfiguration checkDetailedDiffParameter = DiffCheckConfiguration.configure().enableDetailedParameterDiff().build();
+
         ibdo1.putParameter("STRING", "string");
         ibdo1.putParameter("LIST", Arrays.asList("first", "second", "third"));
+
         verifyDiff(1);
+        verifyDiff(1, checkKeyValueDiffParameter);
+        verifyDiff(1, checkDetailedDiffParameter);
+
+        ibdo1.clearParameters();
+        ibdo2.clearParameters();
+        ibdo1.putParameter("STRING", "string");
+        ibdo1.putParameter("Integer", Integer.valueOf(1));
+        ibdo2.putParameter("STRING", "string");
+
+        verifyDiff(1);
+        verifyDiff(1, checkKeyValueDiffParameter);
+        verifyDiff(1, checkDetailedDiffParameter);
+
+        ibdo1.clearParameters();
+        ibdo2.clearParameters();
+        ibdo1.putParameter("STRING", "string");
+        ibdo2.putParameter("STRING", "string");
+        ibdo2.putParameter("Integer", Integer.valueOf(1));
+
+        verifyDiff(1);
+        verifyDiff(1, checkKeyValueDiffParameter);
+        verifyDiff(1, checkDetailedDiffParameter);
+
+        ibdo1.clearParameters();
+        ibdo2.clearParameters();
+        ibdo1.putParameter("STRING", "string");
+        ibdo2.putParameter("STRING", "string");
+
+        verifyDiff(0);
+        verifyDiff(0, checkKeyValueDiffParameter);
+        verifyDiff(0, checkDetailedDiffParameter);
     }
 
     @Test

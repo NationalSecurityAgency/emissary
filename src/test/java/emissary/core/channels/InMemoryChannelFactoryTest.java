@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +13,7 @@ import java.nio.channels.SeekableByteChannel;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class InMemoryChannelFactoryTest {
+class InMemoryChannelFactoryTest extends UnitTest {
 
     @Test
     void testCannotCreateFactoryWithNullByteArray() {

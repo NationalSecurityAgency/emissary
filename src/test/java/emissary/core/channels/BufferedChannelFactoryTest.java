@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -7,7 +9,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class BufferedChannelFactoryTest {
+class BufferedChannelFactoryTest extends UnitTest {
     @Test
     void testCache() throws IOException {
 

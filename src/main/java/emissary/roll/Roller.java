@@ -7,6 +7,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -22,7 +23,7 @@ public class Roller implements Runnable {
     private final PropertyChangeSupport support;
 
     private final long max;
-    private volatile long progress;
+    private AtomicLong progress = new AtomicLong();
     private final TimeUnit t;
     private final long period;
     private final Rollable r;
@@ -57,11 +58,11 @@ public class Roller implements Runnable {
     public final long incrementProgress(long val) {
         try {
             lock.lock();
-            progress += val;
-            if (progress >= max) {
+            long progressValue = progress.addAndGet(val);
+            if (progressValue >= max) {
                 support.firePropertyChange("roll", null, this);
             }
-            return progress;
+            return progressValue;
         } finally {
             lock.unlock();
         }
@@ -72,7 +73,7 @@ public class Roller implements Runnable {
     }
 
     public final long getProgress() {
-        return progress;
+        return progress.get();
     }
 
     public final TimeUnit getTimeUnit() {
@@ -94,7 +95,7 @@ public class Roller implements Runnable {
     protected void resetProgress(long start) {
         try {
             lock.lock();
-            progress = 0;
+            progress = new AtomicLong();
             lastRun = start;
         } finally {
             lock.unlock();
@@ -143,7 +144,7 @@ public class Roller implements Runnable {
     private boolean shouldRoll(long start) {
         // verify both time and progress are set
         // if we're below max we'll check the interval
-        if ((period > 0 && max > 0) && progress < max) {
+        if ((period > 0 && max > 0) && progress.get() < max) {
             // we fired a progress run or delayed start due to starvation. add 100 for clock skew
             if ((start - lastRun + 100) < getIntervalInMillis()) {
                 return false;
