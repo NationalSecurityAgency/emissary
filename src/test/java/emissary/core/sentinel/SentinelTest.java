@@ -65,7 +65,7 @@ class SentinelTest extends UnitTest {
     void trackerTimer() {
         Sentinel.Tracker tracker = new Sentinel.Tracker("MobileAgent-01");
         tracker.setAgentId("Agent-1234-testing.txt");
-        tracker.setServiceKey("http://host.domain.com:8001/thePlace");
+        tracker.setDirectoryEntryKey("http://host.domain.com:8001/thePlace");
         tracker.incrementTimer(5);
 
         assertEquals(0, tracker.getTimer());
@@ -80,13 +80,13 @@ class SentinelTest extends UnitTest {
     void trackerNoAgentIdSet() {
         Sentinel.Tracker tracker = new Sentinel.Tracker("MobileAgent-01");
         tracker.setAgentId("Agent-1234-testing.txt");
-        tracker.setServiceKey("http://host.domain.com:8001/thePlace");
+        tracker.setDirectoryEntryKey("http://host.domain.com:8001/thePlace");
         tracker.incrementTimer(5);
 
         tracker.setAgentId("Agent-1234-No_AgentID_Set");
         assertEquals(-1, tracker.getTimer());
         assertEquals("", tracker.getAgentId());
-        assertEquals("", tracker.getServiceKey());
+        assertEquals("", tracker.getDirectoryEntryKey());
         assertEquals("", tracker.getPlaceName());
         assertEquals("", tracker.getShortName());
         assertEquals("", tracker.getPlaceAndShortName());

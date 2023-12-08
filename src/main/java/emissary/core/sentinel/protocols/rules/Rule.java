@@ -17,6 +17,9 @@ public abstract class Rule {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    // the name of the rule
+    protected final String name;
+
     // the place name to test the condition
     protected final Pattern place;
 
@@ -26,8 +29,11 @@ public abstract class Rule {
     // percentage of mobile agents that are stuck on the same place before sounding the alarm
     protected final double threshold;
 
-    public Rule(String place, long timeLimit, double threshold) {
-        logger.trace("Creating rule for place={}, timeLimit={}, threshold={}", place, timeLimit, threshold);
+    public Rule(String name, String place, long timeLimit, double threshold) {
+        logger.trace("Creating rule for name={}, place={}, timeLimit={}, threshold={}", name, place, timeLimit, threshold);
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("Invalid name [" + name + "]");
+        }
         if (StringUtils.isBlank(place)) {
             throw new IllegalArgumentException("Invalid place pattern [" + place + "]");
         }
@@ -37,13 +43,14 @@ public abstract class Rule {
         if (threshold <= 0.0 || threshold > 1.0) {
             throw new IllegalArgumentException("Invalid threshold [" + threshold + "], expected a value > 0.0 or <= 1.0");
         }
+        this.name = name;
         this.place = Pattern.compile(place);
         this.timeLimit = timeLimit;
         this.threshold = threshold;
     }
 
-    public Rule(String place, String timeLimit, String threshold) {
-        this(place, StringUtils.isBlank(timeLimit) ? 60L : Long.parseLong(timeLimit),
+    public Rule(String name, String place, String timeLimit, String threshold) {
+        this(name, place, StringUtils.isBlank(timeLimit) ? 60L : Long.parseLong(timeLimit),
                 StringUtils.isBlank(threshold) ? 1.0 : Double.parseDouble(threshold));
     }
 
@@ -93,6 +100,7 @@ public abstract class Rule {
     @Override
     public String toString() {
         return new StringJoiner(", ", "{", "}")
+                .add("\"name\":\"" + name + "\"")
                 .add("\"rule\":\"" + getClass().getSimpleName() + "\"")
                 .add("\"place\":\"" + place + "\"")
                 .add("\"timeLimit\":\"" + timeLimit + "\"")

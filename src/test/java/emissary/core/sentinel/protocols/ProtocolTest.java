@@ -58,7 +58,7 @@ class ProtocolTest extends UnitTest {
             String agent = "Agent-0" + i;
             Sentinel.Tracker tracker = new Sentinel.Tracker(agent);
             tracker.setAgentId(agent);
-            tracker.setServiceKey("http://host.domain.com:8001/thePlace");
+            tracker.setDirectoryEntryKey("http://host.domain.com:8001/thePlace");
             tracker.incrementTimer(0);
             tracker.incrementTimer(5 + i);
             trackers.put(agent, tracker);
@@ -128,8 +128,8 @@ class ProtocolTest extends UnitTest {
     void protocolValidJson() {
         Protocol protocol = new Protocol();
         protocol.action = new Notify();
-        protocol.rules.put("TEST_RULE1", new AllMaxTime("thisPlace", 20, 0.75));
-        protocol.rules.put("TEST_RULE2", new AnyMaxTime("thatPlace", 10, 0.5));
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", "thisPlace", 20, 0.75));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", "thatPlace", 10, 0.5));
 
         ObjectMapper mapper = new ObjectMapper();
         try (JsonParser parser = mapper.getFactory().createParser(protocol.toString())) {

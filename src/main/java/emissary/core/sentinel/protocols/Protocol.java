@@ -72,7 +72,7 @@ public class Protocol {
      * @return the place key
      */
     public String getPlaceKey(Sentinel.Tracker tracker) {
-        return getPlaceName(tracker.getServiceKey());
+        return getPlaceName(tracker.getDirectoryEntryKey());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Protocol {
                     }
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-                    Rule ruleImpl = (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
+                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
                             map.get("PLACE_THRESHOLD"));
                     logger.debug("Sentinel loaded rule[{}] - {}", ruleId, ruleImpl);
                     this.rules.put(ruleId, ruleImpl);

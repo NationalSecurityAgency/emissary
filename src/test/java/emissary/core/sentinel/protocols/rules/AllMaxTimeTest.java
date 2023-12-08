@@ -25,30 +25,30 @@ class AllMaxTimeTest extends UnitTest {
 
     @Test
     void constructorBlankPlace() {
-        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("", "3L", "1.0"));
+        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("rule1", "", "3L", "1.0"));
     }
 
     @Test
     void constructorInvalidTimeLimit() {
-        assertThrows(NumberFormatException.class, () -> new AllMaxTime("TestPlace", "L", "1.0"));
-        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("TestPlace", "0L", "1.0"));
+        assertThrows(NumberFormatException.class, () -> new AllMaxTime("rule1", "TestPlace", "L", "1.0"));
+        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("rule1", "TestPlace", "0L", "1.0"));
     }
 
     @Test
     void constructorInvalidThreshold() {
-        assertThrows(NumberFormatException.class, () -> new AllMaxTime("TestPlace", "3L", "."));
-        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("TestPlace", "3L", "0.0"));
+        assertThrows(NumberFormatException.class, () -> new AllMaxTime("rule1", "TestPlace", "3L", "."));
+        assertThrows(IllegalArgumentException.class, () -> new AllMaxTime("rule1", "TestPlace", "3L", "0.0"));
     }
 
     @Test
     void overTimeLimit() {
-        Rule rule = new AllMaxTime("TestPlace", 1, 0.75);
+        Rule rule = new AllMaxTime("rule1", "TestPlace", 1, 0.75);
         assertTrue(rule.overTimeLimit(placeAgentStats));
     }
 
     @Test
     void notOverTimeLimit() {
-        Rule rule = new AllMaxTime("TestPlace", 2, 0.75);
+        Rule rule = new AllMaxTime("rule1", "TestPlace", 2, 0.75);
         assertFalse(rule.overTimeLimit(placeAgentStats));
     }
 }
