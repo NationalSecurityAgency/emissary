@@ -103,6 +103,7 @@ public class Sentinel implements Runnable {
             // Delay this loop
             try {
                 Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));
+                logger.debug("Sentinel is still watching");
                 watch();
             } catch (InterruptedException ignore) {
                 Thread.currentThread().interrupt();
@@ -289,7 +290,7 @@ public class Sentinel implements Runnable {
         public String toString() {
             return new StringJoiner(", ", "{", "}")
                     .add("\"agentName\":\"" + agentName + "\"")
-                    .add("\"placeName\":\"" + directoryEntryKey + "\"")
+                    .add("\"directoryEntry\":\"" + directoryEntryKey + "\"")
                     .add("\"shortName\":\"" + shortName + "\"")
                     .add("\"timeInMinutes\":" + timer)
                     .toString();
