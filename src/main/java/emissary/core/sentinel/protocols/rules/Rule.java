@@ -103,8 +103,8 @@ public abstract class Rule {
                 .add("\"name\":\"" + name + "\"")
                 .add("\"rule\":\"" + getClass().getSimpleName() + "\"")
                 .add("\"place\":\"" + place + "\"")
-                .add("\"timeLimit\":\"" + timeLimit + "\"")
-                .add("\"threshold\":\"" + threshold + "\"")
+                .add("\"timeLimitInMinutes\":" + timeLimit)
+                .add("\"threshold\":" + threshold)
                 .toString();
     }
 

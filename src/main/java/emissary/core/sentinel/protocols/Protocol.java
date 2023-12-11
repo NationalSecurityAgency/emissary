@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static emissary.core.sentinel.Sentinel.Tracker.getPlaceName;
-
 /**
  * This protocol buckets places that are running in mobile agents and then looks at max and min time in place and the
  * number of agents that are potentially "stuck." After places are bucketed, the place stats are run against the
