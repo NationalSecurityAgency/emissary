@@ -103,6 +103,7 @@ public class Sentinel implements Runnable {
             // Delay this loop
             try {
                 Thread.sleep(TimeUnit.MINUTES.toMillis(pollingInterval));
+                logger.debug("Sentinel is still watching");
                 watch();
             } catch (InterruptedException ignore) {
                 Thread.currentThread().interrupt();
@@ -190,10 +191,10 @@ public class Sentinel implements Runnable {
         Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
         if (mobileAgent.isInUse()) {
             if (!Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())
-                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getPlaceName())) {
+                    || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getDirectoryEntryKey())) {
+                trackedAgent.clear();
                 trackedAgent.setAgentId(mobileAgent.agentID());
-                trackedAgent.setPlaceName(mobileAgent.getLastPlaceProcessed());
-                trackedAgent.resetTimer();
+                trackedAgent.setDirectoryEntryKey(mobileAgent.getLastPlaceProcessed());
             }
             trackedAgent.incrementTimer(pollingInterval);
             logger.trace("Agent acquired {}", trackedAgent);
@@ -203,11 +204,11 @@ public class Sentinel implements Runnable {
         }
     }
 
-    public static class Tracker {
+    public static class Tracker implements Comparable<Tracker> {
         private final String agentName;
         private String agentId;
         private String shortName;
-        private String placeName;
+        private String directoryEntryKey;
         private long timer = -1;
 
         public Tracker(String agentName) {
@@ -224,8 +225,7 @@ public class Sentinel implements Runnable {
 
         public void setAgentId(String agentId) {
             if (StringUtils.contains(agentId, "No_AgentID_Set")) {
-                this.agentId = "";
-                this.shortName = "";
+                clear();
             } else {
                 this.agentId = agentId;
                 if (StringUtils.contains(agentId, "Agent-")) {
@@ -242,28 +242,20 @@ public class Sentinel implements Runnable {
             return StringUtils.substringAfter(StringUtils.substringAfter(agentId, "Agent-"), "-");
         }
 
+        public String getDirectoryEntryKey() {
+            return directoryEntryKey;
+        }
+
+        public void setDirectoryEntryKey(String directoryEntryKey) {
+            this.directoryEntryKey = directoryEntryKey;
+        }
+
         public String getPlaceName() {
-            return placeName;
+            return getPlaceName(this.directoryEntryKey);
         }
 
-        public void setPlaceName(String placeName) {
-            this.placeName = placeName;
-        }
-
-        public String getPlaceSimpleName() {
-            return getPlaceSimpleName(this.placeName);
-        }
-
-        public String getPlaceAndShortName() {
-            return getPlaceAndShortName(this.placeName, this.shortName);
-        }
-
-        public static String getPlaceSimpleName(String place) {
-            return StringUtils.defaultString(StringUtils.substringAfterLast(place, "/"), "");
-        }
-
-        public static String getPlaceAndShortName(String place, String shortName) {
-            return getPlaceSimpleName(place) + "/" + shortName;
+        public static String getPlaceName(String directoryEntryKey) {
+            return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, "/"), "");
         }
 
         public long getTimer() {
@@ -285,17 +277,22 @@ public class Sentinel implements Runnable {
         public void clear() {
             this.agentId = "";
             this.shortName = "";
-            this.placeName = "";
+            this.directoryEntryKey = "";
             resetTimer();
         }
 
         @Override
+        public int compareTo(Tracker o) {
+            return this.agentName.compareTo(o.agentName);
+        }
+
+        @Override
         public String toString() {
-            return new StringJoiner(", ", "[", "]")
-                    .add("agentName='" + agentName + "'")
-                    .add("placeName='" + placeName + "'")
-                    .add("shortName='" + shortName + "'")
-                    .add("timer=" + timer + " minute(s)")
+            return new StringJoiner(", ", "{", "}")
+                    .add("\"agentName\":\"" + agentName + "\"")
+                    .add("\"directoryEntry\":\"" + directoryEntryKey + "\"")
+                    .add("\"shortName\":\"" + shortName + "\"")
+                    .add("\"timeInMinutes\":" + timer)
                     .toString();
         }
     }

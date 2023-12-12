@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static emissary.core.sentinel.Sentinel.Tracker.getPlaceSimpleName;
-
 /**
  * This protocol buckets places that are running in mobile agents and then looks at max and min time in place and the
  * number of agents that are potentially "stuck." After places are bucketed, the place stats are run against the
@@ -40,6 +38,8 @@ public class Protocol {
     protected final Map<String, Rule> rules = new ConcurrentHashMap<>();
     protected Action action;
 
+    Protocol() {}
+
     public Protocol(String conf) {
         configure(conf);
     }
@@ -53,30 +53,14 @@ public class Protocol {
      */
     public void run(Map<String, Sentinel.Tracker> trackers) {
 
-        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
-        for (Sentinel.Tracker tracker : trackers.values()) {
-            String placeKey = getPlaceKey(tracker);
-            if (StringUtils.isNotBlank(placeKey)) {
-                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
-            }
-        }
-
+        Map<String, PlaceAgentStats> placeAgentStats = generatePlaceAgentStats(trackers);
         if (!placeAgentStats.isEmpty()) {
             logger.debug("Running rules on agents {}", placeAgentStats);
             if (rules.values().stream().allMatch(rule -> rule.condition(placeAgentStats.values()))) {
+                logger.warn("Sentinel rules matched -- {}", rules.values());
                 action.trigger(trackers);
             }
         }
-    }
-
-    /**
-     * Get the place key, i.e. the simple name
-     *
-     * @param tracker agents, places, and filenames that's currently processing
-     * @return the place key
-     */
-    public String getPlaceKey(Sentinel.Tracker tracker) {
-        return getPlaceSimpleName(tracker.getPlaceName());
     }
 
     /**
@@ -87,7 +71,7 @@ public class Protocol {
     protected void configure(String conf) {
         try {
             this.config = ConfigUtil.getConfigInfo(conf);
-            init();
+            init(this.config);
         } catch (IOException e) {
             logger.warn("Cannot read {}, skipping!!", conf);
         }
@@ -96,7 +80,7 @@ public class Protocol {
     /**
      * Initialize rule set and action
      */
-    protected void init() {
+    protected void init(Configurator config) {
         this.enabled = config.findBooleanEntry("ENABLED", false);
         if (enabled) {
 
@@ -110,7 +94,7 @@ public class Protocol {
                     }
                     Map<String, String> map = config.findStringMatchMap(ruleId + "_");
                     String rule = map.getOrDefault("RULE", AllMaxTime.class.getName());
-                    Rule ruleImpl = (Rule) Factory.create(rule, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
+                    Rule ruleImpl = (Rule) Factory.create(rule, ruleId, validate(map.get("PLACE_MATCHER")), map.get("TIME_LIMIT_MINUTES"),
                             map.get("PLACE_THRESHOLD"));
                     logger.debug("Sentinel loaded rule[{}] - {}", ruleId, ruleImpl);
                     this.rules.put(ruleId, ruleImpl);
@@ -143,11 +127,22 @@ public class Protocol {
         return place;
     }
 
+    protected Map<String, PlaceAgentStats> generatePlaceAgentStats(Map<String, Sentinel.Tracker> trackers) {
+        Map<String, PlaceAgentStats> placeAgentStats = new ConcurrentHashMap<>();
+        for (Sentinel.Tracker tracker : trackers.values()) {
+            String placeKey = tracker.getPlaceName();
+            if (StringUtils.isNotBlank(placeKey)) {
+                placeAgentStats.put(placeKey, placeAgentStats.getOrDefault(placeKey, new PlaceAgentStats(placeKey)).update(tracker.getTimer()));
+            }
+        }
+        return placeAgentStats;
+    }
+
     @Override
     public String toString() {
-        return new StringJoiner(", ", "[", "]")
-                .add("rules=" + rules)
-                .add("action=" + action)
+        return new StringJoiner(", ", "{", "}")
+                .add("\"rules\":" + rules.values())
+                .add("\"action\":" + action)
                 .toString();
     }
 

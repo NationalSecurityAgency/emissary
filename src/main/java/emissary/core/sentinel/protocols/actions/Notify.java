@@ -11,6 +11,6 @@ public class Notify extends Action {
 
     @Override
     public void trigger(Map<String, Sentinel.Tracker> trackers) {
-        logger.warn("Sentinel detected locked agents {}", trackers.values());
+        logger.warn("Sentinel detected possible locked agents -- {}", format(trackers));
     }
 }

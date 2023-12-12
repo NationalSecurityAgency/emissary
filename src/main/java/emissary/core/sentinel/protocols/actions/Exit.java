@@ -11,7 +11,7 @@ public class Exit extends Action {
 
     @Override
     public void trigger(Map<String, Sentinel.Tracker> trackers) {
-        logger.error("Sentinel detected unrecoverable agents {}, exiting now!!", trackers.values());
+        logger.error("Sentinel detected unrecoverable agents, exiting now -- {}", format(trackers));
         System.exit(1);
     }
 }

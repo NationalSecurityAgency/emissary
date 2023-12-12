@@ -14,12 +14,12 @@ public class AnyMaxTime extends Rule {
 
     protected static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public AnyMaxTime(String place, long timeLimit, double threshold) {
-        super(place, timeLimit, threshold);
+    public AnyMaxTime(String name, String place, long timeLimit, double threshold) {
+        super(name, place, timeLimit, threshold);
     }
 
-    public AnyMaxTime(String place, String timeLimit, String threshold) {
-        super(place, timeLimit, threshold);
+    public AnyMaxTime(String name, String place, String timeLimit, String threshold) {
+        super(name, place, timeLimit, threshold);
     }
 
     /**
