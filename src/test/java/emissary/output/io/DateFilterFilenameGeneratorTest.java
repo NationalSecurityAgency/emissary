@@ -1,7 +1,7 @@
 package emissary.output.io;
 
 import emissary.directory.EmissaryNode;
-import emissary.test.core.UnitTest;
+import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.FileNameGenerator;
 
 import org.apache.commons.lang3.StringUtils;

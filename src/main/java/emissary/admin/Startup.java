@@ -5,7 +5,10 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
 import emissary.core.Namespace;
+import emissary.directory.DirectoryEntry;
+import emissary.directory.DirectoryPlace;
 import emissary.directory.EmissaryNode;
+import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
 import emissary.place.IServiceProviderPlace;
@@ -18,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +68,10 @@ public class Startup {
     // sorted lists of the place types, grouped by hostname
     protected final Map<String, List<String>> placeLists = new ConcurrentHashMap<>();
     protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<>();
+
+    // sets to keep track of possible invisible place startup
+    protected Set<String> activeDirPlaces = new LinkedHashSet<>();
+    protected Set<String> placeAlreadyStarted = new LinkedHashSet<>();
 
     /**
      * n return the full DNS name and port without the protocol part
@@ -160,6 +168,10 @@ public class Startup {
         // they've completed their own set-up). So we have to startup
         // the pickup places here.
         startPickUpPlaces();
+
+        if (!verifyNoInvisiblePlacesStarted()) {
+            // TODO: If invisible places are started, shutdown the EmissaryServer
+        }
     }
 
 
@@ -367,6 +379,8 @@ public class Startup {
                     if (directoryActionArg == DIRECTORYADD && Namespace.exists(thePlaceLocation)) {
                         logger.info("Local place already exists: {}", thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
+                        // add place to placeAlreadyStarted list, so can be verified in verifyNoInvisibleStartPlaces
+                        placeAlreadyStarted.add(thePlaceLocation.substring(thePlaceLocation.lastIndexOf("/") + 1));
                         return;
                     }
 
@@ -381,11 +395,9 @@ public class Startup {
                         Startup.this.failedPlaces.add(thePlaceLocation);
                         Startup.this.placesToStart.remove(thePlaceLocation);
                     }
-
                 }
             });
         });
-
         t.start();
         return true;
     }
@@ -491,5 +503,51 @@ public class Startup {
         final String host = placeHost(theLocation);
         List<String> l = placeList.computeIfAbsent(host, k -> new ArrayList<>());
         l.add(theLocation);
+    }
+
+    /**
+     * Verifies the active directory places vs places started up. Log if any places are started without being announced in
+     * start-up.
+     * 
+     * @return true if no invisible places started, false if yes
+     */
+    public boolean verifyNoInvisiblePlacesStarted() {
+        try {
+            IDirectoryPlace dirPlace = DirectoryPlace.lookup();
+            List<DirectoryEntry> dirEntries = dirPlace.getEntries();
+            for (DirectoryEntry entry : dirEntries) {
+                // add place names of active places. getLocalPlace() returns null for any place that failed to start
+                if (entry.getLocalPlace() != null) {
+                    activeDirPlaces.add(entry.getLocalPlace().getPlaceName());
+                }
+            }
+
+            // remove DirectoryPlace from activeDirPlaces. DirectoryPlace is started up automatically in order to
+            // start all other places, so it isn't per se "announced", but it is known and logged
+            activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase("DirectoryPlace"));
+        } catch (EmissaryException e) {
+            throw new RuntimeException(e);
+        }
+
+        // compares place names in active dirs and active places, removes them from set if found
+        for (String thePlaceLocation : places.values()) {
+            activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase(thePlaceLocation.substring(thePlaceLocation.lastIndexOf("/") + 1)));
+        }
+
+        // places that are attempted to startup but are already up are added to separate list
+        // this will only check if places are added to that list
+        if (!placeAlreadyStarted.isEmpty()) {
+            for (String thePlaceLocation : placeAlreadyStarted) {
+                activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase(thePlaceLocation));
+            }
+        }
+
+        // if any places are left in active dir keys, they are places not announced on startup
+        if (!activeDirPlaces.isEmpty()) {
+            logger.warn("{} place(s) started up without being announced! {}", activeDirPlaces.size(), activeDirPlaces);
+            return false;
+        }
+
+        return true;
     }
 }

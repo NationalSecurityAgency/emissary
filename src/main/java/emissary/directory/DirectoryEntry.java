@@ -421,14 +421,14 @@ public class DirectoryEntry implements Serializable {
     /**
      * test if the current dataEntry matches the passed key pattern.
      */
-    public boolean equals(final String pattern) {
-        return equals(pattern.toCharArray());
+    public boolean matches(final String pattern) {
+        return matches(pattern.toCharArray());
     }
 
     /**
      * test if the current dataEntry matches the passed key pattern
      */
-    public boolean equals(final char[] pattern) {
+    public boolean matches(final char[] pattern) {
         return KeyManipulator.gmatch(this.theKey.toCharArray(), pattern);
     }
 
@@ -437,8 +437,8 @@ public class DirectoryEntry implements Serializable {
      * test if the current dataEntry matches the passed key pattern specifically ignoring cost in the incoming pattern (if
      * any)
      */
-    public boolean equalsIgnoreCost(final String pattern) {
-        return equals(KeyManipulator.removeExpense(pattern));
+    public boolean matchesIgnoreCost(final String pattern) {
+        return matches(KeyManipulator.removeExpense(pattern));
     }
 
     /**

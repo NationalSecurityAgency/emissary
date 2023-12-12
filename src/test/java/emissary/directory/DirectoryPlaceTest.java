@@ -30,24 +30,24 @@ class DirectoryPlaceTest extends UnitTest {
 
     // Both on same machine so we don't have to test
     // with jetty
-    private final String masterloc = "http://localhost:8001/TestMasterDirectoryPlace";
+    private final String primaryloc = "http://localhost:8001/TestPrimaryDirectoryPlace";
     private final String clientloc = "http://localhost:8001/DirectoryPlace";
-    private DirectoryPlace master = null;
+    private DirectoryPlace primary = null;
     private DirectoryPlace client = null;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        // master directory
+        // primary directory
         InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
 
-        this.master = spy(new DirectoryPlace(configStream, this.masterloc, new EmissaryNode()));
+        this.primary = spy(new DirectoryPlace(configStream, this.primaryloc, new EmissaryNode()));
         configStream.close();
-        Namespace.bind(this.masterloc, this.master);
+        Namespace.bind(this.primaryloc, this.primary);
 
-        // non-master directory
+        // non-primary directory
         configStream = new ResourceReader().getConfigDataAsStream(this);
-        this.client = spy(new DirectoryPlace(configStream, this.master.getDirectoryEntry().getKey(), this.clientloc, new EmissaryNode()));
+        this.client = spy(new DirectoryPlace(configStream, this.primary.getDirectoryEntry().getKey(), this.clientloc, new EmissaryNode()));
         configStream.close();
         Namespace.bind(this.clientloc, this.client);
     }
@@ -56,8 +56,8 @@ class DirectoryPlaceTest extends UnitTest {
     @AfterEach
     public void tearDown() throws Exception {
         super.tearDown();
-        this.master.shutDown();
-        this.master = null;
+        this.primary.shutDown();
+        this.primary = null;
         this.client.shutDown();
         this.client = null;
         for (String s : Namespace.keySet()) {
@@ -68,16 +68,16 @@ class DirectoryPlaceTest extends UnitTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void testAddEntryInMasterUsingFullKeys() {
+    void testAddEntryInPrimaryUsingFullKeys() {
         final List<String> keys = new ArrayList<>();
         keys.add("DUMDUM.THISPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         keys.add("DUMDUM.THATPLACE.ID.http://host.domain.com:8001/thePlace$5050");
         // TODO look for a better solution than spying (needed because of old STANDALONE configuration in emissary
         // client
-        doNothing().when(this.master).addPeerDirectories(any(Set.class), any(Boolean.class));
-        this.master.addPlaces(keys);
-        final List<DirectoryEntry> allEntries = this.master.getEntries();
-        // Two for the keys, one master and client directories shadowing
+        doNothing().when(this.primary).addPeerDirectories(any(Set.class), any(Boolean.class));
+        this.primary.addPlaces(keys);
+        final List<DirectoryEntry> allEntries = this.primary.getEntries();
+        // Two for the keys, one primary and client directories shadowing
         assertEquals(3, allEntries.size(), "Entries made " + allEntries);
         final DirectoryEntry de = allEntries.get(0);
         assertNotNull(de, "Entry produced");
@@ -94,7 +94,7 @@ class DirectoryPlaceTest extends UnitTest {
         // client
         doNothing().when(this.client).irdAddPlaces(any(List.class), any(Boolean.class));
         this.client.addPlaces(keys);
-        final List<DirectoryEntry> allEntries = this.master.getEntries();
+        final List<DirectoryEntry> allEntries = this.primary.getEntries();
         assertTrue(allEntries.size() > 0, "Entry made");
         final DirectoryEntry de = allEntries.get(0);
         assertNotNull(de, "Entry produced");

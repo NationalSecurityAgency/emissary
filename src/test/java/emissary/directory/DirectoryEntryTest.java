@@ -108,10 +108,10 @@ class DirectoryEntryTest extends UnitTest {
 
     @Test
     void testEquality() {
-        assertFalse(this.d.equals(KeyManipulator.addExpense(this.d2.getKey(), this.d2.getExpense())), "Entry equality");
-        assertFalse(this.d2.equals(KeyManipulator.addExpense(this.d.getKey(), this.d.getExpense())), "Entry equality");
-        assertTrue(this.d.equalsIgnoreCost(KeyManipulator.addExpense(this.d2.getKey(), this.d2.getExpense())), "Entry equality without cost");
-        assertTrue(this.d2.equalsIgnoreCost(KeyManipulator.addExpense(this.d.getKey(), this.d.getExpense())), "Entry equality without cost");
+        assertFalse(this.d.matches(KeyManipulator.addExpense(this.d2.getKey(), this.d2.getExpense())), "Entry equality");
+        assertFalse(this.d2.matches(KeyManipulator.addExpense(this.d.getKey(), this.d.getExpense())), "Entry equality");
+        assertTrue(this.d.matchesIgnoreCost(KeyManipulator.addExpense(this.d2.getKey(), this.d2.getExpense())), "Entry equality without cost");
+        assertTrue(this.d2.matchesIgnoreCost(KeyManipulator.addExpense(this.d.getKey(), this.d.getExpense())), "Entry equality without cost");
     }
 
     @Test

@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FillChannelFactoryTest {
+class FillChannelFactoryTest extends UnitTest {
     @Test
     void testCreate() {
         assertThrows(IllegalArgumentException.class, () -> FillChannelFactory.create(-1, (byte) 0));

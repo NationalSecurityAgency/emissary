@@ -1,7 +1,5 @@
 package emissary.core;
 
-import emissary.config.ConfigUtil;
-import emissary.config.Configurator;
 import emissary.core.channels.FillChannelFactory;
 import emissary.core.channels.InMemoryChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
@@ -14,6 +12,7 @@ import emissary.test.core.junit5.UnitTest;
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +21,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
@@ -679,38 +679,6 @@ class BaseDataObjectTest extends UnitTest {
         assertTrue(this.b.beforeStart(), "Before start with sprout key on end");
         this.b.appendTransformHistory("UNKNOWN.FOOPLACE.ID.http://host:1234/bazPlace");
         assertFalse(this.b.beforeStart(), "Not before start with sprout key on list");
-    }
-
-    @Test
-    void testAltViewRemapping() {
-        try {
-            final byte[] configData = ("RENAME_PROPERTIES = \"FLUBBER\"\n" + "RENAME_FOO =\"BAR\"\n").getBytes();
-
-            final ByteArrayInputStream str = new ByteArrayInputStream(configData);
-            final Configurator conf = ConfigUtil.getConfigInfo(str);
-            MetadataDictionary.initialize(MetadataDictionary.DEFAULT_NAMESPACE_NAME, conf);
-            this.b.addAlternateView("PROPERTIES", configData);
-            this.b.addAlternateView("FOO", configData, 20, 10);
-            assertNotNull(this.b.getAlternateView("PROPERTIES"), "Remapped alt view retrieved by original name");
-            assertNotNull(this.b.getAlternateView("FLUBBER"), "Remapped alt view retrieved by new name");
-            assertNotNull(this.b.getAlternateView("FOO"), "Remapped alt view slice retrieved by original name");
-            assertNotNull(this.b.getAlternateView("BAR"), "Remapped alt view slice retrieved by new name");
-            final Set<String> avnames = this.b.getAlternateViewNames();
-            assertTrue(avnames.contains("FLUBBER"), "Alt view names contains remapped name");
-            assertTrue(avnames.contains("BAR"), "Alt view slice names contains remapped name");
-
-            // Delete by orig name
-            this.b.addAlternateView("FOO", null, 20, 10);
-            assertEquals(1, this.b.getAlternateViewNames().size(), "View removed by orig name");
-            // Delete by mapped name
-            this.b.addAlternateView("FLUBBER", null);
-            assertEquals(0, this.b.getAlternateViewNames().size(), "View removed by orig name");
-        } catch (Exception ex) {
-            fail("Could not configure test", ex);
-        } finally {
-            // Clean up
-            Namespace.unbind(MetadataDictionary.DEFAULT_NAMESPACE_NAME);
-        }
     }
 
     @Test
@@ -1439,6 +1407,36 @@ class BaseDataObjectTest extends UnitTest {
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
             logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+        }
+    }
+
+    @Test
+    void testNewInputStream() throws IOException {
+        final IBaseDataObject ibdo = new BaseDataObject();
+
+        assertNull(ibdo.newInputStream());
+
+        final byte[] bytes1 = new byte[] {0, 1, 2, 3};
+
+        ibdo.setData(bytes1);
+
+        try (final InputStream bytesInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();) {
+            IOUtils.copy(bytesInputStream, byteArrayOutputStream);
+
+            assertArrayEquals(bytes1, byteArrayOutputStream.toByteArray());
+        }
+
+        final byte[] bytes2 = new byte[] {4, 5, 6, 7};
+        final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.memory(bytes2);
+
+        ibdo.setChannelFactory(sbcf);
+
+        try (final InputStream sbcfInputStream = ibdo.newInputStream();
+                final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            IOUtils.copy(sbcfInputStream, byteArrayOutputStream);
+
+            assertArrayEquals(bytes2, byteArrayOutputStream.toByteArray());
         }
     }
 }

@@ -1,6 +1,6 @@
 ![Emissary Dark Knight - some code just wants to watch the core burn](emissary-knight.png) 
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/gov.nsa/emissary/badge.svg)](https://maven-badges.herokuapp.com/maven-central/gov.nsa/emissary) [![Java CI with Maven](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/maven-ci.yml) [![CodeQL](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/NationalSecurityAgency/emissary/actions/workflows/codeql-analysis.yml)
 
 Table of Contents
 =================
@@ -79,10 +79,10 @@ of all the configuration subcommands and a brief description.
 
 Running `./emissary help` will give you the same output as running with no arguments.  If you want to see more
 detailed information on a command, add the command name after help.  For example, see all the 
-arguments with descriptions for the *what* command, run:
+arguments with descriptions for the *server* command, run:
 
 ```
-./emissary help what
+./emissary help server
 ```
 
 #### Common parameters
@@ -96,16 +96,6 @@ but can also be passed in with *(-c or --config)*.  When running from the git ch
 Logging is handled by logback. You can point to a custom file with the *--logbackConfig* argument.
 
 See the *help -c <commandName>* for each command to get more info.
-
-#### What
-
-This command will use the configured engines to identify the file.  Emissary currently only comes with the 
-SizeIdPlace, so the id will be TINY or SMALL etc.  See that class for more info.  The *-i or --input* argument
-is required as well as *-b*.  Here is how to run the command
-
-```
-./emissary what -i <path to some file>
-```
 
 #### Server (Standalone)
 

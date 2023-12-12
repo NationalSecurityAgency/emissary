@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
@@ -20,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LoggingInputStreamFactoryTest {
+class LoggingInputStreamFactoryTest extends UnitTest {
     private ListAppender<ILoggingEvent> appender = null;
     private final Logger logger = (Logger) LoggerFactory.getLogger(LoggingInputStreamFactoryTest.class);
 

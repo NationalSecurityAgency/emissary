@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.test.core.junit5.UnitTest;
+
 import com.google.common.io.Files;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FileChannelFactoryTest {
+class FileChannelFactoryTest extends UnitTest {
     private static final String TEST_STRING = "test data";
     private static final byte[] TEST_BYTES = TEST_STRING.getBytes(StandardCharsets.US_ASCII);
 
