@@ -71,8 +71,6 @@
     <dep.jersey.version>2.40</dep.jersey.version>
     <dep.jetty.version>10.0.15</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
-    <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
-    <dep.junit.version>4.13.2</dep.junit.version>
     <dep.logback.version>1.3.12</dep.logback.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
@@ -312,20 +310,8 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${dep.junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
         <version>${dep.junit-jupiter.version}</version>
         <scope>test</scope>
       </dependency>
@@ -552,11 +538,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>
