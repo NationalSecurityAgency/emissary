@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>FastBoyerMooreTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../testapidocs/emissary/util/search/FastBoyerMooreTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.util.search;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.util.ArrayList;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.fail;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">class</strong> <a name="FastBoyerMooreTest" href="../../../emissary/util/search/FastBoyerMooreTest.html#FastBoyerMooreTest">FastBoyerMooreTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String[][] keywords = {{<span class="jxr_string">"one"</span>, <span class="jxr_string">"two"</span>, <span class="jxr_string">"three"</span>, <span class="jxr_string">"four"</span>, <span class="jxr_string">"five"</span>}, {<span class="jxr_string">"uno"</span>, <span class="jxr_string">"dos"</span>, <span class="jxr_string">"tres"</span>, <span class="jxr_string">"quatro"</span>, <span class="jxr_string">"cinco"</span>},
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>              {<span class="jxr_string">"alpha"</span>, <span class="jxr_string">"beta"</span>, <span class="jxr_string">"gamma"</span>, <span class="jxr_string">"delta"</span>, <span class="jxr_string">"epsilon"</span>}};
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      @Test
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      <strong class="jxr_keyword">void</strong> testSimpleScan() {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>              <strong class="jxr_keyword">final</strong> FastBoyerMoore scanner = <strong class="jxr_keyword">new</strong> FastBoyerMoore(<strong class="jxr_keyword">this</strong>.keywords);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>              <strong class="jxr_keyword">final</strong> byte[] data =
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>                      (<span class="jxr_string">"Hi, this is a one-two-cinco test of the emergency alpha five gamma\nbroadcasting system. \n\n"</span>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>                              + <span class="jxr_string">"If this were a real emergency epsilon (delta) alpha you would four dos tres get the heck out of here."</span>).getBytes();
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>              <strong class="jxr_keyword">int</strong> pos = 0;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>              <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>              <strong class="jxr_keyword">while</strong> (pos &lt; data.length) {
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>                  pos = scanner.staticSingleScan(data, pos, data.length, result);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>              }
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>              assertEquals(12, result.size(), <span class="jxr_string">"All results must be found and reported out"</span>);
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>              assertEquals(14, result.get(0)[0], <span class="jxr_string">"First result check pos"</span>);
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>              assertEquals(0, result.get(0)[1], <span class="jxr_string">"First result check id"</span>);
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>              assertEquals(3, result.get(0)[2], <span class="jxr_string">"First result check length"</span>);
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>              fail(<span class="jxr_string">"Creation of scanner failure"</span>, ex);
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          }
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      }
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

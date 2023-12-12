@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>RegressionTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../testapidocs/emissary/test/core/junit5/RegressionTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.test.core.junit5;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObject;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObjectHelper;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObjectXmlCodecs;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> emissary.util.ByteUtil;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> com.google.errorprone.annotations.ForOverride;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.jdom2.Document;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.params.ParameterizedTest;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.params.provider.MethodSource;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.nio.charset.StandardCharsets;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.List;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> java.util.Map.Entry;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> java.util.TreeMap;
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.fail;
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment"> * This test acts similarly to ExtractionTest; however, it compares the entire BDO instead of just what is defined in</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment"> * the XML. In other words, the XML must define exactly the output of the Place, no more and no less. There are methods</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * provided to generate the XML required.</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment"> * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment"> * To implement this for a test, you should:</em>
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment"> * &lt;/p&gt;</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment"> * &lt;ol&gt;</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Extend this class&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Override {@link #generateAnswers()} to return true, which will generate the XML answer files&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Optionally, override the various provided methods if you want to customise the behaviour of providing the IBDO</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment"> * before/after processing&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Run the tests, which should pass - if they don't, you either have incorrect processing which needs fixing, or you</em>
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <em class="jxr_javadoccomment"> * need to further customise the initial/final IBDOs.&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <em class="jxr_javadoccomment"> * &lt;li&gt;Once the tests pass, you can remove the overridden method(s) added above.&lt;/li&gt;</em>
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <em class="jxr_javadoccomment"> * &lt;/ol&gt;</em>
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="RegressionTest" href="../../../../emissary/test/core/junit5/RegressionTest.html#RegressionTest">RegressionTest</a> <strong class="jxr_keyword">extends</strong> <a name="ExtractionTest" href="../../../../emissary/test/core/junit5/ExtractionTest.html#ExtractionTest">ExtractionTest</a> {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  <em class="jxr_javadoccomment">     * Override this to generate XML for data files.</em>
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <em class="jxr_javadoccomment">     *         automatically</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      @ForOverride
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> generateAnswers() {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * Allow the initial IBDO to be overridden - for example, adding additional previous forms</em>
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  <em class="jxr_javadoccomment">     * This is used in the simple case to generate an IBDO from the file on disk and override the filename</em>
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     * @param resource path to the dat file</em>
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     * @return the initial IBDO</em>
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @ForOverride
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">protected</strong> IBaseDataObject getInitialIbdo(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">return</strong> RegressionTestUtil.getInitialIbdoWithFormInFilename(resource, kff);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>  <em class="jxr_javadoccomment">     * Allow the initial IBDO to be overridden before serialising to XML.</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     * In the default case, we null out the data in the BDO which will force the data to be loaded from the .dat file</em>
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  <em class="jxr_javadoccomment">     * instead.</em>
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  <em class="jxr_javadoccomment">     * @param resource path to the dat file</em>
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  <em class="jxr_javadoccomment">     * @param initialIbdo to tweak</em>
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      @ForOverride
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> tweakInitialIbdoBeforeSerialisation(<strong class="jxr_keyword">final</strong> String resource, <strong class="jxr_keyword">final</strong> IBaseDataObject initialIbdo) {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          RegressionTestUtil.setDataToNull(initialIbdo);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_javadoccomment">     * Allow the generated IBDO to be overridden - for example, adding certain field values. Will modify the provided IBDO.</em>
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_javadoccomment">     * This is used in the simple case to set the current form for the final object to be taken from the file name. If the</em>
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  <em class="jxr_javadoccomment">     * test worked correctly no change will be made, but if there is a discrepancy this will be highlighted afterwards when</em>
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  <em class="jxr_javadoccomment">     * the diff takes place.</em>
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     * @param resource path to the dat file</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * @param finalIbdo the existing final BDO after it's been processed by a place</em>
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      @ForOverride
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> tweakFinalIbdoBeforeSerialisation(<strong class="jxr_keyword">final</strong> String resource, <strong class="jxr_keyword">final</strong> IBaseDataObject finalIbdo) {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          RegressionTestUtil.tweakFinalIbdoWithFormInFilename(resource, finalIbdo);
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>  <em class="jxr_javadoccomment">     * Allow the children generated by the place to be overridden before serialising to XML.</em>
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L100" href="#L100">100</a> <em class="jxr_javadoccomment">     * In the default case, do nothing.</em>
+<a class="jxr_linenumber" name="L101" href="#L101">101</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L102" href="#L102">102</a> <em class="jxr_javadoccomment">     * @param resource path to the dat file</em>
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> <em class="jxr_javadoccomment">     * @param children to tweak</em>
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     @ForOverride
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> tweakFinalResultsBeforeSerialisation(<strong class="jxr_keyword">final</strong> String resource, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; children) {
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <em class="jxr_comment">// No-op unless overridden</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     }
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>     @Override
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>     @ForOverride
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>     <strong class="jxr_keyword">protected</strong> String getInitialForm(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <strong class="jxr_keyword">return</strong> RegressionTestUtil.getInitialFormFromFilename(resource);
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     }
+<a class="jxr_linenumber" name="L115" href="#L115">115</a> 
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     * This method returns the XML element decoders.</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     * @return the XML element decoders.</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">protected</strong> ElementDecoders getDecoders() {
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>         <strong class="jxr_keyword">return</strong> IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
+<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * This method returns the XML element encoders.</em>
+<a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L128" href="#L128">128</a> <em class="jxr_javadoccomment">     * @return the XML element encoders.</em>
+<a class="jxr_linenumber" name="L129" href="#L129">129</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>     <strong class="jxr_keyword">protected</strong> ElementEncoders getEncoders() {
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         <strong class="jxr_keyword">return</strong> IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS;
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>     }
+<a class="jxr_linenumber" name="L133" href="#L133">133</a> 
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L135" href="#L135">135</a> <em class="jxr_javadoccomment">     * When the data is able to be retrieved from the XML (e.g. when getEncoders() returns the default encoders), then this</em>
+<a class="jxr_linenumber" name="L136" href="#L136">136</a> <em class="jxr_javadoccomment">     * method should be empty. However, in this case getEncoders() is returning the sha256 encoders which means the original</em>
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> <em class="jxr_javadoccomment">     * data cannot be retrieved from the XML. Therefore, in order to test equivalence, all of the non-printable data in the</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a> <em class="jxr_javadoccomment">     * IBaseDataObjects needs to be converted to a sha256 hash. The full encoders can be used by overriding the</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a> <em class="jxr_javadoccomment">     * checkAnswersPreHook(...) to be empty and overriding getEncoders() to return the DEFAULT_ELEMENT_ENCODERS.</em>
+<a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     @Override
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> checkAnswersPreHook(<strong class="jxr_keyword">final</strong> Document answers, <strong class="jxr_keyword">final</strong> IBaseDataObject payload, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments,
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">final</strong> String tname) {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">if</strong> (!IBaseDataObjectXmlCodecs.SHA256_ELEMENT_ENCODERS.equals(getEncoders())) {
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         }
+<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">for</strong> (Entry&lt;String, byte[]&gt; entry : <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;(payload.getAlternateViews()).entrySet()) {
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>             payload.addAlternateView(entry.getKey(), ByteUtil.sha256Bytes(entry.getValue()).getBytes(StandardCharsets.ISO_8859_1));
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         }
+<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">if</strong> (payload.data() != <strong class="jxr_keyword">null</strong> &amp;&amp; ByteUtil.hasNonPrintableValues(payload.data())) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>             <strong class="jxr_keyword">final</strong> String hash = ByteUtil.sha256Bytes(payload.data());
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>             <strong class="jxr_keyword">if</strong> (hash != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>                 payload.setData(hash.getBytes(StandardCharsets.UTF_8));
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         }
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         <strong class="jxr_keyword">if</strong> (payload.getExtractedRecords() != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> IBaseDataObject extractedRecord : payload.getExtractedRecords()) {
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>                 <strong class="jxr_keyword">if</strong> (ByteUtil.hasNonPrintableValues(extractedRecord.data())) {
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>                     <strong class="jxr_keyword">final</strong> String hash = ByteUtil.sha256Bytes(extractedRecord.data());
+<a class="jxr_linenumber" name="L164" href="#L164">164</a> 
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>                     <strong class="jxr_keyword">if</strong> (hash != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>                         extractedRecord.setData(hash.getBytes(StandardCharsets.UTF_8));
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>                     }
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>                 }
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             }
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         }
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">if</strong> (attachments != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> IBaseDataObject attachment : attachments) {
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>                 <strong class="jxr_keyword">if</strong> (ByteUtil.hasNonPrintableValues(attachment.data())) {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>                     <strong class="jxr_keyword">final</strong> String hash = ByteUtil.sha256Bytes(attachment.data());
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> 
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                     <strong class="jxr_keyword">if</strong> (hash != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                         attachment.setData(hash.getBytes(StandardCharsets.UTF_8));
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>                     }
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>                 }
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>             }
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         }
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> 
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <em class="jxr_comment">// Everything above can be overridden by extending classes to modify behaviour as they see fit.</em>
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_comment">// Below this point, methods should not be able to be overridden as they are inherently part of RegressionTest.</em>
+<a class="jxr_linenumber" name="L187" href="#L187">187</a> 
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>     @ParameterizedTest
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>     @MethodSource(<span class="jxr_string">"data"</span>)
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>     @Override
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> testExtractionPlace(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         logger.debug(<span class="jxr_string">"Running {} test on resource {}"</span>, place.getClass().getName(), resource);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">if</strong> (generateAnswers()) {
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>                 generateAnswerFiles(resource);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             } <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> Exception e) {
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>                 logger.error(<span class="jxr_string">"Error running test {}"</span>, resource, e);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>                 fail(<span class="jxr_string">"Unable to generate answer file"</span>, e);
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             }
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         <em class="jxr_comment">// Run the normal extraction/regression tests</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">super</strong>.testExtractionPlace(resource);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>     }
+<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     * Actually generate the answer file for a given resource</em>
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> <em class="jxr_javadoccomment">     * Takes initial form &amp; final forms from the filename</em>
+<a class="jxr_linenumber" name="L211" href="#L211">211</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * @param resource to generate against</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     * @throws Exception if an error occurs during processing</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> generateAnswerFiles(<strong class="jxr_keyword">final</strong> String resource) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <em class="jxr_comment">// Get the data and create a channel factory to it</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject initialIbdo = getInitialIbdo(resource);
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <em class="jxr_comment">// Clone the BDO to create an 'after' copy</em>
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <em class="jxr_comment">// Actually process the BDO and keep the children</em>
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; finalResults = place.agentProcessHeavyDuty(finalIbdo);
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> 
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>         <em class="jxr_comment">// Allow overriding things before serialising to XML</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         tweakInitialIbdoBeforeSerialisation(resource, initialIbdo);
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         tweakFinalIbdoBeforeSerialisation(resource, finalIbdo);
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         tweakFinalResultsBeforeSerialisation(resource, finalResults);
+<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <em class="jxr_comment">// Generate the full XML (setup &amp; answers from before &amp; after)</em>
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, getEncoders());
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>     }
+<a class="jxr_linenumber" name="L231" href="#L231">231</a> 
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>     @Override
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Document getAnswerDocumentFor(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>         <em class="jxr_comment">// If generating answers, get the src version, otherwise get the normal XML file</em>
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>         <strong class="jxr_keyword">return</strong> generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource) : <strong class="jxr_keyword">super</strong>.getAnswerDocumentFor(resource);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     }
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> 
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     @Override
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> setupPayload(<strong class="jxr_keyword">final</strong> IBaseDataObject payload, <strong class="jxr_keyword">final</strong> Document answers) {
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>         RegressionTestUtil.setupPayload(payload, answers, getDecoders());
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>     }
+<a class="jxr_linenumber" name="L242" href="#L242">242</a> 
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     @Override
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">void</strong> checkAnswers(<strong class="jxr_keyword">final</strong> Document answers, <strong class="jxr_keyword">final</strong> IBaseDataObject payload,
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments, <strong class="jxr_keyword">final</strong> String tname) {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         RegressionTestUtil.checkAnswers(answers, payload, attachments, place.getClass().getName(), getDecoders());
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>     }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

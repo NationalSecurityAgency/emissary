@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: emissary.server.mvc.internal.WorkSpaceClientSpaceTakeActionTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.501 s - in emissary.server.mvc.internal.WorkSpaceClientSpaceTakeActionTest

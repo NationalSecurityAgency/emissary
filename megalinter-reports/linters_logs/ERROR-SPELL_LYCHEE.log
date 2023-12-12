@@ -1,0 +1,20 @@
+Results of lychee linter (version 0.13.0)
+See documentation on https://megalinter.io/7.4.0/descriptors/spell_lychee/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+✗ [404] https://megalinter.io/configuration/ | Failed: Network error: Not Found
+📝 Summary
+---------------------
+🔍 Total............1
+✅ Successful.......0
+⏳ Timeouts.........0
+🔀 Redirected.......0
+👻 Excluded.........0
+❓ Unknown..........0
+🚫 Errors...........1
+
+Errors in .github/linters/.mega-linter.yml
+✗ [404] https://megalinter.io/configuration/ | Failed: Network error: Not Found
+

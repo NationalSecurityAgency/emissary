@@ -1,0 +1,154 @@
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,689 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,690 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,690 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,691 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,730 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,730 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,731 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,731 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,732 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,734 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,740 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,740 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,741 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,741 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,742 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,742 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,745 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,745 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,746 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,746 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,747 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,747 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,749 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,749 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,750 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,750 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,751 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,752 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,755 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,755 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,756 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,756 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,757 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,757 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,760 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,760 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:59,761 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:59,761 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:59,762 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:59,762 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config

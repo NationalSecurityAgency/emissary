@@ -1,0 +1,30 @@
+Results of gitleaks linter (version 8.18.0)
+See documentation on https://megalinter.io/7.4.0/descriptors/repository_gitleaks/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+
+    ○
+    │╲
+    │ ○
+    ○ ░
+    ░    gitleaks
+
+Finding:     ...72-linux-x64.tar.gz?AuthParam=REDACTED
+ENV JAVA64=/usr/jav...
+Secret:      REDACTED
+RuleID:      generic-api-key
+Entropy:     3.830237
+File:        contrib/docker/Dockerfile
+Line:        11
+Commit:      c702bb7d697567b5d3a0710b225ee15a695e5534
+Author:      Michael Wall
+Email:       mjwall@gmail.com
+Date:        2018-06-01T17:01:20Z
+Fingerprint: c702bb7d697567b5d3a0710b225ee15a695e5534:contrib/docker/Dockerfile:generic-api-key:11
+
+10:23AM INF 765 commits scanned.
+10:23AM INF scan completed in 2m42s
+10:23AM WRN leaks found: 1
+

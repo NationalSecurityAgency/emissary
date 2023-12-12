@@ -1,0 +1,56 @@
+Results of yamllint linter (version 1.32.0)
+See documentation on https://megalinter.io/7.4.0/descriptors/yaml_yamllint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+.github/linters/.mega-linter.yml
+  4:1       warning  missing document start "---"  (document-start)
+  25:2      warning  missing starting space in comment  (comments)
+
+contrib/helm/emissary/Chart.yaml
+  1:1       warning  missing document start "---"  (document-start)
+
+contrib/helm/emissary/templates/deployment.yaml
+  1:1       warning  missing document start "---"  (document-start)
+  4:11      error    too many spaces inside braces  (braces)
+  4:41      error    too many spaces inside braces  (braces)
+  6:7       error    syntax error: expected the node content, but found '-' (syntax)
+  8:41      error    too many spaces inside braces  (braces)
+  9:3       error    wrong indentation: expected 0 but found 2  (indentation)
+  9:15      error    too many spaces inside braces  (braces)
+
+contrib/helm/emissary/templates/ingress.yaml
+  1:1       warning  missing document start "---"  (document-start)
+  1:3       error    syntax error: expected the node content, but found '-' (syntax)
+  5:3       error    wrong indentation: expected 0 but found 2  (indentation)
+  5:80      error    too many spaces inside braces  (braces)
+  6:3       error    wrong indentation: expected 0 but found 2  (indentation)
+  7:3       error    wrong indentation: expected 0 but found 2  (indentation)
+  7:10      error    too many spaces inside braces  (braces)
+  8:8       error    too many spaces inside braces  (braces)
+
+contrib/helm/emissary/templates/service.yaml
+  1:1       warning  missing document start "---"  (document-start)
+  4:11      error    too many spaces inside braces  (braces)
+  4:41      error    too many spaces inside braces  (braces)
+  6:7       error    syntax error: expected the node content, but found '-' (syntax)
+  8:11      error    too many spaces inside braces  (braces)
+  8:32      error    too many spaces inside braces  (braces)
+  10:15     error    too many spaces inside braces  (braces)
+  10:36     error    too many spaces inside braces  (braces)
+  15:56     error    too many spaces inside braces  (braces)
+
+contrib/helm/emissary/templates/serviceaccount.yaml
+  1:1       warning  missing document start "---"  (document-start)
+  1:3       error    syntax error: expected the node content, but found '-' (syntax)
+  5:51      error    too many spaces inside braces  (braces)
+
+contrib/helm/emissary/values.yaml
+  5:1       warning  missing document start "---"  (document-start)
+  31:3      warning  comment not indented like content  (comments-indentation)
+  34:3      warning  comment not indented like content  (comments-indentation)
+  49:5      warning  comment not indented like content  (comments-indentation)
+  62:3      warning  comment not indented like content  (comments-indentation)
+
+

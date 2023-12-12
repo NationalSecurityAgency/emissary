@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: emissary.kff.SsdeepTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.715 s - in emissary.kff.SsdeepTest

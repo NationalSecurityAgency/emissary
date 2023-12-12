@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+        <a id="app-name" class="navbar-brand" href="/">{{appName}}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+                {{#navItems}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{link}}">{{display}}</a>
+                    </li>
+                {{/navItems}}
+                {{#navButtons}}
+                    <li class="nav-item">
+                        <a href="{{link}}" class="btn btn-danger navbar-btn" style="margin: 2px 2px 0px 0px;" onclick="return confirm('Are you sure?')">{{display}}</a>
+                    </li>
+                {{/navButtons}}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><span id="emissary-version" class="nav-link">{{appVersion}}</span></li>
+            </ul>
+        </div>
+    </div>
+</nav>

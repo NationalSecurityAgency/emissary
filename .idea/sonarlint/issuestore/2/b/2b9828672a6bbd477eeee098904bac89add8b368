@@ -1,0 +1,27 @@
+
+@
+java:S2629Â"$Invoke method(s) only conditionally.(°Éï­ùÿÿÿÿ
+@
+java:S2629ç"$Invoke method(s) only conditionally.(È™ˆ¾øÿÿÿÿ
+@
+java:S2629ë"$Invoke method(s) only conditionally.(È™ˆ¾øÿÿÿÿ
+@
+java:S2629†"$Invoke method(s) only conditionally.(ÐÉõ…øÿÿÿÿ
+;
+java:S2629Ê"$Invoke method(s) only conditionally.(óÁ§
+;
+java:S2629‰"$Invoke method(s) only conditionally.(¥Ð«§
+m
+java:S3776c"RRefactor this method to reduce its Cognitive Complexity from 27 to the 15 allowed.(‚ è¯ûÿÿÿÿ
+_
+java:S4201|"IRemove this unnecessary null check; "instanceof" returns false for nulls.(ùñîÈ
+]
+java:S3457"AFormat specifiers should be used instead of string concatenation.(–éííûÿÿÿÿ
+U
+java:S1155‘">Use isEmpty() to check whether the collection is empty or not.(²öÃ˜
+n
+java:S3776È"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(…òíÍûÿÿÿÿ
+i
+java:S3776”"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(ô¸ôÔ
+ƒ
+java:S1130ñ"lRemove the declaration of thrown exception 'java.lang.Exception', as it cannot be thrown from method's body.(Ø¿Ÿ´

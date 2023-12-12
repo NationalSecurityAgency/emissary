@@ -1,0 +1,547 @@
+Results of kics linter (version 1.7.8)
+See documentation on https://megalinter.io/7.4.0/descriptors/repository_kics/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+
+                   .0MO.                                    
+                   OMMMx                                    
+                   ;NMX;                                    
+                    ...           ...              ....     
+WMMMd     cWMMM0.  KMMMO      ;xKWMMMMNOc.     ,xXMMMMMWXkc.
+WMMMd   .0MMMN:    KMMMO    :XMMMMMMMMMMMWl   xMMMMMWMMMMMMl
+WMMMd  lWMMMO.     KMMMO   xMMMMKc...'lXMk   ,MMMMx   .;dXx 
+WMMMd.0MMMX;       KMMMO  cMMMMd        '    'MMMMNl'       
+WMMMNWMMMMl        KMMMO  0MMMN               oMMMMMMMXkl.  
+WMMMMMMMMMMo       KMMMO  0MMMX                .ckKWMMMMMM0.
+WMMMMWokMMMMk      KMMMO  oMMMMc              .     .:OMMMM0
+WMMMK.  dMMMM0.    KMMMO   KMMMMx'    ,kNc   :WOc.    .NMMMX
+WMMMd    cWMMMX.   KMMMO    kMMMMMWXNMMMMMd .WMMMMWKO0NMMMMl
+WMMMd     ,NMMMN,  KMMMO     'xNMMMMMMMNx,   .l0WMMMMMMMWk, 
+xkkk:      ,kkkkx  okkkl        ;xKXKx;          ;dOKKkc    
+
+
+Scanning with Keeping Infrastructure as Code Secure v1.7.8
+
+
+
+Files scanned: 130
+Parsed files: 28
+Queries loaded: 501
+Queries failed to execute: 0
+
+------------------------------------
+
+Root Container Not Mounted Read-only, Severity: LOW, Results: 1
+Description: Check if the root container filesystem is not being mounted read-only.
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/a9c2f49d-0671-4fc9-9ece-f4e261e128d0
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Pod or Container Without ResourceQuota, Severity: LOW, Results: 1
+Description: Each namespace should have a ResourceQuota policy associated to limit the total amount of resources Pods, Containers and PersistentVolumeClaims can consume
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/48a5beba-e4c0-4584-a2aa-e6894e4cf424
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Pod or Container Without LimitRange, Severity: LOW, Results: 1
+Description: Each namespace should have a LimitRange policy associated to ensure that resource allocations of Pods, Containers and PersistentVolumeClaims do not exceed the defined boundaries
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/4a20ebac-1060-4c81-95d1-1f7f620e983b
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+No Drop Capabilities for Containers, Severity: LOW, Results: 1
+Description: Sees if Kubernetes Drop Capabilities exists to ensure containers security context
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/268ca686-7fb7-4ae9-b129-955a2a89064e
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Missing AppArmor Profile, Severity: LOW, Results: 1
+Description: Containers should be configured with an AppArmor profile to enforce fine-grained access control over low-level system resources
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/8b36775e-183d-4d46-b0f7-96a6f34a723f
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Invalid Image Tag, Severity: LOW, Results: 1
+Description: Image tag must be defined and not be empty or equal to latest.
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/583053b7-e632-46f0-b989-f81ff8045385
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Image Without Digest, Severity: LOW, Results: 1
+Description: Images should be specified together with their digests to ensure integrity
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/7c81d34c-8e5a-402b-9798-9f442630e678
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Healthcheck Instruction Missing, Severity: LOW, Results: 1
+Description: Ensure that HEALTHCHECK is being used. The HEALTHCHECK instruction tells Docker how to test a container to check that it is still working
+Platform: Dockerfile
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockerfile-queries/b03a748a-542d-44f4-bb86-9199ab4fd2d5
+
+	[1]: contrib/docker/Dockerfile:1
+
+		001: FROM centos:7
+		002: 
+		003: RUN yum update -y \
+
+
+Cpus Not Limited, Severity: LOW, Results: 3
+Description: CPU limits should be set because if the system has CPU time free, a container is guaranteed to be allocated as much CPU as it requests
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/6b610c50-99fb-4ef0-a5f3-e312fd945bc3
+
+	[1]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+Container Capabilities Unrestricted, Severity: LOW, Results: 3
+Description: Some capabilities are not needed in certain (or any) containers. Make sure that you only add capabilities that your container needs. Drop unnecessary capabilities as well.
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/ce76b7d0-9e77-464d-b86f-c5c48e03e22d
+
+	[1]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+Yum install Without Version, Severity: MEDIUM, Results: 1
+Description: Not specifying the package version can cause failures due to unanticipated changes in required packages
+Platform: Dockerfile
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockerfile-queries/6452c424-1d92-4deb-bb18-a03e95d579c4
+
+	[1]: contrib/docker/Dockerfile:3
+
+		002: 
+		003: RUN yum update -y     && rpm --import https://yum.corretto.aws/corretto.key     && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo     && yum install -y java-11-amazon-corretto-devel     && yum clean all -y     && rm -rf /
+		004: 
+
+
+Using Unrecommended Namespace, Severity: MEDIUM, Results: 2
+Description: Namespaces like 'default', 'kube-system' or 'kube-public' should not be used
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/611ab018-c4aa-4ba2-b0f6-a448337509a6
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+	[2]: contrib/helm/emissary/templates/serviceaccount.yaml:5
+
+		004: metadata:
+		005:   name: {{ include "emissary.serviceAccountName" . }}
+		006:   labels:
+
+
+Unpinned Actions Full Length Commit SHA, Severity: MEDIUM, Results: 4
+Description: Pinning an action to a full length commit SHA is currently the only way to use an action as an immutable release. Pinning to a particular SHA helps mitigate the risk of a bad actor adding a backdoor to the action's repository, as they would need to generate a SHA-1 collision for a valid Git object payload. When selecting a SHA, you should verify it is from the action's repository and not a repository fork.
+Platform: CICD
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/cicd-queries/555ab8f9-2001-455e-a077-f2d0f41e2fb9
+
+	[1]: .github/workflows/codeql-analysis.yml:58
+
+		057:       - name: Autobuild
+		058:         uses: github/codeql-action/autobuild@v2
+		059: 
+
+
+	[2]: .github/workflows/linter.yaml:25
+
+		024:       - name: Lint Code Base
+		025:         uses: oxsecurity/megalinter@v7
+		026:         env:
+
+
+	[3]: .github/workflows/codeql-analysis.yml:47
+
+		046:       - name: Initialize CodeQL
+		047:         uses: github/codeql-action/init@v2
+		048:         with:
+
+
+	[4]: .github/workflows/codeql-analysis.yml:72
+
+		071:       - name: Perform CodeQL Analysis
+		072:         uses: github/codeql-action/analyze@v2
+		073: 
+
+
+Shared Host Network Namespace, Severity: MEDIUM, Results: 3
+Description: Container should not share the host network namespace
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/071a71ff-f868-47a4-ac0b-3c59e4ab5443
+
+	[1]: contrib/docker/docker-compose.yml:20
+
+		019:       - "9001:9001"
+		020:     network_mode: host
+		021:     volumes:
+
+
+	[2]: contrib/docker/docker-compose.yml:10
+
+		009:       - "8001:8001"
+		010:     network_mode: host
+		011:     volumes:
+
+
+	[3]: contrib/docker/docker-compose.yml:30
+
+		029:       - "7001:7001"
+		030:     network_mode: host
+		031:     depends_on:
+
+
+Service Account Token Automount Not Disabled, Severity: MEDIUM, Results: 1
+Description: Service Account Tokens are automatically mounted even if not necessary
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/48471392-d4d0-47c0-b135-cdec95eb3eef
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Security Opt Not Set, Severity: MEDIUM, Results: 3
+Description: Attribute 'security_opt' should be defined.
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/610e266e-6c12-4bca-9925-1ed0cd29742b
+
+	[1]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+Seccomp Profile Is Not Configured, Severity: MEDIUM, Results: 1
+Description: Containers should be configured with a secure Seccomp profile to restrict potentially dangerous syscalls
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/f377b83e-bd07-4f48-a591-60c82b14a78b
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Pids Limit Not Set, Severity: MEDIUM, Results: 3
+Description: 'pids_limit' should be set and different than -1
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/221e0658-cb2a-44e3-b08a-db96a341d6fa
+
+	[1]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+Networks Not Set, Severity: MEDIUM, Results: 3
+Description: Setting networks in services ensures you are not using dockers default bridge (docker0), which shares traffic bewteen all containers.
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/ce14a68b-1668-41a0-ab7d-facd9f784742
+
+	[1]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+NET_RAW Capabilities Not Being Dropped, Severity: MEDIUM, Results: 1
+Description: Containers should drop 'ALL' or at least 'NET_RAW' capabilities
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/dbbc6705-d541-43b0-b166-dd4be8208b54
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Memory Requests Not Defined, Severity: MEDIUM, Results: 1
+Description: Memory requests should be defined for each container. This allows the kubelet to reserve the requested amount of system resources and prevents over-provisioning on individual nodes
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/229588ef-8fde-40c8-8756-f4f2b5825ded
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Memory Not Limited, Severity: MEDIUM, Results: 3
+Description: Memory limits should be defined for each container. This prevents potential resource exhaustion by ensuring that containers consume not more than the designated amount of memory
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/bb9ac4f7-e13b-423d-a010-c74a1bfbe492
+
+	[1]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+Memory Limits Not Defined, Severity: MEDIUM, Results: 1
+Description: Memory limits should be defined for each container. This prevents potential resource exhaustion by ensuring that containers consume not more than the designated amount of memory
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/b14d1bc4-a208-45db-92f0-e21f8e2588e9
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Host Namespace is Shared, Severity: MEDIUM, Results: 3
+Description: The hosts process namespace should not be shared by containers
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/4f31dd9f-2cc3-4751-9b53-67e4af83dac0
+
+	[1]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+Healthcheck Not Set, Severity: MEDIUM, Results: 3
+Description: Check containers periodically to see if they are running properly.
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/698ed579-b239-4f8f-a388-baa4bcb13ef8
+
+	[1]: contrib/docker/docker-compose.yml:5
+
+		004: services:
+		005:   emissary-worker-1:
+		006:     image: emissary
+
+
+	[2]: contrib/docker/docker-compose.yml:25
+
+		024: 
+		025:   emissary-feeder:
+		026:     image: emissary
+
+
+	[3]: contrib/docker/docker-compose.yml:15
+
+		014: 
+		015:   emissary-worker-2:
+		016:     image: emissary
+
+
+Container Traffic Not Bound To Host Interface, Severity: MEDIUM, Results: 3
+Description: Incoming container traffic should be bound to a specific host interface
+Platform: DockerCompose
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockercompose-queries/451d79dc-0588-476a-ad03-3c7f0320abb3
+
+	[1]: contrib/docker/docker-compose.yml:28
+
+		027:     command: feed -p 7001 -i /opt/emissary/target/data/InputData --eatPrefix /opt/emissary/target/data/InputData
+		028:     ports:
+		029:       - "7001:7001"
+
+
+	[2]: contrib/docker/docker-compose.yml:18
+
+		017:     command: server -a 2 -m cluster -p 9001
+		018:     ports:
+		019:       - "9001:9001"
+
+
+	[3]: contrib/docker/docker-compose.yml:8
+
+		007:     command: server -a 2 -m cluster -p 8001
+		008:     ports:
+		009:       - "8001:8001"
+
+
+Container Running With Low UID, Severity: MEDIUM, Results: 1
+Description: Check if containers are running with low UID, which might cause conflicts with the host's user table.
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/02323c00-cdc3-4fdc-a310-4f2b3e7a1660
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:32
+
+		031:         - name: {{ .Chart.Name }}
+		032:           securityContext:
+		033:             {{- toYaml .Values.securityContext | nindent 12 }}
+
+
+Container Running As Root, Severity: MEDIUM, Results: 1
+Description: Containers should only run as non-root user. This limits the exploitability of security misconfigurations and restricts an attacker's possibilities in case of compromise
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/cf34805e-3872-4c08-bf92-6ff7bb0cfadb
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+CPU Requests Not Set, Severity: MEDIUM, Results: 1
+Description: CPU requests should be set to ensure the sum of the resource requests of the scheduled Containers is less than the capacity of the node
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/ca469dd4-c736-448f-8ac1-30a642705e0a
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+CPU Limits Not Set, Severity: MEDIUM, Results: 1
+Description: CPU limits should be set because if the system has CPU time free, a container is guaranteed to be allocated as much CPU as it requests
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/4ac0e2b7-d2d2-4af7-8799-e8de6721ccda
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Privilege Escalation Allowed, Severity: HIGH, Results: 1
+Description: Containers should not run with allowPrivilegeEscalation in order to prevent them from gaining more privileges than their parent process
+Platform: Kubernetes
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/kubernetes-queries/5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d
+
+	[1]: contrib/helm/emissary/templates/deployment.yaml:1
+
+
+
+Missing User Instruction, Severity: HIGH, Results: 1
+Description: A user should be specified in the dockerfile, otherwise the image will run as root
+Platform: Dockerfile
+Learn more about this vulnerability: https://docs.kics.io/latest/queries/dockerfile-queries/fd54f200-402c-4333-a5a4-36ef6709af2f
+
+	[1]: contrib/docker/Dockerfile:1
+
+		001: FROM centos:7
+		002: 
+		003: RUN yum update -y     && rpm --import https://yum.corretto.aws/corretto.key     && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo     && yum install -y java-11-amazon-corretto-devel     && yum clean all -y     && rm -rf /
+
+
+
+Results Summary:
+HIGH: 2
+MEDIUM: 40
+LOW: 14
+INFO: 0
+TOTAL: 56
+
+Scan duration: 13m38.108123665s
+A new version 'v1.7.9' of KICS is available, please consider updating
+

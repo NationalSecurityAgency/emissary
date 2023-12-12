@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: emissary.config.ConfigUtilTest
+-------------------------------------------------------------------------------
+Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.372 s - in emissary.config.ConfigUtilTest

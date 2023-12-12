@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>EmissaryServerIT xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../testapidocs/emissary/server/EmissaryServerIT.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.server;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.client.EmissaryClient;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.client.response.MapResponseEntity;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.command.ServerCommand;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.util.Version;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.apache.hc.client5.http.classic.methods.HttpGet;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.eclipse.jetty.server.Server;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.eclipse.jetty.util.thread.QueuedThreadPool;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.TimeUnit;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">class</strong> <a name="EmissaryServerIT" href="../../emissary/server/EmissaryServerIT.html#EmissaryServerIT">EmissaryServerIT</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      @Test
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      <strong class="jxr_keyword">void</strong> testThreadPoolStuff() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>          ServerCommand cmd = ServerCommand.parse(ServerCommand.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"-h"</span>, <span class="jxr_string">"host1"</span>, <span class="jxr_string">"-p"</span>, <span class="jxr_string">"3001"</span>);
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          EmissaryServer server = <strong class="jxr_keyword">new</strong> EmissaryServer(cmd);
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>          Server jettyServer = server.configureServer();
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          QueuedThreadPool pool = (QueuedThreadPool) jettyServer.getThreadPool();
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          assertEquals(10, pool.getMinThreads());
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>          assertEquals(250, pool.getMaxThreads());
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          assertEquals(50, pool.getLowThreadsThreshold());
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          assertEquals(Long.valueOf(TimeUnit.MINUTES.toMillis(15)).intValue(), pool.getIdleTimeout());
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          assertEquals(9, pool.getThreadsPriority());
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      }
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Test
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">void</strong> testSSLWorks() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          ServerCommand cmd = ServerCommand.parse(ServerCommand.<strong class="jxr_keyword">class</strong>, <span class="jxr_string">"-p"</span>, <span class="jxr_string">"3443"</span>, <span class="jxr_string">"--ssl"</span>, <span class="jxr_string">"--disableSniHostCheck"</span>);
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          EmissaryServer server = <strong class="jxr_keyword">new</strong> EmissaryServer(cmd);
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>              server.startServer();
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>              EmissaryClient client = <strong class="jxr_keyword">new</strong> EmissaryClient();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>              String hostPort = cmd.getHost() + <span class="jxr_string">":"</span> + cmd.getPort(); <em class="jxr_comment">// will be key in response</em>
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>              String endpoint = cmd.getScheme() + <span class="jxr_string">"://"</span> + hostPort + <span class="jxr_string">"/api/version"</span>;
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>              MapResponseEntity versionMap = client.send(<strong class="jxr_keyword">new</strong> HttpGet(endpoint)).getContent(MapResponseEntity.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>              Map&lt;String, String&gt; response = versionMap.getResponse();
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>              assertEquals(<strong class="jxr_keyword">new</strong> Version().getVersion(), response.get(hostPort));
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>              <em class="jxr_comment">// throws some stopping warning, good place to start when fixing the stop</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>              server.stop();
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

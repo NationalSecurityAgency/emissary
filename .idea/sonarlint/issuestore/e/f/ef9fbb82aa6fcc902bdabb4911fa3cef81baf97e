@@ -1,0 +1,31 @@
+
+a	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ÇèåÏøÿÿÿÿ
+a	java:S112™"FDefine and throw a dedicated exception instead of using a generic one.(ÇèåÏøÿÿÿÿ
+t	java:S135ö"YReduce the total number of break and continue statements in this loop to use at most one.(şš¯ııÿÿÿÿ
+t	java:S116"YRename this field "FILETYPE_EMPTY" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Åì¯©ıÿÿÿÿ
+w	java:S116’"\Rename this field "FILETYPE_ENDSWITH" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ãí¡¹şÿÿÿÿ
+C
+java:S1948J"(Make "currentForm" private or transient.(”ìÈñûÿÿÿÿ
+D
+java:S1948T")Make "history" transient or serializable.(†—íùûÿÿÿÿ
+L
+java:S1948s"1Make "multipartAlternative" private or transient.(ßĞêùÿÿÿÿ
+N
+java:S1948¡"2Make "extractedRecords" transient or serializable.(ÖÂæ«üÿÿÿÿ
+X
+java:S1948º"<Make "seekableByteChannelFactory" transient or serializable.(ûÔŸ¶úÿÿÿÿ
+R	java:S125"<This block of commented-out lines of code should be removed.(“òÖ¦
+n
+java:S3776õ"RRefactor this method to reduce its Cognitive Complexity from 34 to the 15 allowed.(“äƒÿÿÿÿÿ
+[
+java:S4968ö"?Replace this type parametrization by the 'final' type `String`.(şš¯ııÿÿÿÿ
+B
+java:S1168¤"+Return an empty collection instead of null.(¥¹ï
+\
+java:S1858ó"F"key" is already a string, there's no need to call "toString()" on it.(­´†C
+j
+java:S2975¢
+"SRemove this "clone" implementation; use a copy constructor or copy factory instead.(©¯İ–
+V
+java:S6213ç
+":Rename this variable to not match a restricted identifier.(Æ…˜ãøÿÿÿÿ

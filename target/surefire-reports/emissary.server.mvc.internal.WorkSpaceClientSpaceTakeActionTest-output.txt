@@ -1,0 +1,426 @@
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:53,766 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:53,766 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:53,767 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:53,768 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:53,768 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:53 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64621/
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,466 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,467 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,469 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,469 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,470 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64623/
+2023-12-12 00:43:54,562 [using logback-test.xml]  WARN emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction -   - There was an exception in the WorkSpaceClientSpaceTake
+emissary.core.NamespaceException: Not found: host:7001/WorkSpace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.doClientSpaceTake(WorkSpaceClientSpaceTakeAction.java:64)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.clientSpaceTake(WorkSpaceClientSpaceTakeAction.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:146)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:189)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:93)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:478)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:400)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:81)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:256)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:235)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:684)
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:175)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel.lambda$handle$0(HttpChannel.java:505)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:762)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:497)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:282)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2023-12-12 00:43:54,568 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,569 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,569 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,569 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,570 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,570 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,570 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,570 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,570 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,572 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,572 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,573 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64626/
+2023-12-12 00:43:54,708 [using logback-test.xml]  WARN org.eclipse.jetty.server.HttpChannel -   - /WorkSpaceClientSpaceTake.action
+java.lang.RuntimeException: java.lang.StringIndexOutOfBoundsException: begin 27, end 6, length 6
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:179)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel.lambda$handle$0(HttpChannel.java:505)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:762)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:497)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:282)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.StringIndexOutOfBoundsException: begin 27, end 6, length 6
+	at java.base/java.lang.String.checkBoundsBeginEnd(String.java:4604)
+	at java.base/java.lang.String.substring(String.java:2707)
+	at java.base/java.lang.String.substring(String.java:2680)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.doClientSpaceTake(WorkSpaceClientSpaceTakeAction.java:63)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.clientSpaceTake(WorkSpaceClientSpaceTakeAction.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:146)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:189)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:93)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:478)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:400)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:81)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:256)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:235)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:684)
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:175)
+	... 13 common frames omitted
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,724 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,724 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,726 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,726 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64628/
+2023-12-12 00:43:54,839 [using logback-test.xml]  WARN org.eclipse.jetty.server.HttpChannel -   - /WorkSpaceClientSpaceTake.action
+java.lang.RuntimeException: java.lang.StringIndexOutOfBoundsException: begin 27, end 1, length 1
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:179)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel.lambda$handle$0(HttpChannel.java:505)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:762)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:497)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:282)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.StringIndexOutOfBoundsException: begin 27, end 1, length 1
+	at java.base/java.lang.String.checkBoundsBeginEnd(String.java:4604)
+	at java.base/java.lang.String.substring(String.java:2707)
+	at java.base/java.lang.String.substring(String.java:2680)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.doClientSpaceTake(WorkSpaceClientSpaceTakeAction.java:63)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.clientSpaceTake(WorkSpaceClientSpaceTakeAction.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:146)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:189)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:93)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:478)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:400)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:81)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:256)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:235)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:684)
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:175)
+	... 13 common frames omitted
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,846 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,846 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,848 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,848 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,849 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64632/
+2023-12-12 00:43:54,931 [using logback-test.xml]  WARN org.eclipse.jetty.server.HttpChannel -   - /WorkSpaceClientSpaceTake.action
+java.lang.RuntimeException: java.lang.StringIndexOutOfBoundsException: begin 27, end 1, length 1
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:179)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:122)
+	at org.eclipse.jetty.server.Server.handle(Server.java:563)
+	at org.eclipse.jetty.server.HttpChannel.lambda$handle$0(HttpChannel.java:505)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:762)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:497)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:282)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:314)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:100)
+	at org.eclipse.jetty.io.SelectableChannelEndPoint$1.run(SelectableChannelEndPoint.java:53)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:969)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.doRunJob(QueuedThreadPool.java:1194)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:1149)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+Caused by: java.lang.StringIndexOutOfBoundsException: begin 27, end 1, length 1
+	at java.base/java.lang.String.checkBoundsBeginEnd(String.java:4604)
+	at java.base/java.lang.String.substring(String.java:2707)
+	at java.base/java.lang.String.substring(String.java:2680)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.doClientSpaceTake(WorkSpaceClientSpaceTakeAction.java:63)
+	at emissary.server.mvc.internal.WorkSpaceClientSpaceTakeAction.clientSpaceTake(WorkSpaceClientSpaceTakeAction.java:54)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:146)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:189)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:93)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:478)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:400)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:81)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:256)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:235)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:684)
+	at org.glassfish.jersey.jetty.JettyHttpContainer.handle(JettyHttpContainer.java:175)
+	... 13 common frames omitted
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,934 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,934 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:54,935 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:54,935 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:54,936 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:54 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64634/
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,014 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,014 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,015 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,015 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,016 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64638/
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,075 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,075 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,076 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,076 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,077 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64641/
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,139 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,139 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,140 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,140 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,141 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64644/
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,205 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,205 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.name to localhost 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.port to 8001 
+2023-12-12 00:43:55,206 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Setting emissary.node.scheme to http 
+2023-12-12 00:43:55,206 [using logback-test.xml]  WARN emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:55,207 [using logback-test.xml]  INFO emissary.command.BaseCommand - sample.dat HTML_ESCAPE.HTMLESCAPE.TRANSFORM.http://localhost:8001/HtmlEscapePlace - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer <init>
+INFO: Creating JettyTestContainer configured at the base URI http://localhost:<AVAILABLE-PORT>/
+Dec 12, 2023 12:43:55 AM org.glassfish.jersey.test.jetty.JettyTestContainerFactory$JettyTestContainer start
+INFO: Started JettyTestContainer at the base URI http://localhost:64648/
+2023-12-12 00:43:55,263 [using logback-test.xml]  INFO emissary.pickup.WorkSpace -   - Sent shutdown msg to localhost:9001

@@ -1,0 +1,1068 @@
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,452 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,452 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,453 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,453 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,454 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,454 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,455 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,460 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,460 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,461 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,461 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,461 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,461 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,462 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,462 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,463 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,464 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,465 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,467 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.client.HTTPConnectionFactory.cfg
+2023-12-12 00:43:50,467 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.client.HTTPConnectionFactory.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/test-classes/emissary/client/HTTPConnectionFactory.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.client.HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.client.HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.client.HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/client/HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,468 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.client.HTTPConnectionFactory-CLUSTER.cfg
+2023-12-12 00:43:50,547 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.client.EmissaryClient.cfg
+2023-12-12 00:43:50,547 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.client.EmissaryClient.cfg
+2023-12-12 00:43:50,547 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/client/EmissaryClient.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.client.EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.client.EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.client.EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/client/EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,548 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.client.EmissaryClient-CLUSTER.cfg
+2023-12-12 00:43:50,575 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,576 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,579 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000001 preparing request execution
+2023-12-12 00:43:50,582 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000001 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,582 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000001 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,582 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000001 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,583 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000001 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,583 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000001 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,584 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000001 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,587 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000001 acquired ep-0000000001
+2023-12-12 00:43:50,587 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000001 acquired endpoint ep-0000000001
+2023-12-12 00:43:50,587 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000001 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,587 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000001 connecting endpoint (null)
+2023-12-12 00:43:50,588 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000001 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,588 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,588 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,599 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-0 close connection IMMEDIATE
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000001 endpoint closed
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000001 discarding endpoint
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000001 releasing endpoint
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000001 connection is not kept alive
+2023-12-12 00:43:50,601 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000001 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,649 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,651 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,651 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,653 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,653 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,654 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,655 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,655 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,656 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,658 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,658 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000002 preparing request execution
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000002 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000002 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000002 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000002 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000002 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000002 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000002 acquired ep-0000000002
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000002 acquired endpoint ep-0000000002
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000002 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000002 connecting endpoint (null)
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000002 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,658 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-1 close connection IMMEDIATE
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000002 endpoint closed
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000002 discarding endpoint
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000002 releasing endpoint
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000002 connection is not kept alive
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000002 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,659 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:50,661 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,662 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,662 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,663 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,663 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,664 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,665 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,665 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,666 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,667 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,667 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000003 preparing request execution
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000003 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000003 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000003 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000003 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000003 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000003 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000003 acquired ep-0000000003
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000003 acquired endpoint ep-0000000003
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000003 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000003 connecting endpoint (null)
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000003 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,667 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-2 close connection IMMEDIATE
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000003 endpoint closed
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000003 discarding endpoint
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000003 releasing endpoint
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000003 connection is not kept alive
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000003 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,668 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:50,669 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,669 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,669 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,670 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,670 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,670 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,670 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,670 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,670 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,671 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,671 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,672 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,673 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,673 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,674 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,675 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,675 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000004 preparing request execution
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000004 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000004 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000004 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000004 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000004 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000004 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000004 acquired ep-0000000004
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000004 acquired endpoint ep-0000000004
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000004 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000004 connecting endpoint (null)
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000004 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,675 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-3 close connection IMMEDIATE
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000004 endpoint closed
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000004 discarding endpoint
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000004 releasing endpoint
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000004 connection is not kept alive
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000004 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,676 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,678 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,678 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,679 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,679 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,680 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,682 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,683 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,683 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,684 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,684 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000005 preparing request execution
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000005 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000005 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000005 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000005 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000005 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000005 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000005 acquired ep-0000000005
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000005 acquired endpoint ep-0000000005
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000005 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000005 connecting endpoint (null)
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000005 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,684 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-4 close connection IMMEDIATE
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000005 endpoint closed
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000005 discarding endpoint
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000005 releasing endpoint
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000005 connection is not kept alive
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000005 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,685 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config
+2023-12-12 00:43:50,686 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,687 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,687 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor null to CLUSTER 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - PROJECT_BASE is set to /Users/connor/Projects/work/emissary/target 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.dir to /Users/connor/Projects/work/emissary/target/config 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.bin.dir to /Users/connor/Projects/work/emissary/target/bin 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.output.root to /Users/connor/Projects/work/emissary/target/localoutput 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Emissary error dir set to /Users/connor/Projects/work/emissary/target/localerror 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.config.flavor to CLUSTER 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.name to localhost 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.port to 8001 
+2023-12-12 00:43:50,688 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Setting emissary.node.scheme to http 
+2023-12-12 00:43:50,688 [using logback-test.xml]  WARN emissary.command.BaseCommand -   - Not using /Users/connor/Projects/work/emissary/target/config/logback.xml, staying with test config file:/Users/connor/Projects/work/emissary/target/test-classes/logback-test.xml
+2023-12-12 00:43:50,689 [using logback-test.xml]  INFO emissary.command.BaseCommand -   - Overriding current emissary.config.flavor CLUSTER to CLUSTER 
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/pickup/file/FilePickUpClient.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as file /Users/connor/Projects/work/emissary/target/config/emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/pickup/file/FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.pickup.file.FilePickUpClient-CLUSTER-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Merged config with emissary.pickup.file.FilePickUpClient-CLUSTER.cfg
+2023-12-12 00:43:50,690 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Exception attempting to get local reference to directory
+emissary.core.NamespaceException: Not found: http://localhost:8005/DirectoryPlace
+	at emissary.core.Namespace.lookup(Namespace.java:60)
+	at emissary.place.ServiceProviderPlace.localizeDirectory(ServiceProviderPlace.java:327)
+	at emissary.place.ServiceProviderPlace.setupPlace(ServiceProviderPlace.java:269)
+	at emissary.place.ServiceProviderPlace.<init>(ServiceProviderPlace.java:178)
+	at emissary.pickup.PickUpPlace.<init>(PickUpPlace.java:127)
+	at emissary.pickup.PickUpSpace.<init>(PickUpSpace.java:74)
+	at emissary.pickup.file.FilePickUpClient.<init>(FilePickUpClient.java:78)
+	at emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient.<init>(FilePickUpClientTest.java:125)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:499)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:480)
+	at emissary.core.Factory.create(Factory.java:68)
+	at emissary.core.Factory.create(Factory.java:123)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:110)
+	at emissary.admin.PlaceStarter.createPlace(PlaceStarter.java:75)
+	at emissary.pickup.file.FilePickUpClientTest.testSetup(FilePickUpClientTest.java:40)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:725)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:60)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:131)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:149)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptLifecycleMethod(TimeoutExtension.java:126)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptBeforeEachMethod(TimeoutExtension.java:76)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.lambda$invoke$0(ExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:106)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:64)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:45)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:37)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.invokeMethodInExtensionContext(ClassBasedTestDescriptor.java:506)
+	at org.junit.jupiter.engine.descriptor.ClassBasedTestDescriptor.lambda$synthesizeBeforeEachMethodAdapter$21(ClassBasedTestDescriptor.java:491)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeEachMethods$3(TestMethodTestDescriptor.java:171)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeBeforeMethodsOrCallbacksUntilExceptionOccurs$6(TestMethodTestDescriptor.java:199)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeMethodsOrCallbacksUntilExceptionOccurs(TestMethodTestDescriptor.java:199)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeBeforeEachMethods(TestMethodTestDescriptor.java:168)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:131)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:66)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:151)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:41)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$6(NodeTestTask.java:155)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:141)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:137)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$9(NodeTestTask.java:139)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:95)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:35)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:57)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:107)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:88)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:54)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:67)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:52)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:86)
+	at org.junit.platform.launcher.core.DefaultLauncherSession$DelegatingLauncher.execute(DefaultLauncherSession.java:86)
+	at org.apache.maven.surefire.junitplatform.LazyLauncher.execute(LazyLauncher.java:50)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.lambda$execute$1(JUnitPlatformProvider.java:191)
+	at java.base/java.util.Iterator.forEachRemaining(Iterator.java:133)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.execute(JUnitPlatformProvider.java:186)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invokeAllTests(JUnitPlatformProvider.java:148)
+	at org.apache.maven.surefire.junitplatform.JUnitPlatformProvider.invoke(JUnitPlatformProvider.java:118)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+2023-12-12 00:43:50,691 [using logback-test.xml] ERROR emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Key registration requires a DirectoryPlace in every Emissary Node
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/ParserFactory.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.ParserFactory-CLUSTER.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (class) emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier.cfg
+2023-12-12 00:43:50,691 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Found config data as resource file:/Users/connor/Projects/work/emissary/target/classes/emissary/parser/DataIdentifier.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Attempting flavor merge on emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Loading config for (string) emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using new style emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No config data as resource for emissary/parser/DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - No file config found using old style DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Unable to opt import flavor config emissary.parser.DataIdentifier-CLUSTER.cfg
+2023-12-12 00:43:50,692 [using logback-test.xml]  WARN emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - Cannot find agent pool!
+2023-12-12 00:43:50,692 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Shutting Down: INITIAL.FILE_PICK_UP_CLIENT.INPUT.http://localhost:8005/FilePickUpClient$5050
+2023-12-12 00:43:50,692 [using logback-test.xml]  INFO emissary.pickup.file.FilePickUpClientTest$MyFilePickUpClient -   - *** Stopping queue monitor 
+2023-12-12 00:43:50,692 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000006 preparing request execution
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000006 target auth state: UNCHALLENGED
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ProtocolExec -   - ex-0000000006 proxy auth state: UNCHALLENGED
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000006 acquiring connection with route {}->http://localhost:8005
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000006 acquiring endpoint (300000 MILLISECONDS)
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000006 endpoint lease request (300000 MILLISECONDS) [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000006 endpoint leased [route: {}->http://localhost:8005][total available: 0; route allocated: 1 of 5; total allocated: 1 of 200]
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ex-0000000006 acquired ep-0000000006
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ex-0000000006 acquired endpoint ep-0000000006
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.ConnectExec -   - ex-0000000006 opening connection {}->http://localhost:8005
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000006 connecting endpoint (null)
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000006 connecting endpoint to http://localhost:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolving remote address
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost resolved to [localhost/127.0.0.1]
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connecting null->localhost/127.0.0.1:8005 (600000 MILLISECONDS)
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultHttpClientConnectionOperator -   - localhost:8005 connection to localhost/127.0.0.1:8005 failed (class java.net.ConnectException); terminating operation
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.DefaultManagedHttpClientConnection -   - http-outgoing-5 close connection IMMEDIATE
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000006 endpoint closed
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.classic.InternalHttpClient -   - ep-0000000006 discarding endpoint
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000006 releasing endpoint
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000006 connection is not kept alive
+2023-12-12 00:43:50,693 [using logback-test.xml] DEBUG org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager -   - ep-0000000006 connection released [route: {}->http://localhost:8005][total available: 0; route allocated: 0 of 5; total allocated: 0 of 200]
+2023-12-12 00:43:50,694 [using logback-test.xml] DEBUG emissary.config.ConfigUtil -   - Configured configDirProperty /Users/connor/Projects/work/emissary/target/config

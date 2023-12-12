@@ -1,0 +1,20 @@
+<root>
+  <setup>
+    <initialForm>JAVASCRIPT</initialForm>
+  </setup>
+
+  <answers>
+    <numAttachments>0</numAttachments>
+    <currentForm>JAVASCRIPT</currentForm>
+    <fileType>JAVASCRIPT</fileType>
+    <currentFormSize>1</currentFormSize>
+
+    <data matchMode="index">
+      <value>١٢٣٤٥٦٧٨٩</value>
+    </data>
+    
+    <data matchMode="index">
+      <value>document.write</value>
+    </data>
+  </answers>
+</root>

@@ -1,0 +1,150 @@
+{
+    "file_extensions": [
+        ".json",
+        ".xml",
+        ".yml",
+        ".yaml"
+    ],
+    "file_names_regex": [
+        "Dockerfile"
+    ],
+    "has_updated_sources": 0,
+    "linters": [
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 5.689674210967496,
+            "files": [
+                ".mega-linter.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".mega-linter.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 1,
+            "is_active": true,
+            "linter_name": "prettier",
+            "name": "YAML_PRETTIER",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 21.219733759993687,
+            "files": [
+                ".mega-linter.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".mega-linter.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 1,
+            "is_active": true,
+            "linter_name": "v8r",
+            "name": "YAML_V8R",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 2.4943664600141346,
+            "files": [
+                ".mega-linter.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".mega-linter.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 1,
+            "is_active": true,
+            "linter_name": "yamllint",
+            "name": "YAML_YAMLLINT",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        }
+    ],
+    "post_commands_results": [],
+    "pre_commands_results": [],
+    "report_folder": "/tmp/lint/megalinter-reports",
+    "reporters": [
+        {
+            "is_active": true,
+            "master": null,
+            "name": "JSON",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "CONSOLE",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "GITLAB_COMMENT",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "AZURE_COMMENT",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "CONFIG",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "UPDATED_SOURCES",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        }
+    ],
+    "return_code": 0,
+    "status": "success"
+}

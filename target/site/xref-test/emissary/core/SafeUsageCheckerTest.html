@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>SafeUsageCheckerTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../testapidocs/emissary/core/SafeUsageCheckerTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> emissary.core;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.config.ServiceConfigGuide;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.LogbackTester;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> ch.qos.logback.classic.Level;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="SafeUsageCheckerTest" href="../../emissary/core/SafeUsageCheckerTest.html#SafeUsageCheckerTest">SafeUsageCheckerTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      @Test
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      <strong class="jxr_keyword">void</strong> testDifferentConfigs() {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>          assertTrue(SafeUsageChecker.ENABLED_FROM_CONFIGURATION, <span class="jxr_string">"Enabled from config file should be true"</span>);
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>          <strong class="jxr_keyword">final</strong> ServiceConfigGuide scg = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>          scg.addEntry(SafeUsageChecker.ENABLED_KEY, Boolean.toString(false));
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>          assertFalse(<strong class="jxr_keyword">new</strong> SafeUsageChecker(scg).enabled, <span class="jxr_string">"Enabled should be false!"</span>);
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>          scg.removeAllEntries(SafeUsageChecker.ENABLED_KEY);
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>          scg.addEntry(SafeUsageChecker.ENABLED_KEY, Boolean.toString(<strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          assertTrue(<strong class="jxr_keyword">new</strong> SafeUsageChecker(scg).enabled, <span class="jxr_string">"Enabled should be true!"</span>);
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      }
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      @Test
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">void</strong> testDisabled() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">final</strong> ServiceConfigGuide scg = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          scg.addEntry(SafeUsageChecker.ENABLED_KEY, Boolean.toString(false));
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">final</strong> SafeUsageChecker suc = <strong class="jxr_keyword">new</strong> SafeUsageChecker(scg);
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">final</strong> byte[] bytes0 = <strong class="jxr_keyword">new</strong> byte[10];
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">final</strong> byte[] bytes1 = <strong class="jxr_keyword">new</strong> byte[10];
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>  
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          suc.reset();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          suc.resetCacheThenRecordSnapshot(bytes0);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          suc.recordSnapshot(bytes1);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          Arrays.fill(bytes0, (byte) 10);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          Arrays.fill(bytes1, (byte) 20);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTe<a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>backTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(SafeUsageChecker.<strong class="jxr_keyword">class</strong>.getName())) {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              suc.checkForUnsafeDataChanges();
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              logbackTester.checkLogList(<strong class="jxr_keyword">new</strong> Level[0], <strong class="jxr_keyword">new</strong> String[0], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[0]);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>  }
+</pre>
+<hr/>
+<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+</body>
+</html>

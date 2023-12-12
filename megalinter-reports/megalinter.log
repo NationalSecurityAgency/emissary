@@ -1,0 +1,111 @@
+----------------------------------------------------------------------------------------------------
+------------------------------------ MegaLinter, by OX Security ------------------------------------
+----------------------------------------------------------------------------------------------------
+ - Image Creation Date: 2023-09-22T15:10:54Z
+ - Image Revision: a87b2872713c6bdde46d2473c5d7ed23e5752dc2
+ - Image Version: v7.4.0
+----------------------------------------------------------------------------------------------------
+The MegaLinter documentation can be found at:
+ - https://megalinter.io/7.4.0
+----------------------------------------------------------------------------------------------------
+MegaLinter initialization
+MegaLinter will analyze workspace [/tmp/lint]
+
+[Activation] JSON_NPM_PACKAGE_JSON_LINT has been set inactive, as none of these files has been found: ['package.json']
+[Activation] KUBERNETES_HELM has been set inactive, as none of these files has been found: ['Chart.yml', 'Chart.yaml']
+[Activation] KUBERNETES_KUBESCAPE has been set inactive, as none of these files has been found: ['Chart.yml', 'Chart.yaml']
+MARKDOWN_REMARK_LINT has been temporary disabled in MegaLinter, please use a previous MegaLinter version or wait for the next one !
+Skipped linters: ANSIBLE_ANSIBLE_LINT, ARM_ARM_TTK, BASH_SHELLCHECK, BASH_SHFMT, BICEP_BICEP_LINTER, CLOJURE_CLJSTYLE, CLOJURE_CLJ_KONDO, CLOUDFORMATION_CFN_LINT, COFFEE_COFFEELINT, COPYPASTE_JSCPD, CPP_CPPLINT, CSHARP_CSHARPIER, CSHARP_DOTNET_FORMAT, CSS_SCSS_LINT, CSS_STYLELINT, C_CPPLINT, DART_DARTANALYZER, EDITORCONFIG_EDITORCONFIG_CHECKER, ENV_DOTENV_LINTER, GHERKIN_GHERKIN_LINT, GO_GOLANGCI_LINT, GO_REVIVE, GRAPHQL_GRAPHQL_SCHEMA_LINTER, GROOVY_NPM_GROOVY_LINT, HTML_DJLINT, HTML_HTMLHINT, JAVASCRIPT_ES, JAVASCRIPT_PRETTIER, JAVASCRIPT_STANDARD, JAVA_CHECKSTYLE, JAVA_PMD, JSON_NPM_PACKAGE_JSON_LINT, JSX_ESLINT, KOTLIN_KTLINT, KUBERNETES_HELM, KUBERNETES_KUBECONFORM, KUBERNETES_KUBESCAPE, LATEX_CHKTEX, LUA_LUACHECK, MAKEFILE_CHECKMAKE, MARKDOWN_MARKDOWNLINT, MARKDOWN_MARKDOWN_LINK_CHECK, MARKDOWN_MARKDOWN_TABLE_FORMATTER, MARKDOWN_REMARK_LINT, OPENAPI_SPECTRAL, PERL_PERLCRITIC, PHP_PHPCS, PHP_PHPLINT, PHP_PHPSTAN, PHP_PSALM, POWERSHELL_POWERSHELL, POWERSHELL_POWERSHELL_FORMATTER, PROTOBUF_PROTOLINT, PUPPET_PUPPET_LINT, PYTHON_BANDIT, PYTHON_BLACK, PYTHON_FLAKE8, PYTHON_ISORT, PYTHON_MYPY, PYTHON_PYLINT, PYTHON_PYRIGHT, PYTHON_RUFF, RAKU_RAKU, REPOSITORY_CHECKOV, REPOSITORY_DEVSKIM, REPOSITORY_DUSTILOCK, REPOSITORY_GITLEAKS, REPOSITORY_GIT_DIFF, REPOSITORY_GRYPE, REPOSITORY_KICS, REPOSITORY_SECRETLINT, REPOSITORY_SEMGREP, REPOSITORY_SYFT, REPOSITORY_TRIVY, REPOSITORY_TRIVY_SBOM, REPOSITORY_TRUFFLEHOG, RST_RSTCHECK, RST_RSTFMT, RST_RST_LINT, RUBY_RUBOCOP, RUST_CLIPPY, R_LINTR, SALESFORCE_SFDX_SCANNER_APEX, SALESFORCE_SFDX_SCANNER_AURA, SALESFORCE_SFDX_SCANNER_LWC, SCALA_SCALAFIX, SNAKEMAKE_LINT, SNAKEMAKE_SNAKEFMT, SPELL_CSPELL, SPELL_LYCHEE, SPELL_PROSELINT, SPELL_VALE, SQL_SQLFLUFF, SQL_SQL_LINT, SQL_TSQLLINT, SWIFT_SWIFTLINT, TEKTON_TEKTON_LINT, TERRAFORM_TERRAFORM_FMT, TERRAFORM_TERRAGRUNT, TERRAFORM_TERRASCAN, TERRAFORM_TFLINT, TSX_ESLINT, TYPESCRIPT_ES, TYPESCRIPT_PRETTIER, TYPESCRIPT_STANDARD, VBDOTNET_DOTNET_FORMAT
+
+MegaLinter now collects the files to analyse
+Listing all files in directory [/tmp/lint], then filter with:
+- File extensions: .bash, .dash, .json, .json5, .jsonc, .ksh, .sh, .xml, .yaml, .yml
+- File names (regex): Dockerfile
+- Excluding .gitignored files [4638]: .github/linters/megalinter-reports/IDE-config.txt, .github/linters/megalinter-reports/IDE-config/.idea/externalDependencies.xml, .github/linters/megalinter-reports/IDE-config/.vscode/extensions.json, .github/linters/megalinter-reports/IDE-config/.yamllint.yml, .github/linters/megalinter-reports/linters_logs/SUCCESS-YAML_PRETTIER.log, .github/linters/megalinter-reports/linters_logs/SUCCESS-YAML_V8R.log, .github/linters/megalinter-reports/linters_logs/SUCCESS-YAML_YAMLLINT.log, .github/linters/megalinter-reports/mega-linter-report.json, .github/linters/megalinter-reports/megalinter.log, .idea/.gitignore,…(full list in DEBUG)
+Kept [39] files on [5396] found files
+
++----MATCHING LINTERS-----+----------------------+----------------+------------+
+| Descriptor | Linter     | Criteria             | Matching files | Format/Fix |
++------------+------------+----------------------+----------------+------------+
+| ACTION     | actionlint | .yml|.yaml           | 9              | no         |
+| BASH       | bash-exec  | .sh|.bash|.dash|.ksh | 4              | no         |
+| DOCKERFILE | hadolint   | Dockerfile           | 1              | no         |
+| XML        | xmllint    | .xml                 | 12             | yes        |
+| YAML       | prettier   | .yml|.yaml           | 16             | yes        |
+| YAML       | yamllint   | .yml|.yaml           | 16             | no         |
+| YAML       | v8r        | .yml|.yaml           | 16             | no         |
++------------+------------+----------------------+----------------+------------+
+
+Processing linters on [5] parallel cores…
+[32m✅ Linted [BASH] files with [bash-exec] successfully - (0.18s)[0m
+- Using [bash-exec v5.2.15] https://megalinter.io/7.4.0/descriptors/bash_bash_exec
+- MegaLinter key: [BASH_EXEC]
+- Rules config: identified by [bash-exec]
+- Number of files analyzed: [4]
+
+Unable to get version for linter [hadolint]
+/usr/bin/hadolint --version returned output: (-11) qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+
+Unable to extract version with regex re.compile('\\d+(\\.\\d+)+') from ERROR
+[31m❌ Linted [DOCKERFILE] files with [hadolint]: Found 1 error(s) - (0.05s)[0m
+- Using [hadolint vERROR] https://megalinter.io/7.4.0/descriptors/dockerfile_hadolint
+- MegaLinter key: [DOCKERFILE_HADOLINT]
+- Rules config: [/contrib/docker/.hadolint.yaml]
+- Number of files analyzed: [1]
+--Error detail:
+qemu: uncaught target signal 11 (Segmentation fault) - core dumped
+
+
+[32m✅ Linted [XML] files with [xmllint] successfully - (0.45s)[0m
+- Using [xmllint v21104] https://megalinter.io/7.4.0/descriptors/xml_xmllint
+- MegaLinter key: [XML_XMLLINT]
+- Rules config: identified by [xmllint]
+- Number of files analyzed: [12]
+
+[32m✅ Linted [YAML] files with [yamllint] successfully - (10.53s)[0m
+- Using [yamllint v1.32.0] https://megalinter.io/7.4.0/descriptors/yaml_yamllint
+- MegaLinter key: [YAML_YAMLLINT]
+- Rules config: [.yamllint.yml]
+- Number of files analyzed: [16]
+
+[32m✅ Linted [YAML] files with [prettier] successfully - (28.19s)[0m
+- Using [prettier v3.0.3] https://megalinter.io/7.4.0/descriptors/yaml_prettier
+- MegaLinter key: [YAML_PRETTIER]
+- Rules config: identified by [prettier]
+- Number of files analyzed: [16]
+
+Unable to get number of errors with regex_count and ([0-9]+) \|
+[31m❌ Linted [ACTION] files with [actionlint]: Found 1 error(s) - (78.79s)[0m
+- Using [actionlint v1.6.26] https://megalinter.io/7.4.0/descriptors/action_actionlint
+- MegaLinter key: [ACTION_ACTIONLINT]
+- Rules config: identified by [actionlint]
+- Number of files analyzed: [9]
+--Error detail:
+fatal error while checking .github/workflows/maven-publish.yml: `/usr/bin/shellcheck --norc -f json -x --shell bash -e SC1091,SC2194,SC2050,SC2154,SC2157 -` did not run successfully while checking script at line:37,col:9: /usr/bin/shellcheck was terminated. stderr: ""
+
+
+[32m✅ Linted [YAML] files with [v8r] successfully - (105.58s)[0m
+- Using [v8r v2.0.0] https://megalinter.io/7.4.0/descriptors/yaml_v8r
+- MegaLinter key: [YAML_V8R]
+- Rules config: identified by [v8r]
+- Number of files analyzed: [16]
+
+[JSON Reporter] Generated JSON report: /tmp/lint/megalinter-reports/mega-linter-report.json
+
++----SUMMARY----+------------+---------------+-------+-------+--------+--------------+
+| Descriptor    | Linter     | Mode          | Files | Fixed | Errors | Elapsed time |
++---------------+------------+---------------+-------+-------+--------+--------------+
+| ❌ ACTION     | actionlint | list_of_files |     9 |       |      1 |       78.79s |
+| ✅ BASH       | bash-exec  | file          |     4 |       |      0 |        0.18s |
+| ❌ DOCKERFILE | hadolint   | list_of_files |     1 |       |      1 |        0.05s |
+| ✅ XML        | xmllint    | list_of_files |    12 |     0 |      0 |        0.45s |
+| ✅ YAML       | prettier   | list_of_files |    16 |     1 |      0 |       28.19s |
+| ✅ YAML       | v8r        | list_of_files |    16 |       |      0 |      105.58s |
+| ✅ YAML       | yamllint   | list_of_files |    16 |       |      0 |       10.53s |
++---------------+------------+---------------+-------+-------+--------+--------------+
+
+[Updated Sources Reporter] copied 3 fixed source files in folder /tmp/lint/megalinter-reports/updated_sources.
+Download it from artifacts then copy-paste it in your local repo to apply linters updates
+[31m❌ Error(s) have been found during linting[0m
+To disable linters or customize their checks, you can use a .mega-linter.yml file at the root of your repository
+More info at https://megalinter.io/7.4.0/configuration/

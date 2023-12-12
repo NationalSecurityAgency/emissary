@@ -1,0 +1,8 @@
+Results of bash-exec linter (version 5.2.15)
+See documentation on https://megalinter.io/7.4.0/descriptors/bash_bash_exec/
+-----------------------------------------------
+
+✅ [SUCCESS] contrib/ci/detect-changes.sh
+✅ [SUCCESS] contrib/continuous-test.sh
+✅ [SUCCESS] contrib/gh-md-toc.Linux.sh
+✅ [SUCCESS] src/test/env.sh

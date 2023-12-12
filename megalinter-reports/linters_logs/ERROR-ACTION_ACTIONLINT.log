@@ -1,0 +1,8 @@
+Results of actionlint linter (version 1.6.26)
+See documentation on https://megalinter.io/7.4.0/descriptors/action_actionlint/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+fatal error while checking .github/workflows/maven-publish.yml: `/usr/bin/shellcheck --norc -f json -x --shell bash -e SC1091,SC2194,SC2050,SC2154,SC2157 -` did not run successfully while checking script at line:37,col:9: /usr/bin/shellcheck was terminated. stderr: ""
+

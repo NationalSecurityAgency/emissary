@@ -1,0 +1,200 @@
+@options
+@packages
+-classpath
+'/Users/connor/Projects/work/emissary/target/classes:/Users/connor/Projects/work/emissary/target/test-classes:/Users/connor/.m2/repository/ch/qos/logback/logback-classic/1.3.12/logback-classic-1.3.12.jar:/Users/connor/.m2/repository/ch/qos/logback/logback-core/1.3.12/logback-core-1.3.12.jar:/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.4.2/jackson-databind-2.13.4.2.jar:/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.4/jackson-annotations-2.13.4.jar:/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.4/jackson-core-2.13.4.jar:/Users/connor/.m2/repository/com/github/spullara/mustache/java/compiler/0.9.10/compiler-0.9.10.jar:/Users/connor/.m2/repository/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar:/Users/connor/.m2/repository/com/google/guava/guava/32.0.0-jre/guava-32.0.0-jre.jar:/Users/connor/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/Users/connor/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/Users/connor/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/Users/connor/.m2/repository/org/checkerframework/checker-qual/3.33.0/checker-qual-3.33.0.jar:/Users/connor/.m2/repository/com/google/errorprone/error_prone_annotations/2.18.0/error_prone_annotations-2.18.0.jar:/Users/connor/.m2/repository/com/google/j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.jar:/Users/connor/.m2/repository/commons-cli/commons-cli/1.5.0/commons-cli-1.5.0.jar:/Users/connor/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/Users/connor/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar:/Users/connor/.m2/repository/info/picocli/picocli/4.7.4/picocli-4.7.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-graphite/4.2.4/metrics-graphite-4.2.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-core/4.2.4/metrics-core-4.2.4.jar:/Users/connor/.m2/repository/com/rabbitmq/amqp-client/5.13.1/amqp-client-5.13.1.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-healthchecks/4.2.4/metrics-healthchecks-4.2.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-jmx/4.2.4/metrics-jmx-4.2.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-jvm/4.2.4/metrics-jvm-4.2.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-servlets/4.2.4/metrics-servlets-4.2.4.jar:/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-json/4.2.4/metrics-json-4.2.4.jar:/Users/connor/.m2/repository/com/helger/profiler/1.1.1/profiler-1.1.1.jar:/Users/connor/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar:/Users/connor/.m2/repository/jakarta/servlet/jakarta.servlet-api/4.0.3/jakarta.servlet-api-4.0.3.jar:/Users/connor/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/2.3.3/jakarta.xml.bind-api-2.3.3.jar:/Users/connor/.m2/repository/net/logstash/logback/logstash-logback-encoder/7.2/logstash-logback-encoder-7.2.jar:/Users/connor/.m2/repository/net/spy/spymemcached/2.12.3/spymemcached-2.12.3.jar:/Users/connor/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar:/Users/connor/.m2/repository/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar:/Users/connor/.m2/repository/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar:/Users/connor/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar:/Users/connor/.m2/repository/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar:/Users/connor/.m2/repository/org/apache/httpcomponents/client5/httpclient5/5.2.1/httpclient5-5.2.1.jar:/Users/connor/.m2/repository/org/apache/httpcomponents/core5/httpcore5/5.2.1/httpcore5-5.2.1.jar:/Users/connor/.m2/repository/org/apache/httpcomponents/core5/httpcore5-h2/5.2/httpcore5-h2-5.2.jar:/Users/connor/.m2/repository/org/codehaus/janino/janino/3.1.7/janino-3.1.7.jar:/Users/connor/.m2/repository/org/codehaus/janino/commons-compiler/3.1.7/commons-compiler-3.1.7.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-plus/10.0.15/jetty-plus-10.0.15.jar:/Users/connor/.m2/repository/jakarta/transaction/jakarta.transaction-api/1.3.3/jakarta.transaction-api-1.3.3.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-jndi/10.0.15/jetty-jndi-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-security/10.0.15/jetty-security-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-server/10.0.15/jetty-server-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-http/10.0.15/jetty-http-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-io/10.0.15/jetty-io-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-util/10.0.15/jetty-util-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-webapp/10.0.15/jetty-webapp-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-servlet/10.0.15/jetty-servlet-10.0.15.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-xml/10.0.15/jetty-xml-10.0.15.jar:/Users/connor/.m2/repository/org/glassfish/jaxb/jaxb-runtime/2.3.8/jaxb-runtime-2.3.8.jar:/Users/connor/.m2/repository/org/glassfish/jaxb/txw2/2.3.8/txw2-2.3.8.jar:/Users/connor/.m2/repository/com/sun/istack/istack-commons-runtime/3.0.12/istack-commons-runtime-3.0.12.jar:/Users/connor/.m2/repository/com/sun/activation/jakarta.activation/1.2.2/jakarta.activation-1.2.2.jar:/Users/connor/.m2/repository/org/glassfish/jersey/containers/jersey-container-jetty-http/2.40/jersey-container-jetty-http-2.40.jar:/Users/connor/.m2/repository/org/glassfish/hk2/external/jakarta.inject/2.6.1/jakarta.inject-2.6.1.jar:/Users/connor/.m2/repository/org/eclipse/jetty/jetty-continuation/9.4.51.v20230217/jetty-continuation-9.4.51.v20230217.jar:/Users/connor/.m2/repository/jakarta/ws/rs/jakarta.ws.rs-api/2.1.6/jakarta.ws.rs-api-2.1.6.jar:/Users/connor/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet-core/2.40/jersey-container-servlet-core-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-common/2.40/jersey-common-2.40.jar:/Users/connor/.m2/repository/jakarta/annotation/jakarta.annotation-api/1.3.5/jakarta.annotation-api-1.3.5.jar:/Users/connor/.m2/repository/org/glassfish/hk2/osgi-resource-locator/1.0.3/osgi-resource-locator-1.0.3.jar:/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-server/2.40/jersey-server-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-client/2.40/jersey-client-2.40.jar:/Users/connor/.m2/repository/jakarta/validation/jakarta.validation-api/2.0.2/jakarta.validation-api-2.0.2.jar:/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-mvc/2.40/jersey-mvc-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-mvc-mustache/2.40/jersey-mvc-mustache-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/inject/jersey-hk2/2.40/jersey-hk2-2.40.jar:/Users/connor/.m2/repository/org/glassfish/hk2/hk2-locator/2.6.1/hk2-locator-2.6.1.jar:/Users/connor/.m2/repository/org/glassfish/hk2/external/aopalliance-repackaged/2.6.1/aopalliance-repackaged-2.6.1.jar:/Users/connor/.m2/repository/org/glassfish/hk2/hk2-api/2.6.1/hk2-api-2.6.1.jar:/Users/connor/.m2/repository/org/glassfish/hk2/hk2-utils/2.6.1/hk2-utils-2.6.1.jar:/Users/connor/.m2/repository/org/javassist/javassist/3.29.2-GA/javassist-3.29.2-GA.jar:/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-json-jackson/2.40/jersey-media-json-jackson-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-entity-filtering/2.40/jersey-entity-filtering-2.40.jar:/Users/connor/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.13.4/jackson-module-jaxb-annotations-2.13.4.jar:/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-multipart/2.40/jersey-media-multipart-2.40.jar:/Users/connor/.m2/repository/org/jvnet/mimepull/mimepull/1.9.15/mimepull-1.9.15.jar:/Users/connor/.m2/repository/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar:/Users/connor/.m2/repository/org/slf4j/log4j-over-slf4j/2.0.7/log4j-over-slf4j-2.0.7.jar:/Users/connor/.m2/repository/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar:/Users/connor/.m2/repository/org/glassfish/jersey/test-framework/providers/jersey-test-framework-provider-jetty/2.40/jersey-test-framework-provider-jetty-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/test-framework/jersey-test-framework-core/2.40/jersey-test-framework-core-2.40.jar:/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-jaxb/2.40/jersey-media-jaxb-2.40.jar:/Users/connor/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar:/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar:/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.8.2/junit-jupiter-api-5.8.2.jar:/Users/connor/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/Users/connor/.m2/repository/org/junit/platform/junit-platform-commons/1.8.2/junit-platform-commons-1.8.2.jar:/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar:/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.8.2/junit-jupiter-engine-5.8.2.jar:/Users/connor/.m2/repository/org/junit/vintage/junit-vintage-engine/5.8.2/junit-vintage-engine-5.8.2.jar:/Users/connor/.m2/repository/org/junit/platform/junit-platform-engine/1.8.2/junit-platform-engine-1.8.2.jar:/Users/connor/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar:/Users/connor/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/Users/connor/.m2/repository/org/mockito/mockito-core/5.4.0/mockito-core-5.4.0.jar:/Users/connor/.m2/repository/net/bytebuddy/byte-buddy/1.14.5/byte-buddy-1.14.5.jar:/Users/connor/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.5/byte-buddy-agent-1.14.5.jar:/Users/connor/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/Users/connor/.m2/repository/org/mockito/mockito-junit-jupiter/5.4.0/mockito-junit-jupiter-5.4.0.jar'
+-encoding
+'UTF-8'
+-protected
+-quiet
+--release
+11
+-sourcepath
+'/Users/connor/Projects/work/emissary/src/test/java:/Users/connor/Projects/work/emissary/target/generated-test-sources/test-annotations'
+-author
+-bottom
+'Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/connor/Projects/work/emissary/target/site/testapidocs'
+-docencoding
+'UTF-8'
+-Xdoclint:all,-missing
+-doctitle
+'Emissary 8.0.0-M10 Test API'
+-link
+'../apidocs'
+-linkoffline
+'https://docs.oracle.com/en/java/javase/11/docs/api' '/Users/connor/Projects/work/emissary/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'Emissary 8.0.0-M10 Test API'
+emissary.roll
+emissary.core
+emissary.core.channels
+emissary.test.core
+emissary.test.core.junit5
+emissary.test.core.junit5.extensions
+emissary.util
+emissary.util.roll
+emissary.util.magic
+emissary.util.shell
+emissary.util.web
+emissary.util.io
+emissary.util.xml
+emissary.util.search
+emissary.config
+emissary.admin
+emissary.output.io
+emissary.output
+emissary.output.filter
+emissary.output.roller.journal
+emissary.output.roller
+emissary.server.mvc
+emissary.server.mvc.internal
+emissary.server.mvc.adapters
+emissary.server
+emissary.server.api
+emissary.pickup
+emissary.pickup.file
+emissary.parser
+emissary.directory
+emissary.spi
+emissary.id
+emissary.command
+emissary.command.converter
+emissary
+emissary.place
+emissary.kff
+emissary.pool
+emissary.transform
+emissary.transform.decode
+emissary.client
+emissary.client.response
+/Users/connor/Projects/work/emissary/target/classes = 1702341810307
+/Users/connor/Projects/work/emissary/target/test-classes = 1702341827244
+/Users/connor/.m2/repository/ch/qos/logback/logback-classic/1.3.12/logback-classic-1.3.12.jar = 1701945196612
+/Users/connor/.m2/repository/ch/qos/logback/logback-core/1.3.12/logback-core-1.3.12.jar = 1701945196676
+/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.13.4.2/jackson-databind-2.13.4.2.jar = 1671484893315
+/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.13.4/jackson-annotations-2.13.4.jar = 1671484893057
+/Users/connor/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.13.4/jackson-core-2.13.4.jar = 1671484893091
+/Users/connor/.m2/repository/com/github/spullara/mustache/java/compiler/0.9.10/compiler-0.9.10.jar = 1669564173989
+/Users/connor/.m2/repository/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar = 1670287418385
+/Users/connor/.m2/repository/com/google/guava/guava/32.0.0-jre/guava-32.0.0-jre.jar = 1686866282126
+/Users/connor/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar = 1669564174001
+/Users/connor/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar = 1669564174030
+/Users/connor/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar = 1669563473774
+/Users/connor/.m2/repository/org/checkerframework/checker-qual/3.33.0/checker-qual-3.33.0.jar = 1686866282162
+/Users/connor/.m2/repository/com/google/errorprone/error_prone_annotations/2.18.0/error_prone_annotations-2.18.0.jar = 1686866282185
+/Users/connor/.m2/repository/com/google/j2objc/j2objc-annotations/2.8/j2objc-annotations-2.8.jar = 1686866282185
+/Users/connor/.m2/repository/commons-cli/commons-cli/1.5.0/commons-cli-1.5.0.jar = 1669564174100
+/Users/connor/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar = 1669564174138
+/Users/connor/.m2/repository/commons-io/commons-io/2.11.0/commons-io-2.11.0.jar = 1669564174158
+/Users/connor/.m2/repository/info/picocli/picocli/4.7.4/picocli-4.7.4.jar = 1689722752210
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-graphite/4.2.4/metrics-graphite-4.2.4.jar = 1669564174159
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-core/4.2.4/metrics-core-4.2.4.jar = 1669564174166
+/Users/connor/.m2/repository/com/rabbitmq/amqp-client/5.13.1/amqp-client-5.13.1.jar = 1669564174208
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-healthchecks/4.2.4/metrics-healthchecks-4.2.4.jar = 1669564174206
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-jmx/4.2.4/metrics-jmx-4.2.4.jar = 1669564174213
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-jvm/4.2.4/metrics-jvm-4.2.4.jar = 1669564174209
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-servlets/4.2.4/metrics-servlets-4.2.4.jar = 1669564174243
+/Users/connor/.m2/repository/io/dropwizard/metrics/metrics-json/4.2.4/metrics-json-4.2.4.jar = 1669564174261
+/Users/connor/.m2/repository/com/helger/profiler/1.1.1/profiler-1.1.1.jar = 1669564174262
+/Users/connor/.m2/repository/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar = 1679705809676
+/Users/connor/.m2/repository/jakarta/servlet/jakarta.servlet-api/4.0.3/jakarta.servlet-api-4.0.3.jar = 1669564177177
+/Users/connor/.m2/repository/jakarta/xml/bind/jakarta.xml.bind-api/2.3.3/jakarta.xml.bind-api-2.3.3.jar = 1669564174454
+/Users/connor/.m2/repository/net/logstash/logback/logstash-logback-encoder/7.2/logstash-logback-encoder-7.2.jar = 1669564174275
+/Users/connor/.m2/repository/net/spy/spymemcached/2.12.3/spymemcached-2.12.3.jar = 1669564174314
+/Users/connor/.m2/repository/org/apache/commons/commons-collections4/4.4/commons-collections4-4.4.jar = 1669564174338
+/Users/connor/.m2/repository/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar = 1670287418476
+/Users/connor/.m2/repository/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar = 1669564174350
+/Users/connor/.m2/repository/org/apache/commons/commons-lang3/3.12.0/commons-lang3-3.12.0.jar = 1669564174333
+/Users/connor/.m2/repository/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar = 1669564174340
+/Users/connor/.m2/repository/org/apache/httpcomponents/client5/httpclient5/5.2.1/httpclient5-5.2.1.jar = 1693560362155
+/Users/connor/.m2/repository/org/apache/httpcomponents/core5/httpcore5/5.2.1/httpcore5-5.2.1.jar = 1693560362158
+/Users/connor/.m2/repository/org/apache/httpcomponents/core5/httpcore5-h2/5.2/httpcore5-h2-5.2.jar = 1693560362140
+/Users/connor/.m2/repository/org/codehaus/janino/janino/3.1.7/janino-3.1.7.jar = 1669565289550
+/Users/connor/.m2/repository/org/codehaus/janino/commons-compiler/3.1.7/commons-compiler-3.1.7.jar = 1669565289453
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-plus/10.0.15/jetty-plus-10.0.15.jar = 1695501889188
+/Users/connor/.m2/repository/jakarta/transaction/jakarta.transaction-api/1.3.3/jakarta.transaction-api-1.3.3.jar = 1694806499218
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-jndi/10.0.15/jetty-jndi-10.0.15.jar = 1695501888991
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-security/10.0.15/jetty-security-10.0.15.jar = 1695501889451
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-server/10.0.15/jetty-server-10.0.15.jar = 1695501889886
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-http/10.0.15/jetty-http-10.0.15.jar = 1695501889286
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-io/10.0.15/jetty-io-10.0.15.jar = 1695501889298
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-util/10.0.15/jetty-util-10.0.15.jar = 1695501889768
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-webapp/10.0.15/jetty-webapp-10.0.15.jar = 1695501889401
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-servlet/10.0.15/jetty-servlet-10.0.15.jar = 1695501889428
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-xml/10.0.15/jetty-xml-10.0.15.jar = 1695501889452
+/Users/connor/.m2/repository/org/glassfish/jaxb/jaxb-runtime/2.3.8/jaxb-runtime-2.3.8.jar = 1686646865332
+/Users/connor/.m2/repository/org/glassfish/jaxb/txw2/2.3.8/txw2-2.3.8.jar = 1686646865264
+/Users/connor/.m2/repository/com/sun/istack/istack-commons-runtime/3.0.12/istack-commons-runtime-3.0.12.jar = 1683293103726
+/Users/connor/.m2/repository/com/sun/activation/jakarta.activation/1.2.2/jakarta.activation-1.2.2.jar = 1683327740959
+/Users/connor/.m2/repository/org/glassfish/jersey/containers/jersey-container-jetty-http/2.40/jersey-container-jetty-http-2.40.jar = 1694806499369
+/Users/connor/.m2/repository/org/glassfish/hk2/external/jakarta.inject/2.6.1/jakarta.inject-2.6.1.jar = 1669564176764
+/Users/connor/.m2/repository/org/eclipse/jetty/jetty-continuation/9.4.51.v20230217/jetty-continuation-9.4.51.v20230217.jar = 1686645713850
+/Users/connor/.m2/repository/jakarta/ws/rs/jakarta.ws.rs-api/2.1.6/jakarta.ws.rs-api-2.1.6.jar = 1669564176803
+/Users/connor/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet-core/2.40/jersey-container-servlet-core-2.40.jar = 1694806499377
+/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-common/2.40/jersey-common-2.40.jar = 1694806499451
+/Users/connor/.m2/repository/jakarta/annotation/jakarta.annotation-api/1.3.5/jakarta.annotation-api-1.3.5.jar = 1669564176828
+/Users/connor/.m2/repository/org/glassfish/hk2/osgi-resource-locator/1.0.3/osgi-resource-locator-1.0.3.jar = 1669564176852
+/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-server/2.40/jersey-server-2.40.jar = 1694806499423
+/Users/connor/.m2/repository/org/glassfish/jersey/core/jersey-client/2.40/jersey-client-2.40.jar = 1694806499427
+/Users/connor/.m2/repository/jakarta/validation/jakarta.validation-api/2.0.2/jakarta.validation-api-2.0.2.jar = 1669564176919
+/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-mvc/2.40/jersey-mvc-2.40.jar = 1694806499427
+/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-mvc-mustache/2.40/jersey-mvc-mustache-2.40.jar = 1694806499431
+/Users/connor/.m2/repository/org/glassfish/jersey/inject/jersey-hk2/2.40/jersey-hk2-2.40.jar = 1694806499453
+/Users/connor/.m2/repository/org/glassfish/hk2/hk2-locator/2.6.1/hk2-locator-2.6.1.jar = 1669564176971
+/Users/connor/.m2/repository/org/glassfish/hk2/external/aopalliance-repackaged/2.6.1/aopalliance-repackaged-2.6.1.jar = 1669564176972
+/Users/connor/.m2/repository/org/glassfish/hk2/hk2-api/2.6.1/hk2-api-2.6.1.jar = 1669564177045
+/Users/connor/.m2/repository/org/glassfish/hk2/hk2-utils/2.6.1/hk2-utils-2.6.1.jar = 1669564177011
+/Users/connor/.m2/repository/org/javassist/javassist/3.29.2-GA/javassist-3.29.2-GA.jar = 1694806499516
+/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-json-jackson/2.40/jersey-media-json-jackson-2.40.jar = 1694806499459
+/Users/connor/.m2/repository/org/glassfish/jersey/ext/jersey-entity-filtering/2.40/jersey-entity-filtering-2.40.jar = 1694806499457
+/Users/connor/.m2/repository/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.13.4/jackson-module-jaxb-annotations-2.13.4.jar = 1671484892988
+/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-multipart/2.40/jersey-media-multipart-2.40.jar = 1694806499486
+/Users/connor/.m2/repository/org/jvnet/mimepull/mimepull/1.9.15/mimepull-1.9.15.jar = 1694806499484
+/Users/connor/.m2/repository/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar = 1669564175888
+/Users/connor/.m2/repository/org/slf4j/log4j-over-slf4j/2.0.7/log4j-over-slf4j-2.0.7.jar = 1687942439710
+/Users/connor/.m2/repository/org/slf4j/slf4j-api/2.0.7/slf4j-api-2.0.7.jar = 1687942439715
+/Users/connor/.m2/repository/org/glassfish/jersey/test-framework/providers/jersey-test-framework-provider-jetty/2.40/jersey-test-framework-provider-jetty-2.40.jar = 1694806627468
+/Users/connor/.m2/repository/org/glassfish/jersey/test-framework/jersey-test-framework-core/2.40/jersey-test-framework-core-2.40.jar = 1694806627445
+/Users/connor/.m2/repository/org/glassfish/jersey/media/jersey-media-jaxb/2.40/jersey-media-jaxb-2.40.jar = 1694806627501
+/Users/connor/.m2/repository/org/hamcrest/hamcrest/2.2/hamcrest-2.2.jar = 1694685915688
+/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar = 1669564177195
+/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.8.2/junit-jupiter-api-5.8.2.jar = 1669564177256
+/Users/connor/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar = 1669564177231
+/Users/connor/.m2/repository/org/junit/platform/junit-platform-commons/1.8.2/junit-platform-commons-1.8.2.jar = 1669564177250
+/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar = 1669564177311
+/Users/connor/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.8.2/junit-jupiter-engine-5.8.2.jar = 1669564177330
+/Users/connor/.m2/repository/org/junit/vintage/junit-vintage-engine/5.8.2/junit-vintage-engine-5.8.2.jar = 1669564177302
+/Users/connor/.m2/repository/org/junit/platform/junit-platform-engine/1.8.2/junit-platform-engine-1.8.2.jar = 1669564177309
+/Users/connor/.m2/repository/junit/junit/4.13.2/junit-4.13.2.jar = 1669564177194
+/Users/connor/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar = 1669564177307
+/Users/connor/.m2/repository/org/mockito/mockito-core/5.4.0/mockito-core-5.4.0.jar = 1687942439988
+/Users/connor/.m2/repository/net/bytebuddy/byte-buddy/1.14.5/byte-buddy-1.14.5.jar = 1687942439921
+/Users/connor/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.5/byte-buddy-agent-1.14.5.jar = 1687942439964
+/Users/connor/.m2/repository/org/objenesis/objenesis/3.3/objenesis-3.3.jar = 1687942439852
+/Users/connor/.m2/repository/org/mockito/mockito-junit-jupiter/5.4.0/mockito-junit-jupiter-5.4.0.jar = 1687942439863
+/Users/connor/Projects/work/emissary/src/test/java = 1692698598052
+/Users/connor/Projects/work/emissary/target/generated-test-sources/test-annotations = 1702341827246
+/Users/connor/Projects/work/emissary/target/site/testapidocs/tag-search-index.js = 1702341845852
+/Users/connor/Projects/work/emissary/target/site/testapidocs/overview-tree.html = 1702341845832
+/Users/connor/Projects/work/emissary/target/site/testapidocs/module-search-index.js = 1702341845851
+/Users/connor/Projects/work/emissary/target/site/testapidocs/index.html = 1702341845835
+/Users/connor/Projects/work/emissary/target/site/testapidocs/package-search-index.js = 1702341845851
+/Users/connor/Projects/work/emissary/target/site/testapidocs/jquery-ui.overrides.css = 1702341845871
+/Users/connor/Projects/work/emissary/target/site/testapidocs/serialized-form.html = 1702341845792
+/Users/connor/Projects/work/emissary/target/site/testapidocs/index-all.html = 1702341845864
+/Users/connor/Projects/work/emissary/target/site/testapidocs/allpackages-index.html = 1702341845850
+/Users/connor/Projects/work/emissary/target/site/testapidocs/deprecated-list.html = 1702341845834
+/Users/connor/Projects/work/emissary/target/site/testapidocs/member-search-index.js = 1702341845851
+/Users/connor/Projects/work/emissary/target/site/testapidocs/script.js = 1702341845868
+/Users/connor/Projects/work/emissary/target/site/testapidocs/stylesheet.css = 1702341845867
+/Users/connor/Projects/work/emissary/target/site/testapidocs/overview-summary.html = 1702341845864
+/Users/connor/Projects/work/emissary/target/site/testapidocs/help-doc.html = 1702341845866
+/Users/connor/Projects/work/emissary/target/site/testapidocs/element-list = 1702341845710
+/Users/connor/Projects/work/emissary/target/site/testapidocs/allclasses-index.html = 1702341845849
+/Users/connor/Projects/work/emissary/target/site/testapidocs/type-search-index.js = 1702341845851
+/Users/connor/Projects/work/emissary/target/site/testapidocs/search.js = 1702341845869

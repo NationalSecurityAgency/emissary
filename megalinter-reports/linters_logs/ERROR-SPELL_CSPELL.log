@@ -1,0 +1,40 @@
+Results of cspell linter (version 7.3.6)
+See documentation on https://megalinter.io/7.4.0/descriptors/spell_cspell/
+-----------------------------------------------
+
+❌ [ERROR] for workspace /tmp/lint
+Linter raw log:
+1/2 ./.github/linters/.mega-linter.yml 11347.40ms X
+./.github/linters/.mega-linter.yml:14:16     - Unknown word (HADOLINT)   -- - DOCKERFILE_HADOLINT
+	 Suggestions: [HAVOLINE, havoline]
+./.github/linters/.mega-linter.yml:21:12     - Unknown word (HADOLINT)   -- DOCKERFILE_HADOLINT_FILE_NAME: ../../contrib
+	 Suggestions: [HAVOLINE, havoline]
+./.github/linters/.mega-linter.yml:21:54     - Unknown word (hadolint)   -- /../contrib/docker/.hadolint.yaml
+	 Suggestions: [havoline, Havoline, haloing, hading, haling]
+2/2 ./45cc8891-6047-4ac0-b7cd-2276ed165aac-megalinter_file_names_cspell.txt 233.77ms
+CSpell: Files checked: 2, Issues found: 3 in 1 files
+
+
+You can skip this misspellings by defining the following .cspell.json file at the root of your repository
+Of course, please correct real typos before :)
+
+{
+    "version": "0.2",
+    "language": "en",
+    "ignorePaths": [
+        "**/node_modules/**",
+        "**/vscode-extension/**",
+        "**/.git/**",
+        "**/.pnpm-lock.json",
+        ".vscode",
+        "package-lock.json",
+        "megalinter-reports"
+    ],
+    "words": [
+        "HADOLINT",
+        "hadolint"
+    ]
+}
+
+
+You can also copy-paste megalinter-reports/.cspell.json at the root of your repository

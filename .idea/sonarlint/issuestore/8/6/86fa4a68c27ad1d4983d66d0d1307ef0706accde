@@ -1,0 +1,9 @@
+
+m
+java:S3776u"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(ùóØ†ýÿÿÿÿ
+[
+java:S1117|"@Rename "filterConfig" which hides the field declared at line 39.(¨ÿŒ†ûÿÿÿÿ
+A
+java:S1181˜"%Catch Exception instead of Throwable.(•”ø¾øÿÿÿÿ
+`
+java:S4201‘"IRemove this unnecessary null check; "instanceof" returns false for nulls.(øý¹Ê

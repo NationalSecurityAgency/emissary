@@ -1,0 +1,116 @@
+body {
+    background-color: #fff; color: #333;
+    font-family: arial, sans-serif;
+    min-height: 75rem;
+    padding-top: 4.5rem;
+}
+div.scriptoutput {
+    font-family: courier, "courier new", monospace;
+    letter-spacing: 1px;
+    background-color: #3d3d3d;
+    border: 0px solid #ededed;
+    height: 450px;
+    overflow: auto;
+    padding: 4px;
+}
+.scriptinput {
+    background-color: #3d3d3d;
+    border: 0px solid #ededed;
+    color: #ededed
+}
+.prompttext {
+    color: #ededed;
+}
+.errortext {
+     color: red;
+}
+.commandtext {
+     color: #ededed;
+}
+.responsetext {
+     color: #34c0d6;
+}
+form {
+  display: inline;
+}
+input[type='submit'], input[type='button'] {
+   display: inline;
+   -moz-border-radius: 0.5em;
+   color: #822a92;
+   background-color: #fef3b8;
+}
+input[type='submit']:hover, input[type='button']:hover {
+   color: red;
+}
+.small {
+   font-size: 0.7em;
+}
+
+table.datagrid tr.odd {
+   background-color: #F5F5F5;
+   color: black;
+}
+
+table.datagrid tr.even {
+   background-color: #FFFFFF;
+   color: black;
+}
+
+table.datagrid tr.sep {
+    background-color: #FFFFFF;
+    color: #822a92;
+}
+
+td.num {
+    text-align: right;
+}
+
+#czar {
+    width: 400px;
+    margin-left: 20px;
+    background-image: url("/img/mini-czar.jpg");
+    background-repeat: no-repeat;
+    background-position: left;
+}
+
+#bubble {
+    display:none;
+}
+
+.triangle-right.left {
+    margin-left: 90px;
+    background: #075698;
+    width: 80%
+}
+
+.triangle-right {
+    position: relative;
+    padding: 15px;
+    margin: 1em 0 3em;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.triangle-right.left:after {
+    top: 16px;
+    left: -40px;
+    bottom: auto;
+    border-width: 15px 40px 0 0;
+    border-color: transparent #075698;
+}
+
+.triangle-right:after {
+    content: "";
+    position: absolute;
+    display: block;
+    border-style: solid;
+    width: 0;
+}
+
+div#content {
+    background-color: #eaeded;
+    border: 1px solid #dee2e6;
+    font-size: 0.7em;
+    padding: 7px;
+    display: none;
+}

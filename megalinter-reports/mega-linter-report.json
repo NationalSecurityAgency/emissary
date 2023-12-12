@@ -1,0 +1,867 @@
+{
+    "file_extensions": [
+        ".yml",
+        ".yaml",
+        ".sh",
+        ".bash",
+        ".dash",
+        ".ksh",
+        ".json",
+        ".json5",
+        ".jsonc",
+        ".xml"
+    ],
+    "file_names_regex": [
+        "Dockerfile"
+    ],
+    "has_updated_sources": 1,
+    "linters": [
+        {
+            "descriptor_id": "ACTION",
+            "descriptor_type": "tooling_format",
+            "elapsed_time_s": 78.78676249500131,
+            "files": [
+                ".github/workflows/cherrypick.yml",
+                ".github/workflows/codeql-analysis.yml",
+                ".github/workflows/create-patch-branch.yml",
+                ".github/workflows/dependency-review.yml",
+                ".github/workflows/linter.yaml",
+                ".github/workflows/maven-ci.yml",
+                ".github/workflows/maven-publish.yml",
+                ".github/workflows/maven-release.yml",
+                ".github/workflows/maven-version.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/cherrypick.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/codeql-analysis.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/create-patch-branch.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/dependency-review.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/linter.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-ci.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-publish.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-release.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-version.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 9,
+            "is_active": true,
+            "linter_name": "actionlint",
+            "name": "ACTION_ACTIONLINT",
+            "number_errors": 1,
+            "number_fixed": 0,
+            "return_code": 1,
+            "status": "error",
+            "total_number_errors": 1
+        },
+        {
+            "descriptor_id": "BASH",
+            "descriptor_type": "language",
+            "elapsed_time_s": 0.18036345799919218,
+            "files": [
+                "contrib/ci/detect-changes.sh",
+                "contrib/continuous-test.sh",
+                "contrib/gh-md-toc.Linux.sh",
+                "src/test/env.sh"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": 0,
+                    "file": "contrib/ci/detect-changes.sh",
+                    "fixed": false,
+                    "status": "success",
+                    "status_code": 0,
+                    "stdout": ""
+                },
+                {
+                    "errors_number": 0,
+                    "file": "contrib/continuous-test.sh",
+                    "fixed": false,
+                    "status": "success",
+                    "status_code": 0,
+                    "stdout": ""
+                },
+                {
+                    "errors_number": 0,
+                    "file": "contrib/gh-md-toc.Linux.sh",
+                    "fixed": false,
+                    "status": "success",
+                    "status_code": 0,
+                    "stdout": ""
+                },
+                {
+                    "errors_number": 0,
+                    "file": "src/test/env.sh",
+                    "fixed": false,
+                    "status": "success",
+                    "status_code": 0,
+                    "stdout": ""
+                }
+            ],
+            "files_number": 4,
+            "is_active": true,
+            "linter_name": "bash-exec",
+            "name": "BASH_EXEC",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "DOCKERFILE",
+            "descriptor_type": "tooling_format",
+            "elapsed_time_s": 0.05105108401039615,
+            "files": [
+                "contrib/docker/Dockerfile"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/Dockerfile",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 1,
+            "is_active": true,
+            "linter_name": "hadolint",
+            "name": "DOCKERFILE_HADOLINT",
+            "number_errors": 1,
+            "number_fixed": 0,
+            "return_code": 1,
+            "status": "error",
+            "total_number_errors": 1
+        },
+        {
+            "descriptor_id": "XML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 0.4479321670369245,
+            "files": [
+                "contrib/checkstyle.xml",
+                "contrib/formatter.xml",
+                "pom.xml",
+                "src/assembly/dist.xml",
+                "src/main/config/logback.xml",
+                "src/test/resources/emissary/test/core/TestExtractionTest.xml",
+                "src/test/resources/emissary/test/core/junit5/MissingTags.xml",
+                "src/test/resources/emissary/test/core/junit5/TestExtractionTest.xml",
+                "src/test/resources/emissary/transform/HtmlEscapePlaceTest/sample.xml",
+                "src/test/resources/emissary/transform/JavascriptEscapePlaceTest/sample.xml",
+                "src/test/resources/emissary/transform/JsonEscapePlaceTest/sample.xml",
+                "src/test/resources/logback-test.xml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": "contrib/checkstyle.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/formatter.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "pom.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/assembly/dist.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/main/config/logback.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/test/core/TestExtractionTest.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/test/core/junit5/MissingTags.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/test/core/junit5/TestExtractionTest.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/transform/HtmlEscapePlaceTest/sample.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/transform/JavascriptEscapePlaceTest/sample.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/emissary/transform/JsonEscapePlaceTest/sample.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "src/test/resources/logback-test.xml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 12,
+            "is_active": true,
+            "linter_name": "xmllint",
+            "name": "XML_XMLLINT",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 28.19165797199821,
+            "files": [
+                ".github/linters/.markdown-lint.yml",
+                ".github/linters/.mega-linter.yml",
+                ".github/linters/.yaml-lint.yml",
+                ".github/workflows/cherrypick.yml",
+                ".github/workflows/codeql-analysis.yml",
+                ".github/workflows/create-patch-branch.yml",
+                ".github/workflows/dependency-review.yml",
+                ".github/workflows/linter.yaml",
+                ".github/workflows/maven-ci.yml",
+                ".github/workflows/maven-publish.yml",
+                ".github/workflows/maven-release.yml",
+                ".github/workflows/maven-version.yml",
+                "contrib/docker/.hadolint.yaml",
+                "contrib/docker/docker-compose.yml",
+                "contrib/elasticsearch/filebeat.agents.docker.yml",
+                "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.markdown-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.mega-linter.yml",
+                    "fixed": true,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.yaml-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/cherrypick.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/codeql-analysis.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/create-patch-branch.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/dependency-review.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/linter.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-ci.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-publish.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-release.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-version.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/.hadolint.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/docker-compose.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/filebeat.agents.docker.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 16,
+            "is_active": true,
+            "linter_name": "prettier",
+            "name": "YAML_PRETTIER",
+            "number_errors": 0,
+            "number_fixed": 1,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 105.57558259100188,
+            "files": [
+                ".github/linters/.markdown-lint.yml",
+                ".github/linters/.mega-linter.yml",
+                ".github/linters/.yaml-lint.yml",
+                ".github/workflows/cherrypick.yml",
+                ".github/workflows/codeql-analysis.yml",
+                ".github/workflows/create-patch-branch.yml",
+                ".github/workflows/dependency-review.yml",
+                ".github/workflows/linter.yaml",
+                ".github/workflows/maven-ci.yml",
+                ".github/workflows/maven-publish.yml",
+                ".github/workflows/maven-release.yml",
+                ".github/workflows/maven-version.yml",
+                "contrib/docker/.hadolint.yaml",
+                "contrib/docker/docker-compose.yml",
+                "contrib/elasticsearch/filebeat.agents.docker.yml",
+                "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.markdown-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.mega-linter.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.yaml-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/cherrypick.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/codeql-analysis.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/create-patch-branch.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/dependency-review.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/linter.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-ci.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-publish.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-release.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-version.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/.hadolint.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/docker-compose.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/filebeat.agents.docker.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 16,
+            "is_active": true,
+            "linter_name": "v8r",
+            "name": "YAML_V8R",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        },
+        {
+            "descriptor_id": "YAML",
+            "descriptor_type": "format",
+            "elapsed_time_s": 10.533805088023655,
+            "files": [
+                ".github/linters/.markdown-lint.yml",
+                ".github/linters/.mega-linter.yml",
+                ".github/linters/.yaml-lint.yml",
+                ".github/workflows/cherrypick.yml",
+                ".github/workflows/codeql-analysis.yml",
+                ".github/workflows/create-patch-branch.yml",
+                ".github/workflows/dependency-review.yml",
+                ".github/workflows/linter.yaml",
+                ".github/workflows/maven-ci.yml",
+                ".github/workflows/maven-publish.yml",
+                ".github/workflows/maven-release.yml",
+                ".github/workflows/maven-version.yml",
+                "contrib/docker/.hadolint.yaml",
+                "contrib/docker/docker-compose.yml",
+                "contrib/elasticsearch/filebeat.agents.docker.yml",
+                "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml"
+            ],
+            "files_lint_results": [
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.markdown-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.mega-linter.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/linters/.yaml-lint.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/cherrypick.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/codeql-analysis.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/create-patch-branch.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/dependency-review.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/linter.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-ci.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-publish.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-release.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": ".github/workflows/maven-version.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/.hadolint.yaml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/docker/docker-compose.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/filebeat.agents.docker.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                },
+                {
+                    "errors_number": null,
+                    "file": "contrib/elasticsearch/sample_objectMetrics-filebeat-prospector.yml",
+                    "fixed": false,
+                    "status": null,
+                    "status_code": null,
+                    "stdout": null
+                }
+            ],
+            "files_number": 16,
+            "is_active": true,
+            "linter_name": "yamllint",
+            "name": "YAML_YAMLLINT",
+            "number_errors": 0,
+            "number_fixed": 0,
+            "return_code": 0,
+            "status": "success",
+            "total_number_errors": 0
+        }
+    ],
+    "post_commands_results": [],
+    "pre_commands_results": [],
+    "report_folder": "/tmp/lint/megalinter-reports",
+    "reporters": [
+        {
+            "is_active": true,
+            "master": null,
+            "name": "JSON",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "CONSOLE",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "GITLAB_COMMENT",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "AZURE_COMMENT",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "CONFIG",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        },
+        {
+            "is_active": true,
+            "master": null,
+            "name": "UPDATED_SOURCES",
+            "processing_order": 0,
+            "report_folder": "/tmp/lint/megalinter-reports",
+            "report_items": []
+        }
+    ],
+    "return_code": 1,
+    "status": "error"
+}
