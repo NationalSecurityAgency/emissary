@@ -80,7 +80,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     public static final String METADATA_VIEW = "." + METADATA_VIEW_NAME;
 
     /* alternate views to NOT output if only a file type/form is specified */
-    protected Set<String> blacklist = Collections.emptySet();
+    protected Set<String> denylist = Collections.emptySet();
 
     protected DropOffUtil dropOffUtil = null;
 
@@ -167,8 +167,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
         if (config != null) {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
-            this.blacklist = config.findEntriesAsSet("BLACKLIST");
-            this.logger.debug("Loaded {} blacklist types for filter {}", this.blacklist.size(), this.blacklist);
+            this.denylist = config.findEntriesAsSet("DENYLIST");
+            this.logger.debug("Loaded {} ignorelist types for filter {}", this.denylist.size(), this.denylist);
         } else {
             this.logger.debug("InitializeCustom has null filter config");
         }
@@ -445,8 +445,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final String fileType = DropOffUtil.getFileType(d);
         final String currentForm = d.currentForm();
 
-        // skip over blacklisted alt views
-        if (this.blacklist.contains(viewName) || this.blacklist.contains(fileType + "." + viewName)) {
+        // skip over denylisted alt views
+        if (this.denylist.contains(viewName) || this.denylist.contains(fileType + "." + viewName)) {
             return checkTypes;
         }
 
