@@ -92,7 +92,4 @@ public class SizeIdPlace extends IdPlace {
         return LABELS[LABELS.length - 1];
     }
 
-    public static void main(String[] args) {
-        mainRunner(SizeIdPlace.class, args);
-    }
 }

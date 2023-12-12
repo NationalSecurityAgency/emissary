@@ -89,10 +89,4 @@ public class JavascriptEscapePlace extends ServiceProviderPlace {
     }
 
 
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(JavascriptEscapePlace.class.getName(), argv);
-    }
 }

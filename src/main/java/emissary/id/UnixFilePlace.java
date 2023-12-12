@@ -145,7 +145,4 @@ public class UnixFilePlace extends emissary.id.IdPlace {
         }
     }
 
-    public static void main(final String[] args) {
-        mainRunner(UnixFilePlace.class.getName(), args);
-    }
 }

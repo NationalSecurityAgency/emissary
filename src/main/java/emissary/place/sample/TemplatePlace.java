@@ -105,10 +105,4 @@ public class TemplatePlace extends ServiceProviderPlace {
         return Collections.emptyList();
     }
 
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(TemplatePlace.class.getName(), argv);
-    }
 }

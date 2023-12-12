@@ -67,10 +67,4 @@ public class ToUpperPlace extends ServiceProviderPlace {
         }
     }
 
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(ToUpperPlace.class.getName(), argv);
-    }
 }

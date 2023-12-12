@@ -473,8 +473,4 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
         }
     }
 
-    public static void main(String[] args) {
-        mainRunner(FilePickUpClient.class.getName(), args);
-    }
-
 }
