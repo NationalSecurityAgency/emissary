@@ -264,12 +264,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             // One based counter
             loopCount++;
 
+            long timeInPlace = 0L;
+
             // First time in, we just have the pickup place where we started
             // our mission. We dont process there, just use it to call through
             // to the directory, so skip the processing. See the difference
             // between the go() and arrive() methods for details
             if ((loopCount > 1 || getProcessFirstPlace()) && !controlError) {
-                atPlace(currentPlace, mypayload);
+                timeInPlace = atPlace(currentPlace, mypayload);
             }
 
             // Choose next place
@@ -336,8 +338,10 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      *
      * @param place the place we are asking to work for us
      * @param payloadArg the data for the place to operate on
+     * @return the time in nanoseconds spent in the place
      */
-    protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+    protected long atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+        long timeInPlace = 0L;
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
         try (TimedResource timer = resourceWatcherStart(place)) {
@@ -348,7 +352,10 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 payloadArg.setParameter("AGENT_MOVE_ERRORS", Integer.toString(this.moveErrorsOccurred));
             }
 
+            long startTime = System.nanoTime();
             place.agentProcessCall(payloadArg);
+            long endTime = System.nanoTime();
+            timeInPlace = (endTime - startTime);
 
             if (this.moveErrorsOccurred > 0) {
                 payloadArg.deleteParameter("AGENT_MOVE_ERRORS");
@@ -366,6 +373,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             }
             checkInterrupt(place);
         }
+
+        return timeInPlace;
     }
 
     protected final void checkInterrupt(final IServiceProviderPlace place) {
