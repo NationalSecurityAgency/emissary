@@ -715,10 +715,4 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
         }
     }
 
-    /**
-     * Test main
-     */
-    public static void main(String[] argv) {
-        mainRunner(MultiFileUnixCommandPlace.class.getName(), argv);
-    }
 }

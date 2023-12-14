@@ -278,10 +278,4 @@ public class CoordinationPlace extends ServiceProviderPlace {
         return coordinate(d, true);
     }
 
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(CoordinationPlace.class.getName(), argv);
-    }
 }

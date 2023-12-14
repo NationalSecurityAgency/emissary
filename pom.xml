@@ -46,7 +46,6 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.commons-cli.version>1.5.0</dep.commons-cli.version>
     <dep.commons-codec.version>1.15</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
     <dep.commons-compress.version>1.21</dep.commons-compress.version>
@@ -71,8 +70,6 @@
     <dep.jersey.version>2.40</dep.jersey.version>
     <dep.jetty.version>10.0.15</dep.jetty.version>
     <dep.junit-jupiter.version>5.8.2</dep.junit-jupiter.version>
-    <!-- junit-vintage, hamcrest and jersey disagree, but this works for everyone -->
-    <dep.junit.version>4.13.2</dep.junit.version>
     <dep.logback.version>1.3.12</dep.logback.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
@@ -146,11 +143,6 @@
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
         <version>${dep.guava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-cli</groupId>
-        <artifactId>commons-cli</artifactId>
-        <version>${dep.commons-cli.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -312,20 +304,8 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${dep.junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>${dep.junit-jupiter.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.vintage</groupId>
-        <artifactId>junit-vintage-engine</artifactId>
         <version>${dep.junit-jupiter.version}</version>
         <scope>test</scope>
       </dependency>
@@ -363,10 +343,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-cli</groupId>
-      <artifactId>commons-cli</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -552,11 +528,6 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>

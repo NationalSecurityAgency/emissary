@@ -1028,31 +1028,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         return (MobileAgent) Namespace.lookup(Thread.currentThread().getName());
     }
 
-    /**
-     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can instantiate
-     * and use the Main class directly.
-     *
-     * @param placeClass the class to instantiate
-     * @param args from command line
-     */
-    public static void mainRunner(Class<?> placeClass, String[] args) {
-        Main main = new Main(placeClass.getName(), args);
-        main.run();
-    }
-
-    /**
-     * Convenience to access the Main runner from a subclass If more flexibility is desired, the subclass can instantiate
-     * and use the Main class directly.
-     *
-     * @param placeClass the class name to instantiate
-     * @param args from command line
-     */
-    public static void mainRunner(String placeClass, String[] args) {
-        Main main = new Main(placeClass, args);
-        main.run();
-    }
-
-
     @Override
     public List<String> getRunningConfig() {
         List<String> runningConfigList = new ArrayList<>();

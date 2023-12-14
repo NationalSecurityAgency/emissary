@@ -10,11 +10,9 @@ import emissary.command.FeedCommand;
 import emissary.command.HelpCommand;
 import emissary.command.PeersCommand;
 import emissary.command.PoolCommand;
-import emissary.command.RunCommand;
 import emissary.command.ServerCommand;
 import emissary.command.TopologyCommand;
 import emissary.command.VersionCommand;
-import emissary.command.WhatCommand;
 import emissary.util.GitRepositoryState;
 import emissary.util.io.LoggingPrintStream;
 
@@ -56,8 +54,8 @@ public class Emissary {
 
     static {
         List<Class<? extends EmissaryCommand>> cmds =
-                Arrays.asList(ServerCommand.class, HelpCommand.class, WhatCommand.class, TopologyCommand.class, FeedCommand.class,
-                        AgentsCommand.class, PoolCommand.class, VersionCommand.class, RunCommand.class, EnvCommand.class,
+                Arrays.asList(ServerCommand.class, HelpCommand.class, TopologyCommand.class, FeedCommand.class,
+                        AgentsCommand.class, PoolCommand.class, VersionCommand.class, EnvCommand.class,
                         PeersCommand.class, ConfigCommand.class, DirectoryCommand.class);
         Map<String, EmissaryCommand> staticCopy = new HashMap<>();
         for (Class<? extends EmissaryCommand> clz : cmds) {

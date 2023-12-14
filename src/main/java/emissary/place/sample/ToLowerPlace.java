@@ -67,10 +67,4 @@ public class ToLowerPlace extends ServiceProviderPlace {
         }
     }
 
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(ToLowerPlace.class.getName(), argv);
-    }
 }

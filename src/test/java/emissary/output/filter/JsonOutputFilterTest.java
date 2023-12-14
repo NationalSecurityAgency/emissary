@@ -136,7 +136,7 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testWhitelistFields() {
+    void testAllowlistFields() {
         config.addEntry("EXTRA_PARAM", "BAR");
         f.initialize(config, "FOO", config);
 
@@ -154,17 +154,15 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
         String s = output.toString();
 
-        System.out.println(s);
-
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"BAR\":[\"foo\"]"), "Filter output should contain field BAR");
         assertFalse(s.contains("\"FOO\":"), "Filter output should not contain field FOO");
     }
 
     @Test
-    void testBlacklistedFields() {
-        config.addEntry("BLACKLIST_FIELD", "FOO");
-        config.addEntry("BLACKLIST_PREFIX", "BAR_");
+    void testDenylistedFields() {
+        config.addEntry("DENYLIST_FIELD", "FOO");
+        config.addEntry("DENYLIST_PREFIX", "BAR_");
         config.addEntry("EXTRA_PARAM", "*");
         f.initialize(config, "FOO", config);
 
@@ -189,16 +187,16 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have whitelist field");
+        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
         assertTrue(s.contains("\"BAR\":[\"myBar\"]"), "Filter output should have prefix no-match field BAR");
-        assertFalse(s.contains("\"FOO\":"), "Filter output should not have blacklist field FOO");
-        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have blacklist prefix field BAR_");
+        assertFalse(s.contains("\"FOO\":"), "Filter output should not have denylist field FOO");
+        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have denylist prefix field BAR_");
     }
 
     @Test
-    void testBlacklistedFieldsNoWhitelist() {
-        config.addEntry("BLACKLIST_FIELD", "FOO");
-        config.addEntry("BLACKLIST_PREFIX", "BAR_");
+    void testDenylistedFieldsNoAllowlist() {
+        config.addEntry("DENYLIST_FIELD", "FOO");
+        config.addEntry("DENYLIST_PREFIX", "BAR_");
         f.initialize(config, "FOO", config);
 
         IBaseDataObject payload = DataObjectFactory.getInstance();
@@ -222,15 +220,15 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
-        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have whitelist field");
+        assertTrue(s.contains("\"QUUX\":[\"myQuux\"]"), "Filter output should have allowlist field");
         assertTrue(s.contains("\"BAR\":[\"myBar\"]"), "Filter output should have prefix no-match field");
-        assertFalse(s.contains("\"FOO\":"), "Filter output should not have blacklist field");
-        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have blacklist prefix field");
+        assertFalse(s.contains("\"FOO\":"), "Filter output should not have denylist field");
+        assertFalse(s.contains("\"BAR_AS_PREFIX\":"), "Filter output should not have denylist prefix field");
     }
 
     @Test
-    void testBlacklistAll() {
-        config.addEntry("BLACKLIST_FIELD", "*");
+    void testDenylistAll() {
+        config.addEntry("DENYLIST_FIELD", "*");
         f.initialize(config, "FOO", config);
 
         List<IBaseDataObject> payloadList = new ArrayList<>();
@@ -245,15 +243,13 @@ class JsonOutputFilterTest extends UnitTest {
         int status = f.filter(payloadList, params, output);
         String s = output.toString();
 
-        System.out.println(s);
-
         assertEquals(IDropOffFilter.STATUS_SUCCESS, status, "Filter should return success");
         assertTrue(s.contains("\"parameters\":{}"), "Filter output should have no parameters");
     }
 
     @Test
-    void testBlacklistedPrefixWhitelistField() {
-        config.addEntry("BLACKLIST_PREFIX", "BAR");
+    void testDenylistedPrefixAllowlistField() {
+        config.addEntry("DENYLIST_PREFIX", "BAR");
         config.addEntry("EXTRA_PARAM", "BAR_BAZ");
         f.initialize(config, "FOO", config);
 
@@ -271,14 +267,14 @@ class JsonOutputFilterTest extends UnitTest {
         String s = output.toString();
 
         // assert
-        assertFalse(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should not have blacklist field BAR_BAR with value bar");
+        assertFalse(s.contains("\"BAR_BAR\":[\"bar\"]"), "Filter output should not have denylist field BAR_BAR with value bar");
         assertTrue(s.contains("\"BAR_BAZ\":[\"baz\"]"), "Filter output should have field BAR_BAZ with value baz");
     }
 
     @Test
-    void testWhitelistedPrefixBlacklistField() {
+    void testAllowlistedPrefixDenylistField() {
         config.addEntry("EXTRA_PARAM_PREFIX", "BAR");
-        config.addEntry("BLACKLIST_FIELD", "BAR_BAZ");
+        config.addEntry("DENYLIST_FIELD", "BAR_BAZ");
         f.initialize(config, "FOO", config);
 
         // setup ibdo
@@ -300,9 +296,9 @@ class JsonOutputFilterTest extends UnitTest {
     }
 
     @Test
-    void testBlacklistValue() {
+    void testDenylistValue() {
         config.addEntry("EXTRA_PARAM", "*");
-        config.addEntry("BLACKLIST_VALUE_BAR", "baz");
+        config.addEntry("DENYLIST_VALUE_BAR", "baz");
         f.initialize(config, "FOO", config);
 
         // setup ibdo
@@ -317,8 +313,6 @@ class JsonOutputFilterTest extends UnitTest {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         f.filter(payloadList, new HashMap<>(), output);
         String s = output.toString();
-
-        System.out.println(s);
 
         // assert
         assertTrue(s.contains("\"BAR\":[\"bar\"]"), "Filter output should field BAR with value bar");

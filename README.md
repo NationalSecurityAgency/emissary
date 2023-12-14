@@ -79,10 +79,10 @@ of all the configuration subcommands and a brief description.
 
 Running `./emissary help` will give you the same output as running with no arguments.  If you want to see more
 detailed information on a command, add the command name after help.  For example, see all the 
-arguments with descriptions for the *what* command, run:
+arguments with descriptions for the *server* command, run:
 
 ```
-./emissary help what
+./emissary help server
 ```
 
 #### Common parameters
@@ -96,16 +96,6 @@ but can also be passed in with *(-c or --config)*.  When running from the git ch
 Logging is handled by logback. You can point to a custom file with the *--logbackConfig* argument.
 
 See the *help -c <commandName>* for each command to get more info.
-
-#### What
-
-This command will use the configured engines to identify the file.  Emissary currently only comes with the 
-SizeIdPlace, so the id will be TINY or SMALL etc.  See that class for more info.  The *-i or --input* argument
-is required as well as *-b*.  Here is how to run the command
-
-```
-./emissary what -i <path to some file>
-```
 
 #### Server (Standalone)
 
@@ -199,20 +189,6 @@ see all the configuration files along with the final output. This is controlled 
 or in offline mode:
 ```
 ./emissary config --place emissary.place.sample.ToLowerPlace --offline --detailed
-```
-
-#### Run
-
-The Run command is a simple command to execute the main method of the given class.  For example
-
-```
-./emissary run emissary.config.ConfigUtil  <path_to_some_cfg_file>
-```
-
-If you need to pass flags to the main method, use *--* to stop parsing flags and simply pass them along.
-
-```
-./emissary run emissary.config.ExtractResource -- -o outputdir somefile
 ```
 
 #### Server (Cluster)

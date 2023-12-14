@@ -13,7 +13,7 @@ public class Stop extends Action {
 
     @Override
     public void trigger(Map<String, Sentinel.Tracker> trackers) {
-        logger.error("Sentinel detected unrecoverable agents {}, initiating graceful shutdown...", trackers.values());
+        logger.error("Sentinel detected unrecoverable agents, initiating graceful shutdown -- {}", format(trackers));
         CompletableFuture.runAsync(EmissaryServer::stopServer);
     }
 }

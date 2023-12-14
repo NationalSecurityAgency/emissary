@@ -51,10 +51,4 @@ public class DelayPlace extends ServiceProviderPlace {
         }
     }
 
-    /**
-     * Test run
-     */
-    public static void main(String[] argv) {
-        mainRunner(DelayPlace.class.getName(), argv);
-    }
 }

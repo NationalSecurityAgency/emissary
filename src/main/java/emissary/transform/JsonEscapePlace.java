@@ -89,11 +89,4 @@ public class JsonEscapePlace extends ServiceProviderPlace {
         }
     }
 
-
-    /**
-     * Test standalone main
-     */
-    public static void main(String[] argv) {
-        mainRunner(JsonEscapePlace.class.getName(), argv);
-    }
 }
