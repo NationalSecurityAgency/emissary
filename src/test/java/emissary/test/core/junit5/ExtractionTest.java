@@ -106,7 +106,7 @@ public abstract class ExtractionTest extends UnitTest {
             IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, initialForm);
             setupPayload(payload, controlDoc);
             processPreHook(payload, controlDoc);
-            List<IBaseDataObject> attachments = place.agentProcessHeavyDuty(payload);
+            List<IBaseDataObject> attachments = processHeavyDutyHook(place, payload);
             processPostHook(payload, attachments);
             checkAnswersPreHook(controlDoc, payload, attachments, resource);
             checkAnswers(controlDoc, payload, attachments, resource);
@@ -123,6 +123,10 @@ public abstract class ExtractionTest extends UnitTest {
 
     protected void processPostHook(IBaseDataObject payload, List<IBaseDataObject> attachments) {
         // Nothing to do here
+    }
+
+    protected List<IBaseDataObject> processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload) throws Exception {
+        return place.agentProcessHeavyDuty(payload);
     }
 
     protected void checkAnswersPreHook(Document answers, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) {
