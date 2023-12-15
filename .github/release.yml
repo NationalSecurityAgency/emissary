@@ -8,7 +8,7 @@ changelog:
         - enhancement
         - framework
         - tech-debt
-    - title: Security 
+    - title: Security
       labels:
         - security
     - title: Bug Fixes
