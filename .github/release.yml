@@ -1,0 +1,34 @@
+---
+changelog:
+  categories:
+    - title: New Features
+      labels:
+        - feature
+    - title: Improvements
+      labels:
+        - enhancement
+        - framework
+        - tech-debt
+    - title: Security
+      labels:
+        - security
+    - title: Bug Fixes
+      labels:
+        - bug
+    - title: Dependencies
+      labels:
+        - dependencies
+    - title: Documentation
+      labels:
+        - documentation
+    - title: Automation and Testing
+      labels:
+        - CI/CD
+        - test-only
+    - title: Breaking Changes
+      labels:
+        - major
+        - integration
+    - title: Other Changes
+      labels:
+        - "*"
