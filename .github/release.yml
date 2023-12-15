@@ -3,7 +3,11 @@ changelog:
     - title: New Features
       labels:
         - feature
+    - title: Improvements
+      labels:
         - enhancement
+        - framework
+        - tech-debt
     - title: Security 
       labels:
         - security
@@ -16,6 +20,14 @@ changelog:
     - title: Documentation
       labels:
         - documentation
+    - title: Automation and Testing
+      labels:
+        - CI/CD
+        - test-only
+    - title: Breaking Changes
+      labels:
+        - major
+        - integration
     - title: Other Changes
       labels:
         - "*"
