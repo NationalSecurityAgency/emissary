@@ -6,6 +6,7 @@ on: # yamllint disable-line rule:truthy
     branches: [master, release/**, patch/**]
   pull_request:
     branches: [master, release/**, patch/**]
+  workflow_call:
 
 permissions:
   contents: read
