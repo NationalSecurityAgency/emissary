@@ -288,10 +288,11 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             if (loopCount == 1 && !getProcessFirstPlace()) {
                 // Use arrivalPlace for MobileAgent.send()
                 recordHistory(currentPlace, this.payload);
-                recordHistory(newEntry, this.payload);
+                recordHistory(newEntry, this.payload, timeInPlace);
             } else {
-                recordHistory(newEntry, this.payload);
+                recordHistory(newEntry, this.payload, timeInPlace);
             }
+
 
             // A local place, around the loop and hit it
             if (newEntry.isLocal()) {
@@ -788,7 +789,18 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the dataobject that is being processed
      */
     protected void recordHistory(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
-        recordHistory(place.getDirectoryEntry(), payloadArg);
+        recordHistory(place.getDirectoryEntry(), payloadArg, -1L);
+    }
+
+    /**
+     * Record the processing history in the data object
+     *
+     * @param place where the processing is taking place
+     * @param payloadArg the dataobject that is being processed
+     * @param timeInPlace the time in place in nanoseconds
+     */
+    protected void recordHistory(final IServiceProviderPlace place, final IBaseDataObject payloadArg, long timeInPlace) {
+        recordHistory(place.getDirectoryEntry(), payloadArg, timeInPlace);
     }
 
     /**
@@ -798,6 +810,17 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the dataobject that is being processed
      */
     protected void recordHistory(final DirectoryEntry placeEntry, final IBaseDataObject payloadArg) {
+        recordHistory(placeEntry, payloadArg, -1L);
+    }
+
+    /**
+     * Record the processing history in the data object
+     *
+     * @param placeEntry where the processing is taking place
+     * @param payloadArg the dataobject that is being processed
+     * @param timeInPlace the time in place in nanoseconds
+     */
+    protected void recordHistory(final DirectoryEntry placeEntry, final IBaseDataObject payloadArg, long timeInPlace) {
 
         String placeKey = null;
         final String cf = payloadArg.currentForm();
@@ -835,6 +858,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         }
 
         payloadArg.appendTransformHistory(placeKey);
+        if (timeInPlace >= 0) {
+            payloadArg.addTimeInLastPlace(timeInPlace);
+        }
 
         logger.debug("Appended {} to history which now has size {}", placeKey, payloadArg.transformHistory().size());
     }

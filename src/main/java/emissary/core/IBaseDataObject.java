@@ -744,6 +744,13 @@ public interface IBaseDataObject {
     void appendTransformHistory(String key, boolean coordinated);
 
     /**
+     * Adds the given time in place to the last entry in transform history.
+     *
+     * @param timeInPlace the time in place in nanoseconds
+     */
+    void addTimeInLastPlace(long timeInPlace);
+
+    /**
      * Return what machine we are located on
      * 
      * @return string local host name

@@ -136,7 +136,8 @@ public class PayloadUtil {
                     sb.append(" ");
                 }
                 // check is NO_URL or not
-                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append("\n");
+                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append(" Time: ").append(h.getTimeInPlace())
+                        .append("\n");
             }
         }
         return sb.toString();

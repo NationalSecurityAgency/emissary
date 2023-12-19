@@ -167,6 +167,13 @@ public class TransformHistory implements Serializable {
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
+    public void addTimeInPlace(long timeInPlace) {
+        if (history.isEmpty()) {
+            return;
+        }
+        history.get(history.size() - 1).setTimeInPlace(timeInPlace);
+    }
+
     @Override
     public String toString() {
         final StringBuilder myOutput = new StringBuilder();
@@ -179,6 +186,7 @@ public class TransformHistory implements Serializable {
     public static class History {
         String key;
         boolean coordinated;
+        long timeInPlace;
 
         /**
          * Needed to support Kryo deserialization
@@ -194,12 +202,20 @@ public class TransformHistory implements Serializable {
             this.coordinated = coordinated;
         }
 
+        public void setTimeInPlace(long timeInPlace) {
+            this.timeInPlace = timeInPlace;
+        }
+
         public String getKey() {
             return key;
         }
 
         public String getKeyNoUrl() {
             return StringUtils.substringBefore(key, ".http");
+        }
+
+        public long getTimeInPlace() {
+            return timeInPlace;
         }
 
         public boolean wasCoordinated() {
