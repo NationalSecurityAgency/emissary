@@ -99,7 +99,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
         try {
             String currentForm = this.unixFileUtil.evaluateByMagicNumber(bytes);
-            if (currentForm != null) {
+            if (currentForm != null && !currentForm.isEmpty()) {
                 if (this.chop && currentForm.indexOf(" ") > 0) {
                     String firstSubstring = currentForm.substring(0, currentForm.indexOf(" "));
                     // chop some things at 2
