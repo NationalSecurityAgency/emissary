@@ -12,6 +12,7 @@ import emissary.core.sentinel.protocols.rules.AnyMaxTime;
 import emissary.core.sentinel.protocols.rules.Rule;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
+import emissary.pool.AgentPool;
 import emissary.test.core.junit5.UnitTest;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -137,6 +138,114 @@ class ProtocolTest extends UnitTest {
         } catch (IOException e) {
             fail(e);
         }
+    }
+
+    @Test
+    void protocol1() {
+        Action action = mock(Action.class);
+
+        Protocol protocol = new Protocol();
+        protocol.action = action;
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", "To(?:Lower|Upper)Place", 5, 1.0));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", "To(?:Lower|Upper)Place", 30, 0.2));
+
+        testProtocol(protocol, action, trackers(), 5, 1);
+        testProtocol(protocol, action, trackers(), 6, 0);
+    }
+
+    @Test
+    void protocol2() {
+        Action action = mock(Action.class);
+
+        Protocol protocol = new Protocol();
+        protocol.action = action;
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", "To(?:Lower|Upper)Place", 5, 1.0));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", "To(?:Lower|Upper)Place", 40, 0.2));
+
+        testProtocol(protocol, action, trackers(), 5, 0);
+    }
+
+    @Test
+    void protocol3() {
+        Action action = mock(Action.class);
+
+        Protocol protocol = new Protocol();
+        protocol.action = action;
+        protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", "To(?:Lower|Upper)Place", 30, 0.01));
+
+        testProtocol(protocol, action, trackers(), 5, 1);
+    }
+
+    @Test
+    void protocol4() {
+        Action action = mock(Action.class);
+
+        Protocol protocol = new Protocol();
+        protocol.action = action;
+        protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", "ToLowerPlace", 30, 0.01));
+
+        testProtocol(protocol, action, trackers(), 5, 0);
+    }
+
+    @Test
+    void protocol5() {
+        Action action = mock(Action.class);
+
+        Protocol protocol = new Protocol();
+        protocol.action = action;
+        protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", "ToUpperPlace", 30, 0.01));
+
+        testProtocol(protocol, action, trackers(), 5, 1);
+    }
+
+    void testProtocol(Protocol protocol, Action action, Map<String, Sentinel.Tracker> trackers, int poolSize, int expected) {
+        AgentPool pool = mock(AgentPool.class);
+        try (MockedStatic<AgentPool> agentPool = Mockito.mockStatic(AgentPool.class)) {
+            agentPool.when(AgentPool::lookup).thenReturn(pool);
+            when(pool.getCurrentPoolSize()).thenReturn(poolSize);
+
+            protocol.run(trackers);
+            verify(action, times(expected)).trigger(trackers);
+        }
+    }
+
+    Map<String, Sentinel.Tracker> trackers() {
+        Sentinel.Tracker agent1 = new Sentinel.Tracker("MobileAgent-01");
+        agent1.setAgentId("Agent-1234-testing1.txt");
+        agent1.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+        agent1.incrementTimer(1);
+        agent1.incrementTimer(5);
+
+        Sentinel.Tracker agent2 = new Sentinel.Tracker("MobileAgent-02");
+        agent2.setAgentId("Agent-2345-testing2.txt");
+        agent2.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+        agent2.incrementTimer(1);
+        agent2.incrementTimer(15);
+
+        Sentinel.Tracker agent3 = new Sentinel.Tracker("MobileAgent-03");
+        agent3.setAgentId("Agent-3456-testing3.txt");
+        agent3.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+        agent3.incrementTimer(1);
+        agent3.incrementTimer(9);
+
+        Sentinel.Tracker agent4 = new Sentinel.Tracker("MobileAgent-04");
+        agent4.setAgentId("Agent-4567-testing4.txt");
+        agent4.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
+        agent4.incrementTimer(1);
+        agent4.incrementTimer(35);
+
+        Sentinel.Tracker agent5 = new Sentinel.Tracker("MobileAgent-05");
+        agent5.setAgentId("Agent-5678-testing5.txt");
+        agent5.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
+        agent5.incrementTimer(1);
+        agent5.incrementTimer(7);
+
+        return Map.of(
+                "MobileAgent-01", agent1,
+                "MobileAgent-02", agent2,
+                "MobileAgent-03", agent3,
+                "MobileAgent-04", agent4,
+                "MobileAgent-05", agent5);
     }
 
 }
