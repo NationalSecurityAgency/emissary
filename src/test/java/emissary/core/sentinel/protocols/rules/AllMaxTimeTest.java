@@ -107,7 +107,7 @@ class AllMaxTimeTest extends UnitTest {
         testRule(new AllMaxTime("rule", TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE, false);
     }
 
-    void testRule(Rule rule, List<Protocol.PlaceAgentStats> stats, int poolSize, boolean expected){
+    void testRule(Rule rule, List<Protocol.PlaceAgentStats> stats, int poolSize, boolean expected) {
         try (MockedStatic<AgentPool> agentPool = Mockito.mockStatic(AgentPool.class)) {
             AgentPool pool = mock(AgentPool.class);
             agentPool.when(AgentPool::lookup).thenReturn(pool);
