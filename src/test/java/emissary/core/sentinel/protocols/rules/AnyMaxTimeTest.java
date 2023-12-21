@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class AnyMaxTimeTest extends UnitTest {
 
     Collection<Protocol.PlaceAgentStats> placeAgentStats;
-    final String TO_UPPER_LOWER_PATTER = "To(?:Lower|Upper)Place";
+    final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
     final String TO_LOWER_PLACE = "ToLowerPlace";
     final String TO_UPPER_PLACE = "ToUpperPlace";
     final int DEFAULT_POOL_SIZE = 5;
@@ -69,22 +69,22 @@ class AnyMaxTimeTest extends UnitTest {
 
     @Test
     void condition1() {
-        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE, true);
+        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE, true);
     }
 
     @Test
     void condition2() {
-        testRule(new AnyMaxTime("rule1", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
+        testRule(new AnyMaxTime("rule1", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
     }
 
     @Test
     void condition3() {
-        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE, false);
+        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE, false);
     }
 
     @Test
     void condition4() {
-        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
+        testRule(new AnyMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
     }
 
     @Test

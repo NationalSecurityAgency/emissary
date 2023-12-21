@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 class AllMaxTimeTest extends UnitTest {
 
     Collection<Protocol.PlaceAgentStats> placeAgentStats;
-    final String TO_UPPER_LOWER_PATTER = "To(?:Lower|Upper)Place";
+    final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
     final String TO_LOWER_PLACE = "ToLowerPlace";
     final String TO_UPPER_PLACE = "ToUpperPlace";
     final int DEFAULT_POOL_SIZE = 5;
@@ -69,12 +69,12 @@ class AllMaxTimeTest extends UnitTest {
 
     @Test
     void condition1() {
-        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE, true);
+        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE, true);
     }
 
     @Test
     void condition2() {
-        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
+        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), stats(), DEFAULT_POOL_SIZE + 1, false);
     }
 
     @Test
@@ -89,17 +89,17 @@ class AllMaxTimeTest extends UnitTest {
 
     @Test
     void condition5() {
-        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE, false);
+        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0), stats(), DEFAULT_POOL_SIZE, false);
     }
 
     @Test
     void condition6() {
-        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT + 1, 0.75), stats(), DEFAULT_POOL_SIZE, false);
+        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 0.75), stats(), DEFAULT_POOL_SIZE, false);
     }
 
     @Test
     void condition7() {
-        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTER, DEFAULT_TIME_LIMIT, 0.5), stats(), DEFAULT_POOL_SIZE, true);
+        testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 0.5), stats(), DEFAULT_POOL_SIZE, true);
     }
 
     @Test

@@ -44,7 +44,7 @@ class ProtocolTest extends UnitTest {
     Rule rule1 = mock(Rule.class);
     Action action = mock(Action.class);
     Map<String, Sentinel.Tracker> trackers;
-    final String TO_UPPER_LOWER_PATTER = "To(?:Lower|Upper)Place";
+    final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
     final String TO_LOWER_PLACE = "ToLowerPlace";
     final String TO_UPPER_PLACE = "ToUpperPlace";
     final int DEFAULT_POOL_SIZE = 5;
@@ -150,8 +150,8 @@ class ProtocolTest extends UnitTest {
 
         Protocol protocol = new Protocol();
         protocol.action = action;
-        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTER, 5, 1.0));
-        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTER, 30, 0.2));
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 30, 0.2));
 
         testProtocol(protocol, action, trackers(), DEFAULT_POOL_SIZE, 1);
         testProtocol(protocol, action, trackers(), DEFAULT_POOL_SIZE + 1, 0);
@@ -163,8 +163,8 @@ class ProtocolTest extends UnitTest {
 
         Protocol protocol = new Protocol();
         protocol.action = action;
-        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTER, 5, 1.0));
-        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTER, 40, 0.2));
+        protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
+        protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 40, 0.2));
 
         testProtocol(protocol, action, trackers(), DEFAULT_POOL_SIZE, 0);
     }
@@ -175,7 +175,7 @@ class ProtocolTest extends UnitTest {
 
         Protocol protocol = new Protocol();
         protocol.action = action;
-        protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_LOWER_PATTER, 30, 0.01));
+        protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_LOWER_PATTERN, 30, 0.01));
 
         testProtocol(protocol, action, trackers(), DEFAULT_POOL_SIZE, 1);
     }
