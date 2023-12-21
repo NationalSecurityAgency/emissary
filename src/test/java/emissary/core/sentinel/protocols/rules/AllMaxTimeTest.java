@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,49 +83,50 @@ class AllMaxTimeTest extends UnitTest {
 
         @Test
         void condition1() {
-            testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), DEFAULT_POOL_SIZE, true);
+            assertTrue(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition2() {
-            testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0), DEFAULT_POOL_SIZE + 1, false);
+            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0, DEFAULT_POOL_SIZE + 1));
         }
 
         @Test
         void condition3() {
-            testRule(new AllMaxTime("rule", TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 0.5), DEFAULT_POOL_SIZE, true);
+            assertTrue(testRule(TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 0.5, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition4() {
-            testRule(new AllMaxTime("rule", TO_UPPER_PLACE, DEFAULT_TIME_LIMIT, 0.75), DEFAULT_POOL_SIZE, false);
+            assertFalse(testRule(TO_UPPER_PLACE, DEFAULT_TIME_LIMIT, 0.75, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition5() {
-            testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0), DEFAULT_POOL_SIZE, false);
+            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition6() {
-            testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 0.75), DEFAULT_POOL_SIZE, false);
+            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 0.75, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition7() {
-            testRule(new AllMaxTime("rule", TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 0.5), DEFAULT_POOL_SIZE, true);
+            assertTrue(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 0.5, DEFAULT_POOL_SIZE));
         }
 
         @Test
         void condition8() {
-            testRule(new AllMaxTime("rule", TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 1.0), DEFAULT_POOL_SIZE, false);
+            assertFalse(testRule(TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 1.0, DEFAULT_POOL_SIZE));
         }
 
-        void testRule(Rule rule, int poolSize, boolean expected) {
+        boolean testRule(String matcher, int time, double threshold, int poolSize) {
+            Rule rule = new AllMaxTime("rule", matcher, time, threshold);
             try (MockedStatic<AgentPool> agentPool = Mockito.mockStatic(AgentPool.class)) {
                 agentPool.when(AgentPool::lookup).thenReturn(pool);
                 when(pool.getCurrentPoolSize()).thenReturn(poolSize);
-                assertEquals(expected, rule.condition(stats));
+                return rule.condition(stats);
             }
         }
 
@@ -142,6 +142,5 @@ class AllMaxTimeTest extends UnitTest {
 
             return List.of(lowerStats, upperStats);
         }
-
     }
 }
