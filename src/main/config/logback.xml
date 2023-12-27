@@ -36,9 +36,9 @@
             <message>[ignore]</message>
           </fieldNames>
         </encoder>
-        <file>localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log</file>
+        <file>${PROJECT_BASE}/localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-          <fileNamePattern>localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
+          <fileNamePattern>${PROJECT_BASE}/localoutput/${emissary.node.name}-${emissary.node.port}-object-trace.log.%d{yyyyMMdd-HHmm}</fileNamePattern>
         </rollingPolicy>
       </appender>
 
