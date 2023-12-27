@@ -12,11 +12,13 @@ import emissary.core.sentinel.protocols.rules.AnyMaxTime;
 import emissary.core.sentinel.protocols.rules.Rule;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
+import emissary.pool.AgentPool;
 import emissary.test.core.junit5.UnitTest;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -40,13 +42,16 @@ import static org.mockito.Mockito.when;
 class ProtocolTest extends UnitTest {
 
     Protocol protocol;
-    Rule rule1 = mock(Rule.class);
-    Action action = mock(Action.class);
+    Rule rule1;
+    Action action;
     Map<String, Sentinel.Tracker> trackers;
 
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
+
+        rule1 = mock(Rule.class);
+        action = mock(Action.class);
 
         protocol = new Protocol();
         protocol.action = action;
@@ -136,6 +141,132 @@ class ProtocolTest extends UnitTest {
             mapper.readTree(parser);
         } catch (IOException e) {
             fail(e);
+        }
+    }
+
+    @Nested
+    class RunTest extends UnitTest {
+
+        final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
+        final String TO_LOWER_PLACE = "ToLowerPlace";
+        final String TO_UPPER_PLACE = "ToUpperPlace";
+        final int DEFAULT_POOL_SIZE = 5;
+
+        Action action;
+        AgentPool pool;
+        Map<String, Sentinel.Tracker> trackers;
+
+        @BeforeEach
+        public void setUp() throws Exception {
+            super.setUp();
+            action = mock(Action.class);
+            pool = mock(AgentPool.class);
+            trackers = trackers();
+        }
+
+        @Test
+        void protocol1() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 30, 0.2));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+        }
+
+        @Test
+        void protocol2() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 40, 0.2));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+        }
+
+        @Test
+        void protocol3() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_LOWER_PATTERN, 30, 0.01));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+        }
+
+        @Test
+        void protocol4() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_LOWER_PLACE, 30, 0.01));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+        }
+
+        @Test
+        void protocol5() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_PLACE, 30, 0.01));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+        }
+
+        @Test
+        void protocol6() {
+            Protocol protocol = new Protocol();
+            protocol.action = action;
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 30, 0.2));
+
+            testProtocol(protocol, DEFAULT_POOL_SIZE + 1, 0);
+        }
+
+        void testProtocol(Protocol protocol, int poolSize, int expected) {
+            try (MockedStatic<AgentPool> agentPool = Mockito.mockStatic(AgentPool.class)) {
+                agentPool.when(AgentPool::lookup).thenReturn(pool);
+                when(pool.getCurrentPoolSize()).thenReturn(poolSize);
+                protocol.run(trackers);
+                verify(action, times(expected)).trigger(trackers);
+            }
+        }
+
+        Map<String, Sentinel.Tracker> trackers() {
+            Sentinel.Tracker agent1 = new Sentinel.Tracker("MobileAgent-01");
+            agent1.setAgentId("Agent-1234-testing1.txt");
+            agent1.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+            agent1.incrementTimer(1); // init
+            agent1.incrementTimer(5);
+
+            Sentinel.Tracker agent2 = new Sentinel.Tracker("MobileAgent-02");
+            agent2.setAgentId("Agent-2345-testing2.txt");
+            agent2.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+            agent2.incrementTimer(1); // init
+            agent2.incrementTimer(15);
+
+            Sentinel.Tracker agent3 = new Sentinel.Tracker("MobileAgent-03");
+            agent3.setAgentId("Agent-3456-testing3.txt");
+            agent3.setDirectoryEntryKey("http://host.domain.com:8001/ToLowerPlace");
+            agent3.incrementTimer(1); // init
+            agent3.incrementTimer(9);
+
+            Sentinel.Tracker agent4 = new Sentinel.Tracker("MobileAgent-04");
+            agent4.setAgentId("Agent-4567-testing4.txt");
+            agent4.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
+            agent4.incrementTimer(1); // init
+            agent4.incrementTimer(35);
+
+            Sentinel.Tracker agent5 = new Sentinel.Tracker("MobileAgent-05");
+            agent5.setAgentId("Agent-5678-testing5.txt");
+            agent5.setDirectoryEntryKey("http://host.domain.com:8001/ToUpperPlace");
+            agent5.incrementTimer(1); // init
+            agent5.incrementTimer(7);
+
+            return Map.of(
+                    "MobileAgent-01", agent1,
+                    "MobileAgent-02", agent2,
+                    "MobileAgent-03", agent3,
+                    "MobileAgent-04", agent4,
+                    "MobileAgent-05", agent5);
         }
     }
 

@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
+import java.util.List;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public abstract class Rule {
 
@@ -61,7 +63,9 @@ public abstract class Rule {
      * @return true if conditions are met, false otherwise
      */
     public boolean condition(Collection<Protocol.PlaceAgentStats> placeAgentStats) {
-        return placeAgentStats.stream().filter(p -> place.matcher(p.getPlace()).matches()).anyMatch(p -> overThreshold(p) && overTimeLimit(p));
+        List<Protocol.PlaceAgentStats> filtered =
+                placeAgentStats.stream().filter(p -> place.matcher(p.getPlace()).matches()).collect(Collectors.toList());
+        return overThreshold(filtered) && overTimeLimit(filtered);
     }
 
     /**
@@ -70,10 +74,11 @@ public abstract class Rule {
      * @param placeAgentStats the stats of a place that is currently processing
      * @return true if the number of mobile agents stuck on the place is over the threshold, false otherwise
      */
-    protected boolean overThreshold(Protocol.PlaceAgentStats placeAgentStats) {
+    protected boolean overThreshold(Collection<Protocol.PlaceAgentStats> placeAgentStats) {
+        int count = placeAgentStats.stream().mapToInt(Protocol.PlaceAgentStats::getCount).sum();
         int poolSize = getAgentCount();
-        logger.debug("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, placeAgentStats.getCount(), poolSize, threshold);
-        return (double) placeAgentStats.getCount() / poolSize >= this.threshold;
+        logger.debug("Testing threshold for place={}, counter={}, poolSize={}, threshold={}", place, count, poolSize, threshold);
+        return (double) count / poolSize >= this.threshold;
     }
 
     /**
@@ -95,7 +100,7 @@ public abstract class Rule {
      * @param placeAgentStats the stats of a place that is currently processing
      * @return true if the places in mobile agents are over the configured time limit, false otherwise
      */
-    protected abstract boolean overTimeLimit(Protocol.PlaceAgentStats placeAgentStats);
+    protected abstract boolean overTimeLimit(Collection<Protocol.PlaceAgentStats> placeAgentStats);
 
     @Override
     public String toString() {
