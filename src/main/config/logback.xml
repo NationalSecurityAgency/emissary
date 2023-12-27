@@ -20,7 +20,7 @@
     </encoder>
   </appender>
 
-  <!-- Enable output metrics logging by creating an environment variable of "ObjectTrace=true" -->
+  <!-- Enable output metrics logging by creating an environment variable of "LOG_OBJECT_TRACE=true" -->
   <if condition="&quot;${LOG_OBJECT_TRACE}&quot;.equals(&quot;true&quot;)">
     <then>
       <appender name="OBJECT-TRACE" class="emissary.util.CustomRolloverLogbackAppender">
