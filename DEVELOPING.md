@@ -295,7 +295,7 @@ additional things to consider when developing:
 
 ### Local Mega Linter validation and auto fix
 The project leverages [MegaLinter](https://github.com/marketplace/actions/megalinter) as a GitHub action to run across 
-changed files in PR's and the entire codebase on merge. To run the same linting rule set locally, follow the steps bellow:
+changed files in PR's and the entire code-base on merge. To run the same linting rule set locally, follow the steps below:
 Instructions are derived from [MegaLinter Runner Documentation](https://megalinter.io/latest/mega-linter-runner/)
 
 1) Install [Node Package Manager (NPM)](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
