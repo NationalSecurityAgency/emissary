@@ -8,6 +8,7 @@ import emissary.util.ShortNameComparator;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ import javax.annotation.Nullable;
 import static emissary.core.Form.PREFIXES_LANG;
 import static emissary.core.Form.TEXT;
 import static emissary.core.Form.UNKNOWN;
+import static emissary.core.constants.Parameters.FILEXT;
+import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 
 public class DropOffUtil {
@@ -145,6 +148,7 @@ public class DropOffUtil {
             if (this.maxFilextLen < 0) {
                 this.maxFilextLen = Integer.MAX_VALUE;
             }
+
         } else {
             logger.debug("Configuration is null for DropOffUtil, using defaults");
             this.executrix = new Executrix();
@@ -895,32 +899,75 @@ public class DropOffUtil {
     }
 
     /**
-     * Extracts from the provided {@link IBaseDataObject} the last file extension from each value in the "Original-Filename"
-     * parameter, if that value contains "." before its last character. If one or more file extensions are extracted, the
-     * IBaseDataObject's "FILEXT" parameter is set as the unique set of extracted file extensions, converted to lowercase.
+     * Utilizes the static methods getFullFilepathsFromParams and getFileExtensions to extract the file extensions from all
+     * the filenames of the object of a given {@link IBaseDataObject}. If one or more file extensions are extracted, the
+     * IBaseDataObject's FILEXT parameter is set as the unique set of extracted file extensions, converted to lowercase.
      *
      * @param p IBaseDataObject to process
      *
      */
     void extractUniqueFileExtensions(IBaseDataObject p) {
-        if (p.hasParameter(ORIGINAL_FILENAME)) {
-            final Set<String> extensions = new HashSet<>();
-            for (Object filename : p.getParameter(ORIGINAL_FILENAME)) {
-                final String fn = (String) filename;
-                if (StringUtils.isNotEmpty(fn) && fn.lastIndexOf('.') > -1) {
-                    final int pos = fn.lastIndexOf('.') + 1;
-                    if (pos < fn.length()) {
-                        final String fext = fn.substring(pos).toLowerCase();
-                        if (fext.length() > 0 && fext.length() <= this.maxFilextLen) {
-                            extensions.add(fext);
-                        }
+        List<String> filenames = getFullFilepathsFromParams(p);
+        Set<String> extensions = getFileExtensions(filenames, this.maxFilextLen);
+        if (!extensions.isEmpty()) {
+            p.setParameter(FILEXT, extensions);
+        }
+    }
+
+    /**
+     * Given a list of filenames, extract and return a set of non-blank file extensions converted to lowercase.
+     *
+     * @param filenames The list of filenames to examine
+     * @param maxFilextLen The maximum size we want a file extension to be
+     * @return A set of unique file extensions from the filename list
+     */
+    public static Set<String> getFileExtensions(List<String> filenames, int maxFilextLen) {
+        final Set<String> extensions = new HashSet<>();
+        for (String filename : filenames) {
+
+            // add the file extension if it is smaller than maxFileextLen
+            final String fext = FilenameUtils.getExtension(filename);
+            if (StringUtils.isNotBlank(fext) && fext.length() <= maxFilextLen) {
+                extensions.add(fext.toLowerCase());
+            }
+        }
+        return extensions;
+    }
+
+    /**
+     * Checks the Original-Filename and FILE_ABSOLUTEPATH for the filename of the object. Returns a list with the non-empty
+     * strings found in these fields. If nothing is found in either field, return an empty list.
+     *
+     * @param d The IBDO
+     * @return The list of filenames found in the field Original-Filename or FILE_ABSOLUTEPATH
+     */
+    public static List<String> getFullFilepathsFromParams(IBaseDataObject d) {
+        return getFullFilepathsFromParams(d, new String[] {ORIGINAL_FILENAME, FILE_ABSOLUTEPATH});
+    }
+
+    /**
+     * Uses the specified list of fields to check for filenames of the object. Returns a list with the non-empty strings
+     * found in these fields. If nothing is found in either field, return an empty list.
+     *
+     * @param d The IBDO
+     * @param filenameFields The list of fields on the IBDO to check
+     * @return The list of filenames found in the list of fields on the IBDO
+     */
+    public static List<String> getFullFilepathsFromParams(IBaseDataObject d, String[] filenameFields) {
+
+        List<String> filenames = new ArrayList<>();
+
+        for (String ibdoField : filenameFields) {
+            if (d.hasParameter(ibdoField)) {
+                for (Object filename : d.getParameter(ibdoField)) {
+                    String stringFileName = (String) filename;
+                    if (StringUtils.isNotBlank(stringFileName)) {
+                        filenames.add(stringFileName);
                     }
                 }
             }
-            if (!extensions.isEmpty()) {
-                p.setParameter("FILEXT", extensions);
-            }
         }
+        return filenames;
     }
 
     /**

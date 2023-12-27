@@ -22,6 +22,8 @@ import java.util.Set;
 
 import static emissary.core.Form.TEXT;
 import static emissary.core.constants.Parameters.EVENT_DATE;
+import static emissary.core.constants.Parameters.FILEXT;
+import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.FILE_DATE;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -525,7 +527,6 @@ class DropOffUtilTest extends UnitTest {
     @Test
     void testExtractUniqueFileExtensions() {
         // these should be constants
-        final String FILEXT = "FILEXT";
         DropOffUtil util = new DropOffUtil();
 
         final IBaseDataObject bdo = new BaseDataObject();
@@ -551,11 +552,75 @@ class DropOffUtilTest extends UnitTest {
     }
 
     @Test
+    void testExtractFileExtensionsWithFullFilepaths() {
+        DropOffUtil util = new DropOffUtil();
+
+        // tests a combination of either FILE_ABSOLUTEPATH and Original-Filename, neither, and both set at once
+        String[] fileAbsolutepaths = {"D:\\Users\\jdoe\\Documents\\Taxes 2023.csv", "", "/paper.abc.zzz",
+                "/home/jdoe/SHARED_D.IR/cat.mov", "/home/user/.bashrc", ""};
+        String[] originalFilenames = {"", "D:\\Users\\jdoe\\interesting.folder\\a.table", "flowers.456.123",
+                "/home/jdoe/SHARED_D.IR/cat", "taxes.thisfileextensionistoolong", ""};
+
+        String[][] extensions = {{"csv"}, {"table"}, {"zzz", "123"}, {"mov"}, {"bashrc"}, {}};
+
+        final IBaseDataObject ibdo = new BaseDataObject();
+
+        for (int i = 0; i < fileAbsolutepaths.length; i++) {
+            ibdo.setParameter(FILE_ABSOLUTEPATH, fileAbsolutepaths[i]);
+            ibdo.setParameter(ORIGINAL_FILENAME, originalFilenames[i]);
+            util.extractUniqueFileExtensions(ibdo);
+            if (extensions[i].length == 0) {
+                assertFalse(ibdo.hasParameter(FILEXT));
+            }
+            for (String extension : extensions[i]) {
+                assertEquals(extensions[i].length, ibdo.getParameter(FILEXT).size(), "Only "
+                        + extensions[i].length + " file extensions should have been extracted");
+                assertTrue(ibdo.getParameter(FILEXT).contains(extension), "FILEXT should be extracted");
+            }
+            // reset for the next test
+            ibdo.clearParameters();
+        }
+    }
+
+    @Test
     void testCleanSpecPath() {
         assertEquals("/this/is/fine", util.cleanSpecPath("/this/is/fine"));
         assertEquals("/this/./is/fine", util.cleanSpecPath("/this/../is/fine"));
         assertEquals("/this/./is/./fine", util.cleanSpecPath("/this/../is/../fine"));
         assertEquals("/this/./././/./is/fine", util.cleanSpecPath("/this/....../../..//./is/fine"));
+    }
+
+    @Test
+    void testGetFullFilepathsFromParams() {
+        IBaseDataObject ibdo = new BaseDataObject();
+        List<String> bestFilenames;
+
+        ibdo.setParameter(ORIGINAL_FILENAME, "");
+        ibdo.setParameter(FILE_ABSOLUTEPATH, "");
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
+        assertEquals(0, bestFilenames.size(), "No filename should have been found");
+
+        ibdo.setParameter(FILE_ABSOLUTEPATH, "theOtherFile.csv");
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
+        assertEquals(1, bestFilenames.size(), "There should be one filename extracted");
+        assertEquals("theOtherFile.csv", bestFilenames.get(0), "The FILE_ABSOLUTEPATH should have been extracted");
+
+        ibdo.setParameter(ORIGINAL_FILENAME, "file.docx");
+        bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo);
+        assertEquals(2, bestFilenames.size(), "There should be two filenames extracted");
+        assertEquals("file.docx", bestFilenames.get(0), "The Original-Filename should have been extracted");
+        assertEquals("theOtherFile.csv", bestFilenames.get(1), "The Original-Filename should have been extracted");
+    }
+
+    @Test
+    void getFullFilepathsFromParamsCustomFields() {
+        IBaseDataObject ibdo = new BaseDataObject();
+        ibdo.setParameter("CustomField", "customName.txt");
+        ibdo.setParameter(ORIGINAL_FILENAME, "groceries.xml");
+        List<String> bestFilenames = DropOffUtil.getFullFilepathsFromParams(ibdo, new String[] {"CustomField"});
+
+        assertEquals(1, bestFilenames.size(), "Only one filename should have been extracted");
+        assertEquals("customName.txt", bestFilenames.get(0), "Only the value in CustomField should have been extracted");
     }
 
     private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
