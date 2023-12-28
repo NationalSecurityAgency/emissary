@@ -61,8 +61,6 @@
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.impsort.version>1.8.0</dep.impsort.version>
     <dep.jackson.version>2.13.4</dep.jackson.version>
-    <dep.jakarta.activation-api.version>1.2.2</dep.jakarta.activation-api.version>
-    <dep.jakarta.servlet-api.version>4.0.3</dep.jakarta.servlet-api.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.jaxb.runtime.version>3.0.1</dep.jaxb.runtime.version>
     <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
@@ -182,16 +180,6 @@
         <groupId>io.dropwizard.metrics</groupId>
         <artifactId>metrics-servlets</artifactId>
         <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.activation</groupId>
-        <artifactId>jakarta.activation-api</artifactId>
-        <version>${dep.jakarta.activation-api.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>${dep.jakarta.servlet-api.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
@@ -377,14 +365,6 @@
       <artifactId>metrics-servlets</artifactId>
     </dependency>
     <dependency>
-      <groupId>jakarta.activation</groupId>
-      <artifactId>jakarta.activation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
@@ -437,12 +417,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty.toolchain</groupId>
-          <artifactId>jetty-servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -481,8 +455,8 @@
       <artifactId>jersey-mvc</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -491,8 +465,8 @@
       <artifactId>jersey-mvc-mustache</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -524,6 +498,12 @@
       <groupId>org.glassfish.jersey.test-framework.providers</groupId>
       <artifactId>jersey-test-framework-provider-jetty</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
