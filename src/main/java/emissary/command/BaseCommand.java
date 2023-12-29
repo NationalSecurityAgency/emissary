@@ -5,6 +5,7 @@ import emissary.command.converter.ProjectBaseConverter;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
 
+import ch.qos.logback.classic.ClassicConstants;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -211,7 +212,7 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     private void doLogbackReinit(LoggerContext loggerContext, String configFilePath) {
-        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, configFilePath);
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, configFilePath);
         loggerContext.reset();
         ContextInitializer newContext = new ContextInitializer(loggerContext);
         try {
