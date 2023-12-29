@@ -1,6 +1,7 @@
 package emissary.place;
 
 import emissary.admin.PlaceStarter;
+import emissary.core.EmissaryException;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
@@ -198,7 +199,8 @@ public class CoordinationPlace extends ServiceProviderPlace {
             List<IBaseDataObject> sprouts = null;
 
             // Like an agent would do it
-            try (TimedResource tr = ResourceWatcher.lookup().starting(getAgent(), p)) {
+            TimedResource tr = resourceWatcherStart(p);
+            try {
                 if (hd) {
                     // Do the normal HD processing
                     sprouts = p.agentProcessHeavyDuty(d);
@@ -211,6 +213,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
                 errorOccurred = true;
             } finally {
+                if (tr != null) {
+                    tr.close();
+                }
                 if (Thread.interrupted()) {
                     logger.warn("Place {} was interrupted during execution.", p);
                 }
@@ -253,6 +258,15 @@ public class CoordinationPlace extends ServiceProviderPlace {
         return sproutCollection;
     }
 
+    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
+        TimedResource tr = TimedResource.EMPTY;
+        try {
+            tr = ResourceWatcher.lookup().starting(getAgent(), place);
+        } catch (EmissaryException ex) {
+            logger.debug("No resource monitoring enabled");
+        }
+        return tr;
+    }
 
     /**
      * Process point when not using HDMobileAgent

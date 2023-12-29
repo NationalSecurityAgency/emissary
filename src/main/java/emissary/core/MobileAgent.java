@@ -340,7 +340,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
-        try (TimedResource timer = resourceWatcherStart(place)) {
+        TimedResource timer = resourceWatcherStart(place);
+        try {
             this.lastPlaceProcessed = place.getDirectoryEntry().getKey();
             if (this.moveErrorsOccurred > 0) {
                 payloadArg.setParameter("AGENT_MOVE_ERRORS", Integer.toString(this.moveErrorsOccurred));
@@ -357,6 +358,9 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             payloadArg.addProcessingError("atPlace(" + place + "): " + problem);
             payloadArg.replaceCurrentForm(ERROR_FORM);
         } finally {
+            if (timer != null) {
+                timer.close();
+            }
             if (!(place instanceof EmptyFormPlace) && payloadArg.currentFormSize() == 0) {
                 logger.error("Place {} left an empty form stack, changing it to ERROR", place);
                 payloadArg.addProcessingError(place + " left an empty form stack");

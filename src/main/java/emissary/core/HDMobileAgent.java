@@ -406,7 +406,8 @@ public class HDMobileAgent extends MobileAgent {
         logger.debug("In atPlaceHD {} with {} payload items", place, payloadListArg.size());
 
         List<IBaseDataObject> ret = Collections.emptyList();
-        try (TimedResource tr = resourceWatcherStart(place)) {
+        TimedResource tr = resourceWatcherStart(place);
+        try {
             // Process and get back a list of sprouted payloads
             lastPlaceProcessed = place.getDirectoryEntry().getKey();
 
@@ -440,6 +441,9 @@ public class HDMobileAgent extends MobileAgent {
                 p.replaceCurrentForm(MobileAgent.ERROR_FORM);
             }
         } finally {
+            if (tr != null) {
+                tr.close();
+            }
             if (!(place instanceof EmptyFormPlace)) {
                 for (final IBaseDataObject p : payloadListArg) {
                     if (p.currentFormSize() == 0) {
