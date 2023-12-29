@@ -719,7 +719,7 @@
           <configuration>
             <showWarnings>${maven.compiler.showWarnings}</showWarnings>
             <compilerArgs>
-              <arg>-Xlint:-path,unchecked</arg>
+              <arg>-Xlint:all</arg>
             </compilerArgs>
             <release>${maven.compiler.release}</release>
           </configuration>
