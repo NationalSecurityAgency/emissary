@@ -8,13 +8,13 @@ import emissary.test.core.junit5.IdentificationTest;
 import emissary.test.core.junit5.LogbackTester;
 import emissary.util.io.ResourceReader;
 
-import ch.qos.logback.classic.Level;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.fail;
@@ -47,7 +47,7 @@ class UnixFilePlaceTest extends IdentificationTest {
                 fail("Cannot run test " + resource, ex);
             }
             // the initialized values passed in here indicate that no exception has been thrown
-            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+            logbackTester.checkLogList(Collections.emptyList());
         }
     }
 
