@@ -26,16 +26,6 @@ jobs:
         env:
           LOG_LEVEL: NOTICE
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXTENDS: .github/linters/.mega-linter.yml
           # setting this to false means that only changed files will be scanned in each commit
           VALIDATE_ALL_CODEBASE: ${{ github.event_name != 'pull_request' }}
-          # Enable Linters to run
-          VALIDATE_GITHUB_ACTIONS: true
-          # VALIDATE_GOOGLE_JAVA_FORMAT: true
-          JAVA_FILE_NAME: ../../contrib/checkstyle.xml
-          VALIDATE_DOCKERFILE_HADOLINT: true
-          DOCKERFILE_HADOLINT_FILE_NAME: ../../contrib/docker/.hadolint.yaml
-          # VALIDATE_MARKDOWN: true
-          VALIDATE_XML: true
-          VALIDATE_YAML: true
-          FILTER_REGEX_EXCLUDE: .*contrib/helm.*
-          GITHUB_COMMENT_REPORTER: false
