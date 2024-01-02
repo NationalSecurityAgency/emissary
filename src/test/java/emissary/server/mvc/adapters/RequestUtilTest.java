@@ -2,11 +2,11 @@ package emissary.server.mvc.adapters;
 
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.servlet.ServletRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.ServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;

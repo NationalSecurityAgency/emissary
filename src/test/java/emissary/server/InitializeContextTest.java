@@ -4,10 +4,9 @@ import emissary.core.EmissaryException;
 import emissary.directory.EmissaryNode;
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.servlet.ServletContextEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import javax.servlet.ServletContextEvent;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

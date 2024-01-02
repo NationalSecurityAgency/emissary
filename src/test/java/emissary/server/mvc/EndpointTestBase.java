@@ -3,14 +3,13 @@ package emissary.server.mvc;
 import emissary.core.Namespace;
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.ws.rs.core.Application;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.mvc.mustache.MustacheMvcFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.jupiter.api.AfterAll;
-
-import javax.ws.rs.core.Application;
 
 public abstract class EndpointTestBase extends JerseyTest {
 

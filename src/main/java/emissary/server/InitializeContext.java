@@ -3,11 +3,10 @@ package emissary.server;
 import emissary.core.EmissaryException;
 import emissary.directory.EmissaryNode;
 
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 
 /**
  * Initialize the application from inside the webapp context This initializer performs the following actions

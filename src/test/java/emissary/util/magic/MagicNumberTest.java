@@ -2,9 +2,8 @@ package emissary.util.magic;
 
 import emissary.test.core.junit5.UnitTest;
 
+import jakarta.xml.bind.DatatypeConverter;
 import org.junit.jupiter.api.Test;
-
-import javax.xml.bind.DatatypeConverter;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

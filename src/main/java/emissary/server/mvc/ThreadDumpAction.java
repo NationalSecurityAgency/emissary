@@ -2,6 +2,10 @@ package emissary.server.mvc;
 
 import emissary.util.Version;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.glassfish.jersey.server.mvc.Template;
 
 import java.lang.management.ManagementFactory;
@@ -12,10 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 @Path("")
 // context is emissary
