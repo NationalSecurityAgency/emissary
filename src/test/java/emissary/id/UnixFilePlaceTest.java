@@ -32,7 +32,7 @@ class UnixFilePlaceTest extends IdentificationTest {
     }
 
     @Test
-    void testDisabled() throws IOException {
+    void testException() throws IOException {
 
         String resource = "emissary/id/UnixFilePlaceTest/UNKNOWN@2.dat";
         try (LogbackTester logbackTester = new LogbackTester(UnixFilePlace.class.getName())) {
