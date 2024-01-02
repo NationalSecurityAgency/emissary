@@ -10,9 +10,8 @@ import emissary.util.io.ResourceReader;
 
 import ch.qos.logback.classic.Level;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,30 +31,24 @@ class UnixFilePlaceTest extends IdentificationTest {
         return new UnixFilePlace();
     }
 
-    @ParameterizedTest
-    @MethodSource("data")
-    void testDisabled(String resource) throws IOException {
+    @Test
+    void testDisabled() throws IOException {
 
-        if (resource.equals("emissary/id/UnixFilePlaceTest/UNKNOWN@2.dat")) {
-            try (LogbackTester logbackTester = new LogbackTester(UnixFilePlace.class.getName())) {
-                try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
-                    byte[] data = IOUtils.toByteArray(doc);
-                    IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
-                    processPreHook(payload, resource);
-                    place.agentProcessHeavyDuty(payload);
-                    processPostHook(payload, resource);
-                } catch (Exception ex) {
-                    logger.error("Error running test {}", resource, ex);
-                    fail("Cannot run test " + resource, ex);
-                }
-                // the initialized values passed in here indicate that no exception has been thrown
-                logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+        String resource = "emissary/id/UnixFilePlaceTest/UNKNOWN@2.dat";
+        try (LogbackTester logbackTester = new LogbackTester(UnixFilePlace.class.getName())) {
+            try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
+                byte[] data = IOUtils.toByteArray(doc);
+                IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
+                processPreHook(payload, resource);
+                place.agentProcessHeavyDuty(payload);
+                processPostHook(payload, resource);
+            } catch (Exception ex) {
+                logger.error("Error running test {}", resource, ex);
+                fail("Cannot run test " + resource, ex);
             }
+            // the initialized values passed in here indicate that no exception has been thrown
+            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
         }
-
-        logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
-
-
     }
 
 }
