@@ -3,7 +3,7 @@
   <head>
     <title>Directory Listing</title>
     <link rel="stylesheet" href="/css/lib/bootstrap.min.css">
-      <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
+    <link type="text/css" rel="stylesheet" href="/css/emissary.css"/>
   </head>
 
   <body>
@@ -11,33 +11,43 @@
   <main class="container">
     <h2>Directory Listing</h2>
     <h6>{{directory-label}}</h6>
-    <p/>
-    <h4>Directory Entries</h4>
-    <table class="table table-striped">
-       <thead>
-          <tr>
-              <th>Key</th>
-              <th>Cost</th>
-              <th>Quality</th>
-              <th title="Computed from Cost and quality">Expense</th>
-              <th title="HH:MM:SS">Age</th>
-          </tr>
-       </thead>
-       <tbody>
+    <p></p>
+      <div class="row">
+        <div class="col-md-10">
+          <h4>Directory Entries</h4>
+        </div>
+        <div class="col-md-2">
+          <label>
+            <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for Place...">
+          </label>
+        </div>
+      </div>
+    <table class="table table-striped" id="tableToSearch">
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Cost</th>
+          <th>Quality</th>
+          <th title="Computed from Cost and quality">Expense</th>
+          <th title="HH:MM:SS">Age</th>
+        </tr>
+      </thead>
+      <tbody>
        {{#entrykeys}}
          {{#dataId}}<tr class="sep"><td colspan="6">{{.}}</td></tr>{{/dataId}}
          {{#entrylist}}
          <tr class='{{stripe}}'>
-            <td>{{key}}</td>
-            <td class="num">{{cost}}</td>
-            <td class="num">{{quality}}</td>
-            <td class="num">{{expense}}</td>
-            <td class="num">{{age}}</td>
+           <td>{{key}}</td>
+           <td class="num">{{cost}}</td>
+           <td class="num">{{quality}}</td>
+           <td class="num">{{expense}}</td>
+           <td class="num">{{age}}</td>
           </tr>
          {{/entrylist}}
        {{/entrykeys}}
-       </tbody>
+      </tbody>
     </table>
+    <p id="empty-message" style="display: none; width: 99%; text-align: center;"><b><i>No places found in table...</i></b></p>
 
     <h4>Peer Directories</h4>
     <ul>
@@ -47,10 +57,10 @@
     </ul>
   </main>
 
-    <script src="/js/lib/jquery.min.js"></script>
-    <script src="/js/lib/popper.min.js"></script>
-    <script src="/js/lib/bootstrap.min.js"></script>
-    <script src="/js/emissary.js" type="text/javascript" ></script>
+  <script src="/js/lib/jquery.min.js"></script>
+  <script src="/js/lib/popper.min.js"></script>
+  <script src="/js/lib/bootstrap.min.js"></script>
+  <script src="/js/emissary.js" type="text/javascript" ></script>
 
   </body>
 </html>
