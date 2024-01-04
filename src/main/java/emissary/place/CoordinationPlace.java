@@ -199,8 +199,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
             List<IBaseDataObject> sprouts = null;
 
             // Like an agent would do it
-            TimedResource tr = resourceWatcherStart(p);
-            try {
+            try (TimedResource tr = resourceWatcherStart(p)) {
+                assert tr != null; // to silence an unused resource warning
+
                 if (hd) {
                     // Do the normal HD processing
                     sprouts = p.agentProcessHeavyDuty(d);
@@ -213,9 +214,6 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
                 errorOccurred = true;
             } finally {
-                if (tr != null) {
-                    tr.close();
-                }
                 if (Thread.interrupted()) {
                     logger.warn("Place {} was interrupted during execution.", p);
                 }
@@ -265,7 +263,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
         } catch (EmissaryException ex) {
             logger.debug("No resource monitoring enabled");
         }
-        return tr;
+        return (tr == null) ? TimedResource.EMPTY : tr;
     }
 
     /**
