@@ -9,6 +9,7 @@ import emissary.test.core.junit5.LogbackTester;
 import emissary.util.io.ResourceReader;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -17,7 +18,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UnixFilePlaceTest extends IdentificationTest {
 
@@ -32,19 +33,16 @@ class UnixFilePlaceTest extends IdentificationTest {
     }
 
     @Test
-    void testException() throws IOException {
+    void testMultiStepRuleAtBottomOfMagicFile() throws Exception {
 
         String resource = "emissary/id/UnixFilePlaceTest/UNKNOWN@2.dat";
         try (LogbackTester logbackTester = new LogbackTester(UnixFilePlace.class.getName())) {
             try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
                 byte[] data = IOUtils.toByteArray(doc);
                 IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
-                processPreHook(payload, resource);
+
                 place.agentProcessHeavyDuty(payload);
-                processPostHook(payload, resource);
-            } catch (Exception ex) {
-                logger.error("Error running test {}", resource, ex);
-                fail("Cannot run test " + resource, ex);
+                assertTrue(StringUtils.isBlank(payload.getProcessingError()), "Expected no processing error");
             }
             // the initialized values passed in here indicate that no exception has been thrown
             logbackTester.checkLogList(Collections.emptyList());
