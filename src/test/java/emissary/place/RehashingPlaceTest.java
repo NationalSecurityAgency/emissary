@@ -20,7 +20,7 @@ class RehashingPlaceTest extends UnitTest {
 
     private static final byte[] configKeyData = ("TGT_HOST = \"myhost.example.com\"\n" + "TGT_PORT = \"9999\"\n"
             + "SERVICE_KEY = \"TPROXY.TRANSFORM.TNAME.http://@{TGT_HOST}:@{TGT_PORT}/TPlaceName$5050\"\n" + "SERVICE_DESCRIPTION = \"test place\"\n")
-                    .getBytes();
+            .getBytes();
 
     @Test
     void testRehash() throws Exception {
