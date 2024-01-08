@@ -611,13 +611,14 @@
         <plugin>
           <groupId>net.revelc.code.formatter</groupId>
           <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.22.0</version>
+          <version>2.23.0</version>
           <configuration>
             <compilerCompliance>${maven.compiler.source}</compilerCompliance>
             <compilerSource>${maven.compiler.source}</compilerSource>
             <compilerTargetPlatform>${maven.compiler.target}</compilerTargetPlatform>
             <configFile>${eclipseFormatterStyle}</configFile>
             <lineEnding>LF</lineEnding>
+            <removeTrailingWhitespace>false</removeTrailingWhitespace>
             <skipCssFormatting>true</skipCssFormatting>
             <skipHtmlFormatting>true</skipHtmlFormatting>
             <skipJsFormatting>true</skipJsFormatting>
