@@ -108,7 +108,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
      */
     protected String checkDifferencesHook(final IBaseDataObject ibdoA, final IBaseDataObject ibdoB, final List<IBaseDataObject> attachmentsA,
             final List<IBaseDataObject> attachmentsB, final String loggingIdentifier) {
-        return PlaceComparisonHelper.checkDifferences(ibdoA, ibdoB, attachmentsA, attachmentsB, loggingIdentifier,
+        return PlaceComparisonHelper.checkDifferences(ibdoB, ibdoA, attachmentsB, attachmentsA, loggingIdentifier,
                 DiffCheckConfiguration.onlyCheckData());
     }
 
