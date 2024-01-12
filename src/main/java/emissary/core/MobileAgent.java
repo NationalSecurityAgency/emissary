@@ -341,6 +341,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
         try (TimedResource timer = resourceWatcherStart(place)) {
+            assert timer != null; // to silence an unused resource warning
+
             this.lastPlaceProcessed = place.getDirectoryEntry().getKey();
             if (this.moveErrorsOccurred > 0) {
                 payloadArg.setParameter("AGENT_MOVE_ERRORS", Integer.toString(this.moveErrorsOccurred));
@@ -393,7 +395,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 logger.debug("No resource monitoring enabled");
             }
         }
-        return tr;
+        return (tr == null) ? TimedResource.EMPTY : tr;
     }
 
     /**
