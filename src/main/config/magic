@@ -17517,9 +17517,3 @@
 >10	byte&0x0B	3		- ADPCM4 encoding
 >10	byte&0x0B	8		- New ADPCM3 encoding
 >10	byte&0x04	4		with resync
-
-#Reproducing issue GitHub issue 887
-
-0       string          GITHUB_ISSUE_NUMBER
-
->20  string    NOT_887             REPRODUCED_BUG

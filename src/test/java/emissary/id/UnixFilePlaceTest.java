@@ -1,5 +1,7 @@
 package emissary.id;
 
+import emissary.config.ConfigUtil;
+import emissary.config.Configurator;
 import emissary.core.DataObjectFactory;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
@@ -26,7 +28,6 @@ class UnixFilePlaceTest extends IdentificationTest {
         return getMyTestParameterFiles(UnixFilePlaceTest.class);
     }
 
-
     @Override
     public IServiceProviderPlace createPlace() throws IOException {
         return new UnixFilePlace();
@@ -34,13 +35,16 @@ class UnixFilePlaceTest extends IdentificationTest {
 
     @Test
     void testMultiStepRuleAtBottomOfMagicFile() throws Exception {
+        ResourceReader rr = new ResourceReader();
+        Configurator configG = ConfigUtil.getConfigInfo(UnixFilePlace.class);
+        configG.addEntry("MAGIC_FILE", rr.getResource(rr.getResourceName(thisPackage, this.getClass().getSimpleName() + "/test.magic")).getFile());
+        place = new UnixFilePlace(configG);
 
-        String resource = "emissary/id/UnixFilePlaceTest/UNKNOWN@2.dat";
+        String resource = rr.getResourceName(thisPackage, this.getClass().getSimpleName() + "/multiStepEndingRule.test");
         try (LogbackTester logbackTester = new LogbackTester(UnixFilePlace.class.getName())) {
-            try (InputStream doc = new ResourceReader().getResourceAsStream(resource)) {
+            try (InputStream doc = rr.getResourceAsStream(resource)) {
                 byte[] data = IOUtils.toByteArray(doc);
                 IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, Form.UNKNOWN);
-
                 place.agentProcessHeavyDuty(payload);
                 assertTrue(StringUtils.isBlank(payload.getProcessingError()), "Expected no processing error");
             }
@@ -48,5 +52,4 @@ class UnixFilePlaceTest extends IdentificationTest {
             logbackTester.checkLogList(Collections.emptyList());
         }
     }
-
 }
