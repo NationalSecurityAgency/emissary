@@ -66,14 +66,13 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     /**
-     * Three-letter time zone IDs often point to multiple timezones. Java 8 uses the timezone over the offset causing
-     * problems with the datetime in verifies. Java 9 fixes this issue. Since 9 isn't released and, even if it was, it would
-     * take some time to transition, a regex strips out the short timezone if there is an offset present.
+     * Three-letter time zone IDs often point to multiple timezones. With Java 9+, there are no longer inconsistencies with
+     * parsing timezones with offsets.
      * <p>
      * See {@link java.util.TimeZone} and {@link java.time.ZoneId#SHORT_IDS}
      */
     @Test
-    void stripThreeLetterTimeZonesWhenThereIsAnOffset() {
+    void parseOffsetWhenThereIsAThreeLetterTimeZone() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][[(]z[)]]]");
 
         // without offset we expect the default ZoneId
@@ -89,11 +88,29 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("Mon, 4 Jan 2016 18:20:30 EST +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30EST+0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30EST +0000", EXPECTED_FULL, pattern);
+
+        // additional tests with ambiguous abbreviations -- they should continue to be ignored and have consistent
+        // behavior
+        test("Mon, 4 Jan 2016 18:20:30 +0000 CST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 ACT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 BST", EXPECTED_FULL, pattern);
+    }
+
+    /**
+     * Test to make sure our code can successfully handle dates with shorter offsets because this bug in java 8 was
+     * resolved: https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8032051
+     */
+    @Test
+    void parseShortOffsets() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-M-d[['T'][ ][/]H[:][/]m[:s][[.]SSS][ ][z][ ][Z][X]]");
+
+        test("2013-12-11T21:25:04+01:00", 1386793504, dtf);
+        test("2013-12-11T21:25:04+01", 1386793504, dtf);
     }
 
     @Test
     void parse_yyyyMMddTHHmmssSSSX() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-M-d[['T'][ ][/]H[:][/]m[:s][[.]SSS][ ][z][ ][Z][XXX]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-M-d[['T'][ ][/]H[:][/]m[:s][[.]SSS][ ][z][ ][Z][X]]");
         test("2016-01-04T18:20:30.000Z", EXPECTED_FULL, pattern);
         test("2016-01-04T18:20:30Z", EXPECTED_FULL, pattern);
         test("2016-01-04T18:20:30+00:00", EXPECTED_FULL, pattern);
