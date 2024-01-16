@@ -158,15 +158,15 @@ public final class IBaseDataObjectXmlHelper {
     }
 
     /**
-     * Creates an XML string from a parent IBaseDataObject and a list of children IBaseDataObjects.
+     * Creates an XML Element from a parent IBaseDataObject and a list of children IBaseDataObjects.
      * 
      * @param parent the parent IBaseDataObject
      * @param children the children IBaseDataObjects.
      * @param initialIbdo the initial IBaseDataObject.
      * @param encoders used to encode ibdo into XML.
-     * @return the XML string.
+     * @return the XML Element.
      */
-    public static String xmlFromIbdo(final IBaseDataObject parent, final List<IBaseDataObject> children,
+    public static Element xmlElementFromIbdo(final IBaseDataObject parent, final List<IBaseDataObject> children,
             final IBaseDataObject initialIbdo, final ElementEncoders encoders) {
         Validate.notNull(parent, "Required: parent != null!");
         Validate.notNull(children, "Required: children != null!");
@@ -206,6 +206,22 @@ public final class IBaseDataObjectXmlHelper {
 
             answersElement.addContent(childElement);
         }
+
+        return rootElement;
+    }
+
+    /**
+     * Creates an XML string from a parent IBaseDataObject and a list of children IBaseDataObjects.
+     * 
+     * @param parent the parent IBaseDataObject
+     * @param children the children IBaseDataObjects.
+     * @param initialIbdo the initial IBaseDataObject.
+     * @param encoders used to encode ibdo into XML.
+     * @return the XML string.
+     */
+    public static String xmlFromIbdo(final IBaseDataObject parent, final List<IBaseDataObject> children,
+            final IBaseDataObject initialIbdo, final ElementEncoders encoders) {
+        final Element rootElement = xmlElementFromIbdo(parent, children, initialIbdo, encoders);
 
         return AbstractJDOMUtil.toString(new Document(rootElement));
     }

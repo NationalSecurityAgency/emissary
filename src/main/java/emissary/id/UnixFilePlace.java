@@ -1,5 +1,6 @@
 package emissary.id;
 
+import emissary.config.Configurator;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.util.UnixFile;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile
@@ -32,7 +34,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
     protected UnixFile unixFileUtil = null;
 
     /**
-     * The remote constructorn
+     * The remote constructor
      */
     public UnixFilePlace(final String cfgInfo, final String dir, final String placeLoc) throws IOException {
         super(cfgInfo, dir, placeLoc);
@@ -44,6 +46,15 @@ public class UnixFilePlace extends emissary.id.IdPlace {
      */
     public UnixFilePlace(final String cfgInfo) throws IOException {
         super(cfgInfo, "TestUnixFilePlace.foo.com:8003");
+        configurePlace();
+    }
+
+    /**
+     * Constructor to build place using the provided Configurator.
+     */
+    public UnixFilePlace(@Nullable Configurator config) throws IOException {
+        super();
+        configG = config != null ? config : configG;
         configurePlace();
     }
 
@@ -99,7 +110,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
 
         try {
             String currentForm = this.unixFileUtil.evaluateByMagicNumber(bytes);
-            if (currentForm != null) {
+            if (currentForm != null && !currentForm.isEmpty()) {
                 if (this.chop && currentForm.indexOf(" ") > 0) {
                     String firstSubstring = currentForm.substring(0, currentForm.indexOf(" "));
                     // chop some things at 2
