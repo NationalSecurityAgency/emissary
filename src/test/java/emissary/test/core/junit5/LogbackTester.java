@@ -10,8 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,19 +47,34 @@ public class LogbackTester implements Closeable {
             final SimplifiedLogEvent event = events.get(i);
             assertEquals(event.level, item.getLevel(), "Levels not equal for element " + i);
             assertEquals(event.message, item.getFormattedMessage(), "Messages not equal for element " + i);
-            if (event.throwable.isEmpty()) {
+            if (event.throwableClassName == null) {
                 assertNull(item.getThrowableProxy(), "Expected no exception for element " + i);
             } else {
                 assertNotNull(item.getThrowableProxy(), "Expected an exception for element " + i);
-                Throwable expected = event.throwable.get();
                 IThrowableProxy proxy = item.getThrowableProxy();
-                assertEquals(expected.getClass().getName(), proxy.getClassName(), "Exception class name not equal for element " + i);
-                assertEquals(expected.getLocalizedMessage(), proxy.getMessage(), "Exception message not equal for element " + i);
+                assertEquals(event.throwableClassName, proxy.getClassName(), "Exception class name not equal for element " + i);
+                assertEquals(event.throwableMessage, proxy.getMessage(), "Exception message not equal for element " + i);
             }
-
         }
     }
 
+    public List<SimplifiedLogEvent> getSimplifiedLogEvents() {
+        final List<SimplifiedLogEvent> simplifiedLogEvents = new ArrayList<>();
+
+        for (int i = 0; i < appender.list.size(); i++) {
+            final ILoggingEvent event = appender.list.get(i);
+
+            if (event.getThrowableProxy() == null) {
+                simplifiedLogEvents.add(new SimplifiedLogEvent(event.getLevel(), event.getFormattedMessage(),
+                        null, null));
+            } else {
+                simplifiedLogEvents.add(new SimplifiedLogEvent(event.getLevel(), event.getFormattedMessage(),
+                        event.getThrowableProxy().getClassName(), event.getThrowableProxy().getMessage()));
+            }
+        }
+
+        return simplifiedLogEvents;
+    }
 
     /**
      * @deprecated Consider using the {@link #checkLogList(List)} overload instead of this version
@@ -90,13 +106,52 @@ public class LogbackTester implements Closeable {
     public static class SimplifiedLogEvent {
         public final Level level;
         public final String message;
-        public final Optional<? extends Throwable> throwable;
+        public final String throwableClassName;
+        public final String throwableMessage;
 
         public SimplifiedLogEvent(Level level, String message, @Nullable Throwable throwable) {
+            this(level, message,
+                    throwable == null ? null : throwable.getClass().getName(),
+                    throwable == null ? null : throwable.getLocalizedMessage());
+        }
+
+        public SimplifiedLogEvent(Level level, String message, String throwableClassName, String throwableMessage) {
+            Validate.notNull(level, "Required: level != null!");
+            Validate.notNull(message, "Required: message != null!");
+            Validate.isTrue((throwableClassName == null && throwableMessage == null) ||
+                    (throwableClassName != null && throwableMessage != null));
+
             this.level = level;
             this.message = message;
-            this.throwable = Optional.ofNullable(throwable);
+            this.throwableClassName = throwableClassName;
+            this.throwableMessage = throwableMessage;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(level, message, throwableClassName, throwableMessage);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SimplifiedLogEvent other = (SimplifiedLogEvent) obj;
+
+            return Objects.equals(level, other.level) &&
+                    Objects.equals(message, other.message) &&
+                    Objects.equals(throwableClassName, other.throwableClassName) &&
+                    Objects.equals(throwableMessage, other.throwableMessage);
+        }
+
+        @Override
+        public String toString() {
+            return super.toString() + " [level=" + level + ", message=" + message + ", throwableClassName="
+                    + throwableClassName + ", throwableMessage=" + throwableMessage + "]";
         }
     }
-
 }

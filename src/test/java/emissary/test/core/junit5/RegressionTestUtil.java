@@ -4,15 +4,19 @@ import emissary.core.BaseDataObject;
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
+import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
 import emissary.core.IBaseDataObjectXmlHelper;
 import emissary.core.channels.FileChannelFactory;
 import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.kff.KffDataObjectHandler;
+import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.util.PlaceComparisonHelper;
 import emissary.util.io.ResourceReader;
+import emissary.util.xml.AbstractJDOMUtil;
 
+import ch.qos.logback.classic.Level;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -36,6 +40,7 @@ import java.util.Set;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -44,6 +49,27 @@ import static org.junit.jupiter.api.Assertions.fail;
  * This class contains utility methods used by RegressionTest.
  */
 public final class RegressionTestUtil {
+    /**
+     * The XML Element name for the log events.
+     */
+    public static final String LOG_NAME = "log";
+    /**
+     * The XML Element name for the SimplifiedLogEvent level attribute.
+     */
+    public static final String LEVEL_NAME = "level";
+    /**
+     * the XML Element name for the SimplifiedLogEvent message attribute.
+     */
+    public static final String MESSAGE_NAME = "message";
+    /**
+     * The XML Element name for the SimplifiedLogEvent throwableClassName attribute.
+     */
+    public static final String THROWABLE_CLASS_NAME = "throwableClassName";
+    /**
+     * The XML Element name for the SimplifiedLogEvent throwableMessage attribute.
+     */
+    public static final String THROWABLE_MESSAGE_NAME = "throwableMessage";
+
     /**
      * XML builder to read XML answer file in
      */
@@ -95,7 +121,7 @@ public final class RegressionTestUtil {
     /**
      * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
      */
-    public static void checkAnswers(final Document answers, final IBaseDataObject payload,
+    public static void checkAnswers(final Document answers, final IBaseDataObject payload, final List<SimplifiedLogEvent> actualSimplifiedLogEvents,
             final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
         final Element parent = root.getChild(ANSWERS);
@@ -108,6 +134,39 @@ public final class RegressionTestUtil {
                 attachments, placeName, DIFF_CHECK);
 
         assertNull(differences, differences);
+
+        final List<SimplifiedLogEvent> expectedSimplifiedLogEvents = getSimplifiedLogEvents(parent);
+
+        assertIterableEquals(expectedSimplifiedLogEvents, actualSimplifiedLogEvents);
+    }
+
+    /**
+     * This method returns any log events from the given XML element.
+     * 
+     * @param answersElement the "answers" XML element that should contain any log events.
+     * @return the list of log events.
+     */
+    public static List<SimplifiedLogEvent> getSimplifiedLogEvents(final Element answersElement) {
+        final List<SimplifiedLogEvent> simplifiedLogEvents = new ArrayList<>();
+
+        final List<Element> answerChildren = answersElement.getChildren();
+
+        for (final Element answerChild : answerChildren) {
+            final String childName = answerChild.getName();
+
+            if (childName.equals(LOG_NAME)) {
+                final Level level = Level.valueOf(answerChild.getChild(LEVEL_NAME).getValue());
+                final String message = answerChild.getChild(MESSAGE_NAME).getValue();
+                final Element throwableClassNameElement = answerChild.getChild(THROWABLE_CLASS_NAME);
+                final Element throwableMessageElement = answerChild.getChild(THROWABLE_MESSAGE_NAME);
+                final String throwableClassName = throwableClassNameElement == null ? null : throwableClassNameElement.getValue();
+                final String throwableMessage = throwableMessageElement == null ? null : throwableMessageElement.getValue();
+
+                simplifiedLogEvents.add(new SimplifiedLogEvent(level, message, throwableClassName, throwableMessage));
+            }
+        }
+
+        return simplifiedLogEvents;
     }
 
     /**
@@ -157,9 +216,28 @@ public final class RegressionTestUtil {
      * @param results for 'answers' section
      */
     public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
-            final List<IBaseDataObject> results, final ElementEncoders encoders) {
+            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders) {
+        final Element rootElement = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, results, initialIbdo, encoders);
+        final Element answerElement = rootElement.getChild(ANSWERS);
+
+        for (SimplifiedLogEvent e : logEvents) {
+            final Element logElement = new Element(LOG_NAME);
+
+            answerElement.addContent(logElement);
+            logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(LEVEL_NAME, e.level.toString())));
+            logElement.addContent(IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(MESSAGE_NAME, e.message)));
+            if (e.throwableClassName != null) {
+                logElement.addContent(
+                        IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_CLASS_NAME, e.throwableClassName)));
+            }
+            if (e.throwableMessage != null) {
+                logElement.addContent(
+                        IBaseDataObjectXmlCodecs.preserve(IBaseDataObjectXmlCodecs.protectedElement(THROWABLE_MESSAGE_NAME, e.throwableMessage)));
+            }
+        }
+
         // Generate the full XML (setup & answers from before & after)
-        final String xmlContent = IBaseDataObjectXmlHelper.xmlFromIbdo(finalIbdo, results, initialIbdo, encoders);
+        final String xmlContent = AbstractJDOMUtil.toString(new Document(rootElement));
         // Write out the XML to disk
         writeXml(resource, xmlContent);
     }
