@@ -1458,6 +1458,7 @@
                   -Xep:TryFailThrowable:WARN \
                   -Xep:Java7ApiChecker:OFF \
                   -Xep:AndroidJdkLibsChecker:OFF \
+                  -Xep:UnnecessaryFinal:OFF \
                   -Xep:InlineMeSuggester:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
