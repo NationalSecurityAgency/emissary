@@ -70,7 +70,7 @@
     <dep.logback.version>1.4.14</dep.logback.version>
     <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
-    <dep.mockito.version>5.4.0</dep.mockito.version>
+    <dep.mockito.version>5.5.0</dep.mockito.version>
     <dep.picocli.version>4.7.4</dep.picocli.version>
     <dep.slf4j.version>2.0.7</dep.slf4j.version>
     <dep.spullara.mustache.compiler.version>0.9.10</dep.spullara.mustache.compiler.version>
