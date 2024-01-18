@@ -22,7 +22,7 @@ class KeyManipulatorTest extends UnitTest {
         assertEquals("http://host.domain.com:8001/thePlace", KeyManipulator.getServiceLocation(t), "Service location");
         assertEquals(5050, KeyManipulator.getExpense(t), "Expense");
         assertEquals("thePlace", KeyManipulator.getServiceClassname(t), "Classname");
-        assertEquals("UNKNOWN::ID", KeyManipulator.getDataID(t), "Data ID");
+        assertEquals("UNKNOWN::ID", KeyManipulator.getDataId(t), "Data ID");
         assertTrue(KeyManipulator.isKeyComplete(t), "Key is complete");
     }
 
@@ -57,7 +57,7 @@ class KeyManipulatorTest extends UnitTest {
 
     @Test
     void testBogusKeys() {
-        assertEquals("::", KeyManipulator.getDataID("THISISATEST"), "Bogus data id");
+        assertEquals("::", KeyManipulator.getDataId("THISISATEST"), "Bogus data id");
         assertFalse(KeyManipulator.isKeyComplete("THISISATEST"), "Incomplete key");
         assertFalse(KeyManipulator.isKeyComplete("THISIS.ATEST"), "Incomplete key");
         assertFalse(KeyManipulator.isKeyComplete("THIS.IS.ATEST"), "Incomplete key");
@@ -143,8 +143,8 @@ class KeyManipulatorTest extends UnitTest {
     @Test
     void testServiceTypeExtraction() {
         final String dataId = "FOO::BAR";
-        assertEquals("BAR", KeyManipulator.getServiceTypeFromDataID(dataId), "Service type from dataID");
-        assertEquals("", KeyManipulator.getServiceTypeFromDataID("FOOBAR"), "Service type from bogus dataID");
+        assertEquals("BAR", KeyManipulator.getServiceTypeFromDataId(dataId), "Service type from dataID");
+        assertEquals("", KeyManipulator.getServiceTypeFromDataId("FOOBAR"), "Service type from bogus dataID");
     }
 
     @Test

@@ -190,10 +190,10 @@ public class Sentinel implements Runnable {
         IMobileAgent mobileAgent = (IMobileAgent) Namespace.lookup(agentKey);
         Tracker trackedAgent = trackers.computeIfAbsent(mobileAgent.getName(), Tracker::new);
         if (mobileAgent.isInUse()) {
-            if (!Objects.equals(mobileAgent.agentID(), trackedAgent.getAgentId())
+            if (!Objects.equals(mobileAgent.agentId(), trackedAgent.getAgentId())
                     || !Objects.equals(mobileAgent.getLastPlaceProcessed(), trackedAgent.getDirectoryEntryKey())) {
                 trackedAgent.clear();
-                trackedAgent.setAgentId(mobileAgent.agentID());
+                trackedAgent.setAgentId(mobileAgent.agentId());
                 trackedAgent.setDirectoryEntryKey(mobileAgent.getLastPlaceProcessed());
             }
             trackedAgent.incrementTimer(pollingInterval);

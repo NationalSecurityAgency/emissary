@@ -90,7 +90,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @param d the entry to add
      */
     public void addEntry(final DirectoryEntry d) {
-        final String dataId = KeyManipulator.getDataID(d.getKey());
+        final String dataId = KeyManipulator.getDataId(d.getKey());
         addEntry(dataId, d);
     }
 
@@ -172,7 +172,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
      * @return the removed entry or null if not found
      */
     public DirectoryEntry removeEntry(final String entryKey) {
-        final String dataId = KeyManipulator.getDataID(entryKey);
+        final String dataId = KeyManipulator.getDataId(entryKey);
         return removeEntry(dataId, entryKey);
     }
 
@@ -279,7 +279,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
     public List<DirectoryEntry> collectAllMatching(final String key) {
         final List<DirectoryEntry> match = new ArrayList<>();
 
-        final String dataId = KeyManipulator.getDataID(key);
+        final String dataId = KeyManipulator.getDataId(key);
         if (dataId.contains("*") || dataId.contains("?")) {
             for (final DirectoryEntryList list : values()) {
                 for (final DirectoryEntry entry : list) {
