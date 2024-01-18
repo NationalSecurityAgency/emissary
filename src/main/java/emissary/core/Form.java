@@ -18,6 +18,11 @@ public class Form {
 
     // Form suffixes
     public static final String SUFFIXES_HTMLESC = "-HTMLESC";
+    public static final String SUFFIXES_ERROR = "-ERROR";
+    public static final String SUFFIXES_PROCESSED = "-PROCESSED";
+    public static final String SUFFIXES_UNWRAPPED = "-UNWRAPPED";
+    public static final String SUFFIXES_BROKEN = "-BROKEN";
+    public static final String SUFFIXES_PASSWORD_PROTECTED = "-PASSWORD-PROTECTED";
 
     /** This class is not meant to be instantiated. */
     private Form() {}
