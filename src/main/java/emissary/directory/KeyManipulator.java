@@ -2,6 +2,9 @@ package emissary.directory;
 
 import emissary.place.IServiceProviderPlace;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.Serializable;
 import javax.annotation.Nullable;
 
@@ -66,6 +69,8 @@ public class KeyManipulator implements Serializable {
 
     // Serializable
     static final long serialVersionUID = 2456659383313218695L;
+
+    protected static final Logger logger = LoggerFactory.getLogger(KeyManipulator.class);
 
     /**
      * How we separate portions of the key
@@ -424,20 +429,20 @@ public class KeyManipulator implements Serializable {
         }
 
         if (gmatch(temp, pat)) {
-            System.out.println("***matched --> " + temp);
-            System.out.println("ServiceType: " + getServiceType(temp));
-            System.out.println("ServiceName: " + getServiceName(temp));
-            System.out.println("DataType   : " + getDataType(temp));
-            System.out.println("Location   : " + getServiceLocation(temp));
-            System.out.println("HostURL    : " + getServiceHostURL(temp));
-            System.out.println("HostName   : " + getServiceHost(temp));
-            System.out.println("ClassName  : " + getServiceClassname(temp));
-            System.out.println("Expense    : " + getExpense(temp));
-            System.out.println("Default Directory  : " + getDefaultDirectoryKey(temp));
+            logger.info("***matched --> {}", temp);
+            logger.info("ServiceType: {}", getServiceType(temp));
+            logger.info("ServiceName: {}", getServiceName(temp));
+            logger.info("DataType   : {}", getDataType(temp));
+            logger.info("Location   : {}", getServiceLocation(temp));
+            logger.info("HostURL    : {}", getServiceHostURL(temp));
+            logger.info("HostName   : {}", getServiceHost(temp));
+            logger.info("ClassName  : {}", getServiceClassname(temp));
+            logger.info("Expense    : {}", getExpense(temp));
+            logger.info("Default Directory  : {}", getDefaultDirectoryKey(temp));
             final String hckey = getHostMatchKey(temp);
-            System.out.println("Host match key : " + hckey + (gmatch(temp, hckey) ? " matches" : " does not match"));
+            logger.info("Host match key : {}   Matches? {}", hckey, gmatch(temp, hckey));
         } else {
-            System.out.println(" --- no match ---");
+            logger.info(" --- no match ---");
         }
     }
 

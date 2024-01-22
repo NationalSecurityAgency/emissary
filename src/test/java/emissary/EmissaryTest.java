@@ -11,6 +11,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class EmissaryTest extends UnitTest {
 
@@ -95,7 +97,7 @@ class EmissaryTest extends UnitTest {
     }
 
     @Test
-    void testExecuteCommmandThrows() {
+    void testExecuteCommandThrows() {
         Map<String, EmissaryCommand> cmds = new HashMap<>();
         cmds.put("broke", new BrokeCommand());
 
@@ -158,7 +160,15 @@ class EmissaryTest extends UnitTest {
 
         @Override
         protected void exit(int retCode) {
-            System.out.println("Return Code was: " + retCode);
+            addReturnCodeToOutContent("Return Code was: " + retCode);
+        }
+
+        public void addReturnCodeToOutContent(String retOutput) {
+            try {
+                outContent.write(retOutput.getBytes());
+            } catch (IOException e) {
+                fail("OutContent should never throw IOException", e);
+            }
         }
     }
 
