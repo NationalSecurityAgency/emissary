@@ -2,9 +2,6 @@ package emissary.directory;
 
 import emissary.place.IServiceProviderPlace;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.Serializable;
 import javax.annotation.Nullable;
 
@@ -69,8 +66,6 @@ public class KeyManipulator implements Serializable {
 
     // Serializable
     static final long serialVersionUID = 2456659383313218695L;
-
-    protected static final Logger logger = LoggerFactory.getLogger(KeyManipulator.class);
 
     /**
      * How we separate portions of the key
@@ -417,33 +412,6 @@ public class KeyManipulator implements Serializable {
 
     public static String getHostMatchKey(final String key) {
         return WILDCARD_THREE + KeyManipulator.getServiceHostURL(key) + "*";
-    }
-
-    public static void main(final String[] argv) {
-        String temp = "UNKNOWN.place.ID.tcp://host.domain.com:8001/thePlace$5050";
-        String pat = "UNKNOWN.place.*";
-
-        if (argv.length > 1) {
-            temp = argv[0];
-            pat = argv[1];
-        }
-
-        if (gmatch(temp, pat)) {
-            logger.info("***matched --> {}", temp);
-            logger.info("ServiceType: {}", getServiceType(temp));
-            logger.info("ServiceName: {}", getServiceName(temp));
-            logger.info("DataType   : {}", getDataType(temp));
-            logger.info("Location   : {}", getServiceLocation(temp));
-            logger.info("HostURL    : {}", getServiceHostURL(temp));
-            logger.info("HostName   : {}", getServiceHost(temp));
-            logger.info("ClassName  : {}", getServiceClassname(temp));
-            logger.info("Expense    : {}", getExpense(temp));
-            logger.info("Default Directory  : {}", getDefaultDirectoryKey(temp));
-            final String hckey = getHostMatchKey(temp);
-            logger.info("Host match key : {}   Matches? {}", hckey, gmatch(temp, hckey));
-        } else {
-            logger.info(" --- no match ---");
-        }
     }
 
     public static String makeSproutKey(final String placeKey) {
