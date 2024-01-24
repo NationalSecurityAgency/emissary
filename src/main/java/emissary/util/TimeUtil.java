@@ -180,6 +180,20 @@ public class TimeUtil {
     }
 
     /**
+     * Get Date object from ISO-8601 formatted string ("yyyy-MM-dd HH:mm:ss")
+     *
+     * @param dateString the string representation of the date in the format yyyy-MM-dd HH:mm:ss
+     * @return ZonedDateTime parsed from the string
+     * @throws DateTimeParseException if string is not in the proper format
+     *
+     * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
+     */
+    @Deprecated
+    public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
+        return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);
+    }
+
+    /**
      * Parses hex date string into formatted string ("yyyy-MM-dd HH:mm:ss.SSS")
      *
      * @param hexDate hex string representation of the date

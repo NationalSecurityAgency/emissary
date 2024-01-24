@@ -59,6 +59,20 @@ class TimeUtilTest extends UnitTest {
         assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate.getTime()), "GetDateAsISO8601Long");
     }
 
+    @Deprecated
+    @Test
+    void testGetZonedDateFromISO8601() {
+        ZonedDateTime zdt = TimeUtil.getZonedDateFromISO8601("2016-12-25 15:30:25");
+        assertEquals(15, zdt.getHour());
+        assertEquals(30, zdt.getMinute());
+        assertEquals(25, zdt.getSecond());
+        assertEquals(2016, zdt.getYear());
+        assertEquals(12, zdt.getMonthValue());
+        assertEquals(25, zdt.getDayOfMonth());
+        assertEquals(360, zdt.getDayOfYear());
+        assertEquals("GMT", zdt.getZone().getId());
+    }
+
     @Test
     void testOrdinal() {
         assertEquals(7, TimeUtil.getCurrentDateOrdinal().length(), "Date with ordinal must be 7 long");
