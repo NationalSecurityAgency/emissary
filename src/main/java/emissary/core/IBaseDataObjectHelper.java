@@ -223,6 +223,7 @@ public final class IBaseDataObjectHelper {
      * Search for the first preferred view by regular expression or use the primary data if none match
      *
      * @param payload the payload to pull data from
+     * @param preferredViewNamePatterns the list of referred view regular expression patterns (null returns data)
      */
     public static byte[] findPreferredDataByRegex(final IBaseDataObject payload, List<Pattern> preferredViewNamePatterns) {
         return Optional.ofNullable(preferredViewNamePatterns).orElse(Collections.emptyList()).stream()
@@ -243,15 +244,21 @@ public final class IBaseDataObjectHelper {
      * Search for the first preferred view that is present or use the primary data if none
      *
      * @param payload the payload to pull data from
+     * @param preferredViews the list of preferred views (null returns data)
      */
     public static byte[] findPreferredData(final IBaseDataObject payload, List<String> preferredViews) {
+        Validate.isTrue(payload != null, "Required: payload != null");
+
         final Set<String> altViewNames = payload.getAlternateViewNames();
 
-        for (final String view : preferredViews) {
-            if (altViewNames.contains(view)) {
-                return payload.getAlternateView(view);
+        if (preferredViews != null) {
+            for (final String view : preferredViews) {
+                if (altViewNames.contains(view)) {
+                    return payload.getAlternateView(view);
+                }
             }
         }
+
         return payload.data();
     }
 }

@@ -359,6 +359,10 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     @Test
     void testFindPreferredDataByRegex() {
+        final List<String> emptyPreferredViews = new ArrayList<>();
+
+        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.findPreferredData(null, emptyPreferredViews));
+
         byte[] view1Bytes = "altview test bytes".getBytes(StandardCharsets.UTF_8);
         ibdo1.addAlternateView("view1", view1Bytes);
 
@@ -388,5 +392,26 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     static List<Pattern> compileAsPatterns(String... values) {
         return Stream.of(values).map(Pattern::compile).collect(Collectors.toList());
+    }
+
+    @Test
+    void testFindPreferredData() {
+        final List<String> emptyPreferredViews = new ArrayList<>();
+
+        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.findPreferredData(null, emptyPreferredViews));
+
+        final List<String> preferredViews = List.of("view1", "view2", "view3");
+        final byte[] view1Bytes = "altview test bytes".getBytes(StandardCharsets.UTF_8);
+        final byte[] primaryViewBytes = "primary view test bytes".getBytes(StandardCharsets.UTF_8);
+
+        ibdo1.setData(primaryViewBytes);
+
+        assertEquals(primaryViewBytes, IBaseDataObjectHelper.findPreferredData(ibdo1, null));
+        assertEquals(primaryViewBytes, IBaseDataObjectHelper.findPreferredData(ibdo1, preferredViews));
+
+        ibdo1.addAlternateView("view1", view1Bytes);
+        ibdo1.addAlternateView("notpreferred", "test bytes".getBytes(StandardCharsets.UTF_8));
+
+        assertEquals(view1Bytes, IBaseDataObjectHelper.findPreferredData(ibdo1, preferredViews));
     }
 }
