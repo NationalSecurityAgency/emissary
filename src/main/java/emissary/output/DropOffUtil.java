@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -888,8 +889,13 @@ public class DropOffUtil {
             final String value = d.getStringParameter(paramName);
             if (value != null) {
                 try {
-                    return Date.from(FlexibleDateTimeParser.parse(value, DATE_ISO_8601).toInstant());
-                } catch (DateTimeParseException | NullPointerException ex) {
+                    ZonedDateTime zdt = FlexibleDateTimeParser.parse(value, DATE_ISO_8601);
+                    if (zdt == null) {
+                        logger.debug("FlexibleDateTimeParser returned null trying to parse EventDate");
+                    } else {
+                        return Date.from(zdt.toInstant());
+                    }
+                } catch (DateTimeParseException ex) {
                     logger.debug("Cannot parse EventDate", ex);
                 }
             }
