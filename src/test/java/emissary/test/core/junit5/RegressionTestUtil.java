@@ -1,9 +1,7 @@
 package emissary.test.core.junit5;
 
-import emissary.core.BaseDataObject;
 import emissary.core.DiffCheckConfiguration;
 import emissary.core.IBaseDataObject;
-import emissary.core.IBaseDataObjectHelper;
 import emissary.core.IBaseDataObjectXmlCodecs;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementDecoders;
 import emissary.core.IBaseDataObjectXmlCodecs.ElementEncoders;
@@ -304,24 +302,6 @@ public final class RegressionTestUtil {
     }
 
     /**
-     * Allow setting the internal data fields to null to avoid being included during serialisation.
-     * 
-     * @param initialIbdo to null out
-     */
-    public static void setDataToNull(final IBaseDataObject initialIbdo) {
-        try {
-            if (initialIbdo instanceof BaseDataObject) {
-                IBaseDataObjectHelper.setPrivateFieldValue((BaseDataObject) initialIbdo, "theData", null);
-                IBaseDataObjectHelper.setPrivateFieldValue((BaseDataObject) initialIbdo, "seekableByteChannelFactory", null);
-            } else {
-                fail("Didn't get an expected type of IBaseDataObject");
-            }
-        } catch (final IllegalAccessException | NoSuchFieldException e) {
-            fail("Couldn't null out data for BDO", e);
-        }
-    }
-
-    /**
      * Simple/default way to provide the initial IBDO
      * 
      * Takes the data from the dat file and sets the current (initial) form based on the filename
@@ -329,13 +309,14 @@ public final class RegressionTestUtil {
      * @param resource path to the dat file
      * @return the initial IBDO
      */
-    public static IBaseDataObject getInitialIbdoWithFormInFilename(final String resource, final KffDataObjectHandler kff) {
+    public static IBaseDataObject getInitialIbdoWithFormInFilename(final IBaseDataObject ibdo, final String resource,
+            final KffDataObjectHandler kff) {
         try {
             final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
             final InitialFinalFormFormat datFile = new InitialFinalFormFormat(datFileUrl);
             final SeekableByteChannelFactory sbcf = FileChannelFactory.create(datFile.getPath());
             // Create a BDO for the data, and set the filename correctly
-            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, "Classification",
+            final IBaseDataObject initialIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(ibdo, sbcf, "Classification",
                     datFile.getInitialForm(), kff);
             initialIbdo.setChannelFactory(sbcf);
             initialIbdo.setFilename(datFile.getOriginalFileName());

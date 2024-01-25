@@ -1,5 +1,6 @@
 package emissary.test.core.junit5;
 
+import emissary.core.BaseDataObject;
 import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObjectHelper;
 import emissary.core.IBaseDataObjectXmlCodecs;
@@ -71,7 +72,7 @@ public abstract class RegressionTest extends ExtractionTest {
      */
     @ForOverride
     protected IBaseDataObject getInitialIbdo(final String resource) {
-        return RegressionTestUtil.getInitialIbdoWithFormInFilename(resource, kff);
+        return RegressionTestUtil.getInitialIbdoWithFormInFilename(new ClearDataBaseDataObject(), resource, kff);
     }
 
     /**
@@ -85,7 +86,11 @@ public abstract class RegressionTest extends ExtractionTest {
      */
     @ForOverride
     protected void tweakInitialIbdoBeforeSerialisation(final String resource, final IBaseDataObject initialIbdo) {
-        RegressionTestUtil.setDataToNull(initialIbdo);
+        if (initialIbdo instanceof ClearDataBaseDataObject) {
+            ((ClearDataBaseDataObject) initialIbdo).clearData();
+        } else {
+            fail("Didn't get an expected type of IBaseDataObject");
+        }
     }
 
     /**
@@ -235,6 +240,13 @@ public abstract class RegressionTest extends ExtractionTest {
 
     // Everything above can be overridden by extending classes to modify behaviour as they see fit.
     // Below this point, methods should not be able to be overridden as they are inherently part of RegressionTest.
+
+    protected class ClearDataBaseDataObject extends BaseDataObject {
+        protected void clearData() {
+            theData = null;
+            seekableByteChannelFactory = null;
+        }
+    }
 
     @ParameterizedTest
     @MethodSource("data")
