@@ -1201,6 +1201,13 @@
           <runOrder>random</runOrder>
           <reuseForks>true</reuseForks>
           <forkCount>${surefire.forkCount}</forkCount>
+          <includes>
+            <include>**/Test*.java</include>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*TestCase.java</include>
+            <include>**/FTest*.java</include>
+          </includes>
         </configuration>
       </plugin>
       <plugin>
