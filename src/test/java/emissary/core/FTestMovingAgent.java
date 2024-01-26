@@ -27,10 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class FTestMovingAgent extends FunctionalTest {
+    @Nullable
     private IDirectoryPlace dir1 = null;
+    @Nullable
     private IDirectoryPlace dir2 = null;
+    @Nullable
     private IServiceProviderPlace toUpper = null;
+    @Nullable
     private IServiceProviderPlace toLower = null;
+    @Nullable
     private CachePlace cache = null;
 
     @Override

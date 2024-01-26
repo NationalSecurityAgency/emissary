@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nullable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,7 +24,9 @@ class DirectoryEntryTest extends UnitTest {
     private static final int cost = 50;
     private static final int quality = 50;
 
+    @Nullable
     private DirectoryEntry d = null;
+    @Nullable
     private DirectoryEntry d2 = null;
 
     @Override

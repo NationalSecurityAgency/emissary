@@ -69,6 +69,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @see emissary.config.ServiceConfigGuide
      */
+    @Nullable
     protected Configurator configG;
 
     /**
@@ -77,7 +78,9 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @see emissary.directory.DirectoryPlace
      */
+    @Nullable
     protected String dirPlace;
+    @Nullable
     protected IDirectoryPlace localDirPlace = null;
 
     /**
@@ -94,14 +97,17 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
 
     // Items that are going to be deprecated, but here now to
     // make the transition easier, for compatibility
+    @Nullable
     protected String myKey = null;
     protected int serviceCost = -1;
     protected int serviceQuality = -1;
+    @Nullable
     protected String placeName = null;
 
     /**
      * Text description of what the place does, usually from config file
      */
+    @Nullable
     protected String serviceDescription;
 
     /**
@@ -117,6 +123,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     /**
      * Set up handler for rehashing
      */
+    @Nullable
     protected KffDataObjectHandler kff = null;
 
     private static final String DOT = ".";
@@ -501,6 +508,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @return List of DirectoryEntry with next places to go
      */
     @Override
+    @Nullable
     public List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
         if (localDirPlace != null) {
             return (localDirPlace.nextKeys(dataID, payload, lastEntry));
@@ -1080,6 +1088,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * the back door of the system and get the TLD for the current payload You should only call this if
      * payload.shortName().indexOf(Family.SEP) &gt; -1
      */
+    @Nullable
     protected IBaseDataObject getTLD() {
         try {
             MobileAgent agent = getAgent();

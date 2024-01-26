@@ -13,6 +13,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,8 +24,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 class SimpleNioParserTest extends UnitTest {
 
     private Path testDataFile;
+    @Nullable
     private FileChannel channel;
     private static final int DATALEN = 1000;
+    @Nullable
     RandomAccessFile raf = null;
 
     @Test

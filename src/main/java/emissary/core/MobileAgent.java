@@ -38,6 +38,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected static final Logger probeLogger = LoggerFactory.getLogger(MobileAgent.class.getPackage().toString() + ".PROBE");
 
     // The thread we plan to run on (we are autonomous, in a limited sense)
+    @Nullable
     protected transient Thread thread = null;
 
     // Name for our threads
@@ -55,14 +56,17 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected static final String DONE_FORM = Form.DONE;
 
     // What we carry around with us
+    @Nullable
     protected IBaseDataObject payload = null;
 
     // Track if the MobileAgent is currently in use
     protected AtomicBoolean idle = new AtomicBoolean(true);
 
     // Place we are at now
+    @Nullable
     protected transient IServiceProviderPlace arrivalPlace = null;
     protected boolean processFirstPlace = false;
+    @Nullable
     protected String lastPlaceProcessed = null;
 
     // ID string for this agent
@@ -422,6 +426,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the current payload we care about
      * @return the SDE answer from the directory
      */
+    @Nullable
     protected DirectoryEntry getNextKey(@Nullable final IServiceProviderPlace place, @Nullable final IBaseDataObject payloadArg) {
 
         logger.debug("start getNextKey");
