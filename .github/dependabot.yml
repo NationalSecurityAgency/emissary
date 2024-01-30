@@ -3,7 +3,7 @@
 
 version: 2
 updates:
-  - package-ecosystem: "Maven"
+  - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
