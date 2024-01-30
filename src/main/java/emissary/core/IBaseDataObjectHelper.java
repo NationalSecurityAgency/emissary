@@ -226,6 +226,8 @@ public final class IBaseDataObjectHelper {
      * @param preferredViewNamePatterns the list of referred view regular expression patterns (null returns data)
      */
     public static byte[] findPreferredDataByRegex(final IBaseDataObject payload, List<Pattern> preferredViewNamePatterns) {
+        Validate.isTrue(payload != null, "Required: payload != null");
+
         return Optional.ofNullable(preferredViewNamePatterns).orElse(Collections.emptyList()).stream()
                 .map(preferredViewNamePattern -> findFirstAlternameViewNameByRegex(payload, preferredViewNamePattern))
                 .filter(Optional::isPresent)

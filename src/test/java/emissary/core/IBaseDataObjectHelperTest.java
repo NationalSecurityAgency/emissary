@@ -359,9 +359,9 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     @Test
     void testFindPreferredDataByRegex() {
-        final List<String> emptyPreferredViews = new ArrayList<>();
+        final List<Pattern> emptyPreferredViews = new ArrayList<>();
 
-        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.findPreferredData(null, emptyPreferredViews));
+        assertThrows(IllegalArgumentException.class, () -> IBaseDataObjectHelper.findPreferredDataByRegex(null, emptyPreferredViews));
 
         byte[] view1Bytes = "altview test bytes".getBytes(StandardCharsets.UTF_8);
         ibdo1.addAlternateView("view1", view1Bytes);
