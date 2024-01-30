@@ -1,0 +1,6 @@
+{
+  "name": "Java CI with Maven",
+  "description": "Perform Maven Verify lifecycle on project",
+  "iconName": "octicon verified",
+  "categories": ["continuous-integration", "java", "maven"]
+}
