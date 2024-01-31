@@ -131,12 +131,14 @@ public class PayloadUtil {
                     .append("\n");
         } else {
             for (final TransformHistory.History h : th) {
+                double msInPlace = h.getTimeInPlace() / 1_000_000;
                 sb.append(" ");
                 if (h.wasCoordinated()) {
                     sb.append(" ");
                 }
                 // check is NO_URL or not
-                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append(" Time: ").append(h.getTimeInPlace())
+                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append(" Time: ")
+                        .append(msInPlace).append("ms")
                         .append("\n");
             }
         }

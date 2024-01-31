@@ -214,7 +214,7 @@ public class TransformHistory implements Serializable {
             return StringUtils.substringBefore(key, ".http");
         }
 
-        public long getTimeInPlace() {
+        public double getTimeInPlace() {
             return timeInPlace;
         }
 
