@@ -11,6 +11,7 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
+import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
 
 import org.slf4j.Logger;
@@ -421,20 +422,27 @@ public class Startup {
             numPlacesFound = this.places.size();
 
             if (numPlacesFound >= numPlacesExpected) {
+                boolean failedPlaceStartups = false;
 
                 if (!this.failedPlaces.isEmpty()) {
-                    String failedPlaceList = "The following places have failed to start: "
-                            + String.join(";", this.failedPlaces);
-                    logger.warn(failedPlaceList);
-                    if (this.node.isStrictStartupMode()) {
-                        logger.error(
-                                "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
-                                        "run server start command without the --strict flag");
-                        logger.error("Server shutting down");
-                        System.exit(1);
-                    }
+                    failedPlaceStartups = true;
+                    String failedPlaceList = String.join("; ", this.failedPlaces);
+                    logger.warn("The following places have failed to start: {}", failedPlaceList);
+                }
+                if (!CoordinationPlace.getFailedCoordinationPlaces().isEmpty()) {
+                    failedPlaceStartups = true;
+                    String failedCoordPlaceList = String.join("; ", CoordinationPlace.getFailedCoordinationPlaces());
+                    logger.warn("The following coordination places have failed to start: {}", failedCoordPlaceList);
                 }
 
+                // check if strict startup & places/coordination places failed, if yes, shut down server
+                if (this.node.isStrictStartupMode() && failedPlaceStartups) {
+                    logger.error(
+                            "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                                    "run server start command without the --strict flag");
+                    logger.error("Server shutting down");
+                    System.exit(1);
+                }
 
                 // normal termination of the loop
                 logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
