@@ -2,6 +2,7 @@ package emissary.config;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -843,6 +844,20 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             }
         }
         return theHash;
+    }
+
+    /**
+     * Return the first string entry matching the key parameter
+     *
+     * @param theParameter key to match
+     * @return the first matching value
+     * @throws IllegalArgumentException if no non-blank value is found
+     */
+    @Override
+    public String findRequiredStringEntry(final String theParameter) throws IllegalArgumentException {
+        String value = findStringEntry(theParameter, null);
+        Validate.notBlank(value, "Missing required parameter [%s]", theParameter);
+        return value;
     }
 
     /**
