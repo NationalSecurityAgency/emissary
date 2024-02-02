@@ -1,0 +1,102 @@
+
+The following files have been resolved:
+   ch.qos.logback:logback-classic:jar:1.4.14:compile[36m -- module ch.qos.logback.classic[m
+   ch.qos.logback:logback-core:jar:1.4.14:compile[36m -- module ch.qos.logback.core[m
+   com.fasterxml.jackson.core:jackson-annotations:jar:2.13.4:compile[36m -- module com.fasterxml.jackson.annotation[m
+   com.fasterxml.jackson.core:jackson-core:jar:2.13.4:compile[36m -- module com.fasterxml.jackson.core[m
+   com.fasterxml.jackson.core:jackson-databind:jar:2.13.4.2:compile[36m -- module com.fasterxml.jackson.databind[m
+   com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations:jar:2.14.1:compile[36m -- module com.fasterxml.jackson.module.jakarta.xmlbind[m
+   com.github.spullara.mustache.java:compiler:jar:0.9.10:compile[36m -- module com.github.mustachejava[0;1m [auto][m
+   com.google.code.findbugs:jsr305:jar:3.0.2:compile[36m -- module jsr305[0;1;33m (auto)[m
+   com.google.code.gson:gson:jar:2.8.9:compile[36m -- module com.google.gson[m
+   com.google.errorprone:error_prone_annotations:jar:2.18.0:compile[36m -- module com.google.errorprone.annotations[0;1m [auto][m
+   com.google.guava:failureaccess:jar:1.0.1:compile[36m -- module failureaccess[0;1;33m (auto)[m
+   com.google.guava:guava:jar:32.0.0-jre:compile[36m -- module com.google.common[0;1m [auto][m
+   com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile[36m -- module listenablefuture[0;1;33m (auto)[m
+   com.google.j2objc:j2objc-annotations:jar:2.8:compile[36m -- module j2objc.annotations[0;1;33m (auto)[m
+   com.helger:profiler:jar:1.1.1:compile[36m -- module com.papertrail.profiler[0;1m [auto][m
+   com.rabbitmq:amqp-client:jar:5.13.1:compile[36m -- module com.rabbitmq.client[0;1m [auto][m
+   com.sun.activation:jakarta.activation:jar:2.0.1:compile[36m -- module jakarta.activation[m
+   com.sun.istack:istack-commons-runtime:jar:4.0.1:compile[36m -- module com.sun.istack.runtime[m
+   commons-codec:commons-codec:jar:1.15:compile[36m -- module org.apache.commons.codec[0;1m [auto][m
+   commons-io:commons-io:jar:2.11.0:compile[36m -- module org.apache.commons.io[0;1m [auto][m
+   info.picocli:picocli:jar:4.7.4:compile[36m -- module info.picocli[m
+   io.dropwizard.metrics:metrics-core:jar:4.2.4:compile[36m -- module com.codahale.metrics[0;1m [auto][m
+   io.dropwizard.metrics:metrics-graphite:jar:4.2.4:compile[36m -- module com.codahale.metrics.graphite[0;1m [auto][m
+   io.dropwizard.metrics:metrics-healthchecks:jar:4.2.4:compile[36m -- module com.codahale.metrics.health[0;1m [auto][m
+   io.dropwizard.metrics:metrics-jmx:jar:4.2.4:compile[36m -- module com.codahale.metrics.jmx[0;1m [auto][m
+   io.dropwizard.metrics:metrics-json:jar:4.2.4:compile[36m -- module com.codahale.metrics.json[0;1m [auto][m
+   io.dropwizard.metrics:metrics-jvm:jar:4.2.4:compile[36m -- module com.codahale.metrics.jvm[0;1m [auto][m
+   io.dropwizard.metrics:metrics-servlets:jar:4.2.4:compile[36m -- module com.codahale.metrics.servlets[0;1m [auto][m
+   jakarta.annotation:jakarta.annotation-api:jar:2.1.1:compile[36m -- module jakarta.annotation[m
+   jakarta.inject:jakarta.inject-api:jar:2.0.1:compile[36m -- module jakarta.inject[m
+   jakarta.transaction:jakarta.transaction-api:jar:2.0.0:compile[36m -- module jakarta.transaction[0;1m [auto][m
+   jakarta.validation:jakarta.validation-api:jar:3.0.2:compile[36m -- module jakarta.validation[m
+   jakarta.ws.rs:jakarta.ws.rs-api:jar:3.1.0:compile[36m -- module jakarta.ws.rs[m
+   jakarta.xml.bind:jakarta.xml.bind-api:jar:3.0.1:compile[36m -- module jakarta.xml.bind[m
+   net.bytebuddy:byte-buddy-agent:jar:1.14.6:test[36m -- module net.bytebuddy.agent[m
+   net.bytebuddy:byte-buddy:jar:1.14.6:test[36m -- module net.bytebuddy[m
+   net.logstash.logback:logstash-logback-encoder:jar:7.2:compile[36m -- module logstash.logback.encoder[0;1m [auto][m
+   net.spy:spymemcached:jar:2.12.3:compile[36m -- module spymemcached[0;1;33m (auto)[m
+   org.apache.commons:commons-collections4:jar:4.4:compile[36m -- module org.apache.commons.collections4[0;1m [auto][m
+   org.apache.commons:commons-compress:jar:1.21:compile[36m -- module org.apache.commons.compress[0;1m [auto][m
+   org.apache.commons:commons-exec:jar:1.3:compile[36m -- module commons.exec[0;1;33m (auto)[m
+   org.apache.commons:commons-lang3:jar:3.12.0:compile[36m -- module org.apache.commons.lang3[0;1m [auto][m
+   org.apache.commons:commons-pool2:jar:2.11.1:compile[36m -- module org.apache.commons.pool2[0;1m [auto][m
+   org.apache.httpcomponents.client5:httpclient5:jar:5.2.1:compile[36m -- module org.apache.httpcomponents.client5.httpclient5[0;1m [auto][m
+   org.apache.httpcomponents.core5:httpcore5-h2:jar:5.2:compile[36m -- module org.apache.httpcomponents.core5.httpcore5.h2[0;1m [auto][m
+   org.apache.httpcomponents.core5:httpcore5:jar:5.2.1:compile[36m -- module org.apache.httpcomponents.core5.httpcore5[0;1m [auto][m
+   org.apiguardian:apiguardian-api:jar:1.1.2:test[36m -- module org.apiguardian.api[m
+   org.checkerframework:checker-qual:jar:3.33.0:compile[36m -- module org.checkerframework.checker.qual[0;1m [auto][m
+   org.codehaus.janino:commons-compiler:jar:3.1.7:compile[36m -- module commons.compiler[0;1;33m (auto)[m
+   org.codehaus.janino:janino:jar:3.1.7:compile[36m -- module janino[0;1;33m (auto)[m
+   org.eclipse.jetty.toolchain:jetty-jakarta-servlet-api:jar:5.0.2:compile[36m -- module jetty.servlet.api[m
+   org.eclipse.jetty:jetty-http:jar:11.0.16:compile[36m -- module org.eclipse.jetty.http[m
+   org.eclipse.jetty:jetty-io:jar:11.0.16:compile[36m -- module org.eclipse.jetty.io[m
+   org.eclipse.jetty:jetty-jndi:jar:11.0.16:compile[36m -- module org.eclipse.jetty.jndi[m
+   org.eclipse.jetty:jetty-plus:jar:11.0.16:compile[36m -- module org.eclipse.jetty.plus[m
+   org.eclipse.jetty:jetty-security:jar:11.0.16:compile[36m -- module org.eclipse.jetty.security[m
+   org.eclipse.jetty:jetty-server:jar:11.0.16:compile[36m -- module org.eclipse.jetty.server[m
+   org.eclipse.jetty:jetty-servlet:jar:11.0.16:compile[36m -- module org.eclipse.jetty.servlet[m
+   org.eclipse.jetty:jetty-util:jar:11.0.16:compile[36m -- module org.eclipse.jetty.util[m
+   org.eclipse.jetty:jetty-webapp:jar:11.0.16:compile[36m -- module org.eclipse.jetty.webapp[m
+   org.eclipse.jetty:jetty-xml:jar:11.0.16:compile[36m -- module org.eclipse.jetty.xml[m
+   org.glassfish.hk2.external:aopalliance-repackaged:jar:3.0.4:compile[36m -- module org.aopalliance[0;1m [auto][m
+   org.glassfish.hk2:hk2-api:jar:3.0.4:compile[36m -- module org.glassfish.hk2.api[0;1m [auto][m
+   org.glassfish.hk2:hk2-locator:jar:3.0.4:compile[36m -- module org.glassfish.hk2.locator[0;1m [auto][m
+   org.glassfish.hk2:hk2-utils:jar:3.0.4:compile[36m -- module org.glassfish.hk2.utilities[0;1m [auto][m
+   org.glassfish.hk2:osgi-resource-locator:jar:1.0.3:compile[36m -- module osgi.resource.locator[0;1;33m (auto)[m
+   org.glassfish.jaxb:jaxb-core:jar:3.0.1:compile[36m -- module org.glassfish.jaxb.core[m
+   org.glassfish.jaxb:jaxb-runtime:jar:3.0.1:compile[36m -- module org.glassfish.jaxb.runtime[m
+   org.glassfish.jaxb:txw2:jar:3.0.1:compile[36m -- module com.sun.xml.txw2[m
+   org.glassfish.jersey.containers:jersey-container-jetty-http:jar:3.1.3:compile[36m -- module jersey.container.jetty.http[0;1;33m (auto)[m
+   org.glassfish.jersey.containers:jersey-container-servlet-core:jar:3.1.3:compile[36m -- module jersey.container.servlet.core[0;1;33m (auto)[m
+   org.glassfish.jersey.core:jersey-client:jar:3.1.3:compile[36m -- module jersey.client[0;1;33m (auto)[m
+   org.glassfish.jersey.core:jersey-common:jar:3.1.3:compile[36m -- module jersey.common[0;1;33m (auto)[m
+   org.glassfish.jersey.core:jersey-server:jar:3.1.3:compile[36m -- module jersey.server[0;1;33m (auto)[m
+   org.glassfish.jersey.ext:jersey-entity-filtering:jar:3.1.3:compile[36m -- module jersey.entity.filtering[0;1;33m (auto)[m
+   org.glassfish.jersey.ext:jersey-mvc-mustache:jar:3.1.3:compile[36m -- module jersey.mvc.mustache[0;1;33m (auto)[m
+   org.glassfish.jersey.ext:jersey-mvc:jar:3.1.3:compile[36m -- module jersey.mvc[0;1;33m (auto)[m
+   org.glassfish.jersey.inject:jersey-hk2:jar:3.1.3:compile[36m -- module jersey.hk2[0;1;33m (auto)[m
+   org.glassfish.jersey.media:jersey-media-jaxb:jar:3.1.3:test[36m -- module jersey.media.jaxb[0;1;33m (auto)[m
+   org.glassfish.jersey.media:jersey-media-json-jackson:jar:3.1.3:compile[36m -- module jersey.media.json.jackson[0;1;33m (auto)[m
+   org.glassfish.jersey.media:jersey-media-multipart:jar:3.1.3:compile[36m -- module jersey.media.multipart[0;1;33m (auto)[m
+   org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-jetty:jar:3.1.3:test[36m -- module jersey.test.framework.provider.jetty[0;1;33m (auto)[m
+   org.glassfish.jersey.test-framework:jersey-test-framework-core:jar:3.1.3:test[36m -- module jersey.test.framework.core[0;1;33m (auto)[m
+   org.hamcrest:hamcrest:jar:2.2:test[36m -- module org.hamcrest[0;1m [auto][m
+   org.javassist:javassist:jar:3.29.2-GA:compile[36m -- module org.javassist[0;1m [auto][m
+   org.jdom:jdom2:jar:2.0.6.1:compile[36m -- module org.jdom2[0;1m [auto][m
+   org.junit.jupiter:junit-jupiter-api:jar:5.10.0:test[36m -- module org.junit.jupiter.api[m
+   org.junit.jupiter:junit-jupiter-engine:jar:5.10.0:test[36m -- module org.junit.jupiter.engine[m
+   org.junit.jupiter:junit-jupiter-params:jar:5.10.0:test[36m -- module org.junit.jupiter.params[m
+   org.junit.jupiter:junit-jupiter:jar:5.10.0:test[36m -- module org.junit.jupiter[m
+   org.junit.platform:junit-platform-commons:jar:1.10.0:test[36m -- module org.junit.platform.commons[m
+   org.junit.platform:junit-platform-engine:jar:1.10.0:test[36m -- module org.junit.platform.engine[m
+   org.jvnet.mimepull:mimepull:jar:1.9.15:compile[36m -- module org.jvnet.mimepull[m
+   org.mockito:mockito-core:jar:5.5.0:test[36m -- module org.mockito[0;1m [auto][m
+   org.mockito:mockito-junit-jupiter:jar:5.5.0:test[36m -- module org.mockito.junit.jupiter[0;1m [auto][m
+   org.objenesis:objenesis:jar:3.3:test[36m -- module org.objenesis[0;1m [auto][m
+   org.opentest4j:opentest4j:jar:1.3.0:test[36m -- module org.opentest4j[m
+   org.slf4j:log4j-over-slf4j:jar:2.0.7:compile[36m -- module log4j[m
+   org.slf4j:slf4j-api:jar:2.0.7:compile[36m -- module org.slf4j[m
+
