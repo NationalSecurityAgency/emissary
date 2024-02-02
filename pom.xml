@@ -1207,6 +1207,30 @@
         <groupId>org.basepom.maven</groupId>
         <artifactId>duplicate-finder-maven-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>dep-list</id>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <executable>mvn</executable>
+              <workingDirectory />
+              <arguments>
+                <argument>dependency:list</argument>
+                <argument>-Dsort=true</argument>
+                <argument>-DoutputFile=.deps/deps.txt</argument>
+                <argument>-q</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <reporting>
