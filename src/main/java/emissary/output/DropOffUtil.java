@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Family;
 import emissary.core.IBaseDataObject;
+import emissary.util.FlexibleDateTimeParser;
 import emissary.util.ShortNameComparator;
 import emissary.util.TimeUtil;
 import emissary.util.shell.Executrix;
@@ -22,6 +23,7 @@ import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +44,7 @@ import static emissary.core.Form.UNKNOWN;
 import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+import static emissary.util.TimeUtil.DATE_ISO_8601;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -886,8 +889,12 @@ public class DropOffUtil {
             final String value = d.getStringParameter(paramName);
             if (value != null) {
                 try {
-                    date = TimeUtil.getDateFromISO8601(value);
-                    return date;
+                    ZonedDateTime zdt = FlexibleDateTimeParser.parse(value, DATE_ISO_8601);
+                    if (zdt == null) {
+                        logger.debug("FlexibleDateTimeParser returned null trying to parse EventDate");
+                    } else {
+                        return Date.from(zdt.toInstant());
+                    }
                 } catch (DateTimeParseException ex) {
                     logger.debug("Cannot parse EventDate", ex);
                 }

@@ -9,7 +9,6 @@ import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeParseException;
 import java.time.zone.ZoneRulesException;
 import java.util.Date;
 
@@ -55,45 +54,9 @@ class TimeUtilTest extends UnitTest {
         assertThrows(ZoneRulesException.class, () -> TimeUtil.getDate("yyyy", "BAD"));
     }
 
-    @Deprecated
-    @Test
-    void testGetDateAsPath() {
-        assertEquals("2016-12-25/15/30", TimeUtil.getDateAsPath(testUtilDate), "GetDateAsPath");
-    }
-
-    @Deprecated
-    @Test
-    void testGetDateOrdinal() {
-        assertEquals("2016360", TimeUtil.getDateOrdinal(testUtilDate), "GetDateOrdinal");
-    }
-
-    @Deprecated
-    @Test
-    void testGetDateAsISO8601() {
-        assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate), "GetDateAsISO8601");
-    }
-
     @Test
     void testGetDateAsISO8601Long() {
         assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate.getTime()), "GetDateAsISO8601Long");
-    }
-
-    @Deprecated
-    @Test
-    void testGetDateAsFullISO8601() {
-        assertEquals("2016-12-25T15:30:25Z", TimeUtil.getDateAsFullISO8601(testUtilDate), "GetDateAsFullISO8601");
-    }
-
-    @Deprecated
-    @Test
-    void testGetDateFromISO8601() {
-        assertEquals(testUtilDate.getTime(), TimeUtil.getDateFromISO8601("2016-12-25 15:30:25").getTime(), "GetDateFromISO8601");
-    }
-
-    @Deprecated
-    @Test
-    void testGetDateFromISO8601Exception() {
-        assertThrows(DateTimeParseException.class, () -> TimeUtil.getDateFromISO8601("Bad Date"));
     }
 
     @Deprecated
@@ -110,24 +73,9 @@ class TimeUtilTest extends UnitTest {
         assertEquals("GMT", zdt.getZone().getId());
     }
 
-    @Deprecated
-    @Test
-    void testDatePath() {
-        assertTrue(TimeUtil.getDateAsPath(new Date()).contains("/"), "Date with slashes must have slashes");
-    }
-
     @Test
     void testOrdinal() {
         assertEquals(7, TimeUtil.getCurrentDateOrdinal().length(), "Date with ordinal must be 7 long");
-    }
-
-    @Deprecated
-    @Test
-    void testISO8601RoundTrip() {
-        final String s = TimeUtil.getCurrentDateISO8601();
-        final Date d = TimeUtil.getDateFromISO8601(s);
-        final String s2 = TimeUtil.getDateAsISO8601(d.getTime());
-        assertEquals(s, s2, "ISO8601 utils should make round trip");
     }
 
     @Test
