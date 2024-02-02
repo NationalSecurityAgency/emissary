@@ -16,10 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
@@ -130,11 +127,11 @@ public class CoordinationPlace extends ServiceProviderPlace {
                         placeRefs.add(p);
                         logger.debug("Place created: {}", p);
                     } else {
-                        failedCoordPlaceCreation.add(s);
+                        failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                         logger.error("Place does not exist and cannot be created: {}", s);
                     }
                 } catch (Exception e) {
-                    failedCoordPlaceCreation.add(s);
+                    failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                     logger.error("Place does not exist and cannot be created: {}", s, e);
                 }
             }
