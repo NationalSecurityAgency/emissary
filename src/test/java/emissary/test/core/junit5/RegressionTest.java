@@ -36,7 +36,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  * </p>
  * <ol>
  * <li>Extend this class</li>
- * <li>Override {@link #generateAnswers()} to return true, which will generate the XML answer files</li>
+ * <li>Either Override {@link #generateAnswers()} to return true or set the generateAnswers system property to true,
+ * which will generate the XML answer files</li>
+ * <li>Optionally, to generate answers file without changing code run {@code mvn clean test -DgenerateAnswers=true}</li>
  * <li>Optionally, override the various provided methods if you want to customise the behaviour of providing the IBDO
  * before/after processing</li>
  * <li>Run the tests, which should pass - if they don't, you either have incorrect processing which needs fixing, or you
@@ -51,14 +53,14 @@ public abstract class RegressionTest extends ExtractionTest {
     private List<SimplifiedLogEvent> actualSimplifiedLogEvents;
 
     /**
-     * Override this to generate XML for data files.
+     * Override this or set the generateAnswers system property to true to generate XML for data files.
      * 
      * @return defaults to false if no XML should be generated (i.e. normal case of executing tests) or true to generate
      *         automatically
      */
     @ForOverride
     protected boolean generateAnswers() {
-        return false;
+        return Boolean.getBoolean("generateAnswers");
     }
 
     /**
