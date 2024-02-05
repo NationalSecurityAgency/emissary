@@ -23,7 +23,10 @@ import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -72,7 +75,7 @@ public class DropOffUtil {
 
     // Items for generating random filenames
     protected static SecureRandom prng = new SecureRandom();
-    protected static final SimpleDateFormat DATE_PATTERN = new SimpleDateFormat("yyyyDDDHHmmss");
+    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmmss");
     protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
     protected static String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;
@@ -172,9 +175,8 @@ public class DropOffUtil {
     }
 
     private static String getDate(final Date d) {
-        synchronized (DATE_PATTERN) {
-            return DATE_PATTERN.format(d);
-        }
+        LocalDateTime ldt = LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
+        return ldt.format(DATE_PATTERN);
     }
 
     /**
