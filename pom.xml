@@ -60,9 +60,9 @@
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.impsort.version>1.8.0</dep.impsort.version>
+    <dep.jackson.version>2.15.2</dep.jackson.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.jaxb.runtime.version>3.0.1</dep.jaxb.runtime.version>
-    <dep.jackson.version>2.15.2</dep.jackson.version>
     <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
     <dep.jersey.version>3.1.3</dep.jersey.version>
     <dep.jetty.version>11.0.16</dep.jetty.version>
@@ -105,26 +105,6 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${dep.logback.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-jaxb-annotations</artifactId>
-        <version>${dep.jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.github.spullara.mustache.java</groupId>
@@ -270,6 +250,13 @@
         <groupId>org.webjars</groupId>
         <artifactId>popper.js</artifactId>
         <version>${dep.webjars.popper.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${dep.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
