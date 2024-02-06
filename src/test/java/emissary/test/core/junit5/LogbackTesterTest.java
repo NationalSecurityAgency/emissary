@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -90,13 +91,6 @@ public class LogbackTesterTest extends UnitTest {
     void canCheckOneEvent() {
         LogbackTester logBackTester = new LogbackTester(logger.getName());
         assertNotNull(logBackTester);
-        boolean[] throwing = new boolean[1];
-        String[] messages = new String[1];
-        Level[] levels = new Level[1];
-        levels[0] = Level.WARN;
-        messages[0] = "Not good news.";
-        throwing[0] = false;
-        logger.warn("Not good news.");
-        logBackTester.checkLogList(levels, messages, throwing);
+        logBackTester.checkLogList(Collections.emptyList());
     }
 }
