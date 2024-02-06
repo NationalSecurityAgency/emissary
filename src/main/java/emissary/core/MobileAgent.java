@@ -434,7 +434,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
         // Stop looping from occurring
         if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS &&
-                !ERROR_FORM.equals(payloadArg.currentForm())) {
+                !payloadArg.currentForm().equals(ERROR_FORM)) {
             payloadArg.replaceCurrentForm(ERROR_FORM);
             payloadArg.addProcessingError("Agent stopped due to larger than max transform history size (looping?)");
         }
@@ -461,8 +461,8 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // If we are in the error condition,
         // clean up and try for error drop off
         final String curKey = payloadArg.currentForm();
-        if (ERROR_FORM.equals(curKey)) {
-            if (payloadArg.currentFormSize() > 1 && ERROR_FORM.equals(payloadArg.currentFormAt(1))) {
+        if (curKey.equals(ERROR_FORM)) {
+            if (payloadArg.currentFormSize() > 1 && payloadArg.currentFormAt(1).equals(ERROR_FORM)) {
                 logger.error("ERROR handling place produced an error, purging all current forms");
                 while (payloadArg.currentFormSize() > 0) {
                     payloadArg.popCurrentForm();
@@ -505,7 +505,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
         // If we came from transform we can start at the beginning again
         if (lastEntry != null && startType != 0) {
-            if ("TRANSFORM".equals(lastEntry.getServiceType())) {
+            if (lastEntry.getServiceType().equals("TRANSFORM")) {
                 startType = 0;
             }
         }
