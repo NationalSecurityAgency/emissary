@@ -65,7 +65,7 @@ jobs:
       RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
   release:
-    needs: verify
+    needs: get_version
     runs-on: ubuntu-latest
     permissions:
       contents: write
