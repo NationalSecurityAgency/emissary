@@ -9,7 +9,7 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: Standard build on Java ${{ matrix.java }}
+    name: Standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
