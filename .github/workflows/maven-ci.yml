@@ -30,7 +30,7 @@ jobs:
       - name: Configure Java & Maven
         uses: actions/setup-java@v4
         with:
-          java-version: "${{ matrix.java }}"
+          java-version: '${{ matrix.java-version }}'
           cache: "maven"
           distribution: "corretto"
 
