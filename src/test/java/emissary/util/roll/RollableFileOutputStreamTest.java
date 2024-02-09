@@ -48,6 +48,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         Files.createFile(file2);
         // test
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
+            assert instance != null;
         }
 
         // verify
