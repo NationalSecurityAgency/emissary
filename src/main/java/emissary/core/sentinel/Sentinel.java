@@ -255,7 +255,7 @@ public class Sentinel implements Runnable {
         }
 
         public static String getPlaceName(String directoryEntryKey) {
-            return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, "/"), "");
+            return StringUtils.defaultString(StringUtils.substringAfterLast(directoryEntryKey, "/"));
         }
 
         public long getTimer() {
