@@ -60,12 +60,12 @@ class InputStreamChannelFactoryTest extends UnitTest {
     @Test
     void testClose() throws IOException {
         SeekableByteChannel sbc = InputStreamChannelFactory.create(testBytes.length, new TestInputStreamFactory(testBytes)).create();
-            // Call close twice - should not do or throw anything beyond the first time.
-            sbc.close();
-            assertFalse(sbc.isOpen());
+        // Call close twice - should not do or throw anything beyond the first time.
+        sbc.close();
+        assertFalse(sbc.isOpen());
 
-            assertDoesNotThrow(() -> sbc.close());
-            assertFalse(sbc.isOpen());
+        assertDoesNotThrow(() -> sbc.close());
+        assertFalse(sbc.isOpen());
     }
 
     @Test
