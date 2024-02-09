@@ -1296,6 +1296,8 @@ class BaseDataObjectTest extends UnitTest {
     static final Level LEVELS_ONE_WARN = ch.qos.logback.classic.Level.WARN;
     static final Throwable NO_THROWABLES = null;
     List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
+    LogbackTester.SimplifiedLogEvent event1 =
+            new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
 
     @Test
     void testChannelFactoryInArrayOutNoSet() throws IOException {
@@ -1311,8 +1313,6 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            LogbackTester.SimplifiedLogEvent event1 =
-                    new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
             events.add(event1);
             logbackTester.checkLogList(events);
         }
@@ -1332,9 +1332,7 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            LogbackTester.SimplifiedLogEvent event2 =
-                    new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
-            events.add(event2);
+            events.add(event1);
             logbackTester.checkLogList(events);
         }
     }
@@ -1355,9 +1353,7 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            LogbackTester.SimplifiedLogEvent event3 =
-                    new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
-            events.add(event3);
+            events.add(event1);
             logbackTester.checkLogList(events);
         }
     }
@@ -1414,9 +1410,7 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            LogbackTester.SimplifiedLogEvent event4 =
-                    new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
-            events.add(event4);
+            events.add(event1);
             logbackTester.checkLogList(events);
         }
     }

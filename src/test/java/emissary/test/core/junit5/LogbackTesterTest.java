@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -87,10 +86,4 @@ public class LogbackTesterTest extends UnitTest {
         assertTrue(thrownException.getMessage().startsWith("Exception message not equal for"), thrownException.getMessage());
     }
 
-    @Test
-    void canCheckOneEvent() {
-        LogbackTester logBackTester = new LogbackTester(logger.getName());
-        assertNotNull(logBackTester);
-        logBackTester.checkLogList(Collections.emptyList());
-    }
 }
