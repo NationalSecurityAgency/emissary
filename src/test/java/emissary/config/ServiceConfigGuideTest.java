@@ -629,14 +629,12 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals(value, nonNullValue, "Does this work?");
 
         // Zero-Length Entry
-        Exception ex = assertThrows(IllegalArgumentException.class, () ->
-            config.findRequiredStringEntry(emptyProp));
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> config.findRequiredStringEntry(emptyProp));
         assertNotNull(ex.getMessage(), "Exception message should not be null");
-        assertTrue(ex.getMessage().contains(emptyProp),"Exception message should name the offending config entry");
+        assertTrue(ex.getMessage().contains(emptyProp), "Exception message should name the offending config entry");
 
         // Missing entry
-        ex = assertThrows(NullPointerException.class, () ->
-            config.findRequiredStringEntry(missingProp));
+        ex = assertThrows(NullPointerException.class, () -> config.findRequiredStringEntry(missingProp));
         assertNotNull(ex.getMessage(), "Exception message should not be null");
         assertTrue(ex.getMessage().contains(missingProp), "Exception message should name the missing config entry");
     }
