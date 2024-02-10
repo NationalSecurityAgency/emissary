@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -74,6 +75,7 @@ class TimedResourceTest extends UnitTest {
     static class TestMobileAgent extends HDMobileAgent {
         private static final long serialVersionUID = 1L;
 
+        @Nullable
         CountDownLatch latch = new CountDownLatch(1);
 
         volatile boolean interrupted;

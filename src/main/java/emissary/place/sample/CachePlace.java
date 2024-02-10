@@ -6,6 +6,7 @@ import emissary.place.ServiceProviderPlace;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * This place just keeps a reference to the last 10 payload objects it has seen. The number is configurable. It allows
@@ -67,6 +68,7 @@ public class CachePlace extends ServiceProviderPlace {
         return cache.size();
     }
 
+    @Nullable
     public synchronized IBaseDataObject pop() {
         if (!cache.isEmpty()) {
             return cache.remove(0);

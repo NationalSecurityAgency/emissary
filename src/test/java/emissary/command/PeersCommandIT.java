@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -23,9 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PeersCommandIT extends UnitTest {
 
+    @Nullable
     private ByteArrayOutputStream outContent;
+    @Nullable
     private ByteArrayOutputStream errContent;
 
+    @Nullable
     private PeersCommand command;
     private List<String> arguments;
 

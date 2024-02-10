@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import javax.annotation.Nullable;
 
 import static emissary.directory.KeyManipulator.CLASSSEPARATOR;
 import static emissary.directory.KeyManipulator.DOLLAR;
@@ -44,6 +45,7 @@ public class DirectoryEntry implements Serializable {
     protected transient boolean lookupAttempted = false;
 
     /** Cached reference to the place instance if local */
+    @Nullable
     protected transient IServiceProviderPlace localPlace = null;
 
     /** The data type from the key */
@@ -68,6 +70,7 @@ public class DirectoryEntry implements Serializable {
     protected static final Logger logger = LoggerFactory.getLogger(DirectoryEntry.class);
 
     /** The description field for this entry */
+    @Nullable
     protected String description;
 
     /** Age of this entry */

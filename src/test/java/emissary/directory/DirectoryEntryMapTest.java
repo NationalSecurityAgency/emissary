@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -20,10 +21,13 @@ class DirectoryEntryMapTest extends UnitTest {
     private static final String key3 = "UNKNOWN.FOOPLACE.TRANSFORM.http://host.domain.com:8001/ThePlace";
     private static final int cost = 50;
     private static final int quality = 50;
-
+    @Nullable
     private DirectoryEntryMap dm = null;
+    @Nullable
     private DirectoryEntry d = null;
+    @Nullable
     private DirectoryEntry d2 = null;
+    @Nullable
     private DirectoryEntry d3 = null;
 
     @Override

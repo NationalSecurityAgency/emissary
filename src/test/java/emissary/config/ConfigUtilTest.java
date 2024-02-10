@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import javax.annotation.Nullable;
 
 import static emissary.config.ConfigUtil.CONFIG_DIR_PROPERTY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +41,7 @@ class ConfigUtilTest extends UnitTest {
     private final Logger configLogger = (Logger) LoggerFactory.getLogger(emissary.config.ConfigUtil.class);
 
     private static String configDir;
+    @Nullable
     private Path CDIR;
 
     @Override

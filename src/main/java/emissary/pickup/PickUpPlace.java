@@ -60,6 +60,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     protected String errorArea;
 
     // Where to move data when done
+    @Nullable
     protected String doneArea;
 
     // Our parser factory
