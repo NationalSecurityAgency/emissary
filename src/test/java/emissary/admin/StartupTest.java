@@ -111,30 +111,29 @@ class StartupTest extends UnitTest {
     }
 
     @Nullable
-    private DirectoryPlace master = null;
+    private DirectoryPlace server = null;
     @Nullable
     private DirectoryPlace client = null;
 
     public void dirStartUp() throws IOException {
-        // master directory
-        InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
+        // server directory
+        InputStream serverConfigStream = new ResourceReader().getConfigDataAsStream(this);
+        String serverLocation = "http://localhost:8001/TestServerDirectoryPlace";
+        this.server = spy(new DirectoryPlace(serverConfigStream, serverLocation, new EmissaryNode()));
+        serverConfigStream.close();
+        Namespace.bind(serverLocation, this.server);
 
-        String masterloc = "http://localhost:8001/TestMasterDirectoryPlace";
-        this.master = spy(new DirectoryPlace(configStream, masterloc, new EmissaryNode()));
-        configStream.close();
-        Namespace.bind(masterloc, this.master);
-
-        // non-master directory
-        configStream = new ResourceReader().getConfigDataAsStream(this);
-        String clientloc = "http://localhost:8001/DirectoryPlace";
-        this.client = spy(new DirectoryPlace(configStream, this.master.getDirectoryEntry().getKey(), clientloc, new EmissaryNode()));
-        configStream.close();
-        Namespace.bind(clientloc, this.client);
+        // client directory
+        InputStream clientConfigStream = new ResourceReader().getConfigDataAsStream(this);
+        String clientLocation = "http://localhost:8001/DirectoryPlace";
+        this.client = spy(new DirectoryPlace(clientConfigStream, this.server.getDirectoryEntry().getKey(), clientLocation, new EmissaryNode()));
+        clientConfigStream.close();
+        Namespace.bind(clientLocation, this.client);
     }
 
     public void dirTeardown() {
-        this.master.shutDown();
-        this.master = null;
+        this.server.shutDown();
+        this.server = null;
         this.client.shutDown();
         this.client = null;
         for (String s : Namespace.keySet()) {
