@@ -51,21 +51,16 @@ class AbstractSeekableByteChannelTest extends UnitTest {
 
     @Test
     void testOpenClose() throws IOException {
-        try (SeekableByteChannel sbc = new TestSeekableByteChannel(10)) {
-            assertTrue(sbc.isOpen());
+        SeekableByteChannel sbc = new TestSeekableByteChannel(10);
+        assertTrue(sbc.isOpen());
+        sbc.close();
+        assertFalse(sbc.isOpen());
 
-            sbc.close();
+        assertThrows(ClosedChannelException.class, () -> sbc.size());
+        assertThrows(ClosedChannelException.class, () -> sbc.read(ByteBuffer.allocate(5)));
+        assertThrows(ClosedChannelException.class, () -> sbc.position());
+        assertThrows(ClosedChannelException.class, () -> sbc.position(5));
 
-            assertFalse(sbc.isOpen());
-
-            sbc.close();
-
-            assertFalse(sbc.isOpen());
-            assertThrows(ClosedChannelException.class, () -> sbc.size());
-            assertThrows(ClosedChannelException.class, () -> sbc.read(ByteBuffer.allocate(5)));
-            assertThrows(ClosedChannelException.class, () -> sbc.position());
-            assertThrows(ClosedChannelException.class, () -> sbc.position(5));
-        }
     }
 
     @Test

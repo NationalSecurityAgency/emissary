@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.Collection;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import static emissary.core.constants.Parameters.INPUT_FILENAME;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
@@ -28,8 +29,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FilePickUpClientTest extends UnitTest {
     private static final String CLIENT_KEY = "http://localhost:8005/FilePickUpClient";
     private static final String DIRECTORY_KEY = "DIR.DIRECTORY.STUDY.http://localhost:8005/DirectoryPlace";
+    @Nullable
     private IBaseDataObject payload = null;
+    @Nullable
     private MyFilePickUpClient client = null;
+    @Nullable
     private WorkBundle bundle = null;
 
     @BeforeEach
@@ -139,6 +143,7 @@ class FilePickUpClientTest extends UnitTest {
         }
 
         @Override
+        @Nullable
         protected String caseIdHook(String initialCaseId, String sessionname, String fileName, Map<String, Collection<Object>> metadata) {
             if (nullifyCaseIdInHook)
                 return null;

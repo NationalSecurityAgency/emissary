@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
+import javax.annotation.Nullable;
 
 import static emissary.log.MDCConstants.SERVICE_LOCATION;
 import static emissary.log.MDCConstants.SHORT_NAME;
@@ -30,7 +31,9 @@ class ProcessReaderTest extends UnitTest {
     static final String FORMAT_PATTERN = "SHORT_NAME: '%s' SERVICE_LOCATION: '%s' - %s";
 
     static final Logger logger = (Logger) LoggerFactory.getLogger(DummyProcessReader.class);
+    @Nullable
     OutputStreamAppender<ILoggingEvent> appender;
+    @Nullable
     PatternLayoutEncoder encoder;
 
     @BeforeEach

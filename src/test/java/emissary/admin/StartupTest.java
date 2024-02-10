@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -109,7 +110,9 @@ class StartupTest extends UnitTest {
         }
     }
 
+    @Nullable
     private DirectoryPlace master = null;
+    @Nullable
     private DirectoryPlace client = null;
 
     public void dirStartUp() throws IOException {
