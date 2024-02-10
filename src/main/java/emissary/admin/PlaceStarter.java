@@ -34,9 +34,9 @@ public class PlaceStarter {
 
     static {
         try {
-            classConf = ConfigUtil.getMasterClassNames();
+            classConf = ConfigUtil.getClassNameInventory();
         } catch (IOException | EmissaryException iox) {
-            logger.error("Missing MasterClassNames.cfg: all places will become " + defaultClassName
+            logger.error("Missing ClassNameInventory.cfg: all places will become " + defaultClassName
                     + " which is probably not what you want. Config is now " + System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY), iox);
             System.exit(1);
         }
@@ -185,7 +185,7 @@ public class PlaceStarter {
         }
         final List<String> classStringList = classConf.findEntries(thePlaceName);
         if (classStringList.isEmpty()) {
-            logger.error("Need a CLASS config entry for {} check entry in emissary.admin.MasterClassNames.cfg, using default "
+            logger.error("Need a CLASS config entry for {} check entry in emissary.admin.ClassNameInventory.cfg, using default "
                     + "{} which is probably not what you want.", thePlaceName, defaultClassName);
             return defaultClassName;
         }
