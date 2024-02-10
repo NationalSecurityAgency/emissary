@@ -13,7 +13,7 @@ public interface IMobileAgent extends Serializable, Runnable {
     /**
      * Return the unique agent id
      */
-    String agentID();
+    String agentId();
 
     /**
      * Get a reference to the payload this agent is responsible for
@@ -21,8 +21,8 @@ public interface IMobileAgent extends Serializable, Runnable {
     emissary.core.IBaseDataObject getPayload();
 
     /**
-     * Send and agent on it's way with the specified payload The payload is not processed at sourcePlace, source is only
-     * used to get directory access to figure out where to go next.
+     * Send an agent on its way with the specified payload The payload is not processed at sourcePlace, source is only used
+     * to get directory access to figure out where to go next.
      * 
      * @param payload the payload IBaseDataObject or list thereof
      * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but the

@@ -108,7 +108,7 @@ class ResourceWatcherTest extends UnitTest {
         }
 
         @Override
-        public String agentID() {
+        public String agentId() {
             return "";
         }
 

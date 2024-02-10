@@ -50,7 +50,7 @@ public class DirectoryEntry implements Serializable {
     protected String dataType;
 
     /** The DataType::ServiceType from the key */
-    protected String dataID;
+    protected String dataId;
 
     /** THe service name from the key */
     protected String serviceName;
@@ -62,7 +62,7 @@ public class DirectoryEntry implements Serializable {
     protected String serviceLocation;
 
     /** The service URL from the key */
-    protected String serviceHostURL;
+    protected String serviceHostUrl;
 
     /** Logger instance */
     protected static final Logger logger = LoggerFactory.getLogger(DirectoryEntry.class);
@@ -140,7 +140,7 @@ public class DirectoryEntry implements Serializable {
         this.serviceType = serviceType;
         this.serviceLocation = serviceLocation;
         this.description = description;
-        setCQEFromExp(expense);
+        setCqeFromExp(expense);
         buildKey();
     }
 
@@ -202,9 +202,9 @@ public class DirectoryEntry implements Serializable {
         this.serviceType = that.serviceType;
         this.serviceName = that.serviceName;
         this.dataType = that.dataType;
-        this.dataID = that.dataID;
+        this.dataId = that.dataId;
         this.serviceLocation = that.serviceLocation;
-        this.serviceHostURL = that.serviceHostURL;
+        this.serviceHostUrl = that.serviceHostUrl;
         this.theQuality = that.theQuality;
         this.theCost = that.theCost;
         this.calculateExpense();
@@ -226,7 +226,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param expense the expense to use
      */
-    protected void setCQEFromExp(final int expense) {
+    protected void setCqeFromExp(final int expense) {
         if (expense >= 100) {
             final int invQual = expense % 100;
             this.theQuality = 100 - invQual;
@@ -315,12 +315,12 @@ public class DirectoryEntry implements Serializable {
         this.serviceType = KeyManipulator.getServiceType(this.theKey);
         this.serviceName = KeyManipulator.getServiceName(this.theKey);
         this.dataType = KeyManipulator.getDataType(key);
-        this.dataID = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;
+        this.dataId = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;
         this.serviceLocation = KeyManipulator.getServiceLocation(key);
-        this.serviceHostURL = KeyManipulator.getServiceHostURL(key);
+        this.serviceHostUrl = KeyManipulator.getServiceHostUrl(key);
         final int exp = KeyManipulator.getExpense(key, -1);
         if (exp > -1) {
-            setCQEFromExp(exp);
+            setCqeFromExp(exp);
         }
     }
 
@@ -341,7 +341,7 @@ public class DirectoryEntry implements Serializable {
      */
     public void setServiceLocation(final String serviceLocation) {
         this.serviceLocation = serviceLocation;
-        this.serviceHostURL = serviceLocation.substring(0, serviceLocation.lastIndexOf(CLASSSEPARATOR) + 1);
+        this.serviceHostUrl = serviceLocation.substring(0, serviceLocation.lastIndexOf(CLASSSEPARATOR) + 1);
         buildKey();
     }
 
@@ -364,12 +364,12 @@ public class DirectoryEntry implements Serializable {
     }
 
     /**
-     * Get dataID
+     * Get dataId
      * 
-     * @return dataID from key
+     * @return dataId from key
      */
-    public String getDataID() {
-        return this.dataID;
+    public String getDataId() {
+        return this.dataId;
     }
 
     /**
@@ -386,8 +386,8 @@ public class DirectoryEntry implements Serializable {
      * 
      * @return service host url from key
      */
-    public String getServiceHostURL() {
-        return this.serviceHostURL;
+    public String getServiceHostUrl() {
+        return this.serviceHostUrl;
     }
 
     /**
@@ -503,7 +503,7 @@ public class DirectoryEntry implements Serializable {
      */
     protected void buildKey() {
         this.theKey = KeyManipulator.makeKey(this.dataType, this.serviceName, this.serviceType, this.serviceLocation);
-        this.dataID = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;
+        this.dataId = this.dataType + KeyManipulator.DATAIDSEPARATOR + this.serviceType;
     }
 
     /**
@@ -557,7 +557,7 @@ public class DirectoryEntry implements Serializable {
      * 
      * @param e a JDOM Element
      */
-    public static DirectoryEntry fromXML(final Element e) {
+    public static DirectoryEntry fromXml(final Element e) {
         final String key = e.getChildTextTrim(KEY);
         final String desc = e.getChildTextTrim(DESC);
         final int cost = JDOMUtil.getChildIntValue(e, COST);
@@ -568,7 +568,7 @@ public class DirectoryEntry implements Serializable {
     /**
      * Turn this entry into an xml fragment
      */
-    public Element getXML() {
+    public Element getXml() {
         final Element root = new Element(ENTRY);
         root.addContent(JDOMUtil.simpleElement(KEY, this.theKey));
         root.addContent(JDOMUtil.simpleElement(DESC, this.description));

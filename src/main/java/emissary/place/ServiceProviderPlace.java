@@ -321,8 +321,8 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
             dirPlace = theDir;
             localDirPlace = null;
             try {
-                String myUrl = KeyManipulator.getServiceHostURL(keys.get(0));
-                String dirUrl = KeyManipulator.getServiceHostURL(dirPlace);
+                String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));
+                String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);
                 if (StringUtils.equals(dirUrl, myUrl)) {
                     localDirPlace = (IDirectoryPlace) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
                 } else {
@@ -496,14 +496,14 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     /**
      * Delegate nextKey to our directory
      *
-     * @param dataID key to entryMap in directory, dataType::serviceType
+     * @param dataId key to entryMap in directory, dataType::serviceType
      * @param lastEntry place agent visited last, this is not stateless
      * @return List of DirectoryEntry with next places to go
      */
     @Override
-    public List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
+    public List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
         if (localDirPlace != null) {
-            return (localDirPlace.nextKeys(dataID, payload, lastEntry));
+            return (localDirPlace.nextKeys(dataId, payload, lastEntry));
         }
         logger.error("No local directory in place {} with dir={}", keys.get(0), dirPlace);
         return null;

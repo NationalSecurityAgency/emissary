@@ -25,11 +25,11 @@ public interface IServiceProviderPlace {
     /**
      * Return list of next places to go with data. Delegation call through to our IDirectoryPlace
      * 
-     * @param dataID the SERVICE_NAME::SERVICE_TYPE
+     * @param dataId the SERVICE_NAME::SERVICE_TYPE
      * @param lastPlace last place visited
      * @return list of DirectoryEntry
      */
-    List<DirectoryEntry> nextKeys(String dataID, IBaseDataObject payload, DirectoryEntry lastPlace);
+    List<DirectoryEntry> nextKeys(String dataId, IBaseDataObject payload, DirectoryEntry lastPlace);
 
     /**
      * Add a service proxy to a running place. Duplicates are ignored.
