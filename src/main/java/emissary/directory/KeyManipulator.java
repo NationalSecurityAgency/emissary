@@ -414,33 +414,6 @@ public class KeyManipulator implements Serializable {
         return WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + "*";
     }
 
-    public static void main(final String[] argv) {
-        String temp = "UNKNOWN.place.ID.tcp://host.domain.com:8001/thePlace$5050";
-        String pat = "UNKNOWN.place.*";
-
-        if (argv.length > 1) {
-            temp = argv[0];
-            pat = argv[1];
-        }
-
-        if (gmatch(temp, pat)) {
-            System.out.println("***matched --> " + temp);
-            System.out.println("ServiceType: " + getServiceType(temp));
-            System.out.println("ServiceName: " + getServiceName(temp));
-            System.out.println("DataType   : " + getDataType(temp));
-            System.out.println("Location   : " + getServiceLocation(temp));
-            System.out.println("HostURL    : " + getServiceHostUrl(temp));
-            System.out.println("HostName   : " + getServiceHost(temp));
-            System.out.println("ClassName  : " + getServiceClassname(temp));
-            System.out.println("Expense    : " + getExpense(temp));
-            System.out.println("Default Directory  : " + getDefaultDirectoryKey(temp));
-            final String hckey = getHostMatchKey(temp);
-            System.out.println("Host match key : " + hckey + (gmatch(temp, hckey) ? " matches" : " does not match"));
-        } else {
-            System.out.println(" --- no match ---");
-        }
-    }
-
     public static String makeSproutKey(final String placeKey) {
         return "*.*." + IServiceProviderPlace.SPROUT_KEY + "." + getServiceLocation(placeKey) + DOLLAR + "0";
     }
