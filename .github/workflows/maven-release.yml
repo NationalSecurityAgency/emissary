@@ -215,7 +215,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/raft/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
+                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
                   }
                 }
               ]
