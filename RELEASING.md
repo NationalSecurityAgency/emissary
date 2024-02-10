@@ -113,7 +113,7 @@ Policy does not allow publishing to maven central via Action and is only authori
 
 Using the `oss` profile will make the artifacts available here: [Sonatype/Maven Central](https://central.sonatype.com/artifact/gov.nsa/emissary)
 
-In order for the following profile to work authroization is needed to publish to the gov.nsa maven group as well as having GPG siging configured in maven settings.
+In order for the following profile to work authorization is needed to publish to the gov.nsa maven group as well as having GPG signing configured in maven settings.
 ```
 mvn clean deploy -Poss
 ```
