@@ -97,6 +97,7 @@ class ResourceWatcherTest extends UnitTest {
             try {
                 for (int i = 0; i < this.times; i++) {
                     try (TimedResource tr = ResourceWatcherTest.this.resourceWatcher.starting(this, ResourceWatcherTest.this.place)) {
+                        assert tr != null;
                         Thread.sleep(rand.nextInt(100));
                     } catch (InterruptedException ex) {
                         // empty catch block
