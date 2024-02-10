@@ -6,7 +6,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.read.ListAppender;
-import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.MDC;
 import org.junit.jupiter.api.Test;
@@ -57,7 +56,7 @@ class LoggingPrintStreamTest {
         final Logger logger = (Logger) LoggerFactory.getLogger(LoggingPrintStream.class);
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.TRACE;
 
-        LoggingPrintStream loggingPrintStream = new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStream = new LoggingPrintStream(INSTANCE, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
         try {
             loggingPrintStream.close();
         } finally {
