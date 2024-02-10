@@ -27,10 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class FTestMovingAgent extends FunctionalTest {
+    @Nullable
     private IDirectoryPlace dir1 = null;
+    @Nullable
     private IDirectoryPlace dir2 = null;
+    @Nullable
     private IServiceProviderPlace toUpper = null;
+    @Nullable
     private IServiceProviderPlace toLower = null;
+    @Nullable
     private CachePlace cache = null;
 
     @Override
@@ -150,7 +155,7 @@ class FTestMovingAgent extends FunctionalTest {
     private void runHttpTest() {
         final Version version = new Version();
         final EmissaryClient h = new EmissaryClient();
-        final String urlBase = KeyManipulator.getServiceHostURL(this.dir1.getKey()) + EmissaryClient.CONTEXT + "/";
+        final String urlBase = KeyManipulator.getServiceHostUrl(this.dir1.getKey()) + EmissaryClient.CONTEXT + "/";
         HttpGet get = new HttpGet(urlBase + "welcome.jsp");
         EmissaryResponse ws = h.send(get);
         String msg = ws.getContentString();

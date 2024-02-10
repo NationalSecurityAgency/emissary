@@ -45,8 +45,9 @@ class ListOpenFilesTest extends UnitTest {
     void isOpen() throws IOException {
         assumeTrue(new Executrix().execute(new String[] {"lsof", "-v"}) == 0);
 
-        // open a file an test
+        // open a file and test
         try (InputStream stream = Files.newInputStream(file)) {
+            assert stream != null;
             assertTrue(instance.isOpen(file));
         }
         assertFalse(instance.isOpen(file));

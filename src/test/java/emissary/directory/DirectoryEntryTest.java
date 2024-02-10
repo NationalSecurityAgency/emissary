@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nullable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,7 +24,9 @@ class DirectoryEntryTest extends UnitTest {
     private static final int cost = 50;
     private static final int quality = 50;
 
+    @Nullable
     private DirectoryEntry d = null;
+    @Nullable
     private DirectoryEntry d2 = null;
 
     @Override
@@ -53,9 +57,9 @@ class DirectoryEntryTest extends UnitTest {
         assertEquals("ID", this.d.getServiceType(), "Service type");
         assertEquals("FOOPLACE", this.d.getServiceName(), "Service name");
         assertEquals(5050, this.d.getExpense(), "Calculate expense");
-        assertEquals("UNKNOWN::ID", this.d.getDataID(), "DataId");
+        assertEquals("UNKNOWN::ID", this.d.getDataId(), "DataId");
         assertEquals(Form.UNKNOWN, this.d.getDataType(), "Data Type");
-        assertEquals("http://host.domain.com:8001/", this.d.getServiceHostURL(), "ServiceHostURL");
+        assertEquals("http://host.domain.com:8001/", this.d.getServiceHostUrl(), "ServiceHostURL");
         assertNull(this.d.getLocalPlace(), "Local place");
     }
 
@@ -96,7 +100,7 @@ class DirectoryEntryTest extends UnitTest {
                         + "</quality><description>This is the description</description><expense>" + exp + "</expense><place>" + key
                         + "</place></entry>";
         final Document jdom = JDOMUtil.createDocument(xml, false);
-        final DirectoryEntry dxml = DirectoryEntry.fromXML(jdom.getRootElement());
+        final DirectoryEntry dxml = DirectoryEntry.fromXml(jdom.getRootElement());
         assertNotNull(dxml, "DirectoryEntry created from xml");
         assertEquals(cost, dxml.getCost(), "Cost from xml");
         assertEquals(quality, dxml.getQuality(), "Quality from xml");
@@ -152,15 +156,15 @@ class DirectoryEntryTest extends UnitTest {
     void testUpdateMethods() {
         this.d.setDataType("KNOWN");
         assertEquals("KNOWN", KeyManipulator.getDataType(this.d.getFullKey()), "update key with new data type");
-        assertEquals("KNOWN::ID", this.d.getDataID(), "update dataid with new data type");
+        assertEquals("KNOWN::ID", this.d.getDataId(), "update dataid with new data type");
 
         this.d.setServiceType("DI");
         assertEquals("DI", KeyManipulator.getServiceType(this.d.getFullKey()), "update key with new service type");
-        assertEquals("KNOWN::DI", this.d.getDataID(), "update dataid with new service type");
+        assertEquals("KNOWN::DI", this.d.getDataId(), "update dataid with new service type");
 
         this.d.setServiceName("BARPLACE");
         assertEquals("BARPLACE", KeyManipulator.getServiceName(this.d.getFullKey()), "update key with new service name");
-        assertEquals("KNOWN::DI", this.d.getDataID(), "no change to dataid with new service name");
+        assertEquals("KNOWN::DI", this.d.getDataId(), "no change to dataid with new service name");
     }
 
     @Test

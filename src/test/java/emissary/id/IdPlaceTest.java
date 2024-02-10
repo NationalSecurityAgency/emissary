@@ -10,11 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IdPlaceTest extends UnitTest {
 
+    @Nullable
     MyIdPlace place;
 
     @BeforeEach

@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public class TransformHistory implements Serializable {
 
@@ -116,6 +117,7 @@ public class TransformHistory implements Serializable {
      *
      * @return last place visited
      */
+    @Nullable
     public String lastVisit() {
         List<String> historyList = get();
         final int sz = historyList.size();
@@ -130,6 +132,7 @@ public class TransformHistory implements Serializable {
      *
      * @return second-to-last place visited
      */
+    @Nullable
     public String penultimateVisit() {
         List<String> historyList = get();
         final int sz = historyList.size();

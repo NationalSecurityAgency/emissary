@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 /**
  * This class is a value object to store the results of both a CRC32 and a message digest computation.
@@ -17,6 +18,7 @@ public class ChecksumResults implements Serializable {
     static final long serialVersionUID = -8187329704593435586L;
 
     private long crc = -1L;
+    @Nullable
     private String ssdeep = null;
     Map<String, byte[]> hashComp = new TreeMap<>();
 
@@ -80,6 +82,7 @@ public class ChecksumResults implements Serializable {
      * @param alg name of algorithm producing desired results
      * @return the formatted value of hash
      */
+    @Nullable
     public String getHashString(String alg) {
         byte[] comp = hashComp.get(alg);
         if (comp == null) {

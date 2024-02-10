@@ -41,7 +41,7 @@ jobs:
           exit 1
 
       - name: Checkout repo
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
 
       - name: Cherry pick to patch branch
         run: |

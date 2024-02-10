@@ -38,6 +38,7 @@ class SegmentChannelFactoryTest extends UnitTest {
         final CheckCloseChannelFactory cccf = new CheckCloseChannelFactory();
 
         try (SeekableByteChannel sbc = SegmentChannelFactory.create(cccf, 0, 0).create()) {
+            assert sbc != null;
         }
 
         assertEquals(List.of(true, true), cccf.isClosedList);

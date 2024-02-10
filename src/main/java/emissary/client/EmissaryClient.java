@@ -59,10 +59,14 @@ public class EmissaryClient {
     // some default objects to use
     private static final BasicCredentialsProvider CRED_PROV = new BasicCredentialsProvider();
     protected static final int ANY_PORT = -1;
+    @Nullable
     protected static final String ANY_HOST = null;
 
+    @Nullable
     private static CloseableHttpClient staticClient = null;
+    @Nullable
     private static RequestConfig staticRequestConfig = null;
+    @Nullable
     private static ConnectionConfig staticConnectionConfig = null;
 
     // static config variables

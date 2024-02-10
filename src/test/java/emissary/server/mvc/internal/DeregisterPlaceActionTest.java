@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import javax.annotation.Nullable;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.TARGET_DIRECTORY;
@@ -31,6 +32,7 @@ class DeregisterPlaceActionTest extends EndpointTestBase {
     private static final String TARGET_DIR = "http://deregisterPlaceActionTest:8001/DirectoryPlace";
     private static final String DEREGISTER_PLACE_ACTION = "DeregisterPlace.action";
     private static final ResourceReader rr = new ResourceReader();
+    @Nullable
     private static DirectoryPlace directory;
 
     @BeforeEach
