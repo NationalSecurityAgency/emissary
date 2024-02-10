@@ -155,7 +155,7 @@ class FTestMovingAgent extends FunctionalTest {
     private void runHttpTest() {
         final Version version = new Version();
         final EmissaryClient h = new EmissaryClient();
-        final String urlBase = KeyManipulator.getServiceHostURL(this.dir1.getKey()) + EmissaryClient.CONTEXT + "/";
+        final String urlBase = KeyManipulator.getServiceHostUrl(this.dir1.getKey()) + EmissaryClient.CONTEXT + "/";
         HttpGet get = new HttpGet(urlBase + "welcome.jsp");
         EmissaryResponse ws = h.send(get);
         String msg = ws.getContentString();

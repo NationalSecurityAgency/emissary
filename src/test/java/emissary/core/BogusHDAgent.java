@@ -43,7 +43,7 @@ public class BogusHDAgent extends HDMobileAgent {
 
         // Compare host and port
         final DirectoryEntry lastVisited = payload.getLastPlaceVisited();
-        if (lastVisited != null && de.getServiceHostURL().equals(lastVisited.getServiceHostURL())) {
+        if (lastVisited != null && de.getServiceHostUrl().equals(lastVisited.getServiceHostUrl())) {
             // Ok they really *are* local
             return de;
         }
