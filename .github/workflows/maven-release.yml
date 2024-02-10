@@ -1,15 +1,15 @@
 # This is a release workflow that leverages the maven release plugin specified in
 # the pom.xml to perform a release and create a tag of that release version.
 ---
-name: 'Maven: Release'
+name: "Maven: Release"
 
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
     inputs:
       release_type:
-        description: 'Choose the release type'
+        description: "Choose the release type"
         required: true
-        default: 'release'
+        default: "release"
         type: choice
         options:
           - release
@@ -21,8 +21,8 @@ on: # yamllint disable-line rule:truthy
         default: ""
 
 env:
-  JAVA_VERSION: '11'
-  JAVA_DISTRIBUTION: 'corretto'
+  JAVA_VERSION: "11"
+  JAVA_DISTRIBUTION: "corretto"
   MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Djava.awt.headless=true"
 
 jobs:
@@ -59,8 +59,8 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-    - name: Get the version
-      run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
+      - name: Get the version
+        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
     outputs:
       RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
 
@@ -71,64 +71,64 @@ jobs:
       contents: write
       packages: write
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Set up JDK ${{ env.JAVA_VERSION }}
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        cache: 'maven'
-        distribution: ${{ env.JAVA_DISTRIBUTION }}
-        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: "maven"
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
-    - name: Configure Git user
-      run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Configure Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-    - name: Branch that release
-      run: git switch -c release/${{ needs.get_version.outputs.RELEASE_VERSION }}
+      - name: Branch that release
+        run: git switch -c release/${{ needs.get_version.outputs.RELEASE_VERSION }}
 
-    - name: Dry run a release with maven
-      run: |
-        mvn -B -V -e -ntp release:prepare -DdryRun -DreleaseVersion=${{ env.RELEASE_VERSION }}
-        mvn -B -V -e -ntp release:clean
+      - name: Dry run a release with maven
+        run: |
+          mvn -B -V -e -ntp release:prepare -DdryRun -DreleaseVersion=${{ env.RELEASE_VERSION }}
+          mvn -B -V -e -ntp release:clean
 
-    - name: Release that version
-      run: |
-        mvn -V -B -e versions:set -DnewVersion=${{ needs.get_version.outputs.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
-        mvn -V -B -e versions:set-scm-tag -DnewTag=${{ needs.get_version.outputs.RELEASE_VERSION }} -DgenerateBackupPoms=false
-        git commit -am "[github_actions](${{ github.actor }}) release ${{ needs.get_version.outputs.RELEASE_VERSION }}"
-        git tag -a ${{ needs.get_version.outputs.RELEASE_VERSION }} -m "${{ needs.get_version.outputs.RELEASE_VERSION }}"
-        git push origin release/${{ needs.get_version.outputs.RELEASE_VERSION }}
-        git push origin ${{ needs.get_version.outputs.RELEASE_VERSION }}
+      - name: Release that version
+        run: |
+          mvn -V -B -e versions:set -DnewVersion=${{ needs.get_version.outputs.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
+          mvn -V -B -e versions:set-scm-tag -DnewTag=${{ needs.get_version.outputs.RELEASE_VERSION }} -DgenerateBackupPoms=false
+          git commit -am "[github_actions](${{ github.actor }}) release ${{ needs.get_version.outputs.RELEASE_VERSION }}"
+          git tag -a ${{ needs.get_version.outputs.RELEASE_VERSION }} -m "${{ needs.get_version.outputs.RELEASE_VERSION }}"
+          git push origin release/${{ needs.get_version.outputs.RELEASE_VERSION }}
+          git push origin ${{ needs.get_version.outputs.RELEASE_VERSION }}
 
-    - name: Build release artifacts
-      run: mvn -B -V -e -ntp "-Dstyle.color=always" package
+      - name: Build release artifacts
+        run: mvn -B -V -e -ntp "-Dstyle.color=always" package
 
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      continue-on-error: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ needs.get_version.outputs.RELEASE_VERSION }}
-        release_name: ${{ needs.get_version.outputs.RELEASE_VERSION }}
-        draft: false
-        prerelease: false
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: ${{ env.RELEASE_VERSION }}
+          draft: false
+          prerelease: false
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -Pgithub-publish -DskipTests
-      continue-on-error: true
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish to GitHub Packages Apache Maven
+        run: mvn deploy -Pgithub-publish -DskipTests
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Delete branch
-      continue-on-error: true
-      if: ${{ github.event.inputs.release_type == 'patch' && startsWith(github.ref_name, 'patch/') }}
-      run: git push origin :${{ github.ref_name }}
+      - name: Delete branch
+        continue-on-error: true
+        if: ${{ github.event.inputs.release_type == 'patch' && startsWith(github.ref_name, 'patch/') }}
+        run: git push origin :${{ github.ref_name }}
 
   snapshot-bump:
     if: ${{ github.event.inputs.release_type == 'release' && github.ref_name == 'master' }}
@@ -138,42 +138,42 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: ${{ env.JAVA_VERSION }}
-        distribution: ${{ env.JAVA_DISTRIBUTION }}
-        cache: 'maven'
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: "maven"
 
-    - name: Configure Git user
-      run: |
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Configure Git user
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-    - name: Get the version and set the name of the branch
-      run: |
-        NEXT_DEV_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F. '{print ""$1"."$2+1"."$3""}')
-        echo "NEXT_DEV_VERSION=${NEXT_DEV_VERSION}" >> "$GITHUB_ENV"
-        echo "PR_BRANCH=action/${NEXT_DEV_VERSION}" >> "$GITHUB_ENV"
+      - name: Get the version and set the name of the branch
+        run: |
+          NEXT_DEV_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F. '{print ""$1"."$2+1"."$3""}')
+          echo "NEXT_DEV_VERSION=${NEXT_DEV_VERSION}" >> "$GITHUB_ENV"
+          echo "PR_BRANCH=action/${NEXT_DEV_VERSION}" >> "$GITHUB_ENV"
 
-    - name: Create a branch
-      run: git switch -c ${{ env.PR_BRANCH }}
+      - name: Create a branch
+        run: git switch -c ${{ env.PR_BRANCH }}
 
-    - name: Set the next snapshot version
-      run: |
-        mvn -B -V -e -ntp versions:set -DnewVersion=${{ env.NEXT_DEV_VERSION }}
-        mvn -B -V -e -ntp versions:commit
-        git add .
-        git commit -m "[github-actions](${{ github.actor }}) next development iteration"
-        git push -u origin ${{ env.PR_BRANCH }}
+      - name: Set the next snapshot version
+        run: |
+          mvn -B -V -e -ntp versions:set -DnewVersion=${{ env.NEXT_DEV_VERSION }}
+          mvn -B -V -e -ntp versions:commit
+          git add .
+          git commit -m "[github-actions](${{ github.actor }}) next development iteration"
+          git push -u origin ${{ env.PR_BRANCH }}
 
-    - name: Create pull request
-      run: gh pr create -B master -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ env.NEXT_DEV_VERSION }}' --body 'Created by GitHub Action'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create pull request
+        run: gh pr create -B master -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ env.NEXT_DEV_VERSION }}' --body 'Created by GitHub Action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   slack-notify-start:
     needs: get_version
@@ -215,7 +215,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
+                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/raft/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
                   }
                 }
               ]
