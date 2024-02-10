@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.lang.management.ThreadInfo;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -41,7 +42,9 @@ public abstract class UnitTest {
     @TempDir
     public static File temporaryDirectory;
     protected static String TMPDIR = "/tmp";
+    @Nullable
     protected Package thisPackage = null;
+    @Nullable
     protected String origConfigPkg = null;
 
     /**
@@ -188,6 +191,7 @@ public abstract class UnitTest {
     /**
      * Get an JDOM XML document corresponding to a test resource
      */
+    @Nullable
     protected Document getAnswerDocumentFor(String resource) {
         int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {

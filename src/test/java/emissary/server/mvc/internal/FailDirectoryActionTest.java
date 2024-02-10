@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Collections;
+import javax.annotation.Nullable;
 
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_KEY;
 import static emissary.server.mvc.adapters.DirectoryAdapter.ADD_PROPAGATION_FLAG;
@@ -35,6 +36,7 @@ class FailDirectoryActionTest extends EndpointTestBase {
     private static final String FAIL_DIR = "EMISSARY_DIRECTORY_SERVICES.DIRECTORY.STUDY.http://failDirectoryRemotePlace:7001/DirectoryPlace";
     private static final String FAIL_DIRECTORY_ACTION = "FailDirectory.action";
     private static final ResourceReader rr = new ResourceReader();
+    @Nullable
     private static DirectoryPlace directory;
 
     @BeforeEach

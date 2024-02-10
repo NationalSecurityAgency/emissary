@@ -41,6 +41,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
     String eatPrefix;
 
     // Database case id for the work in this bundle
+    @Nullable
     String caseId = null;
 
     // Priority of this work bundle
@@ -173,6 +174,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
         }
     }
 
+    @Nullable
     static String readUTFOrNull(DataInputStream in) throws IOException {
         if (in.readBoolean()) {
             return in.readUTF();
@@ -600,6 +602,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @param xml the xml string representing a WorkBundle
      * @return the constructed WorkBundle or null on error
      */
+    @Nullable
     public static WorkBundle buildWorkBundle(String xml) {
         Document jdoc;
         try {
@@ -617,6 +620,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @param jdom the jdom document representing a work bundle object
      * @return the constructed WorkBundle or null on error
      */
+    @Nullable
     private static WorkBundle buildWorkBundle(Document jdom) {
         Element root = jdom.getRootElement();
         if (root == null) {

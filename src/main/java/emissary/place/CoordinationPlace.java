@@ -117,7 +117,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             } catch (NamespaceException ex) {
                 // Try creating the place
                 try {
-                    String skey = KeyManipulator.getServiceHostURL(keys.get(0)) + s;
+                    String skey = KeyManipulator.getServiceHostUrl(keys.get(0)) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
                     String sclz = PlaceStarter.getClassString(skey);
                     IServiceProviderPlace p = PlaceStarter.createPlace(skey, (InputStream) null, sclz, dirPlace);

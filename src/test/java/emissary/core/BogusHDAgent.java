@@ -3,6 +3,8 @@ package emissary.core;
 import emissary.directory.DirectoryEntry;
 import emissary.place.IServiceProviderPlace;
 
+import javax.annotation.Nullable;
+
 /**
  * For hacking the move test. This agent forces a move even when place is in the namespace.
  */
@@ -32,6 +34,7 @@ public class BogusHDAgent extends HDMobileAgent {
      * @return the fake Directory Entry (local always false)
      */
     @Override
+    @Nullable
     protected DirectoryEntry getNextKey(final IServiceProviderPlace place, final IBaseDataObject payload) {
         final DirectoryEntry de = super.getNextKey(place, payload);
         if (de == null) {
@@ -40,7 +43,7 @@ public class BogusHDAgent extends HDMobileAgent {
 
         // Compare host and port
         final DirectoryEntry lastVisited = payload.getLastPlaceVisited();
-        if (lastVisited != null && de.getServiceHostURL().equals(lastVisited.getServiceHostURL())) {
+        if (lastVisited != null && de.getServiceHostUrl().equals(lastVisited.getServiceHostUrl())) {
             // Ok they really *are* local
             return de;
         }

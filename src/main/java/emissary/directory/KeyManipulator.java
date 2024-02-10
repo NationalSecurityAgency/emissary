@@ -108,11 +108,11 @@ public class KeyManipulator implements Serializable {
         return "";
     }
 
-    public static String getDataID(final String key) {
+    public static String getDataId(final String key) {
         return getDataType(key) + DATAIDSEPARATOR + getServiceType(key);
     }
 
-    public static String getServiceTypeFromDataID(final String dataid) {
+    public static String getServiceTypeFromDataId(final String dataid) {
         final int pos = dataid.indexOf(DATAIDSEPARATOR);
         if (pos > -1) {
             return dataid.substring(pos + DATAIDSEPARATOR.length());
@@ -251,7 +251,7 @@ public class KeyManipulator implements Serializable {
     /**
      * Returns the protocol://hostname:port/ from a dictionary formatted key
      */
-    public static String getServiceHostURL(final String key) {
+    public static String getServiceHostUrl(final String key) {
         final String location = getServiceLocation(key);
         final int ds = location.lastIndexOf(CLASSSEPARATOR);
 
@@ -269,7 +269,7 @@ public class KeyManipulator implements Serializable {
      * @return true if local to each other
      */
     public static boolean isLocalTo(final String k1, final String k2) {
-        return getServiceHostURL(k1).equals(getServiceHostURL(k2));
+        return getServiceHostUrl(k1).equals(getServiceHostUrl(k2));
     }
 
     /**
@@ -406,12 +406,12 @@ public class KeyManipulator implements Serializable {
      * @param key the key of the place to find a directory for
      */
     public static String getDefaultDirectoryKey(final String key) {
-        return WILDCARD_THREE + KeyManipulator.getServiceHostURL(key) + "DirectoryPlace";
+        return WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + "DirectoryPlace";
     }
 
 
     public static String getHostMatchKey(final String key) {
-        return WILDCARD_THREE + KeyManipulator.getServiceHostURL(key) + "*";
+        return WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + "*";
     }
 
     public static String makeSproutKey(final String placeKey) {

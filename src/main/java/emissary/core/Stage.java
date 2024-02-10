@@ -1,5 +1,7 @@
 package emissary.core;
 
+import javax.annotation.Nullable;
+
 /**
  * Information class about processing stages in the workflow
  */
@@ -57,7 +59,7 @@ enum Stage {
      * @param name value to look up
      * @return resolved Stage name or null if no matching value was found
      */
-    public static Stage getByName(String name) {
+    public static @Nullable Stage getByName(String name) {
         try {
             return Stage.valueOf(name);
         } catch (IllegalArgumentException | NullPointerException e) {
@@ -71,7 +73,7 @@ enum Stage {
      * @param index value to look up
      * @return resolved Stage, or null if no matching value was found
      */
-    public static Stage getByOrdinal(final int index) {
+    public static @Nullable Stage getByOrdinal(final int index) {
         if (index < 0 || index >= Stage.values().length) {
             return null;
         }
@@ -107,7 +109,7 @@ enum Stage {
      * @param name stage to look up
      * @return the Stage following the name stage or null there is no next value
      */
-    public static Stage nextStageAfter(final String name) {
+    public static @Nullable Stage nextStageAfter(final String name) {
         Stage current = Stage.getByName(name);
         if (current == null) {
             return null;

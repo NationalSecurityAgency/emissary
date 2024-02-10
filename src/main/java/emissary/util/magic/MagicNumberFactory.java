@@ -18,6 +18,7 @@ public class MagicNumberFactory {
 
     private static final Logger log = LoggerFactory.getLogger(MagicNumberFactory.class);
 
+    @Nullable
     private static Map<String, Integer> typeMap = null;
     public static final String EMPTYSTRING = "";
     public static final String ENTRY_NOT_NULL_RULE = "Entry cannot be null";
@@ -381,6 +382,7 @@ public class MagicNumberFactory {
         }
     }
 
+    @Nullable
     private static byte[] resolveMask(String[] columns, MagicNumber item) {
         int ix = columns[1].indexOf("&");
         if (ix > 0) {
@@ -498,6 +500,7 @@ public class MagicNumberFactory {
             throw new ParseException("Unrecognized unary prefix");
     }
 
+    @Nullable
     public static String resolveReverseDataType(int dataTypeId) {
         initTypeMap();
         for (Map.Entry<String, Integer> entry : typeMap.entrySet()) {

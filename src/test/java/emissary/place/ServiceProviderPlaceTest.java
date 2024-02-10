@@ -22,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class ServiceProviderPlaceTest extends UnitTest {
+    @Nullable
     private IServiceProviderPlace place = null;
 
     private static final byte[] configData = ("PLACE_NAME = \"PlaceTest\"\n" + "SERVICE_NAME = \"TEST_SERVICE_NAME\"\n"

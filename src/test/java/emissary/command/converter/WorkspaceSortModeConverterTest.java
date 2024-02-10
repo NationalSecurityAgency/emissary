@@ -7,12 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkspaceSortModeConverterTest extends UnitTest {
+    @Nullable
     private Comparator<WorkBundle> comparator;
     private WorkspaceSortModeConverter converter;
 

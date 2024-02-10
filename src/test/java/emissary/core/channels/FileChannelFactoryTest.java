@@ -68,18 +68,11 @@ class FileChannelFactoryTest extends UnitTest {
 
     @Test
     void testClose() throws IOException {
-        try (final SeekableByteChannel sbc = sbcf.create()) {
-            assertTrue(sbc.isOpen());
-            sbc.close();
-            assertFalse(sbc.isOpen());
-        }
-
-        try (final SeekableByteChannel sbc = sbcf.create()) {
-            assertTrue(sbc.isOpen());
-            sbc.read(ByteBuffer.allocate(1));
-            sbc.close();
-            assertFalse(sbc.isOpen());
-        }
+        final SeekableByteChannel sbc = sbcf.create();
+        assertTrue(sbc.isOpen());
+        sbc.read(ByteBuffer.allocate(1));
+        sbc.close();
+        assertFalse(sbc.isOpen());
     }
 
     @Test

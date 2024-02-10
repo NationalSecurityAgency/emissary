@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.IntStream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.when;
 
 class ExecutrixTest extends UnitTest {
+    @Nullable
     private Executrix e;
 
     @BeforeEach

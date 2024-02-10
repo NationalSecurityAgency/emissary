@@ -178,8 +178,8 @@ class DirectoryEntryListTest extends UnitTest {
     void testXml() throws JDOMException {
         final Document jdom = JDOMUtil.createDocument("<entryList></entryList>", false);
         final Element root = jdom.getRootElement();
-        root.addContent(this.d.getXML());
-        root.addContent(this.d2.getXML());
+        root.addContent(this.d.getXml());
+        root.addContent(this.d2.getXml());
 
         final DirectoryEntryList dl2 = DirectoryEntryList.fromXML(root);
         assertNotNull(dl2, "From xml");

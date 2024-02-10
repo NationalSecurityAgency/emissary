@@ -41,7 +41,7 @@ public class Directory implements Comparable<Directory>, Serializable {
 
     private void setUpEntryInfo() {
         entry = directoryEntry.getKey();
-        dataId = directoryEntry.getDataID();
+        dataId = directoryEntry.getDataId();
         cost = directoryEntry.getCost();
         quality = directoryEntry.getQuality();
         expense = directoryEntry.getExpense();
