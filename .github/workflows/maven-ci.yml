@@ -3,9 +3,9 @@ name: Java CI with Maven
 
 on: # yamllint disable-line rule:truthy
   push:
-    branches: [master, release/**, patch/**]
+    branches: [main, release/**, patch/**]
   pull_request:
-    branches: [master, release/**, patch/**]
+    branches: [main, release/**, patch/**]
 
 jobs:
   build:
