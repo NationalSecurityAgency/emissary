@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
 /**
@@ -217,6 +218,26 @@ public final class IBaseDataObjectHelper {
                 child.setNumSiblings(totalNumSiblings);
             }
         }
+    }
+
+    /**
+     * Used to propagate needed parent metadata parameter information to a sprouted child except for those parameters whose
+     * names are specified in a regular expression pattern.
+     *
+     * @param parentIBaseDataObject the source of parameters to be copied
+     * @param childIBaseDataObject the destination for parameters to be copied
+     * @param excludedParametersPattern compiled regular expression specifying parameter names not to copy down
+     */
+
+    public static void addParentInformationToChildExcluding(final IBaseDataObject parentIBaseDataObject,
+            final IBaseDataObject childIBaseDataObject,
+            final Pattern excludedParametersPattern) {
+        Validate.notNull(parentIBaseDataObject, "Required: parentIBaseDataObject not null");
+        Validate.notNull(childIBaseDataObject, "Required: childIBaseDataObject not null");
+        Validate.notNull(excludedParametersPattern, "Required: excludedParametersPattern not null");
+        StreamSupport.stream(parentIBaseDataObject.getParameterKeys().spliterator(), false)
+                .filter(key -> !excludedParametersPattern.matcher(key).matches())
+                .forEach(key -> childIBaseDataObject.putParameter(key, parentIBaseDataObject.getParameter(key)));
     }
 
     /**

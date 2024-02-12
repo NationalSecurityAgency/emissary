@@ -358,6 +358,26 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     @Test
+    void testAddParentInformationToChildExcluding() throws Exception {
+        final IBaseDataObject parentIbdo = ibdo1;
+        final IBaseDataObject childIbdo = ibdo2;
+        final Pattern excludedParameters = Pattern.compile("FILETYPE|WILDCARDED_.*");
+
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(null, childIbdo, excludedParameters));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, null, excludedParameters));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, null));
+
+        parentIbdo.setFileType("filetype");
+        parentIbdo.setParameter("NON_EXCLUDED", "hereIam");
+        parentIbdo.setParameter("WILDCARDED_KEYNAME", "anyValueWillDo");
+        IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, excludedParameters);
+        assertNull(childIbdo.getFileType(), "Child should not contain simple excluded parameter from parent");
+        assertNull(childIbdo.getParameter("WILDCARDED_KEYNAME"), "Child should not contain wildcard excluded parameter from parent");
+        assertEquals(parentIbdo.getParameter("NON_EXCLUDED").get(0), childIbdo.getParameter("NON_EXCLUDED").get(0),
+                "Child should have non-excluded parent parameter");
+    }
+
+    @Test
     void testFindPreferredDataByRegex() {
         final List<Pattern> emptyPreferredViews = new ArrayList<>();
 
