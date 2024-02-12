@@ -14,13 +14,22 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This place takes two other places, givens them exactly the same IBDO and compares the output.
+ * This place takes two other places, gives each place a copy of the received IBDO and compares the output of the two
+ * places.
  * <p>
- * The configuration file must contain the five properties defined by the five constants in this class.
+ * NOTE: The configurations for the two places to be compared are used to construct the places internally; however, the
+ * two places are never registered with the Emissary framework. Therefore, it is only the configuration for this class
+ * that is registered with the Emissary framework. This means that PLACE_NAME, SERVICE_NAME, SERVICE_PROXY, etc. must
+ * all be set correctly (and is most likely based on the two places being compared's configurations) in this place's
+ * configuration in order to execute the two places to be compared correctly.
+ * <p>
+ * NOTE: the ibdo and attachments returned by Place A are the ones returned from this class.
+ * <p>
+ * The configuration file for this class must contain the five properties defined by the five constants in this class.
  */
 public class ComparisonPlace extends ServiceProviderPlace {
     /**
-     * The full pathname for the class for the first class.
+     * The full pathname for the first class.
      */
     public static final String PLACE_A_CLASSNAME = "PLACE_A_CLASSNAME";
     /**
@@ -28,7 +37,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
      */
     public static final String PLACE_A_CONFIGNAME = "PLACE_A_CONFIGNAME";
     /**
-     * The full pathname for the class for the second class.
+     * The full pathname for the second class.
      */
     public static final String PLACE_B_CLASSNAME = "PLACE_B_CLASSNAME";
     /**
@@ -40,14 +49,14 @@ public class ComparisonPlace extends ServiceProviderPlace {
      */
     public static final String LOGGING_IDENTIFIER = "LOGGING_IDENTIFIER";
 
-    private static final String NOT_NULL_STRING = " == null not allowed!";
+    private static final String CONFIG_ERROR_MSG = " must be defined in the configuration file!";
     private static final String PROCESS_PROCESSHD_MSG = "Mixed process/processHeavyDuty not allowed!";
 
     private final ServiceProviderPlace placeA;
     private final ServiceProviderPlace placeB;
     private final String loggingIdentifier;
 
-    public ComparisonPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {
+    public ComparisonPlace(final String configFile, final String theDir, final String thePlaceLocation) throws IOException {
         super(configFile, theDir, thePlaceLocation);
 
         final String placeAClassName = configG.findStringEntry(PLACE_A_CLASSNAME);
@@ -57,11 +66,11 @@ public class ComparisonPlace extends ServiceProviderPlace {
 
         loggingIdentifier = configG.findStringEntry(LOGGING_IDENTIFIER);
 
-        Validate.notNull(placeAClassName, PLACE_A_CLASSNAME + NOT_NULL_STRING);
-        Validate.notNull(placeAConfigName, PLACE_A_CONFIGNAME + NOT_NULL_STRING);
-        Validate.notNull(placeBClassName, PLACE_B_CLASSNAME + NOT_NULL_STRING);
-        Validate.notNull(placeBConfigName, PLACE_B_CONFIGNAME + NOT_NULL_STRING);
-        Validate.notNull(loggingIdentifier, LOGGING_IDENTIFIER + NOT_NULL_STRING);
+        Validate.notNull(placeAClassName, PLACE_A_CLASSNAME + CONFIG_ERROR_MSG);
+        Validate.notNull(placeAConfigName, PLACE_A_CONFIGNAME + CONFIG_ERROR_MSG);
+        Validate.notNull(placeBClassName, PLACE_B_CLASSNAME + CONFIG_ERROR_MSG);
+        Validate.notNull(placeBConfigName, PLACE_B_CONFIGNAME + CONFIG_ERROR_MSG);
+        Validate.notNull(loggingIdentifier, LOGGING_IDENTIFIER + CONFIG_ERROR_MSG);
 
         placeA = createPlace(placeAClassName, placeAConfigName);
         placeB = createPlace(placeBClassName, placeBConfigName);
@@ -70,7 +79,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
     }
 
     @Override
-    public List<IBaseDataObject> processHeavyDuty(IBaseDataObject ibdoA) throws ResourceException {
+    public List<IBaseDataObject> processHeavyDuty(final IBaseDataObject ibdoA) throws ResourceException {
         final IBaseDataObject ibdoB = IBaseDataObjectHelper.clone(ibdoA, true);
         final List<IBaseDataObject> attachmentsA;
         final List<IBaseDataObject> attachmentsB;
@@ -86,10 +95,10 @@ public class ComparisonPlace extends ServiceProviderPlace {
             attachmentsB = placeB.processHeavyDuty(ibdoB);
         }
 
-        final String differences = checkDifferencesHook(ibdoA, ibdoB, attachmentsA, attachmentsB, loggingIdentifier);
+        final String differences = checkDifferences(ibdoA, ibdoB, attachmentsA, attachmentsB, loggingIdentifier);
 
         if (differences != null) {
-            logDifferencesHook(differences);
+            logDifferences(differences);
         }
 
         return attachmentsA;
@@ -106,7 +115,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
      * @param loggingIdentifier the identifier to be added to the message to be logged.
      * @return the differences to be logger or null if there are no differences.
      */
-    protected String checkDifferencesHook(final IBaseDataObject ibdoA, final IBaseDataObject ibdoB, final List<IBaseDataObject> attachmentsA,
+    protected String checkDifferences(final IBaseDataObject ibdoA, final IBaseDataObject ibdoB, final List<IBaseDataObject> attachmentsA,
             final List<IBaseDataObject> attachmentsB, final String loggingIdentifier) {
         return PlaceComparisonHelper.checkDifferences(ibdoB, ibdoA, attachmentsB, attachmentsA, loggingIdentifier,
                 DiffCheckConfiguration.onlyCheckData());
@@ -117,7 +126,7 @@ public class ComparisonPlace extends ServiceProviderPlace {
      * 
      * @param differences to be logged.
      */
-    protected void logDifferencesHook(final String differences) {
+    protected void logDifferences(final String differences) {
         logger.info(differences);
     }
 
