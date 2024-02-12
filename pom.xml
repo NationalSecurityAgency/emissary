@@ -571,6 +571,33 @@
           <groupId>com.github.ekryd.sortpom</groupId>
           <artifactId>sortpom-maven-plugin</artifactId>
           <version>2.15.0</version>
+          <configuration>
+            <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+            <createBackupFile>false</createBackupFile>
+            <lineSeparator>\n</lineSeparator>
+            <expandEmptyElements>false</expandEmptyElements>
+            <nrOfIndentSpace>2</nrOfIndentSpace>
+            <sortDependencies>scope,groupId,artifactId</sortDependencies>
+            <sortDependencyExclusions>scope,groupId,artifactId</sortDependencyExclusions>
+            <sortPlugins>groupId,artifactId</sortPlugins>
+            <sortProperties>true</sortProperties>
+          </configuration>
+          <executions>
+            <execution>
+              <id>sort-pom</id>
+              <goals>
+                <goal>sort</goal>
+              </goals>
+              <phase>process-sources</phase>
+            </execution>
+            <execution>
+              <id>verify-sorted-pom</id>
+              <goals>
+                <goal>verify</goal>
+              </goals>
+              <phase>process-resources</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -578,20 +605,38 @@
           <version>1.5.3</version>
         </plugin>
         <plugin>
+          <groupId>io.github.git-commit-id</groupId>
+          <artifactId>git-commit-id-maven-plugin</artifactId>
+          <version>4.9.9</version>
+          <configuration>
+            <generateGitPropertiesFile>true</generateGitPropertiesFile>
+            <generateGitPropertiesFilename>${project.build.outputDirectory}/emissary.git.properties</generateGitPropertiesFilename>
+            <commitIdGenerationMode>full</commitIdGenerationMode>
+            <useNativeGit>${git.useNative}</useNativeGit>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>revision</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
           <groupId>net.revelc.code</groupId>
           <artifactId>impsort-maven-plugin</artifactId>
           <version>${dep.impsort.version}</version>
           <configuration>
-            <groups>java.,javax.,*</groups>
+            <groups>emissary,*,java</groups>
+            <staticGroups>*</staticGroups>
+            <staticAfter>true</staticAfter>
             <removeUnused>true</removeUnused>
           </configuration>
           <executions>
             <execution>
-              <id>sort-java-imports</id>
               <goals>
                 <goal>sort</goal>
               </goals>
-              <phase>generate-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -614,18 +659,9 @@
           </configuration>
           <executions>
             <execution>
-              <id>format-java-sources</id>
               <goals>
                 <goal>format</goal>
               </goals>
-              <phase>generate-sources</phase>
-            </execution>
-            <execution>
-              <id>format-java-test-sources</id>
-              <goals>
-                <goal>format</goal>
-              </goals>
-              <phase>generate-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -660,18 +696,9 @@
           </dependencies>
           <executions>
             <execution>
-              <id>checkstyle-sources</id>
               <goals>
                 <goal>check</goal>
               </goals>
-              <phase>process-sources</phase>
-            </execution>
-            <execution>
-              <id>checkstyle-test-sources</id>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <phase>process-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -703,7 +730,6 @@
           <version>3.2.1</version>
           <executions>
             <execution>
-              <id>check-maven-version</id>
               <goals>
                 <goal>enforce</goal>
               </goals>
@@ -734,6 +760,23 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${dep.maven-surefire-plugin.version}</version>
+          <configuration>
+            <argLine>${surefire.argline}</argLine>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <environmentVariables>
+              <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+            </environmentVariables>
+            <reuseForks>false</reuseForks>
+            <forkCount>${surefire.forkCount}</forkCount>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -769,7 +812,6 @@
           </configuration>
           <executions>
             <execution>
-              <id>attach-javadocs</id>
               <goals>
                 <goal>jar</goal>
                 <goal>test-jar</goal>
@@ -860,7 +902,6 @@
           <version>3.2.1</version>
           <executions>
             <execution>
-              <id>attach-sources</id>
               <goals>
                 <goal>jar</goal>
                 <goal>test-jar</goal>
@@ -874,7 +915,14 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${dep.maven-surefire-plugin.version}</version>
           <configuration>
+            <argLine>${surefire.argline}</argLine>
+            <environmentVariables>
+              <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
+            </environmentVariables>
+            <forkCount>${surefire.forkCount}</forkCount>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <reuseForks>true</reuseForks>
+            <runOrder>random</runOrder>
           </configuration>
         </plugin>
         <plugin>
@@ -1006,56 +1054,8 @@
     </pluginManagement>
     <plugins>
       <plugin>
-        <!-- verify before compile; should be sorted already -->
-        <groupId>com.github.ekryd.sortpom</groupId>
-        <artifactId>sortpom-maven-plugin</artifactId>
-        <configuration>
-          <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
-          <createBackupFile>false</createBackupFile>
-          <lineSeparator>\n</lineSeparator>
-          <expandEmptyElements>false</expandEmptyElements>
-          <nrOfIndentSpace>2</nrOfIndentSpace>
-          <sortDependencies>scope,groupId,artifactId</sortDependencies>
-          <sortDependencyExclusions>scope,groupId,artifactId</sortDependencyExclusions>
-          <sortPlugins>groupId,artifactId</sortPlugins>
-          <sortProperties>true</sortProperties>
-        </configuration>
-        <executions>
-          <execution>
-            <id>sort-pom</id>
-            <goals>
-              <goal>sort</goal>
-            </goals>
-            <phase>process-sources</phase>
-          </execution>
-          <execution>
-            <id>verify-sorted-pom</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-            <phase>process-resources</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>io.github.git-commit-id</groupId>
         <artifactId>git-commit-id-maven-plugin</artifactId>
-        <version>4.9.9</version>
-        <configuration>
-          <generateGitPropertiesFile>true</generateGitPropertiesFile>
-          <generateGitPropertiesFilename>${project.build.outputDirectory}/emissary.git.properties</generateGitPropertiesFilename>
-          <commitIdGenerationMode>full</commitIdGenerationMode>
-          <useNativeGit>${git.useNative}</useNativeGit>
-        </configuration>
-        <executions>
-          <execution>
-            <id>git-properties</id>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-            <phase>initialize</phase>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1121,24 +1121,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <reuseForks>false</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
-        </configuration>
-        <executions>
-          <execution>
-            <id>run-integration-tests</id>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1179,16 +1161,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>${surefire.argline}</argLine>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <environmentVariables>
-            <PROJECT_BASE>${project.build.directory}</PROJECT_BASE>
-          </environmentVariables>
-          <runOrder>random</runOrder>
-          <reuseForks>true</reuseForks>
-          <forkCount>${surefire.forkCount}</forkCount>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.basepom.maven</groupId>
@@ -1367,32 +1339,8 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
-            <version>${dep.impsort.version}</version>
-            <configuration>
-              <groups>emissary,*,java</groups>
-              <staticGroups>*</staticGroups>
-              <staticAfter>true</staticAfter>
-              <removeUnused>true</removeUnused>
-            </configuration>
-            <executions>
-              <execution>
-                <id>impsort-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-sources</phase>
-              </execution>
-              <execution>
-                <id>impsort-test-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-test-sources</phase>
-              </execution>
-            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>
