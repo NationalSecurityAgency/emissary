@@ -589,18 +589,10 @@
           </configuration>
           <executions>
             <execution>
-              <id>impsort-sources</id>
               <goals>
                 <goal>sort</goal>
               </goals>
               <phase>generate-sources</phase>
-            </execution>
-            <execution>
-              <id>impsort-test-sources</id>
-              <goals>
-                <goal>sort</goal>
-              </goals>
-              <phase>generate-test-sources</phase>
             </execution>
           </executions>
         </plugin>
