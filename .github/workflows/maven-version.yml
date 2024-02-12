@@ -61,6 +61,6 @@ jobs:
           git push -u origin ${{ env.PR_BRANCH }}
 
       - name: Create pull request
-        run: gh pr create -B master -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ github.event.inputs.next_version }}' --body 'Created by GitHub Action'
+        run: gh pr create -B main -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ github.event.inputs.next_version }}' --body 'Created by GitHub Action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
