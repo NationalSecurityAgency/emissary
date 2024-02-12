@@ -582,16 +582,25 @@
           <artifactId>impsort-maven-plugin</artifactId>
           <version>${dep.impsort.version}</version>
           <configuration>
-            <groups>java.,javax.,*</groups>
+            <groups>emissary,*,java</groups>
             <removeUnused>true</removeUnused>
+            <staticGroups>*</staticGroups>
+            <staticAfter>true</staticAfter>
           </configuration>
           <executions>
             <execution>
-              <id>sort-java-imports</id>
+              <id>impsort-sources</id>
               <goals>
                 <goal>sort</goal>
               </goals>
               <phase>generate-sources</phase>
+            </execution>
+            <execution>
+              <id>impsort-test-sources</id>
+              <goals>
+                <goal>sort</goal>
+              </goals>
+              <phase>generate-test-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -1367,32 +1376,8 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
-            <version>${dep.impsort.version}</version>
-            <configuration>
-              <groups>emissary,*,java</groups>
-              <staticGroups>*</staticGroups>
-              <staticAfter>true</staticAfter>
-              <removeUnused>true</removeUnused>
-            </configuration>
-            <executions>
-              <execution>
-                <id>impsort-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-sources</phase>
-              </execution>
-              <execution>
-                <id>impsort-test-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-test-sources</phase>
-              </execution>
-            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>
