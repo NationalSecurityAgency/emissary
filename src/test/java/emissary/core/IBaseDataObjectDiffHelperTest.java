@@ -350,4 +350,16 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         TreeMap<String, Collection<Object>> sortedParams = new TreeMap<>(ibdo1.getParameters());
         assertEquals(expectedParams, sortedParams.keySet(), "parameters should be sorted in natural order of keys");
     }
+
+    @Test
+    void testDecoderIOExceptions() throws IOException {
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_BOOLEAN_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class,
+                () -> IBaseDataObjectXmlCodecs.DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_BYTE_ARRAY_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_INTEGER_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_STRING_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_STRING_BYTE_ARRAY_DECODER.decode(null, null, "badMethodName"));
+        assertThrows(IOException.class, () -> IBaseDataObjectXmlCodecs.DEFAULT_STRING_OBJECT_DECODER.decode(null, null, "badMethodName"));
+    }
 }

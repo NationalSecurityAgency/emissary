@@ -12,6 +12,7 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -150,7 +151,7 @@ public final class IBaseDataObjectXmlHelper {
             decoders.decodeString(element, ibdo, TRANSACTION_ID);
             decoders.decodeStringByteArray(element, ibdo, VIEW);
             decoders.decodeString(element, ibdo, WORK_BUNDLE_ID);
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Failed to parse XML!", e);
         }
 

@@ -133,9 +133,9 @@ public final class IBaseDataObjectXmlCodecs {
          * @param elements the list of elements to be decoded.
          * @param ibdo the ibdo to set the values on.
          * @param ibdoMethodName the ibdo method name to use to set the values.
-         * @throws Exception thrown if anything goes wrong.
+         * @throws IOException thrown if anything goes wrong.
          */
-        void decode(List<Element> elements, IBaseDataObject ibdo, String ibdoMethodName) throws Exception;
+        void decode(List<Element> elements, IBaseDataObject ibdo, String ibdoMethodName) throws IOException;
     }
 
     /**
@@ -222,43 +222,43 @@ public final class IBaseDataObjectXmlCodecs {
             this.stringObjectDecoder = stringObjectDecoder;
         }
 
-        public void decodeBoolean(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeBoolean(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             booleanDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             byteArrayDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeInteger(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeInteger(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             integerDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeSeekableByteChannelFactory(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeSeekableByteChannelFactory(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             seekableByteChannelFactoryDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeStringByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeStringByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringByteArrayDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeString(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeString(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringDecoder.decode(elements, ibdo, methodName);
         }
 
-        public void decodeStringObject(Element currentElement, IBaseDataObject ibdo, String elementName) throws Exception {
+        public void decodeStringObject(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
             String methodName = getBDOMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringObjectDecoder.decode(elements, ibdo, methodName);
@@ -345,10 +345,14 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a boolean value.
      */
     public static final ElementDecoder DEFAULT_BOOLEAN_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, boolean.class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, boolean.class);
 
-        for (final Element element : elements) {
-            method.invoke(ibdo, Boolean.valueOf(element.getValue()));
+            for (final Element element : elements) {
+                method.invoke(ibdo, Boolean.valueOf(element.getValue()));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode boolean!", e);
         }
     };
 
@@ -356,13 +360,17 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a SeekableByteChannel value.
      */
     public static final ElementDecoder DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, SeekableByteChannelFactory.class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, SeekableByteChannelFactory.class);
 
-        for (final Element element : elements) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+            for (final Element element : elements) {
+                final String elementValue = element.getValue();
+                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
 
-            method.invoke(ibdo, InMemoryChannelFactory.create(extractBytes(encoding, elementValue)));
+                method.invoke(ibdo, InMemoryChannelFactory.create(extractBytes(encoding, elementValue)));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode SeekableByteChannelFactory!", e);
         }
     };
 
@@ -370,13 +378,17 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a byte array value.
      */
     public static final ElementDecoder DEFAULT_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, byte[].class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, byte[].class);
 
-        for (final Element element : elements) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+            for (final Element element : elements) {
+                final String elementValue = element.getValue();
+                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
 
-            method.invoke(ibdo, extractBytes(encoding, elementValue));
+                method.invoke(ibdo, extractBytes(encoding, elementValue));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode byte[]!", e);
         }
     };
 
@@ -384,10 +396,14 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has an integer value.
      */
     public static final ElementDecoder DEFAULT_INTEGER_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, int.class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, int.class);
 
-        for (final Element element : elements) {
-            method.invoke(ibdo, Integer.decode(element.getValue()));
+            for (final Element element : elements) {
+                method.invoke(ibdo, Integer.decode(element.getValue()));
+            }
+        } catch (ReflectiveOperationException | NumberFormatException e) {
+            throw new IOException("Failed to decode integer!", e);
         }
     };
 
@@ -395,13 +411,17 @@ public final class IBaseDataObjectXmlCodecs {
      * Implementation of an XML element decoder that has a string value.
      */
     public static final ElementDecoder DEFAULT_STRING_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, String.class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, String.class);
 
-        for (final Element element : elements) {
-            final String elementValue = element.getValue();
-            final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+            for (final Element element : elements) {
+                final String elementValue = element.getValue();
+                final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
 
-            method.invoke(ibdo, new String(extractBytes(encoding, elementValue), StandardCharsets.UTF_8));
+                method.invoke(ibdo, new String(extractBytes(encoding, elementValue), StandardCharsets.UTF_8));
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode string!", e);
         }
     };
 
@@ -410,19 +430,23 @@ public final class IBaseDataObjectXmlCodecs {
      * array.
      */
     public static final ElementDecoder DEFAULT_STRING_BYTE_ARRAY_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, String.class, byte[].class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, String.class, byte[].class);
 
-        for (final Element element : elements) {
-            final Element nameElement = element.getChild(NAME);
-            final String name = nameElement.getValue();
-            final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-            final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
-            final Element valueElement = element.getChild(VALUE);
-            final String value = valueElement.getValue();
-            final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-            final byte[] valueDecoded = extractBytes(valueEncoding, value);
+            for (final Element element : elements) {
+                final Element nameElement = element.getChild(NAME);
+                final String name = nameElement.getValue();
+                final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+                final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
+                final Element valueElement = element.getChild(VALUE);
+                final String value = valueElement.getValue();
+                final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+                final byte[] valueDecoded = extractBytes(valueEncoding, value);
 
-            method.invoke(ibdo, nameDecoded, valueDecoded);
+                method.invoke(ibdo, nameDecoded, valueDecoded);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode a mapping of String and byte[]!", e);
         }
     };
 
@@ -431,19 +455,23 @@ public final class IBaseDataObjectXmlCodecs {
      * object.
      */
     public static final ElementDecoder DEFAULT_STRING_OBJECT_DECODER = (elements, ibdo, ibdoMethodName) -> {
-        final Method method = getIbdoMethod(ibdoMethodName, String.class, CharSequence.class);
+        try {
+            final Method method = getIbdoMethod(ibdoMethodName, String.class, CharSequence.class);
 
-        for (final Element element : elements) {
-            final Element nameElement = element.getChild(NAME);
-            final String name = nameElement.getValue();
-            final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-            final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
-            final Element valueElement = element.getChild(VALUE);
-            final String value = valueElement.getValue();
-            final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
-            final String valueDecoded = new String(extractBytes(valueEncoding, value));
+            for (final Element element : elements) {
+                final Element nameElement = element.getChild(NAME);
+                final String name = nameElement.getValue();
+                final String nameEncoding = nameElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+                final String nameDecoded = new String(extractBytes(nameEncoding, name), StandardCharsets.UTF_8);
+                final Element valueElement = element.getChild(VALUE);
+                final String value = valueElement.getValue();
+                final String valueEncoding = valueElement.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
+                final String valueDecoded = new String(extractBytes(valueEncoding, value));
 
-            method.invoke(ibdo, nameDecoded, valueDecoded);
+                method.invoke(ibdo, nameDecoded, valueDecoded);
+            }
+        } catch (ReflectiveOperationException e) {
+            throw new IOException("Failed to decode a mapping of String and Object!", e);
         }
     };
 
