@@ -467,6 +467,10 @@
           <groupId>jakarta.servlet</groupId>
           <artifactId>jakarta.servlet-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.hamcrest</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -691,6 +695,7 @@
                       <exclude>ch.qos.logback:*:(,1.2.9)</exclude>
                       <exclude>log4j</exclude>
                       <exclude>org.apache.logging.log4j:*:(,2.17.1)</exclude>
+                      <exclude>org.hamcrest</exclude>
                       <exclude>javax.servlet</exclude>
                     </excludes>
                     <searchTransitive>true</searchTransitive>
