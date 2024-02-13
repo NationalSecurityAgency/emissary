@@ -23,7 +23,6 @@ import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -175,8 +174,7 @@ public class DropOffUtil {
     }
 
     private static String getDate(final Date d) {
-        LocalDateTime ldt = LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
-        return ldt.format(DATE_PATTERN);
+        return DATE_PATTERN.format(d.toInstant().atZone(ZoneId.systemDefault()));
     }
 
     /**
