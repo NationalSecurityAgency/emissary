@@ -88,7 +88,7 @@ public class DirectoryAdapter extends EmissaryClient {
             response.setEntity(EntityBuilder.create().setText("").setContentEncoding(MediaType.TEXT_PLAIN).build());
             return new EmissaryResponse(response);
         } else {
-            final String parentDirectoryUrl = KeyManipulator.getServiceHostURL(parentDirectory);
+            final String parentDirectoryUrl = KeyManipulator.getServiceHostUrl(parentDirectory);
             final HttpPost method = createHttpPost(parentDirectoryUrl, CONTEXT, "/RegisterPlace.action");
 
             final String parentLoc = KeyManipulator.getServiceLocation(parentDirectory);
@@ -139,7 +139,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @return status of operation
      */
     public EmissaryResponse outboundRemovePlaces(final String directory, final List<String> key, final boolean propagating) {
-        final String directoryUrl = KeyManipulator.getServiceHostURL(directory);
+        final String directoryUrl = KeyManipulator.getServiceHostUrl(directory);
         final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/DeregisterPlace.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
@@ -165,7 +165,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @return status of operation
      */
     public EmissaryResponse outboundFailDirectory(final String directory, final String failKey, final boolean permanent) {
-        final String directoryUrl = KeyManipulator.getServiceHostURL(directory);
+        final String directoryUrl = KeyManipulator.getServiceHostUrl(directory);
         final HttpPost method = createHttpPost(directoryUrl, CONTEXT, "/FailDirectory.action");
 
         final String parentLoc = KeyManipulator.getServiceLocation(directory);
@@ -243,7 +243,7 @@ public class DirectoryAdapter extends EmissaryClient {
      * @throws EmissaryException if remote returns an error
      */
     private DirectoryEntryMap zoneTransfer(final String key, @Nullable final String myKey, final String action) throws EmissaryException {
-        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostURL(key), CONTEXT, action);
+        final HttpPost method = createHttpPost(KeyManipulator.getServiceHostUrl(key), CONTEXT, action);
 
         final String parentLoc = KeyManipulator.getServiceLocation(key);
         final List<NameValuePair> nvps = new ArrayList<>();

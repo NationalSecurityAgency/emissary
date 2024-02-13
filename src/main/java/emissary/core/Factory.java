@@ -60,7 +60,7 @@ public class Factory {
             }
             logger.debug("checking:" + types);
 
-            final Constructor<?> constructor = ConstructorLookupCache.lookup(clazz, types.toArray(new Class[0]));
+            final Constructor<?> constructor = ConstructorLookupCache.lookup(clazz, types.toArray(new Class<?>[0]));
             if (constructor == null) {
                 logger.info("Failed to find constructor for args({}) types ({}) : {}", args.length, types.size(), types);
                 throw new Error("failed to find suitable constructor for class " + className);

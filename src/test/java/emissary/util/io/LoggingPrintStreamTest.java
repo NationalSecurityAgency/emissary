@@ -58,9 +58,10 @@ class LoggingPrintStreamTest {
         final Logger logger = (Logger) LoggerFactory.getLogger(LoggingPrintStream.class);
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.TRACE;
 
-        try (LoggingPrintStream loggingPrintStream = new LoggingPrintStream(NULL_OUTPUT_STREAM, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS)) {
+        LoggingPrintStream loggingPrintStream = new LoggingPrintStream(NULL_OUTPUT_STREAM, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        try {
             loggingPrintStream.close();
-
+        } finally {
             assertThrows(RejectedExecutionException.class, () -> loggingPrintStream.println(LOG_MSG_1));
             assertThrows(RejectedExecutionException.class, () -> EXCEPTION_ONE.printStackTrace(loggingPrintStream));
         }
@@ -68,22 +69,23 @@ class LoggingPrintStreamTest {
 
     @Test
     void testLoggingLevel() throws Exception {
-        try (LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
-                LoggingPrintStream loggingPrintStreamDebug =
-                        new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_DEBUG", logbackTester.logger,
-                                org.slf4j.event.Level.DEBUG, 30, TimeUnit.SECONDS);
-                LoggingPrintStream loggingPrintStreamError =
-                        new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_ERROR", logbackTester.logger,
-                                org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS);
-                LoggingPrintStream loggingPrintStreamInfo =
-                        new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_INFO", logbackTester.logger,
-                                org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS);
-                LoggingPrintStream loggingPrintStreamTrace =
-                        new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_TRACE", logbackTester.logger,
-                                org.slf4j.event.Level.TRACE, 30, TimeUnit.SECONDS);
-                LoggingPrintStream loggingPrintStreamWarn =
-                        new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_WARN", logbackTester.logger,
-                                org.slf4j.event.Level.WARN, 30, TimeUnit.SECONDS)) {
+        LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
+        LoggingPrintStream loggingPrintStreamDebug =
+                new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_DEBUG", logbackTester.logger,
+                        org.slf4j.event.Level.DEBUG, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStreamError =
+                new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_ERROR", logbackTester.logger,
+                        org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStreamInfo =
+                new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_INFO", logbackTester.logger,
+                        org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStreamTrace =
+                new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_TRACE", logbackTester.logger,
+                        org.slf4j.event.Level.TRACE, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStreamWarn =
+                new LoggingPrintStream(NULL_OUTPUT_STREAM, logbackTester.name + "_WARN", logbackTester.logger,
+                        org.slf4j.event.Level.WARN, 30, TimeUnit.SECONDS);
+        try {
             logbackTester.logger.setLevel(Level.ALL);
 
             loggingPrintStreamDebug.print(LOG_MSG_1);
@@ -101,7 +103,7 @@ class LoggingPrintStreamTest {
             loggingPrintStreamWarn.print(LOG_MSG_1);
             EXCEPTION_ONE.printStackTrace(loggingPrintStreamWarn);
             loggingPrintStreamWarn.close();
-
+        } finally {
             final Level[] expectedLevels =
                     {Level.DEBUG, Level.DEBUG, Level.ERROR, Level.ERROR, Level.INFO, Level.INFO, Level.TRACE, Level.TRACE, Level.WARN, Level.WARN};
             final String[] expectedMessages =
@@ -126,9 +128,10 @@ class LoggingPrintStreamTest {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
         final Logger logger = (Logger) LoggerFactory.getLogger(LoggingPrintStreamTest.class.getName() + ".testMdcContextMap");
 
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                LoggingPrintStream loggingPrintStream =
-                        new LoggingPrintStream(NullOutputStream.NULL_OUTPUT_STREAM, "STDTEST", logger, slf4jLevel, 30, TimeUnit.SECONDS)) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        LoggingPrintStream loggingPrintStream =
+                new LoggingPrintStream(NullOutputStream.NULL_OUTPUT_STREAM, "STDTEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        try {
             final ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
             final PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
 
@@ -150,9 +153,9 @@ class LoggingPrintStreamTest {
 
             loggingPrintStream.println("MDC_TEST_MESSAGE");
             loggingPrintStream.close();
-
             logger.detachAndStopAllAppenders();
 
+        } finally {
             final String logMessage = baos.toString();
 
             assertEquals(" INFO emissary.util.io.LoggingPrintStreamTest.testMdcContextMap - MDC_VALUE1 MDC_VALUE2 - STDTEST : MDC_TEST_MESSAGE\n",
@@ -164,13 +167,14 @@ class LoggingPrintStreamTest {
     void testOutputStreamArgumentOne() throws Exception {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
 
-        try (LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                LoggingPrintStream loggingPrintStream =
-                        new LoggingPrintStream(baos, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS)) {
+        LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        LoggingPrintStream loggingPrintStream =
+                new LoggingPrintStream(baos, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        try {
             loggingPrintStream.println(LOG_MSG_1);
             loggingPrintStream.close();
-
+        } finally {
             final String streamString = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
             assertEquals(LOG_MSG_1 + "\n", streamString, "OutputStream did not contain expected data");
@@ -183,16 +187,17 @@ class LoggingPrintStreamTest {
     void testOutputStreamArgumentTwo() throws Exception {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
 
-        try (LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                LoggingPrintStream loggingPrintStream =
-                        new LoggingPrintStream(baos, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
-                StringWriter stringWriter = new StringWriter();
-                PrintWriter printWriter = new PrintWriter(stringWriter)) {
+        LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        LoggingPrintStream loggingPrintStream =
+                new LoggingPrintStream(baos, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        try {
             EXCEPTION_ONE.printStackTrace(loggingPrintStream);
             EXCEPTION_ONE.printStackTrace(printWriter);
             loggingPrintStream.close();
-
+        } finally {
             final String streamString = new String(baos.toByteArray(), StandardCharsets.UTF_8);
             final String expectedString = stringWriter.toString();
 
@@ -205,18 +210,19 @@ class LoggingPrintStreamTest {
     void testSingleThread() throws Exception {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
 
-        try (LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                PrintStream printStream = new PrintStream(byteArrayOutputStream);
-                LoggingPrintStream loggingPrintStream =
-                        new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS)) {
+        LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        LoggingPrintStream loggingPrintStream =
+                new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        try {
             EXCEPTION_ONE.printStackTrace(loggingPrintStream);
             loggingPrintStream.println(LOG_MSG_1);
             EXCEPTION_TWO.printStackTrace(loggingPrintStream);
             loggingPrintStream.println(LOG_OBJ_1);
             loggingPrintStream.println(LOG_MSG_2);
             loggingPrintStream.close();
-
+        } finally {
             final Level[] expectedLevels = {Level.INFO, Level.INFO, Level.INFO, Level.INFO, Level.INFO};
             final String[] expectedMessages =
                     {THROWABLE_PREFIX + logbackTester.name,
@@ -234,33 +240,33 @@ class LoggingPrintStreamTest {
     void testMultiThread() throws Exception {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
 
-        try (LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                PrintStream printStream = new PrintStream(byteArrayOutputStream);
-                LoggingPrintStream loggingPrintStream =
-                        new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS)) {
-            final int iterations = 25;
-            final int numberOfThreads = 5;
+        LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(byteArrayOutputStream);
+        LoggingPrintStream loggingPrintStream =
+                new LoggingPrintStream(printStream, logbackTester.name, logbackTester.logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        final int iterations = 25;
+        final int numberOfThreads = 5;
 
-            final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+        final ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 
-            for (int i = 0; i < numberOfThreads; i++) {
-                final String message = "Message from instance " + i;
-                final Exception exception = new Exception("Exception from instance " + i);
+        for (int i = 0; i < numberOfThreads; i++) {
+            final String message = "Message from instance " + i;
+            final Exception exception = new Exception("Exception from instance " + i);
 
-                executorService.submit(() -> {
-                    for (int j = 0; j < iterations; j++) {
-                        loggingPrintStream.println(message);
-                        exception.printStackTrace(loggingPrintStream);
-                    }
-                });
-            }
-
+            executorService.submit(() -> {
+                for (int j = 0; j < iterations; j++) {
+                    loggingPrintStream.println(message);
+                    exception.printStackTrace(loggingPrintStream);
+                }
+            });
+        }
+        try {
             executorService.shutdown();
             executorService.awaitTermination(10, TimeUnit.SECONDS);
 
             loggingPrintStream.close();
-
+        } finally {
             assertEquals(iterations * numberOfThreads * 2, logbackTester.appender.list.size(), "Wrong number of log messages!");
         }
     }

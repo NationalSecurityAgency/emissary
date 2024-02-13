@@ -250,7 +250,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
         final List<Element> entryElements = e.getChildren(DirectoryEntry.ENTRY);
         for (Iterator<Element> i = entryElements.iterator(); i.hasNext();) {
             final Element entryElement = i.next();
-            d.add(DirectoryEntry.fromXML(entryElement));
+            d.add(DirectoryEntry.fromXml(entryElement));
         }
         return d;
     }
@@ -261,7 +261,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
     public Element getXML() {
         final Element root = new Element(ENTRYLIST);
         for (final DirectoryEntry entry : this) {
-            root.addContent(entry.getXML());
+            root.addContent(entry.getXml());
         }
         return root;
     }

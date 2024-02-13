@@ -5,6 +5,7 @@ import emissary.command.converter.ProjectBaseConverter;
 import emissary.config.ConfigUtil;
 import emissary.core.EmissaryException;
 
+import ch.qos.logback.classic.ClassicConstants;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -23,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import javax.annotation.Nullable;
 
 @Command(description = "Base Command")
 public abstract class BaseCommand implements EmissaryCommand {
@@ -32,6 +34,7 @@ public abstract class BaseCommand implements EmissaryCommand {
 
     @Option(names = {"-c", "--config"}, description = "config dir, comma separated if multiple, defaults to <projectBase>/config",
             converter = PathExistsConverter.class)
+    @Nullable
     private Path config;
 
     @Option(names = {"-b", "--projectBase"}, description = "defaults to PROJECT_BASE, errors if different\nDefault: ${DEFAULT-VALUE}",
@@ -39,18 +42,22 @@ public abstract class BaseCommand implements EmissaryCommand {
     private Path projectBase = Paths.get(System.getenv("PROJECT_BASE"));
 
     @Option(names = "--logbackConfig", description = "logback configuration file, defaults to <configDir>/logback.xml")
+    @Nullable
     private String logbackConfig;
 
     @Option(names = {"--flavor"}, description = "emissary config flavor, comma separated for multiple")
     private String flavor;
 
     @Option(names = {"--binDir"}, description = "emissary bin dir, defaults to <projectBase>/bin")
+    @Nullable
     private Path binDir;
 
     @Option(names = {"--outputRoot"}, description = "root output directory, defaults to <projectBase>/localoutput")
+    @Nullable
     private Path outputDir;
 
     @Option(names = {"--errorRoot"}, description = "root error directory, defaults to <projectBase>/localerrors")
+    @Nullable
     private Path errorDir;
 
     @Option(names = {"-q", "--quiet"}, description = "hide banner and non essential messages\nDefault: ${DEFAULT-VALUE}")
@@ -211,7 +218,7 @@ public abstract class BaseCommand implements EmissaryCommand {
     }
 
     private void doLogbackReinit(LoggerContext loggerContext, String configFilePath) {
-        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, configFilePath);
+        System.setProperty(ClassicConstants.CONFIG_FILE_PROPERTY, configFilePath);
         loggerContext.reset();
         ContextInitializer newContext = new ContextInitializer(loggerContext);
         try {

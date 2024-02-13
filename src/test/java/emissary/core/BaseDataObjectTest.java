@@ -1293,9 +1293,11 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     static final byte[] DATA_MODIFICATION_BYTES = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
-    static final Level[] LEVELS_ONE_WARN = new Level[] {Level.WARN};
-    static final String[] ONE_UNSAFE_MODIFICATION_DETECTED = new String[] {UNSAFE_MODIFICATION_DETECTED};
-    static final boolean[] NO_THROWABLES = new boolean[] {false};
+    static final Level LEVELS_ONE_WARN = ch.qos.logback.classic.Level.WARN;
+    static final Throwable NO_THROWABLES = null;
+    List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
+    LogbackTester.SimplifiedLogEvent event1 =
+            new LogbackTester.SimplifiedLogEvent(LEVELS_ONE_WARN, UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
 
     @Test
     void testChannelFactoryInArrayOutNoSet() throws IOException {
@@ -1311,7 +1313,8 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+            events.add(event1);
+            logbackTester.checkLogList(events);
         }
     }
 
@@ -1323,14 +1326,14 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.setChannelFactory(InMemoryChannelFactory.create(DATA_MODIFICATION_BYTES));
 
             byte[] data = ibdo.data();
-            data = ibdo.data();
 
             Arrays.fill(data, (byte) 0);
 
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+            events.add(event1);
+            logbackTester.checkLogList(events);
         }
     }
 
@@ -1350,7 +1353,8 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+            events.add(event1);
+            logbackTester.checkLogList(events);
         }
     }
 
@@ -1369,7 +1373,7 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(new byte[DATA_MODIFICATION_BYTES.length], ibdo.data());
-            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+            logbackTester.checkLogList(Collections.emptyList());
         }
     }
 
@@ -1388,7 +1392,7 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(new byte[DATA_MODIFICATION_BYTES.length], ibdo.data());
-            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+            logbackTester.checkLogList(Collections.emptyList());
         }
     }
 
@@ -1406,7 +1410,8 @@ class BaseDataObjectTest extends UnitTest {
             ibdo.checkForUnsafeDataChanges();
 
             assertArrayEquals(DATA_MODIFICATION_BYTES, ibdo.data());
-            logbackTester.checkLogList(LEVELS_ONE_WARN, ONE_UNSAFE_MODIFICATION_DETECTED, NO_THROWABLES);
+            events.add(event1);
+            logbackTester.checkLogList(events);
         }
     }
 

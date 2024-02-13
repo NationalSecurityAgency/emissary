@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 
 /**
  * Class to help track the things we are interested in monitoring
@@ -17,12 +18,14 @@ public class TimedResource implements AutoCloseable {
 
     public static final TimedResource EMPTY = new TimedResource();
 
+    @Nullable
     private final IMobileAgent agent;
     private final int payloadCount;
     private final long allowedDuration;
     private final String placeName;
     private final long started;
 
+    @Nullable
     private final Timer.Context timerContext;
 
     private final ReentrantLock lock = new ReentrantLock();

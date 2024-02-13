@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,6 +52,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected KffDataObjectHandler kff =
             new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
                     KffDataObjectHandler.SET_FILE_TYPE);
+    @Nullable
     protected IServiceProviderPlace place = null;
 
     @BeforeEach
@@ -106,7 +108,7 @@ public abstract class ExtractionTest extends UnitTest {
             IBaseDataObject payload = DataObjectFactory.getInstance(data, resource, initialForm);
             setupPayload(payload, controlDoc);
             processPreHook(payload, controlDoc);
-            List<IBaseDataObject> attachments = place.agentProcessHeavyDuty(payload);
+            List<IBaseDataObject> attachments = processHeavyDutyHook(place, payload);
             processPostHook(payload, attachments);
             checkAnswersPreHook(controlDoc, payload, attachments, resource);
             checkAnswers(controlDoc, payload, attachments, resource);
@@ -123,6 +125,10 @@ public abstract class ExtractionTest extends UnitTest {
 
     protected void processPostHook(IBaseDataObject payload, List<IBaseDataObject> attachments) {
         // Nothing to do here
+    }
+
+    protected List<IBaseDataObject> processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload) throws Exception {
+        return place.agentProcessHeavyDuty(payload);
     }
 
     protected void checkAnswersPreHook(Document answers, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) {

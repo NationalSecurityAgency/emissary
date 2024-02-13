@@ -146,7 +146,7 @@ public class HDMobileAgent extends MobileAgent {
             go(payload, arrivalPlace, true);
         } else if (payload instanceof Collection) {
             addPayload((Collection<IBaseDataObject>) payload);
-            setAgentID(getPayload().shortName());
+            setAgentId(getPayload().shortName());
             go(null, arrivalPlace, true);
         } else {
             throw new Exception("Illegal payload sent to HDMobileAgent, cannot handle " + payload.getClass().getName());
@@ -160,7 +160,7 @@ public class HDMobileAgent extends MobileAgent {
             super.go(payload, arrivalPlace);
         } else if (payload instanceof Collection) {
             addPayload((Collection<IBaseDataObject>) payload);
-            setAgentID(getPayload().shortName());
+            setAgentId(getPayload().shortName());
             go(null, arrivalPlace, false);
         } else {
             logger.error("Illegal payload sent to HDMobileAgent, cannot handle {}", payload.getClass().getName());
@@ -177,7 +177,7 @@ public class HDMobileAgent extends MobileAgent {
     @Override
     protected void agentControl(final IServiceProviderPlace currentPlaceArg) {
         DirectoryEntry newEntry = currentPlaceArg.getDirectoryEntry();
-        logger.debug("In agentControlHD {} for {}", currentPlaceArg, agentID);
+        logger.debug("In agentControlHD {} for {}", currentPlaceArg, agentId);
 
         // Set into the super classes payload member...
         IBaseDataObject mypayload = getPayload();
@@ -406,7 +406,10 @@ public class HDMobileAgent extends MobileAgent {
         logger.debug("In atPlaceHD {} with {} payload items", place, payloadListArg.size());
 
         List<IBaseDataObject> ret = Collections.emptyList();
+
         try (TimedResource tr = resourceWatcherStart(place)) {
+            assert tr != null; // to silence an unused resource warning
+
             // Process and get back a list of sprouted payloads
             lastPlaceProcessed = place.getDirectoryEntry().getKey();
 

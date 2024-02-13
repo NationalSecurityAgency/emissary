@@ -11,6 +11,8 @@ import java.nio.channels.SeekableByteChannel;
 public class InputStreamChannelFactory {
     private InputStreamChannelFactory() {}
 
+    public static final int SIZE_IS_UNKNOWN = -1;
+
     /**
      * Creates a factory implementation based on an {@link InputStreamFactory}
      * 

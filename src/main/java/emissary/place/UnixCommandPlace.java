@@ -391,7 +391,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      */
     protected void processData(IBaseDataObject tData) throws ResourceException {
 
-        byte[] outputData = runCommandOn(tData.data());
+        byte[] outputData = runCommandOn(findPreferredData(tData));
         String serviceType = KeyManipulator.getServiceType(keys.get(0));
 
         if (serviceType.equals("ID") || serviceType.equals("ANALYZE")) {
@@ -426,6 +426,16 @@ public class UnixCommandPlace extends ServiceProviderPlace {
             serviceHook(serviceType, tData, outputData);
         }
         return;
+    }
+
+    /**
+     * Get data to process
+     *
+     * @param tData the data object
+     * @return the data to process
+     */
+    protected byte[] findPreferredData(IBaseDataObject tData) {
+        return tData.data();
     }
 
 }

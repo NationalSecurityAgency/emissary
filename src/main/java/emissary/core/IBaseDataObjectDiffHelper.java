@@ -1,6 +1,7 @@
 package emissary.core;
 
 import emissary.core.channels.SeekableByteChannelFactory;
+import emissary.core.constants.IbdoXmlElementNames;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -23,10 +24,16 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class IBaseDataObjectDiffHelper {
-
+    private static final String DIFF_OUTPUT_FORMAT = "%s%s: %s : %s";
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
     private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
     private static final String ARE_NOT_EQUAL = " are not equal";
+    private static final String SHORT_NAME = "shortName";
+    private static final String INTERNAL_ID = "internalId";
+    private static final String TRANSFORM_HISTORY = "transformHistory";
+    private static final String FILE_TYPE_EMPTY = "fileTypeEmpty";
+    private static final String CREATION_TIMESTAMP = "creationTimestamp";
+    private static final String EXTRACTED_RECORDS = "extractedRecords";
 
     private IBaseDataObjectDiffHelper() {}
 
@@ -47,53 +54,53 @@ public class IBaseDataObjectDiffHelper {
         if (options.checkData()) {
             final SeekableByteChannelFactory sbcf1 = ibdo1.getChannelFactory();
             final SeekableByteChannelFactory sbcf2 = ibdo2.getChannelFactory();
-            diff(sbcf1, sbcf2, "sbcf", differences);
+            diff(sbcf1, sbcf2, IbdoXmlElementNames.DATA, differences);
         }
 
-        diff(ibdo1.getFilename(), ibdo2.getFilename(), "filename", differences);
-        diff(ibdo1.shortName(), ibdo2.shortName(), "shortName", differences);
+        diff(ibdo1.getFilename(), ibdo2.getFilename(), IbdoXmlElementNames.FILENAME, differences);
+        diff(ibdo1.shortName(), ibdo2.shortName(), SHORT_NAME, differences);
         if (options.checkInternalId()) {
-            diff(ibdo1.getInternalId(), ibdo2.getInternalId(), "internalId", differences);
+            diff(ibdo1.getInternalId(), ibdo2.getInternalId(), INTERNAL_ID, differences);
         }
-        diff(ibdo1.currentForm(), ibdo2.currentForm(), "currentForm", differences);
-        diff(ibdo1.getProcessingError(), ibdo2.getProcessingError(), "processingError", differences);
+        diff(ibdo1.currentForm(), ibdo2.currentForm(), IbdoXmlElementNames.CURRENT_FORM, differences);
+        diff(ibdo1.getProcessingError(), ibdo2.getProcessingError(), IbdoXmlElementNames.PROCESSING_ERROR, differences);
 
         if (options.checkTransformHistory()) {
-            diff(ibdo1.transformHistory(), ibdo2.transformHistory(), "transformHistory", differences);
+            diff(ibdo1.transformHistory(), ibdo2.transformHistory(), TRANSFORM_HISTORY, differences);
         }
 
-        diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), "fontEncoding", differences);
+        diff(ibdo1.getFontEncoding(), ibdo2.getFontEncoding(), IbdoXmlElementNames.FONT_ENCODING, differences);
 
         if (options.performDetailedParameterDiff()) {
-            diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+            diff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
         } else if (options.performKeyValueParameterDiff()) {
-            keyValueMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+            keyValueMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
         } else {
-            minimalMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), "parameters", differences);
+            minimalMapDiff(convertMap(ibdo1.getParameters()), convertMap(ibdo2.getParameters()), IbdoXmlElementNames.PARAMETER, differences);
         }
 
-        diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), "numChildren", differences);
-        diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), "numSiblings", differences);
-        diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), "birthOrder", differences);
-        diff(ibdo1.getAlternateViews(), ibdo2.getAlternateViews(), "alternateViews", differences);
-        diff(ibdo1.header(), ibdo2.header(), "header", differences);
-        diff(ibdo1.footer(), ibdo2.footer(), "footer", differences);
-        diff(ibdo1.getHeaderEncoding(), ibdo2.getHeaderEncoding(), "headerEncoding", differences);
-        diff(ibdo1.getClassification(), ibdo2.getClassification(), "classification", differences);
-        diff(ibdo1.isBroken(), ibdo2.isBroken(), "broken", differences);
-        diff(ibdo1.isFileTypeEmpty(), ibdo2.isFileTypeEmpty(), "fileTypeEmpty", differences);
-        diff(ibdo1.getPriority(), ibdo2.getPriority(), "priority", differences);
+        diff(ibdo1.getNumChildren(), ibdo2.getNumChildren(), IbdoXmlElementNames.NUM_CHILDREN, differences);
+        diff(ibdo1.getNumSiblings(), ibdo2.getNumSiblings(), IbdoXmlElementNames.NUM_SIBLINGS, differences);
+        diff(ibdo1.getBirthOrder(), ibdo2.getBirthOrder(), IbdoXmlElementNames.BIRTH_ORDER, differences);
+        diff(ibdo1.getAlternateViews(), ibdo2.getAlternateViews(), IbdoXmlElementNames.VIEW, differences);
+        diff(ibdo1.header(), ibdo2.header(), IbdoXmlElementNames.HEADER, differences);
+        diff(ibdo1.footer(), ibdo2.footer(), IbdoXmlElementNames.FOOTER, differences);
+        diff(ibdo1.getHeaderEncoding(), ibdo2.getHeaderEncoding(), IbdoXmlElementNames.HEADER_ENCODING, differences);
+        diff(ibdo1.getClassification(), ibdo2.getClassification(), IbdoXmlElementNames.CLASSIFICATION, differences);
+        diff(ibdo1.isBroken(), ibdo2.isBroken(), IbdoXmlElementNames.BROKEN, differences);
+        diff(ibdo1.isFileTypeEmpty(), ibdo2.isFileTypeEmpty(), FILE_TYPE_EMPTY, differences);
+        diff(ibdo1.getPriority(), ibdo2.getPriority(), IbdoXmlElementNames.PRIORITY, differences);
         if (options.checkTimestamp()) {
-            diff(ibdo1.getCreationTimestamp(), ibdo2.getCreationTimestamp(), "creationTimestamp", differences);
+            diff(ibdo1.getCreationTimestamp(), ibdo2.getCreationTimestamp(), CREATION_TIMESTAMP, differences);
         }
-        diff(ibdo1.isOutputable(), ibdo2.isOutputable(), "outputable", differences);
-        diff(ibdo1.getId(), ibdo2.getId(), "id", differences);
-        diff(ibdo1.getWorkBundleId(), ibdo2.getWorkBundleId(), "workBundleId", differences);
-        diff(ibdo1.getTransactionId(), ibdo2.getTransactionId(), "transactionId", differences);
+        diff(ibdo1.isOutputable(), ibdo2.isOutputable(), IbdoXmlElementNames.OUTPUTABLE, differences);
+        diff(ibdo1.getId(), ibdo2.getId(), IbdoXmlElementNames.ID, differences);
+        diff(ibdo1.getWorkBundleId(), ibdo2.getWorkBundleId(), IbdoXmlElementNames.WORK_BUNDLE_ID, differences);
+        diff(ibdo1.getTransactionId(), ibdo2.getTransactionId(), IbdoXmlElementNames.TRANSACTION_ID, differences);
 
         // Special case - pass through DiffCheckConfiguration options. This also ensures the right method is called (Object vs
         // List<IBDO>)
-        diff(ibdo1.getExtractedRecords(), ibdo2.getExtractedRecords(), "extractedRecords", differences, options);
+        diff(ibdo1.getExtractedRecords(), ibdo2.getExtractedRecords(), EXTRACTED_RECORDS, differences, options);
     }
 
     /**
@@ -177,7 +184,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (!Objects.deepEquals(object1, object2)) {
-            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL, object1, object2));
+            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL, object1, object2));
         }
     }
 
@@ -261,7 +268,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1.isEmpty() || !p2.isEmpty()) {
-            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
+            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
         }
     }
 
@@ -288,7 +295,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {
-            differences.add(String.format("%s%s: %s : %s", identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
+            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
         }
     }
 

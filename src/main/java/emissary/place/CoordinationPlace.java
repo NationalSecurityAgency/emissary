@@ -1,6 +1,7 @@
 package emissary.place;
 
 import emissary.admin.PlaceStarter;
+import emissary.core.EmissaryException;
 import emissary.core.Form;
 import emissary.core.IBaseDataObject;
 import emissary.core.Namespace;
@@ -116,7 +117,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             } catch (NamespaceException ex) {
                 // Try creating the place
                 try {
-                    String skey = KeyManipulator.getServiceHostURL(keys.get(0)) + s;
+                    String skey = KeyManipulator.getServiceHostUrl(keys.get(0)) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
                     String sclz = PlaceStarter.getClassString(skey);
                     IServiceProviderPlace p = PlaceStarter.createPlace(skey, (InputStream) null, sclz, dirPlace);
@@ -198,7 +199,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
             List<IBaseDataObject> sprouts = null;
 
             // Like an agent would do it
-            try (TimedResource tr = ResourceWatcher.lookup().starting(getAgent(), p)) {
+            try (TimedResource tr = resourceWatcherStart(p)) {
+                assert tr != null; // to silence an unused resource warning
+
                 if (hd) {
                     // Do the normal HD processing
                     sprouts = p.agentProcessHeavyDuty(d);
@@ -253,6 +256,15 @@ public class CoordinationPlace extends ServiceProviderPlace {
         return sproutCollection;
     }
 
+    protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
+        TimedResource tr = TimedResource.EMPTY;
+        try {
+            tr = ResourceWatcher.lookup().starting(getAgent(), place);
+        } catch (EmissaryException ex) {
+            logger.debug("No resource monitoring enabled");
+        }
+        return (tr == null) ? TimedResource.EMPTY : tr;
+    }
 
     /**
      * Process point when not using HDMobileAgent

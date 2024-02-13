@@ -1001,17 +1001,17 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     /**
      * Called by mobile agent to get a destination for a payload
      *
-     * @param dataID key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
+     * @param dataId key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
      * @param payload the payload being evaluated
      * @param lastPlace place agent visited last, this is not stateless
      * @return List of DirectoryEntry with next place to go or empty list if none
      */
     @Override
-    public List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, final DirectoryEntry lastPlace) {
+    public List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastPlace) {
         // Normal lookup in public entry map
-        logger.debug("nextKey called with dataID='{}', and lastPlace={}", dataID, (lastPlace == null ? "null" : lastPlace.getFullKey()));
+        logger.debug("nextKey called with dataId='{}', and lastPlace={}", dataId, (lastPlace == null ? "null" : lastPlace.getFullKey()));
 
-        List<DirectoryEntry> entries = nextKeys(dataID, payload, lastPlace, this.entryMap);
+        List<DirectoryEntry> entries = nextKeys(dataId, payload, lastPlace, this.entryMap);
         if (logger.isDebugEnabled() && (entries != null) && !entries.isEmpty()) {
             logger.debug("nextKey produced {} entries from main map {}", entries.size(), entries);
         }
@@ -1019,22 +1019,22 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     }
 
     /**
-     * Get tne next logical entry based on current dataid and last place visited
+     * Get tne next logical entry based on current dataId and last place visited
      *
-     * @param dataID key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
+     * @param dataId key to entryMap, dataType::serviceType, e.g. UNKNOWN::ID
      * @param payload the payload being routed
      * @param lastPlace place agent visited last, this is not stateless
      * @param entries map of DirectoryEntry stored in this directory
      * @return List of DirectoryEntry with next place to go or empty list if none
      */
-    protected List<DirectoryEntry> nextKeys(final String dataID, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
+    protected List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, @Nullable final DirectoryEntry lastPlace,
             final DirectoryEntryMap entries) {
         // Find the entry list for the type being requested
-        final DirectoryEntryList currentList = getWildcardedEntryList(dataID, entries);
+        final DirectoryEntryList currentList = getWildcardedEntryList(dataId, entries);
 
-        // Nothing for the dataID or any wildcarded versions, we are done
+        // Nothing for the dataId or any wildcarded versions, we are done
         if ((currentList == null) || currentList.isEmpty()) {
-            logger.debug("nextKey - nothing found here for {}", dataID);
+            logger.debug("nextKey - nothing found here for {}", dataId);
             return Collections.emptyList();
         }
 
@@ -1042,17 +1042,17 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         currentList.removeIf(de -> de.getLocalPlace() != null && de.getLocalPlace().isDenied(payload.currentForm()));
 
         if (currentList.isEmpty()) {
-            logger.debug("nextKeys - no non-DENIED entries found here for {}", dataID);
+            logger.debug("nextKeys - no non-DENIED entries found here for {}", dataId);
             return Collections.emptyList();
         }
         // The list we are building for return to the caller
         final List<DirectoryEntry> keyList = new ArrayList<>();
 
-        // The dataID this time is different from the last place
+        // The dataId this time is different from the last place
         // visited, so we can just choose from the list of the lowest
         // expense places and get on with it
         DirectoryEntry trialEntry = currentList.getEntry(0);
-        if (lastPlace == null || (!lastPlace.getDataID().equals(dataID) && !trialEntry.getServiceLocation().equals(lastPlace.getServiceLocation()))) {
+        if (lastPlace == null || (!lastPlace.getDataId().equals(dataId) && !trialEntry.getServiceLocation().equals(lastPlace.getServiceLocation()))) {
             logger.debug("doing first in list for {}", trialEntry);
             keyList.add(currentList.pickOneOf(trialEntry.getExpense()));
         } else {
@@ -1076,13 +1076,13 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
 
                 // If relaying, we want to be hopping closer to the target
                 if ((te == le) && (trialEntry.getExpense() >= lastPlace.getExpense())
-                        && !trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
+                        && !trialEntry.getServiceHostUrl().equals(lastPlace.getServiceHostUrl())) {
                     logger.debug("nextKey skip equal cost {}", trialEntry.getFullKey());
                     continue;
                 }
 
                 // If equal or lower cost, no point in using the entry
-                if ((trialEntry.getExpense() <= lastPlace.getExpense()) && trialEntry.getServiceHostURL().equals(lastPlace.getServiceHostURL())) {
+                if ((trialEntry.getExpense() <= lastPlace.getExpense()) && trialEntry.getServiceHostUrl().equals(lastPlace.getServiceHostUrl())) {
                     logger.debug("nextKey skip lower cost not relaying {}", trialEntry.getFullKey());
                     continue;
                 }
@@ -1101,18 +1101,18 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     /**
      * Get the possibly wildcarded DirectoryEntryList for the dataId
      *
-     * @param dataID the type of data being queried
+     * @param dataId the type of data being queried
      * @param entries the entry map to use
      * @return DirectoryEntryList or null if none
      */
-    protected DirectoryEntryList getWildcardedEntryList(final String dataID, final DirectoryEntryMap entries) {
+    protected DirectoryEntryList getWildcardedEntryList(final String dataId, final DirectoryEntryMap entries) {
         // Ids of the form FOO-BAR(ASCII)-BAZ will be wildcarded as:
         // FOO-BAR(ASCII)-BAZ
         // FOO-BAR(*)-BAZ
         // FOO-BAR(*)-*
         // FOO-*
         // See WildcardEntry for a more thorough example
-        return WildcardEntry.getWildcardedEntry(dataID, entries);
+        return WildcardEntry.getWildcardedEntry(dataId, entries);
     }
 
     /**
@@ -1156,10 +1156,10 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
         // is the entry that finally was selected for use, so we reuse
         // it here in the proper entry map.
         final DirectoryEntry thisEntry = d.getLastPlaceVisited();
-        final String dataId = thisEntry.getDataID();
+        final String dataId = thisEntry.getDataId();
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Relay payload '{}' arrived with form {} coming from {} arrival entry {} arrival dataID={}", d.shortName(), d.currentForm(),
+            logger.debug("Relay payload '{}' arrived with form {} coming from {} arrival entry {} arrival dataId={}", d.shortName(), d.currentForm(),
                     sourceEntry.getKey(), thisEntry.getKey(), dataId);
         }
 
@@ -1208,7 +1208,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     /**
      * Make directory contents entry keys available for display and transfer
      *
-     * @return Set of String in the DataID format DATATYPE::SERVICETYPE
+     * @return Set of String in the DataId format DATATYPE::SERVICETYPE
      */
     @Override
     public Set<String> getEntryKeys() {

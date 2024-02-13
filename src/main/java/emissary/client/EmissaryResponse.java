@@ -18,12 +18,14 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import javax.annotation.Nullable;
 
 public class EmissaryResponse {
 
     private static final Logger logger = LoggerFactory.getLogger(EmissaryResponse.class);
 
     final int status;
+    @Nullable
     final Object content;
     final String contentType;
     final Header[] headers;
@@ -72,6 +74,7 @@ public class EmissaryResponse {
         return headers;
     }
 
+    @Nullable
     public String getContentString() {
         if (content == null) {
             return null;

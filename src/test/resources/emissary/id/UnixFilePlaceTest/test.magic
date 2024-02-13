@@ -1,0 +1,5 @@
+# Rule for asserting a magic file can end in a multi-line rule
+
+0       string  THE_STRING_TO_MATCH
+
+>20     string  SECOND_PART             REPRODUCED_BUG
