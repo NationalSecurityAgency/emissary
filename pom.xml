@@ -137,31 +137,6 @@
         <version>${dep.picocli.version}</version>
       </dependency>
       <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-graphite</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-healthchecks</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-jmx</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-jvm</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-servlets</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
         <version>${dep.jakarta.xml.bind-api.version}</version>
@@ -255,6 +230,13 @@
         <groupId>com.fasterxml.jackson</groupId>
         <artifactId>jackson-bom</artifactId>
         <version>${dep.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-bom</artifactId>
+        <version>${dep.dropwizard.metrics.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -586,16 +568,16 @@
           <artifactId>impsort-maven-plugin</artifactId>
           <version>${dep.impsort.version}</version>
           <configuration>
-            <groups>java.,javax.,*</groups>
+            <groups>emissary,*,java</groups>
             <removeUnused>true</removeUnused>
+            <staticGroups>*</staticGroups>
+            <staticAfter>true</staticAfter>
           </configuration>
           <executions>
             <execution>
-              <id>sort-java-imports</id>
               <goals>
                 <goal>sort</goal>
               </goals>
-              <phase>generate-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -1372,31 +1354,8 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
-            <configuration>
-              <groups>emissary,*,java</groups>
-              <staticGroups>*</staticGroups>
-              <staticAfter>true</staticAfter>
-              <removeUnused>true</removeUnused>
-            </configuration>
-            <executions>
-              <execution>
-                <id>impsort-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-sources</phase>
-              </execution>
-              <execution>
-                <id>impsort-test-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-test-sources</phase>
-              </execution>
-            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>
