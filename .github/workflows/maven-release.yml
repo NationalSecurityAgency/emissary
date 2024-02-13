@@ -55,8 +55,17 @@ jobs:
           echo "Patch release is not using the correct branch, please target a branch that starts with 'patch/'"
           exit 1
 
-  release:
+  get_version:
     needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the version
+        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
+    outputs:
+      RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+
+  release:
+    needs: get_version
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -78,11 +87,8 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
-      - name: Get the version
-        run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
-
       - name: Branch that release
-        run: git switch -c release/${{ env.RELEASE_VERSION }}
+        run: git switch -c release/${{ needs.get_version.outputs.RELEASE_VERSION }}
 
       - name: Dry run a release with maven
         run: |
@@ -91,12 +97,12 @@ jobs:
 
       - name: Release that version
         run: |
-          mvn -V -B -e versions:set -DnewVersion=${{ env.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
-          mvn -V -B -e versions:set-scm-tag -DnewTag=${{ env.RELEASE_VERSION }} -DgenerateBackupPoms=false
-          git commit -am "[github_actions](${{ github.actor }}) release ${{ env.RELEASE_VERSION }}"
-          git tag -a ${{ env.RELEASE_VERSION }} -m "${{ env.RELEASE_VERSION }}"
-          git push origin release/${{ env.RELEASE_VERSION }}
-          git push origin ${{ env.RELEASE_VERSION }}
+          mvn -V -B -e versions:set -DnewVersion=${{ needs.get_version.outputs.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
+          mvn -V -B -e versions:set-scm-tag -DnewTag=${{ needs.get_version.outputs.RELEASE_VERSION }} -DgenerateBackupPoms=false
+          git commit -am "[github_actions](${{ github.actor }}) release ${{ needs.get_version.outputs.RELEASE_VERSION }}"
+          git tag -a ${{ needs.get_version.outputs.RELEASE_VERSION }} -m "${{ needs.get_version.outputs.RELEASE_VERSION }}"
+          git push origin release/${{ needs.get_version.outputs.RELEASE_VERSION }}
+          git push origin ${{ needs.get_version.outputs.RELEASE_VERSION }}
 
       - name: Build release artifacts
         run: mvn -B -V -e -ntp "-Dstyle.color=always" package
@@ -168,3 +174,51 @@ jobs:
         run: gh pr create -B master -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ env.NEXT_DEV_VERSION }}' --body 'Created by GitHub Action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  slack-notify-start:
+    needs: get_version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to slack channel via bot token
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} Started by: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+  slack-notify-complete:
+    needs: [get_version, release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to slack channel via bot token
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

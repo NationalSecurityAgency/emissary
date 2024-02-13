@@ -9,20 +9,18 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: Standard build on Java ${{ matrix.java }}
+    name: Standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        java: ["11"]
+        java-compiler: ['11', '17']
+        java-version: ['17']
         experimental: [false]
         include:
-          - java: "15"
-            experimental: true
-          - java: "16"
-            experimental: true
-          - java: "17"
-            experimental: true
+          - java-compiler: '11'
+            java-version: '11'
+            experimental: false
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
@@ -32,12 +30,37 @@ jobs:
       - name: Configure Java & Maven
         uses: actions/setup-java@v4
         with:
-          java-version: "${{ matrix.java }}"
+          java-version: '${{ matrix.java-version }}'
           cache: "maven"
           distribution: "corretto"
 
       - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" verify
+        run: mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${{ matrix.java-compiler }} verify
 
       - name: Verify Changed Files
         run: contrib/ci/detect-changes.sh
+
+  slack-notify:
+    if: ${{ github.event_name == 'push' }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to slack channel via bot token
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "emissary-master -- Commit: <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}> merged by ${{ github.actor }}.\nCI Job Status: *${{ join(needs.*.result, ' ')}}*"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
