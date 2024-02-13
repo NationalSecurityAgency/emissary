@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static net.logstash.logback.marker.Markers.appendEntries;
 
+@Deprecated
 public class ObjectTracing {
 
     protected static Logger objectTraceLogger = LoggerFactory.getLogger("objectTrace");;
