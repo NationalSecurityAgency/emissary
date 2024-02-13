@@ -4,11 +4,11 @@ import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.LogbackTester;
 import emissary.test.core.junit5.UnitTest;
 
-import ch.qos.logback.classic.Level;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,8 +49,7 @@ public class SafeUsageCheckerTest extends UnitTest {
 
         try (LogbackTester logbackTester = new LogbackTester(SafeUsageChecker.class.getName())) {
             suc.checkForUnsafeDataChanges();
-
-            logbackTester.checkLogList(new Level[0], new String[0], new boolean[0]);
+            logbackTester.checkLogList(Collections.emptyList());
         }
     }
 }
