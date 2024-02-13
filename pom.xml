@@ -1420,7 +1420,8 @@
                   -Xep:Java8ApiChecker:OFF \
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
-                  -Xep:Varifier:OFF</arg>
+                  -Xep:Varifier:OFF \
+                  -Xep:YodaCondition:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
