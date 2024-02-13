@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
 import static emissary.core.constants.IbdoXmlElementNames.SETUP;
@@ -175,6 +176,7 @@ public final class RegressionTestUtil {
      * @param resource to get the answer file for
      * @return the XML file in the src directory (not target)
      */
+    @Nullable
     public static Document getAnswerDocumentFor(final String resource) {
         try {
             final Path path = RegressionTestUtil.getXmlPath(resource);
@@ -193,6 +195,7 @@ public final class RegressionTestUtil {
      * @param resource path to the .dat file
      * @return path to the corresponding .xml file
      */
+    @Nullable
     public static Path getXmlPath(final String resource) {
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
@@ -290,6 +293,7 @@ public final class RegressionTestUtil {
      * @param resource to get the form from
      * @return the initial form from the filename
      */
+    @Nullable
     public static String getInitialFormFromFilename(final String resource) {
         try {
             final Path datFileUrl = Paths.get(new ResourceReader().getResource(resource).toURI());
@@ -309,6 +313,7 @@ public final class RegressionTestUtil {
      * @param resource path to the dat file
      * @return the initial IBDO
      */
+    @Nullable
     public static IBaseDataObject getInitialIbdoWithFormInFilename(final IBaseDataObject ibdo, final String resource,
             final KffDataObjectHandler kff) {
         try {

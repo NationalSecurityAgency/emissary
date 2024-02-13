@@ -46,21 +46,21 @@
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
     <argLine />
     <checkstyleFormatter>${project.basedir}/contrib/checkstyle.xml</checkstyleFormatter>
-    <dep.commons-codec.version>1.15</dep.commons-codec.version>
+    <dep.commons-codec.version>1.16.0</dep.commons-codec.version>
     <dep.commons-collections.version>4.4</dep.commons-collections.version>
-    <dep.commons-compress.version>1.21</dep.commons-compress.version>
+    <dep.commons-compress.version>1.24.0</dep.commons-compress.version>
     <dep.commons-exec.version>1.3</dep.commons-exec.version>
-    <dep.commons-io.version>2.11.0</dep.commons-io.version>
-    <dep.commons-lang.version>3.12.0</dep.commons-lang.version>
+    <dep.commons-io.version>2.13.0</dep.commons-io.version>
+    <dep.commons-lang.version>3.13.0</dep.commons-lang.version>
     <dep.commons-pool2.version>2.11.1</dep.commons-pool2.version>
     <dep.dropwizard.metrics.version>4.2.4</dep.dropwizard.metrics.version>
     <dep.errorprone.version>2.23.0</dep.errorprone.version>
-    <dep.gson.version>2.8.9</dep.gson.version>
-    <dep.guava.version>32.0.0-jre</dep.guava.version>
+    <dep.gson.version>2.10.1</dep.gson.version>
+    <dep.guava.version>32.1.2-jre</dep.guava.version>
     <dep.httpclient.version>5.2.1</dep.httpclient.version>
     <dep.httpcore.version>5.2.1</dep.httpcore.version>
     <dep.impsort.version>1.8.0</dep.impsort.version>
-    <dep.jackson.version>2.13.4</dep.jackson.version>
+    <dep.jackson.version>2.15.2</dep.jackson.version>
     <dep.jakarta.xml.bind-api.version>3.0.1</dep.jakarta.xml.bind-api.version>
     <dep.jaxb.runtime.version>3.0.1</dep.jaxb.runtime.version>
     <dep.jdom2.version>2.0.6.1</dep.jdom2.version>
@@ -107,26 +107,6 @@
         <version>${dep.logback.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${dep.jackson.version}.2</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.module</groupId>
-        <artifactId>jackson-module-jaxb-annotations</artifactId>
-        <version>${dep.jackson.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.github.spullara.mustache.java</groupId>
         <artifactId>compiler</artifactId>
         <version>${dep.spullara.mustache.compiler.version}</version>
@@ -155,31 +135,6 @@
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${dep.picocli.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-graphite</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-healthchecks</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-jmx</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-jvm</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.dropwizard.metrics</groupId>
-        <artifactId>metrics-servlets</artifactId>
-        <version>${dep.dropwizard.metrics.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
@@ -270,6 +225,20 @@
         <groupId>org.webjars</groupId>
         <artifactId>popper.js</artifactId>
         <version>${dep.webjars.popper.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${dep.jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-bom</artifactId>
+        <version>${dep.dropwizard.metrics.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -400,11 +369,6 @@
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>3.1.7</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -595,16 +559,16 @@
           <artifactId>impsort-maven-plugin</artifactId>
           <version>${dep.impsort.version}</version>
           <configuration>
-            <groups>java.,javax.,*</groups>
+            <groups>emissary,*,java</groups>
             <removeUnused>true</removeUnused>
+            <staticGroups>*</staticGroups>
+            <staticAfter>true</staticAfter>
           </configuration>
           <executions>
             <execution>
-              <id>sort-java-imports</id>
               <goals>
                 <goal>sort</goal>
               </goals>
-              <phase>generate-sources</phase>
             </execution>
           </executions>
         </plugin>
@@ -925,8 +889,8 @@
             </exceptions>
             <printEqualFiles>false</printEqualFiles>
             <failBuildInCaseOfDifferentContentConflict>true</failBuildInCaseOfDifferentContentConflict>
-            <failBuildInCaseOfEqualContentConflict>false</failBuildInCaseOfEqualContentConflict>
-            <failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
+            <failBuildInCaseOfEqualContentConflict>true</failBuildInCaseOfEqualContentConflict>
+            <failBuildInCaseOfConflict>true</failBuildInCaseOfConflict>
             <checkCompileClasspath>true</checkCompileClasspath>
             <checkRuntimeClasspath>true</checkRuntimeClasspath>
             <checkTestClasspath>true</checkTestClasspath>
@@ -967,6 +931,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
           <version>${dep.versions.maven.plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.cyclonedx</groupId>
+          <artifactId>cyclonedx-maven-plugin</artifactId>
+          <version>2.7.9</version>
         </plugin>
         <plugin>
           <groupId>org.jacoco</groupId>
@@ -1362,6 +1331,22 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <configuration>
+              <outputFormat>json</outputFormat>
+              <schemaVersion>1.3</schemaVersion>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>makeAggregateBom</goal>
+                </goals>
+                <phase>validate</phase>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
     </profile>
@@ -1380,32 +1365,8 @@
             <artifactId>sortpom-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <!-- Sort java imports -->
             <groupId>net.revelc.code</groupId>
             <artifactId>impsort-maven-plugin</artifactId>
-            <version>${dep.impsort.version}</version>
-            <configuration>
-              <groups>emissary,*,java</groups>
-              <staticGroups>*</staticGroups>
-              <staticAfter>true</staticAfter>
-              <removeUnused>true</removeUnused>
-            </configuration>
-            <executions>
-              <execution>
-                <id>impsort-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-sources</phase>
-              </execution>
-              <execution>
-                <id>impsort-test-sources</id>
-                <goals>
-                  <goal>sort</goal>
-                </goals>
-                <phase>generate-test-sources</phase>
-              </execution>
-            </executions>
           </plugin>
           <plugin>
             <groupId>net.revelc.code.formatter</groupId>

@@ -32,10 +32,10 @@ jobs:
       branch: ${{ steps.set_output.outputs.patch_branch }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v4
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}

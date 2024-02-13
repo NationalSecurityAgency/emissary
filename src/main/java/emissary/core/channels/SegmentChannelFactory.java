@@ -45,7 +45,7 @@ public final class SegmentChannelFactory {
 
         private SegmentChannelFactoryImpl(final SeekableByteChannelFactory seekableByteChannelFactory, final long start,
                 final long length) {
-            Validate.notNull(seekableByteChannelFactory, "Required: seekableByteChannelFactory not null!");
+            Validate.isTrue(seekableByteChannelFactory != null, "Required: seekableByteChannelFactory != null!");
             Validate.isTrue(start >= 0, "Required: start >= 0!");
             Validate.isTrue(length >= 0, "Required: length >= 0!");
             try (SeekableByteChannel sbc = seekableByteChannelFactory.create()) {

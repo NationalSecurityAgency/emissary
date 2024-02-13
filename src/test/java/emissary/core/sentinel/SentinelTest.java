@@ -43,7 +43,7 @@ class SentinelTest extends UnitTest {
         IMobileAgent hdma = mock(IMobileAgent.class);
         when(hdma.getName()).thenReturn(agentKey);
         when(hdma.isInUse()).thenReturn(true);
-        when(hdma.agentID()).thenReturn("Agent-1234-" + shortname);
+        when(hdma.agentId()).thenReturn("Agent-1234-" + shortname);
         when(hdma.getLastPlaceProcessed()).thenReturn("http://host.domain.com:8001/" + placename);
 
         Sentinel.Tracker tracker;

@@ -89,6 +89,8 @@ public interface Configurator {
     Map<String, Set<String>> findStringMatchMultiMap(final String theParameter);
 
 
+    String findRequiredStringEntry(String theParameter) throws IllegalArgumentException;
+
     /**
      * Find the first config entry matching with default value when none
      *

@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,6 +52,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected KffDataObjectHandler kff =
             new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
                     KffDataObjectHandler.SET_FILE_TYPE);
+    @Nullable
     protected IServiceProviderPlace place = null;
 
     @BeforeEach

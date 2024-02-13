@@ -120,7 +120,7 @@ public class DumpDirectoryAction {
         public PeerInfo(String peerkey, boolean healthy) {
             this.peerkey = peerkey;
             this.link =
-                    KeyManipulator.getServiceHostURL(peerkey) + "emissary/DumpDirectory.action?targetDir="
+                    KeyManipulator.getServiceHostUrl(peerkey) + "emissary/DumpDirectory.action?targetDir="
                             + KeyManipulator.getServiceLocation(peerkey);
             this.status = healthy ? "" : "DOWN";
         }

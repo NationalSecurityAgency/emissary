@@ -611,4 +611,31 @@ class ServiceConfigGuideTest extends UnitTest {
         assertEquals(nonNullValue, multiValue, "Multi-valued property should return first non-null value");
         assertEquals(defaultValue, multiNullValue, "Multi-valued property with all nulls should return default");
     }
+
+    @Test
+    void testFindRequiredStringEntry() {
+        final String workingProp = "test.workingProp";
+        final String emptyProp = "test.emptyProp";
+        final String missingProp = "test.missingProp";
+        final String nonNullValue = "non-null value";
+        final String emptyValue = "";
+
+        final ServiceConfigGuide config = new ServiceConfigGuide();
+        config.addEntry(workingProp, nonNullValue);
+        config.addEntry(emptyProp, emptyValue);
+
+        // Working entry
+        final String value = config.findRequiredStringEntry(workingProp);
+        assertEquals(value, nonNullValue, "Does this work?");
+
+        // Zero-Length Entry
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> config.findRequiredStringEntry(emptyProp));
+        assertNotNull(ex.getMessage(), "Exception message should not be null");
+        assertTrue(ex.getMessage().contains(emptyProp), "Exception message should name the offending config entry");
+
+        // Missing entry
+        ex = assertThrows(NullPointerException.class, () -> config.findRequiredStringEntry(missingProp));
+        assertNotNull(ex.getMessage(), "Exception message should not be null");
+        assertTrue(ex.getMessage().contains(missingProp), "Exception message should name the missing config entry");
+    }
 }

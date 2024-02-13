@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -26,10 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
  * Base class of all the functional tests
  */
 public abstract class FunctionalTest extends UnitTest {
+    @Nullable
     protected EmissaryServer jserver = null;
+    @Nullable
     protected Server jetty = null;
+    @Nullable
     protected IDirectoryPlace directory = null;
+    @Nullable
     protected AgentPool pool = null;
+    @Nullable
     protected MoveSpool spool = null;
 
     public FunctionalTest() {

@@ -106,6 +106,7 @@ public class LogbackTester implements Closeable {
     public static class SimplifiedLogEvent {
         public final Level level;
         public final String message;
+        @Nullable
         public final String throwableClassName;
         public final String throwableMessage;
 

@@ -14,6 +14,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,6 +24,7 @@ class JournaledChannelTest extends UnitTest {
 
     @TempDir
     private static Path TEMP_DIR;
+    @Nullable
     private JournaledChannel channel;
     private String onekstring = "";
 
