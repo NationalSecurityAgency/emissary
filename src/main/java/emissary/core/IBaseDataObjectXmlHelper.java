@@ -62,9 +62,8 @@ public final class IBaseDataObjectXmlHelper {
      * @param kff an existing Kff handler
      * @return a typical BDO with the specified data
      */
-    public static IBaseDataObject createStandardInitialIbdo(final SeekableByteChannelFactory sbcf,
+    public static IBaseDataObject createStandardInitialIbdo(final IBaseDataObject ibdo, final SeekableByteChannelFactory sbcf,
             final String classification, final String formAndFileType, final KffDataObjectHandler kff) {
-        final IBaseDataObject ibdo = new BaseDataObject();
         final IBaseDataObject tempIbdo = new BaseDataObject();
 
         // We want to return the ibdo with the data field equal to null. This can only

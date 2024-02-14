@@ -265,7 +265,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         expectedIbdo.setFileType(formAndFileType);
         expectedIbdo.setClassification(classification);
 
-        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(sbcf, classification,
+        final IBaseDataObject actualIbdo = IBaseDataObjectXmlHelper.createStandardInitialIbdo(new BaseDataObject(), sbcf, classification,
                 formAndFileType, kff);
 
         IBaseDataObjectDiffHelper.diff(expectedIbdo, actualIbdo, differences, DiffCheckConfiguration.onlyCheckData());
