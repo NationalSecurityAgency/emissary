@@ -59,6 +59,17 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: "maven"
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+
       - name: Get the version
         run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
     outputs:
