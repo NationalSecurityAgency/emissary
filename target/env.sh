@@ -1,7 +1,0 @@
-export BIN_DIR="/Users/connor/Projects/work/emissary/target/bin"
-export CONFIG_DIR="/Users/connor/Projects/work/emissary/target/config"
-export HOST="localhost"
-export OUTPUT_ROOT="/Users/connor/Projects/work/emissary/target/localoutput"
-export PORT="7001"
-export PROJECT_BASE="/Users/connor/Projects/work/emissary/target"
-export SCHEME="http"

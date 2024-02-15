@@ -399,7 +399,7 @@
 <a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L392" href="#L392">392</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> processData(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) <strong class="jxr_keyword">throws</strong> <a name="ResourceException" href="../../emissary/core/ResourceException.html#ResourceException">ResourceException</a> {
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         byte[] outputData = runCommandOn(tData.data());
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>         byte[] outputData = runCommandOn(findPreferredData(tData));
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>         String serviceType = KeyManipulator.getServiceType(keys.get(0));
 <a class="jxr_linenumber" name="L396" href="#L396">396</a> 
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>         <strong class="jxr_keyword">if</strong> (serviceType.equals(<span class="jxr_string">"ID"</span>) || serviceType.equals(<span class="jxr_string">"ANALYZE"</span>)) {
@@ -437,14 +437,18 @@
 <a class="jxr_linenumber" name="L429" href="#L429">429</a>     }
 <a class="jxr_linenumber" name="L430" href="#L430">430</a> 
 <a class="jxr_linenumber" name="L431" href="#L431">431</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * Run the class</em>
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] argv) {
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>         mainRunner(UnixCommandPlace.<strong class="jxr_keyword">class</strong>, argv);
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>     }
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> }
+<a class="jxr_linenumber" name="L432" href="#L432">432</a> <em class="jxr_javadoccomment">     * Get data to process</em>
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L434" href="#L434">434</a> <em class="jxr_javadoccomment">     * @param tData the data object</em>
+<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     * @return the data to process</em>
+<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>     <strong class="jxr_keyword">protected</strong> byte[] findPreferredData(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tData) {
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>         <strong class="jxr_keyword">return</strong> tData.data();
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>     }
+<a class="jxr_linenumber" name="L440" href="#L440">440</a> 
+<a class="jxr_linenumber" name="L441" href="#L441">441</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

@@ -204,7 +204,7 @@
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>             <strong class="jxr_keyword">final</strong> byte[] dataBytes = dataString.toString().getBytes();
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>             <em class="jxr_comment">// A vector for holding the results.</em>
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;<strong class="jxr_keyword">int</strong>[]&gt;();
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>             <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; result = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             scanner.setData(dataBytes);
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>             scanner.scan(0, dataBytes.length, result);
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; result.size(); i++) {
@@ -255,7 +255,7 @@
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>                 <strong class="jxr_keyword">final</strong> byte[] dataBytes = dataString.toString().getBytes();
 <a class="jxr_linenumber" name="L248" href="#L248">248</a> 
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>                 <em class="jxr_comment">// A vector for holding the results.</em>
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>                 <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; hits = <strong class="jxr_keyword">new</strong> ArrayList&lt;<strong class="jxr_keyword">int</strong>[]&gt;();
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>                 <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; hits = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>                 <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_comment">                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in</em>
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_comment">                 * general this should be used more effediently (with a boyer more algorithm or something.</em>
@@ -290,7 +290,7 @@
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>                 <strong class="jxr_keyword">final</strong> byte[] dataBytes = dataString.toString().getBytes();
 <a class="jxr_linenumber" name="L283" href="#L283">283</a> 
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>                 <em class="jxr_comment">// A vector for holding the results.</em>
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>                 <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; hits = <strong class="jxr_keyword">new</strong> ArrayList&lt;<strong class="jxr_keyword">int</strong>[]&gt;();
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>                 <strong class="jxr_keyword">final</strong> List&lt;<strong class="jxr_keyword">int</strong>[]&gt; hits = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>                 <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_comment">                 * loop through the data from beginint to end calling scan at each position. This shows how to use scan(), but in</em>
 <a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_comment">                 * general this should be used more effediently (with a boyer more algorithm or something.</em>
@@ -473,6 +473,6 @@
 <a class="jxr_linenumber" name="L465" href="#L465">465</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

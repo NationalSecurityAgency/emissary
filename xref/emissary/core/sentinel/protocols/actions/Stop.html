@@ -21,12 +21,12 @@
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>      @Override
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> trigger(Map&lt;String, Sentinel.Tracker&gt; trackers) {
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>          logger.error(<span class="jxr_string">"Sentinel detected unrecoverable agents {}, initiating graceful shutdown..."</span>, trackers.values());
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>          logger.error(<span class="jxr_string">"Sentinel detected unrecoverable agents, initiating graceful shutdown -- {}"</span>, format(trackers));
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>          CompletableFuture.runAsync(EmissaryServer::stopServer);
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>      }
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

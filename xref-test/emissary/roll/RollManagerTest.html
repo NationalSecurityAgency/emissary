@@ -16,9 +16,9 @@
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.extension.ExtendWith;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.util.Observable;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.Observer;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.beans.PropertyChangeEvent;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.beans.PropertyChangeListener;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.CountDownLatch;
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.TimeUnit;
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  
@@ -42,7 +42,7 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          RollManager rm = <strong class="jxr_keyword">new</strong> RollManager(ConfigUtil.getConfigInfo(<strong class="jxr_keyword">this</strong>.getClass()));
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          Roller r = <strong class="jxr_keyword">new</strong> Roller(1, TimeUnit.DAYS, 1, <strong class="jxr_keyword">new</strong> <a name="RollableTest" href="../../emissary/roll/RollableTest.html#RollableTest">RollableTest</a>());
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          RollTestObserver o = <strong class="jxr_keyword">new</strong> RollTestObserver();
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          r.addObserver(o);
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          r.addPropertyChangeListener(o);
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>          rm.addRoller(r);
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          r.incrementProgress();
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          Assertions.assertNotNull(o.o, <span class="jxr_string">"Roller notified"</span>);
@@ -93,14 +93,14 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          assertFalse(rm.exec.getQueue().contains(r));
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> RollTestObserver <strong class="jxr_keyword">implements</strong> Observer {
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Observable o;
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>          Object arg;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> RollTestObserver <strong class="jxr_keyword">implements</strong> PropertyChangeListener {
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Object o;
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          String prop;
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          @Override
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> update(Observable o, Object arg) {
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">this</strong>.o = o;
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">this</strong>.arg = arg;
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> propertyChange(PropertyChangeEvent evt) {
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">this</strong>.prop = evt.getPropertyName();
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>              <strong class="jxr_keyword">this</strong>.o = evt.getNewValue();
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>  
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
@@ -108,6 +108,6 @@
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

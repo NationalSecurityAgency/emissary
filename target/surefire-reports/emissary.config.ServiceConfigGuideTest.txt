@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: emissary.config.ServiceConfigGuideTest
--------------------------------------------------------------------------------
-Tests run: 33, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.197 s - in emissary.config.ServiceConfigGuideTest

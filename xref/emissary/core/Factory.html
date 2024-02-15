@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>              }
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>              logger.debug(<span class="jxr_string">"checking:"</span> + types);
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; constructor = ConstructorLookupCache.lookup(clazz, types.toArray(<strong class="jxr_keyword">new</strong> Class[0]));
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; constructor = ConstructorLookupCache.lookup(clazz, types.toArray(<strong class="jxr_keyword">new</strong> Class&lt;?&gt;[0]));
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              <strong class="jxr_keyword">if</strong> (constructor == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>                  logger.info(<span class="jxr_string">"Failed to find constructor for args({}) types ({}) : {}"</span>, args.length, types.size(), types);
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(<span class="jxr_string">"failed to find suitable constructor for class "</span> + className);
@@ -107,7 +107,7 @@
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>              <em class="jxr_comment">// directly. When this succeeds, it can avoid the</em>
 <a class="jxr_linenumber" name="L100" href="#L100">100</a>             <em class="jxr_comment">// overhead of calling getConstructor() on the Class</em>
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>             <em class="jxr_comment">// object.</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>             <strong class="jxr_keyword">return</strong> ClassLookupCache.lookup(className).newInstance();
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>             <strong class="jxr_keyword">return</strong> ClassLookupCache.lookup(className).getDeclaredConstructor().newInstance();
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>         } <strong class="jxr_keyword">catch</strong> (Throwable e) {
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             <em class="jxr_comment">// The simple approach failed, so we'll fall back on a</em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>             <em class="jxr_comment">// more complicated approach that probably has more</em>
@@ -154,6 +154,6 @@
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

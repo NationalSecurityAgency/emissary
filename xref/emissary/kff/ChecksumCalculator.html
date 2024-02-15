@@ -183,7 +183,7 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">final</strong> byte[] b = <strong class="jxr_keyword">new</strong> byte[1024];
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> MessageDigest d : digest) {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create());) {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create())) {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>                 d.reset();
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> 
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>                 <strong class="jxr_keyword">int</strong> bytesRead;
@@ -198,7 +198,7 @@
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         }
 <a class="jxr_linenumber" name="L191" href="#L191">191</a> 
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">if</strong> (crc != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create());) {
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Channels.newInputStream(sbcf.create())) {
 <a class="jxr_linenumber" name="L194" href="#L194">194</a>                 crc.reset();
 <a class="jxr_linenumber" name="L195" href="#L195">195</a> 
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>                 <strong class="jxr_keyword">int</strong> bytesRead;
@@ -221,6 +221,6 @@
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

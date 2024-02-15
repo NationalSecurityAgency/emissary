@@ -90,7 +90,7 @@
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>                  <strong class="jxr_keyword">this</strong>.theDir = (<a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a>) Namespace.lookup(theDir);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              } <strong class="jxr_keyword">catch</strong> (<a name="NamespaceException" href="../../emissary/core/NamespaceException.html#NamespaceException">NamespaceException</a> ne) {
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>                  logger.debug(<span class="jxr_string">"Cannot get directory using {}: {}"</span>, theDir, ne);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>                  logger.debug(<span class="jxr_string">"Cannot get directory using {}: {}"</span>, theDir, ne.getLocalizedMessage());
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>              }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
@@ -284,7 +284,7 @@
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>             System.load(fullPathName);
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>             logger.debug(<span class="jxr_string">"LINK SUCCESS for {}"</span>, fullPathName);
 <a class="jxr_linenumber" name="L278" href="#L278">278</a>         } <strong class="jxr_keyword">catch</strong> (UnsatisfiedLinkError e) {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>             logger.debug(<span class="jxr_string">"Unable to link retrieved {}:{}"</span>, fullPathName, e);
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>             logger.debug(<span class="jxr_string">"Unable to link retrieved {}:{}"</span>, fullPathName, e.getLocalizedMessage());
 <a class="jxr_linenumber" name="L280" href="#L280">280</a> 
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>             <em class="jxr_comment">// We have done all we can. Throw an exception and return</em>
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>             <strong class="jxr_keyword">throw</strong> (<strong class="jxr_keyword">new</strong> UnsatisfiedLinkError(<span class="jxr_string">"Cannot link with retrieved library "</span> + fullPathName + <span class="jxr_string">":"</span> + e));
@@ -496,6 +496,6 @@
 <a class="jxr_linenumber" name="L488" href="#L488">488</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

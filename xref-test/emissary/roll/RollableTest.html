@@ -10,13 +10,13 @@
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.util.Observable;
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.util.Observer;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.beans.PropertyChangeEvent;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.beans.PropertyChangeListener;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.util.concurrent.ArrayBlockingQueue;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.util.concurrent.TimeUnit;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="RollableTest" href="../../emissary/roll/RollableTest.html#RollableTest">RollableTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> <strong class="jxr_keyword">implements</strong> Rollable, Observer {
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="RollableTest" href="../../emissary/roll/RollableTest.html#RollableTest">RollableTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> <strong class="jxr_keyword">implements</strong> Rollable, PropertyChangeListener {
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>      <strong class="jxr_keyword">boolean</strong> wasRolled;
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">long</strong> updateCount;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>      ArrayBlockingQueue&lt;Object&gt; x = <strong class="jxr_keyword">new</strong> ArrayBlockingQueue&lt;&gt;(1);
@@ -44,9 +44,9 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      @SuppressWarnings(<span class="jxr_string">"unused"</span>)
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>      @Override
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> update(Observable o, Object arg) {
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">if</strong> (o instanceof Roller) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>              Roller r = (Roller) o;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> propertyChange(PropertyChangeEvent evt) {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">if</strong> (evt.getNewValue() instanceof Roller) {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>              Roller r = (Roller) evt.getNewValue();
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>              updateCount++;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          }
@@ -59,6 +59,6 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

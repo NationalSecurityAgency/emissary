@@ -12,11 +12,11 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.LogbackTester;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.test.core.junit5.UnitTest;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> ch.qos.logback.classic.Level;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.Arrays;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertFalse;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,13 +57,12 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTe<a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>backTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(SafeUsageChecker.<strong class="jxr_keyword">class</strong>.getName())) {
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>              suc.checkForUnsafeDataChanges();
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>              logbackTester.checkLogList(<strong class="jxr_keyword">new</strong> Level[0], <strong class="jxr_keyword">new</strong> String[0], <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[0]);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  }
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              logbackTester.checkLogList(Collections.emptyList());
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          }
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

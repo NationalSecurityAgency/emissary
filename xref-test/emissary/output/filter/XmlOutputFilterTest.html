@@ -26,69 +26,71 @@
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">class</strong> <a name="XmlOutputFilterTest" href="../../../emissary/output/filter/XmlOutputFilterTest.html#XmlOutputFilterTest">XmlOutputFilterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">private</strong> ServiceConfigGuide config;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject payload;
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> IDropOffFilter f;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">private</strong> Path tmpDir;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      @BeforeEach
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup(@TempDir <strong class="jxr_keyword">final</strong> Path tmpDir) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">this</strong>.tmpDir = tmpDir;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>  
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>          config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          config.removeAllEntries(<span class="jxr_string">"OUTPUT_PATH"</span>);
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_FOO"</span>, <span class="jxr_string">"/tmp/%S%.%F%"</span>);
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_BAR"</span>, <span class="jxr_string">"/xyzzy/%S%.%F%"</span>);
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>          config.addEntry(<span class="jxr_string">"OUTPUT_PATH"</span>, tmpDir.toAbsolutePath().toString());
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          f = <strong class="jxr_keyword">new</strong> XmlOutputFilter();
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">class</strong> <a name="XmlOutputFilterTest" href="../../../emissary/output/filter/XmlOutputFilterTest.html#XmlOutputFilterTest">XmlOutputFilterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      @Nullable
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> ServiceConfigGuide config;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject payload;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> IDropOffFilter f;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> Path tmpDir;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      @BeforeEach
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup(@TempDir <strong class="jxr_keyword">final</strong> Path tmpDir) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>          <strong class="jxr_keyword">this</strong>.tmpDir = tmpDir;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          config = <strong class="jxr_keyword">new</strong> ServiceConfigGuide();
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          config.removeAllEntries(<span class="jxr_string">"OUTPUT_PATH"</span>);
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_FOO"</span>, <span class="jxr_string">"/tmp/%S%.%F%"</span>);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          config.addEntry(<span class="jxr_string">"OUTPUT_SPEC_BAR"</span>, <span class="jxr_string">"/xyzzy/%S%.%F%"</span>);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          config.addEntry(<span class="jxr_string">"OUTPUT_PATH"</span>, tmpDir.toAbsolutePath().toString());
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          payload = DataObjectFactory.getInstance();
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          payload.setData(<span class="jxr_string">"This is the data"</span>.getBytes());
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          payload.setFileType(<span class="jxr_string">"FTYPE"</span>);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          payload.setFilename(<span class="jxr_string">"/this/is/a/testfile"</span>);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      }
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      @Override
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @AfterEach
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tearDown() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          Files.deleteIfExists(tmpDir);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          config = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>      }
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      @Test
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">void</strong> testFilterSetup() {
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          f.initialize(config, <span class="jxr_string">"FOO"</span>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(<span class="jxr_string">"FOO"</span>, f.getFilterName(), <span class="jxr_string">"Filter name should be set"</span>);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(<span class="jxr_string">"/tmp/%S%.%F%"</span>, f.getOutputSpec(), <span class="jxr_string">"Output spec should be build based on name"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">void</strong> testOutputFromFilter() {
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          f.initialize(config, <span class="jxr_string">"FOO"</span>, config);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          List&lt;IBaseDataObject&gt; payloadList = Lists.newArrayList(payload);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>  
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          Map&lt;String, Object&gt; params = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          f = <strong class="jxr_keyword">new</strong> XmlOutputFilter();
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>  
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          payload = DataObjectFactory.getInstance();
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          payload.setData(<span class="jxr_string">"This is the data"</span>.getBytes());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          payload.setFileType(<span class="jxr_string">"FTYPE"</span>);
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          payload.setFilename(<span class="jxr_string">"/this/is/a/testfile"</span>);
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @Override
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      @AfterEach
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> tearDown() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          Files.deleteIfExists(tmpDir);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          config = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      }
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>      @Test
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">void</strong> testFilterSetup() {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          f.initialize(config, <span class="jxr_string">"FOO"</span>);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          assertEquals(<span class="jxr_string">"FOO"</span>, f.getFilterName(), <span class="jxr_string">"Filter name should be set"</span>);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertEquals(<span class="jxr_string">"/tmp/%S%.%F%"</span>, f.getOutputSpec(), <span class="jxr_string">"Output spec should be build based on name"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      @Test
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">void</strong> testOutputFromFilter() {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          f.initialize(config, <span class="jxr_string">"FOO"</span>, config);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          List&lt;IBaseDataObject&gt; payloadList = Lists.newArrayList(payload);
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          assertTrue(f.isOutputtable(payload, params), <span class="jxr_string">"Payload should be outputtable"</span>);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertTrue(f.isOutputtable(payloadList, params), <span class="jxr_string">"Payload list should be outputtable"</span>);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          ByteArrayOutputStream output = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">int</strong> status = f.filter(payloadList, params, output);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          assertEquals(IDropOffFilter.STATUS_SUCCESS, status, <span class="jxr_string">"Status of filter should be success"</span>);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          assertTrue(output.toString().contains(<span class="jxr_string">"&lt;name&gt;/this/is/a/testfile&lt;/name&gt;"</span>), <span class="jxr_string">"Output must contain name field '"</span> + output + <span class="jxr_string">"'"</span>);
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          Map&lt;String, Object&gt; params = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertTrue(f.isOutputtable(payload, params), <span class="jxr_string">"Payload should be outputtable"</span>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertTrue(f.isOutputtable(payloadList, params), <span class="jxr_string">"Payload list should be outputtable"</span>);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          ByteArrayOutputStream output = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">int</strong> status = f.filter(payloadList, params, output);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          assertEquals(IDropOffFilter.STATUS_SUCCESS, status, <span class="jxr_string">"Status of filter should be success"</span>);
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          assertTrue(output.toString().contains(<span class="jxr_string">"&lt;name&gt;/this/is/a/testfile&lt;/name&gt;"</span>), <span class="jxr_string">"Output must contain name field '"</span> + output + <span class="jxr_string">"'"</span>);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      }
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

@@ -33,11 +33,11 @@
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">     * Return list of next places to go with data. Delegation call through to our IDirectoryPlace</em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">     * @param dataID the SERVICE_NAME::SERVICE_TYPE</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">     * @param dataId the SERVICE_NAME::SERVICE_TYPE</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  <em class="jxr_javadoccomment">     * @param lastPlace last place visited</em>
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_javadoccomment">     * @return list of DirectoryEntry</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      List&lt;DirectoryEntry&gt; nextKeys(String dataID, <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> lastPlace);
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      List&lt;DirectoryEntry&gt; nextKeys(String dataId, <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> lastPlace);
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     * Add a service proxy to a running place. Duplicates are ignored.</em>
@@ -163,9 +163,13 @@
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>     <a name="MobileAgent" href="../../emissary/core/MobileAgent.html#MobileAgent">MobileAgent</a> getAgent() <strong class="jxr_keyword">throws</strong> NamespaceException;
 <a class="jxr_linenumber" name="L157" href="#L157">157</a> 
-<a class="jxr_linenumber" name="L158" href="#L158">158</a> }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> <em class="jxr_javadoccomment">     * Returns whether form is denied</em>
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>     <strong class="jxr_keyword">boolean</strong> isDenied(String s);
+<a class="jxr_linenumber" name="L162" href="#L162">162</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

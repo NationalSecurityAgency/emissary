@@ -27,141 +27,146 @@
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.security.MessageDigest;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> emissary.core.constants.Parameters.INPUT_FILENAME;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> emissary.core.constants.Parameters.ORIGINAL_FILENAME;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">class</strong> <a name="FilePickUpClientTest" href="../../../emissary/pickup/file/FilePickUpClientTest.html#FilePickUpClientTest">FilePickUpClientTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CLIENT_KEY = <span class="jxr_string">"http://localhost:8005/FilePickUpClient"</span>;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DIRECTORY_KEY = <span class="jxr_string">"DIR.DIRECTORY.STUDY.http://localhost:8005/DirectoryPlace"</span>;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject payload = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> MyFilePickUpClient client = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> WorkBundle bundle = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>  
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      @BeforeEach
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSetup() {
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          payload = DataObjectFactory.getInstance(<span class="jxr_string">"This is a test"</span>.getBytes(), <span class="jxr_string">"/eat/prefix/testPath"</span>, <span class="jxr_string">"UNKNOWN"</span>);
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>          InputStream clientConfig = <strong class="jxr_keyword">new</strong> ResourceReader().getConfigDataAsStream(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          client =
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>                  (MyFilePickUpClient) PlaceStarter.createPlace(CLIENT_KEY, clientConfig, MyFilePickUpClient.<strong class="jxr_keyword">class</strong>.getName(), DIRECTORY_KEY);
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          bundle = <strong class="jxr_keyword">new</strong> WorkBundle(<span class="jxr_string">"/output/root"</span>, <span class="jxr_string">"/eat/prefix"</span>);
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          client.setCurrentBundle(bundle);
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>      }
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>  
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>      @AfterEach
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTearDown() {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          <strong class="jxr_keyword">if</strong> (client != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              client.shutDown();
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>              client = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          bundle = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          payload = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Test
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithMissingPath() {
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertEquals(<span class="jxr_string">"bar"</span>, payload.getStringParameter(INPUT_FILENAME), <span class="jxr_string">"Input filename must be recorded"</span>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(<span class="jxr_string">"/foo"</span>, payload.getStringParameter(<span class="jxr_string">"TARGETBIN"</span>), <span class="jxr_string">"TargetBin must be recorded without prefix"</span>);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(bundle.getPriority(), payload.getPriority(), <span class="jxr_string">"Priority must be transferred from bundle to payload"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithSimpleCaseId() {
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          bundle.setCaseId(<span class="jxr_string">"PETERPAN"</span>);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          assertEquals(bundle.getCaseId(), payload.getStringParameter(<span class="jxr_string">"DATABASE_CASE_ID"</span>), <span class="jxr_string">"Simple case id must be transferred from bundle to payload"</span>);
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      @Test
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithComplexCaseId() {
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          String originalShortName = payload.shortName();
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          assertEquals(<span class="jxr_string">"PETERPAN"</span>, payload.getStringParameter(<span class="jxr_string">"PROJECT"</span>), <span class="jxr_string">"Complex case id must be transferred from bundle to payload"</span>);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          assertEquals(originalShortName, payload.shortName(), <span class="jxr_string">"Complex case id must not mess with payload filename when not simple"</span>);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>      }
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      @Test
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithComplexCaseIdInSimpleMode() {
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          payload.putParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, <span class="jxr_string">"true"</span>);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          assertEquals(<span class="jxr_string">"PETERPAN"</span>, payload.getStringParameter(<span class="jxr_string">"PROJECT"</span>), <span class="jxr_string">"Complex case id must be transferred from bundle to payload"</span>);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          assertTrue(payload.shortName().startsWith(<span class="jxr_string">"PETERPAN-"</span>),
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>                  <span class="jxr_string">"Complex case in simple mode must add fn hash to payload not "</span> + payload.shortName());
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          assertEquals(<span class="jxr_string">"/foo/bar"</span>, payload.getStringParameter(ORIGINAL_FILENAME), <span class="jxr_string">"Original-Filename should be set in simple mode"</span>);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      }
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>      @Test
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">void</strong> testNullReturnedFromFixCaseIdHookUsesTimeForCase() {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          bundle.setCaseId(<span class="jxr_string">"PETERPAN"</span>);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          client.nullifyCaseIdInHook = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          assertEquals(TimeUtil.getCurrentDateOrdinal(),
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>                  payload.getStringParameter(<span class="jxr_string">"DATABASE_CASE_ID"</span>),
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>                  <span class="jxr_string">"Current oridina date must be used when hook nullifies simple case name"</span>);
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>      }
-<a class="jxr_linenumber" name="L100" href="#L100">100</a> 
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     @Test
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">void</strong> testCreateFileName() <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>         <em class="jxr_comment">// Perform the default filename creation strategy</em>
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         String filePath = <span class="jxr_string">"/foo/bar"</span>;
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         MessageDigest digest = MessageDigest.getInstance(<span class="jxr_string">"SHA-256"</span>);
-<a class="jxr_linenumber" name="L106" href="#L106">106</a>         digest.reset();
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         byte[] resultHash = digest.digest(filePath.getBytes());
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         String resultString = Hexl.toUnformattedHexString(resultHash);
-<a class="jxr_linenumber" name="L109" href="#L109">109</a> 
-<a class="jxr_linenumber" name="L110" href="#L110">110</a>         <em class="jxr_comment">// Compare with the output of the createFilename() method</em>
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         assertEquals(<span class="jxr_string">"PETERPAN-"</span> + resultString, client.createFilename(filePath, <span class="jxr_string">"PETERPAN"</span>), <span class="jxr_string">"File names do not match"</span>);
-<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>         <em class="jxr_comment">// Compare with what was set in the payload for simple mode</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>         payload.putParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, <span class="jxr_string">"true"</span>);
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>         client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(filePath));
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>         assertEquals(<span class="jxr_string">"PETERPAN-"</span> + resultString, payload.getFilename(), <span class="jxr_string">"Payload filename is not set to correct value"</span>);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>     }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> MyFilePickUpClient <strong class="jxr_keyword">extends</strong> FilePickUpClient {
-<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> nullifyCaseIdInHook = false;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> emissary.core.constants.Parameters.INPUT_FILENAME;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> emissary.core.constants.Parameters.ORIGINAL_FILENAME;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">class</strong> <a name="FilePickUpClientTest" href="../../../emissary/pickup/file/FilePickUpClientTest.html#FilePickUpClientTest">FilePickUpClientTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String CLIENT_KEY = <span class="jxr_string">"http://localhost:8005/FilePickUpClient"</span>;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DIRECTORY_KEY = <span class="jxr_string">"DIR.DIRECTORY.STUDY.http://localhost:8005/DirectoryPlace"</span>;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      @Nullable
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject payload = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Nullable
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">private</strong> MyFilePickUpClient client = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      @Nullable
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">private</strong> WorkBundle bundle = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      @BeforeEach
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testSetup() {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          payload = DataObjectFactory.getInstance(<span class="jxr_string">"This is a test"</span>.getBytes(), <span class="jxr_string">"/eat/prefix/testPath"</span>, <span class="jxr_string">"UNKNOWN"</span>);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          InputStream clientConfig = <strong class="jxr_keyword">new</strong> ResourceReader().getConfigDataAsStream(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          client =
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>                  (MyFilePickUpClient) PlaceStarter.createPlace(CLIENT_KEY, clientConfig, MyFilePickUpClient.<strong class="jxr_keyword">class</strong>.getName(), DIRECTORY_KEY);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          bundle = <strong class="jxr_keyword">new</strong> WorkBundle(<span class="jxr_string">"/output/root"</span>, <span class="jxr_string">"/eat/prefix"</span>);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          client.setCurrentBundle(bundle);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      @AfterEach
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTearDown() {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">if</strong> (client != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              client.shutDown();
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              client = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          bundle = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          payload = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      @Test
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithMissingPath() {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertEquals(<span class="jxr_string">"bar"</span>, payload.getStringParameter(INPUT_FILENAME), <span class="jxr_string">"Input filename must be recorded"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(<span class="jxr_string">"/foo"</span>, payload.getStringParameter(<span class="jxr_string">"TARGETBIN"</span>), <span class="jxr_string">"TargetBin must be recorded without prefix"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(bundle.getPriority(), payload.getPriority(), <span class="jxr_string">"Priority must be transferred from bundle to payload"</span>);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      @Test
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithSimpleCaseId() {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          bundle.setCaseId(<span class="jxr_string">"PETERPAN"</span>);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertEquals(bundle.getCaseId(), payload.getStringParameter(<span class="jxr_string">"DATABASE_CASE_ID"</span>), <span class="jxr_string">"Simple case id must be transferred from bundle to payload"</span>);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      @Test
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithComplexCaseId() {
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          String originalShortName = payload.shortName();
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          assertEquals(<span class="jxr_string">"PETERPAN"</span>, payload.getStringParameter(<span class="jxr_string">"PROJECT"</span>), <span class="jxr_string">"Complex case id must be transferred from bundle to payload"</span>);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          assertEquals(originalShortName, payload.shortName(), <span class="jxr_string">"Complex case id must not mess with payload filename when not simple"</span>);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>      }
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>      @Test
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">void</strong> testDataObjectCreatedCallbackWithComplexCaseIdInSimpleMode() {
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          payload.putParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, <span class="jxr_string">"true"</span>);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          assertEquals(<span class="jxr_string">"PETERPAN"</span>, payload.getStringParameter(<span class="jxr_string">"PROJECT"</span>), <span class="jxr_string">"Complex case id must be transferred from bundle to payload"</span>);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          assertTrue(payload.shortName().startsWith(<span class="jxr_string">"PETERPAN-"</span>),
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>                  <span class="jxr_string">"Complex case in simple mode must add fn hash to payload not "</span> + payload.shortName());
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          assertEquals(<span class="jxr_string">"/foo/bar"</span>, payload.getStringParameter(ORIGINAL_FILENAME), <span class="jxr_string">"Original-Filename should be set in simple mode"</span>);
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>      @Test
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>      <strong class="jxr_keyword">void</strong> testNullReturnedFromFixCaseIdHookUsesTimeForCase() {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          bundle.setCaseId(<span class="jxr_string">"PETERPAN"</span>);
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          client.nullifyCaseIdInHook = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"/eat/prefix/foo/bar"</span>));
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         assertEquals(TimeUtil.getCurrentDateOrdinal(),
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>                 payload.getStringParameter(<span class="jxr_string">"DATABASE_CASE_ID"</span>),
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>                 <span class="jxr_string">"Current oridina date must be used when hook nullifies simple case name"</span>);
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>     }
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     @Test
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>     <strong class="jxr_keyword">void</strong> testCreateFileName() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         <em class="jxr_comment">// Perform the default filename creation strategy</em>
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>         String filePath = <span class="jxr_string">"/foo/bar"</span>;
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>         MessageDigest digest = MessageDigest.getInstance(<span class="jxr_string">"SHA-256"</span>);
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         digest.reset();
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         byte[] resultHash = digest.digest(filePath.getBytes());
+<a class="jxr_linenumber" name="L112" href="#L112">112</a>         String resultString = Hexl.toUnformattedHexString(resultHash);
+<a class="jxr_linenumber" name="L113" href="#L113">113</a> 
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <em class="jxr_comment">// Compare with the output of the createFilename() method</em>
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>         assertEquals(<span class="jxr_string">"PETERPAN-"</span> + resultString, client.createFilename(filePath, <span class="jxr_string">"PETERPAN"</span>), <span class="jxr_string">"File names do not match"</span>);
+<a class="jxr_linenumber" name="L116" href="#L116">116</a> 
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <em class="jxr_comment">// Compare with what was set in the payload for simple mode</em>
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>         bundle.setCaseId(<span class="jxr_string">"PROJECT:PETERPAN"</span>);
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         payload.putParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, <span class="jxr_string">"true"</span>);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>         client.dataObjectCreated(payload, <strong class="jxr_keyword">new</strong> File(filePath));
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>         assertEquals(<span class="jxr_string">"PETERPAN-"</span> + resultString, payload.getFilename(), <span class="jxr_string">"Payload filename is not set to correct value"</span>);
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     }
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> 
-<a class="jxr_linenumber" name="L124" href="#L124">124</a>         <strong class="jxr_keyword">public</strong> MyFilePickUpClient(InputStream configInfo, String dir, String placeLoc) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>             <strong class="jxr_keyword">super</strong>(configInfo, dir, placeLoc);
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         }
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> MyFilePickUpClient <strong class="jxr_keyword">extends</strong> FilePickUpClient {
+<a class="jxr_linenumber" name="L125" href="#L125">125</a> 
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> nullifyCaseIdInHook = false;
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> 
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         @Override
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> dataObjectCreated(IBaseDataObject d, File f) {
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>             <strong class="jxr_keyword">super</strong>.dataObjectCreated(d, f);
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         }
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCurrentBundle(WorkBundle wb) {
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>             currentBundle = wb;
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         <strong class="jxr_keyword">public</strong> MyFilePickUpClient(InputStream configInfo, String dir, String placeLoc) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>             <strong class="jxr_keyword">super</strong>(configInfo, dir, placeLoc);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         }
+<a class="jxr_linenumber" name="L131" href="#L131">131</a> 
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>         @Override
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> dataObjectCreated(IBaseDataObject d, File f) {
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>             <strong class="jxr_keyword">super</strong>.dataObjectCreated(d, f);
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>         }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">public</strong> WorkBundle getCurrentBundle() {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>             <strong class="jxr_keyword">return</strong> currentBundle;
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setCurrentBundle(WorkBundle wb) {
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>             currentBundle = wb;
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         }
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         @Override
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">protected</strong> String caseIdHook(String initialCaseId, String sessionname, String fileName, Map&lt;String, Collection&lt;Object&gt;&gt; metadata) {
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>             <strong class="jxr_keyword">if</strong> (nullifyCaseIdInHook)
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">else</strong>
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.caseIdHook(initialCaseId, sessionname, fileName, metadata);
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         }
-<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         @Override
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">protected</strong> String createFilename(String filePath, String prefix) {
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.createFilename(filePath, prefix);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         <strong class="jxr_keyword">public</strong> WorkBundle getCurrentBundle() {
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>             <strong class="jxr_keyword">return</strong> currentBundle;
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         }
+<a class="jxr_linenumber" name="L144" href="#L144">144</a> 
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>         @Override
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>         @Nullable
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">protected</strong> String caseIdHook(String initialCaseId, String sessionname, String fileName, Map&lt;String, Collection&lt;Object&gt;&gt; metadata) {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">if</strong> (nullifyCaseIdInHook)
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.caseIdHook(initialCaseId, sessionname, fileName, metadata);
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         }
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>     }
-<a class="jxr_linenumber" name="L154" href="#L154">154</a> }
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         @Override
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">protected</strong> String createFilename(String filePath, String prefix) {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.createFilename(filePath, prefix);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         }
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>     }
+<a class="jxr_linenumber" name="L159" href="#L159">159</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

@@ -1,8 +1,0 @@
-Results of hadolint linter (version ERROR)
-See documentation on https://megalinter.io/7.4.0/descriptors/dockerfile_hadolint/
------------------------------------------------
-
-❌ [ERROR] for workspace /tmp/lint
-Linter raw log:
-qemu: uncaught target signal 11 (Segmentation fault) - core dumped
-

@@ -21,7 +21,7 @@
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment">     * Return the unique agent id</em>
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>      String agentID();
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>      String agentId();
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">     * Get a reference to the payload this agent is responsible for</em>
@@ -29,8 +29,8 @@
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>      emissary.core.IBaseDataObject getPayload();
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">     * Send and agent on it's way with the specified payload The payload is not processed at sourcePlace, source is only</em>
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">     * used to get directory access to figure out where to go next.</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <em class="jxr_javadoccomment">     * Send an agent on its way with the specified payload The payload is not processed at sourcePlace, source is only used</em>
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">     * to get directory access to figure out where to go next.</em>
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">     * @param payload the payload IBaseDataObject or list thereof</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">     * @param sourcePlace the place sending the payload the key of this place will be added to the transform history but the</em>
@@ -133,13 +133,13 @@
 <a class="jxr_linenumber" name="L125" href="#L125">125</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L126" href="#L126">126</a> <em class="jxr_javadoccomment">     * @return default value of 1</em>
 <a class="jxr_linenumber" name="L127" href="#L127">127</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">default</strong> <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> payloadCount() {
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>     <strong class="jxr_keyword">default</strong> <strong class="jxr_keyword">int</strong> payloadCount() {
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">return</strong> 1;
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * @param d the entry to add</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addEntry(<strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> d) {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataID(d.getKey());
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataId(d.getKey());
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          addEntry(dataId, d);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>      }
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>  
@@ -180,7 +180,7 @@
 <a class="jxr_linenumber" name="L172" href="#L172">172</a> <em class="jxr_javadoccomment">     * @return the removed entry or null if not found</em>
 <a class="jxr_linenumber" name="L173" href="#L173">173</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>     <strong class="jxr_keyword">public</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> removeEntry(<strong class="jxr_keyword">final</strong> String entryKey) {
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataID(entryKey);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataId(entryKey);
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">return</strong> removeEntry(dataId, entryKey);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     }
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 
@@ -287,7 +287,7 @@
 <a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> List&lt;DirectoryEntry&gt; collectAllMatching(<strong class="jxr_keyword">final</strong> String key) {
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">final</strong> List&lt;DirectoryEntry&gt; match = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L281" href="#L281">281</a> 
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataID(key);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <strong class="jxr_keyword">final</strong> String dataId = KeyManipulator.getDataId(key);
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">if</strong> (dataId.contains(<span class="jxr_string">"*"</span>) || dataId.contains(<span class="jxr_string">"?"</span>)) {
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="DirectoryEntryList" href="../../emissary/directory/DirectoryEntryList.html#DirectoryEntryList">DirectoryEntryList</a> list : values()) {
 <a class="jxr_linenumber" name="L285" href="#L285">285</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> entry : list) {
@@ -419,6 +419,6 @@
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

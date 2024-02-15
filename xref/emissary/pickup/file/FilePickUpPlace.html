@@ -24,7 +24,7 @@
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> pollingInterval = 30000;
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>      <em class="jxr_comment">// List of FileDataServer objects</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">protected</strong> List&lt;FileDataServer&gt; theDataServer = <strong class="jxr_keyword">new</strong> ArrayList&lt;FileDataServer&gt;();
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">protected</strong> List&lt;FileDataServer&gt; theDataServer = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  
 <a class="jxr_linenumber" name="L21" href="#L21">21</a>      <em class="jxr_comment">// How many files the FileDataServer should group</em>
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> BUNDLE_SIZE = 20;
@@ -137,12 +137,9 @@
 <a class="jxr_linenumber" name="L129" href="#L129">129</a>         }
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
-<a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         mainRunner(FilePickUpPlace.<strong class="jxr_keyword">class</strong>.getName(), args);
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> }
+<a class="jxr_linenumber" name="L132" href="#L132">132</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

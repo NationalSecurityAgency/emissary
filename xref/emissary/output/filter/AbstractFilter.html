@@ -88,7 +88,7 @@
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String METADATA_VIEW = <span class="jxr_string">"."</span> + METADATA_VIEW_NAME;
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_comment">/* alternate views to NOT output if only a file type/form is specified */</em>
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">protected</strong> Set&lt;String&gt; blacklist = Collections.emptySet();
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">protected</strong> Set&lt;String&gt; denylist = Collections.emptySet();
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>      <strong class="jxr_keyword">protected</strong> <a name="DropOffUtil" href="../../../emissary/output/DropOffUtil.html#DropOffUtil">DropOffUtil</a> dropOffUtil = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
@@ -175,8 +175,8 @@
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>         <strong class="jxr_keyword">if</strong> (config != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">this</strong>.outputTypes = config.findEntriesAsSet(<span class="jxr_string">"OUTPUT_TYPE"</span>);
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>             <strong class="jxr_keyword">this</strong>.logger.debug(<span class="jxr_string">"Loaded {} output types for filter {}"</span>, <strong class="jxr_keyword">this</strong>.outputTypes.size(), <strong class="jxr_keyword">this</strong>.outputTypes);
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">this</strong>.blacklist = config.findEntriesAsSet(<span class="jxr_string">"BLACKLIST"</span>);
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">this</strong>.logger.debug(<span class="jxr_string">"Loaded {} blacklist types for filter {}"</span>, <strong class="jxr_keyword">this</strong>.blacklist.size(), <strong class="jxr_keyword">this</strong>.blacklist);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>             <strong class="jxr_keyword">this</strong>.denylist = config.findEntriesAsSet(<span class="jxr_string">"DENYLIST"</span>);
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">this</strong>.logger.debug(<span class="jxr_string">"Loaded {} ignorelist types for filter {}"</span>, <strong class="jxr_keyword">this</strong>.denylist.size(), <strong class="jxr_keyword">this</strong>.denylist);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L173" href="#L173">173</a>             <strong class="jxr_keyword">this</strong>.logger.debug(<span class="jxr_string">"InitializeCustom has null filter config"</span>);
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>         }
@@ -219,7 +219,7 @@
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>             <strong class="jxr_keyword">return</strong>;
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         }
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; configPreferences = <strong class="jxr_keyword">new</strong> ArrayList&lt;String&gt;();
+<a class="jxr_linenumber" name="L214" href="#L214">214</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; configPreferences = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">if</strong> (getFilterName() != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>             configPreferences.add(<strong class="jxr_keyword">this</strong>.getClass().getPackage().getName() + <span class="jxr_string">"."</span> + getFilterName() + ConfigUtil.CONFIG_FILE_ENDING);
@@ -420,7 +420,7 @@
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> canOutput = !Collections.disjoint(<strong class="jxr_keyword">this</strong>.outputTypes, types);
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">if</strong> (canOutput &amp;&amp; <strong class="jxr_keyword">this</strong>.logger.isDebugEnabled()) {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>             <strong class="jxr_keyword">final</strong> Set&lt;String&gt; outputFor = <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;();
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>             <strong class="jxr_keyword">final</strong> Set&lt;String&gt; outputFor = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String s : <strong class="jxr_keyword">this</strong>.outputTypes) {
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>                 <strong class="jxr_keyword">if</strong> (types.contains(s)) {
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>                     outputFor.add(s);
@@ -448,13 +448,13 @@
 <a class="jxr_linenumber" name="L440" href="#L440">440</a>     }
 <a class="jxr_linenumber" name="L441" href="#L441">441</a> 
 <a class="jxr_linenumber" name="L442" href="#L442">442</a>     <strong class="jxr_keyword">protected</strong> Set&lt;String&gt; getTypesToCheckForNamedView(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">final</strong> String viewName) {
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>         <strong class="jxr_keyword">final</strong> Set&lt;String&gt; checkTypes = <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;();
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>         <strong class="jxr_keyword">final</strong> Set&lt;String&gt; checkTypes = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L444" href="#L444">444</a>         <strong class="jxr_keyword">final</strong> String lang = <strong class="jxr_keyword">this</strong>.dropOffUtil.getLanguage(d);
 <a class="jxr_linenumber" name="L445" href="#L445">445</a>         <strong class="jxr_keyword">final</strong> String fileType = DropOffUtil.getFileType(d);
 <a class="jxr_linenumber" name="L446" href="#L446">446</a>         <strong class="jxr_keyword">final</strong> String currentForm = d.currentForm();
 <a class="jxr_linenumber" name="L447" href="#L447">447</a> 
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>         <em class="jxr_comment">// skip over blacklisted alt views</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.blacklist.contains(viewName) || <strong class="jxr_keyword">this</strong>.blacklist.contains(fileType + <span class="jxr_string">"."</span> + viewName)) {
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>         <em class="jxr_comment">// skip over denylisted alt views</em>
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.denylist.contains(viewName) || <strong class="jxr_keyword">this</strong>.denylist.contains(fileType + <span class="jxr_string">"."</span> + viewName)) {
 <a class="jxr_linenumber" name="L450" href="#L450">450</a>             <strong class="jxr_keyword">return</strong> checkTypes;
 <a class="jxr_linenumber" name="L451" href="#L451">451</a>         }
 <a class="jxr_linenumber" name="L452" href="#L452">452</a> 
@@ -508,11 +508,11 @@
 <a class="jxr_linenumber" name="L500" href="#L500">500</a> 
 <a class="jxr_linenumber" name="L501" href="#L501">501</a>     @Override
 <a class="jxr_linenumber" name="L502" href="#L502">502</a>     <strong class="jxr_keyword">public</strong> Collection&lt;String&gt; getOutputTypes() {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashSet&lt;String&gt;(<strong class="jxr_keyword">this</strong>.outputTypes);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;(<strong class="jxr_keyword">this</strong>.outputTypes);
 <a class="jxr_linenumber" name="L504" href="#L504">504</a>     }
 <a class="jxr_linenumber" name="L505" href="#L505">505</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

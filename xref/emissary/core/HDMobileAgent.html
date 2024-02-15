@@ -38,7 +38,7 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = 786319119844306571L;
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>  
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      <em class="jxr_comment">// What we carry around with us</em>
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; payloadList = Collections.synchronizedList(<strong class="jxr_keyword">new</strong> ArrayList&lt;IBaseDataObject&gt;());
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; payloadList = Collections.synchronizedList(<strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;());
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">     * Still have the uncaught exception handler but not really in a true ThreadGroup</em>
@@ -154,7 +154,7 @@
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>             go(payload, arrivalPlace, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (payload instanceof Collection) {
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             addPayload((Collection&lt;IBaseDataObject&gt;) payload);
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>             setAgentID(getPayload().shortName());
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>             setAgentId(getPayload().shortName());
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>             go(<strong class="jxr_keyword">null</strong>, arrivalPlace, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"Illegal payload sent to HDMobileAgent, cannot handle "</span> + payload.getClass().getName());
@@ -168,7 +168,7 @@
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             <strong class="jxr_keyword">super</strong>.go(payload, arrivalPlace);
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (payload instanceof Collection) {
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>             addPayload((Collection&lt;IBaseDataObject&gt;) payload);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>             setAgentID(getPayload().shortName());
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>             setAgentId(getPayload().shortName());
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             go(<strong class="jxr_keyword">null</strong>, arrivalPlace, false);
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>             logger.error(<span class="jxr_string">"Illegal payload sent to HDMobileAgent, cannot handle {}"</span>, payload.getClass().getName());
@@ -185,7 +185,7 @@
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     @Override
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> agentControl(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> currentPlaceArg) {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> newEntry = currentPlaceArg.getDirectoryEntry();
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         logger.debug(<span class="jxr_string">"In agentControlHD {} for {}"</span>, currentPlaceArg, agentID);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         logger.debug(<span class="jxr_string">"In agentControlHD {} for {}"</span>, currentPlaceArg, agentId);
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> 
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>         <em class="jxr_comment">// Set into the super classes payload member...</em>
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> mypayload = getPayload();
@@ -226,7 +226,7 @@
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>                     atPlaceHD(currentPlace, <strong class="jxr_keyword">this</strong>.payloadList);
 <a class="jxr_linenumber" name="L219" href="#L219">219</a>                 } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L220" href="#L220">220</a>                     <em class="jxr_comment">// Add the primary payload object to a list</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>                     <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; toBeProcessed = <strong class="jxr_keyword">new</strong> ArrayList&lt;IBaseDataObject&gt;();
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>                     <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; toBeProcessed = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>                     toBeProcessed.add(mypayload);
 <a class="jxr_linenumber" name="L223" href="#L223">223</a> 
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>                     <em class="jxr_comment">// Add any other payload that has the same current form</em>
@@ -403,7 +403,7 @@
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>     }
 <a class="jxr_linenumber" name="L396" href="#L396">396</a> 
 <a class="jxr_linenumber" name="L397" href="#L397">397</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * Do work now that we have arrived a the specified place</em>
+<a class="jxr_linenumber" name="L398" href="#L398">398</a> <em class="jxr_javadoccomment">     * Do work now that we have arrived at the specified place</em>
 <a class="jxr_linenumber" name="L399" href="#L399">399</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L400" href="#L400">400</a> <em class="jxr_javadoccomment">     * @param place the place we are asking to work for us</em>
 <a class="jxr_linenumber" name="L401" href="#L401">401</a> <em class="jxr_javadoccomment">     * @param payloadListArg list of IBaseDataObject for the place to operate on</em>
@@ -414,196 +414,199 @@
 <a class="jxr_linenumber" name="L406" href="#L406">406</a>         logger.debug(<span class="jxr_string">"In atPlaceHD {} with {} payload items"</span>, place, payloadListArg.size());
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> 
 <a class="jxr_linenumber" name="L408" href="#L408">408</a>         List&lt;IBaseDataObject&gt; ret = Collections.emptyList();
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">try</strong> (<a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = resourceWatcherStart(place)) {
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>             <em class="jxr_comment">// Process and get back a list of sprouted payloads</em>
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>             lastPlaceProcessed = place.getDirectoryEntry().getKey();
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> 
+<a class="jxr_linenumber" name="L410" href="#L410">410</a>         <strong class="jxr_keyword">try</strong> (<a name="TimedResource" href="../../emissary/core/TimedResource.html#TimedResource">TimedResource</a> tr = resourceWatcherStart(place)) {
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>             assert tr != <strong class="jxr_keyword">null</strong>; <em class="jxr_comment">// to silence an unused resource warning</em>
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>             <strong class="jxr_keyword">if</strong> (moveErrorsOccurred &gt; 0) {
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>                 addMoveErrorCount(payloadListArg);
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>             }
-<a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>             ret = place.agentProcessHeavyDuty(payloadListArg);
-<a class="jxr_linenumber" name="L418" href="#L418">418</a> 
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>             <strong class="jxr_keyword">for</strong> (Iterator&lt;IBaseDataObject&gt; it = ret.iterator(); it.hasNext();) {
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>                 <strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> ibdo = it.next();
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>                 <strong class="jxr_keyword">if</strong> (ibdo == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>                     logger.error(<span class="jxr_string">"{} violated contract and returned null IBaseDataObject. Child counts and IDs may be inconsistent."</span>, place);
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>                     it.remove();
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>                 }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>             }
-<a class="jxr_linenumber" name="L426" href="#L426">426</a> 
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>             <strong class="jxr_keyword">if</strong> (moveErrorsOccurred &gt; 0) {
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>                 deleteMoveErrorCount(payloadListArg);
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>             }
-<a class="jxr_linenumber" name="L430" href="#L430">430</a> 
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             logger.debug(<span class="jxr_string">"done with agentProcessHD for {} with {} sprouted results along for the ride"</span>, place, ret.size());
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>         } <strong class="jxr_keyword">catch</strong> (Throwable problem) {
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>             logger.warn(<span class="jxr_string">"**{} caught {} with {} payloads"</span>, place, problem, payloadListArg.size(), problem);
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>             <em class="jxr_comment">// We don't know here which one of the items on the list</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>             <em class="jxr_comment">// caused the exception so we are going to error them all</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>             <em class="jxr_comment">// If place providers don't catch their own exceptions</em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>             <em class="jxr_comment">// we are conservative in what we think is safe to do here</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p : payloadListArg) {
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>                 p.addProcessingError(<span class="jxr_string">"agentProcessHeavyDury("</span> + place + <span class="jxr_string">"): "</span> + problem);
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>                 p.replaceCurrentForm(MobileAgent.ERROR_FORM);
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>             }
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>             <strong class="jxr_keyword">if</strong> (!(place instanceof <a name="EmptyFormPlace" href="../../emissary/place/EmptyFormPlace.html#EmptyFormPlace">EmptyFormPlace</a>)) {
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p : payloadListArg) {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>                     <strong class="jxr_keyword">if</strong> (p.currentFormSize() == 0) {
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>                         logger.error(<span class="jxr_string">"Place {} left an empty form stack, changing it to ERROR"</span>, place);
-<a class="jxr_linenumber" name="L447" href="#L447">447</a>                         p.addProcessingError(place + <span class="jxr_string">" left an empty form stack"</span>);
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>                         p.pushCurrentForm(ERROR_FORM);
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>                     }
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>                 }
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             }
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             MDC.remove(MDCConstants.SERVICE_LOCATION);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>             checkInterrupt(place);
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>         }
-<a class="jxr_linenumber" name="L455" href="#L455">455</a> 
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>         <strong class="jxr_keyword">return</strong> ret;
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>     }
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>             <em class="jxr_comment">// Process and get back a list of sprouted payloads</em>
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>             lastPlaceProcessed = place.getDirectoryEntry().getKey();
+<a class="jxr_linenumber" name="L415" href="#L415">415</a> 
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             <strong class="jxr_keyword">if</strong> (moveErrorsOccurred &gt; 0) {
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>                 addMoveErrorCount(payloadListArg);
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>             }
+<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             ret = place.agentProcessHeavyDuty(payloadListArg);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a> 
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>             <strong class="jxr_keyword">for</strong> (Iterator&lt;IBaseDataObject&gt; it = ret.iterator(); it.hasNext();) {
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>                 <strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> ibdo = it.next();
+<a class="jxr_linenumber" name="L424" href="#L424">424</a>                 <strong class="jxr_keyword">if</strong> (ibdo == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>                     logger.error(<span class="jxr_string">"{} violated contract and returned null IBaseDataObject. Child counts and IDs may be inconsistent."</span>, place);
+<a class="jxr_linenumber" name="L426" href="#L426">426</a>                     it.remove();
+<a class="jxr_linenumber" name="L427" href="#L427">427</a>                 }
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>             }
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> 
+<a class="jxr_linenumber" name="L430" href="#L430">430</a>             <strong class="jxr_keyword">if</strong> (moveErrorsOccurred &gt; 0) {
+<a class="jxr_linenumber" name="L431" href="#L431">431</a>                 deleteMoveErrorCount(payloadListArg);
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>             }
+<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>             logger.debug(<span class="jxr_string">"done with agentProcessHD for {} with {} sprouted results along for the ride"</span>, place, ret.size());
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>         } <strong class="jxr_keyword">catch</strong> (Throwable problem) {
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>             logger.warn(<span class="jxr_string">"**{} caught {} with {} payloads"</span>, place, problem, payloadListArg.size(), problem);
+<a class="jxr_linenumber" name="L437" href="#L437">437</a>             <em class="jxr_comment">// We don't know here which one of the items on the list</em>
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>             <em class="jxr_comment">// caused the exception so we are going to error them all</em>
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>             <em class="jxr_comment">// If place providers don't catch their own exceptions</em>
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>             <em class="jxr_comment">// we are conservative in what we think is safe to do here</em>
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>             <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p : payloadListArg) {
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>                 p.addProcessingError(<span class="jxr_string">"agentProcessHeavyDury("</span> + place + <span class="jxr_string">"): "</span> + problem);
+<a class="jxr_linenumber" name="L443" href="#L443">443</a>                 p.replaceCurrentForm(MobileAgent.ERROR_FORM);
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>             }
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>             <strong class="jxr_keyword">if</strong> (!(place instanceof <a name="EmptyFormPlace" href="../../emissary/place/EmptyFormPlace.html#EmptyFormPlace">EmptyFormPlace</a>)) {
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p : payloadListArg) {
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>                     <strong class="jxr_keyword">if</strong> (p.currentFormSize() == 0) {
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>                         logger.error(<span class="jxr_string">"Place {} left an empty form stack, changing it to ERROR"</span>, place);
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>                         p.addProcessingError(place + <span class="jxr_string">" left an empty form stack"</span>);
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>                         p.pushCurrentForm(ERROR_FORM);
+<a class="jxr_linenumber" name="L452" href="#L452">452</a>                     }
+<a class="jxr_linenumber" name="L453" href="#L453">453</a>                 }
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>             }
+<a class="jxr_linenumber" name="L455" href="#L455">455</a>             MDC.remove(MDCConstants.SERVICE_LOCATION);
+<a class="jxr_linenumber" name="L456" href="#L456">456</a>             checkInterrupt(place);
+<a class="jxr_linenumber" name="L457" href="#L457">457</a>         }
 <a class="jxr_linenumber" name="L458" href="#L458">458</a> 
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> <em class="jxr_javadoccomment">     * Add the move error count to each payload</em>
-<a class="jxr_linenumber" name="L461" href="#L461">461</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addMoveErrorCount(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
-<a class="jxr_linenumber" name="L463" href="#L463">463</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : payloadListArg) {
-<a class="jxr_linenumber" name="L464" href="#L464">464</a>             payload.setParameter(<span class="jxr_string">"AGENT_MOVE_ERRORS"</span>, Integer.toString(moveErrorsOccurred));
-<a class="jxr_linenumber" name="L465" href="#L465">465</a>         }
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     }
-<a class="jxr_linenumber" name="L467" href="#L467">467</a> 
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L469" href="#L469">469</a> <em class="jxr_javadoccomment">     * Delete the move error count from each payload</em>
-<a class="jxr_linenumber" name="L470" href="#L470">470</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> deleteMoveErrorCount(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : payloadListArg) {
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>             payload.deleteParameter(<span class="jxr_string">"AGENT_MOVE_ERRORS"</span>);
-<a class="jxr_linenumber" name="L474" href="#L474">474</a>         }
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>     }
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> 
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * Record history for a bunch of payload objects (IBaseDataObject)</em>
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> recordHistory(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> place, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
-<a class="jxr_linenumber" name="L481" href="#L481">481</a>         logger.debug(<span class="jxr_string">"In recordHistory with {} payloads"</span>, payloadListArg.size());
-<a class="jxr_linenumber" name="L482" href="#L482">482</a>         <strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> placeEntry = place.getDirectoryEntry();
-<a class="jxr_linenumber" name="L483" href="#L483">483</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d : payloadListArg) {
-<a class="jxr_linenumber" name="L484" href="#L484">484</a>             recordHistory(placeEntry, d);
-<a class="jxr_linenumber" name="L485" href="#L485">485</a>         }
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     }
-<a class="jxr_linenumber" name="L487" href="#L487">487</a> 
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L489" href="#L489">489</a> <em class="jxr_javadoccomment">     * Record history for a bunch of payload objects (IBaseDataObject)</em>
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> recordHistory(<strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> placeEntry, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
-<a class="jxr_linenumber" name="L492" href="#L492">492</a>         logger.debug(<span class="jxr_string">"In recordHistory with {} payloads"</span>, payloadListArg.size());
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d : payloadListArg) {
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>             recordHistory(placeEntry, d);
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>         }
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>     }
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a> <em class="jxr_javadoccomment">     * Make the log message for all the payloads</em>
-<a class="jxr_linenumber" name="L500" href="#L500">500</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> logAgentCompletion() {
-<a class="jxr_linenumber" name="L502" href="#L502">502</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : <strong class="jxr_keyword">this</strong>.payloadList) {
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>             logAgentCompletion(payload);
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         }
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>     }
-<a class="jxr_linenumber" name="L506" href="#L506">506</a> 
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L508" href="#L508">508</a> <em class="jxr_javadoccomment">     * Return whatever we carry as an object for serialization</em>
-<a class="jxr_linenumber" name="L509" href="#L509">509</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>     @Override
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>     <strong class="jxr_keyword">public</strong> Object getPayloadForTransport() {
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.payloadList;
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>     }
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L516" href="#L516">516</a> <em class="jxr_javadoccomment">     * Setup the parallel type set tracking variable for a possible new payload</em>
-<a class="jxr_linenumber" name="L517" href="#L517">517</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setParallelTrackingInfoFor(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) {
-<a class="jxr_linenumber" name="L519" href="#L519">519</a> 
-<a class="jxr_linenumber" name="L520" href="#L520">520</a>         <em class="jxr_comment">// Clear out current value</em>
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>         clearParallelTrackingInfo();
+<a class="jxr_linenumber" name="L459" href="#L459">459</a>         <strong class="jxr_keyword">return</strong> ret;
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>     }
+<a class="jxr_linenumber" name="L461" href="#L461">461</a> 
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     * Add the move error count to each payload</em>
+<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> addMoveErrorCount(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : payloadListArg) {
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>             payload.setParameter(<span class="jxr_string">"AGENT_MOVE_ERRORS"</span>, Integer.toString(moveErrorsOccurred));
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>         }
+<a class="jxr_linenumber" name="L469" href="#L469">469</a>     }
+<a class="jxr_linenumber" name="L470" href="#L470">470</a> 
+<a class="jxr_linenumber" name="L471" href="#L471">471</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * Delete the move error count from each payload</em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> deleteMoveErrorCount(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : payloadListArg) {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>             payload.deleteParameter(<span class="jxr_string">"AGENT_MOVE_ERRORS"</span>);
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         }
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>     }
+<a class="jxr_linenumber" name="L479" href="#L479">479</a> 
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * Record history for a bunch of payload objects (IBaseDataObject)</em>
+<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L483" href="#L483">483</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> recordHistory(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> place, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>         logger.debug(<span class="jxr_string">"In recordHistory with {} payloads"</span>, payloadListArg.size());
+<a class="jxr_linenumber" name="L485" href="#L485">485</a>         <strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> placeEntry = place.getDirectoryEntry();
+<a class="jxr_linenumber" name="L486" href="#L486">486</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d : payloadListArg) {
+<a class="jxr_linenumber" name="L487" href="#L487">487</a>             recordHistory(placeEntry, d);
+<a class="jxr_linenumber" name="L488" href="#L488">488</a>         }
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     }
+<a class="jxr_linenumber" name="L490" href="#L490">490</a> 
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L492" href="#L492">492</a> <em class="jxr_javadoccomment">     * Record history for a bunch of payload objects (IBaseDataObject)</em>
+<a class="jxr_linenumber" name="L493" href="#L493">493</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> recordHistory(<strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> placeEntry, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; payloadListArg) {
+<a class="jxr_linenumber" name="L495" href="#L495">495</a>         logger.debug(<span class="jxr_string">"In recordHistory with {} payloads"</span>, payloadListArg.size());
+<a class="jxr_linenumber" name="L496" href="#L496">496</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d : payloadListArg) {
+<a class="jxr_linenumber" name="L497" href="#L497">497</a>             recordHistory(placeEntry, d);
+<a class="jxr_linenumber" name="L498" href="#L498">498</a>         }
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>     }
+<a class="jxr_linenumber" name="L500" href="#L500">500</a> 
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L502" href="#L502">502</a> <em class="jxr_javadoccomment">     * Make the log message for all the payloads</em>
+<a class="jxr_linenumber" name="L503" href="#L503">503</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> logAgentCompletion() {
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload : <strong class="jxr_keyword">this</strong>.payloadList) {
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>             logAgentCompletion(payload);
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>         }
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>     }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a> 
+<a class="jxr_linenumber" name="L510" href="#L510">510</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L511" href="#L511">511</a> <em class="jxr_javadoccomment">     * Return whatever we carry as an object for serialization</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a>     @Override
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>     <strong class="jxr_keyword">public</strong> Object getPayloadForTransport() {
+<a class="jxr_linenumber" name="L515" href="#L515">515</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.payloadList;
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>     }
+<a class="jxr_linenumber" name="L517" href="#L517">517</a> 
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L519" href="#L519">519</a> <em class="jxr_javadoccomment">     * Setup the parallel type set tracking variable for a possible new payload</em>
+<a class="jxr_linenumber" name="L520" href="#L520">520</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setParallelTrackingInfoFor(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d) {
 <a class="jxr_linenumber" name="L522" href="#L522">522</a> 
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         <em class="jxr_comment">// Look at history from the tail backwards in time and</em>
-<a class="jxr_linenumber" name="L524" href="#L524">524</a>         <em class="jxr_comment">// while looking at the same parallelType serviceType</em>
-<a class="jxr_linenumber" name="L525" href="#L525">525</a>         <em class="jxr_comment">// add values to the visitedPlaces tracking variable.</em>
-<a class="jxr_linenumber" name="L526" href="#L526">526</a>         <em class="jxr_comment">// We need to do this because this data object may have</em>
-<a class="jxr_linenumber" name="L527" href="#L527">527</a>         <em class="jxr_comment">// been processed through some of them as a slug and it</em>
-<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <em class="jxr_comment">// will not have filled in the visitedPlace properly.</em>
-<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; history = d.transformHistory();
-<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <strong class="jxr_keyword">int</strong> lastParallelType = -1;
-<a class="jxr_linenumber" name="L531" href="#L531">531</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = history.size() - 1; i &gt;= 0; i--) {
-<a class="jxr_linenumber" name="L532" href="#L532">532</a>             <strong class="jxr_keyword">final</strong> String key = history.get(i);
-<a class="jxr_linenumber" name="L533" href="#L533">533</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> typeSet = typeLookup(KeyManipulator.getServiceType(key));
-<a class="jxr_linenumber" name="L534" href="#L534">534</a>             <strong class="jxr_keyword">if</strong> (lastParallelType == -1 &amp;&amp; isParallelServiceType(typeSet)) {
-<a class="jxr_linenumber" name="L535" href="#L535">535</a>                 lastParallelType = typeSet;
-<a class="jxr_linenumber" name="L536" href="#L536">536</a>             }
-<a class="jxr_linenumber" name="L537" href="#L537">537</a>             <strong class="jxr_keyword">if</strong> (typeSet != lastParallelType) {
-<a class="jxr_linenumber" name="L538" href="#L538">538</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>         <em class="jxr_comment">// Clear out current value</em>
+<a class="jxr_linenumber" name="L524" href="#L524">524</a>         clearParallelTrackingInfo();
+<a class="jxr_linenumber" name="L525" href="#L525">525</a> 
+<a class="jxr_linenumber" name="L526" href="#L526">526</a>         <em class="jxr_comment">// Look at history from the tail backwards in time and</em>
+<a class="jxr_linenumber" name="L527" href="#L527">527</a>         <em class="jxr_comment">// while looking at the same parallelType serviceType</em>
+<a class="jxr_linenumber" name="L528" href="#L528">528</a>         <em class="jxr_comment">// add values to the visitedPlaces tracking variable.</em>
+<a class="jxr_linenumber" name="L529" href="#L529">529</a>         <em class="jxr_comment">// We need to do this because this data object may have</em>
+<a class="jxr_linenumber" name="L530" href="#L530">530</a>         <em class="jxr_comment">// been processed through some of them as a slug and it</em>
+<a class="jxr_linenumber" name="L531" href="#L531">531</a>         <em class="jxr_comment">// will not have filled in the visitedPlace properly.</em>
+<a class="jxr_linenumber" name="L532" href="#L532">532</a>         <strong class="jxr_keyword">final</strong> List&lt;String&gt; history = d.transformHistory();
+<a class="jxr_linenumber" name="L533" href="#L533">533</a>         <strong class="jxr_keyword">int</strong> lastParallelType = -1;
+<a class="jxr_linenumber" name="L534" href="#L534">534</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = history.size() - 1; i &gt;= 0; i--) {
+<a class="jxr_linenumber" name="L535" href="#L535">535</a>             <strong class="jxr_keyword">final</strong> String key = history.get(i);
+<a class="jxr_linenumber" name="L536" href="#L536">536</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> typeSet = typeLookup(KeyManipulator.getServiceType(key));
+<a class="jxr_linenumber" name="L537" href="#L537">537</a>             <strong class="jxr_keyword">if</strong> (lastParallelType == -1 &amp;&amp; isParallelServiceType(typeSet)) {
+<a class="jxr_linenumber" name="L538" href="#L538">538</a>                 lastParallelType = typeSet;
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>             }
-<a class="jxr_linenumber" name="L540" href="#L540">540</a>             addParallelTrackingInfo(KeyManipulator.getServiceName(key));
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         }
-<a class="jxr_linenumber" name="L542" href="#L542">542</a>     }
-<a class="jxr_linenumber" name="L543" href="#L543">543</a> 
-<a class="jxr_linenumber" name="L544" href="#L544">544</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L545" href="#L545">545</a> <em class="jxr_javadoccomment">     * To string method useful from the Namespace when bound there</em>
-<a class="jxr_linenumber" name="L546" href="#L546">546</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L547" href="#L547">547</a>     @Override
-<a class="jxr_linenumber" name="L548" href="#L548">548</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="L549" href="#L549">549</a>         <strong class="jxr_keyword">if</strong> (isZombie()) {
-<a class="jxr_linenumber" name="L550" href="#L550">550</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"Closed"</span>;
-<a class="jxr_linenumber" name="L551" href="#L551">551</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (!isInUse()) {
-<a class="jxr_linenumber" name="L552" href="#L552">552</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"Idle"</span>;
-<a class="jxr_linenumber" name="L553" href="#L553">553</a>         }
-<a class="jxr_linenumber" name="L554" href="#L554">554</a> 
-<a class="jxr_linenumber" name="L555" href="#L555">555</a>         String sn = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L556" href="#L556">556</a>         <strong class="jxr_keyword">int</strong> sz = 0;
-<a class="jxr_linenumber" name="L557" href="#L557">557</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.payloadList != <strong class="jxr_keyword">null</strong> &amp;&amp; !<strong class="jxr_keyword">this</strong>.payloadList.isEmpty()) {
-<a class="jxr_linenumber" name="L558" href="#L558">558</a>             <em class="jxr_comment">// Avoid synchronizing this [don't call getPayload()]</em>
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L560" href="#L560">560</a>                 sn = <strong class="jxr_keyword">this</strong>.payloadList.get(0).shortName();
-<a class="jxr_linenumber" name="L561" href="#L561">561</a>                 sz = <strong class="jxr_keyword">this</strong>.payloadList.size();
-<a class="jxr_linenumber" name="L562" href="#L562">562</a>             } <strong class="jxr_keyword">catch</strong> (Throwable t) {
-<a class="jxr_linenumber" name="L563" href="#L563">563</a>                 <em class="jxr_comment">// empty catch block</em>
-<a class="jxr_linenumber" name="L564" href="#L564">564</a>             }
-<a class="jxr_linenumber" name="L565" href="#L565">565</a>         }
-<a class="jxr_linenumber" name="L566" href="#L566">566</a>         <strong class="jxr_keyword">if</strong> (sn == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L567" href="#L567">567</a>             sn = <span class="jxr_string">"Missing payload"</span>;
+<a class="jxr_linenumber" name="L540" href="#L540">540</a>             <strong class="jxr_keyword">if</strong> (typeSet != lastParallelType) {
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="L542" href="#L542">542</a>             }
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>             addParallelTrackingInfo(KeyManipulator.getServiceName(key));
+<a class="jxr_linenumber" name="L544" href="#L544">544</a>         }
+<a class="jxr_linenumber" name="L545" href="#L545">545</a>     }
+<a class="jxr_linenumber" name="L546" href="#L546">546</a> 
+<a class="jxr_linenumber" name="L547" href="#L547">547</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L548" href="#L548">548</a> <em class="jxr_javadoccomment">     * To string method useful from the Namespace when bound there</em>
+<a class="jxr_linenumber" name="L549" href="#L549">549</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L550" href="#L550">550</a>     @Override
+<a class="jxr_linenumber" name="L551" href="#L551">551</a>     <strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="L552" href="#L552">552</a>         <strong class="jxr_keyword">if</strong> (isZombie()) {
+<a class="jxr_linenumber" name="L553" href="#L553">553</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"Closed"</span>;
+<a class="jxr_linenumber" name="L554" href="#L554">554</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (!isInUse()) {
+<a class="jxr_linenumber" name="L555" href="#L555">555</a>             <strong class="jxr_keyword">return</strong> <span class="jxr_string">"Idle"</span>;
+<a class="jxr_linenumber" name="L556" href="#L556">556</a>         }
+<a class="jxr_linenumber" name="L557" href="#L557">557</a> 
+<a class="jxr_linenumber" name="L558" href="#L558">558</a>         String sn = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>         <strong class="jxr_keyword">int</strong> sz = 0;
+<a class="jxr_linenumber" name="L560" href="#L560">560</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.payloadList != <strong class="jxr_keyword">null</strong> &amp;&amp; !<strong class="jxr_keyword">this</strong>.payloadList.isEmpty()) {
+<a class="jxr_linenumber" name="L561" href="#L561">561</a>             <em class="jxr_comment">// Avoid synchronizing this [don't call getPayload()]</em>
+<a class="jxr_linenumber" name="L562" href="#L562">562</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L563" href="#L563">563</a>                 sn = <strong class="jxr_keyword">this</strong>.payloadList.get(0).shortName();
+<a class="jxr_linenumber" name="L564" href="#L564">564</a>                 sz = <strong class="jxr_keyword">this</strong>.payloadList.size();
+<a class="jxr_linenumber" name="L565" href="#L565">565</a>             } <strong class="jxr_keyword">catch</strong> (Throwable t) {
+<a class="jxr_linenumber" name="L566" href="#L566">566</a>                 <em class="jxr_comment">// empty catch block</em>
+<a class="jxr_linenumber" name="L567" href="#L567">567</a>             }
 <a class="jxr_linenumber" name="L568" href="#L568">568</a>         }
-<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">return</strong> sn + <span class="jxr_string">"("</span> + sz + <span class="jxr_string">") - "</span> + lastPlaceProcessed;
-<a class="jxr_linenumber" name="L570" href="#L570">570</a>     }
-<a class="jxr_linenumber" name="L571" href="#L571">571</a> 
-<a class="jxr_linenumber" name="L572" href="#L572">572</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L573" href="#L573">573</a> <em class="jxr_javadoccomment">     * @return the lastPlaceProcessed</em>
-<a class="jxr_linenumber" name="L574" href="#L574">574</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L575" href="#L575">575</a>     @Override
-<a class="jxr_linenumber" name="L576" href="#L576">576</a>     <strong class="jxr_keyword">public</strong> String getLastPlaceProcessed() {
-<a class="jxr_linenumber" name="L577" href="#L577">577</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.lastPlaceProcessed;
-<a class="jxr_linenumber" name="L578" href="#L578">578</a>     }
-<a class="jxr_linenumber" name="L579" href="#L579">579</a> 
-<a class="jxr_linenumber" name="L580" href="#L580">580</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L581" href="#L581">581</a> <em class="jxr_javadoccomment">     * Interrupt the agent's thread Seems a little weird to be public, but there aren't a lot of choices.</em>
-<a class="jxr_linenumber" name="L582" href="#L582">582</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L583" href="#L583">583</a>     @Override
-<a class="jxr_linenumber" name="L584" href="#L584">584</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> interrupt() {
-<a class="jxr_linenumber" name="L585" href="#L585">585</a>         <strong class="jxr_keyword">this</strong>.thread.interrupt();
-<a class="jxr_linenumber" name="L586" href="#L586">586</a>     }
-<a class="jxr_linenumber" name="L587" href="#L587">587</a> 
-<a class="jxr_linenumber" name="L588" href="#L588">588</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L589" href="#L589">589</a> <em class="jxr_javadoccomment">     * Determine if this agent is walking un-dead</em>
-<a class="jxr_linenumber" name="L590" href="#L590">590</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L591" href="#L591">591</a>     @Override
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isZombie() {
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.timeToQuit;
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>     }
-<a class="jxr_linenumber" name="L595" href="#L595">595</a> 
-<a class="jxr_linenumber" name="L596" href="#L596">596</a> }
+<a class="jxr_linenumber" name="L569" href="#L569">569</a>         <strong class="jxr_keyword">if</strong> (sn == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L570" href="#L570">570</a>             sn = <span class="jxr_string">"Missing payload"</span>;
+<a class="jxr_linenumber" name="L571" href="#L571">571</a>         }
+<a class="jxr_linenumber" name="L572" href="#L572">572</a>         <strong class="jxr_keyword">return</strong> sn + <span class="jxr_string">"("</span> + sz + <span class="jxr_string">") - "</span> + lastPlaceProcessed;
+<a class="jxr_linenumber" name="L573" href="#L573">573</a>     }
+<a class="jxr_linenumber" name="L574" href="#L574">574</a> 
+<a class="jxr_linenumber" name="L575" href="#L575">575</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L576" href="#L576">576</a> <em class="jxr_javadoccomment">     * @return the lastPlaceProcessed</em>
+<a class="jxr_linenumber" name="L577" href="#L577">577</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L578" href="#L578">578</a>     @Override
+<a class="jxr_linenumber" name="L579" href="#L579">579</a>     <strong class="jxr_keyword">public</strong> String getLastPlaceProcessed() {
+<a class="jxr_linenumber" name="L580" href="#L580">580</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.lastPlaceProcessed;
+<a class="jxr_linenumber" name="L581" href="#L581">581</a>     }
+<a class="jxr_linenumber" name="L582" href="#L582">582</a> 
+<a class="jxr_linenumber" name="L583" href="#L583">583</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L584" href="#L584">584</a> <em class="jxr_javadoccomment">     * Interrupt the agent's thread Seems a little weird to be public, but there aren't a lot of choices.</em>
+<a class="jxr_linenumber" name="L585" href="#L585">585</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L586" href="#L586">586</a>     @Override
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> interrupt() {
+<a class="jxr_linenumber" name="L588" href="#L588">588</a>         <strong class="jxr_keyword">this</strong>.thread.interrupt();
+<a class="jxr_linenumber" name="L589" href="#L589">589</a>     }
+<a class="jxr_linenumber" name="L590" href="#L590">590</a> 
+<a class="jxr_linenumber" name="L591" href="#L591">591</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> <em class="jxr_javadoccomment">     * Determine if this agent is walking un-dead</em>
+<a class="jxr_linenumber" name="L593" href="#L593">593</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>     @Override
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isZombie() {
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.timeToQuit;
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>     }
+<a class="jxr_linenumber" name="L598" href="#L598">598</a> 
+<a class="jxr_linenumber" name="L599" href="#L599">599</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

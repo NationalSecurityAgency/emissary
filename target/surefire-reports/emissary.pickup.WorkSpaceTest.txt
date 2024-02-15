@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: emissary.pickup.WorkSpaceTest
--------------------------------------------------------------------------------
-Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.533 s - in emissary.pickup.WorkSpaceTest

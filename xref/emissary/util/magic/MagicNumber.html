@@ -170,7 +170,7 @@
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> 
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         <strong class="jxr_keyword">if</strong> (!substitute)
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>             <strong class="jxr_keyword">return</strong> desc;
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         Stack&lt;Character&gt; stack = <strong class="jxr_keyword">new</strong> Stack&lt;Character&gt;();
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>         Stack&lt;Character&gt; stack = <strong class="jxr_keyword">new</strong> Stack&lt;&gt;();
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = (desc.length() - 1); i &gt;= 0; --i)
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>             stack.push(desc.charAt(i));
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder();
@@ -366,7 +366,7 @@
 <a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L359" href="#L359">359</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addDependencyLayer(<a name="MagicNumber" href="../../../emissary/util/magic/MagicNumber.html#MagicNumber">MagicNumber</a>[] dependencyLayer) {
 <a class="jxr_linenumber" name="L360" href="#L360">360</a>         <strong class="jxr_keyword">if</strong> (dependencies == <strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>             dependencies = <strong class="jxr_keyword">new</strong> ArrayList&lt;MagicNumber[]&gt;();
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>             dependencies = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L362" href="#L362">362</a>         dependencies.add(dependencyLayer);
 <a class="jxr_linenumber" name="L363" href="#L363">363</a>     }
 <a class="jxr_linenumber" name="L364" href="#L364">364</a> 
@@ -434,6 +434,6 @@
 <a class="jxr_linenumber" name="L426" href="#L426">426</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

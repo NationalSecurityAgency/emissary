@@ -116,11 +116,11 @@
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">""</span>;
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>     }
 <a class="jxr_linenumber" name="L110" href="#L110">110</a> 
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getDataID(<strong class="jxr_keyword">final</strong> String key) {
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getDataId(<strong class="jxr_keyword">final</strong> String key) {
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">return</strong> getDataType(key) + DATAIDSEPARATOR + getServiceType(key);
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>     }
 <a class="jxr_linenumber" name="L114" href="#L114">114</a> 
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getServiceTypeFromDataID(<strong class="jxr_keyword">final</strong> String dataid) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getServiceTypeFromDataId(<strong class="jxr_keyword">final</strong> String dataid) {
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> pos = dataid.indexOf(DATAIDSEPARATOR);
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">if</strong> (pos &gt; -1) {
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>             <strong class="jxr_keyword">return</strong> dataid.substring(pos + DATAIDSEPARATOR.length());
@@ -259,7 +259,7 @@
 <a class="jxr_linenumber" name="L251" href="#L251">251</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     * Returns the protocol://hostname:port/ from a dictionary formatted key</em>
 <a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getServiceHostURL(<strong class="jxr_keyword">final</strong> String key) {
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getServiceHostUrl(<strong class="jxr_keyword">final</strong> String key) {
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>         <strong class="jxr_keyword">final</strong> String location = getServiceLocation(key);
 <a class="jxr_linenumber" name="L256" href="#L256">256</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> ds = location.lastIndexOf(CLASSSEPARATOR);
 <a class="jxr_linenumber" name="L257" href="#L257">257</a> 
@@ -277,7 +277,7 @@
 <a class="jxr_linenumber" name="L269" href="#L269">269</a> <em class="jxr_javadoccomment">     * @return true if local to each other</em>
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L271" href="#L271">271</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isLocalTo(<strong class="jxr_keyword">final</strong> String k1, <strong class="jxr_keyword">final</strong> String k2) {
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>         <strong class="jxr_keyword">return</strong> getServiceHostURL(k1).equals(getServiceHostURL(k2));
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>         <strong class="jxr_keyword">return</strong> getServiceHostUrl(k1).equals(getServiceHostUrl(k2));
 <a class="jxr_linenumber" name="L273" href="#L273">273</a>     }
 <a class="jxr_linenumber" name="L274" href="#L274">274</a> 
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>     <em class="jxr_javadoccomment">/**</em>
@@ -414,50 +414,23 @@
 <a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * @param key the key of the place to find a directory for</em>
 <a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L408" href="#L408">408</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getDefaultDirectoryKey(<strong class="jxr_keyword">final</strong> String key) {
-<a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">return</strong> WILDCARD_THREE + KeyManipulator.getServiceHostURL(key) + <span class="jxr_string">"DirectoryPlace"</span>;
+<a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">return</strong> WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + <span class="jxr_string">"DirectoryPlace"</span>;
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>     }
 <a class="jxr_linenumber" name="L411" href="#L411">411</a> 
 <a class="jxr_linenumber" name="L412" href="#L412">412</a> 
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String getHostMatchKey(<strong class="jxr_keyword">final</strong> String key) {
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">return</strong> WILDCARD_THREE + KeyManipulator.getServiceHostURL(key) + <span class="jxr_string">"*"</span>;
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">return</strong> WILDCARD_THREE + KeyManipulator.getServiceHostUrl(key) + <span class="jxr_string">"*"</span>;
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>     }
 <a class="jxr_linenumber" name="L416" href="#L416">416</a> 
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] argv) {
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>         String temp = <span class="jxr_string">"UNKNOWN.place.ID.tcp://host.domain.com:8001/thePlace$5050"</span>;
-<a class="jxr_linenumber" name="L419" href="#L419">419</a>         String pat = <span class="jxr_string">"UNKNOWN.place.*"</span>;
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String makeSproutKey(<strong class="jxr_keyword">final</strong> String placeKey) {
+<a class="jxr_linenumber" name="L418" href="#L418">418</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"*.*."</span> + IServiceProviderPlace.SPROUT_KEY + <span class="jxr_string">"."</span> + getServiceLocation(placeKey) + DOLLAR + <span class="jxr_string">"0"</span>;
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>     }
 <a class="jxr_linenumber" name="L420" href="#L420">420</a> 
-<a class="jxr_linenumber" name="L421" href="#L421">421</a>         <strong class="jxr_keyword">if</strong> (argv.length &gt; 1) {
-<a class="jxr_linenumber" name="L422" href="#L422">422</a>             temp = argv[0];
-<a class="jxr_linenumber" name="L423" href="#L423">423</a>             pat = argv[1];
-<a class="jxr_linenumber" name="L424" href="#L424">424</a>         }
-<a class="jxr_linenumber" name="L425" href="#L425">425</a> 
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">if</strong> (gmatch(temp, pat)) {
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>             System.out.println(<span class="jxr_string">"***matched --&gt; "</span> + temp);
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>             System.out.println(<span class="jxr_string">"ServiceType: "</span> + getServiceType(temp));
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>             System.out.println(<span class="jxr_string">"ServiceName: "</span> + getServiceName(temp));
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>             System.out.println(<span class="jxr_string">"DataType   : "</span> + getDataType(temp));
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>             System.out.println(<span class="jxr_string">"Location   : "</span> + getServiceLocation(temp));
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>             System.out.println(<span class="jxr_string">"HostURL    : "</span> + getServiceHostURL(temp));
-<a class="jxr_linenumber" name="L433" href="#L433">433</a>             System.out.println(<span class="jxr_string">"HostName   : "</span> + getServiceHost(temp));
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>             System.out.println(<span class="jxr_string">"ClassName  : "</span> + getServiceClassname(temp));
-<a class="jxr_linenumber" name="L435" href="#L435">435</a>             System.out.println(<span class="jxr_string">"Expense    : "</span> + getExpense(temp));
-<a class="jxr_linenumber" name="L436" href="#L436">436</a>             System.out.println(<span class="jxr_string">"Default Directory  : "</span> + getDefaultDirectoryKey(temp));
-<a class="jxr_linenumber" name="L437" href="#L437">437</a>             <strong class="jxr_keyword">final</strong> String hckey = getHostMatchKey(temp);
-<a class="jxr_linenumber" name="L438" href="#L438">438</a>             System.out.println(<span class="jxr_string">"Host match key : "</span> + hckey + (gmatch(temp, hckey) ? <span class="jxr_string">" matches"</span> : <span class="jxr_string">" does not match"</span>));
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>             System.out.println(<span class="jxr_string">" --- no match ---"</span>);
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>         }
-<a class="jxr_linenumber" name="L442" href="#L442">442</a>     }
-<a class="jxr_linenumber" name="L443" href="#L443">443</a> 
-<a class="jxr_linenumber" name="L444" href="#L444">444</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String makeSproutKey(<strong class="jxr_keyword">final</strong> String placeKey) {
-<a class="jxr_linenumber" name="L445" href="#L445">445</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"*.*."</span> + IServiceProviderPlace.SPROUT_KEY + <span class="jxr_string">"."</span> + getServiceLocation(placeKey) + DOLLAR + <span class="jxr_string">"0"</span>;
-<a class="jxr_linenumber" name="L446" href="#L446">446</a>     }
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> 
-<a class="jxr_linenumber" name="L448" href="#L448">448</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>     <strong class="jxr_keyword">private</strong> <a name="KeyManipulator" href="../../emissary/directory/KeyManipulator.html#KeyManipulator">KeyManipulator</a>() {}
-<a class="jxr_linenumber" name="L450" href="#L450">450</a> }
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>     <strong class="jxr_keyword">private</strong> <a name="KeyManipulator" href="../../emissary/directory/KeyManipulator.html#KeyManipulator">KeyManipulator</a>() {}
+<a class="jxr_linenumber" name="L423" href="#L423">423</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

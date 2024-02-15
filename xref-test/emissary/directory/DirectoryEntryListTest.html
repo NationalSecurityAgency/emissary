@@ -186,8 +186,8 @@
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">void</strong> testXml() <strong class="jxr_keyword">throws</strong> JDOMException {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">final</strong> Document jdom = JDOMUtil.createDocument(<span class="jxr_string">"&lt;entryList&gt;&lt;/entryList&gt;"</span>, false);
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">final</strong> Element root = jdom.getRootElement();
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         root.addContent(<strong class="jxr_keyword">this</strong>.d.getXML());
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>         root.addContent(<strong class="jxr_keyword">this</strong>.d2.getXML());
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         root.addContent(<strong class="jxr_keyword">this</strong>.d.getXml());
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         root.addContent(<strong class="jxr_keyword">this</strong>.d2.getXml());
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         <strong class="jxr_keyword">final</strong> DirectoryEntryList dl2 = DirectoryEntryList.fromXML(root);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         assertNotNull(dl2, <span class="jxr_string">"From xml"</span>);
@@ -213,6 +213,6 @@
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

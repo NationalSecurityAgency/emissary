@@ -81,11 +81,12 @@
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertEquals(<span class="jxr_string">"emissary/util/Version.cfg"</span>, rr.getConfigDataName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource config naming"</span>);
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo.xml"</span>, rr.getXmlName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      }
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          assertEquals(<span class="jxr_string">"emissary/util/io/sample.dat"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.thisPackage, <span class="jxr_string">"sample.dat"</span>), <span class="jxr_string">"Sample file with extension naming"</span>);
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

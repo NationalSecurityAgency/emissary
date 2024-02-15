@@ -36,7 +36,7 @@
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">long</strong> crc32 = -1L;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      String ssdeep = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      Map&lt;String, byte[]&gt; hashComp = <strong class="jxr_keyword">new</strong> TreeMap&lt;String, byte[]&gt;();
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      Map&lt;String, byte[]&gt; hashComp = <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;();
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>  
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">     * Create an empty result object</em>
@@ -241,7 +241,7 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a> <em class="jxr_javadoccomment">     * Get names of all algorithm results present</em>
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">public</strong> Set&lt;String&gt; getResultNames() {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TreeSet&lt;String&gt;(hashComp.keySet());
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;(hashComp.keySet());
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>     }
 <a class="jxr_linenumber" name="L238" href="#L238">238</a> 
 <a class="jxr_linenumber" name="L239" href="#L239">239</a>     <em class="jxr_javadoccomment">/**</em>
@@ -278,6 +278,6 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

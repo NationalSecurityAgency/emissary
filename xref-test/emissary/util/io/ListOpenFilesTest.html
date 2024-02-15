@@ -53,18 +53,19 @@
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">void</strong> isOpen() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          assumeTrue(<strong class="jxr_keyword">new</strong> Executrix().execute(<strong class="jxr_keyword">new</strong> String[] {<span class="jxr_string">"lsof"</span>, <span class="jxr_string">"-v"</span>}) == 0);
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          <em class="jxr_comment">// open a file an test</em>
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          <em class="jxr_comment">// open a file and test</em>
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>          <strong class="jxr_keyword">try</strong> (InputStream stream = Files.newInputStream(file)) {
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>              assertTrue(instance.isOpen(file));
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          }
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertFalse(instance.isOpen(file));
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <em class="jxr_comment">// test for a file that does not exist</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          assertFalse(instance.isOpen(Paths.get(tmpDir.toString(), <span class="jxr_string">"dne"</span>)));
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>      }
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>              assert stream != <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>              assertTrue(instance.isOpen(file));
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          }
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertFalse(instance.isOpen(file));
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          <em class="jxr_comment">// test for a file that does not exist</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertFalse(instance.isOpen(Paths.get(tmpDir.toString(), <span class="jxr_string">"dne"</span>)));
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      }
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

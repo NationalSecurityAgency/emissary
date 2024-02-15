@@ -94,22 +94,9 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Exception message not equal for"</span>), thrownException.getMessage());
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>      @Test
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">void</strong> canCheckOneEvent() {
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          assertNotNull(logBackTester);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">boolean</strong>[] throwing = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">boolean</strong>[1];
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>          String[] messages = <strong class="jxr_keyword">new</strong> String[1];
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          Level[] levels = <strong class="jxr_keyword">new</strong> Level[1];
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          levels[0] = Level.WARN;
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          messages[0] = <span class="jxr_string">"Not good news."</span>;
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          throwing[0] = false;
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          logger.warn(<span class="jxr_string">"Not good news."</span>);
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         logBackTester.checkLogList(levels, messages, throwing);
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>     }
-<a class="jxr_linenumber" name="L102" href="#L102">102</a> }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

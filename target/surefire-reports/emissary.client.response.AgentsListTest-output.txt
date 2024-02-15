@@ -1,5 +1,0 @@
-2023-12-12 00:43:58,590 [using logback-test.xml]  INFO emissary.client.response.AgentList -   - 
-localhost :
-         Agent-01: header-footer.dat(1) - LOWER_CASE.TO_UPPER.TRANSFORM.http://localhost:8001/ToUpperPlace
-         Agent-02: Idle
-         Agent-03: junk

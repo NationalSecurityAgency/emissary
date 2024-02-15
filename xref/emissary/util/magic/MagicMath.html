@@ -61,8 +61,8 @@
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>      }
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] parseEscapedString(String s) {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          List&lt;Number&gt; array = <strong class="jxr_keyword">new</strong> ArrayList&lt;Number&gt;();
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Stack&lt;Character&gt; chars = <strong class="jxr_keyword">new</strong> Stack&lt;Character&gt;();
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          List&lt;Number&gt; array = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          Stack&lt;Character&gt; chars = <strong class="jxr_keyword">new</strong> Stack&lt;&gt;();
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = (s.length() - 1); i &gt;= 0; i--)
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>              chars.push(s.charAt(i));
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">while</strong> (!chars.empty()) {
@@ -278,6 +278,6 @@
 <a class="jxr_linenumber" name="L270" href="#L270">270</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2023 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
 </body>
 </html>

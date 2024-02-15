@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: emissary.core.IBaseDataObjectHelperTest
--------------------------------------------------------------------------------
-Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.366 s - in emissary.core.IBaseDataObjectHelperTest
