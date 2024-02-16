@@ -252,8 +252,6 @@ public abstract class ExtractionTest extends UnitTest {
             assertFalse(payload.hasParameter(key),
                     String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
                             payload.getStringParameter(key)));
-            assertFalse(payload.hasParameter(key), String.format("Metadata element '%s' in '%s' should not exist, but has value of '%s'", key, tname,
-                    payload.getStringParameter(key)));
         }
 
         // Check the primary view. Even though there is only one
