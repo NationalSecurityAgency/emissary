@@ -191,7 +191,7 @@ public abstract class ExtractionTest extends UnitTest {
                                     payload.getAllCurrentForms()));
                 } else {
                     assertTrue(payload.searchCurrentForm(cf) > -1,
-                            "Current form " + cf + " not found in " + tname + ", " + payload.getAllCurrentForms());
+                            String.format("Current form %s not found in %s, %s", cf, tname, payload.getAllCurrentForms()));
                 }
             }
         }
