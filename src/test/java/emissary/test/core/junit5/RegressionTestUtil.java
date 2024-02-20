@@ -75,7 +75,7 @@ public final class RegressionTestUtil {
     private static final SAXBuilder XML_BUILDER = new SAXBuilder(XMLReaders.NONVALIDATING);
 
     /**
-     * Default configuration to only check data when comparing
+     * Difference configuration to use when comparing IBDO's.
      */
     private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.configure().enableData().enableKeyValueParameterDiff().build();
 
