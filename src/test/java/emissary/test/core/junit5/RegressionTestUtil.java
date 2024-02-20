@@ -77,7 +77,7 @@ public final class RegressionTestUtil {
     /**
      * Default configuration to only check data when comparing
      */
-    private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.onlyCheckData();
+    private static final DiffCheckConfiguration DIFF_CHECK = DiffCheckConfiguration.configure().enableData().enableKeyValueParameterDiff().build();
 
     /**
      * Logger instance
