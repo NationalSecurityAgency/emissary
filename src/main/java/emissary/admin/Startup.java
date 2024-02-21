@@ -279,6 +279,7 @@ public class Startup {
 
         final long start = System.currentTimeMillis();
         final Map<String, String> dirStarts = new HashMap<>();
+        EmissaryNode emissaryNode = new EmissaryNode();
         for (final String thePlaceLocation : hostParameters) {
 
             final String host = placeHost(thePlaceLocation);
@@ -286,7 +287,7 @@ public class Startup {
             if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
                 logger.info("Doing local startup for directory {} ", thePlaceLocation);
                 final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null);
+                final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, emissaryNode);
                 if (p != null) {
                     dirStarts.put(host, thePlaceLocation);
                     localDirectoriesArg.put(host, p.toString());
