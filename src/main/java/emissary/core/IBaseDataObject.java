@@ -781,6 +781,7 @@ public interface IBaseDataObject {
     /**
      * Support deep copy via clone
      */
+    @Deprecated
     IBaseDataObject clone() throws CloneNotSupportedException;
 
     /**
