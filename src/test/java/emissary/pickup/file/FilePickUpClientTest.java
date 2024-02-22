@@ -145,10 +145,11 @@ class FilePickUpClientTest extends UnitTest {
         @Override
         @Nullable
         protected String caseIdHook(String initialCaseId, String sessionname, String fileName, Map<String, Collection<Object>> metadata) {
-            if (nullifyCaseIdInHook)
+            if (nullifyCaseIdInHook) {
                 return null;
-            else
+            } else {
                 return super.caseIdHook(initialCaseId, sessionname, fileName, metadata);
+            }
         }
 
         @Override

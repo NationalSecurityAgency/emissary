@@ -124,8 +124,9 @@ public class MagicNumber {
      */
     public String describe(byte[] data) {
         String desc = describeSelf(data);
-        if (desc == null)
+        if (desc == null) {
             return null;
+        }
         StringBuilder sb = new StringBuilder(desc);
         return escapeBackspace(describeDependents(data, sb, 0));
     }
@@ -150,8 +151,9 @@ public class MagicNumber {
      * Describe this instance only
      */
     private String describeSelf(byte[] data) {
-        if (!test(data))
+        if (!test(data)) {
             return null;
+        }
         return format(description, data);
     }
 
@@ -160,11 +162,13 @@ public class MagicNumber {
      */
     private String format(String desc, byte[] data) {
 
-        if (!substitute)
+        if (!substitute) {
             return desc;
+        }
         Stack<Character> stack = new Stack<>();
-        for (int i = (desc.length() - 1); i >= 0; --i)
+        for (int i = (desc.length() - 1); i >= 0; --i) {
             stack.push(desc.charAt(i));
+        }
         StringBuilder sb = new StringBuilder();
 
         while (!stack.empty()) {
@@ -196,8 +200,9 @@ public class MagicNumber {
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
-                if (subType.charValue() == 'l' && !stack.empty() && (stack.peek()).charValue() == 'd')
+                if (subType.charValue() == 'l' && !stack.empty() && (stack.peek()).charValue() == 'd') {
                     stack.pop();
+                }
                 continue;
             }
             sb.append(next.charValue());
@@ -230,8 +235,9 @@ public class MagicNumber {
             }
         }
 
-        if (!shouldContinue)
+        if (!shouldContinue) {
             return sb.toString();
+        }
         return describeDependents(data, sb, layer + 1);
     }
 
@@ -254,8 +260,9 @@ public class MagicNumber {
      */
     public boolean test(byte[] data) {
         byte[] subject = getElement(data, offset, dataTypeLength);
-        if (subject == null)
+        if (subject == null) {
             return false;
+        }
         // printByteSample(subject, "DATA SAMPLE: ");
         return testNumeric(subject);
     }
@@ -264,8 +271,9 @@ public class MagicNumber {
      * Tests numeric byte data only
      */
     private boolean testNumeric(byte[] data) {
-        if (substitute)
+        if (substitute) {
             return true;
+        }
         byte[] mValues = value;
 
         log.debug("Unary Operator: {}", unaryOperator);
@@ -275,60 +283,71 @@ public class MagicNumber {
         switch (unaryOperator) {
             case MAGICOPERATOR_AND:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i])
+                    if (data[i] != mValues[i]) {
                         return false;
+                    }
                 }
                 return true;
             case MAGICOPERATOR_GTHAN:
                 for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF))
+                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF)) {
                         return false;
-                    if (i == end - 1 && data[i] == mValues[i])
+                    }
+                    if (i == end - 1 && data[i] == mValues[i]) {
                         return false;
+                    }
                 }
                 return true;
             case MAGICOPERATOR_LTHAN:
                 for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF))
+                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF)) {
                         return false;
-                    if (i == end - 1 && data[i] == mValues[i])
+                    }
+                    if (i == end - 1 && data[i] == mValues[i]) {
                         return false;
+                    }
                 }
                 return true;
             case MAGICOPERATOR_OR:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] == mValues[i])
+                    if (data[i] == mValues[i]) {
                         return true;
+                    }
                 }
                 return false;
             case MAGICOPERATOR_BWAND:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i])
+                    if (data[i] != mValues[i]) {
                         return false;
+                    }
                 }
                 return true;
             case MAGICOPERATOR_BWNOT:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i])
+                    if (data[i] != mValues[i]) {
                         return true;
+                    }
                 }
                 return false;
             case MAGICOPERATOR_NOT:
                 for (int i = 0; i < end; i++) {
-                    if (data[i] != mValues[i])
+                    if (data[i] != mValues[i]) {
                         return true;
+                    }
                 }
                 return false;
             case MAGICOPERATOR_EQUAL_GTHAN:
                 for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF))
+                    if ((data[i] & 0xFF) < (mValues[i] & 0xFF)) {
                         return false;
+                    }
                 }
                 return true;
             case MAGICOPERATOR_EQUAL_LTHAN:
                 for (int i = 0; i < end; i++) {
-                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF))
+                    if ((data[i] & 0xFF) > (mValues[i] & 0xFF)) {
                         return false;
+                    }
                 }
                 return true;
             default:
@@ -342,14 +361,17 @@ public class MagicNumber {
      * Retrieves the data sample
      */
     private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
-        if (data == null)
+        if (data == null) {
             return null;
-        if (data.length < (offset + length))
+        }
+        if (data.length < (offset + length)) {
             return null;
+        }
         // log.info ("SAMPLE STATS - offset: {}, length: {}", offset, length);
         byte[] subject = new byte[length];
-        for (int i = 0; i < subject.length; i++)
+        for (int i = 0; i < subject.length; i++) {
             subject[i] = data[i + offset];
+        }
         return subject;
     }
 
@@ -357,8 +379,9 @@ public class MagicNumber {
      * Add child continuations
      */
     public void addDependencyLayer(MagicNumber[] dependencyLayer) {
-        if (dependencies == null)
+        if (dependencies == null) {
             dependencies = new ArrayList<>();
+        }
         dependencies.add(dependencyLayer);
     }
 
@@ -371,14 +394,16 @@ public class MagicNumber {
     public String toString() {
 
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < depth; i++)
+        for (int i = 0; i < depth; i++) {
             sb.append('>');
-        if (offsetUnary > 0)
+        }
+        if (offsetUnary > 0) {
             sb.append(offsetUnary);
+        }
 
-        if (offset == 0)
+        if (offset == 0) {
             sb.append("0");
-        else {
+        } else {
             sb.append(MagicMath.HEX_PREFIX);
             sb.append(Integer.toHexString(offset));
         }
@@ -391,12 +416,13 @@ public class MagicNumber {
         }
 
         sb.append('\t');
-        if (unaryOperator == MAGICOPERATOR_EQUAL_LTHAN)
+        if (unaryOperator == MAGICOPERATOR_EQUAL_LTHAN) {
             sb.append("<=");
-        else if (unaryOperator == MAGICOPERATOR_EQUAL_GTHAN)
+        } else if (unaryOperator == MAGICOPERATOR_EQUAL_GTHAN) {
             sb.append(">=");
-        else
+        } else {
             sb.append(unaryOperator);
+        }
         sb.append(MagicMath.byteArrayToHexString(value));
 
         sb.append('\t');
@@ -410,10 +436,12 @@ public class MagicNumber {
     private String toString(StringBuilder sbuf, int depth) {
         StringBuilder sb = sbuf;
         int d = depth;
-        if (sb == null)
+        if (sb == null) {
             sb = new StringBuilder(description);
-        if (dependencies == null || d >= dependencies.size())
+        }
+        if (dependencies == null || d >= dependencies.size()) {
             return sb.toString();
+        }
         MagicNumber[] dependentItems = dependencies.get(d);
         for (int i = 0; i < dependentItems.length; i++) {
             sb.append('\n');
