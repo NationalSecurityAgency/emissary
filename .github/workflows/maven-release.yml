@@ -59,6 +59,9 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Get the version
         run: echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -v '\[.*' | awk -F- '{print ""$1"${{ github.event.inputs.release_suffix }}"}')" >> "$GITHUB_ENV"
     outputs:

@@ -8,6 +8,7 @@ import emissary.core.Namespace;
 import emissary.core.NamespaceException;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.place.IServiceProviderPlace;
@@ -72,6 +73,23 @@ public class PlaceStarter {
             final String directory) {
         // generate constructor args
         final Object[] constructorArgs = {theConfigStream, directory, theLocation};
+        return createPlace(theLocation, constructorArgs, theClassStr);
+    }
+
+    /**
+     * Create a place using Stream based config
+     *
+     * @param theLocation key for the new place
+     * @param theConfigStream stream configuration for the place
+     * @param theClassStr string name of the class to instantiate
+     * @param directory the string directory name to register in
+     * @param node the emissary node
+     * @return the place that was found or created, or null if it can't be done
+     */
+    public static IServiceProviderPlace createPlace(final String theLocation, final InputStream theConfigStream, final String theClassStr,
+            final String directory, final EmissaryNode node) {
+        // generate constructor args
+        final Object[] constructorArgs = {theConfigStream, directory, theLocation, node};
         return createPlace(theLocation, constructorArgs, theClassStr);
     }
 

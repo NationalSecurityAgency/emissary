@@ -79,7 +79,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     // Metadata items that should always be copied to children
     protected Set<String> ALWAYS_COPY_METADATA_VALS = new HashSet<>();
 
-    private boolean useObjectTraceLogger = false;
+    protected boolean useObjectTraceLogger = false;
 
     public PickUpPlace() throws IOException {
         super();

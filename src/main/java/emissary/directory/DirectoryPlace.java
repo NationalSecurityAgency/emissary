@@ -87,21 +87,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * Create a new empty directory using this location and no parent
      *
      * @param placeLoc string key to register this directory
-     * @throws IOException when configuration fails
-     * @deprecated use {@link #DirectoryPlace(String, EmissaryNode)}
-     */
-    @Deprecated
-    // need to pass in EmissaryNode
-    public DirectoryPlace(final String placeLoc) throws IOException {
-        super(placeLoc);
-        this.emissaryNode = new EmissaryNode();
-        setupDirectory();
-    }
-
-    /**
-     * Create a new empty directory using this location and no parent
-     *
-     * @param placeLoc string key to register this directory
      * @param node EmissaryNode for this directory place
      * 
      * @throws IOException when configuration fails
@@ -109,55 +94,6 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
     public DirectoryPlace(final String placeLoc, EmissaryNode node) throws IOException {
         super(placeLoc);
         this.emissaryNode = node;
-        setupDirectory();
-    }
-
-    /**
-     * Create a new empty directory as specified by the config info no parent.
-     *
-     * @param configInfo our config file to read
-     * @param placeLoc string key to register this directory
-     * @throws IOException when configuration fails
-     * @deprecated use {@link #DirectoryPlace(String, String, EmissaryNode)}
-     */
-    @Deprecated
-    // need to pass in EmissaryNode
-    public DirectoryPlace(final String configInfo, final String placeLoc) throws IOException {
-        this(configInfo, null, placeLoc);
-    }
-
-    /**
-     * Create a new child directory as specified by the config info with a parent for relaying through.
-     *
-     * @param configInfo our config file to read
-     * @param parentDir string key of the parent directory
-     * @param placeLoc string key to register this directory
-     * @throws IOException when configuration fails
-     * @deprecated use {@link #DirectoryPlace(String, String, EmissaryNode)}
-     */
-    @Deprecated
-    // need to pass in EmissaryNode
-    public DirectoryPlace(final String configInfo, final String parentDir, final String placeLoc) throws IOException {
-        super(configInfo, parentDir, placeLoc);
-        this.emissaryNode = new EmissaryNode();
-        setupDirectory();
-    }
-
-    /**
-     * Create a new directory as specified by the config info with a parent for relaying through.
-     *
-     * @param configStream config info
-     * @param parentDir the parent directory or null if none
-     * @param placeLoc key for this place
-     * @throws IOException when configuration fails
-     * @deprecated use {@link #DirectoryPlace(InputStream, String, String, EmissaryNode)}
-     */
-    @Deprecated
-    // need to pass in EmissaryNode
-    // is actually/accidentally the one used by Startup/PlaceStarter.createPlace and probably shouldn't be?
-    public DirectoryPlace(final InputStream configStream, final String parentDir, final String placeLoc) throws IOException {
-        super(configStream, parentDir, placeLoc);
-        this.emissaryNode = new EmissaryNode();
         setupDirectory();
     }
 

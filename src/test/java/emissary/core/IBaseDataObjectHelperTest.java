@@ -8,7 +8,6 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -37,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.any;
 
 class IBaseDataObjectHelperTest extends UnitTest {
 
@@ -184,15 +182,6 @@ class IBaseDataObjectHelperTest extends UnitTest {
     @Test
     void testCloneInternalId() {
         verifyClone("getInternalId", ibdo1, IS_NOT_SAME, IS_NOT_EQUALS, EQUAL_AFTER_FULL_CLONE);
-        // Now assert that if an exception occurs, the IDs will differ
-        try (MockedStatic<IBaseDataObjectHelper> helper = Mockito.mockStatic(IBaseDataObjectHelper.class, Mockito.CALLS_REAL_METHODS)) {
-            helper.when(() -> IBaseDataObjectHelper.setPrivateFieldValue(any(), any(), any()))
-                    .thenThrow(IllegalAccessException.class);
-
-            final IBaseDataObject cloneExceptionIbdo = IBaseDataObjectHelper.clone(ibdo1, EQUAL_AFTER_FULL_CLONE);
-            assertNotEquals(ibdo1.getInternalId(), cloneExceptionIbdo.getInternalId());
-            // IDs will differ if an exception occurs during setPrivateField
-        }
     }
 
     @Test

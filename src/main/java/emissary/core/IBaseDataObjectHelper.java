@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Date;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
@@ -29,6 +29,12 @@ public final class IBaseDataObjectHelper {
      * A logger instance.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(IBaseDataObjectHelper.class);
+
+    private static class InternalIdBaseDataObject extends BaseDataObject {
+        private InternalIdBaseDataObject(final UUID internalId) {
+            this.internalId = internalId;
+        }
+    }
 
     private IBaseDataObjectHelper() {}
 
@@ -44,14 +50,13 @@ public final class IBaseDataObjectHelper {
     public static IBaseDataObject clone(final IBaseDataObject iBaseDataObject, final boolean fullClone) {
         Validate.notNull(iBaseDataObject, "Required: iBaseDataObject not null");
 
-        final BaseDataObject bdo = new BaseDataObject();
+        final BaseDataObject bdo = fullClone ? new InternalIdBaseDataObject(iBaseDataObject.getInternalId()) : new BaseDataObject();
 
         final SeekableByteChannelFactory sbcf = iBaseDataObject.getChannelFactory();
         if (sbcf != null) {
             bdo.setChannelFactory(sbcf);
         }
 
-        bdo.replaceCurrentForm(null);
         final List<String> allCurrentForms = iBaseDataObject.getAllCurrentForms();
         for (int i = 0; i < allCurrentForms.size(); i++) {
             bdo.enqueueCurrentForm(allCurrentForms.get(i));
@@ -71,11 +76,6 @@ public final class IBaseDataObjectHelper {
         }
 
         if (fullClone) {
-            try {
-                setPrivateFieldValue(bdo, "internalId", iBaseDataObject.getInternalId());
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                // Ignore any problems setting the internal id.
-            }
             final String processingError = iBaseDataObject.getProcessingError();
             if (processingError != null) {
                 bdo.addProcessingError(processingError.substring(0, processingError.length() - 1));
@@ -96,29 +96,6 @@ public final class IBaseDataObjectHelper {
         }
 
         return bdo;
-    }
-
-    /**
-     * This method reflectively sets a private method that is not normally accessible. This method should only be used when
-     * the field must be set and there is no other way to do it. Ideally the class would be modified so that this method
-     * call would not be necessary.
-     * 
-     * @param bdo the BaseDataObject to set the field on.
-     * @param fieldName the name of the field to be set.
-     * @param object the object that the field is to be set to.
-     * @throws IllegalAccessException if this {@code Field} object is enforcing Java language access control and the
-     *         underlying field is either inaccessible or final.
-     * @throws NoSuchFieldException if a field with the specified name is not found.
-     */
-    public static void setPrivateFieldValue(final BaseDataObject bdo, final String fieldName, final Object object)
-            throws IllegalAccessException, NoSuchFieldException {
-        Validate.notNull(bdo, "Required: bdo not null");
-        Validate.notNull(fieldName, "Required: fieldName not null");
-
-        final Field field = bdo.getClass().getDeclaredField(fieldName);
-
-        field.setAccessible(true); // NOSONAR intentional visibility change
-        field.set(bdo, object); // NOSONAR intentional visibility change
     }
 
     /**
