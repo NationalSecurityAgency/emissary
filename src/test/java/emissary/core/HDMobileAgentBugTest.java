@@ -2,6 +2,7 @@ package emissary.core;
 
 import emissary.admin.PlaceStarter;
 import emissary.directory.DirectoryPlace;
+import emissary.directory.EmissaryNode;
 import emissary.place.IServiceProviderPlace;
 import emissary.place.ServiceProviderPlace;
 import emissary.test.core.junit5.UnitTest;
@@ -34,7 +35,7 @@ class HDMobileAgentBugTest extends UnitTest {
 
     @BeforeEach
     public void setup() throws IOException {
-        directory = addPlace("http://localhost:8543/DirectoryPlace", DirectoryPlace.class.getName());
+        directory = addDir("http://localhost:8543/DirectoryPlace", DirectoryPlace.class.getName());
         analyze = addPlace("http://localhost:8543/FakeAnalyzePlace", FakeAnalyzePlace.class.getName());
         skipped = addPlace("http://localhost:8543/FakeSkippedPlace", FakeSkippedPlace.class.getName());
         validate = addPlace("http://localhost:8543/FakeVerifyPlace", FakeVerifyPlace.class.getName());
@@ -49,6 +50,10 @@ class HDMobileAgentBugTest extends UnitTest {
         analyze.shutDown();
         skipped.shutDown();
         validate.shutDown();
+    }
+
+    protected IServiceProviderPlace addDir(String key, String clsName) {
+        return PlaceStarter.createPlace(key, null, clsName, null, new EmissaryNode());
     }
 
     protected IServiceProviderPlace addPlace(String key, String clsName) {
