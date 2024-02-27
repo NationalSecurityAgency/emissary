@@ -14,6 +14,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ public class TimeUtil {
     public static final DateTimeFormatter DATE_FULL_ISO_8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX").withZone(GMT);
     public static final DateTimeFormatter DATE_ORDINAL = DateTimeFormatter.ofPattern("yyyyDDD").withZone(GMT);
     public static final DateTimeFormatter DATE_ISO_8601_SSS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    public static final DateTimeFormatter DATE_ORDINAL_WITH_TIME = DateTimeFormatter.ofPattern("yyyyDDDHHmmss");
     private static final String ISO_8601_TIME_DATE_STRING = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private static final String HEX_REGEX = "^0x([0-9A-Fa-f]{8})([0-9A-Fa-f]{8})";
     private static final Pattern HEX_DATE_PATTERN = Pattern.compile(HEX_REGEX);
@@ -231,6 +233,11 @@ public class TimeUtil {
 
     public static String getISO8601DateFormatString() {
         return ISO_8601_TIME_DATE_STRING;
+    }
+
+
+    public static String getDateOrdinalWithTime(final Date d) {
+        return DATE_ORDINAL_WITH_TIME.format(d.toInstant().atZone(ZoneId.systemDefault()));
     }
 
     /** This class is not meant to be instantiated. */
