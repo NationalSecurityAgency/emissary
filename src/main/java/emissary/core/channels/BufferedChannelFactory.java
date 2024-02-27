@@ -17,12 +17,12 @@ public final class BufferedChannelFactory {
      * Creates a SeekableByteChannelFactory that caches the bytes of the passed in SeekableByteChannelFactory.
      * 
      * @param seekableByteChannelFactory to be cached.
-     * @param bufferSize of the buffer of bytes.
+     * @param maxBufferSize maximum size of the buffer of bytes (BufferSize = Math.min(sbcf.size(), maxBufferSize)).
      * @return the caching SeekableByteChannelFactory.
      */
     public static SeekableByteChannelFactory create(final SeekableByteChannelFactory seekableByteChannelFactory,
-            final int bufferSize) {
-        return new BufferedChannelFactoryImpl(seekableByteChannelFactory, bufferSize);
+            final int maxBufferSize) {
+        return new BufferedChannelFactoryImpl(seekableByteChannelFactory, maxBufferSize);
     }
 
     /**
@@ -42,15 +42,25 @@ public final class BufferedChannelFactory {
          * Creates a SeekableByteChannelFactory that caches the bytes of the passed in SeekableByteChannelFactory.
          * 
          * @param seekableByteChannelFactory to be cached.
-         * @param bufferSize of the buffer of bytes.
+         * @param maxBufferSize of the buffer of bytes.
          */
         public BufferedChannelFactoryImpl(final SeekableByteChannelFactory seekableByteChannelFactory,
-                final int bufferSize) {
+                final int maxBufferSize) {
             Validate.notNull(seekableByteChannelFactory, "Required: seekableByteChannelFactory not null!");
-            Validate.isTrue(bufferSize > 0, "Required: bufferSize > 0");
+            Validate.isTrue(maxBufferSize > 0, "Required: maxBufferSize > 0");
 
             this.seekableByteChannelFactory = seekableByteChannelFactory;
-            this.bufferSize = bufferSize;
+
+            int b = maxBufferSize;
+            try (SeekableByteChannel sbc = seekableByteChannelFactory.create()) {
+                if (sbc.size() < maxBufferSize) {
+                    b = (int) sbc.size();
+                }
+            } catch (IOException e) {
+                // Leave b as maxBufferSize.
+            }
+
+            this.bufferSize = b;
         }
 
         @Override
