@@ -70,11 +70,13 @@ public class MagicNumberFactory {
             int counter = 0;
             while ((s = reader.readLine()) != null) {
                 counter++;
-                if (s == null || s.length() == 0 || s.charAt(0) == '#')
+                if (s == null || s.length() == 0 || s.charAt(0) == '#') {
                     continue;
+                }
                 int depth = getEntryDepth(s);
-                if (depth < 0)
+                if (depth < 0) {
                     continue;
+                }
                 try {
                     if (depth == 0 && extensions.size() > 0) {
                         if (finger == null) {
@@ -97,10 +99,12 @@ public class MagicNumberFactory {
                         }
                     } else if (depth > 0) {
 
-                        if (finger == null)
+                        if (finger == null) {
                             continue;
-                        if (currentDepth < 0)
+                        }
+                        if (currentDepth < 0) {
                             currentDepth = depth;
+                        }
                         if (currentDepth == depth) {
                             parseAndStore(extensions, s, swallowParseException);
                         } else if (currentDepth < depth) {
@@ -118,9 +122,9 @@ public class MagicNumberFactory {
                     }
                 } catch (Exception e) {
 
-                    if (continuationErrorMap == null || zeroDepthErrorList == null)
+                    if (continuationErrorMap == null || zeroDepthErrorList == null) {
                         continue;
-
+                    }
                     if (swallowParseException &&
                             (e.getClass() == ParseException.class) &&
                             IGNORABLE_DATATYPE_MSGS.contains(e.getMessage())) {
@@ -143,8 +147,9 @@ public class MagicNumberFactory {
                     }
                 }
             }
-            if (finger != null && extensions.size() > 0)
+            if (finger != null && extensions.size() > 0) {
                 addExtensionsLayer(extensions, finger);
+            }
         } catch (IOException ioe) {
             log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): {}", ioe.getMessage(), ioe);
             /** Doing all of this in memory - yes, one could erroneously use one of the IO objects but ... */
@@ -166,8 +171,9 @@ public class MagicNumberFactory {
      */
     private static MagicNumber parseAndStore(List<MagicNumber> storage, String entry, boolean swallowParseException) throws Exception {
         MagicNumber item = buildMagicNumber(entry, swallowParseException);
-        if (item != null)
+        if (item != null) {
             storage.add(item);
+        }
         return item;
     }
 
@@ -261,18 +267,20 @@ public class MagicNumberFactory {
                 i++;
             } else if (c == ' ' || c == '\t') {
                 while (entry.length() > (i + 1)) {
-                    if (entry.charAt(i + 1) == ' ' || entry.charAt(i + 1) == '\t')
+                    if (entry.charAt(i + 1) == ' ' || entry.charAt(i + 1) == '\t') {
                         i++;
-                    else
+                    } else {
                         break;
+                    }
                 }
                 index++;
             } else {
                 columns[index] += c;
             }
             if (index == 3) {
-                if (entry.length() > (i + 1))
+                if (entry.length() > (i + 1)) {
                     columns[index] = entry.substring(i + 1);
+                }
                 break;
             }
         }
@@ -283,8 +291,9 @@ public class MagicNumberFactory {
      * Corrects some known/common erroneous syntax errors
      */
     private static String[] prepareEntry(String entry) throws ParseException {
-        if (entry == null)
+        if (entry == null) {
             throw new ParseException(ENTRY_NOT_NULL_RULE);
+        }
         String subject = entry;
         int invalidOperatorIndex = subject.indexOf(" = ");
         if (invalidOperatorIndex > 0) {
@@ -309,12 +318,14 @@ public class MagicNumberFactory {
     // -----------------------------------------------------------------------
     private static int resolveOffset(String[] columns, MagicNumber item) throws ParseException {
         String entry = columns[0];
-        if (item.depth > 0)
+        if (item.depth > 0) {
             entry = entry.substring(item.depth);
-        if (entry.charAt(0) == '&')
+        }
+        if (entry.charAt(0) == '&') {
             entry = entry.substring(1);
-        else if (entry.charAt(0) == '(' && entry.charAt(entry.length() - 1) == ')')
+        } else if (entry.charAt(0) == '(' && entry.charAt(entry.length() - 1) == ')') {
             entry = entry.substring(1, entry.length() - 1);
+        }
         try {
             return MagicMath.stringToInt(entry);
         } catch (NumberFormatException e) {
@@ -323,8 +334,9 @@ public class MagicNumberFactory {
     }
 
     private static char resolveOffsetUnary(String[] columns, MagicNumber item) {
-        if (columns[0].charAt(0) == '&')
+        if (columns[0].charAt(0) == '&') {
             return '&';
+        }
         return (char) 0;
     }
 
@@ -334,8 +346,9 @@ public class MagicNumberFactory {
         }
         int depth = 0;
         for (; depth < entry.length(); depth++) {
-            if (entry.charAt(depth) != '>')
+            if (entry.charAt(depth) != '>') {
                 break;
+            }
         }
         return depth;
     }
@@ -359,12 +372,13 @@ public class MagicNumberFactory {
 
         // parse out any masking
         int ix = subject.indexOf("&") > 0 ? subject.indexOf("&") : subject.indexOf("/");
-        if (ix > 0)
+        if (ix > 0) {
             subject = columns[1].substring(0, ix);
-
+        }
         int dataTypeId = lookupDataType(subject);
-        if (dataTypeId < 0)
+        if (dataTypeId < 0) {
             throw new ParseException("Unsupported Data Type: " + subject);
+        }
         return dataTypeId;
     }
 
@@ -408,27 +422,31 @@ public class MagicNumberFactory {
         }
 
         int unaryLen = unaryPrefixLength(subject);
-        if (unaryLen > 0)
+        if (unaryLen > 0) {
             subject = subject.substring(unaryLen);
-        if (subject.toUpperCase().endsWith("L"))
+        }
+        if (subject.toUpperCase().endsWith("L")) {
             subject = subject.substring(0, subject.length() - 1);
-
+        }
         byte[] valueArray = MagicMath.stringToByteArray(subject);
         valueArray = MagicMath.setLength(valueArray, item.dataTypeLength);
 
-        if (item.mask != null)
+        if (item.mask != null) {
             valueArray = MagicMath.mask(valueArray, item.mask);
-        if (item.dataType == MagicNumber.TYPE_LELONG)
+        }
+        if (item.dataType == MagicNumber.TYPE_LELONG) {
             MagicMath.longEndianSwap(valueArray, 0);
-        else if (item.dataType == MagicNumber.TYPE_LESHORT)
+        } else if (item.dataType == MagicNumber.TYPE_LESHORT) {
             MagicMath.shortEndianSwap(valueArray, 0);
+        }
         return valueArray;
     }
 
     private static int unaryPrefixLength(@Nullable String s) {
 
-        if (s == null || s.length() == 0)
+        if (s == null || s.length() == 0) {
             return 0;
+        }
 
         char op = s.charAt(0);
         int len = s.length();
@@ -459,10 +477,11 @@ public class MagicNumberFactory {
         int dataTypeId = item.dataType;
         switch (dataTypeId) {
             case MagicNumber.TYPE_STRING:
-                if (item.value == null)
+                if (item.value == null) {
                     return -1;
-                else
+                } else {
                     return item.value.length;
+                }
             case MagicNumber.TYPE_BYTE:
                 return 1;
             case MagicNumber.TYPE_SHORT:
@@ -488,16 +507,17 @@ public class MagicNumberFactory {
 
     private static char resolveUnary(String[] columns, MagicNumber item) throws ParseException {
         int unaryLen = unaryPrefixLength(columns[2]);
-        if (item.dataType == MagicNumber.TYPE_STRING || unaryLen == 0)
+        if (item.dataType == MagicNumber.TYPE_STRING || unaryLen == 0) {
             return MagicNumber.MAGICOPERATOR_DEFAULT;
-        else if (unaryLen == 1)
+        } else if (unaryLen == 1) {
             return columns[2].charAt(0);
-        else if (unaryLen == 2 && columns[2].charAt(0) == MagicNumber.MAGICOPERATOR_LTHAN) {
+        } else if (unaryLen == 2 && columns[2].charAt(0) == MagicNumber.MAGICOPERATOR_LTHAN) {
             return MagicNumber.MAGICOPERATOR_EQUAL_LTHAN;
         } else if (unaryLen == 2 && columns[2].charAt(0) == MagicNumber.MAGICOPERATOR_GTHAN) {
             return MagicNumber.MAGICOPERATOR_EQUAL_GTHAN;
-        } else
+        } else {
             throw new ParseException("Unrecognized unary prefix");
+        }
     }
 
     @Nullable
