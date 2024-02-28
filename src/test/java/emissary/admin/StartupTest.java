@@ -60,39 +60,34 @@ class StartupTest extends UnitTest {
     void testInvisPlaceStart() throws IOException {
         // setup node, startup, and DirectoryPlace
         EmissaryNode node = new EmissaryNode();
-        Startup startup = new Startup(node.getNodeConfigurator(), node);
         String location = "http://" + node.getNodeName() + ":" + node.getNodePort();
         dirStartUp();
 
         // test if place is already started before startup
-        startup.activeDirPlaces.add(location + "/PlaceAlreadyStartedTest");
-        startup.placeAlreadyStarted.add(location + "/PlaceAlreadyStartedTest");
-        assertTrue(startup.verifyNoInvisiblePlacesStarted());
-        startup.activeDirPlaces.clear();
-        startup.placeAlreadyStarted.clear();
+        Startup.activeDirPlaces.add(location + "/PlaceAlreadyStartedTest");
+        Startup.placeAlreadyStarted.add(location + "/PlaceAlreadyStartedTest");
+        assertTrue(Startup.verifyNoInvisiblePlacesStarted());
+        Startup.activeDirPlaces.clear();
+        Startup.placeAlreadyStarted.clear();
 
         // test if place is started up normally and is active dir
-        startup.places.put(location, DevNullPlace.class.getSimpleName());
-        startup.activeDirPlaces.add(DevNullPlace.class.getSimpleName());
-        assertTrue(startup.verifyNoInvisiblePlacesStarted());
-        startup.activeDirPlaces.clear();
-        startup.places.remove(location, DevNullPlace.class.getSimpleName());
+        Startup.places.put(location, DevNullPlace.class.getSimpleName());
+        Startup.activeDirPlaces.add(DevNullPlace.class.getSimpleName());
+        assertTrue(Startup.verifyNoInvisiblePlacesStarted());
+        Startup.activeDirPlaces.clear();
+        Startup.places.remove(location, DevNullPlace.class.getSimpleName());
 
         // test unannounced place with active dir
-        startup.activeDirPlaces.add(location + "/PlaceStartUnannouncedTest");
-        assertFalse(startup.verifyNoInvisiblePlacesStarted());
-        startup.activeDirPlaces.clear();
+        Startup.activeDirPlaces.add(location + "/PlaceStartUnannouncedTest");
+        assertFalse(Startup.verifyNoInvisiblePlacesStarted());
+        Startup.activeDirPlaces.clear();
 
         // teardown
         dirTeardown();
     }
 
     @Test
-    void verifyNoInvisiblePlacesStartedHandlesNullLocalPlace() throws IOException {
-        // setup node, startup, and DirectoryPlace
-        EmissaryNode node = new EmissaryNode();
-        Startup startup = new Startup(node.getNodeConfigurator(), node);
-
+    void verifyNoInvisiblePlacesStartedHandlesNullLocalPlace() {
         try (MockedStatic<DirectoryPlace> dirPlace = Mockito.mockStatic(DirectoryPlace.class)) {
 
             DirectoryEntry entry = mock(DirectoryEntry.class);
@@ -106,7 +101,7 @@ class StartupTest extends UnitTest {
 
             dirPlace.when(DirectoryPlace::lookup).thenReturn(directoryPlace);
 
-            assertTrue(startup.verifyNoInvisiblePlacesStarted());
+            assertTrue(Startup.verifyNoInvisiblePlacesStarted());
         }
     }
 
