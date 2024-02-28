@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
@@ -80,5 +81,19 @@ class CoordinationPlaceTest extends UnitTest {
         List<IBaseDataObject> sprouts = place.processHeavyDuty(ibdo);
         assertTrue(CollectionUtils.isNotEmpty(sprouts) && sprouts.size() == 1);
         assertTrue(ibdo.getAllCurrentForms().contains("TESTCOORDINATE"));
+    }
+
+    @Test
+    void testFailedCoordinationPlace() {
+        // add coordination place that does not exist
+        place.configG.addEntry("SERVICE_COORDINATION", "fakePlace");
+        place.configurePlace();
+
+        // verify place was not started/created
+        assertTrue(place.placeRefs.isEmpty());
+        // verify coordination place failed, and thus was added to failedCoordPlaceCreation set
+        assertEquals(1, CoordinationPlace.getFailedCoordinationPlaces().size());
+
+        place.configG.removeEntry("SERVICE_COORDINATION", "fakePlace");
     }
 }
