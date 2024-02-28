@@ -1310,6 +1310,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Clone this payload
      */
+    @Deprecated
     @Override
     public IBaseDataObject clone() throws CloneNotSupportedException {
         final BaseDataObject c = (BaseDataObject) super.clone();
