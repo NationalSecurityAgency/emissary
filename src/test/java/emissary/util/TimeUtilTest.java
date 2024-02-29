@@ -117,4 +117,9 @@ class TimeUtilTest extends UnitTest {
         assertThrows(IllegalArgumentException.class, () -> TimeUtil.convertHexDate(invalidHexDate1));
         assertThrows(IllegalArgumentException.class, () -> TimeUtil.convertHexDate(invalidHexDate2));
     }
+
+    @Test
+    void testGetDateOrdinalWithTime() {
+        assertEquals("2016360153025", TimeUtil.getDateOrdinalWithTime(testUtilDate), "Date Ordinal with Time did not match");
+    }
 }

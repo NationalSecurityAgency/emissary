@@ -23,9 +23,7 @@ import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,6 +45,7 @@ import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 import static emissary.util.TimeUtil.DATE_ISO_8601;
+import static emissary.util.TimeUtil.getDateOrdinalWithTime;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -74,7 +73,6 @@ public class DropOffUtil {
 
     // Items for generating random filenames
     protected static SecureRandom prng = new SecureRandom();
-    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmmss");
     protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
     protected static String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;
@@ -165,16 +163,12 @@ public class DropOffUtil {
      */
     public String generateBuildFileName() {
         if (this.uuidInOutputFilenames) {
-            return (prefix + getDate(new Date()) + UUID.randomUUID());
+            return (prefix + getDateOrdinalWithTime(new Date()) + UUID.randomUUID());
         } else {
             // Using some constants plus yyyyJJJhhmmss plus random digit,
             // letter, digit
-            return (prefix + getDate(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
+            return (prefix + getDateOrdinalWithTime(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
         }
-    }
-
-    private static String getDate(final Date d) {
-        return DATE_PATTERN.format(d.toInstant().atZone(ZoneId.systemDefault()));
     }
 
     /**
