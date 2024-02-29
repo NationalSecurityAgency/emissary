@@ -1390,6 +1390,7 @@
                   -XepAllSuggestionsAsWarnings \
                   -XepDisableWarningsInGeneratedCode \
                   -Xep:AndroidJdkLibsChecker:OFF \
+                  -Xep:BooleanParameter:OFF \
                   -Xep:DefaultCharset:OFF \
                   -Xep:InlineMeSuggester:OFF \
                   -Xep:InlineTrivialConstant:OFF \
@@ -1398,8 +1399,7 @@
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
                   -Xep:Varifier:OFF \
-                  -Xep:YodaCondition:OFF \
-                  -Xep:BooleanParameter:OFF</arg>
+                  -Xep:YodaCondition:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
