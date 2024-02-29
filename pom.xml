@@ -1422,6 +1422,7 @@
                   -XepAllSuggestionsAsWarnings \
                   -XepDisableWarningsInGeneratedCode \
                   -Xep:AndroidJdkLibsChecker:OFF \
+                  -Xep:BooleanParameter:OFF \
                   -Xep:DefaultCharset:OFF \
                   -Xep:InlineMeSuggester:OFF \
                   -Xep:InlineTrivialConstant:OFF \
