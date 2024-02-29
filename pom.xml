@@ -1398,7 +1398,8 @@
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
                   -Xep:Varifier:OFF \
-                  -Xep:YodaCondition:OFF</arg>
+                  -Xep:YodaCondition:OFF \
+                  -Xep:BooleanParameter:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
