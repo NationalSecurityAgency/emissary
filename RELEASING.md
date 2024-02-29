@@ -6,7 +6,8 @@ Table of Contents
 * [Introduction](#introduction)
 * [Versioning](#versioning)
 * [Release Types](#release-types)
-* [Publishing a Release](#publishing-a-release)
+* [Publishing a Release to GitHub](#publishing-a-release)
+* [Publishing a Release to Maven Central](#publishing-a-release-to-maven-central)
 
 ## Introduction
 
@@ -105,3 +106,14 @@ Options to use:
 - From: `Branch: release/<version>`
 ```
 Pushes release artifacts to a repo using `maven deploy`.
+
+## Publishing a Release to Maven Central
+
+Policy does not allow publishing to maven central via Action and is only authorized to be perforemd by specific individuals. 
+
+Using the `oss` profile will make the artifacts available here: [Sonatype/Maven Central](https://central.sonatype.com/artifact/gov.nsa/emissary)
+
+In order for the following profile to work authorization is needed to publish to the gov.nsa maven group as well as having GPG signing configured in maven settings.
+```
+mvn clean deploy -Poss
+```
