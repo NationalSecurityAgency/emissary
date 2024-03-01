@@ -21,7 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
@@ -34,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SimpleTimeZone;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -108,7 +106,6 @@ public class DropOffUtil {
      * <li>ID_PARAMETER : multiple parameter values, ordered list of how to build a EMISSARY_ID</li>
      * <li>ID : backwards compatibility for ID_PARAMETER only used if ID_PARAMETER does not exist</li>
      * <li>DATE_PARAMETER : multiple parameter values, ordered list of how to build a date path</li>
-     * <li>DATE_FORMAT: string to use for SimpleDateFormat, ordered list</li>
      * <li>OUTPUT_FILE_PREFIX: string to use when generating random filenames, dflt: TXT</li>
      * <li>UUID_IN_OUTPUT_FILENAMES: boolean [true]</li>
      * <li>AUTO_GENERATED_ID_PREFIX: prefix to use for an auto-generated id</li>
@@ -534,21 +531,8 @@ public class DropOffUtil {
             return fixFileNameSeparators(tld.getStringParameter("TARGETBIN"));
         } else {
             logger.debug("TARGETBIN is null");
-            return whatBin(null);
+            return ("NO-CASE" + SEPARATOR + TimeUtil.getCurrentDate());
         }
-    }
-
-    /**
-     * This is a fallback, we should have either the bin name from the plop line or the processing time plugged in by pickup
-     * but if not, we have to send it somewhere...
-     */
-    public String whatBin(final String sriheader) {
-        final SimpleTimeZone gmt = new SimpleTimeZone(0, "GMT");
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" + SEPARATOR + "HH" + SEPARATOR + "mm");
-        sdf.setTimeZone(gmt);
-        final Date currentTime_1 = new Date();
-        final String dateStringDefault = sdf.format(currentTime_1);
-        return ("NO-CASE" + SEPARATOR + dateStringDefault);
     }
 
     public String getRelativeShortOutputFileName(final IBaseDataObject d) {
