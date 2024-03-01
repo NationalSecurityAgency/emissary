@@ -227,7 +227,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} complete.\nRelease Page: <https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ env.RELEASE_VERSION }}|${{ env.RELEASE_VERSION }}>"
+                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} complete.\nRelease Page: <https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ env.RELEASE_VERSION }}>"
                   }
                 }
               ]
