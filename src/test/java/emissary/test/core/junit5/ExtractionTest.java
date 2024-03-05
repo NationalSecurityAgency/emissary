@@ -49,6 +49,9 @@ public abstract class ExtractionTest extends UnitTest {
     private static final List<IBaseDataObject> NO_ATTACHMENTS = Collections.emptyList();
     private static final byte[] INCORRECT_VIEW_MESSAGE = "This is the incorrect view, the place should not have processed this view".getBytes();
 
+    private boolean skipAttCountValidation = false;
+    private boolean skipExtractCountValidation = false;
+
     protected KffDataObjectHandler kff =
             new KffDataObjectHandler(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
                     KffDataObjectHandler.SET_FILE_TYPE);
@@ -173,7 +176,7 @@ public abstract class ExtractionTest extends UnitTest {
     protected void checkAnswers(Element el, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) throws DataConversionException {
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
         long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith("att")).count();
-        if (Math.toIntExact(numAttElements) != numAtt && !(numAttElements <= 0 && numAtt == -1)) {
+        if (Math.toIntExact(numAttElements) != numAtt && !(numAttElements <= 0 && numAtt == -1) && !skipAttCountValidation) {
             logger.warn("Expected numAttachments and actual <att#> count in {} not equal. Expected: {} Actual: {}", tname, Math.max(numAtt, 0),
                     numAttElements);
         }
@@ -286,7 +289,7 @@ public abstract class ExtractionTest extends UnitTest {
         int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
         long numExtractElements =
                 el.getChildren().stream().filter(c -> c.getName().startsWith("extract") && !c.getName().startsWith("extractCount")).count();
-        if (Math.toIntExact(numExtractElements) != extractCount && !(numExtractElements <= 0 && extractCount == -1)) {
+        if (Math.toIntExact(numExtractElements) != extractCount && !(numExtractElements <= 0 && extractCount == -1) && !skipExtractCountValidation) {
             logger.warn("Expected extractCount and actual <extract#> count in {} not equal. Expected: {} Actual: {}", tname,
                     Math.max(extractCount, 0),
                     numExtractElements);
@@ -429,5 +432,14 @@ public abstract class ExtractionTest extends UnitTest {
         if (!didSetFiletype) {
             payload.setFileType(payload.currentForm());
         }
+    }
+
+    // allow the validation of att and ext counts to be skipped/not logged in tests
+    protected void setAttachmentCountValidation(boolean skipAttCountValidation) {
+        this.skipAttCountValidation = skipAttCountValidation;
+    }
+
+    protected void setExtractCountValidation(boolean skipExtractCountValidation) {
+        this.skipExtractCountValidation = skipExtractCountValidation;
     }
 }
