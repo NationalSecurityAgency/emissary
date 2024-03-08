@@ -65,7 +65,7 @@ public interface IBaseDataObject {
      * 
      * @return if data is undefined or zero length.
      */
-    boolean isDataEmpty() throws IOException;
+    boolean hasContent() throws IOException;
 
     /**
      * Set the byte channel factory using whichever implementation is providing access to the data.

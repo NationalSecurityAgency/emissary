@@ -200,9 +200,9 @@ class BaseDataObjectTest extends UnitTest {
         final IBaseDataObject zeroLengthDataIbdo = new BaseDataObject(new byte[0], "zeroLengthDataIbdo");
         final IBaseDataObject nonZeroLengthDataIbdo = new BaseDataObject(new byte[1], "nonZeroLengthDataIbdo");
 
-        assertTrue(nullDataIbdo.isDataEmpty());
-        assertTrue(zeroLengthDataIbdo.isDataEmpty());
-        assertFalse(nonZeroLengthDataIbdo.isDataEmpty());
+        assertFalse(nullDataIbdo.hasContent());
+        assertFalse(zeroLengthDataIbdo.hasContent());
+        assertTrue(nonZeroLengthDataIbdo.hasContent());
     }
 
     @Test

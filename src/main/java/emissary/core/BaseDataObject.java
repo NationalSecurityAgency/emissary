@@ -468,8 +468,8 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return if data is undefined or zero length.
      */
     @Override
-    public boolean isDataEmpty() throws IOException {
-        return getDataState() == DataState.NO_DATA || getChannelSize() == 0;
+    public boolean hasContent() throws IOException {
+        return getChannelSize() > 0;
     }
 
     /**
