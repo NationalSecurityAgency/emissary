@@ -176,9 +176,15 @@ public abstract class ExtractionTest extends UnitTest {
     protected void checkAnswers(Element el, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) throws DataConversionException {
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
         long numAttElements = el.getChildren().stream().filter(c -> c.getName().startsWith("att")).count();
-        if (Math.toIntExact(numAttElements) != numAtt && !(numAttElements <= 0 && numAtt == -1) && !skipAttCountValidation) {
-            logger.warn("Expected numAttachments and actual <att#> count in {} not equal. Expected: {} Actual: {}", tname, Math.max(numAtt, 0),
-                    numAttElements);
+        if (numAtt > -1 || numAttElements > 0) {
+            if (!skipAttCountValidation) {
+                assertEquals(Math.max(numAtt, 0), Math.toIntExact(numAttElements), "Expected numAttachments not equal to number of <att#> elements");
+            } else {
+                if (Math.toIntExact(numAttElements) != numAtt) {
+                    logger.warn("Expected numAttachments and actual <att#> count in {} not equal. Expected: {} Actual: {}", tname,
+                            Math.max(numAtt, 0), numAttElements);
+                }
+            }
         }
         if (numAtt > -1) {
             assertEquals(numAtt, attachments != null ? attachments.size() : 0, "Number of attachments in " + tname);
@@ -289,10 +295,16 @@ public abstract class ExtractionTest extends UnitTest {
         int extractCount = JDOMUtil.getChildIntValue(el, "extractCount");
         long numExtractElements =
                 el.getChildren().stream().filter(c -> c.getName().startsWith("extract") && !c.getName().startsWith("extractCount")).count();
-        if (Math.toIntExact(numExtractElements) != extractCount && !(numExtractElements <= 0 && extractCount == -1) && !skipExtractCountValidation) {
-            logger.warn("Expected extractCount and actual <extract#> count in {} not equal. Expected: {} Actual: {}", tname,
-                    Math.max(extractCount, 0),
-                    numExtractElements);
+        if (extractCount > -1 || numExtractElements > 0) {
+            if (!skipExtractCountValidation) {
+                assertEquals(Math.max(extractCount, 0), Math.toIntExact(numExtractElements),
+                        "Expected extractCount not equal to number of <extract#> elements");
+            } else {
+                if (Math.toIntExact(numExtractElements) != extractCount) {
+                    logger.warn("Expected extractCount and actual <extract#> count in {} not equal. Expected: {} Actual: {}", tname,
+                            Math.max(extractCount, 0), numExtractElements);
+                }
+            }
         }
 
         if (payload.hasExtractedRecords()) {
@@ -435,11 +447,11 @@ public abstract class ExtractionTest extends UnitTest {
     }
 
     // allow the validation of att and ext counts to be skipped/not logged in tests
-    protected void setAttachmentCountValidation(boolean skipAttCountValidation) {
-        this.skipAttCountValidation = skipAttCountValidation;
+    protected void setAttachmentCountValidation(boolean value) {
+        this.skipAttCountValidation = !value;
     }
 
-    protected void setExtractCountValidation(boolean skipExtractCountValidation) {
-        this.skipExtractCountValidation = skipExtractCountValidation;
+    protected void setExtractCountValidation(boolean value) {
+        this.skipExtractCountValidation = !value;
     }
 }
