@@ -213,7 +213,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add RELEASE_VERSION to environment variable
-        run: echo "RELEASE_VERSION=${{ env.RELEASE_VERSION }}" >> "$GITHUB_ENV"
+        run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
 
       - name: Publish to slack channel via bot token
         id: slack
@@ -227,7 +227,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} complete.\nRelease Page: <https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ env.RELEASE_VERSION }}|${{ env.RELEASE_VERSION }}>"
+                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} complete.\nRelease Page: <https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ env.RELEASE_VERSION }}>"
                   }
                 }
               ]

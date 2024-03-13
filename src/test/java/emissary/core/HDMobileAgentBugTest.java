@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -34,7 +35,7 @@ class HDMobileAgentBugTest extends UnitTest {
     private HDMobileAgent ma;
 
     @BeforeEach
-    public void setup() throws IOException {
+    void setup() {
         directory = addDir("http://localhost:8543/DirectoryPlace", DirectoryPlace.class.getName());
         analyze = addPlace("http://localhost:8543/FakeAnalyzePlace", FakeAnalyzePlace.class.getName());
         skipped = addPlace("http://localhost:8543/FakeSkippedPlace", FakeSkippedPlace.class.getName());
@@ -45,22 +46,22 @@ class HDMobileAgentBugTest extends UnitTest {
     }
 
     @AfterEach
-    public void testTearDown() {
+    void testTearDown() {
         directory.shutDown();
         analyze.shutDown();
         skipped.shutDown();
         validate.shutDown();
     }
 
-    protected IServiceProviderPlace addDir(String key, String clsName) {
+    private IServiceProviderPlace addDir(String key, String clsName) {
         return PlaceStarter.createPlace(key, null, clsName, null, new EmissaryNode());
     }
 
-    protected IServiceProviderPlace addPlace(String key, String clsName) {
+    private IServiceProviderPlace addPlace(String key, String clsName) {
         return PlaceStarter.createPlace(key, null, clsName, null);
     }
 
-    protected IBaseDataObject generateIbdo(int index, String form) {
+    private IBaseDataObject generateIbdo(int index, String form) {
         IBaseDataObject ibdo = DataObjectFactory.getInstance(new byte[] {}, "testing_file" + Family.getSep(index), form, "TST");
         ibdo.pushCurrentForm("FRM-PROCESSED-alternative");
         ibdo.appendTransformHistory("*.FAKE_ANALYZE.ANALYZE.http://localhost:8543/VisitedHereFirstPlace");
@@ -161,8 +162,8 @@ class HDMobileAgentBugTest extends UnitTest {
         // wrong
         assertTrue(att2.transformHistory().contains(FAKE_VERIFY_HISTORY));
         // these should be part of the history, but are not
-        assertTrue(!att2.transformHistory().contains(FAKE_SKIPPED_HISTORY));
-        assertTrue(!att2.transformHistory().contains(FAKE_VERIFY_OTHER_HISTORY));
+        assertFalse(att2.transformHistory().contains(FAKE_SKIPPED_HISTORY));
+        assertFalse(att2.transformHistory().contains(FAKE_VERIFY_OTHER_HISTORY));
     }
     //@formatter:on
 
@@ -171,10 +172,11 @@ class HDMobileAgentBugTest extends UnitTest {
      */
     static final class FakeAnalyzePlace extends ServiceProviderPlace {
 
+        @SuppressWarnings("unused")
         public FakeAnalyzePlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
-        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) throws ResourceException {
+        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) {
             return Collections.emptyList();
         }
     }
@@ -184,10 +186,11 @@ class HDMobileAgentBugTest extends UnitTest {
      */
     static final class FakeSkippedPlace extends ServiceProviderPlace {
 
+        @SuppressWarnings("unused")
         public FakeSkippedPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
-        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) throws ResourceException {
+        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) {
             return Collections.emptyList();
         }
     }
@@ -197,6 +200,7 @@ class HDMobileAgentBugTest extends UnitTest {
      */
     static final class FakeVerifyPlace extends ServiceProviderPlace {
 
+        @SuppressWarnings("unused")
         public FakeVerifyPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
