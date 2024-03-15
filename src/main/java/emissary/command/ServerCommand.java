@@ -1,5 +1,6 @@
 package emissary.command;
 
+import emissary.admin.Startup;
 import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
@@ -124,6 +125,13 @@ public class ServerCommand extends ServiceCommand {
         try {
             LOG.info("Running Emissary Server");
             new EmissaryServer(this).startServer();
+
+            // after server start-up, check if invisible place start-ups occurred on strict server start-up, and shut down server if
+            // so.
+            if (Startup.isInvisPlacesStartedInStrictMode() && EmissaryServer.isStarted()) {
+                EmissaryServer.stopServer(true);
+                LOG.info("Server shut down due to invisible place startups on strict-mode: {}", Startup.getInvisPlaces());
+            }
         } catch (EmissaryException e) {
             LOG.error("Unable to start server", e);
         }

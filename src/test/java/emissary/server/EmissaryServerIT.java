@@ -1,11 +1,8 @@
 package emissary.server;
 
-import emissary.admin.Startup;
 import emissary.client.EmissaryClient;
 import emissary.client.response.MapResponseEntity;
 import emissary.command.ServerCommand;
-import emissary.core.EmissaryException;
-import emissary.directory.EmissaryNode;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.Version;
 
@@ -18,7 +15,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class EmissaryServerIT extends UnitTest {
 
@@ -51,17 +47,5 @@ class EmissaryServerIT extends UnitTest {
             // throws some stopping warning, good place to start when fixing the stop
             server.stop();
         }
-    }
-
-    @Test
-    void testInvisPlacesOnStrictStartUp() throws EmissaryException {
-        ServerCommand cmd = ServerCommand.parse(ServerCommand.class, "--strict");
-        EmissaryServer server = new EmissaryServer(cmd);
-        EmissaryNode node = new EmissaryNode();
-        String location = "http://" + node.getNodeName() + ":" + node.getNodePort();
-        Startup.getInvisPlaces().add(location + "/PlaceStartUnannouncedTest");
-        server.startServer();
-        // make sure server is shutdown due to invis places on strict startup
-        assertFalse(server.isServerRunning());
     }
 }
