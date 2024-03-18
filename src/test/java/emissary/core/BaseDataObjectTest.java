@@ -195,6 +195,17 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     @Test
+    void testIsDataEmpty() throws IOException {
+        final IBaseDataObject nullDataIbdo = new BaseDataObject();
+        final IBaseDataObject zeroLengthDataIbdo = new BaseDataObject(new byte[0], "zeroLengthDataIbdo");
+        final IBaseDataObject nonZeroLengthDataIbdo = new BaseDataObject(new byte[1], "nonZeroLengthDataIbdo");
+
+        assertFalse(nullDataIbdo.hasContent());
+        assertFalse(zeroLengthDataIbdo.hasContent());
+        assertTrue(nonZeroLengthDataIbdo.hasContent());
+    }
+
+    @Test
     void testDataLengthBothNull() {
         BaseDataObject bdo = new BaseDataObject();
         assertEquals(0, bdo.dataLength());

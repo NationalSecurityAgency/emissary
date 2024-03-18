@@ -463,6 +463,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
+     * Checks if the data is defined with a non-zero length.
+     * 
+     * @return if data is undefined or zero length.
+     */
+    @Override
+    public boolean hasContent() throws IOException {
+        return getChannelSize() > 0;
+    }
+
+    /**
      * Convenience method to get the size of the channel or byte array providing access to the data.
      * 
      * @return the channel size
