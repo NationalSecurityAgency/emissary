@@ -40,7 +40,12 @@
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
   </issueManagement>
   <ciManagement />
-  <distributionManagement />
+  <distributionManagement>
+    <site>
+      <id>github</id>
+      <url>scm:git:git@github.com:NationalSecurityAgency/emissary.git</url>
+    </site>
+  </distributionManagement>
   <properties>
     <BUILD_TIMESTAMP>${maven.build.timestamp}</BUILD_TIMESTAMP>
     <EMISSARY_VERSION>${project.version}</EMISSARY_VERSION>
@@ -868,6 +873,14 @@
               <delimiter>@</delimiter>
               <!-- to add Ant-like tokens style -->
             </delimiters>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <version>3.2.1</version>
+          <configuration>
+            <scmBranch>gh-pages</scmBranch>
           </configuration>
         </plugin>
         <plugin>

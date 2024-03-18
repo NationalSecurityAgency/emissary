@@ -36,6 +36,8 @@ the path of a set of related payload objects through the workflow and
 the [emissary.directory.DirectoryPlace](src/main/java/emissary/directory/DirectoryPlace.java) which manages the available
 services, their cost and quality and keep the P2P network connected.
 
+### Maven Site and Javadoc hosted on GitHub Pages: https://code.nsa.gov/emissary/
+
 ## Minimum Requirements
 
 - Linux or MacOSX operating system
