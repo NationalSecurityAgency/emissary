@@ -225,7 +225,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             final IBaseDataObject tld = payloadList.get(0);
 
 
-            if (outputCompletionPayloadSize && tld.getChannelFactory() != null) {
+            if (outputCompletionPayloadSize && tld.hasContent()) {
                 logger.info(
                         "Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes",
                         tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
