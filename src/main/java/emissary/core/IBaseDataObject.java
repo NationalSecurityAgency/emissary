@@ -61,6 +61,13 @@ public interface IBaseDataObject {
     void setData(final byte[] newData, int offset, int length);
 
     /**
+     * Checks if the data is defined with a non-zero length.
+     * 
+     * @return if data is undefined or zero length.
+     */
+    boolean hasContent() throws IOException;
+
+    /**
      * Set the byte channel factory using whichever implementation is providing access to the data.
      * 
      * @param sbcf the new channel factory to set on this object
@@ -781,6 +788,7 @@ public interface IBaseDataObject {
     /**
      * Support deep copy via clone
      */
+    @Deprecated
     IBaseDataObject clone() throws CloneNotSupportedException;
 
     /**

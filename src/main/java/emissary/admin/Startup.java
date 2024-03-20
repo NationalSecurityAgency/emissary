@@ -11,6 +11,7 @@ import emissary.directory.EmissaryNode;
 import emissary.directory.IDirectoryPlace;
 import emissary.directory.KeyManipulator;
 import emissary.pickup.PickUpPlace;
+import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
 
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class Startup {
     protected final Set<String> failedPlaces = ConcurrentHashMap.newKeySet();
 
     // Collection of the places as they finish coming up
-    protected final Map<String, String> places = new ConcurrentHashMap<>();
+    protected static final Map<String, String> places = new ConcurrentHashMap<>();
 
     // Collection of places that are being started
     protected final Set<String> placesToStart = ConcurrentHashMap.newKeySet();
@@ -70,8 +71,11 @@ public class Startup {
     protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<>();
 
     // sets to keep track of possible invisible place startup
-    protected Set<String> activeDirPlaces = new LinkedHashSet<>();
-    protected Set<String> placeAlreadyStarted = new LinkedHashSet<>();
+    protected static Set<String> activeDirPlaces = new LinkedHashSet<>();
+    protected static Set<String> placeAlreadyStarted = new LinkedHashSet<>();
+
+    // invisible place startups occurred in strict mode
+    protected static boolean invisPlacesStartedInStrictMode = false;
 
     /**
      * n return the full DNS name and port without the protocol part
@@ -169,8 +173,8 @@ public class Startup {
         // the pickup places here.
         startPickUpPlaces();
 
-        if (!verifyNoInvisiblePlacesStarted()) {
-            // TODO: If invisible places are started, shutdown the EmissaryServer
+        if (!verifyNoInvisiblePlacesStarted() && node.isStrictStartupMode()) {
+            invisPlacesStartedInStrictMode = true;
         }
     }
 
@@ -245,7 +249,7 @@ public class Startup {
 
         if (hashListSize(m) > 0) {
             for (final List<String> placeList : m.values()) {
-                final boolean status = placeSetup(directoryAction, this.localDirectories, this.places, placeList);
+                final boolean status = placeSetup(directoryAction, this.localDirectories, places, placeList);
 
                 if (!status) {
                     logger.warn("Startup: places setup failed!");
@@ -419,23 +423,30 @@ public class Startup {
                 numPlacesExpected = this.placesToStart.size();
             }
 
-            numPlacesFound = this.places.size();
+            numPlacesFound = places.size();
 
             if (numPlacesFound >= numPlacesExpected) {
+                boolean failedPlaceStartups = false;
 
                 if (!this.failedPlaces.isEmpty()) {
-                    String failedPlaceList = "The following places have failed to start: "
-                            + String.join(";", this.failedPlaces);
-                    logger.warn(failedPlaceList);
-                    if (this.node.isStrictStartupMode()) {
-                        logger.error(
-                                "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
-                                        "run server start command without the --strict flag");
-                        logger.error("Server shutting down");
-                        System.exit(1);
-                    }
+                    failedPlaceStartups = true;
+                    String failedPlaceList = String.join("; ", this.failedPlaces);
+                    logger.warn("The following places have failed to start: {}", failedPlaceList);
+                }
+                if (!CoordinationPlace.getFailedCoordinationPlaces().isEmpty()) {
+                    failedPlaceStartups = true;
+                    String failedCoordPlaceList = String.join("; ", CoordinationPlace.getFailedCoordinationPlaces());
+                    logger.warn("The following coordination places have failed to start: {}", failedCoordPlaceList);
                 }
 
+                // check if strict startup & places/coordination places failed, if yes, shut down server
+                if (this.node.isStrictStartupMode() && failedPlaceStartups) {
+                    logger.error(
+                            "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                                    "run server start command without the --strict flag");
+                    logger.error("Server shutting down");
+                    System.exit(1);
+                }
 
                 // normal termination of the loop
                 logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
@@ -512,7 +523,7 @@ public class Startup {
      * 
      * @return true if no invisible places started, false if yes
      */
-    public boolean verifyNoInvisiblePlacesStarted() {
+    public static boolean verifyNoInvisiblePlacesStarted() {
         try {
             IDirectoryPlace dirPlace = DirectoryPlace.lookup();
             List<DirectoryEntry> dirEntries = dirPlace.getEntries();
@@ -550,5 +561,15 @@ public class Startup {
         }
 
         return true;
+    }
+
+    // get invisibly started places
+    public static Set<String> getInvisPlaces() {
+        return activeDirPlaces;
+    }
+
+    // get if invisible places are started while in strict mode
+    public static boolean isInvisPlacesStartedInStrictMode() {
+        return invisPlacesStartedInStrictMode;
     }
 }

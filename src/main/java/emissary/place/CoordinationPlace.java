@@ -17,7 +17,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
@@ -43,6 +45,9 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected String outputForm = null; // What we call it when we are finished
     protected boolean pushForm = true; // push or set on the form
     protected boolean updateTransformHistory = false;
+
+    // set of coordination places that failed to be created/did not exist
+    protected static Set<String> failedCoordPlaceCreation = new LinkedHashSet<>();
 
     /**
      * Create the place using the supplied configuration and location
@@ -120,14 +125,16 @@ public class CoordinationPlace extends ServiceProviderPlace {
                     String skey = KeyManipulator.getServiceHostUrl(keys.get(0)) + s;
                     logger.debug("No such place {}, creating as {}", s, skey, ex);
                     String sclz = PlaceStarter.getClassString(skey);
-                    IServiceProviderPlace p = PlaceStarter.createPlace(skey, (InputStream) null, sclz, dirPlace);
+                    IServiceProviderPlace p = PlaceStarter.createPlace(skey, null, sclz, dirPlace);
                     if (p != null) {
                         placeRefs.add(p);
                         logger.debug("Place created: {}", p);
                     } else {
+                        failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                         logger.error("Place does not exist and cannot be created: {}", s);
                     }
                 } catch (Exception e) {
+                    failedCoordPlaceCreation.add(s + " in " + configG.findStringEntry("PLACE_NAME"));
                     logger.error("Place does not exist and cannot be created: {}", s, e);
                 }
             }
@@ -290,4 +297,12 @@ public class CoordinationPlace extends ServiceProviderPlace {
         return coordinate(d, true);
     }
 
+    /**
+     * Get method for the set of failed coordination places
+     * 
+     * @return the names of the failed coordination places
+     */
+    public static Set<String> getFailedCoordinationPlaces() {
+        return failedCoordPlaceCreation;
+    }
 }

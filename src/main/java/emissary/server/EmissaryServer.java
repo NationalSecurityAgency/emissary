@@ -1,5 +1,6 @@
 package emissary.server;
 
+import emissary.admin.Startup;
 import emissary.client.EmissaryClient;
 import emissary.client.EmissaryResponse;
 import emissary.client.HTTPConnectionFactory;
@@ -194,6 +195,13 @@ public class EmissaryServer {
             }
 
             LOG.info("Started EmissaryServer at {}", serverLocation);
+
+            // check if invisible place start-ups occurred on strict server start-up, and shut down server if so.
+            if (Startup.isInvisPlacesStartedInStrictMode() && this.server.isStarted()) {
+                EmissaryServer.stopServer(true);
+                LOG.info("Server shut down due to invisible place startups on strict-mode: {}", Startup.getInvisPlaces());
+            }
+
             return configuredServer;
         } catch (Throwable t) {
             String errorMsg = "Emissary server didn't start";

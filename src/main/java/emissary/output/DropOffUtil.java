@@ -21,11 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +33,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SimpleTimeZone;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -47,6 +43,7 @@ import static emissary.core.constants.Parameters.FILEXT;
 import static emissary.core.constants.Parameters.FILE_ABSOLUTEPATH;
 import static emissary.core.constants.Parameters.ORIGINAL_FILENAME;
 import static emissary.util.TimeUtil.DATE_ISO_8601;
+import static emissary.util.TimeUtil.getDateOrdinalWithTime;
 
 public class DropOffUtil {
     protected static final Logger logger = LoggerFactory.getLogger(DropOffUtil.class);
@@ -74,7 +71,6 @@ public class DropOffUtil {
 
     // Items for generating random filenames
     protected static SecureRandom prng = new SecureRandom();
-    protected static final DateTimeFormatter DATE_PATTERN = DateTimeFormatter.ofPattern("yyyyDDDHHmmss");
     protected static final byte[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".getBytes();
     protected static String prefix = "TXT";
     protected boolean uuidInOutputFilenames = true;
@@ -110,7 +106,6 @@ public class DropOffUtil {
      * <li>ID_PARAMETER : multiple parameter values, ordered list of how to build a EMISSARY_ID</li>
      * <li>ID : backwards compatibility for ID_PARAMETER only used if ID_PARAMETER does not exist</li>
      * <li>DATE_PARAMETER : multiple parameter values, ordered list of how to build a date path</li>
-     * <li>DATE_FORMAT: string to use for SimpleDateFormat, ordered list</li>
      * <li>OUTPUT_FILE_PREFIX: string to use when generating random filenames, dflt: TXT</li>
      * <li>UUID_IN_OUTPUT_FILENAMES: boolean [true]</li>
      * <li>AUTO_GENERATED_ID_PREFIX: prefix to use for an auto-generated id</li>
@@ -165,16 +160,12 @@ public class DropOffUtil {
      */
     public String generateBuildFileName() {
         if (this.uuidInOutputFilenames) {
-            return (prefix + getDate(new Date()) + UUID.randomUUID());
+            return (prefix + getDateOrdinalWithTime(new Date()) + UUID.randomUUID());
         } else {
             // Using some constants plus yyyyJJJhhmmss plus random digit,
             // letter, digit
-            return (prefix + getDate(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
+            return (prefix + getDateOrdinalWithTime(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
         }
-    }
-
-    private static String getDate(final Date d) {
-        return DATE_PATTERN.format(d.toInstant().atZone(ZoneId.systemDefault()));
     }
 
     /**
@@ -540,21 +531,8 @@ public class DropOffUtil {
             return fixFileNameSeparators(tld.getStringParameter("TARGETBIN"));
         } else {
             logger.debug("TARGETBIN is null");
-            return whatBin(null);
+            return ("NO-CASE" + SEPARATOR + TimeUtil.getCurrentDate());
         }
-    }
-
-    /**
-     * This is a fallback, we should have either the bin name from the plop line or the processing time plugged in by pickup
-     * but if not, we have to send it somewhere...
-     */
-    public String whatBin(final String sriheader) {
-        final SimpleTimeZone gmt = new SimpleTimeZone(0, "GMT");
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd" + SEPARATOR + "HH" + SEPARATOR + "mm");
-        sdf.setTimeZone(gmt);
-        final Date currentTime_1 = new Date();
-        final String dateStringDefault = sdf.format(currentTime_1);
-        return ("NO-CASE" + SEPARATOR + dateStringDefault);
     }
 
     public String getRelativeShortOutputFileName(final IBaseDataObject d) {

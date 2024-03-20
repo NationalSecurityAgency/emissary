@@ -74,6 +74,9 @@ jobs:
       contents: write
       packages: write
     steps:
+      - name: Add RELEASE_VERSION to environment variable
+        run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -91,7 +94,7 @@ jobs:
           git config user.email "${{ github.actor }}@users.noreply.github.com"
 
       - name: Branch that release
-        run: git switch -c release/${{ needs.get_version.outputs.RELEASE_VERSION }}
+        run: git switch -c release/${{ env.RELEASE_VERSION }}
 
       - name: Dry run a release with maven
         run: |
@@ -100,12 +103,12 @@ jobs:
 
       - name: Release that version
         run: |
-          mvn -V -B -e versions:set -DnewVersion=${{ needs.get_version.outputs.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
-          mvn -V -B -e versions:set-scm-tag -DnewTag=${{ needs.get_version.outputs.RELEASE_VERSION }} -DgenerateBackupPoms=false
-          git commit -am "[github_actions](${{ github.actor }}) release ${{ needs.get_version.outputs.RELEASE_VERSION }}"
-          git tag -a ${{ needs.get_version.outputs.RELEASE_VERSION }} -m "${{ needs.get_version.outputs.RELEASE_VERSION }}"
-          git push origin release/${{ needs.get_version.outputs.RELEASE_VERSION }}
-          git push origin ${{ needs.get_version.outputs.RELEASE_VERSION }}
+          mvn -V -B -e versions:set -DnewVersion=${{ env.RELEASE_VERSION }} -DprocessAllModules -DgenerateBackupPoms=false
+          mvn -V -B -e versions:set-scm-tag -DnewTag=${{ env.RELEASE_VERSION }} -DgenerateBackupPoms=false
+          git commit -am "[github_actions](${{ github.actor }}) release ${{ env.RELEASE_VERSION }}"
+          git tag -a ${{ env.RELEASE_VERSION }} -m "${{ env.RELEASE_VERSION }}"
+          git push origin release/${{ env.RELEASE_VERSION }}
+          git push origin ${{ env.RELEASE_VERSION }}
 
       - name: Build release artifacts
         run: mvn -B -V -e -ntp "-Dstyle.color=always" package
@@ -124,6 +127,12 @@ jobs:
 
       - name: Publish to GitHub Packages Apache Maven
         run: mvn deploy -Pgithub-publish -DskipTests
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish site to GitHub Pages
+        run: mvn site site:stage scm-publish:publish-scm -DskipTests
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -182,9 +191,12 @@ jobs:
     needs: get_version
     runs-on: ubuntu-latest
     steps:
+      - name: Add RELEASE_VERSION to environment variable
+        run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
+
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -194,7 +206,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} Started by: ${{ github.actor }}"
+                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} Started by: ${{ github.actor }}"
                   }
                 }
               ]
@@ -206,9 +218,12 @@ jobs:
     needs: [get_version, release]
     runs-on: ubuntu-latest
     steps:
+      - name: Add RELEASE_VERSION to environment variable
+        run: echo "RELEASE_VERSION=${{ needs.get_version.outputs.RELEASE_VERSION }}" >> "$GITHUB_ENV"
+
       - name: Publish to slack channel via bot token
         id: slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v1.25.0
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
@@ -218,7 +233,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-release -- Release of version: ${{ needs.get_version.outputs.RELEASE_VERSION }} complete.\nRelease Page: [${{ needs.get_version.outputs.RELEASE_VERSION }}](https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ needs.get_version.outputs.RELEASE_VERSION }})"
+                    "text": "emissary-release -- Release of version: ${{ env.RELEASE_VERSION }} complete.\nRelease Page: <https://github.com/NationalSecurityAgency/emissary/releases/tag/${{ env.RELEASE_VERSION }}>"
                   }
                 }
               ]

@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static emissary.core.Form.TEXT;
 import static emissary.core.constants.Parameters.EVENT_DATE;
@@ -476,6 +477,12 @@ class DropOffUtilTest extends UnitTest {
         this.util = new DropOffUtil(cfg);
 
         assertNull(this.util.getEventDate(d, tld));
+    }
+
+    @Test
+    void testGetSubdirName() {
+        String subdirName = this.util.getSubDirName(new BaseDataObject(), null, new BaseDataObject());
+        assertTrue(Pattern.compile("NO-CASE/\\d{4}-\\d{2}-\\d{2}/\\d{2}/\\d{2}").matcher(subdirName).matches());
     }
 
     @Test
