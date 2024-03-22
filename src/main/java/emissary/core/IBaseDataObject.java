@@ -401,7 +401,9 @@ public interface IBaseDataObject {
      * @param arg1 the value of the filetype to set
      * @param arg2 the list of things caller considers equal to being empty
      * @return true if it was empty and set
+     * @deprecated Use {@link #setFileType(String)} instead.
      */
+    @Deprecated(forRemoval = true)
     boolean setFileTypeIfEmpty(String arg1, String[] arg2);
 
     /**
