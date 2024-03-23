@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -49,8 +50,8 @@ class StartupTest extends UnitTest {
         // TODO: figure out why the key isn't http://localhost:8001. Seems
         // this way when running too, so get("") works. This test is just testing the
         // PickUp stuff is pulled out separately
-        List<String> pickups = startup.pickupLists.get("");
-        List<String> places = startup.placeLists.get("");
+        Set<String> pickups = startup.pickupLists.get("");
+        Set<String> places = startup.placeLists.get("");
         assertIterableEquals(Arrays.asList(location + "/" + "FilePickUpPlace", location + "/" + "FilePickUpClient"), pickups);
         assertIterableEquals(Arrays.asList(location + "/" + "CoordinationPlace", location + "/" + "DelayPlace", location + "/" + "DevNullPlace"),
                 places);

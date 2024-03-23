@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,8 +66,8 @@ public class Startup {
     protected final Set<String> placesToStart = ConcurrentHashMap.newKeySet();
 
     // sorted lists of the place types, grouped by hostname
-    protected final Map<String, List<String>> placeLists = new ConcurrentHashMap<>();
-    protected final Map<String, List<String>> pickupLists = new ConcurrentHashMap<>();
+    protected final Map<String, Set<String>> placeLists = new ConcurrentHashMap<>();
+    protected final Map<String, Set<String>> pickupLists = new ConcurrentHashMap<>();
 
     // sets to keep track of possible invisible place startup
     protected static Set<String> activeDirPlaces = new LinkedHashSet<>();
@@ -245,10 +244,10 @@ public class Startup {
 
     }
 
-    void startMapOfPlaces(final Map<String, List<String>> m) {
+    void startMapOfPlaces(final Map<String, Set<String>> m) {
 
         if (hashListSize(m) > 0) {
-            for (final List<String> placeList : m.values()) {
+            for (final Set<String> placeList : m.values()) {
                 final boolean status = placeSetup(directoryAction, this.localDirectories, places, placeList);
 
                 if (!status) {
@@ -265,10 +264,10 @@ public class Startup {
     /**
      * Count all entries in lists of a map
      */
-    private int hashListSize(@Nullable final Map<String, List<String>> m) {
+    private int hashListSize(@Nullable final Map<String, Set<String>> m) {
         int total = 0;
         if (m != null) {
-            for (final List<String> l : m.values()) {
+            for (final Set<String> l : m.values()) {
                 if (l != null) {
                     total += l.size();
                 }
@@ -333,14 +332,14 @@ public class Startup {
      * the same host:port!
      */
     protected boolean placeSetup(final int directoryActionArg, final Map<String, String> localDirectoriesArg, final Map<String, String> placesArg,
-            final List<String> hostParameters) {
+            final Set<String> hostParameters) {
 
         // Track how many places we are trying to start
         this.placesToStart.addAll(hostParameters);
 
         final Thread t = new Thread(() -> {
 
-            final String thePlaceHost = placeHost(hostParameters.get(0));
+            final String thePlaceHost = placeHost(hostParameters.stream().findFirst().get());
 
             final String localDirectory = localDirectoriesArg.get(thePlaceHost);
 
@@ -511,9 +510,9 @@ public class Startup {
         }
     }
 
-    private void sortPickupOrPlace(String theLocation, Map<String, List<String>> placeList) {
+    private void sortPickupOrPlace(String theLocation, Map<String, Set<String>> placeList) {
         final String host = placeHost(theLocation);
-        List<String> l = placeList.computeIfAbsent(host, k -> new ArrayList<>());
+        Set<String> l = placeList.computeIfAbsent(host, k -> new LinkedHashSet<>());
         l.add(theLocation);
     }
 
@@ -543,7 +542,7 @@ public class Startup {
 
         // compares place names in active dirs and active places, removes them from set if found
         for (String thePlaceLocation : places.values()) {
-            activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase(thePlaceLocation.substring(thePlaceLocation.lastIndexOf("/") + 1)));
+            activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase(placeName(thePlaceLocation)));
         }
 
         // places that are attempted to startup but are already up are added to separate list
