@@ -78,6 +78,10 @@ public final class IBaseDataObjectXmlCodecs {
      */
     public static final String ENCODING_ATTRIBUTE_NAME = "encoding";
     /**
+     * The XML attribute name for Length.
+     */
+    public static final String LENGTH_ATTRIBUTE_NAME = "length";
+    /**
      * A map of element names of IBaseDataObject methods that get/set primitives and their default values.
      */
     public static final Map<String, Object> PRIMITVE_NAME_DEFAULT_MAP = Collections
@@ -489,8 +493,11 @@ public final class IBaseDataObjectXmlCodecs {
                     try {
                         final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,
                                 BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+                        final Element childElement = preserve(protectedElementBase64(childElementName, bytes));
 
-                        parentElement.addContent(preserve(protectedElementBase64(childElementName, bytes)));
+                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));
+
+                        parentElement.addContent(childElement);
                     } catch (final IOException e) {
                         LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
                     }
@@ -513,8 +520,11 @@ public final class IBaseDataObjectXmlCodecs {
                     try {
                         final byte[] bytes = SeekableByteChannelHelper.getByteArrayFromChannel(value,
                                 BaseDataObject.MAX_BYTE_ARRAY_SIZE);
+                        final Element childElement = preserve(protectedElementHash(childElementName, bytes));
 
-                        parentElement.addContent(preserve(protectedElementHash(childElementName, bytes)));
+                        childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(bytes.length));
+
+                        parentElement.addContent(childElement);
                     } catch (final IOException e) {
                         LOGGER.error("Could not get bytes from SeekableByteChannel!", e);
                     }
@@ -584,7 +594,11 @@ public final class IBaseDataObjectXmlCodecs {
         public void encode(final List<byte[]> values, final Element parentElement, final String childElementName) {
             for (final byte[] value : values) {
                 if (value != null) {
-                    parentElement.addContent(preserve(protectedElementBase64(childElementName, value)));
+                    final Element childElement = preserve(protectedElementBase64(childElementName, value));
+
+                    childElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(value.length));
+
+                    parentElement.addContent(childElement);
                 }
             }
         }
@@ -639,10 +653,14 @@ public final class IBaseDataObjectXmlCodecs {
             for (final Map<String, byte[]> value : values) {
                 for (final Entry<String, byte[]> view : value.entrySet()) {
                     final Element metaElement = new Element(VIEW);
+                    final Element nameElement = preserve(protectedElement(NAME, view.getKey()));
+                    final Element valueElement = preserve(protectedElementBase64(VALUE, view.getValue()));
+
+                    valueElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(view.getValue().length));
 
                     parentElement.addContent(metaElement);
-                    metaElement.addContent(preserve(protectedElement(NAME, view.getKey())));
-                    metaElement.addContent(preserve(protectedElementBase64(VALUE, view.getValue())));
+                    metaElement.addContent(nameElement);
+                    metaElement.addContent(valueElement);
                 }
             }
         }
@@ -656,10 +674,14 @@ public final class IBaseDataObjectXmlCodecs {
             for (final Map<String, byte[]> value : values) {
                 for (final Entry<String, byte[]> view : value.entrySet()) {
                     final Element metaElement = new Element(IbdoXmlElementNames.VIEW);
+                    final Element nameElement = preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey()));
+                    final Element valueElement = preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue()));
+
+                    valueElement.setAttribute(LENGTH_ATTRIBUTE_NAME, Integer.toString(view.getValue().length));
 
                     parentElement.addContent(metaElement);
-                    metaElement.addContent(preserve(protectedElement(IbdoXmlElementNames.NAME, view.getKey())));
-                    metaElement.addContent(preserve(protectedElementSha256(IbdoXmlElementNames.VALUE, view.getValue())));
+                    metaElement.addContent(nameElement);
+                    metaElement.addContent(valueElement);
                 }
             }
         }
