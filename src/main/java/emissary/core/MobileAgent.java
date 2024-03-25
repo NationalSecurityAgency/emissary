@@ -295,6 +295,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 recordHistory(newEntry, this.payload);
             }
 
+
             // A local place, around the loop and hit it
             if (newEntry.isLocal()) {
                 logger.debug("Choosing local place {}", newEntry.getFullKey());
@@ -342,6 +343,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param payloadArg the data for the place to operate on
      */
     protected void atPlace(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
+        long timeInPlace;
         logger.debug("In atPlace {} with {}", place, payloadArg.shortName());
 
         try (TimedResource timer = resourceWatcherStart(place)) {
@@ -352,7 +354,11 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
                 payloadArg.setParameter("AGENT_MOVE_ERRORS", Integer.toString(this.moveErrorsOccurred));
             }
 
+            long startTime = System.nanoTime();
             place.agentProcessCall(payloadArg);
+            long endTime = System.nanoTime();
+            timeInPlace = (endTime - startTime);
+            payloadArg.addTimeInLastPlace(timeInPlace);
 
             if (this.moveErrorsOccurred > 0) {
                 payloadArg.deleteParameter("AGENT_MOVE_ERRORS");
@@ -783,6 +789,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * @param place where the processing is taking place
      * @param payloadArg the dataobject that is being processed
      */
+
     protected void recordHistory(final IServiceProviderPlace place, final IBaseDataObject payloadArg) {
         recordHistory(place.getDirectoryEntry(), payloadArg);
     }
