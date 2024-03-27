@@ -45,7 +45,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
         logger.info("InterruptibleCharSequence overhead percentage: {}.", overheadPercentage);
     }
 
-    public boolean tryMatch(CharSequence input, String regex) {
+    public static boolean tryMatch(CharSequence input, String regex) {
         return Pattern.matches(regex, input);
     }
 
