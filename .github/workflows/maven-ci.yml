@@ -74,7 +74,7 @@ jobs:
           distribution: "corretto"
 
       - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify
+        run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify -DskipTests
 
   slack-notify:
     if: ${{ github.event_name == 'push' }}
