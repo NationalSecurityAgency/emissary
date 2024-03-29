@@ -26,14 +26,14 @@ class PlaceComparisonHelperTest extends UnitTest {
 
     private static final DiffCheckConfiguration DIFF_OPTIONS = DiffCheckConfiguration.onlyCheckData();
 
-    private static final byte[] configurationBytes = new StringBuilder()
-            .append("PLACE_NAME = \"TesterPlace\"")
-            .append("SERVICE_NAME = \"TESTER\"")
-            .append("SERVICE_TYPE = \"TRANSFORM\"")
-            .append("SERVICE_DESCRIPTION = \"Place defined for testing\"")
-            .append("SERVICE_COST = 50")
-            .append("SERVICE_QUALITY = 50")
-            .append("SERVICE_PROXY = \"UNKNOWN\"").toString().getBytes(StandardCharsets.UTF_8);
+    private static final byte[] configurationBytes =
+            ("PLACE_NAME = \"TesterPlace\"" +
+                    "SERVICE_NAME = \"TESTER\"" +
+                    "SERVICE_TYPE = \"TRANSFORM\"" +
+                    "SERVICE_DESCRIPTION = \"Place defined for testing\"" +
+                    "SERVICE_COST = 50" +
+                    "SERVICE_QUALITY = 50" +
+                    "SERVICE_PROXY = \"UNKNOWN\"").getBytes(StandardCharsets.UTF_8);
 
     private IBaseDataObject ibdoNewPlace;
     private IBaseDataObject ibdoOldPlace;
@@ -57,7 +57,7 @@ class PlaceComparisonHelperTest extends UnitTest {
         assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1));
     }
 
-    private void checkThrowsNull(final Executable e) {
+    private static void checkThrowsNull(final Executable e) {
         assertThrows(NullPointerException.class, e);
     }
 

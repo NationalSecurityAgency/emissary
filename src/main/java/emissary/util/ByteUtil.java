@@ -285,7 +285,7 @@ public class ByteUtil {
         boolean badCharacters = false;
 
         for (byte aByte : bytes) {
-            if (aByte < 9 || aByte > 13 && aByte < 32) {
+            if (aByte < 9 || (aByte > 13 && aByte < 32)) {
                 badCharacters = true;
                 break;
             }
