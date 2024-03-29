@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static emissary.output.roller.journal.Journal.EXT;
@@ -222,7 +223,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
         outputMap.forEach(this::coalesceFiles);
     }
 
-    private void loadJournal(Path path, HashMap<String, Collection<Journal>> outputMap) {
+    private void loadJournal(Path path, Map<String, Collection<Journal>> outputMap) {
         try (JournalReader jr = new JournalReader(path)) {
             Journal j = jr.getJournal();
             outputMap.computeIfAbsent(j.getKey(), k -> new ArrayList<>()).add(j);

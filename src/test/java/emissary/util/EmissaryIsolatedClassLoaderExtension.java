@@ -17,7 +17,7 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
     @Override
     public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
             ExtensionContext extensionContext) throws Throwable {
-        if (extensionContext.getRequiredTestClass().getClassLoader().getClass().getName().equals(TestClassLoader.class)) {
+        if (extensionContext.getRequiredTestClass().getClassLoader().getClass().getName().equals(TestClassLoader.class.getName())) {
             invocation.proceed();
             return;
         }

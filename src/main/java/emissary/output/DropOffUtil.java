@@ -705,7 +705,7 @@ public class DropOffUtil {
         COMPLETE_FILETYPE("COMPLETE_FILETYPE"), FILETYPE("FILETYPE"), FINAL_ID("FINAL_ID"), FONT_ENCODING("FontEncoding"), POPPED_FORMS(
                 "POPPED_FORMS");
 
-        String fieldName;
+        final String fieldName;
 
         FileTypeCheckParameter(String fieldName) {
             this.fieldName = fieldName;
