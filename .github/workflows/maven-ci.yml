@@ -58,6 +58,24 @@ jobs:
       - name: Build with Maven
         run: mvn -B -e -ntp "-Dstyle.color=always" site
 
+  error-prone-build:
+    name: Maven build using errorProne profile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure Java & Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          cache: "maven"
+          distribution: "corretto"
+
+      - name: Build with Maven
+        run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify
+
   slack-notify:
     if: ${{ github.event_name == 'push' }}
     needs: build
