@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -47,7 +48,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
             Thread.sleep(10);
         }
 
-        assertEquals(payload.getStringParameter("PARENT_INFO").toUpperCase(),
+        assertEquals(payload.getStringParameter("PARENT_INFO").toUpperCase(Locale.ROOT),
                 child.getStringParameter("CHILD_INFO"),
                 "Child should have obtained access to parent metadata");
 
@@ -66,7 +67,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
         public void process(IBaseDataObject d) {
             IBaseDataObject p = getTLD();
             if (p != null && p.hasParameter("PARENT_INFO")) {
-                d.putParameter("CHILD_INFO", p.getStringParameter("PARENT_INFO").toUpperCase());
+                d.putParameter("CHILD_INFO", p.getStringParameter("PARENT_INFO").toUpperCase(Locale.ROOT));
             } else {
                 System.err.println("COuld not get parent " + p);
             }

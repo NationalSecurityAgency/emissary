@@ -15,12 +15,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
+    @Nullable
     private MyWorkSpace space = null;
+    @Nullable
     private IDirectoryPlace peer = null;
 
     // Workspace input and output directories
@@ -29,8 +32,8 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
     private File outarea1;
     private File holdarea;
 
-    private List<File> workingFiles = new ArrayList<>();
-    private List<String> workingFilePaths = new ArrayList<>();
+    private final List<File> workingFiles = new ArrayList<>();
+    private final List<String> workingFilePaths = new ArrayList<>();
 
     @Override
     @BeforeEach
@@ -116,8 +119,8 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
         space.setPauseTime(10);// millis
         space.setRetryStrategy(true);
         space.setDirectoryProcessing(false);
-        space.setFPM(maxCount);
-        space.setBPM(maxBytes);
+        space.setFpm(maxCount);
+        space.setBpm(maxBytes);
 
         assertTrue(Namespace.exists("http://localhost:8005/" + namespace), "WorkSpace should exist in namespace");
 
@@ -189,19 +192,19 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
             super(command);
         }
 
-        public void setFPM(int value) {
+        public void setFpm(int value) {
             this.FILES_PER_MESSAGE = value;
         }
 
-        public void setBPM(long value) {
+        public void setBpm(long value) {
             this.MAX_BUNDLE_SIZE = value;
         }
 
-        public int getFPM() {
+        public int getFpm() {
             return this.FILES_PER_MESSAGE;
         }
 
-        public long getBPM() {
+        public long getBpm() {
             return this.MAX_BUNDLE_SIZE;
         }
     }

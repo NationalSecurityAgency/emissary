@@ -22,8 +22,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JournaledChannelTest extends UnitTest {
 
+    @Nullable
     @TempDir
-    private static Path TEMP_DIR;
+    private static Path TEMP_DIR = null;
     @Nullable
     private JournaledChannel channel;
     private String onekstring = "";

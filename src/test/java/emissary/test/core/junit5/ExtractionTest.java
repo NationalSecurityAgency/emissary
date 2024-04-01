@@ -170,7 +170,8 @@ public abstract class ExtractionTest extends UnitTest {
         }
     }
 
-    protected void checkAnswers(Element el, IBaseDataObject payload, List<IBaseDataObject> attachments, String tname) throws DataConversionException {
+    protected void checkAnswers(Element el, IBaseDataObject payload, @Nullable List<IBaseDataObject> attachments, String tname)
+            throws DataConversionException {
 
         int numAtt = JDOMUtil.getChildIntValue(el, "numAttachments");
         if (numAtt > -1) {
@@ -307,7 +308,7 @@ public abstract class ExtractionTest extends UnitTest {
         }
     }
 
-    private void checkForMissingNameElement(String parentTag, String key, String tname) {
+    private static void checkForMissingNameElement(String parentTag, String key, String tname) {
         if (key == null) {
             fail(String.format("The element %s has a problem in %s: does not have a child name element", parentTag, tname));
         }

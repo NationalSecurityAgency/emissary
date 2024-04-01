@@ -25,7 +25,7 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
         runTestWithIsolatedClassPath(invocationContext, extensionContext);
     }
 
-    private void runTestWithIsolatedClassPath(ReflectiveInvocationContext<Method> invocationContext,
+    private static void runTestWithIsolatedClassPath(ReflectiveInvocationContext<Method> invocationContext,
             ExtensionContext extensionContext) throws Throwable {
         // get the test class and method
         Class<?> testClass = extensionContext.getRequiredTestClass();
@@ -52,10 +52,10 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
 
     public static class TestClassLoader extends URLClassLoader {
         public TestClassLoader() {
-            super(getURLsFromSystemClassLoader());
+            super(getUrLsFromSystemClassLoader());
         }
 
-        private static URL[] getURLsFromSystemClassLoader() {
+        private static URL[] getUrLsFromSystemClassLoader() {
             ClassLoader systemClassLoader = getSystemClassLoader();
             if (systemClassLoader instanceof URLClassLoader) {
                 return ((URLClassLoader) systemClassLoader).getURLs();

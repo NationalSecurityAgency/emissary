@@ -25,13 +25,16 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DropOffPlaceTest extends UnitTest {
 
+    @Nullable
     DropOffPlace place = null;
     private Path tempDir;
 
@@ -101,7 +104,10 @@ class DropOffPlaceTest extends UnitTest {
             final List<IBaseDataObject> payloadList = new ArrayList<>();
             payloadList.add(payload);
 
-            final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
+            assertDoesNotThrow(() -> {
+                assertNotNull(this.place);
+                return this.place.agentProcessHeavyDuty(payloadList);
+            });
             assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().endsWith(expected)));
         } finally {
             rootLogger.detachAppender(appender);
@@ -134,7 +140,10 @@ class DropOffPlaceTest extends UnitTest {
             final List<IBaseDataObject> payloadList = new ArrayList<>();
             payloadList.add(payload);
 
-            final List<IBaseDataObject> val = this.place.agentProcessHeavyDuty(payloadList);
+            assertDoesNotThrow(() -> {
+                assertNotNull(this.place);
+                return this.place.agentProcessHeavyDuty(payloadList);
+            });
             assertTrue(appender.list.stream().anyMatch(i -> i.getFormattedMessage().endsWith(expected)));
         } finally {
             rootLogger.detachAppender(appender);

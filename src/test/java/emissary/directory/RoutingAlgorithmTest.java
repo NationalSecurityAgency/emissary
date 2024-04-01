@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -434,7 +435,7 @@ class RoutingAlgorithmTest extends UnitTest {
          */
         private static final long serialVersionUID = 6667669555504467253L;
 
-        public DirectoryEntry getNextKeyAccess(final IServiceProviderPlace place, final IBaseDataObject payload) {
+        public DirectoryEntry getNextKeyAccess(@Nullable final IServiceProviderPlace place, @Nullable final IBaseDataObject payload) {
             return getNextKey(place, payload);
         }
 

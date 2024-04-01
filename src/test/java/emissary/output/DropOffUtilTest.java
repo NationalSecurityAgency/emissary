@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 import static emissary.core.Form.TEXT;
 import static emissary.core.constants.Parameters.EVENT_DATE;
@@ -38,7 +39,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests for DropOffUtil
  */
 class DropOffUtilTest extends UnitTest {
+    @Nullable
     private DropOffUtil util = null;
+    @Nullable
     private IBaseDataObject payload = null;
 
     @BeforeEach
@@ -110,7 +113,7 @@ class DropOffUtilTest extends UnitTest {
 
         this.util = new DropOffUtil(cfg);
         this.payload = DataObjectFactory.getInstance("This is a test".getBytes(), "/eat/prefix/testPath", "UNKNOWN");
-        id = this.util.getBestId(this.payload, tld);
+        assertNotNull(this.util.getBestId(this.payload, tld));
         assertEquals("yes", this.payload.getStringParameter("AUTO_GENERATED_ID"), "an auto gen id parameter should have been set");
 
         // Test get ID from parameter //////////////////////////////
@@ -630,12 +633,12 @@ class DropOffUtilTest extends UnitTest {
         assertEquals("customName.txt", bestFilenames.get(0), "Only the value in CustomField should have been extracted");
     }
 
-    private void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
+    private static void setupMetadata(IBaseDataObject bdo, String fieldValue, DropOffUtil.FileTypeCheckParameter fileTypeCheckParameter) {
         bdo.clearParameters();
         bdo.putParameter(fileTypeCheckParameter.getFieldName(), fieldValue);
     }
 
-    private void testFileType(IBaseDataObject bdo, Map<String, String> metadata, String expectedResults, String formsArg) {
+    private static void testFileType(IBaseDataObject bdo, @Nullable Map<String, String> metadata, String expectedResults, @Nullable String formsArg) {
         String fileType;
         fileType = DropOffUtil.getAndPutFileType(bdo, metadata, formsArg);
         assertEquals(expectedResults, fileType);

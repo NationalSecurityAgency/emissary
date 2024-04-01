@@ -129,13 +129,12 @@ class WindowedSeekableByteChannelTest extends UnitTest {
         final byte[] buff = new byte[17];
         final ByteBuffer destination = ByteBuffer.wrap(buff);
         final int EVEN = 1024;
-        final int fourKB = EVEN * 4;
+        final int fourKb = EVEN * 4;
 
-        final int FINAL_ALPHABET_LEN = fourKB % I_ALPHABET;
-        final int LAST_READ_LENGTH = fourKB % buff.length;
+        final int FINAL_ALPHABET_LEN = fourKb % I_ALPHABET;
+        final int LAST_READ_LENGTH = fourKb % buff.length;
 
-        @SuppressWarnings("resource")
-        final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(fourKB), EVEN);
+        final WindowedSeekableByteChannel instance = new WindowedSeekableByteChannel(getChannel(fourKb), EVEN);
         int result = 0;
 
         int read = instance.read(destination);
@@ -144,7 +143,7 @@ class WindowedSeekableByteChannelTest extends UnitTest {
             destination.position(0);
             read = instance.read(destination);
         }
-        assertEquals(fourKB, result, "Expected to read 4KB");
+        assertEquals(fourKb, result, "Expected to read 4KB");
         assertEquals(buildArry(I_ALPHABET)[FINAL_ALPHABET_LEN - 1], buff[LAST_READ_LENGTH - 1], "Last byte matches");
     }
 

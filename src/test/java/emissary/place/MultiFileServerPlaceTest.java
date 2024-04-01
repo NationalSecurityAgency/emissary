@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class MultiFileServerPlaceTest extends UnitTest {
+    @Nullable
     MFSPlace mfsp = null;
+    @Nullable
     IBaseDataObject parent = null;
 
     @Override
@@ -101,6 +104,7 @@ class MultiFileServerPlaceTest extends UnitTest {
 
     private static final class MFSPlace extends MultiFileServerPlace {
 
+        @Nullable
         public String cft = null;
 
         public MFSPlace(InputStream config, String loc) throws IOException {

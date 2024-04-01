@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
+import javax.annotation.Nullable;
 
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_DECODERS;
 import static emissary.core.IBaseDataObjectXmlCodecs.DEFAULT_ELEMENT_ENCODERS;
@@ -217,6 +218,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         assertNull(checkLengthKeyValue(root, ibdo.getAlternateView("\200AlternateView11Key").length, "\200AlternateView11Key", "answers", "view"));
     }
 
+    @Nullable
     private static String checkLengthElement(Element rootElement, int lengthToCheck, String... xmlPathElementNames) {
         Element element = rootElement;
 
@@ -250,6 +252,7 @@ class IBaseDataObjectXmlHelperTest extends UnitTest {
         }
     }
 
+    @Nullable
     private static String checkLengthKeyValue(Element rootElement, int lengthToCheck, String key, String... xmlPathElementNames) {
         Element element = rootElement;
 

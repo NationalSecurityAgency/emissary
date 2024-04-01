@@ -124,7 +124,7 @@ public abstract class FunctionalTest extends UnitTest {
         }
     }
 
-    protected IServiceProviderPlace addPlace(String key, String clsName, String dir) {
+    protected IServiceProviderPlace addPlace(String key, String clsName, @Nullable String dir) {
         return PlaceStarter.createPlace(key, null, clsName, dir);
     }
 

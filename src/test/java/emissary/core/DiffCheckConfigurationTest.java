@@ -65,10 +65,10 @@ class DiffCheckConfigurationTest extends UnitTest {
 
         diffCheckBuilder.enableKeyValueParameterDiff();
 
-        final DiffCheckConfiguration KeyValueParameterConfiguration2 = diffCheckBuilder.build();
+        final DiffCheckConfiguration keyValueParameterConfiguration2 = diffCheckBuilder.build();
 
-        assertFalse(KeyValueParameterConfiguration2.performDetailedParameterDiff());
-        assertTrue(KeyValueParameterConfiguration2.performKeyValueParameterDiff());
+        assertFalse(keyValueParameterConfiguration2.performDetailedParameterDiff());
+        assertTrue(keyValueParameterConfiguration2.performKeyValueParameterDiff());
 
         diffCheckBuilder.enableDetailedParameterDiff();
 

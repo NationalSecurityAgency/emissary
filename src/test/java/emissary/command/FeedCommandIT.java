@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,6 +43,7 @@ class FeedCommandIT extends UnitTest {
     public static final String[] BOOLEAN_ARGS = {"-sd", "--skipDot", "-l", "--loop"};
     public static final String[] INT_ARGS = {"-p", "--port", "--bundleSize"};
 
+    @Nullable
     private FeedCommand command;
     private Path baseDir;
     private Path inputDir;

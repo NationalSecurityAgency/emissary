@@ -102,7 +102,7 @@ class WorkspaceSortModeConverterTest extends UnitTest {
         assertEquals(0, comparator.compare(one, two));
     }
 
-    private void testComparePriority(Comparator<WorkBundle> comparator) {
+    private static void testComparePriority(Comparator<WorkBundle> comparator) {
         WorkBundle one = new WorkBundle();
         WorkBundle two = new WorkBundle();
 

@@ -164,6 +164,7 @@ public @interface TestAttempts {
                 this.maxAttempts = maxAttempts;
             }
 
+            @Override
             public String getDisplayName(int invocationIndex) {
                 return "Attempt " + invocationIndex + " of " + maxAttempts;
             }

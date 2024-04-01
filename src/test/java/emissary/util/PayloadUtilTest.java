@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
         d.setCreationTimestamp(new Date(0));
-        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -69,7 +70,7 @@ public class PayloadUtilTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.setCreationTimestamp(new Date(0));
         d.appendTransformHistory("BOGUSKEYELEMENT");
-        final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = ">>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -244,7 +245,7 @@ public class PayloadUtilTest extends UnitTest {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
         assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are expected to be valid");
-        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase()), "Upper case alpha characters are expected to be valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase(Locale.ROOT)), "Upper case alpha characters are expected to be valid");
         assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are expected to be valid");
         assertTrue(PayloadUtil.isValidForm("-_"), "'-' and '_' are expected to be valid form characters");
         assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses are expected to be valid form characters");
@@ -293,7 +294,7 @@ public class PayloadUtilTest extends UnitTest {
      * @param form The form to be tested
      * @return Whether the form is considered valid
      */
-    private boolean isValidFormSetImplementation(String form) {
+    private static boolean isValidFormSetImplementation(String form) {
         if (form.length() > 0) {
             for (int i = 0; i < form.length(); i++) {
                 if (!validFormChars.contains(form.charAt(i))) {

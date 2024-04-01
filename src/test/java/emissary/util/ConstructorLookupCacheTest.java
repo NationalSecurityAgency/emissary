@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,6 +33,7 @@ class ConstructorLookupCacheTest extends UnitTest {
         /**
          * @return A constructor for this class that accepts the given arguments, or {@code null} if none.
          */
+        @Nullable
         public static Constructor<ExampleClass> getConstructor(Class<?>... args) {
             try {
                 return ExampleClass.class.getConstructor(args);
