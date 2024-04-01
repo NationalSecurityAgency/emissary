@@ -7,6 +7,7 @@
 package emissary.util.search;
 
 import java.io.PrintStream;
+import javax.annotation.Nullable;
 
 /**
  * This class implements a tree state machine scanner that searches text backwards starting from the end. A list of
@@ -105,6 +106,7 @@ public class BackwardsTreeScanner {
         // Each state can be visited by a single character. This is it!
         public byte gotHereBy;
         // A list of keyword ids that are matched at this state.
+        @Nullable
         public int[] matches = null;
 
         // constructor

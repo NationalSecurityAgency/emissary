@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 import static java.util.stream.Collectors.toList;
 
@@ -100,6 +101,7 @@ public class FlexibleDateTimeParser {
      * @param formats the date/time formats to use
      * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
      */
+    @Nullable
     public static ZonedDateTime parse(final String dateString, final List<DateTimeFormatter> formats) {
         String cleanedDateString = cleanDateString(dateString);
 
@@ -187,6 +189,7 @@ public class FlexibleDateTimeParser {
      * @param configEntries the list of override formats from the config file
      * @return a list of {@link DateTimeFormatter}s
      */
+    @Nullable
     private static List<DateTimeFormatter> getConfigFormats(final List<ConfigEntry> configEntries) {
         if (CollectionUtils.isEmpty(configEntries)) {
             return null;
@@ -200,6 +203,7 @@ public class FlexibleDateTimeParser {
      * @param entry format from the config file
      * @return {@link DateTimeFormatter} if the pattern is valid, null otherwise
      */
+    @Nullable
     private static DateTimeFormatter getFormatter(ConfigEntry entry) {
         try {
             return DateTimeFormatter.ofPattern(entry.getValue());

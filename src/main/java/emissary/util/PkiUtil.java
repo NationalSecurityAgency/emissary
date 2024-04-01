@@ -40,6 +40,7 @@ public class PkiUtil {
     private static final Logger log = LoggerFactory.getLogger(PkiUtil.class);
 
     /* build the key/trust store from props */
+    @Nullable
     public static KeyStore buildStore(@Nullable final String path, final char[] pazz, final String type)
             throws IOException, GeneralSecurityException {
         if ((path == null) || path.isEmpty()) {
@@ -81,6 +82,7 @@ public class PkiUtil {
     /*
      * Build char array from password, load from file or read from environment variable.
      */
+    @Nullable
     public static char[] loadPW(@Nullable final String pazz) throws IOException {
         if (pazz == null) {
             return null;

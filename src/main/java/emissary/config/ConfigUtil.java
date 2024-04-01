@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * This configuration utility collection helps to find configuration for various classes and objects. It responds to
@@ -74,21 +75,27 @@ public class ConfigUtil {
     public static final String PROJECT_BASE_ENV = "PROJECT_BASE";
 
     /** The package name where config stuff may be found */
+    @Nullable
     private static String configPkg = null;
 
     /** The directory where config stuff may be found */
+    @Nullable
     private static String configDirProperty = null;
 
     /** The directories where config stuff may be found, searched in order */
+    @Nullable
     private static List<String> configDirs = null;
 
     /** The project root directory */
+    @Nullable
     private static String projectRoot = null;
 
     /** The output root */
+    @Nullable
     private static String outputRoot = null;
 
     /** The bin dir */
+    @Nullable
     private static String binDir = null;
 
     /**
@@ -96,6 +103,7 @@ public class ConfigUtil {
      * sort of like a mini single inheritance model. It is a comma separated, ordered list of subtypes to try to merge into
      * the current config.
      */
+    @Nullable
     private static String configFlavors = null;
 
     /*
@@ -462,6 +470,7 @@ public class ConfigUtil {
     /**
      * Return the in-use config flavors
      */
+    @Nullable
     public static List<String> getFlavors() {
         if (configFlavors == null) {
             return null;

@@ -82,6 +82,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     /* alternate views to NOT output if only a file type/form is specified */
     protected Set<String> denylist = Collections.emptySet();
 
+    @Nullable
     protected DropOffUtil dropOffUtil = null;
 
     /**

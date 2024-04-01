@@ -12,6 +12,7 @@ import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 
 /**
  * Pool implementation that utilizes a Journal to durably track state out written data. The implementation will create
@@ -29,6 +30,7 @@ public class JournaledChannelPool implements AutoCloseable {
     final String key;
     private final Queue<JournaledChannel> free = new LinkedList<>();
     private int created;
+    @Nullable
     private JournaledChannel[] allchannels;
 
     public JournaledChannelPool(final Path directory, final String key, final int max) throws IOException {

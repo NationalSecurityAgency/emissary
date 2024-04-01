@@ -308,6 +308,7 @@ public class Executrix {
      * @return byte array containing the data or null on io exception
      * @see #readFile(String)
      */
+    @Nullable
     public static byte[] readDataFromFile(final String theFileName, final boolean quiet) {
         try {
             return readFile(theFileName, -1);
@@ -337,6 +338,7 @@ public class Executrix {
      * @param length the maximum byte count to read or -1 for all
      * @return byte array containing the data or null on io exception
      */
+    @Nullable
     public static byte[] readDataFromFile(final RandomAccessFile raf, final int offset, final int length) {
         // Seek to offset specified
         try {
@@ -393,6 +395,7 @@ public class Executrix {
      * @param length the maximum byte count to read or -1 for all
      * @return bytes of data or null on exception
      */
+    @Nullable
     public static byte[] readDataFromChannel(@Nullable final SeekableByteChannel channel, final long offset, final int length) {
         if (channel == null) {
             return null;
@@ -690,7 +693,7 @@ public class Executrix {
      * @param charset character set of the output
      * @return process exit status
      */
-    public int execute(final String[] cmd, @Nullable final StringBuffer out, @Nullable final StringBuffer err, final String charset) {
+    public int execute(final String[] cmd, @Nullable final StringBuffer out, @Nullable final StringBuffer err, @Nullable final String charset) {
         final StringBuilder bout = (out != null) ? new StringBuilder() : null;
         final StringBuilder berr = (err != null) ? new StringBuilder() : null;
 
@@ -713,7 +716,7 @@ public class Executrix {
      * @param err the destination to capture the standard error
      * @return process exit status
      */
-    public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err, final String charset) {
+    public int execute(final String[] cmd, @Nullable final StringBuilder out, @Nullable final StringBuilder err, @Nullable final String charset) {
         return execute(cmd, out, err, charset, null);
     }
 
@@ -726,7 +729,8 @@ public class Executrix {
      * @param env environment variables for the new process supplied in name=value format.
      * @return process exit status
      */
-    public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err, final String charset, final Map<String, String> env) {
+    public int execute(final String[] cmd, final StringBuilder out, final StringBuilder err, final String charset,
+            @Nullable final Map<String, String> env) {
         return execute(cmd, null, out, err, charset, env);
     }
 
@@ -749,7 +753,7 @@ public class Executrix {
      * @param out the destination to capture the standard output
      * @return process exit status
      */
-    public int execute(final String[] cmd, final byte[] data, final StringBuilder out) {
+    public int execute(final String[] cmd, final byte[] data, @Nullable final StringBuilder out) {
         return execute(cmd, data, out, null);
     }
 
@@ -762,7 +766,7 @@ public class Executrix {
      * @param err the destination to capture the standard error
      * @return process exit status
      */
-    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err) {
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, @Nullable final StringBuilder err) {
         return execute(cmd, data, out, err, null);
     }
 
@@ -776,7 +780,7 @@ public class Executrix {
      * @param charset character set of the output
      * @return process exit status
      */
-    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, final String charset) {
+    public int execute(final String[] cmd, final byte[] data, final StringBuilder out, final StringBuilder err, @Nullable final String charset) {
         return execute(cmd, data, out, err, charset, null);
     }
 
@@ -791,7 +795,7 @@ public class Executrix {
      * @param env environment variables for the new process supplied in name=value format.
      * @return process exit status
      */
-    public int execute(final String[] cmd, final byte[] data, @Nullable final StringBuilder out, @Nullable final StringBuilder err,
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final StringBuilder out, @Nullable final StringBuilder err,
             @Nullable final String charset,
             @Nullable final Map<String, String> env) {
         int exitValue = -1;
@@ -903,6 +907,7 @@ public class Executrix {
      * @param data the bytes to write
      * @return the file that was created
      */
+    @Nullable
     public File writeDataToNewTempDir(final String dirn, final byte[] data) {
         final File dir = new File(dirn);
         if (!dir.mkdirs()) {

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 
 import static emissary.output.roller.journal.Journal.CURRENT_VERSION;
 import static emissary.output.roller.journal.Journal.ENTRY_LENGTH;
@@ -41,8 +42,10 @@ public class JournalReader implements Closeable {
     // current sequence value
     private long sequence;
     // persisted journal
+    @Nullable
     FileChannel journalChannel;
     // not final to release on close
+    @Nullable
     private ByteBuffer b = ByteBuffer.allocateDirect(ENTRY_LENGTH);
 
     private final Journal journal;

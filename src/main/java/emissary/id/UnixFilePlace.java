@@ -31,6 +31,7 @@ public class UnixFilePlace extends emissary.id.IdPlace {
     /**
      * The {@link UnixFile} instance
      */
+    @Nullable
     protected UnixFile unixFileUtil = null;
 
     /**

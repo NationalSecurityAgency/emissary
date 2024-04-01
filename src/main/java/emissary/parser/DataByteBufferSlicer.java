@@ -40,6 +40,7 @@ public class DataByteBufferSlicer {
      * @param data the data to pull from
      * @param list the list of position records indicating absolute offsets
      */
+    @Nullable
     public static byte[] makeDataSlice(ByteBuffer data, @Nullable List<PositionRecord> list) {
         // Nothing to do
         if (list == null || list.isEmpty()) {

@@ -167,6 +167,7 @@ public class HtmlEscape {
      * @param isHex true if the digits are in hex
      * @return the Unicode codepoint in a[] char or null
      */
+    @Nullable
     public static char[] unescapeHtmlChar(String s, boolean isHex) {
         int num = -1;
         try {
@@ -260,6 +261,7 @@ public class HtmlEscape {
     }
 
 
+    @Nullable
     private static String getValueForHTMLEntity(String entity) {
         String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
         if (s != null) {

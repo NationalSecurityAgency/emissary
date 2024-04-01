@@ -338,6 +338,7 @@ public class JNI implements Serializable {
     /**
      * Look up the repository using our directory and retrieve the bytestream over the network with a synchronous call.
      */
+    @Nullable
     public byte[] returnFile(final String filename, final String[] errmsg) {
 
         if (this.theDir == null) {
@@ -384,6 +385,7 @@ public class JNI implements Serializable {
      * and Repositories might not exist. A non-related repository can be specified in this case and the system will
      * bootstrap from it.
      */
+    @Nullable
     public byte[] returnFile(final String filename, final String[] errmsg, final String repositoryKey) {
 
         final String repositoryAddrString = KeyManipulator.getServiceLocation(repositoryKey);

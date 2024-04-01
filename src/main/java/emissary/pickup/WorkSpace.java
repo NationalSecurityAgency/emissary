@@ -91,6 +91,7 @@ public class WorkSpace implements Runnable {
     protected WorkSpaceStats stats = new WorkSpaceStats();
 
     // Thread to notify clients that there is work to do
+    @Nullable
     protected ClientNotifier notifier = null;
 
     // Process control for collector thread
@@ -103,6 +104,7 @@ public class WorkSpace implements Runnable {
     protected long NOTIFIER_PAUSE_TIME = 1000L;
     protected int retryCount = 0;
     protected boolean useFileTimestamps = false;
+    @Nullable
     protected String PROJECT_BASE = null;
 
     /**

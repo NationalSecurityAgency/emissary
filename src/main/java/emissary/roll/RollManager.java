@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 
 /**
  * RollManager handles all incremental rolls for configured objects within the framework
@@ -27,6 +28,7 @@ public class RollManager implements PropertyChangeListener {
 
     final HashSet<Roller> rollers = new HashSet<>();
     // SINGLETON
+    @Nullable
     private static RollManager RM;
 
     protected RollManager() {

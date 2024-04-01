@@ -28,6 +28,7 @@ public class InputSession {
     private static final Logger logger = LoggerFactory.getLogger(InputSession.class);
 
     // Overall start/length of the session
+    @Nullable
     protected PositionRecord overall = null;
 
     // ordered list of PositionRecord for the header within the session

@@ -56,6 +56,7 @@ public class RollUtil {
     }
 
     // attempt to parse time unit.
+    @Nullable
     private static TimeUnit getUnit(@Nullable String unit) {
         return unit == null ? null : TimeUnit.valueOf(unit);
     }

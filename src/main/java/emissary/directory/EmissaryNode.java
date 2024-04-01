@@ -23,6 +23,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Hold some details about being a P2P node in the emissary network The order of preference to find the node
@@ -66,13 +67,18 @@ public class EmissaryNode {
     // TODO: make an enum for these
     private static final String DEFAULT_NODE_MODE = "standalone";
 
+    @Nullable
     protected String nodeName = null;
     protected int nodePort = -1;
+    @Nullable
     protected String nodeScheme = null;
     // this is the OS for all practical purposes
+    @Nullable
     protected String nodeType = null;
+    @Nullable
     protected String nodeMode = null; // probably better as nodeType, but that requires a refactor
     protected boolean nodeNameIsDefault = false;
+    @Nullable
     protected String nodeServiceType = null;
 
     protected boolean strictStartupMode = false;

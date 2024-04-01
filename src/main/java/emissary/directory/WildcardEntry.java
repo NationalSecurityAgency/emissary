@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Handle the details of a wildcard directory entry including iterating through the possible directory match strings A
@@ -40,7 +41,9 @@ public class WildcardEntry {
     private static final Logger logger = LoggerFactory.getLogger(WildcardEntry.class);
 
     String dataType;
+    @Nullable
     String serviceType;
+    @Nullable
     List<String> wc = null;
 
     private static final char DASH = '-';
