@@ -50,10 +50,10 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
         for (int i = 0; i < this.libraryDirectoryString.size(); i++) {
             this.libraryDirectoryFile.add(new File(this.libraryDirectoryString.get(i)));
 
-            if (!(this.libraryDirectoryFile.get(i)).isDirectory()) {
+            if (!this.libraryDirectoryFile.get(i).isDirectory()) {
                 logger.warn("Invalid libraryDirectory: {} is not a directory.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
-            } else if (!(this.libraryDirectoryFile.get(i)).canRead()) {
+            } else if (!this.libraryDirectoryFile.get(i).canRead()) {
                 logger.warn("Invalid libraryDirectory: {} is not readable.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
             }

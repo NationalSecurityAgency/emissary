@@ -501,7 +501,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             d.pushCurrentForm(tmpForm);
         }
         d.setFileType(SINGLE_CHILD_FILETYPE);
-        return (0);
+        return 0;
     }
 
     /**

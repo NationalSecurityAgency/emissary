@@ -79,7 +79,7 @@ public class JournalReader implements Closeable {
                 break;
             }
             long nextSeq = getSequence();
-            if (nextSeq != (++sequence)) {
+            if (nextSeq != ++sequence) {
                 logger.warn("Incorrect sequence value returned. Expected {} Received {}. Exiting", sequence, nextSeq);
                 break;
             }

@@ -90,7 +90,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Still have an uncaught exception handler but not really in a true ThreadGroup with other agents
      */
     public MobileAgent() {
-        this(new AgentThreadGroup(TG_ID), AGENT_THREAD + (AGENT_COUNTER++));
+        this(new AgentThreadGroup(TG_ID), AGENT_THREAD + AGENT_COUNTER++);
     }
 
     /**

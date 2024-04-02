@@ -610,7 +610,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         // NB: enhanced for loop does not support remove
         for (final Iterator<ConfigEntry> i = this.p_service_parameters.iterator(); i.hasNext();) {
             final ConfigEntry curEntry = i.next();
-            if ((anEntry.getKey().equals(curEntry.getKey()))
+            if (anEntry.getKey().equals(curEntry.getKey())
                     && ((anEntry.getValue() == null && curEntry.getValue() == null) || (anEntry.getValue() != null && anEntry.getValue().equals(
                             curEntry.getValue())))) {
                 logger.debug("Removing {} = {}", curEntry.getKey(), curEntry.getValue());
@@ -997,7 +997,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return (Integer.parseInt(matchingEntries.get(0)));
+                return Integer.parseInt(matchingEntries.get(0));
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1018,7 +1018,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return (Long.parseLong(matchingEntries.get(0)));
+                return Long.parseLong(matchingEntries.get(0));
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }
@@ -1039,7 +1039,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
         if (!matchingEntries.isEmpty()) {
             try {
-                return (Double.parseDouble(matchingEntries.get(0)));
+                return Double.parseDouble(matchingEntries.get(0));
             } catch (NumberFormatException e) {
                 logger.warn("{} is non-numeric returning default value: {}", theParameter, dflt);
             }

@@ -102,18 +102,22 @@ public class CharacterCounterSet extends CounterSet {
             int cp = s.codePointAt(offset);
             int[] cpa = {cp};
             String scp = new String(cpa, 0, 1);
-            if (Character.isLetter(cp))
+            if (Character.isLetter(cp)) {
                 increment("CHARACTER_LETTER");
-            else if (Character.isDigit(cp))
+            } else if (Character.isDigit(cp)) {
                 increment("CHARACTER_DIGIT");
-            else if (Character.isSpaceChar(cp))
+            } else if (Character.isSpaceChar(cp)) {
                 increment("CHARACTER_BLANK_SPACE");
-            else if (Character.isISOControl(cp))
+            } else if (Character.isSpaceChar(cp)) {
+                increment("CHARACTER_WHITESPACE");
+            } else if (Character.isISOControl(cp)) {
                 increment("CHARACTER_ISO_CONTROL");
-            else if (scp.matches("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]"))
+            } else if (scp
+                    .matches("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]")) {
                 increment("CHARACTER_PUNCTUATION");
-            else
+            } else {
                 increment("CHARACTER_OTHER");
+            }
         }
     }
 }

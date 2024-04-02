@@ -511,7 +511,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Nullable
     public List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
         if (localDirPlace != null) {
-            return (localDirPlace.nextKeys(dataId, payload, lastEntry));
+            return localDirPlace.nextKeys(dataId, payload, lastEntry);
         }
         logger.error("No local directory in place {} with dir={}", keys.get(0), dirPlace);
         return null;

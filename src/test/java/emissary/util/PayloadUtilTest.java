@@ -52,7 +52,7 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
         d.setCreationTimestamp(new Date(0));
-        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -69,7 +69,7 @@ public class PayloadUtilTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.setCreationTimestamp(new Date(0));
         d.appendTransformHistory("BOGUSKEYELEMENT");
-        final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = ">>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
