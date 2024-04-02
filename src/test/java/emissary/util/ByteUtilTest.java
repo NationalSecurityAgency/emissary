@@ -189,14 +189,14 @@ class ByteUtilTest extends UnitTest {
     }
 
     @Test
-    void testIsControlOrWhitespace() {
+    void testIsControlOrBlankSpace() {
         byte[] no = new byte[] {'a', 'A', 'z', 'Z', '0', '9', '~'};
         byte[] yes = new byte[] {' ', '\t', '\n', '\r', (byte) 12, (byte) (0xff & 254)};
         for (int pos = 0; pos < yes.length; pos++) {
-            assertTrue(ByteUtil.isControlOrWhiteSpace(yes, pos), "Should be control at pos " + pos);
+            assertTrue(ByteUtil.isControlOrBlankSpace(yes, pos), "Should be control at pos " + pos);
         }
         for (int pos = 0; pos < no.length; pos++) {
-            assertFalse(ByteUtil.isControlOrWhiteSpace(no, pos), "Should not be control at pos " + pos);
+            assertFalse(ByteUtil.isControlOrBlankSpace(no, pos), "Should not be control at pos " + pos);
         }
     }
 

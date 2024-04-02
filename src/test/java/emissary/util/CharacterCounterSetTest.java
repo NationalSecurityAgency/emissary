@@ -14,7 +14,7 @@ class CharacterCounterSetTest extends UnitTest {
 
     static Stream<Arguments> arguments() {
         return Stream.of(
-                // test: string, letter count, digit count, punctuation count, whitespace count
+                // test: string, letter count, digit count, punctuation count, blank space count
                 Arguments.of("ABC123", 3, 3, 0, 0),
                 Arguments.of("Президент Буш", 12, 0, 0, 1),
                 Arguments.of("{}[]\\|.?;:!@#$%^&*()-_=+,", 0, 0, 25, 0),
@@ -28,13 +28,13 @@ class CharacterCounterSetTest extends UnitTest {
     @ParameterizedTest
     @MethodSource("arguments")
     void testCount(String s, int expectedLetterCount, int expectedDigitCount,
-            int expectedPunctuationCount, int expectedWhitespaceCount) {
+            int expectedPunctuationCount, int expectedBlankSpaceCount) {
         CharacterCounterSet c = new CharacterCounterSet();
         c.count(s);
         assertEquals(expectedLetterCount, c.getLetterCount(), "Count of letters");
         assertEquals(expectedDigitCount, c.getDigitCount(), "Count of digits");
         assertEquals(expectedPunctuationCount, c.getPunctuationCount(), "Count of punctuation");
-        assertEquals(expectedWhitespaceCount, c.getWhitespaceCount(), "Count of whitespace");
+        assertEquals(expectedBlankSpaceCount, c.getBlankSpaceCount(), "Count of blank space");
     }
 
 }
