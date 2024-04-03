@@ -76,7 +76,7 @@ class BaseDataObjectTest extends UnitTest {
     void testInterface() {
         // This should pass by compilation, but in case anyone
         // ever thinks of taking it out, this may remind them...
-        assertTrue(this.b instanceof emissary.core.IBaseDataObject, "Implements the interface");
+        assertTrue(this.b instanceof IBaseDataObject, "Implements the interface");
     }
 
     @Test
@@ -1050,8 +1050,8 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testFiletype() {
-        this.b.setFileType(emissary.core.Form.UNKNOWN);
-        assertEquals(emissary.core.Form.UNKNOWN, this.b.getFileType(), "Filetype saved");
+        this.b.setFileType(Form.UNKNOWN);
+        assertEquals(Form.UNKNOWN, this.b.getFileType(), "Filetype saved");
 
         this.b.setFileTypeIfEmpty("FOO");
         assertEquals("FOO", this.b.getFileType(), "Filetype saved on empty");
@@ -1304,7 +1304,7 @@ class BaseDataObjectTest extends UnitTest {
     }
 
     static final byte[] DATA_MODIFICATION_BYTES = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
-    static final Level LEVELS_ONE_WARN = ch.qos.logback.classic.Level.WARN;
+    static final Level LEVELS_ONE_WARN = Level.WARN;
     static final Throwable NO_THROWABLES = null;
     List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
     LogbackTester.SimplifiedLogEvent event1 =

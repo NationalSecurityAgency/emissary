@@ -1,5 +1,5 @@
 package emissary.core;
 
-public interface IExtendedDataObject extends emissary.core.IBaseDataObject {
+public interface IExtendedDataObject extends IBaseDataObject {
     boolean isExtended();
 }

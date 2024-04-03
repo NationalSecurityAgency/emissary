@@ -126,7 +126,7 @@ class TestExtractionTest extends UnitTest {
         }, "The test should fail if we did not create the nometa tag correctly");
     }
 
-    public static class WhyDoYouMakeMeDoThisExtractionTest extends emissary.test.core.junit5.ExtractionTest {
+    public static class WhyDoYouMakeMeDoThisExtractionTest extends ExtractionTest {
 
         public WhyDoYouMakeMeDoThisExtractionTest() {
             super();

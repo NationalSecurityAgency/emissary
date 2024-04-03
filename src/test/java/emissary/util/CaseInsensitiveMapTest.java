@@ -56,7 +56,7 @@ class CaseInsensitiveMapTest extends UnitTest {
         m.put("Foo", "Bar");
         assertTrue(m.containsKey("foo"), "ContainsKey must work on case-insensitivity");
         assertEquals("Bar", m.get("foo"), "Object map must use case-insensitivity for String keys");
-        emissary.util.Pair pair = new emissary.util.Pair("Foo", "Bar");
+        Pair pair = new Pair("Foo", "Bar");
         m.put(pair, "Baz");
         assertTrue(m.containsKey(pair), "Object map must hold non-String keys");
         assertEquals("Baz", m.get(pair), "Object map must still hold non-String keys");

@@ -1,5 +1,6 @@
 package emissary.util;
 
+import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +50,7 @@ public class DateTimeFormatParser {
 
         Configurator configG;
         try {
-            configG = emissary.config.ConfigUtil.getConfigInfo(DateTimeFormatParser.class);
+            configG = ConfigUtil.getConfigInfo(DateTimeFormatParser.class);
         } catch (IOException e) {
             logger.error("Cannot open default config file", e);
             return;

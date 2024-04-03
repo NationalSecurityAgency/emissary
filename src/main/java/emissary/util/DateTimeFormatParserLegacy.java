@@ -1,5 +1,6 @@
 package emissary.util;
 
+import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public class DateTimeFormatParserLegacy {
 
     protected static void configure() {
         try {
-            Configurator configG = emissary.config.ConfigUtil.getConfigInfo(DateTimeFormatParserLegacy.class);
+            Configurator configG = ConfigUtil.getConfigInfo(DateTimeFormatParserLegacy.class);
             for (final String dfentry : configG.findEntries("DATE_FORMAT")) {
                 try {
                     final SimpleDateFormat sdf = new SimpleDateFormat(dfentry);

@@ -441,7 +441,7 @@ public class JNI implements Serializable {
 
         try {
             repositoryProxy = (IJniRepositoryPlace) Namespace.lookup(repositoryAddrString);
-        } catch (emissary.core.NamespaceException ne) {
+        } catch (NamespaceException ne) {
             errmsg[0] = "JNI.returnFile: " + ne;
             return stamp;
         }

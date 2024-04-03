@@ -609,7 +609,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
                     long fileEnd = System.currentTimeMillis();
                     logger.info("fileParseMetric:{},{},{},{},{}", fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
                     break;
-                } catch (emissary.core.EmissaryException ex) {
+                } catch (EmissaryException ex) {
                     logger.error("Could not dispatch {}", theFile.getName(), ex);
                     throw new ParserException("Could not process" + theFile.getName(), ex);
                 }
@@ -653,7 +653,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             } catch (ParserEOFException eof) {
                 // expected at end of file
                 break;
-            } catch (emissary.core.EmissaryException ex) {
+            } catch (EmissaryException ex) {
                 logger.error("Could not dispatch {}", fixedName, ex);
             }
 

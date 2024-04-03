@@ -33,10 +33,10 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /** hold onto the parent configurator */
-    protected emissary.config.Configurator configG;
+    protected Configurator configG;
 
     /** hold onto the specific filter configurator */
-    protected emissary.config.Configurator filterConfig;
+    protected Configurator filterConfig;
 
     /** hold onto the filter name, impl should set this */
     protected String filterName = "Abstract";
@@ -88,7 +88,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * Initialization phase hook for the filter with default preferences for the runtime configuration of the filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName) {
+    public void initialize(final Configurator theConfigG, final String filterName) {
         loadFilterConfiguration(null);
         initialize(theConfigG, filterName, this.filterConfig);
     }
@@ -101,8 +101,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, @Nullable final String filterName,
-            final emissary.config.Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, @Nullable final String filterName,
+            final Configurator theFilterConfig) {
         this.configG = theConfigG;
         if (filterName != null) {
             setFilterName(filterName);
@@ -221,7 +221,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         this.logger.debug("Looking for filter configuration preferences {}", configPreferences);
         try {
-            this.filterConfig = emissary.config.ConfigUtil.getConfigInfo(configPreferences);
+            this.filterConfig = ConfigUtil.getConfigInfo(configPreferences);
         } catch (IOException iox) {
             this.logger.debug("Could not find filter configuration for {}", getFilterName(), iox);
         }
@@ -316,7 +316,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     /*
      * Extract my Output Spec from the supplied config info and save it
      */
-    protected void loadOutputSpec(final emissary.config.Configurator theConfigG) {
+    protected void loadOutputSpec(final Configurator theConfigG) {
         this.outputSpec = theConfigG.findStringEntry("OUTPUT_SPEC_" + getFilterName(), null);
         this.errorSpec = theConfigG.findStringEntry("ERROR_SPEC_" + getFilterName(), null);
         this.logger.debug("Output spec for {} is {}", getFilterName(), this.outputSpec);
