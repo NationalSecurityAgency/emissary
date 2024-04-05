@@ -2,6 +2,7 @@ package emissary.core;
 
 import emissary.test.core.junit5.UnitTest;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.BlockingQueue;
@@ -10,14 +11,16 @@ import java.util.regex.Pattern;
 
 import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class InterruptibleCharSequenceTest extends UnitTest {
     public static String BACKTRACKER = "^(((((a+)*)*)*)*)*$";
     public static String INPUT = "aaaaab";
 
-    // Uncomment to test overhead. This method does not perform any assertions.
-    // @Test
+    // Enable to test overhead. This method does not perform any assertions.
+    @Test
+    @Disabled
     void testOverhead() {
         String regex = BACKTRACKER;
         String inputNormal = INPUT;
@@ -55,10 +58,10 @@ class InterruptibleCharSequenceTest extends UnitTest {
             try {
                 matcherResult = tryMatch(input, regex);
             } catch (InterruptedByTimeoutException interruptedByTimeoutException) {
-                atFinish.offer(interruptedByTimeoutException);
+                assertTrue(atFinish.offer(interruptedByTimeoutException));
                 return;
             }
-            atFinish.offer(matcherResult);
+            assertTrue(atFinish.offer(matcherResult));
         });
         t.start();
         return t;
@@ -77,11 +80,11 @@ class InterruptibleCharSequenceTest extends UnitTest {
     @Test
     void testInterruptibleCharSequence() throws InterruptedException {
         long sleepMillis = 32;
-        String INPUT = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+        String obnoxiousInput = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
 
         while (sleepMillis > 0) {
             BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<>();
-            Thread t = tryMatchInThread(new InterruptibleCharSequence(INPUT), BACKTRACKER, blockingQueue);
+            Thread t = tryMatchInThread(new InterruptibleCharSequence(obnoxiousInput), BACKTRACKER, blockingQueue);
             sleep(sleepMillis);
             if (Thread.State.TERMINATED == t.getState()) {
                 sleepMillis /= 2;
