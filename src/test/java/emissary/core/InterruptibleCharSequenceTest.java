@@ -77,6 +77,7 @@ class InterruptibleCharSequenceTest extends UnitTest {
     @Test
     void testInterruptibleCharSequence() throws InterruptedException {
         long sleepMillis = 32;
+        String INPUT = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
 
         while (sleepMillis > 0) {
             BlockingQueue<Object> blockingQueue = new LinkedBlockingQueue<>();
