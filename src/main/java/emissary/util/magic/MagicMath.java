@@ -45,8 +45,9 @@ public class MagicMath {
     public static String byteArrayToHexString(byte[] b) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < b.length; i++) {
-            if (i == 0)
+            if (i == 0) {
                 sb.append(HEX_PREFIX);
+            }
             sb.append(Integer.toString((int) b[i], 16));
         }
         return sb.toString();
@@ -55,8 +56,9 @@ public class MagicMath {
     public static byte[] parseEscapedString(String s) {
         List<Number> array = new ArrayList<>();
         Stack<Character> chars = new Stack<>();
-        for (int i = (s.length() - 1); i >= 0; i--)
+        for (int i = (s.length() - 1); i >= 0; i--) {
             chars.push(s.charAt(i));
+        }
         while (!chars.empty()) {
             Character c = chars.pop();
             String val = EMPTYSTRING;
@@ -73,8 +75,9 @@ public class MagicMath {
                     int max = 3;
                     while (!chars.empty() && Character.isDigit(next) && max-- > 0) {
                         val += chars.pop();
-                        if (!chars.empty())
+                        if (!chars.empty()) {
                             next = chars.peek();
+                        }
                     }
                     array.add(new BigInteger(val, 8));
                     val = EMPTYSTRING;
@@ -99,12 +102,13 @@ public class MagicMath {
     }
 
     public static byte[] stringToByteArray(String s) {
-        if (s.startsWith(HEX_PREFIX))
+        if (s.startsWith(HEX_PREFIX)) {
             return hexStringToByteArray(s);
-        else if (!s.equals(ZERO) && s.startsWith(PRE_OCT))
+        } else if (!s.equals(ZERO) && s.startsWith(PRE_OCT)) {
             return octalStringToByteArray(s.substring(1));
-        else
+        } else {
             return decimalStringToByteArray(s);
+        }
     }
 
     public static byte[] octalStringToByteArray(String s) {
@@ -120,43 +124,50 @@ public class MagicMath {
 
         int actualSize = data.length;
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == 0)
+            if (data[i] == 0) {
                 actualSize--;
-            else
+            } else {
                 break;
+            }
         }
-        if (data.length == length)
+        if (data.length == length) {
             return data;
-        else if (actualSize > length)
+        } else if (actualSize > length) {
             throw new ByteArrayPrecisionException(BYTEARRAY_PRECISION_ERROR_RULE);
+        }
 
-        if (length == 0)
+        if (length == 0) {
             return new byte[0];
+        }
 
         byte[] newValues = new byte[length];
         int ix = data.length - 1;
         for (int i = (length - 1); i >= 0; i--) {
-            if (ix < 0)
+            if (ix < 0) {
                 newValues[i] = (byte) 0;
-            else
+            } else {
                 newValues[i] = data[ix--];
+            }
         }
         return newValues;
     }
 
     public static byte[] mask(byte[] data, byte[] maskValues) {
         byte[] target = new byte[data.length];
-        for (int i = 0; i < data.length; i++)
+        for (int i = 0; i < data.length; i++) {
             target[i] = (byte) (data[i] & maskValues[i]);
+        }
         return target;
     }
 
     public static byte[] hexStringToByteArray(String s) {
         String subject = s;
-        if (subject.startsWith(HEX_PREFIX))
+        if (subject.startsWith(HEX_PREFIX)) {
             subject = subject.substring(2);
-        if (subject.length() % 2 != 0)
+        }
+        if (subject.length() % 2 != 0) {
             subject = ZERO + subject;
+        }
         byte[] array = new byte[subject.length() / 2];
         for (int i = 0; i < array.length; i++) {
             int b = Integer.parseInt(subject.substring(i * 2, i * 2 + 2), 16);
@@ -170,46 +181,52 @@ public class MagicMath {
     }
 
     public static int stringToInt(String s) {
-        if (s.startsWith(HEX_PREFIX))
+        if (s.startsWith(HEX_PREFIX)) {
             return new BigInteger(s.substring(2), 16).intValue();
-        else if (!s.equals("0") && s.startsWith(PRE_OCT))
+        } else if (!s.equals("0") && s.startsWith(PRE_OCT)) {
             return new BigInteger(s.substring(1), 8).intValue();
-        else
+        } else {
             return new BigInteger(s, 10).intValue();
+        }
     }
 
 
     public static byte[] integerToByteArray(int arraySize, long integerValue) {
         byte[] valueBytes = new byte[arraySize];
         for (int i = 0; i < arraySize; i++) {
-            valueBytes[arraySize - i - 1] = (byte) ((integerValue) >>> (i * 8) & 0xff);
+            valueBytes[arraySize - i - 1] = (byte) (integerValue >>> (i * 8) & 0xff);
         }
         return valueBytes;
     }
 
     public static long stringToLong(String stringValue) {
-        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2)))
+        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
             return Long.parseLong(stringValue.substring(2), 16);
-        else if (stringValue.length() > 1 && stringValue.charAt(0) == '0')
+        } else if (stringValue.length() > 1 && stringValue.charAt(0) == '0') {
             return Long.parseLong(stringValue.substring(1), 8);
-        else
+        } else {
             return Long.parseLong(stringValue, 10);
+        }
     }
 
+    @Nullable
     public static byte[] stringToByteArray(int arraySize, @Nullable String stringValue) {
-        if (stringValue == null || stringValue.length() == 0)
+        if (stringValue == null || stringValue.length() == 0) {
             return null;
-        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2)))
+        }
+        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
             return hexStringToByteArray(stringValue);
-        else
+        } else {
             return integerToByteArray(arraySize, stringToLong(stringValue));
+        }
     }
 
     public static String byteArrayToString(byte[] bytes) {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < bytes.length; i++) {
-            if (i != 0)
+            if (i != 0) {
                 sb.append(", ");
+            }
             sb.append(Byte.toString(bytes[i]));
         }
         return sb.toString();
@@ -218,10 +235,11 @@ public class MagicMath {
     public static long byteArrayToLong(byte[] data) {
         int actualSize = data.length;
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == 0)
+            if (data[i] == 0) {
                 actualSize--;
-            else
+            } else {
                 break;
+            }
         }
         byte[] adjustedData = setLength(data, actualSize);
         BigInteger value = new BigInteger(adjustedData);
@@ -231,13 +249,15 @@ public class MagicMath {
     public static String byteArrayToString(byte[] data, int radix) {
         int actualSize = data.length;
         for (int i = 0; i < data.length; i++) {
-            if (data[i] == 0)
+            if (data[i] == 0) {
                 actualSize--;
-            else
+            } else {
                 break;
+            }
         }
-        if (actualSize == 0)
+        if (actualSize == 0) {
             return ZERO;
+        }
         byte[] adjustedData = setLength(data, actualSize);
         BigInteger value = new BigInteger(adjustedData);
         return value.toString(radix);
@@ -245,8 +265,9 @@ public class MagicMath {
 
     public static void longEndianSwap(byte[] array, int offset) {
 
-        if (array.length < (offset + 4))
+        if (array.length < (offset + 4)) {
             throw new ArrayIndexOutOfBoundsException(array.length + 1);
+        }
         byte t = array[offset];
         array[offset] = array[offset + 3];
         array[offset + 3] = t;
@@ -257,8 +278,9 @@ public class MagicMath {
     }
 
     public static void shortEndianSwap(byte[] array, int offset) {
-        if (array.length < (offset + 2))
+        if (array.length < (offset + 2)) {
             throw new ArrayIndexOutOfBoundsException(array.length + 1);
+        }
 
         byte t = array[offset];
         array[offset] = array[offset + 1];

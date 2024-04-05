@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
+import javax.annotation.Nullable;
 
 /**
  * This class provides a seekable channel for a portion, or window, within the provided ReadableByteChannel. The
@@ -48,7 +49,9 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
     /**
      * Internal buffers for windowed content
      */
+    @Nullable
     private ByteBuffer buff1;
+    @Nullable
     private ByteBuffer buff2;
 
     /**

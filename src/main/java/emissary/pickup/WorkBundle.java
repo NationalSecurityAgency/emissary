@@ -238,7 +238,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param argOutputRoot Value to assign to this.outputRoot
      */
-    public void setOutputRoot(String argOutputRoot) {
+    public void setOutputRoot(@Nullable String argOutputRoot) {
         this.outputRoot = argOutputRoot;
     }
 
@@ -256,7 +256,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param argEatPrefix Value to assign to this.eatPrefix
      */
-    public void setEatPrefix(String argEatPrefix) {
+    public void setEatPrefix(@Nullable String argEatPrefix) {
         this.eatPrefix = argEatPrefix;
     }
 
@@ -444,14 +444,14 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @param argCaseId Value to assign to this.caseId
      */
-    public void setCaseId(String argCaseId) {
+    public void setCaseId(@Nullable String argCaseId) {
         this.caseId = argCaseId;
     }
 
     /**
      * Set the transient sentTo indicating inprogress work
      */
-    public void setSentTo(String place) {
+    public void setSentTo(@Nullable String place) {
         this.sentTo = place;
     }
 

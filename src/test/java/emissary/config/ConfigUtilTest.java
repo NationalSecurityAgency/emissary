@@ -380,31 +380,31 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testMasterClassNamesOneFile() throws IOException, EmissaryException {
+    void testClassNameInventoryOneFile() throws IOException, EmissaryException {
         // read in current file
         // figure out number of entries
 
         ConfigUtil.initialize();
 
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
         assertNotNull(c, "Configurator should not be null");
     }
 
     @Test
-    void testMasterClassNamesMultipleFiles() throws IOException, EmissaryException {
+    void testClassNameInventoryMultipleFiles() throws IOException, EmissaryException {
         final String contents1 = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-core.cfg", contents1);
+        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-core.cfg", contents1);
 
         final String one = "Dev2NullPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
         final String two = "DirectoryPlace       = \"emissary.directory.DirectoryPlace\"";
-        createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-modeone.cfg", one + two);
+        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-modeone.cfg", one + two);
 
         final String three = "Dev3NullPlace         = \"emissary.place.iamtheone.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-modetwo.cfg", three);
+        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-modetwo.cfg", three);
 
         ConfigUtil.initialize();
 
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
         assertNotNull(c, "Configurator should not be null");
         assertEquals(4, c.entryKeys().size(), "Should have 4 entries");
         assertEquals("emissary.place.sample.DevNullPlace", c.findStringEntry("DevNullPlace"), "Should have set DevNullPlace");
@@ -413,7 +413,7 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testNoMasterClassNamesFilesExist() throws EmissaryException, IOException {
+    void testNoClassNameInventoryFilesExist() throws EmissaryException, IOException {
 
         final Path noCfgsFolder = createTmpSubDir("folder_with_no_cfg_files");
 
@@ -421,46 +421,46 @@ class ConfigUtilTest extends UnitTest {
         ConfigUtil.initialize();
 
         EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getMasterClassNames();
+            final Configurator c = ConfigUtil.getClassNameInventory();
         });
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }
 
     @Test
-    void testOldMasterClassNamesFileExistsButIsIgnored() throws EmissaryException, IOException {
+    void testOldClassNameInventoryFileExistsButIsIgnored() throws EmissaryException, IOException {
 
-        // create a config file using old/deprecated file name convention MasterClassNames.cfg
+        // create a config file using old/deprecated file name convention ClassNameInventory.cfg
         final Path oldCfgsFolder = createTmpSubDir("folder_with_old_cfg_file_name");
 
         final String contents = "DevNullPlace         = \"emissary.place.sample.DevNullPlace\"\n";
-        createFileAndPopulate(oldCfgsFolder, "MasterClassNames.cfg", contents);
+        createFileAndPopulate(oldCfgsFolder, "ClassNameInventory.cfg", contents);
 
         System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(oldCfgsFolder.toAbsolutePath()));
         ConfigUtil.initialize();
 
         EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getMasterClassNames();
+            final Configurator c = ConfigUtil.getClassNameInventory();
         });
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }
 
     @Test
-    void testOneMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testOneClassNameInventoryMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1AB");
         final Path cfgDir2 = createTmpSubDir("cfg2AB");
         final String one = "DevNullPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-cfgDir1.cfg", one);
+        createFileAndPopulate(cfgDir1, "emissary.admin.ClassNameInventory-cfgDir1.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.donotpickme.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-cfgDir2.cfg", two);
+        createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-cfgDir2.cfg", two);
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
 
         // run
         ConfigUtil.initialize();
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
 
         // assert
         assertNotNull(c, "Should have a configurator");
@@ -474,20 +474,20 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testSameMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testSameClassNameInventoryMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABC");
         final Path cfgDir2 = createTmpSubDir("cfg2ABC");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-sames.cfg", one);
+        createFileAndPopulate(cfgDir1, "emissary.admin.ClassNameInventory-sames.cfg", one);
         final String two = "Dev2NullPlace         = \"emissary.place.second.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-sames.cfg", two);
+        createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-sames.cfg", two);
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
         ConfigUtil.initialize();
 
         // run
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
 
         // assert
         assertNotNull(c, "Should have a configurator");
@@ -502,27 +502,27 @@ class ConfigUtilTest extends UnitTest {
 
 
     @Test
-    void testMultipleMasterClassNamesMultipleDirs() throws IOException, EmissaryException {
+    void testMultipleClassNameInventoryMultipleDirs() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABCD");
         final Path cfgDir2 = createTmpSubDir("cfg2ABCD");
         final Path cfgDir3 = createTmpSubDir("cfg3ABCD");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames-sames.cfg", one);
+        createFileAndPopulate(cfgDir1, "emissary.admin.ClassNameInventory-sames.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.second.DevNullPlace\"\n";
         final String three = "Dev2NullPlace         = \"emissary.place.second.DevNullPlace2\"\n";
-        createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-sames.cfg", two + three);
+        createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-sames.cfg", two + three);
         final String four = "BleeBleeNullPlace         = \"emissary.place.second.BleeNullPlace\"\n";
-        createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-sames-two.cfg", four);
+        createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-sames-two.cfg", four);
         final String five = "BleeCheesePlace         = \"emissary.place.second.BleeCheesePlace\"\n";
-        createFileAndPopulate(cfgDir3, "emissary.admin.MasterClassNames-three.cfg", five);
+        createFileAndPopulate(cfgDir3, "emissary.admin.ClassNameInventory-three.cfg", five);
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath() + "," + cfgDir3.toAbsolutePath());
         ConfigUtil.initialize();
 
         // run
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
 
         // assert
         assertNotNull(c, "Should have a configurator");
@@ -538,13 +538,13 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testMasterClassNamesWarnsOnFlavor() throws IOException, EmissaryException {
+    void testClassNameInventoryWarnsOnFlavor() throws IOException, EmissaryException {
         final String contents2 = "DevNullPlace         = \"emissary.place.second.DevNullPlace\"\n";
-        createFileAndPopulate(CDIR, "emissary.admin.MasterClassNames-NORM.cfg", contents2);
+        createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-NORM.cfg", contents2);
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "NORM");
 
         ConfigUtil.initialize();
-        ConfigUtil.getMasterClassNames();
+        ConfigUtil.getClassNameInventory();
 
         // Confirm logs contain flavor message
         assertTrue(
@@ -558,7 +558,7 @@ class ConfigUtilTest extends UnitTest {
 
     @Test
     void testGetFlavorFromFile() {
-        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString() + "emissary.admin.MasterClassNames-flavor1.cfg").toFile());
+        final String flavor = ConfigUtil.getFlavorsFromCfgFile(Paths.get(CDIR.toString() + "emissary.admin.ClassNameInventory-flavor1.cfg").toFile());
         assertEquals("flavor1", flavor, "Flavors didn't match");
     }
 
@@ -589,22 +589,22 @@ class ConfigUtilTest extends UnitTest {
     }
 
     @Test
-    void testDuplicateEntryInMasterClassNamesThrowsIOException() throws IOException, EmissaryException {
+    void testDuplicateEntryInClassNameInventoryThrowsIOException() throws IOException, EmissaryException {
         // setup
         final Path cfgDir1 = createTmpSubDir("cfg1ABCDE");
         final Path cfgDir2 = createTmpSubDir("cfg2ABCDE");
         final String one = "DevNullPlace         = \"emissary.place.first.DevNullPlace\"\n";
-        createFileAndPopulate(cfgDir1, "emissary.admin.MasterClassNames.cfg", one);
+        createFileAndPopulate(cfgDir1, "emissary.admin.ClassNameInventory.cfg", one);
         final String two = "BlahBlahPlace         = \"emissary.place.second.DevNullPlace\"\n";
         final String three = "DevNullPlace         = \"emissary.place.second.DevNullPlace2\"\n";
-        createFileAndPopulate(cfgDir2, "emissary.admin.MasterClassNames-hasdups.cfg", two + three);
+        createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-hasdups.cfg", two + three);
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
         ConfigUtil.initialize();
 
         // run
-        final Configurator c = ConfigUtil.getMasterClassNames();
+        final Configurator c = ConfigUtil.getClassNameInventory();
         // clean up quick so other test don't fail
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
         ConfigUtil.initialize();

@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * This implements a simple caching mechanism for {@link Constructor} lookups. For example if the same class constructor
@@ -60,6 +61,7 @@ public final class ConstructorLookupCache {
          *         assumed to be compatible with those argument types and create an object of the given type; otherwise
          *         {@code null}.
          */
+        @Nullable
         public Constructor<?> getConstructor(final Class<?> desiredClazz, final Class<?>[] desiredArgTypes) {
             // The stored class has to match the desired class.
             if (!this.clazz.equals(desiredClazz)) {
@@ -131,6 +133,7 @@ public final class ConstructorLookupCache {
      * @return If {@code clazz} has a constructor that can accept the argument types in {@code argTypes}, this returns the
      *         matching constructor; otherwise {@code null}.
      */
+    @Nullable
     private static Constructor<?> directConstructorLookup(final Class<?> clazz, final Class<?>[] argTypes) {
         // Look for an exact match.
         try {
@@ -197,6 +200,7 @@ public final class ConstructorLookupCache {
      * @param argTypes The argument types that the caller intends to pass to the constructor.
      * @return If a matching constructor is in the cache, return it. Otherwise {@code null}.
      */
+    @Nullable
     public static Constructor<?> get(final Class<?> clazz, final Class<?>[] argTypes) {
         // Currently there is at most one cached lookup per thread, so
         // we can just check if the current thread knows about the

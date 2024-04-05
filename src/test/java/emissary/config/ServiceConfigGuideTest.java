@@ -474,7 +474,7 @@ class ServiceConfigGuideTest extends UnitTest {
         final String impname = dir + "/import.cfg";
 
         final byte[] primary = ("IMPORT_FILE = \"" + impname + "\"\n").getBytes();
-        final byte[] importfile = ("FOO = \"BAR\"\n").getBytes();
+        final byte[] importfile = "FOO = \"BAR\"\n".getBytes();
 
         try {
             assertTrue(Executrix.writeDataToFile(primary, priname));
@@ -520,7 +520,7 @@ class ServiceConfigGuideTest extends UnitTest {
         final String optname = dir + "/optional.cfg";
 
         final byte[] primary = ("FOO = \"BAR\"\nOPT_IMPORT_FILE = \"" + optname + "\"\n").getBytes();
-        final byte[] optional = ("FOO = \"BAR2\"\n").getBytes();
+        final byte[] optional = "FOO = \"BAR2\"\n".getBytes();
 
         final Configurator c;
         try {
@@ -538,7 +538,7 @@ class ServiceConfigGuideTest extends UnitTest {
     @Test
     void testOptImportWhenOptionalFileDoesNotExist(@TempDir final Path dir) throws IOException {
         final String priname = dir + "/primary.cfg";
-        final byte[] primary = ("FOO = \"BAR\"\nOPT_IMPORT_FILE = \"/tmp/bogus.cfg\"\n").getBytes();
+        final byte[] primary = "FOO = \"BAR\"\nOPT_IMPORT_FILE = \"/tmp/bogus.cfg\"\n".getBytes();
 
         final Configurator c;
         try {
@@ -556,7 +556,7 @@ class ServiceConfigGuideTest extends UnitTest {
         final String optname = dir + "/optional.cfg";
 
         final byte[] primary = ("FOO = \"BAR\"\nOPT_IMPORT_FILE = \"" + optname + "\"\n").getBytes();
-        final byte[] optional = ("FOO = \"BAR2\"\"\nBAD = \"LINE\"").getBytes();
+        final byte[] optional = "FOO = \"BAR2\"\"\nBAD = \"LINE\"".getBytes();
         try {
             assertTrue(Executrix.writeDataToFile(primary, priname));
             assertTrue(Executrix.writeDataToFile(optional, optname));

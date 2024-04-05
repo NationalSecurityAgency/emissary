@@ -33,9 +33,7 @@ public class PayloadUtilTest extends UnitTest {
         timezone = System.getProperty("user.timezone");
         System.setProperty("user.timezone", "GMT");
 
-        for (char character : validFormCharsString.toCharArray()) {
-            validFormChars.add(character);
-        }
+        validFormCharsString.chars().forEach(character -> validFormChars.add((char) character));
     }
 
     @AfterAll
@@ -52,7 +50,7 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
         d.setCreationTimestamp(new Date(0));
-        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -69,7 +67,7 @@ public class PayloadUtilTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.setCreationTimestamp(new Date(0));
         d.appendTransformHistory("BOGUSKEYELEMENT");
-        final String expected = ">>[UNKNOWN]//UNKNOWN//" + (new Date(0));
+        final String expected = ">>[UNKNOWN]//UNKNOWN//" + new Date(0);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);

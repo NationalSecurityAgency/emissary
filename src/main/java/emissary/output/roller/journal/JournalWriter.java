@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.annotation.Nullable;
 
 import static emissary.output.roller.journal.Journal.SEP;
 
@@ -29,6 +30,7 @@ import static emissary.output.roller.journal.Journal.SEP;
 public class JournalWriter implements Closeable {
 
     private final ReentrantLock lock = new ReentrantLock();
+    @Nullable
     private ByteBuffer b = ByteBuffer.allocateDirect(Journal.ENTRY_LENGTH);
     // full path to journal file
     final Path journalPath;
@@ -37,6 +39,7 @@ public class JournalWriter implements Closeable {
     byte version;
     String key;
     // persisted journal
+    @Nullable
     FileChannel journal;
     JournalEntry prev;
 

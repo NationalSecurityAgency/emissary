@@ -28,14 +28,19 @@ import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements IMultiFileUnixCommandPlace {
     protected boolean doSynchronized;
     protected List<String> newChildForms;
+    @Nullable
     protected String newParentForm;
     protected String newErrorForm;
     protected boolean keepFilesDebug = false;
     protected boolean nukeMyProxies = true;
     protected boolean recurseSubDirs = true;
+    @Nullable
     protected String apBinDir = null;
+    @Nullable
     protected List<String> binFiles = null;
+    @Nullable
     protected List<String> binFileExt = null;
+    @Nullable
     protected List<String> outDirs = null;
     protected String SINGLE_CHILD_FILETYPE = Form.UNKNOWN;
     protected boolean KEEP_PARENT_HASHES_FOR_SINGLE_CHILD = false;
@@ -45,6 +50,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
     protected static final String DEFAULT_NEW_ERROR_FORM = Form.ERROR;
     protected boolean setTitleToFile = true;
     protected Map<String, String> fileTypesByExtension = new HashMap<>();
+    @Nullable
     protected String contentFile = null;
     protected Executrix executrix;
     protected String logfilename;
@@ -495,7 +501,7 @@ public class MultiFileUnixCommandPlace extends MultiFileServerPlace implements I
             d.pushCurrentForm(tmpForm);
         }
         d.setFileType(SINGLE_CHILD_FILETYPE);
-        return (0);
+        return 0;
     }
 
     /**

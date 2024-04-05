@@ -173,6 +173,7 @@ public class SimpleNioParser extends NIOSessionParser {
      *
      * @param records the list of position records indicating absolute offsets
      */
+    @Nullable
     byte[] makeDataSlice(@Nullable List<PositionRecord> records) throws IOException {
         if (records == null || records.isEmpty()) {
             return null;

@@ -39,10 +39,12 @@ public class JsonEscape {
             } else if (data[i] == '\\' && (i + 1) < data.length && isOctalDigit(data[i + 1])) {
                 // Process octal escape
                 int end = i + 1;
-                if ((i + 2) < data.length && isOctalDigit(data[i + 2]))
+                if ((i + 2) < data.length && isOctalDigit(data[i + 2])) {
                     end++;
-                if ((i + 3) < data.length && isOctalDigit(data[i + 3]))
+                }
+                if ((i + 3) < data.length && isOctalDigit(data[i + 3])) {
                     end++;
+                }
                 String s = new String(data, i + 1, (end - i));
                 try {
                     int num = Integer.parseInt(s, 8);
@@ -55,14 +57,15 @@ public class JsonEscape {
                 }
             } else if (data[i] == '\\' && (i + 1) < data.length && ESCAPES.indexOf(data[i + 1]) != -1) {
                 byte b = data[i + 1];
-                if (b == 'n')
+                if (b == 'n') {
                     out.write('\n');
-                else if (b == 't')
+                } else if (b == 't') {
                     out.write('\t');
-                else if (b == 'r')
+                } else if (b == 'r') {
                     out.write('\r');
-                else
+                } else {
                     out.write(b);
+                }
                 i++;
             } else {
                 out.write(data[i]);

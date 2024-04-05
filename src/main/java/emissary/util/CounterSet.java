@@ -87,8 +87,9 @@ public class CounterSet extends HashMap<String, Integer> {
      * @param keys the names of the new counters
      */
     public void addKeys(Collection<String> keys) {
-        for (String key : keys)
+        for (String key : keys) {
             addKey(key);
+        }
     }
 
     /**

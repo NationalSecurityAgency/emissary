@@ -76,7 +76,7 @@ public class Url {
      * @param urlString the URL resource
      * @param props properties to use on the connection
      */
-    public static UrlData getUrl(final String urlString, final UrlRequestProperty[] props) {
+    public static UrlData getUrl(final String urlString, @Nullable final UrlRequestProperty[] props) {
         return processUrl(urlString, props, null, Url.GET);
     }
 

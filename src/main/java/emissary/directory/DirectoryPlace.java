@@ -391,6 +391,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      * @param loadMap the map to load into or null for no load. Observers are notified if loadMap is not null
      * @return the new entries
      */
+    @Nullable
     private DirectoryEntryMap loadRemoteEntries(final String key, @Nullable final DirectoryEntryMap loadMap) {
 
         if (this.emissaryNode.isStandalone()) {
@@ -674,6 +675,7 @@ public class DirectoryPlace extends ServiceProviderPlace implements IRemoteDirec
      *
      * @param key the peer to remove
      */
+    @Nullable
     private DirectoryEntry removePeer(final String key) {
         if (this.emissaryNode.isStandalone()) {
             logger.debug("Cannot remove peers from standalone nodes");

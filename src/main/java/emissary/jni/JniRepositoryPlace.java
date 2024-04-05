@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class JniRepositoryPlace extends ServiceProviderPlace {
 
@@ -49,10 +50,10 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
         for (int i = 0; i < this.libraryDirectoryString.size(); i++) {
             this.libraryDirectoryFile.add(new File(this.libraryDirectoryString.get(i)));
 
-            if (!(this.libraryDirectoryFile.get(i)).isDirectory()) {
+            if (!this.libraryDirectoryFile.get(i).isDirectory()) {
                 logger.warn("Invalid libraryDirectory: {} is not a directory.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
-            } else if (!(this.libraryDirectoryFile.get(i)).canRead()) {
+            } else if (!this.libraryDirectoryFile.get(i).canRead()) {
                 logger.warn("Invalid libraryDirectory: {} is not readable.", this.libraryDirectoryString.get(i));
                 this.libraryDirectoryFile.set(i, null);
             }
@@ -84,7 +85,8 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
      * library (.so or .dll) to use. If we have what the requestor is looking for in our libraryDirectory, serve it back to
      * them as an array of bytes.
      */
-    public/* synchronized */byte[] nativeLibraryDeliver(final String query) throws RemoteException {
+    @Nullable
+    public /* synchronized */ byte[] nativeLibraryDeliver(final String query) throws RemoteException {
 
         final File nativeLib = nativeLibraryLookup(query);
 
@@ -119,6 +121,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
     /**
      * Lookup the requested file in the repository either for delivery or timestamp checking
      */
+    @Nullable
     private File nativeLibraryLookup(final String query) {
 
         String[] fileList = null;

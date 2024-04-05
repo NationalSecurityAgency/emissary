@@ -28,6 +28,7 @@ public abstract class NIOSessionParser extends SessionParser {
     protected int chunkStart = 0;
 
     /** The current chunk buffer */
+    @Nullable
     protected byte[] data = null;
 
     /** The current write position for the current chunk buffer */

@@ -3,6 +3,7 @@ package emissary.util.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import javax.annotation.Nullable;
 
 /**
  * BufferedWriterOutputStream: a subclass to support writing bytes to a Writer. This implementation also buffers the
@@ -10,7 +11,9 @@ import java.io.Writer;
  */
 public class BufferedWriterOutputStream extends OutputStream {
     /** the writer to write to */
+    @Nullable
     private Writer writer = null;
+    @Nullable
     private char[] buffer = null;
     private int bufferLength = 0;
 
@@ -35,7 +38,7 @@ public class BufferedWriterOutputStream extends OutputStream {
             // convert this set of bytes to a character array
             for (int i = 0; i < chunkSize; i++) {
                 // copy in byte as a character (ensure we do not get negative)
-                buffer[bufferLength++] = (char) (0xFF & (int) (bytes[i + start]));
+                buffer[bufferLength++] = (char) (0xFF & (int) bytes[i + start]);
             }
 
             // and write it if full

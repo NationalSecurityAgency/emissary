@@ -101,10 +101,11 @@ public abstract class IdentificationTest extends UnitTest {
         String[] expectedForms = expected.split("#");
         for (int i = 0; i < expectedForms.length; i++) {
             String result = payload.currentFormAt(i).replaceAll("^LANG-", "");
-            if (expectedForms[i].indexOf("(") > 0)
+            if (expectedForms[i].indexOf("(") > 0) {
                 assertEquals(expectedForms[i], result, "Current form is wrong in " + resource);
-            else
+            } else {
                 assertEquals(expectedForms[i], result.replaceAll("\\(.*\\)", ""), "Current form is wrong in " + resource);
+            }
         }
     }
 }

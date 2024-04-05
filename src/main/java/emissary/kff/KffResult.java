@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 /**
  * Provide results of a KFF check including the details of the hash or cryptographic sum or sums that were used.
@@ -17,15 +18,19 @@ public class KffResult implements Serializable {
     // Serializable
     static final long serialVersionUID = -5338535050376705502L;
 
+    @Nullable
     String itemName = null;
 
+    @Nullable
     String filterName = null;
 
     boolean hit = false;
 
+    @Nullable
     FilterType filterType = null;
 
     long crc32 = -1L;
+    @Nullable
     String ssdeep = null;
 
     Map<String, byte[]> hashComp = new TreeMap<>();
@@ -216,6 +221,7 @@ public class KffResult implements Serializable {
      * 
      * @param alg the name of the algorithm
      */
+    @Nullable
     public String getResultString(String alg) {
         if (alg.equals("SSDEEP")) {
             return getSsdeep();

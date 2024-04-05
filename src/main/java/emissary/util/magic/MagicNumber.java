@@ -100,10 +100,12 @@ public class MagicNumber {
 
     // Column C Properties
     protected char unaryOperator;
+    @Nullable
     protected byte[] value = null;
     protected boolean substitute = false;
 
     // Column D Properties
+    @Nullable
     protected String description = null;
 
     // Magic Number Properties
@@ -122,6 +124,7 @@ public class MagicNumber {
     /**
      * Tests the sample and if successful provides the description
      */
+    @Nullable
     public String describe(byte[] data) {
         String desc = describeSelf(data);
         if (desc == null) {
@@ -150,6 +153,7 @@ public class MagicNumber {
     /**
      * Describe this instance only
      */
+    @Nullable
     private String describeSelf(byte[] data) {
         if (!test(data)) {
             return null;
@@ -200,7 +204,7 @@ public class MagicNumber {
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
-                if (subType.charValue() == 'l' && !stack.empty() && (stack.peek()).charValue() == 'd') {
+                if (subType.charValue() == 'l' && !stack.empty() && stack.peek().charValue() == 'd') {
                     stack.pop();
                 }
                 continue;
@@ -360,6 +364,7 @@ public class MagicNumber {
     /**
      * Retrieves the data sample
      */
+    @Nullable
     private static byte[] getElement(@Nullable byte[] data, int offset, int length) {
         if (data == null) {
             return null;
@@ -433,7 +438,7 @@ public class MagicNumber {
     /**
      * Private method to create the string plus continuations
      */
-    private String toString(StringBuilder sbuf, int depth) {
+    private String toString(@Nullable StringBuilder sbuf, int depth) {
         StringBuilder sb = sbuf;
         int d = depth;
         if (sb == null) {

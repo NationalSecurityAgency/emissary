@@ -111,7 +111,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param placeLoc the place key
      * @throws IOException If there is some I/O problem.
      */
-    public PickUpPlace(String configInfo, String dir, String placeLoc) throws IOException {
+    public PickUpPlace(String configInfo, @Nullable String dir, String placeLoc) throws IOException {
         super(configInfo, dir, placeLoc);
         configurePickUpPlace();
     }
@@ -359,6 +359,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * @param eatPrefix optional prefix strip from the work bundle
      * @return null if no holdingArea, else the new File endpoint
      */
+    @Nullable
     protected File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
         String base = theFile.getPath();
         if (eatPrefix != null) {
@@ -668,6 +669,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
      * 
      * @return fixed filename
      */
+    @Nullable
     protected String fixFileName(@Nullable String v) {
         if (v == null) {
             return null;

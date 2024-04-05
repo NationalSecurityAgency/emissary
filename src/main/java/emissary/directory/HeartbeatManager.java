@@ -37,6 +37,7 @@ public class HeartbeatManager {
 
 
     /** The timer drives the tasks and scheduling of heartbeat pings */
+    @Nullable
     protected Timer timer = null;
 
     /** Directory this instance acts on behalf of */

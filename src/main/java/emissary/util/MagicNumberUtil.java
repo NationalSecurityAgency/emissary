@@ -22,7 +22,7 @@ import java.util.TreeMap;
  * Java ByteCode From Larry Schwimmer (schwim@cs.stanford.edu) 0 belong 0xcafebabe compiled Java class data, &gt;6
  * beshort x version %d. &gt;4 beshort x \b%d
  *
- * The entries must have 4 columns where the first three are delimited by white space as tabs, or spaces, or both and
+ * The entries must have 4 columns where the first three are delimited by blank space as tabs, or spaces, or both and
  * the remaining columns will be stored as the description. Since spaces are also delimiters - if the value column
  * (third column) requires a space then it should be escaped.
  *

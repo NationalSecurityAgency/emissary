@@ -6,8 +6,10 @@ import emissary.util.io.ReadOutput;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Date;
+import javax.annotation.Nullable;
 
 public class WatcherThread extends Thread {
+    @Nullable
     private Process proc = null;
     private int delay = 1000;
     private boolean flag = true;

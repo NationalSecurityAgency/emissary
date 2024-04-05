@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Stack;
+import javax.annotation.Nullable;
 
 /**
  * Implements the unix 'find' command. This class lists files within a directory no matter how many levels of
@@ -91,6 +92,7 @@ public class FileFind {
          * Stack of Files and directory lists keeping track of where in the tree we are.
          */
         private Stack<Object> currentPath = new Stack<>();
+        @Nullable
         private FileFilter filter = null;
 
         public FileIterator(String filename) throws IOException {

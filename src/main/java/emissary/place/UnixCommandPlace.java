@@ -20,9 +20,12 @@ import static emissary.core.constants.Configurations.NEW_FORM;
  */
 public class UnixCommandPlace extends ServiceProviderPlace {
     protected boolean doSynchronized;
+    @Nullable
     protected String newForm;
     protected String newFormOnError;
+    @Nullable
     protected String metaDataTag = null;
+    @Nullable
     protected String alternateView = null;
     protected boolean addAsMetaData = false;
     protected boolean perlChop = false;
@@ -172,6 +175,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
     /**
      * Run the file process
      */
+    @Nullable
     public byte[] fileProcess(String[] cmd, String outputFile) {
         logger.debug("fileProcess({})", Arrays.asList(cmd));
         StringBuilder errbuf = new StringBuilder();
@@ -190,6 +194,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
      * @param chop if true chomp CRLF from output
      * @return bytes of output from command execution
      */
+    @Nullable
     public byte[] stdOutProcess(String[] cmd, boolean chop) {
         logger.debug("stdOutProcess({},{}) with charset {}", Arrays.asList(cmd), chop, charset);
         StringBuilder outbuf = new StringBuilder();
@@ -211,10 +216,10 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         }
 
         try {
-            return (outbuf.toString().getBytes(charset));
+            return outbuf.toString().getBytes(charset);
         } catch (UnsupportedEncodingException e) {
             logger.error("UnixCommandPlace.stdOutProcess charset problem", e);
-            return (outbuf.toString().getBytes());
+            return outbuf.toString().getBytes();
         }
     }
 

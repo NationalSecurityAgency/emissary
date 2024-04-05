@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static emissary.core.constants.Configurations.OUTPUT_FORM;
 
@@ -42,6 +43,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
     protected List<IServiceProviderPlace> placeRefs;
 
 
+    @Nullable
     protected String outputForm = null; // What we call it when we are finished
     protected boolean pushForm = true; // push or set on the form
     protected boolean updateTransformHistory = false;

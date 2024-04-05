@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import javax.annotation.Nullable;
 
 public class ReadOutput implements Runnable {
 
     private BufferedReader br;
+    @Nullable
     private PrintStream ps = null;
     private String tag;
     public boolean finished = false;

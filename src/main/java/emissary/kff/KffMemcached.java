@@ -81,6 +81,7 @@ public class KffMemcached implements KffFilter {
     /**
      * Do not store values that contain these substrings exactly (this is not treated as a regex)
      */
+    @Nullable
     protected Set<String> ignorePatterns = null;
 
     /**

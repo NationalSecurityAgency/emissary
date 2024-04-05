@@ -21,7 +21,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,13 +55,13 @@ class CoordinationPlaceTest extends UnitTest {
     @Test
     void shouldContinue() {
         // test the default behavior
-        assertTrue(place.shouldContinue(Mockito.mock(IBaseDataObject.class), Mockito.mock(IServiceProviderPlace.class)));
+        assertTrue(place.shouldContinue(mock(IBaseDataObject.class), mock(IServiceProviderPlace.class)));
     }
 
     @Test
     void shouldSkip() {
         // test the default behavior
-        assertFalse(place.shouldSkip(Mockito.mock(IBaseDataObject.class), Mockito.mock(IServiceProviderPlace.class)));
+        assertFalse(place.shouldSkip(mock(IBaseDataObject.class), mock(IServiceProviderPlace.class)));
     }
 
     @Test
@@ -74,7 +73,7 @@ class CoordinationPlaceTest extends UnitTest {
 
     @Test
     void processHeavyDuty() throws Exception {
-        when(mockCoordPlace.agentProcessHeavyDuty(any(IBaseDataObject.class))).thenReturn(
+        when(mockCoordPlace.agentProcessHeavyDuty(Mockito.any(IBaseDataObject.class))).thenReturn(
                 Collections.singletonList(DataObjectFactory.getInstance("child testing this".getBytes(), "test_file", "text")));
 
         IBaseDataObject ibdo = DataObjectFactory.getInstance("testing this".getBytes(), "test_file", "text");

@@ -3,6 +3,7 @@ package emissary.pickup;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 /**
  * A WorkUnit is a unit of work a worker will process. The idea is to replace fileNameList. Currently, WorkBundle is set
@@ -20,7 +21,7 @@ public final class WorkUnit {
      * 
      * @param fileName the associated filename
      */
-    WorkUnit(String fileName) {
+    WorkUnit(@Nullable String fileName) {
         this.fileName = fileName;
     }
 

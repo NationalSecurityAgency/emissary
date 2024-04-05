@@ -174,7 +174,7 @@ public class DataFilter extends AbstractFilter {
     }
 
     protected boolean writeDataStream(final IBaseDataObject d, final IBaseDataObject tld, final OutputStream output, final byte[] data,
-            final String type) {
+            @Nullable final String type) {
         try {
             output.write(data);
         } catch (IOException ex) {

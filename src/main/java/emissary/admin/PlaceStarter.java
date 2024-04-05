@@ -29,15 +29,16 @@ import javax.annotation.Nullable;
 public class PlaceStarter {
     private static final Logger logger = LoggerFactory.getLogger(PlaceStarter.class);
 
+    @Nullable
     private static Configurator classConf = null;
 
     protected static final String defaultClassName = "emissary.place.sample.DevNullPlace";
 
     static {
         try {
-            classConf = ConfigUtil.getMasterClassNames();
+            classConf = ConfigUtil.getClassNameInventory();
         } catch (IOException | EmissaryException iox) {
-            logger.error("Missing MasterClassNames.cfg: all places will become " + defaultClassName
+            logger.error("Missing ClassNameInventory.cfg: all places will become " + defaultClassName
                     + " which is probably not what you want. Config is now " + System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY), iox);
             System.exit(1);
         }
@@ -102,6 +103,7 @@ public class PlaceStarter {
      * @param theClassStr string name of the class to instantiate
      * @return the place that was found or created, or null if it can't be done
      */
+    @Nullable
     public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, @Nullable final String theClassStr) {
         logger.debug("Ready to createPlace {} as {}", theLocation, theClassStr);
 
@@ -180,6 +182,7 @@ public class PlaceStarter {
      * method to check if the place already exists.
      */
     // ////////////////////////////////////////////////////////////
+    @Nullable
     public static IServiceProviderPlace alreadyExists(final String theLocation) {
         final String thePlaceHost = Startup.placeHost(theLocation);
         // TODO should we add a check for index of? Can cause an exception if // isn't present
@@ -203,7 +206,7 @@ public class PlaceStarter {
         }
         final List<String> classStringList = classConf.findEntries(thePlaceName);
         if (classStringList.isEmpty()) {
-            logger.error("Need a CLASS config entry for {} check entry in emissary.admin.MasterClassNames.cfg, using default "
+            logger.error("Need a CLASS config entry for {} check entry in emissary.admin.ClassNameInventory.cfg, using default "
                     + "{} which is probably not what you want.", thePlaceName, defaultClassName);
             return defaultClassName;
         }

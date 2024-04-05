@@ -45,6 +45,7 @@ public class ParserFactory {
 
 
     // Data type identification engine
+    @Nullable
     DataIdentifier idEngine = null;
 
     /**
@@ -146,6 +147,7 @@ public class ParserFactory {
      * @param args arguments to the parser constructor
      * @return SessionParser implementation
      */
+    @Nullable
     protected SessionParser makeSessionParserClass(@Nullable String clazz, Object... args) {
         // Choose implementation class based on data type
         if (clazz == null) {

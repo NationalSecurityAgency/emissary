@@ -1,6 +1,7 @@
 package emissary.util;
 
 import java.lang.ref.SoftReference;
+import javax.annotation.Nullable;
 
 /**
  * This implements a simple caching mechanism for {@link Class#forName(String)}. For example if the same class name is
@@ -49,6 +50,7 @@ public final class ClassLookupCache {
          * @return If this instance has the given {@code desiredName}, this returns its {@link Class} object. Otherwise
          *         {@code null}.
          */
+        @Nullable
         public Class<T> getClass(final String desiredName) {
             return this.className.equals(desiredName) ? this.clazz : null;
         }
@@ -83,6 +85,7 @@ public final class ClassLookupCache {
      * @return If the class name is currently known to the cache, the corresponding {@link Class} object is returned.
      *         Otherwise {@code null}.
      */
+    @Nullable
     public static Class<?> get(final String className) {
         // Currently there is at most one cached lookup per thread, so
         // we can just check if the current thread knows about the

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * This configuration utility collection helps to find configuration for various classes and objects. It responds to
@@ -41,8 +42,8 @@ public class ConfigUtil {
     /** Constant string for files that end with {@value} */
     public static final String JS_FILE_ENDING = ResourceReader.JS_SUFFIX;
 
-    /** Constant string for master files name prefix */
-    public static final String MASTER_FILE_PREFIX = "emissary.admin.MasterClassNames";
+    /** Constant string for inventory files name prefix */
+    public static final String INVENTORY_FILE_PREFIX = "emissary.admin.ClassNameInventory";
 
     /**
      * This property specifies the config override directory. When present, we look here first for config info. If not
@@ -74,21 +75,27 @@ public class ConfigUtil {
     public static final String PROJECT_BASE_ENV = "PROJECT_BASE";
 
     /** The package name where config stuff may be found */
+    @Nullable
     private static String configPkg = null;
 
     /** The directory where config stuff may be found */
+    @Nullable
     private static String configDirProperty = null;
 
     /** The directories where config stuff may be found, searched in order */
+    @Nullable
     private static List<String> configDirs = null;
 
     /** The project root directory */
+    @Nullable
     private static String projectRoot = null;
 
     /** The output root */
+    @Nullable
     private static String outputRoot = null;
 
     /** The bin dir */
+    @Nullable
     private static String binDir = null;
 
     /**
@@ -96,6 +103,7 @@ public class ConfigUtil {
      * sort of like a mini single inheritance model. It is a comma separated, ordered list of subtypes to try to merge into
      * the current config.
      */
+    @Nullable
     private static String configFlavors = null;
 
     /*
@@ -462,6 +470,7 @@ public class ConfigUtil {
     /**
      * Return the in-use config flavors
      */
+    @Nullable
     public static List<String> getFlavors() {
         if (configFlavors == null) {
             return null;
@@ -532,39 +541,39 @@ public class ConfigUtil {
     }
 
     /**
-     * Gets all MasterClassNames from configured file.
+     * Gets all ClassNameInventory from configured file.
      * <p>
      * For a single entry in 'emissary.config.dir' or comma separated list of config directories, every file that starts
-     * with 'emissary.admin.MasterClassNames' will be combined into a Configurator. This means files like
-     * 'emissary.admin.MasterClassNames.cfg', 'emissary.admin.MasterClassNames-module1.cfg' and
-     * 'emissary.admin.MasterClassNames-whatever.cfg' will be used. The concept of flavoring no longer applies to the
-     * MasterClassNames.
+     * with 'emissary.admin.ClassNameInventory' will be combined into a Configurator. This means files like
+     * 'emissary.admin.ClassNameInventory.cfg', 'emissary.admin.ClassNameInventory-module1.cfg' and
+     * 'emissary.admin.ClassNameInventory-whatever.cfg' will be used. The concept of flavoring no longer applies to the
+     * ClassNameInventory.
      *
-     * @return Configurator with all emissary.admin.MasterClassNames
+     * @return Configurator with all emissary.admin.ClassNameInventory
      * @throws IOException If there is some I/O problem.
      * @throws EmissaryException If no config files are found.
      */
-    public static Configurator getMasterClassNames() throws IOException, EmissaryException {
-        final List<File> masterClassNames = new ArrayList<>();
+    public static Configurator getClassNameInventory() throws IOException, EmissaryException {
+        final List<File> classNameInventory = new ArrayList<>();
         for (final String dir : getConfigDirs()) {
-            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(MASTER_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
-            // sort the files, to put emissary.admin.MasterClassNames.cfg before emissary.admin.MasterClassNames-blah.cfg
+            final File[] files = new File(dir).listFiles((dir1, name) -> name.startsWith(INVENTORY_FILE_PREFIX) && name.endsWith(CONFIG_FILE_ENDING));
+            // sort the files, to put emissary.admin.ClassNameInventory.cfg before emissary.admin.ClassNameInventory-blah.cfg
             if (files != null) {
                 Arrays.sort(files);
-                masterClassNames.addAll(Arrays.asList(files));
+                classNameInventory.addAll(Arrays.asList(files));
             }
         }
         // check to make sure we have at least one
-        if (masterClassNames.isEmpty()) {
-            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", MASTER_FILE_PREFIX, CONFIG_FILE_ENDING));
+        if (classNameInventory.isEmpty()) {
+            throw new EmissaryException(String.format("No %s%s files found.  No places to start.", INVENTORY_FILE_PREFIX, CONFIG_FILE_ENDING));
         }
 
         ServiceConfigGuide scg = null;
-        for (final File f : masterClassNames) {
+        for (final File f : classNameInventory) {
             if (!f.exists() || !f.canRead()) {
-                logger.warn("Could not read MasterClassNames from {}", f.getAbsolutePath());
+                logger.warn("Could not read ClassNameInventory from {}", f.getAbsolutePath());
             } else {
-                logger.debug("Reading MasterClassNames from {}", f.getAbsolutePath());
+                logger.debug("Reading ClassNameInventory from {}", f.getAbsolutePath());
             }
             if (null != configFlavors) {
                 final String cfgFlavor = getFlavorsFromCfgFile(f);
@@ -573,14 +582,14 @@ public class ConfigUtil {
                 }
             }
             if (scg == null) { // first one
-                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
+                scg = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
             } else {
                 final Set<String> existingKeys = scg.entryKeys();
-                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "MasterClassNames");
+                final Configurator scgToMerge = new ServiceConfigGuide(Files.newInputStream(f.toPath()), "ClassNameInventory");
                 boolean noErrorsForFile = true;
                 for (final String key : scgToMerge.entryKeys()) {
                     if (existingKeys.contains(key)) {
-                        logger.error("Tried to overwrite existing key from MasterClassNames:{} in {}", key, f.getAbsolutePath());
+                        logger.error("Tried to overwrite existing key from ClassNameInventory:{} in {}", key, f.getAbsolutePath());
                         noErrorsForFile = false;
                         // System.exit(43); // this is swallowed in JettyServer in jetty 6
                     }
@@ -614,7 +623,7 @@ public class ConfigUtil {
             return "";
         }
         if (parts.length > 2) {
-            logger.warn("Filename {} had multiple - characters, using the last to determin the flavor", filename);
+            logger.warn("Filename {} had multiple - characters, using the last to determine the flavor", filename);
         }
         return parts[parts.length - 1].replaceAll(".cfg", "");
     }

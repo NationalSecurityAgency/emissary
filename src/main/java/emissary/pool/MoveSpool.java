@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Provide a storage area for incoming "moveTo(here)" payloads so that the http transfer can become more asnychronous.
@@ -54,6 +55,7 @@ public class MoveSpool implements Runnable {
     private long dequeCount = 0;
 
     // Cached ref to my local directory
+    @Nullable
     IDirectoryPlace localDirectory = null;
 
     // Methods for using the spool to dispatch
@@ -301,7 +303,8 @@ public class MoveSpool implements Runnable {
      * @param itineraryItems state from the transferred MobileAgent or empty for GO
      * @return number of items on the queue
      */
-    protected int enqueue(Method method, Object payload, IServiceProviderPlace place, int errorCount, List<DirectoryEntry> itineraryItems) {
+    protected int enqueue(Method method, Object payload, @Nullable IServiceProviderPlace place, int errorCount,
+            @Nullable List<DirectoryEntry> itineraryItems) {
 
         String itemName = PayloadUtil.getName(payload);
         logger.debug("Enqueue item " + itemName + " for place " + place + ", method=" + method);

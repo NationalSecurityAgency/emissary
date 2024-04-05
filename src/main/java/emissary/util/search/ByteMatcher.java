@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
  */
 public class ByteMatcher {
 
+    @Nullable
     private byte[] mydata = null;
 
+    @Nullable
     private KeywordScanner scanner = null;
 
     public static final int NOTFOUND = -1;
@@ -96,8 +98,9 @@ public class ByteMatcher {
     public int indexOf(byte[] pattern, int beginIndex, int endIndex) {
 
         // Impossible to find under these conditions
-        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length)
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length) {
             return NOTFOUND;
+        }
 
         // Use the Boyer-Moore scanning algorithm.
         return scanner.indexOf(pattern, beginIndex, endIndex);
@@ -303,6 +306,7 @@ public class ByteMatcher {
      * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the {token} to
      * the end of the line.
      */
+    @Nullable
     public String getValue(String key, int ofs, String delim) {
 
         int keypos = this.indexOf(key, ofs);
@@ -343,6 +347,7 @@ public class ByteMatcher {
         return getSValue(key, 0, mydata.length);
     }
 
+    @Nullable
     public byte[] getSValue(String key, int ofs, int limit) {
 
         // Make sure the key exists
@@ -395,7 +400,7 @@ public class ByteMatcher {
         // Return the bytes of the data
         byte[] value = new byte[length];
         System.arraycopy(this.mydata, valpos, value, 0, length);
-        return (value);
+        return value;
     }
 
     @Override

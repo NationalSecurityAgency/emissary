@@ -31,6 +31,7 @@ public class UnixFilePlace extends IdPlace {
     /**
      * The {@link UnixFile} instance
      */
+    @Nullable
     protected UnixFile unixFileUtil = null;
 
     /**
