@@ -49,6 +49,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     private static final long serialVersionUID = 7362181964652092657L;
 
     /* Actual data - migrate away from this towards byte channels. */
+    @Nullable
     protected byte[] theData;
 
     /**
@@ -86,6 +87,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The last determined language(characterset) of the data.
      */
+    @Nullable
     protected String fontEncoding = null;
 
     /**
@@ -117,26 +119,31 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * Any header that goes along with the data
      */
+    @Nullable
     protected byte[] header = null;
 
     /**
      * Any footer that goes along with the data
      */
+    @Nullable
     protected byte[] footer = null;
 
     /**
      * If the header has some encoding scheme record it
      */
+    @Nullable
     protected String headerEncoding = null;
 
     /**
      * Record the classification scheme for the document
      */
+    @Nullable
     protected String classification = null;
 
     /**
      * Keep track of if and how the document is broken so we can report on it later
      */
+    @Nullable
     protected StringBuilder brokenDocument = null;
 
     // Filetypes that we think are equivalent to no file type at all
@@ -158,6 +165,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The extracted records, if any
      */
+    @Nullable
     protected List<IBaseDataObject> extractedRecords;
 
     /**
@@ -183,6 +191,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * A factory to create channels for the referenced data.
      */
+    @Nullable
     protected SeekableByteChannelFactory seekableByteChannelFactory;
 
     final SafeUsageChecker safeUsageChecker = new SafeUsageChecker();
@@ -226,10 +235,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
-    @Override
     /**
      * {@inheritDoc}
      */
+    @Override
     public void checkForUnsafeDataChanges() {
         safeUsageChecker.checkForUnsafeDataChanges();
 
@@ -356,6 +365,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * 
      * @return the factory containing the data reference or the data wrapped in a new factory
      */
+    @Nullable
     @Override
     public SeekableByteChannelFactory getChannelFactory() {
         switch (getDataState()) {
@@ -374,6 +384,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * {@inheritDoc}
      */
+    @Nullable
     @Override
     public InputStream newInputStream() {
         final SeekableByteChannelFactory sbcf = getChannelFactory();
@@ -400,6 +411,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @see #getChannelFactory()
      * @return the data as a byte array
      */
+    @Nullable
     @Override
     public byte[] data() {
         switch (getDataState()) {
@@ -571,6 +583,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return this.currentForm.indexOf(value);
     }
 
+    @Nullable
     @Override
     public String searchCurrentForm(final Collection<String> values) {
         for (final String value : values) {
@@ -599,6 +612,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      *
      * @return The value that was removed, or {@code null} if the list was empty.
      */
+    @Nullable
     @Override
     public String popCurrentForm() {
         if (this.currentForm.isEmpty()) {
@@ -799,12 +813,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return host;
     }
 
+    @Nullable
     @Override
     public DirectoryEntry getLastPlaceVisited() {
         String entry = history.lastVisit();
         return entry == null ? null : new DirectoryEntry(entry);
     }
 
+    @Nullable
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
         String entry = history.penultimateVisit();
@@ -934,6 +950,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    @Nullable
     @Override
     public List<Object> getParameter(final String key) {
         // Try remapping
@@ -978,6 +995,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         return getStringParameter(key, DEFAULT_PARAM_SEPARATOR);
     }
 
+    @Nullable
     @Override
     public String getStringParameter(final String key, final String sep) {
         final List<Object> obj = getParameter(key);
@@ -1213,6 +1231,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param s the name of the view to retrieve
      * @return buffer of alternate view data or null if none
      */
+    @Nullable
     @Override
     public ByteBuffer getAlternateViewBuffer(final String s) {
         final byte[] viewdata = getAlternateView(s);
@@ -1290,6 +1309,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         }
     }
 
+    @Nullable
     @Override
     public String getBroken() {
         if (this.brokenDocument == null) {

@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 
 import static emissary.core.Form.HTML;
 import static emissary.core.Form.PREFIXES_LANG;
@@ -32,6 +33,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
     /**
      * Can be overridden from config file
      */
+    @Nullable
     private String outputForm = null;
 
     /**
@@ -91,8 +93,9 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
             }
             // Track how much change in size there was
             int variance = d.dataLength() - newData.length;
-            if (variance < 0)
+            if (variance < 0) {
                 variance *= -1;
+            }
             d.setParameter("HTML_Entity_Decode_Variance", Integer.toString(variance));
             d.setData(newData);
             d.setFileTypeIfEmpty(HTML);

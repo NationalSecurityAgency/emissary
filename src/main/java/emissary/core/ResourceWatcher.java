@@ -17,6 +17,7 @@ import java.util.SortedMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 /**
  * Track mobile agents and make them obey resource limitations
@@ -36,6 +37,7 @@ public class ResourceWatcher implements Runnable {
     protected Map<String, Long> placeTimeLimits = new ConcurrentHashMap<>();
 
     // The thread we plan to run on
+    @Nullable
     protected transient Thread monitor = null;
 
     // Loop control

@@ -117,9 +117,9 @@ public class ByteUtil {
      *
      * @param b a byte array
      * @param pos a position in the byte array
-     * @return true if byte at pos in array b is a control or whitespace byte
+     * @return true if byte at pos in array b is a control or blank space byte
      */
-    public static boolean isControlOrWhiteSpace(byte[] b, int pos) {
+    public static boolean isControlOrBlankSpace(byte[] b, int pos) {
         if (b[pos] == Ascii_DEL || b[pos] <= Ascii_SP) {
             return true;
         }
@@ -300,6 +300,7 @@ public class ByteUtil {
      * @param bytes to be hashed
      * @return the hex string of a sha256 hash of the bytes.
      */
+    @Nullable
     public static String sha256Bytes(final byte[] bytes) {
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");

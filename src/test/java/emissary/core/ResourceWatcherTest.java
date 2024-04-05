@@ -6,8 +6,6 @@ import emissary.place.sample.DevNullPlace;
 import emissary.test.core.junit5.UnitTest;
 
 import com.codahale.metrics.Timer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,16 +21,6 @@ class ResourceWatcherTest extends UnitTest {
 
     public ResourceWatcher resourceWatcher = null;
     public IServiceProviderPlace place = null;
-
-    @Override
-    @BeforeEach
-    public void setUp() throws Exception {}
-
-    @Override
-    @AfterEach
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Test
     void testResourceWatcherWithMultipleThreads() throws Exception {

@@ -6,6 +6,8 @@ import org.jdom2.input.SAXBuilder;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
+import javax.annotation.Nullable;
+
 /**
  * Utilities for dealing with JDOM documents. Doctypes are disallowed for DTDs for the prevention of XML entity attacks
  * making this a safer alternative to {@link JDOMUtil} .
@@ -36,7 +38,7 @@ public class SaferJDOMUtil extends AbstractJDOMUtil {
      * @param filter an XMLFilter to receive callbacks during processing
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final String xml, final XMLFilter filter) throws JDOMException {
+    public static Document createDocument(final String xml, @Nullable final XMLFilter filter) throws JDOMException {
         return createDocument(xml, filter, createSAXBuilder());
     }
 
@@ -57,7 +59,7 @@ public class SaferJDOMUtil extends AbstractJDOMUtil {
      * @param filter an XMLFilter to receive callbacks during processing
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final byte[] xml, final XMLFilter filter) throws JDOMException {
+    public static Document createDocument(final byte[] xml, @Nullable final XMLFilter filter) throws JDOMException {
         return createDocument(xml, filter, null);
     }
 
@@ -69,7 +71,7 @@ public class SaferJDOMUtil extends AbstractJDOMUtil {
      * @param charset the charset to interpret the bytes in
      * @return the JDOM representation of that XML document
      */
-    public static Document createDocument(final byte[] xml, final XMLFilter filter, final String charset)
+    public static Document createDocument(final byte[] xml, final XMLFilter filter, @Nullable final String charset)
             throws JDOMException {
         return createDocument(xml, filter, charset, createSAXBuilder());
     }

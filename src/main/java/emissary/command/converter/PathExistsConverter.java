@@ -8,6 +8,7 @@ import picocli.CommandLine.ITypeConverter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.annotation.Nullable;
 
 public class PathExistsConverter implements ITypeConverter<Path> {
     private String optionName;
@@ -16,7 +17,7 @@ public class PathExistsConverter implements ITypeConverter<Path> {
         this(null);
     }
 
-    public PathExistsConverter(String optionName) {
+    public PathExistsConverter(@Nullable String optionName) {
         this.optionName = optionName;
     }
 

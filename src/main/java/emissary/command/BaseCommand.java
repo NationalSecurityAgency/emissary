@@ -205,7 +205,7 @@ public abstract class BaseCommand implements EmissaryCommand {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         URL logCfg = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
 
-        if (logCfg != null && (logCfg.toString().endsWith("logback-test.xml") || (logCfg.toString().endsWith("logback-test.groovy")))) {
+        if (logCfg != null && (logCfg.toString().endsWith("logback-test.xml") || logCfg.toString().endsWith("logback-test.groovy"))) {
             // logCfg can be null if Emissary.setupLogbackForConsole is called
             LOG.warn("Not using {}, staying with test config {}", getLogbackConfig(), logCfg);
             doLogbackReinit(loggerContext, logCfg.getPath());

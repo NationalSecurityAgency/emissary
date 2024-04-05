@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 /**
  * Lightweight wrapper holding reference to a pooled object and the pool, which returns the channel to the pool on
@@ -16,7 +17,9 @@ import java.nio.file.Path;
 public class KeyedOutput extends OutputStream implements SeekableByteChannel {
 
     static final Logger LOG = LoggerFactory.getLogger(KeyedOutput.class);
+    @Nullable
     JournaledChannelPool pool;
+    @Nullable
     JournaledChannel jc;
 
     KeyedOutput(final JournaledChannelPool pool, final JournaledChannel jc) {

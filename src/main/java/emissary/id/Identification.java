@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import javax.annotation.Nullable;
 
 /**
  * Response object from an identification engine. Contains a list of types for the currentForm and a list of properties
@@ -88,6 +89,7 @@ public class Identification implements Serializable {
     /**
      * Get the first type or null if none
      */
+    @Nullable
     public String getFirstType() {
         if (this.types.isEmpty()) {
             return null;
@@ -151,6 +153,7 @@ public class Identification implements Serializable {
      * 
      * @return the top top or null if none
      */
+    @Nullable
     public String popType() {
         if (this.types.isEmpty()) {
             return null;

@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import javax.annotation.Nullable;
 
 /**
  * Class for Parsing Dates using DateTimeFormatter. Attempts to parse a date of an unknown format with a predefined set
@@ -117,6 +118,7 @@ public class DateTimeFormatParser {
      * @param supplyDefaultOnBad when true use current date if sentDate cannot be parsed
      * @return the GMT time of the event or NOW if it cannot be parsed, or null if supplyDefaultOnBad is false
      */
+    @Nullable
     public static LocalDateTime parseDate(final String dateString, final boolean supplyDefaultOnBad) {
 
         if (StringUtils.isNotEmpty(dateString)) {
@@ -156,6 +158,7 @@ public class DateTimeFormatParser {
      * @param dateString the string to attempt to format
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
+    @Nullable
     private static LocalDateTime tryParseWithDateTimeZoneFormats(final String dateString) {
         // formats with a time zone
         for (final DateTimeFormatter dtf : dateTimeZoneFormats) {
@@ -176,6 +179,7 @@ public class DateTimeFormatParser {
      * @param dateString the string to attempt to format
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
+    @Nullable
     private static LocalDateTime tryParseWithDateTimeFormats(final String dateString) {
         // formats with a date and time and no zone/offset
         for (final DateTimeFormatter dtf : dateTimeFormats) {
@@ -194,6 +198,7 @@ public class DateTimeFormatParser {
      * @param dateString the string to attempt to format
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
+    @Nullable
     private static LocalDateTime tryParseWithDateTimeOffsetFormats(final String dateString) {
         // formats with a time zone offset
         for (final DateTimeFormatter dtf : dateTimeOffsetFormats) {
@@ -213,6 +218,7 @@ public class DateTimeFormatParser {
      * @param dateString the string to attempt to format
      * @return the LocalDateTime object if a formatter worked, or null otherwise
      */
+    @Nullable
     private static LocalDateTime tryParseWithDateFormats(final String dateString) {
         // formats with a date but no time
         for (final DateTimeFormatter dtf : dateFormats) {

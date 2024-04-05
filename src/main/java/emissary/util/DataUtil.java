@@ -50,7 +50,7 @@ public class DataUtil {
     }
 
     /**
-     * Return true if the data slot is empty or just whitespace and/or control chars
+     * Return true if the data slot is empty
      */
     public static boolean isEmpty(final IBaseDataObject d) {
         final byte[] data = d.data();
@@ -58,7 +58,7 @@ public class DataUtil {
     }
 
     /**
-     * Return true if the data is empty or consists only of whitespace or control characters
+     * Return true if the data is null or empty
      * 
      * @param data array to check
      * @return true if data is null or devoid of real characters
@@ -68,7 +68,7 @@ public class DataUtil {
     }
 
     /**
-     * Return true if the data slot is empty or just one whitespace character
+     * Return true if the data slot is empty
      */
     public static boolean isEmpty(final WorkUnit u) {
         final byte[] data = u.getData();

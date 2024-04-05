@@ -17,31 +17,31 @@ Release process uses GitHub actions and involves:
   - Remove the "-SNAPSHOT" suffix from the version and create scm tag
   - Create a GitHub release and upload artifacts
 - If patch release, delete the patch branch
-- For a formal release only, increment snapshot version on a branch and open a pull request 
+- For a formal release only, increment snapshot version on a branch and open a pull request
 - Publish the artifacts to GitHub Maven Repo
 
-The release process used for this repository creates a branch for every release that is prefixed with `release/`. Tags are not added nor are releases performed on the `master` branch. 
-The `master` branch is the target for merging new commits and for development releases (-SNAPSHOT) only. All patches will originate using a `patch/` prefixed branch and once complete 
-a new `release/` branch will be created. 
+The release process used for this repository creates a branch for every release that is prefixed with `release/`. Tags are not added nor are releases performed on the `main` branch.
+The `main` branch is the target for merging new commits and for development releases (-SNAPSHOT) only. All patches will originate using a `patch/` prefixed branch and once complete 
+a new `release/` branch will be created.
 
 ## Versioning
 
-While not strictly enforced, versioning generally follows the [Semantic Versioning](https://semver.org/) Guide. 
+While not strictly enforced, versioning generally follows the [Semantic Versioning](https://semver.org/) Guide.
 
 ## Release Types
 
 ### Formal Release
 
-Formal release for the project and is intended to be stable. 
+Formal release for the project and is intended to be stable.
 
 ```
 Action: `Maven: Release`
 Options:
-- From: `Branch: master` 
+- From: `Branch: main`
 - Type: `Release`
 - Suffix: Leave blank
 ```
-Creates a branch called `release/<version>` and performs release. One commit is added to a branch called `action/<version>` only to increment to the next snapshot version, and 
+Creates a branch called `release/<version>` and performs release. One commit is added to a branch called `action/<version>` only to increment to the next snapshot version, and
 a pull request is created that needs to be approved and merged to finish the release process.
 
 
@@ -52,7 +52,7 @@ Releases may have bugs or vulnerabilities with a high enough severity that requi
 #### Create Patch Branch
 
 Creating a patch branch can be done manually or using the GitHub action. The action was added as a convenience, and is not required as part
-of the workflow. 
+of the workflow.
 
 Note: When manually creating a patch branch, the name must start with `patch/` and must be based on a release branch, i.e. `release/<version>`.
 ```
@@ -66,7 +66,7 @@ The user can specify one or more commit hashes, separated by spaces, to cherry-p
 
 #### Release Patch
 
-Patch release for the project that intended to fix one or more bugs/vulnerabilities for a release.  Patches are not intended for new functionality 
+Patch release for the project that intended to fix one or more bugs/vulnerabilities for a release.  Patches are not intended for new functionality
 unless it is directly supporting a bugfix/hotfix.
 
 ```
@@ -93,7 +93,7 @@ Options:
 - Suffix: `-M1` <- this is just an example it can be anything, e.g. `M1` OR `-MILESTONE1`
 ```
 
-Creates a branch called `release/<version><suffix>`, i.e. `release/8.0.0-M1`, and performs release. No commits or pull request are created to increment 
+Creates a branch called `release/<version><suffix>`, i.e. `release/8.0.0-M1`, and performs release. No commits or pull request are created to increment
 to the next version.
 
 ## Publishing a Release
@@ -109,7 +109,7 @@ Pushes release artifacts to a repo using `maven deploy`.
 
 ## Publishing a Release to Maven Central
 
-Policy does not allow publishing to maven central via Action and is only authorized to be perforemd by specific individuals. 
+Policy does not allow publishing to maven central via Action and is only authorized to be perforemd by specific individuals.
 
 Using the `oss` profile will make the artifacts available here: [Sonatype/Maven Central](https://central.sonatype.com/artifact/gov.nsa/emissary)
 

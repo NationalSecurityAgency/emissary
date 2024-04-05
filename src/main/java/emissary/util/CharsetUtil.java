@@ -146,6 +146,7 @@ public class CharsetUtil {
      * @param charSet the JAVA charset
      * @return JUCS2 string or null if error
      */
+    @Nullable
     public static String getUTFString(final byte[] data, final String charSet) {
         try {
             return new String(data, charSet);

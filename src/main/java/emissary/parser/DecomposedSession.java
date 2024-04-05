@@ -27,9 +27,13 @@ public class DecomposedSession {
     static final String METADATA_KEY = "METADATA";
     static final String INITIAL_FORMS = "INITIAL_FORMS";
 
+    @Nullable
     protected byte[] header = null;
+    @Nullable
     protected byte[] footer = null;
+    @Nullable
     protected byte[] data = null;
+    @Nullable
     protected String classification = null;
     protected List<String> initialForms = new ArrayList<>();
     protected ArrayListMultimap<String, Object> metadata = ArrayListMultimap.create(100, 1);
@@ -255,6 +259,7 @@ public class DecomposedSession {
      * @param key the name
      * @param sep the separator
      */
+    @Nullable
     public String getStringMetadataItem(String key, String sep) {
         List<Object> o = metadata.get(key);
         if (o.isEmpty()) {

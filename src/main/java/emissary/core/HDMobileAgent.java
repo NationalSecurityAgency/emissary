@@ -60,6 +60,7 @@ public class HDMobileAgent extends MobileAgent {
      * 
      * @param num the specified payload
      */
+    @Nullable
     public synchronized IBaseDataObject getPayload(final int num) {
         if (this.payloadList == null || this.payloadList.size() <= num) {
             return null;

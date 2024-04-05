@@ -149,7 +149,7 @@ public class DirectoryAdapter extends EmissaryClient {
 
         int count = 0;
         for (String k : key) {
-            nvps.add(new BasicNameValuePair(ADD_KEY + (count++), k));
+            nvps.add(new BasicNameValuePair(ADD_KEY + count++, k));
         }
         nvps.add(new BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));
         method.setEntity(new UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));

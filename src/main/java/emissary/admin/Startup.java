@@ -49,6 +49,7 @@ public class Startup {
     private static final Logger logger = LoggerFactory.getLogger(Startup.class);
 
     // The startup config object
+    @Nullable
     protected Configurator hostsConfig = null;
 
     // Successfully started directories

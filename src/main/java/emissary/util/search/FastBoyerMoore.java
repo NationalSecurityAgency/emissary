@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class FastBoyerMoore {
     private static Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);
@@ -14,6 +15,7 @@ public class FastBoyerMoore {
     int minKeywordLength;
     int[] lookup = new int[259];
     transient BackwardsTreeScanner scanner;
+    @Nullable
     byte[] data = null;
     BackwardsTreeScanner.State root;
 
@@ -221,6 +223,7 @@ public class FastBoyerMoore {
         // byte[][] keywords;
         /** Root node of tree state diagram. Always start a search from here! */
         State root = new State((byte) 0);
+        @Nullable
         byte[] data = null;
 
         public BackwardsTreeScanner(final BackwardsTreeScanner o) {
@@ -383,6 +386,7 @@ public class FastBoyerMoore {
             public int gotHereBy;
 
             // A list of keyword ids that are matched at this state.
+            @Nullable
             public int[] matches = null;
 
             // constructor

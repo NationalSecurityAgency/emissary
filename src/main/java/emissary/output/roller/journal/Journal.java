@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Tracks written progress of a corresponding file. Some formats within the framework don't lend themselves to knowing
@@ -71,6 +72,7 @@ public final class Journal {
      * 
      * @return Last entry that should correlate to the last good position in a file or null if no entries are present.
      */
+    @Nullable
     public JournalEntry getLastEntry() {
         return entries.isEmpty() ? null : entries.get(entries.size() - 1);
     }
@@ -83,6 +85,7 @@ public final class Journal {
      * @param channelSize The maximum position, generally the file size, to search for
      * @return JournalEntry containing the last good offset less than or equal to channelSize
      */
+    @Nullable
     public JournalEntry getLastValidEntry(long channelSize) {
         if (channelSize < 0) {
             throw new IllegalArgumentException("Channel Size must be 0 or larger");

@@ -51,7 +51,7 @@ public class FileManipulator implements Serializable {
     }
 
     public static String mkTempFile(final String dirPath) {
-        return (mkTempFile(dirPath, "temp"));
+        return mkTempFile(dirPath, "temp");
     }
 
     /** This class is not meant to be instantiated. */

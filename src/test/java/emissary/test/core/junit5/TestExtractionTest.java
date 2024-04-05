@@ -2,7 +2,6 @@ package emissary.test.core.junit5;
 
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
-import emissary.place.IServiceProviderPlace;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -21,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.spy;
 
 class TestExtractionTest extends UnitTest {
 
@@ -35,7 +35,7 @@ class TestExtractionTest extends UnitTest {
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+        ExtractionTest test = spy(ExtractionTest.class);
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
         test.checkStringValue(meta, "1;2;3;4;5;6;7", "testCheckStringValueForCollection");
@@ -52,7 +52,7 @@ class TestExtractionTest extends UnitTest {
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+        ExtractionTest test = spy(ExtractionTest.class);
 
         Element meta = answerDoc.getRootElement().getChild("answers").getChild("meta");
 
@@ -67,8 +67,6 @@ class TestExtractionTest extends UnitTest {
         Document answerDoc = builder.build(inputStream);
         inputStream.close();
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
-
         String fontEncodingValue = answerDoc.getRootElement().getChild("answers").getChild("fontEncoding").getValue();
         assertEquals("UTF16", fontEncodingValue);
     }
@@ -82,7 +80,7 @@ class TestExtractionTest extends UnitTest {
         inputStream.close();
         String matchMode = "!index";
 
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+        ExtractionTest test = spy(ExtractionTest.class);
 
         List<Element> dataList = answerDoc.getRootElement().getChild("answers").getChildren("data");
         Element bangIndexData = getAttributeFromDataChild(dataList, matchMode);
@@ -113,7 +111,7 @@ class TestExtractionTest extends UnitTest {
     @Test
     void testExtractionNoNameTags() throws JDOMException, IOException {
         IBaseDataObject d = DataObjectFactory.getInstance();
-        WhyDoYouMakeMeDoThisExtractionTest test = new WhyDoYouMakeMeDoThisExtractionTest();
+        ExtractionTest test = spy(ExtractionTest.class);
 
         SAXBuilder builder = new SAXBuilder(XMLReaders.NONVALIDATING);
         InputStream inputStream = TestExtractionTest.class.getResourceAsStream(MISSING_TAGS_RESOURCE);
@@ -124,17 +122,5 @@ class TestExtractionTest extends UnitTest {
         Assertions.assertThrows(AssertionError.class, () -> {
             test.checkAnswers(answers, d, null, MISSING_TAGS_RESOURCE);
         }, "The test should fail if we did not create the nometa tag correctly");
-    }
-
-    public static class WhyDoYouMakeMeDoThisExtractionTest extends emissary.test.core.junit5.ExtractionTest {
-
-        public WhyDoYouMakeMeDoThisExtractionTest() {
-            super();
-        }
-
-        @Override
-        public IServiceProviderPlace createPlace() throws IOException {
-            return null;
-        }
     }
 }

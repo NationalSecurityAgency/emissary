@@ -23,8 +23,10 @@ import javax.annotation.Nullable;
  */
 public class ChecksumCalculator {
     /** Used for CRC32 calculations */
+    @Nullable
     private CRC32 crc = null;
     /** Used for SSDEEP calculations */
+    @Nullable
     private Ssdeep ssdeep = null;
 
     /** Used for hash calculations */

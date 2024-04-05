@@ -70,6 +70,7 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 import javax.naming.directory.AttributeInUseException;
 
 public class EmissaryServer {
@@ -81,6 +82,7 @@ public class EmissaryServer {
     private static final Logger LOG = LoggerFactory.getLogger(EmissaryServer.class);
 
     // Our namespace
+    @Nullable
     private String nameSpaceName = null;
 
     private Server server;
@@ -215,7 +217,7 @@ public class EmissaryServer {
      * @return true if running
      */
     public boolean isServerRunning() {
-        return (this.server != null) && (this.server.isStarted());
+        return (this.server != null) && this.server.isStarted();
     }
 
 

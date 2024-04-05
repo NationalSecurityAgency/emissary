@@ -166,7 +166,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param theDir string name of our directory
      * @param thePlaceLocation string name of our location
      */
-    protected ServiceProviderPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {
+    protected ServiceProviderPlace(String configFile, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super();
         configG = loadConfigurator(configFile, thePlaceLocation);
         setupPlace(theDir, thePlaceLocation);
@@ -179,7 +179,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      * @param theDir string name of our directory
      * @param thePlaceLocation string name of our location
      */
-    protected ServiceProviderPlace(InputStream configStream, String theDir, String thePlaceLocation) throws IOException {
+    protected ServiceProviderPlace(InputStream configStream, @Nullable String theDir, String thePlaceLocation) throws IOException {
         super();
         configG = loadConfigurator(configStream, thePlaceLocation);
         setupPlace(theDir, thePlaceLocation);
@@ -252,7 +252,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
      *
      * @param theDir name of our directory
      */
-    protected void setupPlace(String theDir, String placeLocation) throws IOException {
+    protected void setupPlace(@Nullable String theDir, String placeLocation) throws IOException {
 
         // Customize the logger to the runtime class
         logger = LoggerFactory.getLogger(this.getClass());
@@ -511,7 +511,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Nullable
     public List<DirectoryEntry> nextKeys(final String dataId, final IBaseDataObject payload, final DirectoryEntry lastEntry) {
         if (localDirPlace != null) {
-            return (localDirPlace.nextKeys(dataId, payload, lastEntry));
+            return localDirPlace.nextKeys(dataId, payload, lastEntry);
         }
         logger.error("No local directory in place {} with dir={}", keys.get(0), dirPlace);
         return null;
