@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class CharacterCounterSet extends CounterSet {
     private static final long serialVersionUID = -7111758159975960091L;
-    public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_WHITESPACE", "CHARACTER_ISO_CONTROL",
+    public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_BLANK_SPACE", "CHARACTER_ISO_CONTROL",
             "CHARACTER_PUNCTUATION", "CHARACTER_OTHER"};
 
     /**
@@ -61,13 +61,14 @@ public class CharacterCounterSet extends CounterSet {
     }
 
     /**
-     * Easy access to whitespace
+     * Easy access to blank space
      */
-    public int getWhitespaceCount() {
-        return get("CHARACTER_WHITESPACE");
+    public int getBlankSpaceCount() {
+        return get("CHARACTER_BLANK_SPACE");
     }
 
     /**
+     *
      * Easy access to control
      */
     public int getISOControlCount() {
@@ -106,7 +107,7 @@ public class CharacterCounterSet extends CounterSet {
             else if (Character.isDigit(cp))
                 increment("CHARACTER_DIGIT");
             else if (Character.isSpaceChar(cp))
-                increment("CHARACTER_WHITESPACE");
+                increment("CHARACTER_BLANK_SPACE");
             else if (Character.isISOControl(cp))
                 increment("CHARACTER_ISO_CONTROL");
             else if (scp.matches("[\\p{Punct}\\p{InGeneralPunctuation}\\u00a1-\\u00bf\\uff01-\\uff0f\\uff1a-\\uff20\\uff38-\\uff40\\uff5b-\\uff60]"))

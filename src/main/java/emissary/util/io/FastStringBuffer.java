@@ -33,6 +33,7 @@ public class FastStringBuffer extends OutputStream {
 
     protected int curPos = 0;
     protected byte[] buffer;
+    @Nullable
     protected String myString = null;
     protected OutputStream stream;
     protected int bytesWritten = 0;
@@ -41,7 +42,7 @@ public class FastStringBuffer extends OutputStream {
         this(null);
     }
 
-    public FastStringBuffer(final OutputStream stream) {
+    public FastStringBuffer(@Nullable final OutputStream stream) {
         this(1024, stream);
     }
 
@@ -49,7 +50,7 @@ public class FastStringBuffer extends OutputStream {
         this(initialSize, null);
     }
 
-    public FastStringBuffer(final int initialSize, final OutputStream stream) {
+    public FastStringBuffer(final int initialSize, @Nullable final OutputStream stream) {
         this.buffer = new byte[initialSize];
         this.stream = stream;
     }

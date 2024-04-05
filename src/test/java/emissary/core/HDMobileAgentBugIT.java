@@ -17,11 +17,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.spy;
 
 /**
  * This test class only exists to highlight a bug in the HDMobileAgent
  */
-class HDMobileAgentBugTest extends UnitTest {
+class HDMobileAgentBugIT extends UnitTest {
 
     private static final String FAKE_ANALYZE_HISTORY = "FRM-PROCESSED-alternative.FAKE_ANALYZE.ANALYZE.http://localhost:8001/FakeAnalyzePlace$105050";
     private static final String FAKE_VERIFY_HISTORY = "FRM-PROCESSED-alternative.FAKE_VERIFY.VERIFY.http://localhost:8001/FakeVerifyPlace$105050";
@@ -41,7 +42,7 @@ class HDMobileAgentBugTest extends UnitTest {
         skipped = addPlace("http://localhost:8543/FakeSkippedPlace", FakeSkippedPlace.class.getName());
         validate = addPlace("http://localhost:8543/FakeVerifyPlace", FakeVerifyPlace.class.getName());
 
-        ma = new HDMobileAgent();
+        ma = spy(HDMobileAgent.class);
         ma.arrivalPlace = analyze;
     }
 
@@ -92,7 +93,6 @@ class HDMobileAgentBugTest extends UnitTest {
         ma.clear();
         ma.addPayload(att1);
         ma.agentControl(analyze);
-
         assertTrue(att1.transformHistory().contains(FAKE_ANALYZE_HISTORY));
         assertTrue(att1.transformHistory().contains(FAKE_VERIFY_HISTORY));
 
@@ -176,7 +176,7 @@ class HDMobileAgentBugTest extends UnitTest {
         public FakeAnalyzePlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
-        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) {
+        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payloadListArg) {
             return Collections.emptyList();
         }
     }
@@ -190,7 +190,7 @@ class HDMobileAgentBugTest extends UnitTest {
         public FakeSkippedPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
-        public List<IBaseDataObject> agentProcessHeavyDuty(List<IBaseDataObject> payloadListArg) {
+        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payloadListArg) {
             return Collections.emptyList();
         }
     }
@@ -204,6 +204,8 @@ class HDMobileAgentBugTest extends UnitTest {
         public FakeVerifyPlace(String configFile, String theDir, String thePlaceLocation) throws IOException {}
 
         @Override
-        public void process(IBaseDataObject payload) {}
+        public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payloadListArg) {
+            return Collections.emptyList();
+        }
     }
 }

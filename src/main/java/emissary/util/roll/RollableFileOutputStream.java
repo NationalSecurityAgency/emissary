@@ -28,8 +28,10 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     /** Flag to let callers know if this class is currently rolling */
     volatile boolean rolling;
     /** Current output stream we're writing to */
+    @Nullable
     FileOutputStream fileOutputStream;
     /** Current File we're writing to */
+    @Nullable
     File currentFile;
     /** File Name Generator for creating unique file names */
     FileNameGenerator namegen;

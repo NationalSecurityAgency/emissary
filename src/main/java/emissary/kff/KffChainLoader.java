@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Loads a chain of file filter specified by the configuration subsystem Expects to find a configuration file with a
@@ -27,6 +28,7 @@ public class KffChainLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(KffChainLoader.class);
 
+    @Nullable
     private static KffChain theInstance = null;
     private static Map<String, String> classes;
 

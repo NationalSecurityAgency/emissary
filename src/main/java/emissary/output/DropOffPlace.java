@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * DropOffPlace manages the output from the system It has evolved into a controller of sorts with way too many options,
@@ -469,6 +470,7 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
      * 
      * @return the named filter or null if none by that name
      */
+    @Nullable
     public IDropOffFilter getFilter(final String name) {
         for (final IDropOffFilter f : this.outputFilters) {
             if (f.getFilterName().equals(name)) {

@@ -9,6 +9,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiKeywordScanner.class);
 
+    @Nullable
     private byte[] data = null;
     private int[] skipTable = new int[256];
     private int standardSkip = 0;

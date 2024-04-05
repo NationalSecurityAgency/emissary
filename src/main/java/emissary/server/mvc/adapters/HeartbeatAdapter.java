@@ -10,6 +10,8 @@ import emissary.place.IServiceProviderPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
+
 /**
  * Stuff for adapting the Directory heartbeat calls to HTTP
  */
@@ -25,6 +27,7 @@ public class HeartbeatAdapter extends EmissaryClient {
      *
      * @return reference to the place when found, null otherwise
      */
+    @Nullable
     public IServiceProviderPlace inboundHeartbeat(final String fromName, final String toName) throws NamespaceException {
         if (toName == null) {
             throw new IllegalArgumentException("No place specified in msg from " + fromName);
