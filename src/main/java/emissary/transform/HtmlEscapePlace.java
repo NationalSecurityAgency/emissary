@@ -93,8 +93,9 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
             }
             // Track how much change in size there was
             int variance = d.dataLength() - newData.length;
-            if (variance < 0)
+            if (variance < 0) {
                 variance *= -1;
+            }
             d.setParameter("HTML_Entity_Decode_Variance", Integer.toString(variance));
             d.setData(newData);
             d.setFileTypeIfEmpty(HTML);

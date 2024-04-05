@@ -216,10 +216,10 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         }
 
         try {
-            return (outbuf.toString().getBytes(charset));
+            return outbuf.toString().getBytes(charset);
         } catch (UnsupportedEncodingException e) {
             logger.error("UnixCommandPlace.stdOutProcess charset problem", e);
-            return (outbuf.toString().getBytes());
+            return outbuf.toString().getBytes();
         }
     }
 

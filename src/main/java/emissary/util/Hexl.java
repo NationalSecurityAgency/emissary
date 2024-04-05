@@ -30,7 +30,7 @@ public class Hexl {
      * Print out the whole byte array as hex
      */
     public static String toHexString(byte[] data) {
-        return (toHexString(data, data.length));
+        return toHexString(data, data.length);
     }
 
     /**
@@ -105,7 +105,7 @@ public class Hexl {
         }
         output.append(new String(rhs));
 
-        return (output.toString());
+        return output.toString();
     }
 
     /** This class is not meant to be instantiated. */

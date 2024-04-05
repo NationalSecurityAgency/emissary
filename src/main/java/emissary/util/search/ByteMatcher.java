@@ -98,8 +98,9 @@ public class ByteMatcher {
     public int indexOf(byte[] pattern, int beginIndex, int endIndex) {
 
         // Impossible to find under these conditions
-        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length)
+        if (mydata == null || beginIndex > (mydata.length - pattern.length) || endIndex > mydata.length) {
             return NOTFOUND;
+        }
 
         // Use the Boyer-Moore scanning algorithm.
         return scanner.indexOf(pattern, beginIndex, endIndex);
@@ -399,7 +400,7 @@ public class ByteMatcher {
         // Return the bytes of the data
         byte[] value = new byte[length];
         System.arraycopy(this.mydata, valpos, value, 0, length);
-        return (value);
+        return value;
     }
 
     @Override

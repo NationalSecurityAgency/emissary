@@ -38,7 +38,7 @@ public class BufferedWriterOutputStream extends OutputStream {
             // convert this set of bytes to a character array
             for (int i = 0; i < chunkSize; i++) {
                 // copy in byte as a character (ensure we do not get negative)
-                buffer[bufferLength++] = (char) (0xFF & (int) (bytes[i + start]));
+                buffer[bufferLength++] = (char) (0xFF & (int) bytes[i + start]);
             }
 
             // and write it if full

@@ -55,8 +55,9 @@ public class HtmlEscape {
 
         ByteArrayOutputStream baos = null;
         byte[] returnBytes = null;
-        if (data == null || data.length == 0)
+        if (data == null || data.length == 0) {
             return new byte[0];
+        }
 
         try {
             baos = new ByteArrayOutputStream();
@@ -75,8 +76,9 @@ public class HtmlEscape {
                     int startPos = j;
 
                     // Jump to end of digits, find a semi-colon
-                    while (j < data.length && ByteUtil.isHexadecimal(data[j]) && j < startPos + 5)
+                    while (j < data.length && ByteUtil.isHexadecimal(data[j]) && j < startPos + 5) {
                         j++;
+                    }
 
                     if (j < data.length && data[j] == ';') {
                         // Try to convert it
@@ -126,8 +128,9 @@ public class HtmlEscape {
      * @return the new String without escaped HTML
      */
     public static String unescapeHtml(@Nullable String s, @Nullable CharacterCounterSet counters) {
-        if (s == null || s.length() == 0)
+        if (s == null || s.length() == 0) {
             return "";
+        }
 
         StringBuffer sb = new StringBuffer(s.length());
         Matcher m = HESC_PATTERN.matcher(s);
@@ -212,15 +215,17 @@ public class HtmlEscape {
             } else {
                 int spos = i;
                 int j = spos + 1;
-                while (j < slen && j < (spos + LONGEST_ENTITY_NAME) && s.charAt(j) != ';' && s.charAt(j) != ' ')
+                while (j < slen && j < (spos + LONGEST_ENTITY_NAME) && s.charAt(j) != ';' && s.charAt(j) != ' ') {
                     j++;
+                }
 
                 if (j < slen && j == spos + 1) // broken case with extra semicolon
                 {
                     spos++;
                     j = spos + 1;
-                    while (j < slen && j < (spos + LONGEST_ENTITY_NAME) && s.charAt(j) != ';' && s.charAt(j) != ' ')
+                    while (j < slen && j < (spos + LONGEST_ENTITY_NAME) && s.charAt(j) != ';' && s.charAt(j) != ' ') {
                         j++;
+                    }
                 }
 
                 if (j < slen + 1) {
@@ -289,15 +294,17 @@ public class HtmlEscape {
             if (i + 4 < slen && s[i] == '&') {
                 int spos = i;
                 int epos = spos + 1;
-                while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ')
+                while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ') {
                     epos++;
+                }
 
                 if (epos == spos + 1) // broken case with extra semi-colon
                 {
                     spos++;
                     epos = spos + 1;
-                    while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ')
+                    while (epos < slen && epos < spos + LONGEST_ENTITY_NAME && s[epos] != ';' && s[epos] != ' ') {
                         epos++;
+                    }
                 }
 
                 String val = HTML_ENTITY_MAP.getValueForHTMLEntity(new String(s, spos + 1, epos - (spos + 1)));

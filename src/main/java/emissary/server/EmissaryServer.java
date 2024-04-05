@@ -217,7 +217,7 @@ public class EmissaryServer {
      * @return true if running
      */
     public boolean isServerRunning() {
-        return (this.server != null) && (this.server.isStarted());
+        return (this.server != null) && this.server.isStarted();
     }
 
 

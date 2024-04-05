@@ -69,7 +69,7 @@ public class SpamSumSignature {
             throw new IllegalArgumentException("Signature is not valid." + "\r\nParameter name: " + "signature");
         }
 
-        blockSize = Integer.parseInt(signature.substring((0), (0) + (idx1)));
+        blockSize = Integer.parseInt(signature.substring(0, 0 + idx1));
         hash1 = GetBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));
         hash2 = GetBytes(signature.substring(idx2 + 1));
     }

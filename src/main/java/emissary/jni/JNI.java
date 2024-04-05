@@ -263,12 +263,12 @@ public class JNI implements Serializable {
         // jacking the version number for the actual library being requested.
         if (!retrieveDependencies(lib, errorMsg)) {
             logger.debug("Unable to retrieve dependencies:{}", errorMsg[0]);
-            throw (new UnsatisfiedLinkError("Unable to retrieve dependencies for " + filename + " : " + errorMsg[0]));
+            throw new UnsatisfiedLinkError("Unable to retrieve dependencies for " + filename + " : " + errorMsg[0]);
         }
 
         if (!retrieveFile(filename, errorMsg)) {
             logger.debug("Unable to retrieve:{}", errorMsg[0]);
-            throw (new UnsatisfiedLinkError("Unable to retrieve " + filename + " : " + errorMsg[0]));
+            throw new UnsatisfiedLinkError("Unable to retrieve " + filename + " : " + errorMsg[0]);
         }
 
         // Loadlib the file we just retrieved and saved
@@ -279,7 +279,7 @@ public class JNI implements Serializable {
             logger.debug("Unable to link retrieved {}:{}", fullPathName, e.getLocalizedMessage());
 
             // We have done all we can. Throw an exception and return
-            throw (new UnsatisfiedLinkError("Cannot link with retrieved library " + fullPathName + ":" + e));
+            throw new UnsatisfiedLinkError("Cannot link with retrieved library " + fullPathName + ":" + e);
         }
     }
 

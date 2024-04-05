@@ -44,7 +44,7 @@ public class DependencyCheck {
         if (returnVal == 0) {
             exists = true;
         }
-        return (exists);
+        return exists;
     }
 
     /**
@@ -84,7 +84,7 @@ public class DependencyCheck {
     }
 
     public Set<String> getDependencies(String key) {
-        return (config.findEntriesAsSet(key));
+        return config.findEntriesAsSet(key);
     }
 
     public void printDependencyReport() {

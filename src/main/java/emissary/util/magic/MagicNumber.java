@@ -204,7 +204,7 @@ public class MagicNumber {
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }
-                if (subType.charValue() == 'l' && !stack.empty() && (stack.peek()).charValue() == 'd') {
+                if (subType.charValue() == 'l' && !stack.empty() && stack.peek().charValue() == 'd') {
                     stack.pop();
                 }
                 continue;

@@ -98,7 +98,7 @@ public class FileDataServer extends Pausable {
 
                 @Override
                 public boolean accept(File dir, String name) {
-                    return (!name.startsWith(".")) && ++filesInList <= MAXFILESTOLIST;
+                    return !name.startsWith(".") && ++filesInList <= MAXFILESTOLIST;
                 }
             });
 
