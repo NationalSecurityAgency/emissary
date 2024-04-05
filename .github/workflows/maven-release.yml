@@ -30,14 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check release is using correct branch
-        if: ${{ github.event.inputs.release_type == 'release' && github.ref_name != 'master' }}
+        if: ${{ github.event.inputs.release_type == 'release' && github.ref_name != 'main' }}
         run: |
-          echo "Release is not using the correct branch, please target 'master'"
+          echo "Release is not using the correct branch, please target 'main'"
           exit 1
       - name: Check milestone release type is using correct branch
-        if: ${{ github.event.inputs.release_type == 'milestone' && github.ref_name != 'master' }}
+        if: ${{ github.event.inputs.release_type == 'milestone' && github.ref_name != 'main' }}
         run: |
-          echo "Milestone release is not using the correct branch, please target 'master'"
+          echo "Milestone release is not using the correct branch, please target 'main'"
           exit 1
       - name: Check milestone has release suffix
         if: ${{ github.event.inputs.release_type == 'milestone' && github.event.inputs.release_suffix == '' }}
@@ -143,7 +143,7 @@ jobs:
         run: git push origin :${{ github.ref_name }}
 
   snapshot-bump:
-    if: ${{ github.event.inputs.release_type == 'release' && github.ref_name == 'master' }}
+    if: ${{ github.event.inputs.release_type == 'release' && github.ref_name == 'main' }}
     needs: release
     runs-on: ubuntu-latest
     permissions:
@@ -183,7 +183,7 @@ jobs:
           git push -u origin ${{ env.PR_BRANCH }}
 
       - name: Create pull request
-        run: gh pr create -B master -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ env.NEXT_DEV_VERSION }}' --body 'Created by GitHub Action'
+        run: gh pr create -B main -H ${{ env.PR_BRANCH }} --title 'next development iteration ${{ env.NEXT_DEV_VERSION }}' --body 'Created by GitHub Action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
