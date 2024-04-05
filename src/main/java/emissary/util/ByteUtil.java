@@ -117,9 +117,9 @@ public class ByteUtil {
      *
      * @param b a byte array
      * @param pos a position in the byte array
-     * @return true if byte at pos in array b is a control or whitespace byte
+     * @return true if byte at pos in array b is a control or blank space byte
      */
-    public static boolean isControlOrWhiteSpace(byte[] b, int pos) {
+    public static boolean isControlOrBlankSpace(byte[] b, int pos) {
         if (b[pos] == Ascii_DEL || b[pos] <= Ascii_SP) {
             return true;
         }

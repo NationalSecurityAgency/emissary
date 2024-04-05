@@ -221,17 +221,17 @@ class HtmlEscapeTest extends UnitTest {
     }
 
     @Test
-    void testCountingOfWhitespaceEscapes() {
+    void testCountingOfBlankSpaceEscapes() {
         CharacterCounterSet c = new CharacterCounterSet();
         HtmlEscape.unescapeEntities("a&nbsp;b&#160;", c);
-        assertEquals(2, c.getWhitespaceCount(), "Counted nbsp as whitespace");
+        assertEquals(2, c.getBlankSpaceCount(), "Counted nbsp as blank space");
     }
 
     @Test
-    void testCountingOfWhitespaceEscapesAsBytes() {
+    void testCountingOfBlankSpaceEscapesAsBytes() {
         CharacterCounterSet c = new CharacterCounterSet();
         HtmlEscape.unescapeEntities("a&nbsp;b&#160;".getBytes(), c);
-        assertEquals(2, c.getWhitespaceCount(), "Counted nbsp as whitespace");
+        assertEquals(2, c.getBlankSpaceCount(), "Counted nbsp as blank space");
     }
 
     @Test

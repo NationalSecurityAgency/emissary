@@ -49,14 +49,14 @@ class DataUtilTest extends UnitTest {
         assertTrue(DataUtil.isEmpty(d1), "empty: " + d1);
         assertFalse(DataUtil.isNotEmpty(d1), "not empty: " + d1);
 
-        final byte[] whitespace = {' '};
-        final byte[] whitespaces = {' ', ' '};
+        final byte[] blankSpace = {' '};
+        final byte[] blankSpaces = {' ', ' '};
         final byte[] control = {' ', ByteUtil.Ascii_DEL, ' '};
         final byte[] foo = {'f', 'o', '1'};
-        final byte[] whiten = {' ', ' ', '1'};
-        final byte[] whitencontrol = {' ', ' ', '1', ByteUtil.Ascii_ESC};
+        final byte[] blankNum = {' ', ' ', '1'};
+        final byte[] blankNumControl = {' ', ' ', '1', ByteUtil.Ascii_ESC};
         final byte[] W = "Президент Буш".getBytes();
-        for (final byte[] bytes : Arrays.asList(whitespace, whitespaces, control, foo, whiten, whitencontrol, W)) {
+        for (final byte[] bytes : Arrays.asList(blankSpace, blankSpaces, control, foo, blankNum, blankNumControl, W)) {
             assertFalse(DataUtil.isEmpty(bytes), "empty: " + Arrays.toString(bytes));
             final IBaseDataObject d2 = DataObjectFactory.getInstance();
             d2.setData(bytes);
