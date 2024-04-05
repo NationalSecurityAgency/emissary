@@ -65,24 +65,24 @@ public class EditDistance {
 
     // #define swap_char(x,y) (_cswap = (x), (x) = (y), (y) = _cswap)
     private static void swap_char(/* ref */byte[][] x, /* ref */byte[][] y) {
-        byte[] _cswap = (x[0]);
-        (x[0]) = (y[0]);
-        (y[0]) = _cswap;
+        byte[] _cswap = x[0];
+        x[0] = y[0];
+        y[0] = _cswap;
     }
 
     // #define min3(x,y,z) (_mx = (x), _my = (y), _mz = (z), (_mx < _my ? (_mx < _mz ? _mx : _mz) : (_mz < _my) ? _mz :
     // _my))
     private static int min3(int x, int y, int z) {
-        int _mx = (x);
-        int _my = (y);
-        int _mz = (z);
+        int _mx = x;
+        int _my = y;
+        int _mz = z;
         return (_mx < _my ? (_mx < _mz ? _mx : _mz) : (_mz < _my) ? _mz : _my);
     }
 
     // #define min2(x,y) (_mx = (x), _my = (y), (_mx < _my ? _mx : _my))
     private static int min2(int x, int y) {
-        int _mx = (x);
-        int _my = (y);
+        int _mx = x;
+        int _my = y;
         return (_mx < _my ? _mx : _my);
     }
 
@@ -123,7 +123,7 @@ public class EditDistance {
     static int to_len;
 
     private static int ar(int x, int y, int index) {
-        return (((x) == 0) ? (y) * del : (((y) == 0) ? (x) * ins : buffer[mod(index)]));
+        return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
     }
 
     private static int NW(int x, int y) {
@@ -143,7 +143,7 @@ public class EditDistance {
     }
 
     private static int mod(int x) {
-        return ((x) % radix);
+        return (x % radix);
     }
 
     /*

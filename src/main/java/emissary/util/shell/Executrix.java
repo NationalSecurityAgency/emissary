@@ -193,7 +193,7 @@ public class Executrix {
         }
 
         final File dir = new File(filename).getParentFile();
-        if (dir != null && (!dir.exists())) {
+        if (dir != null && !dir.exists()) {
             final boolean status = dir.mkdirs();
             if (!status) {
                 logger.warn("Unable to create directory path to file {}", filename);

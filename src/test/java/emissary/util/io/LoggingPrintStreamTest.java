@@ -6,6 +6,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.read.ListAppender;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.Validate;
 import org.apache.log4j.MDC;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static emissary.util.io.LoggingPrintStream.NORMAL_SEPARATOR;
 import static emissary.util.io.LoggingPrintStream.THROWABLE_PREFIX;
-import static org.apache.commons.io.output.NullOutputStream.INSTANCE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,12 +43,14 @@ class LoggingPrintStreamTest {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.TRACE;
 
         assertThrows(NullPointerException.class, () -> new LoggingPrintStream(null, "TEST", logger, slf4jLevel, 1, TimeUnit.SECONDS));
-        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(INSTANCE, null, logger, slf4jLevel, 1, TimeUnit.SECONDS));
-        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(INSTANCE, "TEST", null, slf4jLevel, 1, TimeUnit.SECONDS));
-        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(INSTANCE, "TEST", logger, null, 1, TimeUnit.SECONDS));
+        assertThrows(NullPointerException.class,
+                () -> new LoggingPrintStream(NullOutputStream.INSTANCE, null, logger, slf4jLevel, 1, TimeUnit.SECONDS));
+        assertThrows(NullPointerException.class,
+                () -> new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", null, slf4jLevel, 1, TimeUnit.SECONDS));
+        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", logger, null, 1, TimeUnit.SECONDS));
         assertThrows(IllegalArgumentException.class,
-                () -> new LoggingPrintStream(INSTANCE, "TEST", logger, slf4jLevel, -1, TimeUnit.SECONDS));
-        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(INSTANCE, "TEST", logger, slf4jLevel, 1, null));
+                () -> new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", logger, slf4jLevel, -1, TimeUnit.SECONDS));
+        assertThrows(NullPointerException.class, () -> new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", logger, slf4jLevel, 1, null));
     }
 
     @Test
@@ -56,7 +58,7 @@ class LoggingPrintStreamTest {
         final Logger logger = (Logger) LoggerFactory.getLogger(LoggingPrintStream.class);
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.TRACE;
 
-        LoggingPrintStream loggingPrintStream = new LoggingPrintStream(INSTANCE, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
+        LoggingPrintStream loggingPrintStream = new LoggingPrintStream(NullOutputStream.INSTANCE, "TEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
         try {
             loggingPrintStream.close();
         } finally {
@@ -69,19 +71,19 @@ class LoggingPrintStreamTest {
     void testLoggingLevel() {
         LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
         LoggingPrintStream loggingPrintStreamDebug =
-                new LoggingPrintStream(INSTANCE, logbackTester.name + "_DEBUG", logbackTester.logger,
+                new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_DEBUG", logbackTester.logger,
                         org.slf4j.event.Level.DEBUG, 30, TimeUnit.SECONDS);
         LoggingPrintStream loggingPrintStreamError =
-                new LoggingPrintStream(INSTANCE, logbackTester.name + "_ERROR", logbackTester.logger,
+                new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_ERROR", logbackTester.logger,
                         org.slf4j.event.Level.ERROR, 30, TimeUnit.SECONDS);
         LoggingPrintStream loggingPrintStreamInfo =
-                new LoggingPrintStream(INSTANCE, logbackTester.name + "_INFO", logbackTester.logger,
+                new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_INFO", logbackTester.logger,
                         org.slf4j.event.Level.INFO, 30, TimeUnit.SECONDS);
         LoggingPrintStream loggingPrintStreamTrace =
-                new LoggingPrintStream(INSTANCE, logbackTester.name + "_TRACE", logbackTester.logger,
+                new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_TRACE", logbackTester.logger,
                         org.slf4j.event.Level.TRACE, 30, TimeUnit.SECONDS);
         LoggingPrintStream loggingPrintStreamWarn =
-                new LoggingPrintStream(INSTANCE, logbackTester.name + "_WARN", logbackTester.logger,
+                new LoggingPrintStream(NullOutputStream.INSTANCE, logbackTester.name + "_WARN", logbackTester.logger,
                         org.slf4j.event.Level.WARN, 30, TimeUnit.SECONDS);
         try {
             logbackTester.logger.setLevel(Level.ALL);
@@ -128,7 +130,7 @@ class LoggingPrintStreamTest {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         LoggingPrintStream loggingPrintStream =
-                new LoggingPrintStream(INSTANCE, "STDTEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
+                new LoggingPrintStream(NullOutputStream.INSTANCE, "STDTEST", logger, slf4jLevel, 30, TimeUnit.SECONDS);
         try {
             final ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
             final PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();

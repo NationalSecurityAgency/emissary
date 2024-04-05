@@ -59,7 +59,7 @@ public class FlexibleDateTimeParser {
     /* date time formats - vars: FORMAT_DATETIME */
     private static List<DateTimeFormatter> dateFormats = new ArrayList<>();
 
-    /** init */
+    /* init */
     static {
         configure();
     }

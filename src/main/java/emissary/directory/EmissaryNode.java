@@ -168,7 +168,7 @@ public class EmissaryNode {
      * True if this node appears to be a stand-alone (non P2P) node
      */
     public boolean isStandalone() {
-        return isValidStandalone() && (getNodeMode().equals("standalone"));
+        return isValidStandalone() && getNodeMode().equals("standalone");
     }
 
     private Object getNodeMode() {

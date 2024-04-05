@@ -20,7 +20,7 @@ public class DataObjectFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
 
-    /**
+    /*
      * Initialize our implementation details
      */
     static {

@@ -81,7 +81,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
         // doing this to avoid java bug that caused direct memory leaks.
         // could be removed in java 9 when they provide a JVM argument to
         // limit caching
-        if (!(src.isDirect())) {
+        if (!src.isDirect()) {
             int written = 0;
             while (src.hasRemaining()) {
                 this.directBuff.clear();
