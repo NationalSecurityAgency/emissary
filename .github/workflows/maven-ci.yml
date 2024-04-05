@@ -93,7 +93,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "emissary-master -- Commit: <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}> merged by ${{ github.actor }}.\nCI Job Status: *${{ join(needs.*.result, ' ')}}*"
+                    "text": "emissary-main -- Commit: <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}> merged by ${{ github.actor }}.\nCI Job Status: *${{ join(needs.*.result, ' ')}}*"
                   }
                 }
               ]
