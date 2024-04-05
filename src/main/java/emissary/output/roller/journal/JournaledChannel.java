@@ -10,6 +10,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import javax.annotation.Nullable;
 
 /**
  * Wrapper class to allow for use of underlying channel in either OutputStream code or WritableChannel.
@@ -19,11 +20,14 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
     static final Logger LOG = LoggerFactory.getLogger(JournaledChannel.class);
     // 128k
     static final int BUFF_SIZE = 128 * 1024;
+    @Nullable
     FileChannel fc;
     Path path;
+    @Nullable
     JournalEntry e;
     final int index;
     final JournalWriter journal;
+    @Nullable
     ByteBuffer directBuff;
 
     JournaledChannel(final Path path, final String key, final int index) throws IOException {
@@ -35,6 +39,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
         writeEntry();
     }
 
+    @Nullable
     private byte[] b1 = null;
 
     @Override

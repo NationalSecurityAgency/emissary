@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.annotation.Nullable;
 
 public class FileExistsConverter implements ITypeConverter<File> {
     private String optionName;
@@ -18,7 +19,7 @@ public class FileExistsConverter implements ITypeConverter<File> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
-    public FileExistsConverter(String optionName) {
+    public FileExistsConverter(@Nullable String optionName) {
         this.optionName = optionName;
     }
 

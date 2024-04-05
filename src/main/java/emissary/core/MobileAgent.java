@@ -199,14 +199,14 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     /**
      * Set the current place we should kick off with
      */
-    protected synchronized void setArrivalPlace(final IServiceProviderPlace p) {
+    protected synchronized void setArrivalPlace(@Nullable final IServiceProviderPlace p) {
         this.arrivalPlace = p;
     }
 
     /**
      * Set the payload
      */
-    protected synchronized void setPayload(final IBaseDataObject p) {
+    protected synchronized void setPayload(@Nullable final IBaseDataObject p) {
         this.payload = p;
     }
 

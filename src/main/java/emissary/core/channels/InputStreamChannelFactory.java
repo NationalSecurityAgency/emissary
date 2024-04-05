@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
+import javax.annotation.Nullable;
 
 public class InputStreamChannelFactory {
     private InputStreamChannelFactory() {}
@@ -50,6 +51,7 @@ public class InputStreamChannelFactory {
         /**
          * The current InputStream instance.
          */
+        @Nullable
         private CountingInputStream inputStream;
 
         private long size;

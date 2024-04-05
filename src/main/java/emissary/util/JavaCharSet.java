@@ -33,6 +33,7 @@ public class JavaCharSet {
     /**
      * Look up the encoding and return the Java CharSet for it if different from the string passed in
      */
+    @Nullable
     public static String get(@Nullable final String cs) {
         if (cs == null) {
             return null;

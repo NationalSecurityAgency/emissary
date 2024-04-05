@@ -78,6 +78,7 @@ public class TypeEngine {
      * @param label LHS part of equation to lookup
      * @return RHS part of mapping or null if none found
      */
+    @Nullable
     public String getForm(@Nullable String engine, @Nullable String label) {
 
         // check params
@@ -120,6 +121,7 @@ public class TypeEngine {
     /**
      * Chop down to file extension and look it up in specified engine
      */
+    @Nullable
     public String getFormByExtension(String engine, @Nullable String fn) {
         if (fn == null) {
             return null;

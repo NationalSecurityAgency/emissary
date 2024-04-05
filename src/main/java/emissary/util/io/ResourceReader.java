@@ -141,6 +141,7 @@ public class ResourceReader {
      * @param c the class
      * @return a URL indicating the jar file or file location or null if none
      */
+    @Nullable
     public URL which(@Nullable Class<?> c) {
         if (c == null) {
             return null;

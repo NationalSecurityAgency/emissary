@@ -5,13 +5,14 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 public class PathExistsReadableConverter extends PathExistsConverter {
     public PathExistsReadableConverter() {
         this(null);
     }
 
-    public PathExistsReadableConverter(String optionName) {
+    public PathExistsReadableConverter(@Nullable String optionName) {
         super(optionName);
     }
 

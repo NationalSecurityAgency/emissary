@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Helper class to use during development of a major refactoring or replacement of a Place.
@@ -41,6 +42,7 @@ public class PlaceComparisonHelper {
      *         constructor is inaccessible.
      * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
      */
+    @Nullable
     public static ServiceProviderPlace getPlaceToCompare(final Configurator configG) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, InvocationTargetException,
             NoSuchMethodException, SecurityException {
@@ -126,6 +128,7 @@ public class PlaceComparisonHelper {
      * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return the string of differences, or null if there aren't any
      */
+    @Nullable
     public static String checkDifferences(final IBaseDataObject ibdoForOldPlace, final IBaseDataObject ibdoForNewPlace,
             final List<IBaseDataObject> oldResults, final List<IBaseDataObject> newResults, final String identifier,
             final DiffCheckConfiguration options) {

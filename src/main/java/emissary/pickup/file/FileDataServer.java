@@ -9,6 +9,7 @@ import org.slf4j.MDC;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import javax.annotation.Nullable;
 
 /**
  * Thread to monitor a directory for files
@@ -23,6 +24,7 @@ public class FileDataServer extends Pausable {
     protected File theDirectory;
 
     // Ref to my owner
+    @Nullable
     protected FilePickUpPlace myParent = null;
 
     // protected int filesInList;

@@ -69,6 +69,7 @@ public class TimeUtil {
      * @throws ZoneRulesException if checking availability and the zone ID cannot be found
      * @throws IllegalArgumentException if the pattern is invalid
      */
+    @Nullable
     public static String getDate(@Nullable final TemporalAccessor date, final String format, @Nullable final ZoneId timeZone) {
         if (date == null) {
             return null;
@@ -100,6 +101,7 @@ public class TimeUtil {
      * @return the formatted date in the form yyyy-MM-dd/HH/mm
      * @throws DateTimeException if an error occurs during formatting
      */
+    @Nullable
     public static String getDateAsPath(@Nullable final TemporalAccessor date) {
         if (date == null) {
             return null;
@@ -125,6 +127,7 @@ public class TimeUtil {
      * @return the formatted date in the form yyyyjjj
      * @throws DateTimeException if an error occurs during formatting
      */
+    @Nullable
     public static String getDateOrdinal(@Nullable TemporalAccessor date) {
         return date == null ? null : DATE_ORDINAL.format(date);
     }
@@ -156,6 +159,7 @@ public class TimeUtil {
      * @return String in the format yyyy-MM-dd HH:mm:ss
      * @throws DateTimeException if an error occurs during formatting
      */
+    @Nullable
     public static String getDateAsISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_ISO_8601.format(date);
     }
@@ -177,6 +181,7 @@ public class TimeUtil {
      * @return the formatted date in yyyy-MM-dd'T'HH:mm:ss'Z'
      * @throws DateTimeException if an error occurs during formatting
      */
+    @Nullable
     public static String getDateAsFullISO8601(@Nullable final TemporalAccessor date) {
         return date == null ? null : DATE_FULL_ISO_8601.format(date);
     }
@@ -190,6 +195,7 @@ public class TimeUtil {
      *
      * @deprecated replaced by {@link FlexibleDateTimeParser#parse(String)}
      */
+    @Nullable
     @Deprecated
     public static ZonedDateTime getZonedDateFromISO8601(@Nullable final String dateString) throws DateTimeParseException {
         return dateString == null ? null : ZonedDateTime.parse(dateString, DATE_ISO_8601);

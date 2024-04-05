@@ -109,6 +109,7 @@ public abstract class AbstractJDOMUtil {
      * @param jdom the jdom document
      * @return String value in UTF-8
      */
+    @Nullable
     public static String toString(final Document jdom) {
         final XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         try (final ByteArrayOutputStream os = new ByteArrayOutputStream()) {

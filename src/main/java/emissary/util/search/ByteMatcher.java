@@ -9,8 +9,10 @@ import javax.annotation.Nullable;
  */
 public class ByteMatcher {
 
+    @Nullable
     private byte[] mydata = null;
 
+    @Nullable
     private KeywordScanner scanner = null;
 
     public static final int NOTFOUND = -1;
@@ -303,6 +305,7 @@ public class ByteMatcher {
      * Find tags of the form "Key{token}Value" returning "Value" when "Key" is supplied. The value goes after the {token} to
      * the end of the line.
      */
+    @Nullable
     public String getValue(String key, int ofs, String delim) {
 
         int keypos = this.indexOf(key, ofs);
@@ -343,6 +346,7 @@ public class ByteMatcher {
         return getSValue(key, 0, mydata.length);
     }
 
+    @Nullable
     public byte[] getSValue(String key, int ofs, int limit) {
 
         // Make sure the key exists

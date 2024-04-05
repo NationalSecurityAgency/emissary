@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import javax.annotation.Nullable;
 
 import static emissary.core.Form.HTML;
 import static emissary.core.Form.PREFIXES_LANG;
@@ -32,6 +33,7 @@ public class HtmlEscapePlace extends ServiceProviderPlace {
     /**
      * Can be overridden from config file
      */
+    @Nullable
     private String outputForm = null;
 
     /**

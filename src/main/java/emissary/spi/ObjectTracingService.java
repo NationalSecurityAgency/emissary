@@ -8,11 +8,13 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
+import javax.annotation.Nullable;
 
 import static net.logstash.logback.marker.Markers.appendEntries;
 
 public class ObjectTracingService {
 
+    @Nullable
     private static ServiceLoader<ObjectTracing> loader = null;
     private static final Logger objectTraceLogger = LoggerFactory.getLogger("objectTrace");
 

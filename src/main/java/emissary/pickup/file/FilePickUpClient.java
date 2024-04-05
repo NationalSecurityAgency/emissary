@@ -44,13 +44,16 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     protected QueServer queServer;
 
     // work bundle currently being processed
+    @Nullable
     protected WorkBundle currentBundle = null;
+    @Nullable
     protected WorkUnit currentWorkUnit = null;
 
     protected String unixInRoot;
     protected String unixOutRoot;
     protected String digestHashType;
 
+    @Nullable
     protected MessageDigest digest = null;
 
     /**
@@ -163,6 +166,7 @@ public class FilePickUpClient extends PickUpSpace implements IPickUp {
     /**
      * Find a file in the holding area that matches our guy.
      */
+    @Nullable
     protected File findFileInHoldingArea(File f, @Nullable String eatPrefix) {
         if (holdingArea != null) {
             String fpart = f.getName();

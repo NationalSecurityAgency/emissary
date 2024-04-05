@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of a pick up place that talks to a one or more WorkSpace instances for obtaining distributed work.
@@ -45,7 +46,7 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
      * @param dir string key of the directory to register with
      * @param placeLocation string key of this place
      */
-    public PickUpSpace(String configInfo, String dir, String placeLocation) throws IOException {
+    public PickUpSpace(String configInfo, @Nullable String dir, String placeLocation) throws IOException {
         super(configInfo, dir, placeLocation);
     }
 
@@ -105,7 +106,9 @@ public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements
     /**
      * Return name of the first space on the list or null if none
      */
+
     @Override
+    @Nullable
     public String getSpaceName() {
         if (openSpaceNames.size() > 0) {
             return openSpaceNames.get(0);

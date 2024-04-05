@@ -300,6 +300,7 @@ public class ByteUtil {
      * @param bytes to be hashed
      * @return the hex string of a sha256 hash of the bytes.
      */
+    @Nullable
     public static String sha256Bytes(final byte[] bytes) {
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-256");

@@ -6,13 +6,14 @@ import picocli.CommandLine.ITypeConverter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.annotation.Nullable;
 
 public class ProjectBaseConverter extends PathExistsConverter implements ITypeConverter<Path> {
     public ProjectBaseConverter() {
         this(null);
     }
 
-    public ProjectBaseConverter(String optionName) {
+    public ProjectBaseConverter(@Nullable String optionName) {
         super(optionName);
     }
 

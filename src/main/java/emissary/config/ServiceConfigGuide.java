@@ -868,7 +868,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @return the first matching entry of the default if none found
      */
     @Override
-    public String findStringEntry(final String theParameter, final String dflt) {
+    public String findStringEntry(final String theParameter, @Nullable final String dflt) {
         final List<String> matchingEntries = findEntries(theParameter);
         for (final String entry : matchingEntries) {
             if (entry != null) {

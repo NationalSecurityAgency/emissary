@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 public class PlaceStarter {
     private static final Logger logger = LoggerFactory.getLogger(PlaceStarter.class);
 
+    @Nullable
     private static Configurator classConf = null;
 
     protected static final String defaultClassName = "emissary.place.sample.DevNullPlace";
@@ -102,6 +103,7 @@ public class PlaceStarter {
      * @param theClassStr string name of the class to instantiate
      * @return the place that was found or created, or null if it can't be done
      */
+    @Nullable
     public static IServiceProviderPlace createPlace(final String theLocation, final Object[] constructorArgs, @Nullable final String theClassStr) {
         logger.debug("Ready to createPlace {} as {}", theLocation, theClassStr);
 
@@ -180,6 +182,7 @@ public class PlaceStarter {
      * method to check if the place already exists.
      */
     // ////////////////////////////////////////////////////////////
+    @Nullable
     public static IServiceProviderPlace alreadyExists(final String theLocation) {
         final String thePlaceHost = Startup.placeHost(theLocation);
         // TODO should we add a check for index of? Can cause an exception if // isn't present

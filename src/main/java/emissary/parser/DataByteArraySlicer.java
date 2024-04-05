@@ -31,6 +31,7 @@ public class DataByteArraySlicer {
      * @param data the data to pull from
      * @param list the list of position records indicating offsets
      */
+    @Nullable
     public static byte[] makeDataSlice(byte[] data, @Nullable List<PositionRecord> list) {
 
         // Nothing to do

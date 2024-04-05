@@ -196,6 +196,7 @@ public class MagicMath {
             return Long.parseLong(stringValue, 10);
     }
 
+    @Nullable
     public static byte[] stringToByteArray(int arraySize, @Nullable String stringValue) {
         if (stringValue == null || stringValue.length() == 0)
             return null;

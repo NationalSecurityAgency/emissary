@@ -14,6 +14,7 @@ public class LineTokenizer {
     protected byte delim = (byte) '\n';
     protected int tokenCount = 0;
     protected byte[] data;
+    @Nullable
     protected Charset charset = Charset.forName("8859_1");
 
     /**
@@ -171,6 +172,7 @@ public class LineTokenizer {
      * 
      * @return the next line as an array of bytes
      */
+    @Nullable
     public byte[] nextTokenBytes() {
 
         if (tokenCount == 0) {

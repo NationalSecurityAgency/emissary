@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Utilities for dealing with request parameters
@@ -22,7 +23,7 @@ public class RequestUtil {
      * Get attribute or parameter from request. Attribute has priority over parameter when both are present. If no parameter
      * is found, return the default value.
      */
-    public static String getParameter(final ServletRequest request, final String param, final String defaultVal) {
+    public static String getParameter(final ServletRequest request, final String param, @Nullable final String defaultVal) {
         Object o = request.getAttribute(param);
         if (o == null) {
             o = sanitizeParameter(request.getParameter(param));
@@ -233,6 +234,7 @@ public class RequestUtil {
      * @param parameter the String to sanitize
      * @return a new String object with any CR/LF characters removed or null when the provided argument is null
      */
+    @Nullable
     public static String sanitizeParameter(String parameter) {
         return (null == parameter ? null : parameter.replaceAll("[\n\r]", "_"));
     }

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import javax.annotation.Nullable;
 
 /**
  *
@@ -25,7 +26,9 @@ public class ReadOutputBuffer extends ProcessReader {
     private static final Logger logger = LoggerFactory.getLogger(ReadOutputBuffer.class);
 
     private BufferedReader br;
+    @Nullable
     private StringBuffer buf = null;
+    @Nullable
     private StringBuilder bld = null;
     private long maxSize = -1;
     public boolean finished = false;
@@ -128,6 +131,7 @@ public class ReadOutputBuffer extends ProcessReader {
         this.interrupt();
     }
 
+    @Nullable
     public String getString() {
         if (this.buf != null) {
             return this.buf.toString();
