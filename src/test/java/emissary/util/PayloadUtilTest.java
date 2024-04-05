@@ -33,9 +33,7 @@ public class PayloadUtilTest extends UnitTest {
         timezone = System.getProperty("user.timezone");
         System.setProperty("user.timezone", "GMT");
 
-        for (char character : validFormCharsString.toCharArray()) {
-            validFormChars.add(character);
-        }
+        validFormCharsString.chars().forEach(character -> validFormChars.add((char) character));
     }
 
     @AfterAll

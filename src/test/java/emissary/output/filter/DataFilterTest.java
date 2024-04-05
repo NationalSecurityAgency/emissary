@@ -10,9 +10,7 @@ import emissary.util.shell.Executrix;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,8 +42,6 @@ class DataFilterTest extends UnitTest {
         payload.setData("This is the data".getBytes());
         payload.setFileType("FTYPE");
         payload.setFilename("/this/is/a/testfile");
-        List<IBaseDataObject> payloadList = new ArrayList<>();
-        payloadList.add(payload);
 
         Map<String, Object> params = new HashMap<>();
 
@@ -60,5 +56,4 @@ class DataFilterTest extends UnitTest {
 
         expected.delete();
     }
-
 }

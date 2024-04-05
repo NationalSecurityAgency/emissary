@@ -57,7 +57,7 @@ class DataIdentifierTest extends UnitTest {
 
     @Test
     void testExtensibility() {
-        DataIdentifierT id = new DataIdentifierT();
+        MyDataIdentifier id = new MyDataIdentifier();
         assertEquals(id.getTestStringMaxSize(), id.checkSize(), "String size to test");
 
         // Check byte array
@@ -67,7 +67,7 @@ class DataIdentifierTest extends UnitTest {
     }
 
 
-    private static final class DataIdentifierT extends DataIdentifier {
+    private static final class MyDataIdentifier extends DataIdentifier {
         public int checkSize() {
             return DATA_ID_STR_SZ;
         }

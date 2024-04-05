@@ -90,7 +90,7 @@ public class SpamSumSignature {
             return false;
         }
 
-        return this.equals((SpamSumSignature) obj);
+        return this.isEqual((SpamSumSignature) obj);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class SpamSumSignature {
         return super.hashCode();
     }
 
-    public boolean equals(SpamSumSignature other) {
+    public boolean isEqual(SpamSumSignature other) {
         if (this.blockSize != other.blockSize) {
             return false;
         }

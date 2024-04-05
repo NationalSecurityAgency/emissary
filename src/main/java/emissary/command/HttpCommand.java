@@ -16,12 +16,8 @@ import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/* abstract command to configure http options
- * <p>
- * Used for both running servers and clients, so things
- * like port or host change meaning depending on how it
- * will be used. This class just setup up the config options.
- *
+/**
+ * Abstract command used to set up config options for both servers and clients.
  */
 public abstract class HttpCommand extends BaseCommand {
     static final Logger LOG = LoggerFactory.getLogger(HttpCommand.class);
