@@ -6,7 +6,7 @@
       <useProjectArtifact>true</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <includes>
-        <include>emissary*</include>
+        <include>gov.nsa.emissary*</include>
       </includes>
     </dependencySet>
     <dependencySet>
