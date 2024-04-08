@@ -1,0 +1,9 @@
+.github/
+.idea/
+contrib/ci/
+contrib/docker/
+contrib/elasticsearch/
+contrib/helm/
+target/
+target-idea/
+.mvn-classpath
