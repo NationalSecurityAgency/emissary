@@ -75,6 +75,9 @@ public class ComparisonPlace extends ServiceProviderPlace {
         placeA = createPlace(placeAClassName, placeAConfigName);
         placeB = createPlace(placeBClassName, placeBConfigName);
 
+        placeA.shutDown();
+        placeB.shutDown();
+
         Validate.isTrue(placeA.processMethodImplemented == placeB.processMethodImplemented, PROCESS_PROCESSHD_MSG);
     }
 
