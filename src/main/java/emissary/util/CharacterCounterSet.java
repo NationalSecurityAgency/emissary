@@ -108,8 +108,6 @@ public class CharacterCounterSet extends CounterSet {
                 increment("CHARACTER_DIGIT");
             } else if (Character.isSpaceChar(cp)) {
                 increment("CHARACTER_BLANK_SPACE");
-            } else if (Character.isSpaceChar(cp)) {
-                increment("CHARACTER_WHITESPACE");
             } else if (Character.isISOControl(cp)) {
                 increment("CHARACTER_ISO_CONTROL");
             } else if (scp

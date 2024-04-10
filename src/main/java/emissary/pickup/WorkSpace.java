@@ -199,7 +199,7 @@ public class WorkSpace implements Runnable {
     }
 
     protected void startJetty() {
-        if (!emissary.server.EmissaryServer.isStarted()) {
+        if (!EmissaryServer.isStarted()) {
             // TODO investigate passing the feedCommand object directly to the serverCommand
             List<String> args = new ArrayList<>();
             args.add("-b");

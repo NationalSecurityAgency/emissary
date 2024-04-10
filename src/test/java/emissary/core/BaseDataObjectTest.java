@@ -1307,6 +1307,7 @@ class BaseDataObjectTest extends UnitTest {
 
     static final byte[] DATA_MODIFICATION_BYTES = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
     static final Level LEVELS_ONE_WARN = Level.WARN;
+
     @Nullable
     static final Throwable NO_THROWABLES = null;
     List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();

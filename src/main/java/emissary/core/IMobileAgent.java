@@ -18,7 +18,7 @@ public interface IMobileAgent extends Serializable, Runnable {
     /**
      * Get a reference to the payload this agent is responsible for
      */
-    emissary.core.IBaseDataObject getPayload();
+    IBaseDataObject getPayload();
 
     /**
      * Send an agent on its way with the specified payload The payload is not processed at sourcePlace, source is only used
