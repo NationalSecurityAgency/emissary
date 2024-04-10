@@ -188,6 +188,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   slack-notify-start:
+    if: ${{ github.event.repository.fork == 'false' }}
     needs: get_version
     runs-on: ubuntu-latest
     steps:
@@ -215,6 +216,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   slack-notify-complete:
+    if: ${{ github.event.repository.fork == 'false' }}
     needs: [get_version, release]
     runs-on: ubuntu-latest
     steps:
