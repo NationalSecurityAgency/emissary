@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 
 public class FileExistsConverter implements ITypeConverter<File> {
     private String optionName;
+    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     public FileExistsConverter() {
         this(null);
@@ -20,8 +21,6 @@ public class FileExistsConverter implements ITypeConverter<File> {
     public FileExistsConverter(@Nullable String optionName) {
         this.optionName = optionName;
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     @Override
     public File convert(String value) {
