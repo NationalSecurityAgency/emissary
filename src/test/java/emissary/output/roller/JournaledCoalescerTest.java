@@ -48,9 +48,9 @@ class JournaledCoalescerTest extends UnitTest {
     private JournaledCoalescer journaledCoalescer;
 
     private Path targetBudPath;
-    private Path tempBuD1;
+    private Path tempBud1;
     private static final String BUD1_NAME = "bud1";
-    private Path tempBuD2;
+    private Path tempBud2;
     private static final String BUD2_NAME = "bud2";
     private final List<String> BUD1_LINES = Arrays.asList("Line1", "Line2");
     private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
@@ -62,11 +62,11 @@ class JournaledCoalescerTest extends UnitTest {
         journaledCoalescer = new JournaledCoalescer(targetBudPath, fileNameGenerator);
 
         // setup temp files
-        tempBuD1 = Files.createTempFile(targetBudPath, BUD1_NAME, "");
-        Files.write(tempBuD1, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+        tempBud1 = Files.createTempFile(targetBudPath, BUD1_NAME, "");
+        Files.write(tempBud1, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
 
-        tempBuD2 = Files.createTempFile(targetBudPath, BUD2_NAME, "");
-        Files.write(tempBuD2, BUD2_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+        tempBud2 = Files.createTempFile(targetBudPath, BUD2_NAME, "");
+        Files.write(tempBud2, BUD2_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
     }
 
     @AfterEach
@@ -124,8 +124,8 @@ class JournaledCoalescerTest extends UnitTest {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBudPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
-            Files.copy(tempBuD1, one);
-            Files.copy(tempBuD2, two);
+            Files.copy(tempBud1, one);
+            Files.copy(tempBud2, two);
             one.commit();
             two.commit();
         }
@@ -147,9 +147,9 @@ class JournaledCoalescerTest extends UnitTest {
         Path bud1destination;
         Path bud2destination;
         try (KeyedOutput one = journaledCoalescer.getOutput(); KeyedOutput two = journaledCoalescer.getOutput()) {
-            Files.copy(tempBuD1, one);
+            Files.copy(tempBud1, one);
             bud1destination = one.getFinalDestination();
-            Files.copy(tempBuD2, two);
+            Files.copy(tempBud2, two);
             bud2destination = two.getFinalDestination();
             one.commit();
             two.commit();
@@ -163,7 +163,7 @@ class JournaledCoalescerTest extends UnitTest {
         // verify
         journaledCoalescer.roll();
         assertTrue(Files.exists(bud1destination));
-        long totalSize = Files.size(tempBuD1) + Files.size(tempBuD2);
+        long totalSize = Files.size(tempBud1) + Files.size(tempBud2);
         assertEquals(totalSize, Files.size(bud1destination));
 
     }
@@ -175,7 +175,7 @@ class JournaledCoalescerTest extends UnitTest {
 
         // test
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBuD1, one);
+            Files.copy(tempBud1, one);
             expectedPrefix1 = one.getFinalDestination().getFileName().toString();
             one.commit();
         }
@@ -185,7 +185,7 @@ class JournaledCoalescerTest extends UnitTest {
         String expectedPrefix2;
 
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBuD2, one);
+            Files.copy(tempBud2, one);
             expectedPrefix2 = one.getFinalDestination().getFileName().toString();
             one.commit();
         }
@@ -209,7 +209,7 @@ class JournaledCoalescerTest extends UnitTest {
         // setup
         Path finalBudOutput;
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
-            Files.copy(tempBuD1, one);
+            Files.copy(tempBud1, one);
             finalBudOutput = one.getFinalDestination();
             one.commit();
         }
@@ -236,8 +236,8 @@ class JournaledCoalescerTest extends UnitTest {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBudPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
-            Files.copy(tempBuD1, one);
-            Files.copy(tempBuD2, two);
+            Files.copy(tempBud1, one);
+            Files.copy(tempBud2, two);
             one.commit();
             two.commit();
         }
@@ -309,7 +309,7 @@ class JournaledCoalescerTest extends UnitTest {
     @Test
     void testRollEmptyFiles() throws Exception {
         // setup
-        Files.write(tempBuD1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(tempBud1, new byte[] {}, StandardOpenOption.TRUNCATE_EXISTING);
         Path finalBudOutput;
         try (KeyedOutput os = journaledCoalescer.getOutput()) {
             // make sure we create an empty file

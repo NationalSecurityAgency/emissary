@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.InvocationInterceptor;
 import org.junit.jupiter.api.extension.ReflectiveInvocationContext;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -52,16 +53,15 @@ public class EmissaryIsolatedClassLoaderExtension implements InvocationIntercept
 
     public static class TestClassLoader extends URLClassLoader {
         public TestClassLoader() {
-            super(getUrLsFromSystemClassLoader());
+            super(getUrlsFromSystemClassLoader());
         }
 
-        private static URL[] getUrLsFromSystemClassLoader() {
+        private static URL[] getUrlsFromSystemClassLoader() {
             ClassLoader systemClassLoader = getSystemClassLoader();
             if (systemClassLoader instanceof URLClassLoader) {
                 return ((URLClassLoader) systemClassLoader).getURLs();
             }
-            String sep = System.getProperty("path.separator");
-            String[] paths = System.getProperty("java.class.path").split("[" + sep + "]");
+            String[] paths = System.getProperty("java.class.path").split("[" + File.pathSeparator + "]");
             return Arrays.stream(paths).map(path -> {
                 try {
                     return Paths.get(path).toUri().toURL();

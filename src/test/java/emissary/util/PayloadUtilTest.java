@@ -243,7 +243,7 @@ public class PayloadUtilTest extends UnitTest {
         // Check that all expected valid characters are valid
         String alphaLow = "abcdefghijklmnopqrstuvwxyz";
         assertTrue(PayloadUtil.isValidForm(alphaLow), "Lower case alpha characters are expected to be valid");
-        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase(Locale.ROOT)), "Upper case alpha characters are expected to be valid");
+        assertTrue(PayloadUtil.isValidForm(alphaLow.toUpperCase(Locale.getDefault())), "Upper case alpha characters are expected to be valid");
         assertTrue(PayloadUtil.isValidForm("0123456789"), "Numeric characters are expected to be valid");
         assertTrue(PayloadUtil.isValidForm("-_"), "'-' and '_' are expected to be valid form characters");
         assertTrue(PayloadUtil.isValidForm("formName-(suffixInParens)"), "Parentheses are expected to be valid form characters");
