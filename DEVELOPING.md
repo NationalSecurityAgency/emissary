@@ -715,7 +715,7 @@ Once the build succeeds, we can start a container:
 docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
 ```
 
-### Build Emissary UBI8 Docker Image
+### Build and Run Emissary UBI8 Docker Image
 
 From the root of the project, simply run:
 ```
