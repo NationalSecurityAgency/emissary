@@ -17,11 +17,11 @@ public class FileExistsConverter implements ITypeConverter<File> {
         this(null);
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
-
     public FileExistsConverter(@Nullable String optionName) {
         this.optionName = optionName;
     }
+
+    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     @Override
     public File convert(String value) {

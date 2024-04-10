@@ -655,46 +655,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     }
 
     /**
-     * Provide access to the move-error counter for the MoveAdapter
-     */
-    @Override
-    public int getMoveErrorCount() {
-        return this.moveErrorsOccurred;
-    }
-
-    /**
-     * Provide access to the itinerary queue for the MoveAdapter
-     */
-    @Override
-    public DirectoryEntry[] getItineraryQueueItems() {
-        return this.nextKeyQueue.toArray(new DirectoryEntry[0]);
-    }
-
-    /**
-     * This is for an already in process agent arriving at a new place from a "moveTo". This is different than the above
-     * method because we presume we have arrived at this place in order to do some processing here, not just because we got
-     * picked up by it. So we don't need to get a key first, just start processing.
-     *
-     * @param dataObject the real payload, exisitng if any will be cleared
-     * @param arrivalPlaceArg the place we start at
-     * @param moveErrorCount transported move error counter
-     * @param queuedItineraryItems transported itinerary items list of DirectoryEntry
-     */
-    @Override
-    public synchronized void arrive(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final int moveErrorCount,
-            final List<DirectoryEntry> queuedItineraryItems) throws Exception {
-
-        if (dataObject instanceof IBaseDataObject) {
-            clear();
-            this.moveErrorsOccurred = moveErrorCount;
-            this.nextKeyQueue.addAll(queuedItineraryItems);
-            go(dataObject, arrivalPlaceArg, true);
-        } else {
-            throw new Exception("Illegal payload sent to MobileAgent, cannot handle " + dataObject.getClass().getName());
-        }
-    }
-
-    /**
      * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate on
      * which path we entered to the agent's thread
      *
@@ -738,6 +698,46 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // the run() loop now takes over on the agent's thread and we return
         // control of the currentThread to the caller of this method
         notifyAll();
+    }
+
+    /**
+     * Provide access to the move-error counter for the MoveAdapter
+     */
+    @Override
+    public int getMoveErrorCount() {
+        return this.moveErrorsOccurred;
+    }
+
+    /**
+     * Provide access to the itinerary queue for the MoveAdapter
+     */
+    @Override
+    public DirectoryEntry[] getItineraryQueueItems() {
+        return this.nextKeyQueue.toArray(new DirectoryEntry[0]);
+    }
+
+    /**
+     * This is for an already in process agent arriving at a new place from a "moveTo". This is different than the above
+     * method because we presume we have arrived at this place in order to do some processing here, not just because we got
+     * picked up by it. So we don't need to get a key first, just start processing.
+     *
+     * @param dataObject the real payload, exisitng if any will be cleared
+     * @param arrivalPlaceArg the place we start at
+     * @param moveErrorCount transported move error counter
+     * @param queuedItineraryItems transported itinerary items list of DirectoryEntry
+     */
+    @Override
+    public synchronized void arrive(final Object dataObject, final IServiceProviderPlace arrivalPlaceArg, final int moveErrorCount,
+            final List<DirectoryEntry> queuedItineraryItems) throws Exception {
+
+        if (dataObject instanceof IBaseDataObject) {
+            clear();
+            this.moveErrorsOccurred = moveErrorCount;
+            this.nextKeyQueue.addAll(queuedItineraryItems);
+            go(dataObject, arrivalPlaceArg, true);
+        } else {
+            throw new Exception("Illegal payload sent to MobileAgent, cannot handle " + dataObject.getClass().getName());
+        }
     }
 
     /**

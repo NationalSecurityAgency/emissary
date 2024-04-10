@@ -881,26 +881,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     /**
-     * Put a collection of parameters into the metadata map, adding only distinct k/v pairs
-     *
-     * @param m the map of new parameters
-     */
-    @Override
-    public void putUniqueParameters(final Map<? extends String, ? extends Object> m) {
-        putParameters(m, MergePolicy.DISTINCT);
-    }
-
-    /**
-     * Merge in parameters keeping existing keys unchanged
-     *
-     * @param m map of new parameters to consider
-     */
-    @Override
-    public void mergeParameters(final Map<? extends String, ? extends Object> m) {
-        putParameters(m, MergePolicy.KEEP_EXISTING);
-    }
-
-    /**
      * Merge in new parameters using the specified policy to determine whether to keep all values, unique values, or prefer
      * existing values
      *
@@ -948,6 +928,27 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                 }
             }
         }
+    }
+
+
+    /**
+     * Put a collection of parameters into the metadata map, adding only distinct k/v pairs
+     *
+     * @param m the map of new parameters
+     */
+    @Override
+    public void putUniqueParameters(final Map<? extends String, ? extends Object> m) {
+        putParameters(m, MergePolicy.DISTINCT);
+    }
+
+    /**
+     * Merge in parameters keeping existing keys unchanged
+     *
+     * @param m map of new parameters to consider
+     */
+    @Override
+    public void mergeParameters(final Map<? extends String, ? extends Object> m) {
+        putParameters(m, MergePolicy.KEEP_EXISTING);
     }
 
     @Nullable
@@ -1155,6 +1156,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    public boolean setFileTypeIfEmpty(final String v) {
+        return setFileTypeIfEmpty(v, this.FILETYPE_EMPTY);
+    }
+
+    @Override
     public boolean isFileTypeEmpty() {
         return isFileTypeEmpty(this.FILETYPE_EMPTY);
     }
@@ -1181,11 +1187,6 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             }
         }
         return false;
-    }
-
-    @Override
-    public boolean setFileTypeIfEmpty(final String v) {
-        return setFileTypeIfEmpty(v, this.FILETYPE_EMPTY);
     }
 
     @Override

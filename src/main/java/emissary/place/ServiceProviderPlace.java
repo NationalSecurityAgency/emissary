@@ -198,6 +198,27 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     }
 
     /**
+     * Create the place with no directory
+     *
+     * @param configFile string name of config data file
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(String configFile, String placeLocation) throws IOException {
+        this(configFile, null, placeLocation);
+    }
+
+
+    /**
+     * Create the place with no directory
+     *
+     * @param configStream stream of config data
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
+        this(configStream, null, placeLocation);
+    }
+
+    /**
      * Load the configurator
      *
      * @param configStream the stream to use or null to auto configure
@@ -224,7 +245,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         }
         return loadConfigurator(placeLocation);
     }
-
 
     /**
      * Load the configurator, figuring out whence automatically
@@ -369,26 +389,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Override
     public DirectoryEntry getDirectoryEntry() {
         return new DirectoryEntry(keys.get(0), serviceDescription, serviceCost, serviceQuality);
-    }
-
-    /**
-     * Create the place with no directory
-     *
-     * @param configFile string name of config data file
-     * @param placeLocation string name of our location
-     */
-    protected ServiceProviderPlace(String configFile, String placeLocation) throws IOException {
-        this(configFile, null, placeLocation);
-    }
-
-    /**
-     * Create the place with no directory
-     *
-     * @param configStream stream of config data
-     * @param placeLocation string name of our location
-     */
-    protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
-        this(configStream, null, placeLocation);
     }
 
     /**

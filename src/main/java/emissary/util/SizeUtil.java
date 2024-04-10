@@ -60,79 +60,6 @@ public class SizeUtil {
     }
 
     /**
-     * Approximates the amount of RAM consumed by the "extracted records" in a single IBaseDataObject. This is typically the
-     * case when the framework gets eventing datasets. These extracted records are usually treated specially and not run
-     * through the processing pipelines proper, but on output do appear as proper child IBaseDataObjects. In the case of a
-     * large dataset, these extracted records can consume huge amounts of RAM.
-     * 
-     * @param ibdo - The IBaseDataObject to approximate
-     * @return - The approximate size, in bytes, in RAM for extracted records of an IBaseDataObject
-     */
-    public static long getExtractedRecordRAMSize(@Nullable IBaseDataObject ibdo) {
-        if (ibdo == null) {
-            return 0L;
-        }
-
-        long totalSize = 0L;
-
-        // Count up the size of any extracted children
-        if (ibdo.hasExtractedRecords()) {
-            List<IBaseDataObject> childObjList = ibdo.getExtractedRecords();
-            if (childObjList != null) {
-                for (IBaseDataObject child : childObjList) {
-                    if (child != null) {
-                        totalSize += sizeof(child);
-                        totalSize += objOverhead + refSize; // For the pointer to child in childObjList (Object
-                                                            // overhead)
-                    }
-                }
-            }
-        }
-
-        return totalSize;
-    }
-
-    /**
-     * Approximate the amount of RAM consumed by the various "payloads" of an IBaseDataObject. In this case, a payload
-     * refers to the header, footer, data (primary view), and all the alternate views.
-     * 
-     * @param ibdo - The IBaseDataObject to approximate
-     * @return - The approximate size, in bytes, in RAM for the IBaseDataObject
-     */
-    public static long getPayloadRAMSize(@Nullable IBaseDataObject ibdo) {
-        if (ibdo == null) {
-            return 0L;
-        }
-
-        long totalSize = 0L;
-
-        // We don't concern ourselves with object references here, because they are likely
-        // tiny compared to the various "payloads" and altViews. A more accurate
-        // version of this method would factor those in, but they are likely to be
-        // negligible
-
-        // Primary view (potentially gigantic)
-        totalSize += ibdo.dataLength(); // This always returns an int
-
-        // Header and footer size (probably not big)
-        if (ibdo.footer() != null) {
-            totalSize += ibdo.footer().length;
-        }
-        if (ibdo.header() != null) {
-            totalSize += ibdo.header().length;
-        }
-
-        // Size up the alternative views
-        for (Map.Entry<String, byte[]> altView : ibdo.getAlternateViews().entrySet()) {
-            if (altView.getValue() != null) {
-                totalSize += altView.getValue().length;
-            }
-        }
-
-        return totalSize;
-    }
-
-    /**
      * Approximate the amount of RAM consumed by an individual {@link IBaseDataObject}. The purpose of this method is to
      * approximate the RAM that will be consumed by a corresponding serialized/deserialized object, hence not all aspects of
      * the {@link IBaseDataObject} are considered. Additionally, this method does not include all the "outputtable" logic
@@ -209,6 +136,79 @@ public class SizeUtil {
                 totalSize += objOverhead + refSize; // For the pointer to ibdo in familyTree (Object overhead)
             }
         }
+        return totalSize;
+    }
+
+    /**
+     * Approximates the amount of RAM consumed by the "extracted records" in a single IBaseDataObject. This is typically the
+     * case when the framework gets eventing datasets. These extracted records are usually treated specially and not run
+     * through the processing pipelines proper, but on output do appear as proper child IBaseDataObjects. In the case of a
+     * large dataset, these extracted records can consume huge amounts of RAM.
+     * 
+     * @param ibdo - The IBaseDataObject to approximate
+     * @return - The approximate size, in bytes, in RAM for extracted records of an IBaseDataObject
+     */
+    public static long getExtractedRecordRAMSize(@Nullable IBaseDataObject ibdo) {
+        if (ibdo == null) {
+            return 0L;
+        }
+
+        long totalSize = 0L;
+
+        // Count up the size of any extracted children
+        if (ibdo.hasExtractedRecords()) {
+            List<IBaseDataObject> childObjList = ibdo.getExtractedRecords();
+            if (childObjList != null) {
+                for (IBaseDataObject child : childObjList) {
+                    if (child != null) {
+                        totalSize += sizeof(child);
+                        totalSize += objOverhead + refSize; // For the pointer to child in childObjList (Object
+                                                            // overhead)
+                    }
+                }
+            }
+        }
+
+        return totalSize;
+    }
+
+    /**
+     * Approximate the amount of RAM consumed by the various "payloads" of an IBaseDataObject. In this case, a payload
+     * refers to the header, footer, data (primary view), and all the alternate views.
+     * 
+     * @param ibdo - The IBaseDataObject to approximate
+     * @return - The approximate size, in bytes, in RAM for the IBaseDataObject
+     */
+    public static long getPayloadRAMSize(@Nullable IBaseDataObject ibdo) {
+        if (ibdo == null) {
+            return 0L;
+        }
+
+        long totalSize = 0L;
+
+        // We don't concern ourselves with object references here, because they are likely
+        // tiny compared to the various "payloads" and altViews. A more accurate
+        // version of this method would factor those in, but they are likely to be
+        // negligible
+
+        // Primary view (potentially gigantic)
+        totalSize += ibdo.dataLength(); // This always returns an int
+
+        // Header and footer size (probably not big)
+        if (ibdo.footer() != null) {
+            totalSize += ibdo.footer().length;
+        }
+        if (ibdo.header() != null) {
+            totalSize += ibdo.header().length;
+        }
+
+        // Size up the alternative views
+        for (Map.Entry<String, byte[]> altView : ibdo.getAlternateViews().entrySet()) {
+            if (altView.getValue() != null) {
+                totalSize += altView.getValue().length;
+            }
+        }
+
         return totalSize;
     }
 

@@ -266,15 +266,6 @@ public class HtmlEscape {
     }
 
 
-    @Nullable
-    private static String getValueForHTMLEntity(String entity) {
-        String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
-        if (s != null) {
-            return s;
-        }
-        return null;
-    }
-
     /**
      * Unescape HTML entities without measuring what was changed
      */
@@ -333,6 +324,15 @@ public class HtmlEscape {
             }
         }
         return baos.toByteArray();
+    }
+
+    @Nullable
+    private static String getValueForHTMLEntity(String entity) {
+        String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
+        if (s != null) {
+            return s;
+        }
+        return null;
     }
 
     /** This class is not meant to be instantiated. */
