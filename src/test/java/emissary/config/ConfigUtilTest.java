@@ -97,7 +97,7 @@ class ConfigUtilTest extends UnitTest {
 
     private static final class Dummy {
         @SuppressWarnings("unused")
-        public int getStuff() {
+        public static int getStuff() {
             return 1;
         }
     }
@@ -420,9 +420,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(noCfgsFolder.toAbsolutePath()));
         ConfigUtil.initialize();
 
-        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getClassNameInventory();
-        });
+        EmissaryException thrown = assertThrows(EmissaryException.class, ConfigUtil::getClassNameInventory);
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }
@@ -439,9 +437,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(oldCfgsFolder.toAbsolutePath()));
         ConfigUtil.initialize();
 
-        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getClassNameInventory();
-        });
+        EmissaryException thrown = assertThrows(EmissaryException.class, ConfigUtil::getClassNameInventory);
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }

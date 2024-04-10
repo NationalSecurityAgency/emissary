@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DirectoryEntryListTest extends UnitTest {
 
+    @Nullable
     private DirectoryEntryList dl = null;
     private static final String key1 = "UNKNOWN.FOOPLACE.ID.http://host.domain.com:8001/thePlace";
     private static final String key2 = "UNKNOWN.FOOPLACE.TRANSFORM.http://host.domain.com:8001/otherPlace";
@@ -26,8 +28,11 @@ class DirectoryEntryListTest extends UnitTest {
     private static final int cost = 50;
     private static final int quality = 50;
 
+    @Nullable
     private DirectoryEntry d = null;
+    @Nullable
     private DirectoryEntry d2 = null;
+    @Nullable
     private DirectoryEntry d3 = null;
 
     @Override

@@ -12,6 +12,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -82,8 +83,8 @@ class JournaledChannelPoolTest extends UnitTest {
         assertEquals(totlen, jrnltot, "Total length should be " + totlen);
     }
 
-    private void writeText(final KeyedOutput ko, final String text) throws IOException {
-        try (BufferedWriter bw = new BufferedWriter(Channels.newWriter(ko, "UTF-8"))) {
+    private static void writeText(final KeyedOutput ko, final String text) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(Channels.newWriter(ko, StandardCharsets.UTF_8))) {
             bw.write(text);
             bw.flush();
             ko.commit();

@@ -26,7 +26,7 @@ class FileChannelFactoryTest extends UnitTest {
     private static SeekableByteChannelFactory sbcf;
 
     @BeforeAll
-    static void setup(final @TempDir Path tempDir) throws IOException {
+    static void setup(@TempDir final Path tempDir) throws IOException {
         final Path path = tempDir.resolve("testBytes");
 
         Files.write(TEST_BYTES, path.toFile());
@@ -84,7 +84,7 @@ class FileChannelFactoryTest extends UnitTest {
     }
 
     @Test
-    void testCanCreateAndRetrieveEmptyFile(final @TempDir Path tempDir) throws IOException {
+    void testCanCreateAndRetrieveEmptyFile(@TempDir final Path tempDir) throws IOException {
         final Path path = tempDir.resolve("emptyBytes");
         Files.write(new byte[0], path.toFile());
         final SeekableByteChannelFactory simbcf = FileChannelFactory.create(path);

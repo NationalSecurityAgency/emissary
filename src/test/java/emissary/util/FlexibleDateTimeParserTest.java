@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -42,7 +43,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      * @param expected the expected parsed and formatted date
      * @param msg the error message to display if the test fails
      */
-    private void test(String date, long expected, String msg) {
+    private static void test(@Nullable String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date);
         Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
     }
@@ -54,7 +55,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      * @param expected the expected parsed and formatted date
      * @param formatter run a date format manually and compare the output to the unknown parser
      */
-    private void test(String date, long expected, DateTimeFormatter formatter) {
+    private static void test(String date, long expected, DateTimeFormatter formatter) {
         long unknownParse = FlexibleDateTimeParser.parse(date).toEpochSecond();
         assertEquals(expected, unknownParse, "Flexible parse failed for " + formatter);
 

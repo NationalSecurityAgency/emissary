@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,8 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class FTestSpacePlaceInteraction extends FunctionalTest {
+    @Nullable
     private FilePickUpClient place = null;
+    @Nullable
     private WorkSpace space = null;
+    @Nullable
     private InputStream configStream = null;
 
     // Workspace input and output directories

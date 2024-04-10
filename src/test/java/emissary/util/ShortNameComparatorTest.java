@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class ShortNameComparatorTest extends UnitTest {
     private final byte[] nobytes = new byte[0];
-    private final String b = "foo";
-    private final String ba = this.b + Family.SEP;
+    private static final String b = "foo";
+    private final String ba = b + Family.SEP;
 
     @Test
     void testOrdering() {

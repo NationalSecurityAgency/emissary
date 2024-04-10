@@ -425,7 +425,7 @@ class ExecutrixTest extends UnitTest {
         sout.setLength(0);
     }
 
-    private void readAndNuke(final String name) throws IOException {
+    private static void readAndNuke(final String name) throws IOException {
         final File f = new File(name);
         assertTrue(f.exists(), "File " + name + " must exist");
         final byte[] data = Executrix.readDataFromFile(name);

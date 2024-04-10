@@ -123,7 +123,7 @@ class EmissaryTest extends UnitTest {
         assertTrue(emissary.getErr().contains("picocli INFO] Parsing 1 command line args [another]"));
     }
 
-    private String[] makeArgs(String... args) {
+    private static String[] makeArgs(String... args) {
         String[] ret = new String[args.length];
         System.arraycopy(args, 0, ret, 0, args.length);
         return ret;

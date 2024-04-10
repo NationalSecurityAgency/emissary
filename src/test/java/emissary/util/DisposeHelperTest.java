@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,6 +32,7 @@ class DisposeHelperTest extends UnitTest {
         throw new RuntimeException("DisposeHelperTest");
     };
 
+    @Nullable
     private ListAppender<ILoggingEvent> appender = null;
     private final Logger logger = (Logger) LoggerFactory.getLogger(DisposeHelper.class);
     private final Logger rLogger = (Logger) LoggerFactory.getLogger("DisposeHelperRunnable");

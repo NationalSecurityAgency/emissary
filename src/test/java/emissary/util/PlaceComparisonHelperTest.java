@@ -57,7 +57,7 @@ class PlaceComparisonHelperTest extends UnitTest {
         assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1));
     }
 
-    private void checkThrowsNull(final Executable e) {
+    private static void checkThrowsNull(final Executable e) {
         assertThrows(NullPointerException.class, e);
     }
 

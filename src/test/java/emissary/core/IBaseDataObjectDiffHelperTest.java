@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,7 +61,8 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         differences.clear();
     }
 
-    private void verifyDiffList(final int expectedDifferences, final List<IBaseDataObject> list1, final List<IBaseDataObject> list2) {
+    private void verifyDiffList(final int expectedDifferences, @Nullable final List<IBaseDataObject> list1,
+            @Nullable final List<IBaseDataObject> list2) {
         IBaseDataObjectDiffHelper.diff(list1, list1, "test", differences, EMPTY_OPTIONS);
         assertEquals(0, differences.size());
         IBaseDataObjectDiffHelper.diff(list1, list2, "test", differences, EMPTY_OPTIONS);
@@ -68,7 +70,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
         differences.clear();
     }
 
-    private void checkThrowsNull(final Executable e) {
+    private static void checkThrowsNull(final Executable e) {
         assertThrows(NullPointerException.class, e);
     }
 

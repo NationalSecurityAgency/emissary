@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static emissary.core.SafeUsageChecker.UNSAFE_MODIFICATION_DETECTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -54,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class BaseDataObjectTest extends UnitTest {
 
+    @Nullable
     private BaseDataObject b = null;
 
     @Override
@@ -1305,6 +1307,8 @@ class BaseDataObjectTest extends UnitTest {
 
     static final byte[] DATA_MODIFICATION_BYTES = "These are the test bytes!".getBytes(StandardCharsets.US_ASCII);
     static final Level LEVELS_ONE_WARN = Level.WARN;
+
+    @Nullable
     static final Throwable NO_THROWABLES = null;
     List<LogbackTester.SimplifiedLogEvent> events = new ArrayList<>();
     LogbackTester.SimplifiedLogEvent event1 =

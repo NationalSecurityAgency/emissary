@@ -573,11 +573,11 @@ class ServiceProviderPlaceTest extends UnitTest {
             super(config);
         }
 
-        public PlaceTest(InputStream config, String loc) throws IOException {
+        public PlaceTest(InputStream config, @Nullable String loc) throws IOException {
             super(config, loc);
         }
 
-        public PlaceTest(InputStream config, String dir, String loc) throws IOException {
+        public PlaceTest(InputStream config, @Nullable String dir, @Nullable String loc) throws IOException {
             super(config, dir, loc);
         }
 

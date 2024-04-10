@@ -4,10 +4,12 @@ import emissary.directory.EmissaryNode;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.io.FileNameGenerator;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,42 +28,42 @@ class DateFilterFilenameGeneratorTest extends UnitTest {
 
         String filename1 = fileNameGenerator.nextFileName();
         String filename2 = fileNameGenerator.nextFileName();
-        String[] filename1Parts = filename1.split(String.valueOf(DateFilterFilenameGenerator.DELIMITER));
+        List<String> filename1Parts = Splitter.onPattern(String.valueOf(DateFilterFilenameGenerator.DELIMITER)).splitToList(filename1);
 
         // Test Uniqueness
         assertNotEquals(filename1, filename2);
 
         // Test that filename starts with date (11 digits)
-        assertTrue(NumberUtils.isDigits(filename1Parts[0]));
-        assertEquals(11, filename1Parts[0].length());
+        assertTrue(NumberUtils.isDigits(filename1Parts.get(0)));
+        assertEquals(11, filename1Parts.get(0).length());
 
         // Test that uuid is valid
-        assertEquals(UUID.fromString(filename1Parts[1]).toString(), filename1Parts[1]);
+        assertEquals(UUID.fromString(filename1Parts.get(1)).toString(), filename1Parts.get(1));
 
         // Test that filename has 4 parts and filter name is present at the end
-        assertEquals(4, filename1Parts.length);
-        assertEquals(FAKE_FILTER, filename1Parts[filename1Parts.length - 1]);
+        assertEquals(4, filename1Parts.size());
+        assertEquals(FAKE_FILTER, filename1Parts.get(filename1Parts.size() - 1));
     }
 
     @Test
     void testFilterDelimiterReplacement() {
         FileNameGenerator fileNameGenerator = new DateFilterFilenameGenerator(FAKE_FILTER_UNDERSCORE);
         String filename = fileNameGenerator.nextFileName();
-        String[] filenameParts = filename.split(String.valueOf(DateFilterFilenameGenerator.DELIMITER));
+        List<String> filenameParts = Splitter.onPattern(String.valueOf(DateFilterFilenameGenerator.DELIMITER)).splitToList(filename);
 
-        assertNotEquals(FAKE_FILTER_UNDERSCORE, filenameParts[3]);
-        assertEquals(FAKE_FILTER_DASH, filenameParts[3]);
+        assertNotEquals(FAKE_FILTER_UNDERSCORE, filenameParts.get(3));
+        assertEquals(FAKE_FILTER_DASH, filenameParts.get(3));
     }
 
     @Test
     void testEmptyFilter() {
         FileNameGenerator fileNameGenerator = new DateFilterFilenameGenerator(StringUtils.EMPTY);
         String filename = fileNameGenerator.nextFileName();
-        String[] filenameParts = filename.split(String.valueOf(DateFilterFilenameGenerator.DELIMITER));
+        List<String> filenameParts = Splitter.onPattern(String.valueOf(DateFilterFilenameGenerator.DELIMITER)).splitToList(filename);
 
         // Only expect 3 parts now and that node name is the last element
-        assertEquals(3, filenameParts.length);
-        assertEquals(System.getProperty(EmissaryNode.NODE_NAME_PROPERTY), filenameParts[filenameParts.length - 1]);
+        assertEquals(3, filenameParts.size());
+        assertEquals(System.getProperty(EmissaryNode.NODE_NAME_PROPERTY), filenameParts.get(filenameParts.size() - 1));
     }
 
 

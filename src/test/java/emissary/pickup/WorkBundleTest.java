@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class WorkBundleTest extends UnitTest {
 
-    private boolean compareWorkerUnits(WorkUnit w1, WorkUnit w2) {
+    private static boolean compareWorkerUnits(WorkUnit w1, WorkUnit w2) {
         boolean matchFileNames;
         if (w1.getFileName() == null && w2.getFileName() == null) {
             matchFileNames = true;

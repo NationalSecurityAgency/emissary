@@ -15,6 +15,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LoggingInputStreamFactoryTest extends UnitTest {
+    @Nullable
     private ListAppender<ILoggingEvent> appender = null;
     private final Logger logger = (Logger) LoggerFactory.getLogger(LoggingInputStreamFactoryTest.class);
 

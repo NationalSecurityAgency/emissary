@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -47,7 +48,7 @@ class ListOpenFilesTest extends UnitTest {
 
         // open a file and test
         try (InputStream stream = Files.newInputStream(file)) {
-            assert stream != null;
+            assertNotNull(stream);
             assertTrue(instance.isOpen(file));
         }
         assertFalse(instance.isOpen(file));

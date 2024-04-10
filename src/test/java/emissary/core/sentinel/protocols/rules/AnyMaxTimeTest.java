@@ -23,6 +23,7 @@ class AnyMaxTimeTest extends UnitTest {
 
     Collection<Protocol.PlaceAgentStats> placeAgentStats;
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -74,6 +75,7 @@ class AnyMaxTimeTest extends UnitTest {
         AgentPool pool;
         List<Protocol.PlaceAgentStats> stats;
 
+        @Override
         @BeforeEach
         public void setUp() throws Exception {
             super.setUp();

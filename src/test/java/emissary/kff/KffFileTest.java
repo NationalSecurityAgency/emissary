@@ -172,7 +172,7 @@ class KffFileTest extends UnitTest {
         // read the "known file" entry into the buffer
         sbc.read(buffer);
         // convert the raw byte[] in a ChecksumResults object
-        return buildChecksumResultsWithSha1AndCRC(buffer.array());
+        return buildChecksumResultsWithSha1AndCrc(buffer.array());
     }
 
     /**
@@ -184,7 +184,7 @@ class KffFileTest extends UnitTest {
         byte[] randomBytes = new byte[DEFAULT_RECORD_LENGTH];
         RANDOM.nextBytes(randomBytes);
         // convert the raw byte[] in a ChecksumResults object
-        return buildChecksumResultsWithSha1AndCRC(randomBytes);
+        return buildChecksumResultsWithSha1AndCrc(randomBytes);
     }
 
     /**
@@ -193,11 +193,11 @@ class KffFileTest extends UnitTest {
      * @param recordBytes input byte array, with expected length {@link KffFile#DEFAULT_RECORD_LENGTH}
      * @return the constructed ChecksumBytes instance
      */
-    private static ChecksumResults buildChecksumResultsWithSha1AndCRC(byte[] recordBytes) {
+    private static ChecksumResults buildChecksumResultsWithSha1AndCrc(byte[] recordBytes) {
         Validate.notNull(recordBytes, "recordBytes must not be null");
         Validate.isTrue(recordBytes.length == DEFAULT_RECORD_LENGTH, "recordBytes must include 24 elements");
         byte[] sha1Bytes = getSha1Bytes(recordBytes);
-        byte[] crc32Bytes = getCrc32BytesLE(recordBytes);
+        byte[] crc32Bytes = getCrc32BytesLe(recordBytes);
         ChecksumResults csr = new ChecksumResults();
         csr.setHash("SHA-1", sha1Bytes);
         csr.setCrc(ByteUtils.fromLittleEndian(crc32Bytes));
@@ -222,7 +222,7 @@ class KffFileTest extends UnitTest {
      * @param recordBytes Bytes to parse
      * @return the CRC32 bytes, in litte-endian order
      */
-    private static byte[] getCrc32BytesLE(byte[] recordBytes) {
+    private static byte[] getCrc32BytesLe(byte[] recordBytes) {
         Validate.notNull(recordBytes, "recordBytes must not be null");
         Validate.isTrue(recordBytes.length == DEFAULT_RECORD_LENGTH, "recordBytes must include 24 elements");
         byte[] result = Arrays.copyOfRange(recordBytes, DEFAULT_RECORD_LENGTH - 4, DEFAULT_RECORD_LENGTH);

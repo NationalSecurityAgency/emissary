@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,11 +33,13 @@ import static org.mockito.Mockito.validateMockitoUsage;
 import static org.mockito.Mockito.verify;
 
 class MultiFileUnixCommandPlaceTest extends UnitTest {
+    @Nullable
     private MultiFileUnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(MultiFileUnixCommandPlaceTest.class);
     private Path workDir;
     private File scriptFile;
     private static final String W = "Президент Буш";
+    @Nullable
     private IBaseDataObject payload;
     private static final String FORM = "TEST";
     private static final String PAYLOAD_STRING = "abcdefg";

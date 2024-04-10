@@ -6,6 +6,7 @@ import emissary.core.IBaseDataObject;
 import emissary.place.IServiceProviderPlace;
 import emissary.util.io.ResourceReader;
 
+import com.google.common.base.Splitter;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -26,6 +29,7 @@ public abstract class IdentificationTest extends UnitTest {
 
     protected static Logger logger = LoggerFactory.getLogger(IdentificationTest.class);
 
+    @Nullable
     protected static IServiceProviderPlace place = null;
 
     @BeforeEach
@@ -98,13 +102,13 @@ public abstract class IdentificationTest extends UnitTest {
     }
 
     protected void checkAnswers(IBaseDataObject payload, String resource, String expected) {
-        String[] expectedForms = expected.split("#");
-        for (int i = 0; i < expectedForms.length; i++) {
+        List<String> expectedForms = Splitter.on('#').splitToList(expected);
+        for (int i = 0; i < expectedForms.size(); i++) {
             String result = payload.currentFormAt(i).replaceAll("^LANG-", "");
-            if (expectedForms[i].indexOf("(") > 0) {
-                assertEquals(expectedForms[i], result, "Current form is wrong in " + resource);
+            if (expectedForms.get(i).indexOf("(") > 0) {
+                assertEquals(expectedForms.get(i), result, "Current form is wrong in " + resource);
             } else {
-                assertEquals(expectedForms[i], result.replaceAll("\\(.*\\)", ""), "Current form is wrong in " + resource);
+                assertEquals(expectedForms.get(i), result.replaceAll("\\(.*\\)", ""), "Current form is wrong in " + resource);
             }
         }
     }

@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class WorkSpaceTest extends UnitTest {
+    @Nullable
     MyWorkSpace mws;
 
     @Override
@@ -40,21 +42,21 @@ class WorkSpaceTest extends UnitTest {
     @Test
     void testPriorityQueueing() {
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         for (int i = 0; i < 10; i++) {
             // Set up some fake work
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt");
             wb.setPriority(5);
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
         }
 
         // Now add a higher priority item
         WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
         wb.addFileName("emergency.txt");
         wb.setPriority(1);
-        mws.addOutboundBundle_(wb);
+        mws.addOutboundBundle(wb);
 
         // See that the first thing handed out is the highest priority
         WorkBundle taken = mws.take(C1);
@@ -71,7 +73,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] times = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < times.length; i++) {
@@ -79,7 +81,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", times[i], 5L);
             wb.setPriority(1); // uniform priority to ensure times are used, not priority
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -107,7 +109,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] times = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < times.length; i++) {
@@ -115,7 +117,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", times[i], 5L);
             wb.setPriority(i);
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -143,7 +145,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] times = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < times.length; i++) {
@@ -151,7 +153,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", times[i], 2L);
             wb.setPriority(1); // uniform priority to make sure time sorting works
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -179,7 +181,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] times = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < times.length; i++) {
@@ -187,7 +189,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", times[i], 2L);
             wb.setPriority(i);
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -214,7 +216,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] sizes = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < sizes.length; i++) {
@@ -222,7 +224,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", 2L, sizes[i]);
             wb.setPriority(1); // uniform priority, so the time ordering is used
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -250,7 +252,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] sizes = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < sizes.length; i++) {
@@ -258,7 +260,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", 2L, sizes[i]);
             wb.setPriority(i);
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -285,7 +287,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] sizes = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < sizes.length; i++) {
@@ -293,7 +295,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", 2L, sizes[i]);
             wb.setPriority(1); // uniform priority to sort by size
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -321,7 +323,7 @@ class WorkSpaceTest extends UnitTest {
         mws = new MyWorkSpace(FeedCommand.parse(FeedCommand.class, args));
 
         String C1 = "INITIAL.INPUT.A.http://otherhost:7001/FilePickUpClient";
-        mws.addPickUp_(C1);
+        mws.addPickUp(C1);
 
         long[] sizes = {4, 5, 3, 1, 2, 7, 0, 8, 9, 10, 6};
         for (int i = 0; i < sizes.length; i++) {
@@ -329,7 +331,7 @@ class WorkSpaceTest extends UnitTest {
             WorkBundle wb = new WorkBundle("/fake/root", "/fake/eat");
             wb.addFileName("faker-" + i + ".txt", 2L, sizes[i]);
             wb.setPriority(i);
-            mws.addOutboundBundle_(wb);
+            mws.addOutboundBundle(wb);
 
         }
 
@@ -353,9 +355,9 @@ class WorkSpaceTest extends UnitTest {
         String C3 = "INITIAL.INPUT.A.http://otherhost:9001/FilePickUpClient";
 
         // Set up some fake clients
-        mws.addPickUp_(C1);
-        mws.addPickUp_(C2);
-        mws.addPickUp_(C3);
+        mws.addPickUp(C1);
+        mws.addPickUp(C2);
+        mws.addPickUp(C3);
         assertEquals(3, mws.getPickUpPlaceCount(), "Pickups added must count");
 
         // Set up some fake work
@@ -363,7 +365,7 @@ class WorkSpaceTest extends UnitTest {
         wb.addFileName("faker.txt");
 
         // Give the fake work to the space
-        mws.addOutboundBundle_(wb);
+        mws.addOutboundBundle(wb);
         assertEquals(1, mws.getBundlesProcessed(), "Adding bundle processes it");
         assertEquals(1, mws.getOutboundQueueSize(), "Budnle is outbound");
         assertEquals(0, mws.getRetriedCount(), "No retries yet");
@@ -380,7 +382,7 @@ class WorkSpaceTest extends UnitTest {
         assertEquals(1, mws.getPendingQueueSize(), "Taken item is pending");
 
         // Fail the fake client that took the work
-        mws.removePickUp_(C2);
+        mws.removePickUp(C2);
         assertEquals(2, mws.getPickUpPlaceCount(), "Pickups removed must count");
 
         // Make sure the bundle went back to outbound queue
@@ -411,15 +413,18 @@ class WorkSpaceTest extends UnitTest {
             super(command);
         }
 
-        public void addPickUp_(String pup) {
+        @Override
+        public void addPickUp(String pup) {
             super.addPickUp(pup);
         }
 
-        public void removePickUp_(String pup) {
+        @Override
+        public void removePickUp(String pup) {
             super.removePickUp(pup);
         }
 
-        public void addOutboundBundle_(WorkBundle wb) {
+        @Override
+        public void addOutboundBundle(WorkBundle wb) {
             super.addOutboundBundle(wb);
         }
 

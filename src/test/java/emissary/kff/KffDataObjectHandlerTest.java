@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +47,9 @@ class KffDataObjectHandlerTest extends UnitTest {
     static final String DATA_CRC32 = "33323239323631363138";
 
 
+    @Nullable
     protected KffDataObjectHandler kff;
+    @Nullable
     protected IBaseDataObject payload;
     private static final String resource = "emissary/kff/test.dat";
 

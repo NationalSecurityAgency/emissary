@@ -15,6 +15,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -48,7 +49,7 @@ class RollableFileOutputStreamTest extends UnitTest implements FileNameGenerator
         Files.createFile(file2);
         // test
         try (RollableFileOutputStream instance = new RollableFileOutputStream(this, tmpDir.toFile())) {
-            assert instance != null;
+            assertNotNull(instance);
         }
 
         // verify

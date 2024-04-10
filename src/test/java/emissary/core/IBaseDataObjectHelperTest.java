@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +47,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     private static final Boolean IS_EQUALS = true;
     private static final Boolean IS_NOT_SAME = false;
     private static final Boolean IS_NOT_EQUALS = false;
+    @Nullable
     private static final Boolean DONT_CHECK = null;
     private static final Boolean EQUAL_WITHOUT_FULL_CLONE = false;
     private static final Boolean EQUAL_AFTER_FULL_CLONE = true;
@@ -78,7 +80,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
         }
     }
 
-    private static void verifyCloneAssertions(final Method method, final Object obj1, final Object obj2, final Boolean isSame, final Boolean isEquals)
+    private static void verifyCloneAssertions(final Method method, final Object obj1, final Object obj2, @Nullable final Boolean isSame,
+            @Nullable final Boolean isEquals)
             throws IllegalAccessException, InvocationTargetException {
         final Object o1 = method.invoke(obj1);
         final Object o2 = method.invoke(obj2);
