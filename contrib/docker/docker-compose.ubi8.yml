@@ -2,7 +2,7 @@
 version: "3"
 
 services:
-  emissary:
+  emissary-server:
     image: emissary-ubi8
     build:
       context: ../../
@@ -10,8 +10,8 @@ services:
     environment:
       - PROJECT_BASE=/opt/emissary
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
-    hostname: "emissary"
-    command: "server -a 5 -p 8001 -s http -h emissary"
+    hostname: "emissary-server"
+    command: "server -a 5 -p 8001 -s http -h emissary-server"
     ports:
       - "8000:8000"
       - "8001:8001"
