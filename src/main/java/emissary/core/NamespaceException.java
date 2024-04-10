@@ -11,7 +11,7 @@ package emissary.core;
  *
  * @author ce
  */
-public class NamespaceException extends emissary.core.EmissaryException {
+public class NamespaceException extends EmissaryException {
 
     // Serializable
     static final long serialVersionUID = 3860002960394131834L;

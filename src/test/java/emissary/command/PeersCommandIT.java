@@ -69,7 +69,7 @@ class PeersCommandIT extends UnitTest {
         // setup
         // needed because it has already been initialize as a static
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTING");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
         arguments.addAll(Arrays.asList("--flavor", "TESTING", "-ih", "localhost"));
         command = PeersCommand.parse(PeersCommand.class, arguments);
 
@@ -85,7 +85,7 @@ class PeersCommandIT extends UnitTest {
         // setup
         // needed because it has already been initialize as a static
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTING");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
         arguments.addAll(Arrays.asList("--flavor", "TESTING", "-d", "\\n"));
         command = PeersCommand.parse(PeersCommand.class, arguments);
         String newLine = System.getProperty("line.separator");

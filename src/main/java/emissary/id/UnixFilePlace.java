@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 /**
  * Accesses emissary.util.UnixFile to perform file identification tests using emissary.util.UnixFile
  */
-public class UnixFilePlace extends emissary.id.IdPlace {
+public class UnixFilePlace extends IdPlace {
 
     protected boolean chop = true;
     protected boolean replace = false;

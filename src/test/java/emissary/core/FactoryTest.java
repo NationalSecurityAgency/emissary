@@ -34,7 +34,7 @@ class FactoryTest extends UnitTest {
         Object[] args = {"Here is a string", null};
         Object o = Factory.create("java.lang.Throwable", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof java.lang.Throwable, "Type of object");
+        assertTrue(o instanceof Throwable, "Type of object");
     }
 
     @Test
@@ -43,21 +43,21 @@ class FactoryTest extends UnitTest {
         Object[] args = {"Here is a string", ex};
         Object o = Factory.create("java.lang.Throwable", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof java.lang.Throwable, "Type of object");
+        assertTrue(o instanceof Throwable, "Type of object");
     }
 
     @Test
     void testWithVarArgs() {
         Object o = Factory.create("java.lang.Throwable", "Here is a string");
         assertNotNull(o, "Factory vararg creation");
-        assertTrue(o instanceof java.lang.Throwable, "Type of object on vararg create");
+        assertTrue(o instanceof Throwable, "Type of object on vararg create");
     }
 
     @Test
     void testWithVarArgsAndNull() {
         Object o = Factory.create("java.lang.Throwable", "Here is a string", null);
         assertNotNull(o, "Factory vararg with null");
-        assertTrue(o instanceof java.lang.Throwable, "Type of object on vararg with null");
+        assertTrue(o instanceof Throwable, "Type of object on vararg with null");
     }
 
     @Test
@@ -82,7 +82,7 @@ class FactoryTest extends UnitTest {
         Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof java.lang.Integer, "Type of object");
+        assertTrue(o instanceof Integer, "Type of object");
         for (String s : Namespace.keySet()) {
             fail("Namespace should be empty but has " + s);
         }
@@ -94,10 +94,10 @@ class FactoryTest extends UnitTest {
         Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args, key);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof java.lang.Integer, "Type of object");
+        assertTrue(o instanceof Integer, "Type of object");
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Registered object");
-        assertTrue(o2 instanceof java.lang.Integer, "Type of registered object");
+        assertTrue(o2 instanceof Integer, "Type of registered object");
         assertEquals(o, o2, "Creation matches registration");
     }
 

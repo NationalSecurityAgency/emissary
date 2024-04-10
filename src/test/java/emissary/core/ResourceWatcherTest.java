@@ -46,10 +46,10 @@ class ResourceWatcherTest extends UnitTest {
         cdl.await();
 
         // Add them up
-        final Map<String, com.codahale.metrics.Timer> stats = this.resourceWatcher.getStats();
+        final Map<String, Timer> stats = this.resourceWatcher.getStats();
         assertTrue(stats.size() > 0, "Stats were not collected");
 
-        final com.codahale.metrics.Timer s = stats.get("DevNullPlace");
+        final Timer s = stats.get("DevNullPlace");
         assertNotNull(s, "Events must be measured");
 
         assertEquals(threadCount * iterations, s.getCount(), "Events must not be lost");

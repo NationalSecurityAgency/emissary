@@ -279,7 +279,7 @@ public class DropOffUtil {
      */
     public String getPathFromSpec(final String spec, final IBaseDataObject d) {
         // pass self as tld if tld, null if not
-        return getPathFromSpec(spec, d, (d != null && d.shortName().indexOf(emissary.core.Family.SEP) == -1) ? d : null);
+        return getPathFromSpec(spec, d, (d != null && d.shortName().indexOf(Family.SEP) == -1) ? d : null);
     }
 
     /**
@@ -392,7 +392,7 @@ public class DropOffUtil {
                         case 'b':
                             sb.append(cleanSpecPath((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d)));
                             final String sn = d.shortName();
-                            final int pos = sn.indexOf(emissary.core.Family.SEP);
+                            final int pos = sn.indexOf(Family.SEP);
                             if (pos > 0) {
                                 sb.append(sn.substring(pos));
                             }
@@ -543,7 +543,7 @@ public class DropOffUtil {
     }
 
     public String getRelativeShortOutputFileName(final IBaseDataObject d, @Nullable final String spec) {
-        return getRelativeShortOutputFileName(d, spec, d.shortName().indexOf(emissary.core.Family.SEP) == -1 ? d : null);
+        return getRelativeShortOutputFileName(d, spec, d.shortName().indexOf(Family.SEP) == -1 ? d : null);
     }
 
     public String getRelativeShortOutputFileName(final IBaseDataObject d, final String spec, @Nullable final IBaseDataObject tld) {
@@ -560,7 +560,7 @@ public class DropOffUtil {
     }
 
     public String getShortOutputFileName(final IBaseDataObject d, @Nullable final String spec) {
-        return getShortOutputFileName(d, spec, d.shortName().indexOf(emissary.core.Family.SEP) == -1 ? d : null);
+        return getShortOutputFileName(d, spec, d.shortName().indexOf(Family.SEP) == -1 ? d : null);
     }
 
     public String getShortOutputFileName(final IBaseDataObject d, final String spec, @Nullable final IBaseDataObject tld) {
@@ -980,7 +980,7 @@ public class DropOffUtil {
         }
 
         for (final IBaseDataObject p : payloadList) {
-            final int level = StringUtils.countMatches(p.shortName(), emissary.core.Family.SEP) + 1;
+            final int level = StringUtils.countMatches(p.shortName(), Family.SEP) + 1;
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
@@ -1046,7 +1046,7 @@ public class DropOffUtil {
                 final List<IBaseDataObject> childObjList = p.getExtractedRecords();
                 Collections.sort(childObjList, new ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
-                    final int parentLevel = StringUtils.countMatches(child.shortName(), emissary.core.Family.SEP);
+                    final int parentLevel = StringUtils.countMatches(child.shortName(), Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);
                     if (parentFileType != null) {
                         child.setParameter("PARENT_FILETYPE", parentFileType);
