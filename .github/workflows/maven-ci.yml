@@ -40,6 +40,25 @@ jobs:
       - name: Verify Changed Files
         run: contrib/ci/detect-changes.sh
 
+  ubi8-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          file: contrib/docker/Dockerfile.ubi8
+
   site-build:
     name: Standard maven site build
     runs-on: ubuntu-latest
