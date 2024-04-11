@@ -137,7 +137,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             for (Path entry : stream) {
                 String finalOutputFilename = FilenameUtils.getBaseName(entry.toString());
                 if (isOrphanedFile(finalOutputFilename)) {
-                    finalize(entry, outputPath.resolve(finalOutputFilename));
+                    finalizeRoll(entry, outputPath.resolve(finalOutputFilename));
                 }
             }
         } catch (IOException e) {
@@ -248,7 +248,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             // Check to see if we already rolled files successfully and crashed on deletion
             if (Files.exists(rolledOutputPath)) {
                 LOG.warn("Full output file already found {}. Deleting old part files.", rolledOutputPath);
-                finalize(journals, rolledOutputPath, finalOutputPath);
+                finalizeRoll(journals, rolledOutputPath, finalOutputPath);
                 return;
             }
 
@@ -268,7 +268,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
             Files.move(workingOutputPath, rolledOutputPath);
             LOG.info("Successfully coalesced {} files into: {}. Size: {}", journals.size(), rolledOutputPath, Files.size(rolledOutputPath));
 
-            finalize(journals, rolledOutputPath, finalOutputPath);
+            finalizeRoll(journals, rolledOutputPath, finalOutputPath);
         } catch (IOException ex) {
             LOG.error("IOException while processing journals for {}", key, ex);
         }
@@ -323,12 +323,24 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
         return this.rolling;
     }
 
-    protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
-        cleanupFiles(journals);
-        finalize(rolledOutputPath, finalOutputPath);
+    /** @deprecated replaced by {@link #finalizeRoll(Collection, Path, Path)} */
+    @Deprecated(since = "8.1.0")
+    protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
+        finalizeRoll(journals, rolledOutputPath, finalOutputPath);
     }
 
-    protected void finalize(Path rolledOutputPath, Path finalOutputPath) throws IOException {
+    /** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */
+    @Deprecated(since = "8.1.0")
+    protected void finalize(Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
+        finalizeRoll(rolledOutputPath, finalOutputPath);
+    }
+
+    protected void finalizeRoll(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
+        cleanupFiles(journals);
+        finalizeRoll(rolledOutputPath, finalOutputPath);
+    }
+
+    protected void finalizeRoll(Path rolledOutputPath, Path finalOutputPath) throws IOException {
         if (!Files.exists(rolledOutputPath)) {
             return;
         }
