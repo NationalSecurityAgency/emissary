@@ -323,14 +323,14 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
     }
 
     /** @deprecated replaced by {@link #finalizeRoll(Collection, Path, Path)} */
-    @Deprecated
-    protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException {
+    @Deprecated(since = "8.1.0")
+    protected void finalize(Collection<Journal> journals, Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
         finalizeRoll(journals, rolledOutputPath, finalOutputPath);
     }
 
     /** @deprecated replaced by {@link #finalizeRoll(Path, Path)} */
-    @Deprecated
-    protected void finalize(Path rolledOutputPath, Path finalOutputPath) throws IOException {
+    @Deprecated(since = "8.1.0")
+    protected void finalize(Path rolledOutputPath, Path finalOutputPath) throws IOException { // NOSONAR
         finalizeRoll(rolledOutputPath, finalOutputPath);
     }
 
