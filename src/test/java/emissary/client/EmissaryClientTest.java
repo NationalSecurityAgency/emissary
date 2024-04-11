@@ -101,7 +101,7 @@ class EmissaryClientTest extends UnitTest {
         logger.debug("Starting testPassingInRequestConfig");
         EmissaryClient.configure();
         EmissaryClient client = new EmissaryClient();
-        RequestConfig requestConfig = client.getRequestConfig();
+
         ConnectionConfig connectionConfig = client.getConnectionConfig();
         // initial value from config file on classpath
         int valueInCfgOnClasspath = (int) TimeUnit.MINUTES.toMillis(10);

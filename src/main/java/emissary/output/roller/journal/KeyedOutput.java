@@ -51,6 +51,12 @@ public class KeyedOutput extends OutputStream implements SeekableByteChannel {
         return this.jc.position();
     }
 
+    /* Unsupported operations */
+    @Override
+    public SeekableByteChannel position(final long newPosition) throws IOException {
+        throw new UnsupportedOperationException("This operation is not permitted");
+    }
+
     @Override
     public long size() throws IOException {
         return this.jc.size();
@@ -84,12 +90,6 @@ public class KeyedOutput extends OutputStream implements SeekableByteChannel {
         this.pool.free(this.jc);
         this.pool = null;
         this.jc = null;
-    }
-
-    /* Unsupported operations */
-    @Override
-    public SeekableByteChannel position(final long newPosition) throws IOException {
-        throw new UnsupportedOperationException("This operation is not permitted");
     }
 
     @Override

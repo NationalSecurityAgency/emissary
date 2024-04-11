@@ -14,7 +14,7 @@ class SaferJDOMUtilTest extends UnitTest {
 
     @Test
     void testDTDDisallowed() {
-        final String plist_xml =
+        final String plistXml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                         + "<!DOCTYPE note SYSTEM \"http://www.example.com/Note.dtd\">\n"
                         + "<note>\n"
@@ -23,12 +23,12 @@ class SaferJDOMUtilTest extends UnitTest {
                         + "<heading>Reminder</heading>\n"
                         + "</note>";
 
-        assertThrows(JDOMParseException.class, () -> SaferJDOMUtil.createDocument(plist_xml));
+        assertThrows(JDOMParseException.class, () -> SaferJDOMUtil.createDocument(plistXml));
     }
 
     @Test
     void testNonValidating() throws JDOMException {
-        final String plist_xml =
+        final String plistXml =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                         + "<note>\n"
                         + "<to>To</to>\n"
@@ -36,7 +36,7 @@ class SaferJDOMUtilTest extends UnitTest {
                         + "<heading>Reminder</heading>\n"
                         + "</note>";
 
-        final Document doc = SaferJDOMUtil.createDocument(plist_xml);
+        final Document doc = SaferJDOMUtil.createDocument(plistXml);
         assertNotNull(doc, "Document should be created");
     }
 }

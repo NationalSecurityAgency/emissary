@@ -3,6 +3,7 @@ package emissary.test.core.junit5;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 /**
  * Utility class to represent a dat file name.
@@ -13,8 +14,11 @@ public class InitialFinalFormFormat {
     // Similar but not same as regex in PayloadUtil
     private static final Pattern validForm = Pattern.compile("([\\w-)(/]+)");
 
+    @Nullable
     private String initialForm;
+    @Nullable
     private String finalForm;
+    @Nullable
     private String comments;
     private final String baseFileName;
     private final String originalFileName;

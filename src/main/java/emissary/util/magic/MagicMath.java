@@ -111,6 +111,18 @@ public class MagicMath {
         }
     }
 
+    @Nullable
+    public static byte[] stringToByteArray(int arraySize, @Nullable String stringValue) {
+        if (stringValue == null || stringValue.length() == 0) {
+            return null;
+        }
+        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
+            return hexStringToByteArray(stringValue);
+        } else {
+            return integerToByteArray(arraySize, stringToLong(stringValue));
+        }
+    }
+
     public static byte[] octalStringToByteArray(String s) {
         String sub = s.startsWith(PRE_OCT) ? s.substring(1) : s;
         BigInteger integer = new BigInteger(sub, 8);
@@ -209,17 +221,6 @@ public class MagicMath {
         }
     }
 
-    @Nullable
-    public static byte[] stringToByteArray(int arraySize, @Nullable String stringValue) {
-        if (stringValue == null || stringValue.length() == 0) {
-            return null;
-        }
-        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
-            return hexStringToByteArray(stringValue);
-        } else {
-            return integerToByteArray(arraySize, stringToLong(stringValue));
-        }
-    }
 
     public static String byteArrayToString(byte[] bytes) {
         StringBuilder sb = new StringBuilder("[");
@@ -230,20 +231,6 @@ public class MagicMath {
             sb.append(Byte.toString(bytes[i]));
         }
         return sb.toString();
-    }
-
-    public static long byteArrayToLong(byte[] data) {
-        int actualSize = data.length;
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == 0) {
-                actualSize--;
-            } else {
-                break;
-            }
-        }
-        byte[] adjustedData = setLength(data, actualSize);
-        BigInteger value = new BigInteger(adjustedData);
-        return value.longValue();
     }
 
     public static String byteArrayToString(byte[] data, int radix) {
@@ -261,6 +248,21 @@ public class MagicMath {
         byte[] adjustedData = setLength(data, actualSize);
         BigInteger value = new BigInteger(adjustedData);
         return value.toString(radix);
+    }
+
+
+    public static long byteArrayToLong(byte[] data) {
+        int actualSize = data.length;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == 0) {
+                actualSize--;
+            } else {
+                break;
+            }
+        }
+        byte[] adjustedData = setLength(data, actualSize);
+        BigInteger value = new BigInteger(adjustedData);
+        return value.longValue();
     }
 
     public static void longEndianSwap(byte[] array, int offset) {

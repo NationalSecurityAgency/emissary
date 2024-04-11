@@ -18,6 +18,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +42,7 @@ class LoggingChannelFactoryTest extends UnitTest {
     }
 
     @Test
-    void testChannelFactory(final @TempDir Path tempDir) throws IOException {
+    void testChannelFactory(@TempDir final Path tempDir) throws IOException {
         final Path path = tempDir.resolve("testBytes");
         final SeekableByteChannelFactory fileSbcf = new TestFileChannelFactory(path, logger);
         final SeekableByteChannelFactory loggingFalseSbcf = LoggingChannelFactory.create(fileSbcf, "Identifier", logger,
@@ -126,7 +127,9 @@ class LoggingChannelFactoryTest extends UnitTest {
             this.logger = logger;
         }
 
+
         @Override
+        @Nullable
         public SeekableByteChannel create() {
             try {
                 return FileChannel.open(path, StandardOpenOption.READ, StandardOpenOption.WRITE,

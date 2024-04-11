@@ -38,7 +38,7 @@ class ConfigUtilTest extends UnitTest {
     private static List<Path> testFilesAndDirectories;
 
     private ListAppender<ILoggingEvent> appender = new ListAppender<>();
-    private final Logger configLogger = (Logger) LoggerFactory.getLogger(emissary.config.ConfigUtil.class);
+    private final Logger configLogger = (Logger) LoggerFactory.getLogger(ConfigUtil.class);
 
     private static String configDir;
     @Nullable
@@ -71,7 +71,7 @@ class ConfigUtilTest extends UnitTest {
         }
         CDIR = null;
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
 
@@ -97,7 +97,7 @@ class ConfigUtilTest extends UnitTest {
 
     private static final class Dummy {
         @SuppressWarnings("unused")
-        public int getStuff() {
+        public static int getStuff() {
             return 1;
         }
     }
@@ -119,7 +119,7 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testEmptyFlavorNaming() throws EmissaryException {
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
         final String[] r = ConfigUtil.addFlavors("emissary.blubber.Whale.cfg");
         assertEquals(0, r.length, "Flavor cannot be added not " + Arrays.asList(r));
     }
@@ -127,19 +127,19 @@ class ConfigUtilTest extends UnitTest {
     @Test
     void testSingleFlavorNaming() throws EmissaryException {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         assertEquals("emissary.blubber.Whale-TESTFLAVOR.cfg",
                 ConfigUtil.addFlavors("emissary.blubber.Whale.cfg")[0],
                 "Flavor should be added to resource name");
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
     void testDoubleFlavorNaming() throws EmissaryException {
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "CHOCOLATE,PEANUTBUTTER");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         final String[] fnames = ConfigUtil.addFlavors("emissary.blubber.Whale.cfg");
         assertEquals(2, fnames.length, "All flavors must be added");
@@ -147,7 +147,7 @@ class ConfigUtilTest extends UnitTest {
         assertEquals("emissary.blubber.Whale-PEANUTBUTTER.cfg", fnames[1], "Second flavor should be added to resource name");
 
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
 
@@ -155,7 +155,7 @@ class ConfigUtilTest extends UnitTest {
     void testFlavorMerge() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         final Path baseFile = Paths.get(configDir, "emissary.blubber.Whale.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
@@ -175,7 +175,7 @@ class ConfigUtilTest extends UnitTest {
 
         // Restore default flavor
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // Clean up tmp files
         Files.deleteIfExists(baseFile);
@@ -186,7 +186,7 @@ class ConfigUtilTest extends UnitTest {
     void testFlavorMergeWithVariableExpansion() throws IOException, EmissaryException {
         // Set up a flavor for the test
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "TESTFLAVOR");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         final Path baseFile = Paths.get(configDir, "emissary.blubber.Shark.cfg");
         try (OutputStream ros = Files.newOutputStream(baseFile)) {
@@ -207,7 +207,7 @@ class ConfigUtilTest extends UnitTest {
 
         // Restore default flavor
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // Clean up tmp files
         Files.deleteIfExists(baseFile);
@@ -249,7 +249,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         final Configurator c1 = ConfigUtil.getConfigInfo(cfgName1);
@@ -261,7 +261,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -275,7 +275,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + cfgName2.getParent());
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         assertEquals("HOO", ConfigUtil.getConfigInfo(cfgName1).findStringEntry("BOO"), "Entry BOO is wrong");
@@ -283,7 +283,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -298,7 +298,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         final Configurator c = ConfigUtil.getConfigInfo(cfgName);
@@ -308,7 +308,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -324,7 +324,7 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         final Configurator c = ConfigUtil.getConfigInfo("emissary.blubber.Shark.cfg");
@@ -336,7 +336,7 @@ class ConfigUtilTest extends UnitTest {
         // Restore default flavor
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -348,14 +348,14 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2 + "," + configDir3);
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         assertEquals(3, ConfigUtil.getConfigDirs().size(), "Should be 3 config dirs");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -366,16 +366,16 @@ class ConfigUtilTest extends UnitTest {
         System.setProperty(CONFIG_DIR_PROPERTY, configDir1 + "," + configDir2);
 
         // run
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         assertEquals(2, ConfigUtil.getConfigDirs().size(), "Should be 2 config dirs");
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
         assertEquals(2, ConfigUtil.getConfigDirs().size(), "Should still be 2 config dirs");
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
     }
 
@@ -384,7 +384,7 @@ class ConfigUtilTest extends UnitTest {
         // read in current file
         // figure out number of entries
 
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         final Configurator c = ConfigUtil.getClassNameInventory();
         assertNotNull(c, "Configurator should not be null");
@@ -402,7 +402,7 @@ class ConfigUtilTest extends UnitTest {
         final String three = "Dev3NullPlace         = \"emissary.place.iamtheone.DevNullPlace\"\n";
         createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-modetwo.cfg", three);
 
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         final Configurator c = ConfigUtil.getClassNameInventory();
         assertNotNull(c, "Configurator should not be null");
@@ -418,11 +418,9 @@ class ConfigUtilTest extends UnitTest {
         final Path noCfgsFolder = createTmpSubDir("folder_with_no_cfg_files");
 
         System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(noCfgsFolder.toAbsolutePath()));
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
-        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getClassNameInventory();
-        });
+        EmissaryException thrown = assertThrows(EmissaryException.class, ConfigUtil::getClassNameInventory);
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }
@@ -437,11 +435,9 @@ class ConfigUtilTest extends UnitTest {
         createFileAndPopulate(oldCfgsFolder, "ClassNameInventory.cfg", contents);
 
         System.setProperty(CONFIG_DIR_PROPERTY, String.valueOf(oldCfgsFolder.toAbsolutePath()));
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
-        EmissaryException thrown = assertThrows(EmissaryException.class, () -> {
-            final Configurator c = ConfigUtil.getClassNameInventory();
-        });
+        EmissaryException thrown = assertThrows(EmissaryException.class, ConfigUtil::getClassNameInventory);
 
         assertTrue(thrown.getMessage().contains("No places to start."));
     }
@@ -470,7 +466,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -484,7 +480,7 @@ class ConfigUtilTest extends UnitTest {
         createFileAndPopulate(cfgDir2, "emissary.admin.ClassNameInventory-sames.cfg", two);
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // run
         final Configurator c = ConfigUtil.getClassNameInventory();
@@ -497,7 +493,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
 
@@ -519,7 +515,7 @@ class ConfigUtilTest extends UnitTest {
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath() + "," + cfgDir3.toAbsolutePath());
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // run
         final Configurator c = ConfigUtil.getClassNameInventory();
@@ -534,7 +530,7 @@ class ConfigUtilTest extends UnitTest {
 
         // clean up
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -543,7 +539,7 @@ class ConfigUtilTest extends UnitTest {
         createFileAndPopulate(CDIR, "emissary.admin.ClassNameInventory-NORM.cfg", contents2);
         System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, "NORM");
 
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
         ConfigUtil.getClassNameInventory();
 
         // Confirm logs contain flavor message
@@ -553,7 +549,7 @@ class ConfigUtilTest extends UnitTest {
                                 .contains("appeared to be flavored with NORM")));
 
         System.clearProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
     }
 
     @Test
@@ -601,13 +597,13 @@ class ConfigUtilTest extends UnitTest {
 
         final String origConfigDirProp = System.getProperty(CONFIG_DIR_PROPERTY);
         System.setProperty(CONFIG_DIR_PROPERTY, cfgDir1.toAbsolutePath() + "," + cfgDir2.toAbsolutePath());
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // run
         final Configurator c = ConfigUtil.getClassNameInventory();
         // clean up quick so other test don't fail
         System.setProperty(CONFIG_DIR_PROPERTY, origConfigDirProp);
-        emissary.config.ConfigUtil.initialize();
+        ConfigUtil.initialize();
 
         // assert
         assertNotNull(c, "Should have a configurator");

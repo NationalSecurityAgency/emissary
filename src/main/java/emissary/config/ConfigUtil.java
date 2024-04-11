@@ -351,6 +351,30 @@ public class ConfigUtil {
     }
 
     /**
+     * Get the configurator on the specified stream
+     *
+     * @param is the stream of data
+     * @param name the name of the stream for debugging
+     * @return configurator object
+     */
+    public static Configurator getConfigInfo(final InputStream is, final String name) throws IOException {
+        final ServiceConfigGuide scg = new ServiceConfigGuide(is, name);
+
+        final String[] flavoredNames = addFlavors(name);
+        for (final String flavoredName : flavoredNames) {
+            try {
+                logger.debug("Attempting flavor merge on {}", flavoredName);
+                final Configurator flavoredConfig = getConfigInfo(flavoredName);
+                scg.merge(flavoredConfig);
+                logger.debug("Merged config with {}", flavoredName);
+            } catch (IOException iox) {
+                logger.debug("Unable to opt import flavor config {}", flavoredName);
+            }
+        }
+        return scg;
+    }
+
+    /**
      * Get the last modified time of a config file resource
      *
      * @param name the name of the config resource
@@ -499,30 +523,6 @@ public class ConfigUtil {
             flavoredNames[i] = base + "-" + flavor[i] + suffix;
         }
         return flavoredNames;
-    }
-
-    /**
-     * Get the configurator on the specified stream
-     *
-     * @param is the stream of data
-     * @param name the name of the stream for debugging
-     * @return configurator object
-     */
-    public static Configurator getConfigInfo(final InputStream is, final String name) throws IOException {
-        final ServiceConfigGuide scg = new ServiceConfigGuide(is, name);
-
-        final String[] flavoredNames = addFlavors(name);
-        for (final String flavoredName : flavoredNames) {
-            try {
-                logger.debug("Attempting flavor merge on {}", flavoredName);
-                final Configurator flavoredConfig = getConfigInfo(flavoredName);
-                scg.merge(flavoredConfig);
-                logger.debug("Merged config with {}", flavoredName);
-            } catch (IOException iox) {
-                logger.debug("Unable to opt import flavor config {}", flavoredName);
-            }
-        }
-        return scg;
     }
 
     /**

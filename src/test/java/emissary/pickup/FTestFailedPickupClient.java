@@ -14,15 +14,20 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FTestFailedPickupClient extends FunctionalTest {
+    @Nullable
     private BreakableFilePickUpClient goodplace = null;
+    @Nullable
     private BreakableFilePickUpClient badplace = null;
+    @Nullable
     private MyWorkSpace space = null;
+    @Nullable
     private IDirectoryPlace peer2 = null;
 
     // Workspace input and output directories
@@ -31,8 +36,8 @@ class FTestFailedPickupClient extends FunctionalTest {
     private File holdarea;
     private File outarea;
 
-    private List<File> workingFiles = new ArrayList<>();
-    private List<String> workingFilePaths = new ArrayList<>();
+    private final List<File> workingFiles = new ArrayList<>();
+    private final List<String> workingFilePaths = new ArrayList<>();
 
     @Override
     @BeforeEach
@@ -238,7 +243,7 @@ class FTestFailedPickupClient extends FunctionalTest {
         }
     }
 
-    private void checkFileCounts(WorkSpace space, int files, int bytes, int bundles, int places, int outbound, int pending, int retried) {
+    private static void checkFileCounts(WorkSpace space, int files, int bytes, int bundles, int places, int outbound, int pending, int retried) {
         assertEquals(files, space.getFilesProcessed(), "files processed");
         assertEquals(bytes, space.getBytesProcessed(), "bytes processed");
         assertEquals(bundles, space.getBundlesProcessed(), "bundles processed");

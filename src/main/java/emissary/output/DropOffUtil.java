@@ -391,7 +391,7 @@ public class DropOffUtil {
                         case 'b':
                             sb.append(cleanSpecPath((tld != null) ? getBestIdFrom(tld) : getBestIdFrom(d)));
                             final String sn = d.shortName();
-                            final int pos = sn.indexOf(emissary.core.Family.SEP);
+                            final int pos = sn.indexOf(Family.SEP);
                             if (pos > 0) {
                                 sb.append(sn.substring(pos));
                             }
@@ -976,7 +976,7 @@ public class DropOffUtil {
         }
 
         for (final IBaseDataObject p : payloadList) {
-            final int level = StringUtils.countMatches(p.shortName(), emissary.core.Family.SEP) + 1;
+            final int level = StringUtils.countMatches(p.shortName(), Family.SEP) + 1;
             // save specified metadata items for children to grab
             parentTypes.put("" + level, p.getFileType());
 
@@ -1042,7 +1042,7 @@ public class DropOffUtil {
                 final List<IBaseDataObject> childObjList = p.getExtractedRecords();
                 childObjList.sort(new ShortNameComparator());
                 for (final IBaseDataObject child : childObjList) {
-                    final int parentLevel = StringUtils.countMatches(child.shortName(), emissary.core.Family.SEP);
+                    final int parentLevel = StringUtils.countMatches(child.shortName(), Family.SEP);
                     final String parentFileType = parentTypes.get("" + parentLevel);
                     if (parentFileType != null) {
                         child.setParameter(PARENT_FILETYPE, parentFileType);

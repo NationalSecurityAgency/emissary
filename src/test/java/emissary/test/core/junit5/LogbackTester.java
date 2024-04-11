@@ -94,7 +94,7 @@ public class LogbackTester implements Closeable {
                     throwable == null ? null : throwable.getLocalizedMessage());
         }
 
-        public SimplifiedLogEvent(Level level, String message, String throwableClassName, String throwableMessage) {
+        public SimplifiedLogEvent(Level level, String message, @Nullable String throwableClassName, @Nullable String throwableMessage) {
             Validate.notNull(level, "Required: level != null!");
             Validate.notNull(message, "Required: message != null!");
             Validate.isTrue((throwableClassName == null && throwableMessage == null) ||

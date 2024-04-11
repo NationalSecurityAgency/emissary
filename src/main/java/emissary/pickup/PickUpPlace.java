@@ -281,6 +281,55 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         return processDataFile(f, fixedName, isOversize, simpleMode, getDoneArea());
     }
 
+    /**
+     * Call back from a data server or queue server when a new file is ready to process
+     * 
+     * @param theFile file to process
+     * @param fixedName the good short name of the file
+     * @param isOversize true if the content is too big by configuration
+     * @param simpleMode true if no session parsing is desired
+     * @param outputRoot the done area
+     * @return true if it worked
+     * @throws IOException If there is some I/O problem.
+     */
+    public boolean processDataFile(File theFile, String fixedName, boolean isOversize, boolean simpleMode, String outputRoot) throws IOException,
+            EmissaryException {
+        boolean success = true;
+        logger.debug("Starting processDataFile in PickUpPlace for {}", theFile);
+
+        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
+
+        // Handle oversize data quickly without reading the file
+        if (isOversize) {
+            handleOversizePayload(theFile, fixedName, simpleMode);
+        }
+
+        // Handle it without session parsing if simple mode is on
+        else if (simpleMode) {
+            handleSimplePayload(theFile, fixedName);
+        }
+
+        // Parse sessions out of the file
+        else {
+            try {
+                logger.debug("Starting processSessions on {}", theFile);
+                processSessions(theFile, fixedName);
+                logger.debug("Finished with processSessions on {}", theFile);
+            } catch (ParserException ex) {
+                logger.error("Cannot parse {}", theFile.getName(), ex);
+                success = false;
+            }
+        }
+
+        if (success) {
+            handleFileSuccess(theFile, outputRoot);
+        } else {
+            handleFileError(theFile);
+        }
+
+        logger.debug("Ending processDataFile {} {} {}", theFile, (success ? "success" : "failure"), (simpleMode ? "simple" : ""));
+        return success;
+    }
 
     /**
      * Handle oversize payload item
@@ -474,56 +523,6 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
     }
 
     /**
-     * Call back from a data server or queue server when a new file is ready to process
-     * 
-     * @param theFile file to process
-     * @param fixedName the good short name of the file
-     * @param isOversize true if the content is too big by configuration
-     * @param simpleMode true if no session parsing is desired
-     * @param outputRoot the done area
-     * @return true if it worked
-     * @throws IOException If there is some I/O problem.
-     */
-    public boolean processDataFile(File theFile, String fixedName, boolean isOversize, boolean simpleMode, String outputRoot) throws IOException,
-            EmissaryException {
-        boolean success = true;
-        logger.debug("Starting processDataFile in PickUpPlace for {}", theFile);
-
-        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
-
-        // Handle oversize data quickly without reading the file
-        if (isOversize) {
-            handleOversizePayload(theFile, fixedName, simpleMode);
-        }
-
-        // Handle it without session parsing if simple mode is on
-        else if (simpleMode) {
-            handleSimplePayload(theFile, fixedName);
-        }
-
-        // Parse sessions out of the file
-        else {
-            try {
-                logger.debug("Starting processSessions on {}", theFile);
-                processSessions(theFile, fixedName);
-                logger.debug("Finished with processSessions on {}", theFile);
-            } catch (ParserException ex) {
-                logger.error("Cannot parse {}", theFile.getName(), ex);
-                success = false;
-            }
-        }
-
-        if (success) {
-            handleFileSuccess(theFile, outputRoot);
-        } else {
-            handleFileError(theFile);
-        }
-
-        logger.debug("Ending processDataFile {} {} {}", theFile, (success ? "success" : "failure"), (simpleMode ? "simple" : ""));
-        return success;
-    }
-
-    /**
      * Build a data object and handle the data bytes
      * 
      * @param theContent the data bytes
@@ -610,7 +609,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
                     long fileEnd = System.currentTimeMillis();
                     logger.info("fileParseMetric:{},{},{},{},{}", fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
                     break;
-                } catch (emissary.core.EmissaryException ex) {
+                } catch (EmissaryException ex) {
                     logger.error("Could not dispatch {}", theFile.getName(), ex);
                     throw new ParserException("Could not process" + theFile.getName(), ex);
                 }
@@ -654,7 +653,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             } catch (ParserEOFException eof) {
                 // expected at end of file
                 break;
-            } catch (emissary.core.EmissaryException ex) {
+            } catch (EmissaryException ex) {
                 logger.error("Could not dispatch {}", fixedName, ex);
             }
 

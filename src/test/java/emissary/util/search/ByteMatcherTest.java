@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.UnsupportedCharsetException;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,13 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ByteMatcherTest extends UnitTest {
 
-    private final String data = "The quick brown fox jumped over the lazy dog";
+    private static final String DATA = "The quick brown fox jumped over the lazy dog";
+    @Nullable
     private ByteMatcher b;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        this.b = new ByteMatcher(this.data.getBytes());
+        this.b = new ByteMatcher(DATA.getBytes());
     }
 
     @Override
@@ -77,22 +79,22 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testSimpleScan() {
-        assertEquals(this.data.indexOf("fox"), this.b.indexOf("fox"), "Match pos same as string");
+        assertEquals(DATA.indexOf("fox"), this.b.indexOf("fox"), "Match pos same as string");
     }
 
     @Test
     void testIndexOfBytes() {
-        assertEquals(this.data.indexOf("fox"), this.b.indexOf("fox".getBytes()), "Match pos same as string");
+        assertEquals(DATA.indexOf("fox"), this.b.indexOf("fox".getBytes()), "Match pos same as string");
     }
 
     @Test
     void testOffsetScan() {
-        assertEquals(this.data.indexOf("fox", 9), this.b.indexOf("fox", 9), "Match pos same as string using offset");
+        assertEquals(DATA.indexOf("fox", 9), this.b.indexOf("fox", 9), "Match pos same as string using offset");
     }
 
     @Test
     void testNotFound() {
-        assertEquals(this.data.indexOf("llama"), this.b.indexOf("llama"), "Match pos same as string when not found");
+        assertEquals(DATA.indexOf("llama"), this.b.indexOf("llama"), "Match pos same as string when not found");
     }
 
     @Test
@@ -102,7 +104,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIndexOfBytesIncludedWithEndIndex() {
-        assertEquals(this.data.indexOf("dog"), this.b.indexOf("dog".getBytes(), 0, b.length()), "Match pos same as string");
+        assertEquals(DATA.indexOf("dog"), this.b.indexOf("dog".getBytes(), 0, b.length()), "Match pos same as string");
     }
 
     @Test
@@ -112,12 +114,12 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIndexOfIncludedWithEndIndex() {
-        assertEquals(this.data.indexOf("dog"), this.b.indexOf("dog", 0, b.length()), "Match pos same as string");
+        assertEquals(DATA.indexOf("dog"), this.b.indexOf("dog", 0, b.length()), "Match pos same as string");
     }
 
     @Test
     void testLength() {
-        assertEquals(this.data.length(), this.b.length(), "Length same as string");
+        assertEquals(DATA.length(), this.b.length(), "Length same as string");
     }
 
     @Test
@@ -145,14 +147,14 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testBadSlice() {
-        final byte[] res = this.b.slice(0, this.data.length() + 10);
+        final byte[] res = this.b.slice(0, DATA.length() + 10);
         assertNotNull(res, "Bad slice must not return null");
         assertEquals(0, res.length, "Length of bad slice must be 0");
     }
 
     @Test
     void testByteAt() {
-        assertEquals(this.data.charAt(11), (char) this.b.byteAt(11), "ByteAt matches string charAt");
+        assertEquals(DATA.charAt(11), (char) this.b.byteAt(11), "ByteAt matches string charAt");
     }
 
     @Test
@@ -176,7 +178,7 @@ class ByteMatcherTest extends UnitTest {
     @Test
     void testGetSValueWithOfs() {
         this.b = new ByteMatcher("Abc\nkey: 6\nvalue\r\nanother: 14\nkey and value\n\r\n".getBytes());
-        assertEquals("value", new String(this.b.getSValue("key", 4, this.data.length())).trim(), "SValue extraction");
+        assertEquals("value", new String(this.b.getSValue("key", 4, DATA.length())).trim(), "SValue extraction");
     }
 
     @Test
@@ -217,17 +219,17 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIgnoreCaseScan() {
-        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX"), "Pos in case insensitive search");
+        assertEquals(DATA.indexOf("fox"), this.b.indexIgnoreCase("foX"), "Pos in case insensitive search");
     }
 
     @Test
     void testIgnoreCaseByteScan() {
-        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes()), "Pos in case insensitive search");
+        assertEquals(DATA.indexOf("fox"), this.b.indexIgnoreCase("foX".getBytes()), "Pos in case insensitive search");
     }
 
     @Test
     void testIgnoreCaseScanWithOffset() {
-        assertEquals(this.data.indexOf("fox"), this.b.indexIgnoreCase("foX", 0), "Pos in case insensitive search");
+        assertEquals(DATA.indexOf("fox"), this.b.indexIgnoreCase("foX", 0), "Pos in case insensitive search");
     }
 
     @Test
@@ -237,12 +239,12 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testIndexIgnoreCaseScanIncludedWithEndIndex() {
-        assertEquals(this.data.indexOf("dog"), this.b.indexIgnoreCase("Dog", 0, b.length()), "Match pos same as string");
+        assertEquals(DATA.indexOf("dog"), this.b.indexIgnoreCase("Dog", 0, b.length()), "Match pos same as string");
     }
 
     @Test
     void testBadConditionsOnIndexOf() {
-        assertEquals(-1, this.b.indexOf("lazy", this.data.length() + 5), "Bad startOfs gives not found");
+        assertEquals(-1, this.b.indexOf("lazy", DATA.length() + 5), "Bad startOfs gives not found");
     }
 
     @Test
@@ -252,7 +254,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testBadConditionOnByteAt() {
-        int byteAt = this.data.length() + 5;
+        int byteAt = DATA.length() + 5;
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> this.b.byteAt(byteAt));
     }
 
@@ -268,7 +270,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testBadConditionOnIndexIgnoreCase() {
-        assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(), this.data.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
+        assertEquals(-1, this.b.indexIgnoreCase("lazy".getBytes(), DATA.length() + 5), "IndexIgnore cannot find pattern with bad ofs");
     }
 
     @Test

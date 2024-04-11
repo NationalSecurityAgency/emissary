@@ -110,7 +110,7 @@ class FTestMovingAgent extends FunctionalTest {
                 pool = AgentPool.lookup();
                 logger.debug("Found pool after reset to " + agentClass);
                 spool.resetPool();
-            } catch (emissary.core.NamespaceException ex) {
+            } catch (NamespaceException ex) {
                 fail("Agent pool is missing after reset to " + agentClass, ex);
             }
         } else if (agentClass != null) {

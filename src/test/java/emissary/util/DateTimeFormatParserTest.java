@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -34,7 +35,7 @@ public class DateTimeFormatParserTest extends UnitTest {
      * @param expected the expected parsed and formatted date
      * @param msg the error message to display if the test fails
      */
-    private void test(String date, long expected, String msg) {
+    private static void test(@Nullable String date, long expected, String msg) {
         LocalDateTime unknownParse = DateTimeFormatParser.parseDate(date, false);
         assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(ZoneOffset.UTC), "Error on: " + msg);
     }
@@ -45,7 +46,7 @@ public class DateTimeFormatParserTest extends UnitTest {
      * @param date the string representation of a date
      * @param expected the expected parsed and formatted date
      */
-    private void test(String date, long expected) {
+    private static void test(String date, long expected) {
         long unknownParse = DateTimeFormatParser.parseDate(date, false).toEpochSecond(ZoneOffset.UTC);
         assertEquals(expected, unknownParse, "Flexible parse failed");
 

@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,12 +36,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class UnixCommandPlaceTest extends UnitTest {
+    @Nullable
     private UnixCommandPlace place;
     private static final Logger logger = LoggerFactory.getLogger(UnixCommandPlaceTest.class);
     private Path scriptFile;
     private static final String W = "Президент Буш";
+    @Nullable
     private IBaseDataObject payload;
-    private final String FORM = "TEST";
+    private static final String FORM = "TEST";
 
     @Override
     @BeforeEach

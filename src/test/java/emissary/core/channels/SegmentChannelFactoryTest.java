@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SegmentChannelFactoryTest extends UnitTest {
@@ -38,7 +39,7 @@ class SegmentChannelFactoryTest extends UnitTest {
         final CheckCloseChannelFactory cccf = new CheckCloseChannelFactory();
 
         try (SeekableByteChannel sbc = SegmentChannelFactory.create(cccf, 0, 0).create()) {
-            assert sbc != null;
+            assertNotNull(sbc);
         }
 
         assertEquals(List.of(true, true), cccf.isClosedList);

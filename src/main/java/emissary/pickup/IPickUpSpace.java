@@ -53,7 +53,7 @@ public interface IPickUpSpace {
      * 
      * @param path the newly arrived WorkBundle object
      */
-    boolean enque(emissary.pickup.WorkBundle path);
+    boolean enque(WorkBundle path);
 
     /**
      * The size of the last WorkBundle successfully received

@@ -227,48 +227,48 @@ public final class IBaseDataObjectXmlCodecs {
         }
 
         public void decodeBoolean(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             booleanDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             byteArrayDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeInteger(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             integerDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeSeekableByteChannelFactory(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             seekableByteChannelFactoryDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeStringByteArray(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringByteArrayDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeString(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringDecoder.decode(elements, ibdo, methodName);
         }
 
         public void decodeStringObject(Element currentElement, IBaseDataObject ibdo, String elementName) throws IOException {
-            String methodName = getBDOMethodForElement(elementName);
+            String methodName = getBdoMethodForElement(elementName);
             List<Element> elements = currentElement.getChildren(elementName);
             stringObjectDecoder.decode(elements, ibdo, methodName);
         }
 
-        private static String getBDOMethodForElement(String elementName) {
+        private static String getBdoMethodForElement(String elementName) {
             String methodName = METHOD_MAP.get(elementName);
             Validate.notNull(methodName, NO_IBDO_METHOD_MATCH_ELEMENT_NAME + elementName);
             return methodName;
@@ -389,7 +389,7 @@ public final class IBaseDataObjectXmlCodecs {
                 final String elementValue = element.getValue();
                 final String encoding = element.getAttributeValue(ENCODING_ATTRIBUTE_NAME);
 
-                method.invoke(ibdo, extractBytes(encoding, elementValue));
+                method.invoke(ibdo, (Object) extractBytes(encoding, elementValue));
             }
         } catch (ReflectiveOperationException e) {
             throw new IOException("Failed to decode byte[]!", e);
@@ -823,7 +823,7 @@ public final class IBaseDataObjectXmlCodecs {
      * @return the ibdo method object
      */
     public static Method getIbdoMethod(final String methodName, final Class<?>... parameterTypes)
-            throws NoSuchMethodException, SecurityException {
+            throws NoSuchMethodException {
         return IBaseDataObject.class.getDeclaredMethod(methodName, parameterTypes);
     }
 }

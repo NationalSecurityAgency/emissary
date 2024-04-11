@@ -12,12 +12,11 @@ import javax.annotation.Nullable;
 
 public class FileExistsConverter implements ITypeConverter<File> {
     private String optionName;
+    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     public FileExistsConverter() {
         this(null);
     }
-
-    private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     public FileExistsConverter(@Nullable String optionName) {
         this.optionName = optionName;

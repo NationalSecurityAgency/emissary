@@ -46,6 +46,7 @@ class ProtocolTest extends UnitTest {
     Action action;
     Map<String, Sentinel.Tracker> trackers;
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         super.setUp();
@@ -156,6 +157,7 @@ class ProtocolTest extends UnitTest {
         AgentPool pool;
         Map<String, Sentinel.Tracker> trackers;
 
+        @Override
         @BeforeEach
         public void setUp() throws Exception {
             super.setUp();

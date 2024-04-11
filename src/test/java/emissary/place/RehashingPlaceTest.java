@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -60,6 +61,7 @@ class RehashingPlaceTest extends UnitTest {
 
     private static final class RehashPlaceTest extends ServiceProviderPlace implements RehashingPlace {
 
+        @Nullable
         private byte[] USE_DATA = null;
 
         public RehashPlaceTest(InputStream config) throws IOException {

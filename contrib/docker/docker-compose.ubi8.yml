@@ -1,0 +1,27 @@
+---
+version: "3"
+
+services:
+  emissary-server:
+    image: emissary-ubi8
+    build:
+      context: ../../
+      dockerfile: contrib/docker/Dockerfile.ubi8
+    environment:
+      - PROJECT_BASE=/opt/emissary
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
+    hostname: "emissary-server"
+    command: "server -a 5 -p 8001 -s http -h emissary-server"
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    expose:
+      - '8000'
+      - '8001'
+    volumes:
+      - input:/opt/emissary/target/data
+      - output:/opt/emissary/localoutput
+
+volumes:
+  input:
+  output:

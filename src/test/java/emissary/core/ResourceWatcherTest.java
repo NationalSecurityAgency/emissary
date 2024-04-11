@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceWatcherTest extends UnitTest {
 
+    @Nullable
     public ResourceWatcher resourceWatcher = null;
+    @Nullable
     public IServiceProviderPlace place = null;
 
     @Test
@@ -46,10 +49,10 @@ class ResourceWatcherTest extends UnitTest {
         cdl.await();
 
         // Add them up
-        final Map<String, com.codahale.metrics.Timer> stats = this.resourceWatcher.getStats();
+        final Map<String, Timer> stats = this.resourceWatcher.getStats();
         assertTrue(stats.size() > 0, "Stats were not collected");
 
-        final com.codahale.metrics.Timer s = stats.get("DevNullPlace");
+        final Timer s = stats.get("DevNullPlace");
         assertNotNull(s, "Events must be measured");
 
         assertEquals(threadCount * iterations, s.getCount(), "Events must not be lost");
@@ -101,7 +104,9 @@ class ResourceWatcherTest extends UnitTest {
             return "";
         }
 
+
         @Override
+        @Nullable
         public IBaseDataObject getPayload() {
             return null;
         }
@@ -121,7 +126,9 @@ class ResourceWatcherTest extends UnitTest {
             return 0;
         }
 
+
         @Override
+        @Nullable
         public DirectoryEntry[] getItineraryQueueItems() {
             return null;
         }
@@ -131,7 +138,9 @@ class ResourceWatcherTest extends UnitTest {
             return false;
         }
 
+
         @Override
+        @Nullable
         public Object getPayloadForTransport() {
             return null;
         }

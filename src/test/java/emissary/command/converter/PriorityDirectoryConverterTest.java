@@ -7,11 +7,14 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.annotation.Nullable;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PriorityDirectoryConverterTest extends UnitTest {
     private PriorityDirectoryConverter converter;
+    @Nullable
     private PriorityDirectory pd;
 
     @Override

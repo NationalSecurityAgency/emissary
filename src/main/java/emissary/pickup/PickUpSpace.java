@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * Implementation of a pick up place that talks to a one or more WorkSpace instances for obtaining distributed work.
  */
-public abstract class PickUpSpace extends emissary.pickup.PickUpPlace implements IPickUpSpace {
+public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
     // List of workspace instances to interact with
     protected List<String> openSpaceNames = new ArrayList<>();
 

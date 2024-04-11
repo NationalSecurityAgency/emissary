@@ -33,10 +33,10 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     /** hold onto the parent configurator */
-    protected emissary.config.Configurator configG;
+    protected Configurator configG;
 
     /** hold onto the specific filter configurator */
-    protected emissary.config.Configurator filterConfig;
+    protected Configurator filterConfig;
 
     /** hold onto the filter name, impl should set this */
     protected String filterName = "Abstract";
@@ -89,7 +89,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * Initialization phase hook for the filter with default preferences for the runtime configuration of the filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, final String filterName) {
+    public void initialize(final Configurator theConfigG, final String filterName) {
         loadFilterConfiguration(null);
         initialize(theConfigG, filterName, this.filterConfig);
     }
@@ -102,8 +102,8 @@ public abstract class AbstractFilter implements IDropOffFilter {
      * @param theFilterConfig the configuration for the specific filter
      */
     @Override
-    public void initialize(final emissary.config.Configurator theConfigG, @Nullable final String filterName,
-            final emissary.config.Configurator theFilterConfig) {
+    public void initialize(final Configurator theConfigG, @Nullable final String filterName,
+            final Configurator theFilterConfig) {
         this.configG = theConfigG;
         if (filterName != null) {
             setFilterName(filterName);
@@ -222,7 +222,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
         this.logger.debug("Looking for filter configuration preferences {}", configPreferences);
         try {
-            this.filterConfig = emissary.config.ConfigUtil.getConfigInfo(configPreferences);
+            this.filterConfig = ConfigUtil.getConfigInfo(configPreferences);
         } catch (IOException iox) {
             this.logger.debug("Could not find filter configuration for {}", getFilterName(), iox);
         }
@@ -307,6 +307,42 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in questin.
+     *
+     * @param type of the data
+     */
+    protected boolean isOutputtable(final String type) {
+        return this.outputTypes.contains("*") || this.outputTypes.contains(type);
+    }
+
+    /**
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in question.
+     *
+     * @param types types to check
+     * @return true if any one of the types is outputtable
+     */
+    protected boolean isOutputtable(final Collection<String> types) {
+        if (this.outputTypes.contains("*")) {
+            this.logger.debug("Outputtable due to wildcard in output types");
+            return true;
+        }
+
+        final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
+        if (canOutput && this.logger.isDebugEnabled()) {
+            final Set<String> outputFor = new HashSet<>();
+            for (final String s : this.outputTypes) {
+                if (types.contains(s)) {
+                    outputFor.add(s);
+                }
+            }
+            this.logger.debug("Outputtable due to non-disjoint sets: {}", outputFor);
+        }
+        return canOutput;
+    }
+
+    /**
      * Close the filter
      */
     @Override
@@ -317,7 +353,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     /*
      * Extract my Output Spec from the supplied config info and save it
      */
-    protected void loadOutputSpec(final emissary.config.Configurator theConfigG) {
+    protected void loadOutputSpec(final Configurator theConfigG) {
         this.outputSpec = theConfigG.findStringEntry("OUTPUT_SPEC_" + getFilterName(), null);
         this.errorSpec = theConfigG.findStringEntry("ERROR_SPEC_" + getFilterName(), null);
         this.logger.debug("Output spec for {} is {}", getFilterName(), this.outputSpec);
@@ -386,42 +422,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
         } else {
             return JavaCharSet.get(lang);
         }
-    }
-
-    /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
-     * being on the outputTypes list from the run-time type configuration stream for the filter in questin.
-     *
-     * @param type of the data
-     */
-    protected boolean isOutputtable(final String type) {
-        return this.outputTypes.contains("*") || this.outputTypes.contains(type);
-    }
-
-    /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
-     * being on the outputTypes list from the run-time type configuration stream for the filter in question.
-     *
-     * @param types types to check
-     * @return true if any one of the types is outputtable
-     */
-    protected boolean isOutputtable(final Collection<String> types) {
-        if (this.outputTypes.contains("*")) {
-            this.logger.debug("Outputtable due to wildcard in output types");
-            return true;
-        }
-
-        final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
-        if (canOutput && this.logger.isDebugEnabled()) {
-            final Set<String> outputFor = new HashSet<>();
-            for (final String s : this.outputTypes) {
-                if (types.contains(s)) {
-                    outputFor.add(s);
-                }
-            }
-            this.logger.debug("Outputtable due to non-disjoint sets: {}", outputFor);
-        }
-        return canOutput;
     }
 
     /**

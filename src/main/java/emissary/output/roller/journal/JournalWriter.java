@@ -85,6 +85,12 @@ public class JournalWriter implements Closeable {
         }
     }
 
+    private void write() throws IOException {
+        b.flip();
+        journal.write(b);
+        b.clear();
+    }
+
     private void writeHeader() throws IOException {
         this.journal = FileChannel.open(journalPath, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
         b.clear();
@@ -105,12 +111,6 @@ public class JournalWriter implements Closeable {
         b.putLong(sequence);
         b.put(SEP);
         write();
-    }
-
-    private void write() throws IOException {
-        b.flip();
-        journal.write(b);
-        b.clear();
     }
 
     // fill buffer with zeros from current position to limit

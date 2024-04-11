@@ -179,7 +179,7 @@ public class Emissary {
     public static LoggerContext setupLogbackForConsole() {
         // So it looks better when commands are run
         ch.qos.logback.classic.Logger root =
-                (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+                (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.detachAndStopAllAppenders();
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         lc.reset();

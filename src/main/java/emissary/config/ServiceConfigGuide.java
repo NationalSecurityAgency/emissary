@@ -194,11 +194,6 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         readConfigData(is, "UNKNOWN");
     }
 
-    protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
-        logger.debug("Reading config file {}", filename);
-        final InputStream is = ConfigUtil.getConfigData(filename);
-        readConfigData(is, filename);
-    }
 
     protected void readConfigData(final InputStream is, final String filename) throws IOException, ConfigSyntaxException {
         final Reader r = new BufferedReader(new InputStreamReader(is));
@@ -247,6 +242,12 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         }
         r.close();
         is.close();
+    }
+
+    protected void readSingleConfigFile(final String filename) throws IOException, ConfigSyntaxException {
+        logger.debug("Reading config file {}", filename);
+        final InputStream is = ConfigUtil.getConfigData(filename);
+        readConfigData(is, filename);
     }
 
     /**

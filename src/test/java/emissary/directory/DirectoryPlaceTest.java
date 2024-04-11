@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,9 +31,11 @@ class DirectoryPlaceTest extends UnitTest {
 
     // Both on same machine so we don't have to test
     // with jetty
-    private final String primaryloc = "http://localhost:8001/TestPrimaryDirectoryPlace";
-    private final String clientloc = "http://localhost:8001/DirectoryPlace";
+    private static final String PRIMARYLOC = "http://localhost:8001/TestPrimaryDirectoryPlace";
+    private static final String CLIENTLOC = "http://localhost:8001/DirectoryPlace";
+    @Nullable
     private DirectoryPlace primary = null;
+    @Nullable
     private DirectoryPlace client = null;
 
     @Override
@@ -41,15 +44,15 @@ class DirectoryPlaceTest extends UnitTest {
         // primary directory
         InputStream configStream = new ResourceReader().getConfigDataAsStream(this);
 
-        this.primary = spy(new DirectoryPlace(configStream, this.primaryloc, new EmissaryNode()));
+        this.primary = spy(new DirectoryPlace(configStream, PRIMARYLOC, new EmissaryNode()));
         configStream.close();
-        Namespace.bind(this.primaryloc, this.primary);
+        Namespace.bind(PRIMARYLOC, this.primary);
 
         // non-primary directory
         configStream = new ResourceReader().getConfigDataAsStream(this);
-        this.client = spy(new DirectoryPlace(configStream, this.primary.getDirectoryEntry().getKey(), this.clientloc, new EmissaryNode()));
+        this.client = spy(new DirectoryPlace(configStream, this.primary.getDirectoryEntry().getKey(), CLIENTLOC, new EmissaryNode()));
         configStream.close();
-        Namespace.bind(this.clientloc, this.client);
+        Namespace.bind(CLIENTLOC, this.client);
     }
 
     @Override

@@ -158,7 +158,7 @@ public final class SeekableByteChannelHelper {
         // Read direct into buffer's array if possible, otherwise copy through an internal buffer
         final int bytesToRead = byteBuffer.remaining();
         if (byteBuffer.hasArray()) {
-            final int bytesRead = inputStream.read(byteBuffer.array(), byteBuffer.position(), bytesToRead);
+            final int bytesRead = inputStream.read(byteBuffer.array(), byteBuffer.arrayOffset() + byteBuffer.position(), bytesToRead);
             if (bytesRead > 0) {
                 byteBuffer.position(byteBuffer.position() + bytesRead);
             }

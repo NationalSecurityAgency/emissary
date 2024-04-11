@@ -38,7 +38,7 @@ class SeekableByteChannelHelperTest extends UnitTest {
         final SeekableByteChannelFactory sbcf = SeekableByteChannelHelper.immutable(SeekableByteChannelHelper.memory(TEST_BYTES));
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer someTestBytes = ByteBuffer.wrap(TEST_BYTES);
-        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(2l));
+        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(2L));
         assertThrows(NonWritableChannelException.class, () -> sbc.write(someTestBytes));
     }
 
@@ -127,6 +127,11 @@ class SeekableByteChannelHelperTest extends UnitTest {
     private static class ExceptionInputStream extends InputStream {
         @Override
         public int read() throws IOException {
+            throw new IOException("This InputStream always throws an exception!");
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
             throw new IOException("This InputStream always throws an exception!");
         }
     }

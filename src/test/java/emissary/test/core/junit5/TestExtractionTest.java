@@ -24,8 +24,8 @@ import static org.mockito.Mockito.spy;
 
 class TestExtractionTest extends UnitTest {
 
-    private final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
-    private final String MISSING_TAGS_RESOURCE = "/emissary/test/core/junit5/MissingTags.xml";
+    private static final String RESOURCE_NAME = "/emissary/test/core/junit5/TestExtractionTest.xml";
+    private static final String MISSING_TAGS_RESOURCE = "/emissary/test/core/junit5/MissingTags.xml";
 
     @Test
     void testCheckStringValueForCollection() throws JDOMException, IOException {
@@ -96,7 +96,7 @@ class TestExtractionTest extends UnitTest {
         assertThrows(AssertionError.class, () -> test.checkStringValue(bangContainsData, "timestamp:20221229", "testCheckStringValue!ContainsFalse"));
     }
 
-    private Element getAttributeFromDataChild(List<Element> dataList, String matchMode) {
+    private static Element getAttributeFromDataChild(List<Element> dataList, String matchMode) {
         Element data = null;
         // Having different matchModes in the same data necessitates having to go through each child and
         // filter for the correct one

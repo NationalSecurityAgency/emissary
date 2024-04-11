@@ -22,7 +22,7 @@ class FTestMobileAgent extends FunctionalTest {
     public void testSetUp() throws Exception {
         @SuppressWarnings("unused")
         final Logger[] testLoggers =
-                new Logger[] {LoggerFactory.getLogger(Startup.class), LoggerFactory.getLogger(emissary.core.MobileAgent.class)};
+                new Logger[] {LoggerFactory.getLogger(Startup.class), LoggerFactory.getLogger(MobileAgent.class)};
 
 
     }

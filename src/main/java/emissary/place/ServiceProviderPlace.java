@@ -60,7 +60,7 @@ import static emissary.core.constants.Configurations.SERVICE_TYPE;
  * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality
  * throughout the system.
  */
-public abstract class ServiceProviderPlace implements emissary.place.IServiceProviderPlace,
+public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         ServiceProviderPlaceMBean {
 
     /**
@@ -198,6 +198,27 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     }
 
     /**
+     * Create the place with no directory
+     *
+     * @param configFile string name of config data file
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(String configFile, String placeLocation) throws IOException {
+        this(configFile, null, placeLocation);
+    }
+
+
+    /**
+     * Create the place with no directory
+     *
+     * @param configStream stream of config data
+     * @param placeLocation string name of our location
+     */
+    protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
+        this(configStream, null, placeLocation);
+    }
+
+    /**
      * Load the configurator
      *
      * @param configStream the stream to use or null to auto configure
@@ -206,7 +227,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // Read the configuration stream
         if (configStream != null) {
             // Use supplied stream
-            return emissary.config.ConfigUtil.getConfigInfo(configStream);
+            return ConfigUtil.getConfigInfo(configStream);
         }
         return loadConfigurator(placeLocation);
     }
@@ -220,11 +241,10 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // Read the configuration stream
         if (configFileName != null) {
             // Use supplied stream
-            return emissary.config.ConfigUtil.getConfigInfo(configFileName);
+            return ConfigUtil.getConfigInfo(configFileName);
         }
         return loadConfigurator(placeLocation);
     }
-
 
     /**
      * Load the configurator, figuring out whence automatically
@@ -244,7 +264,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         String serviceClass = (pos > -1 ? placeLocation.substring(pos + 1) : placeLocation);
         configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
         configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
-        return emissary.config.ConfigUtil.getConfigInfo(configLocs);
+        return ConfigUtil.getConfigInfo(configLocs);
     }
 
     /**
@@ -369,26 +389,6 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
     @Override
     public DirectoryEntry getDirectoryEntry() {
         return new DirectoryEntry(keys.get(0), serviceDescription, serviceCost, serviceQuality);
-    }
-
-    /**
-     * Create the place with no directory
-     *
-     * @param configFile string name of config data file
-     * @param placeLocation string name of our location
-     */
-    protected ServiceProviderPlace(String configFile, String placeLocation) throws IOException {
-        this(configFile, null, placeLocation);
-    }
-
-    /**
-     * Create the place with no directory
-     *
-     * @param configStream stream of config data
-     * @param placeLocation string name of our location
-     */
-    protected ServiceProviderPlace(InputStream configStream, String placeLocation) throws IOException {
-        this(configStream, null, placeLocation);
     }
 
     /**
@@ -849,7 +849,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // Cannot register if we have no directory
         // If we are the directory, its no problem though
         if (dirPlace == null) {
-            if (!(this instanceof emissary.directory.IDirectoryPlace)) {
+            if (!(this instanceof IDirectoryPlace)) {
                 logger.debug("Directory is null: cannot register anything. Illegal configuration.");
             }
             return;
@@ -872,7 +872,7 @@ public abstract class ServiceProviderPlace implements emissary.place.IServicePro
         // Cannot register if we have no directory
         // If we are the directory, its no problem though
         if (dirPlace == null) {
-            if (!(this instanceof emissary.directory.IDirectoryPlace)) {
+            if (!(this instanceof IDirectoryPlace)) {
                 logger.debug("Directory is null: cannot register anything. Illegal configuration.");
             }
             return;

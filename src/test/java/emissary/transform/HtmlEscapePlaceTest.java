@@ -40,6 +40,7 @@ public class HtmlEscapePlaceTest extends ExtractionTest {
         HtmlEscapePlace place;
         IBaseDataObject d;
 
+        @Override
         @BeforeEach
         public void setUp() throws Exception {
             super.setUp();

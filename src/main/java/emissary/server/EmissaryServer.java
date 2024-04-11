@@ -269,13 +269,6 @@ public class EmissaryServer {
     }
 
     /**
-     * Forcibly stop the server running under the default name
-     */
-    public static void stopServerForce() {
-        stopServer(true, false);
-    }
-
-    /**
      * Stop the server running under the default name
      *
      * @param quiet be quiet about failures if true
@@ -413,6 +406,13 @@ public class EmissaryServer {
         Namespace.unbind(name);
         Namespace.clear();
         LOG.info("Emissary named {} completely stopped.", name);
+    }
+
+    /**
+     * Forcibly stop the server running under the default name
+     */
+    public static void stopServerForce() {
+        stopServer(true, false);
     }
 
     @SuppressWarnings("unchecked")
