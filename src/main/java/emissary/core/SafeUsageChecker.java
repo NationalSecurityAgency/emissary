@@ -46,7 +46,9 @@ public class SafeUsageChecker {
      * array contents. Used for determining whether the clients modify the array contents without explicitly pushing those
      * changes back to the IBDO
      */
+    @SuppressWarnings("ArrayAsKeyOfSetOrMap")
     private final Map<byte[], String> cache = new HashMap<>();
+
     public final boolean enabled;
 
     public SafeUsageChecker() {

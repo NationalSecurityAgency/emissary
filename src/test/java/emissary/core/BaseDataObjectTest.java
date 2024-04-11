@@ -137,7 +137,7 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testDataLengthWhenLargerThanMaxInt() throws IOException {
-        final Long higherLength = Long.valueOf(Integer.MAX_VALUE + 100l);
+        final Long higherLength = Integer.MAX_VALUE + 100L;
         final String testString = "test data";
         BaseDataObject bdo = Mockito.spy(this.b);
         Mockito.when(bdo.getChannelSize()).thenReturn(higherLength);

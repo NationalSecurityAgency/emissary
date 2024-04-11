@@ -10,7 +10,6 @@ import emissary.place.ServiceProviderPlace;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ public class PlaceComparisonHelper {
 
     private PlaceComparisonHelper() {}
 
-    private static final String FMT_COMPARISON_IDENTIFIER = "Comparison[%s==%s]";
     // Config key to use in Place configuration to define another place to compare
     public static final String CFG_PLACE_TO_COMPARE = "PLACE_TO_COMPARE";
 
@@ -34,18 +32,10 @@ public class PlaceComparisonHelper {
      * @param configG from an existing place which is scanned for PLACE_TO_COMPARE, which should reference a place that the
      *        developer wants to compare against
      * @return the instantiated place if configured
-     * @throws ClassNotFoundException if we can't find the other place
-     * @throws SecurityException if we can't access the String constructor for the other place
-     * @throws NoSuchMethodException if there isn't an accessible constructor for the other place
-     * @throws InvocationTargetException if the underlying constructor throws an exception
-     * @throws IllegalAccessException if the Constructor object is enforcing Java language access control and the underlying
-     *         constructor is inaccessible.
-     * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
+     * @throws ReflectiveOperationException if there is a problem.
      */
     @Nullable
-    public static ServiceProviderPlace getPlaceToCompare(final Configurator configG) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
+    public static ServiceProviderPlace getPlaceToCompare(final Configurator configG) throws ReflectiveOperationException {
         if (configG == null) {
             return null;
         }
@@ -73,21 +63,12 @@ public class PlaceComparisonHelper {
      * @param oldMethodName to use when comparing (e.g. processHeavyDuty)
      * @param options {@link DiffCheckConfiguration} to configure diffing options
      * @return a readable string of differences to log or use elsewhere.
-     * @throws SecurityException if we can't access the String constructor for the other place
-     * @throws NoSuchMethodException if there isn't an accessible constructor for the other place
-     * @throws InvocationTargetException if the underlying constructor throws an exception
-     * @throws IllegalArgumentException if the number of actual and formal parameters differ; if an unwrapping conversion
-     *         for primitive arguments fails; or if, after possible unwrapping, a parameter value cannot be converted to the
-     *         corresponding formal parameter type by a method invocation conversion; if this constructor pertains to an
-     *         enum class
-     * @throws IllegalAccessException if the Constructor object is enforcing Java language access control and the underlying
-     *         constructor is inaccessible.
+     * @throws ReflectiveOperationException if there is a problem.
      */
     @SuppressWarnings("unchecked")
     public static String compareToPlace(final List<IBaseDataObject> newResults, final IBaseDataObject ibdoForNewPlace,
             final ServiceProviderPlace newPlace, final String newMethodName, final ServiceProviderPlace oldPlace, final String oldMethodName,
-            final DiffCheckConfiguration options) throws NoSuchMethodException,
-            SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+            final DiffCheckConfiguration options) throws ReflectiveOperationException {
 
         Validate.notNull(newResults, "Required: newResults not null");
         Validate.notNull(ibdoForNewPlace, "Required: ibdoForNewPlace not null");
@@ -100,7 +81,7 @@ public class PlaceComparisonHelper {
         // Generate an identifier from the simple class names, e.g. Comparison[ColorPlace==ColourPlace]
         final String oldPlaceName = oldPlace.getClass().getSimpleName();
         final String newPlaceName = newPlace.getClass().getSimpleName();
-        final String identifier = String.format(FMT_COMPARISON_IDENTIFIER, oldPlaceName, newPlaceName);
+        final String identifier = String.format("Comparison[%s==%s]", oldPlaceName, newPlaceName);
 
         // Get the method to run (e.g. processHeavyDuty)
         final Method oldProcess = oldPlace.getClass().getDeclaredMethod(oldMethodName, IBaseDataObject.class);
