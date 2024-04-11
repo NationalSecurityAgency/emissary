@@ -165,8 +165,7 @@ public class DropOffUtil {
         if (this.uuidInOutputFilenames) {
             return (prefix + getDateOrdinalWithTime(new Date()) + UUID.randomUUID());
         } else {
-            // Using some constants plus yyyyJJJhhmmss plus random digit,
-            // letter, digit
+            // Using some constants plus yyyyJJJhhmmss plus random digit, letter, digit
             return (prefix + getDateOrdinalWithTime(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
         }
     }
@@ -181,8 +180,7 @@ public class DropOffUtil {
 
     @Nullable
     public String makeWayForIncomingFile(final IBaseDataObject ibdo, final String suffix, @Nullable final String spec) {
-        // Construct output file from DropOff output path and IBaseDataObject
-        // filename
+        // Construct output file from DropOff output path and IBaseDataObject filename
         final String outputFile = getShortOutputFileName(ibdo, spec);
 
         // Return value when finally set
@@ -255,8 +253,7 @@ public class DropOffUtil {
             }
         }
 
-        // If the specified output directory doesn't have write
-        // permission try to fix it
+        // If the specified output directory doesn't have write permission try to fix it
         if (!Files.isWritable(thePath)) {
             logger.warn("No write permission for {}, setting it now", pathName);
             if (!thePath.toFile().setWritable(true) || !Files.isWritable(thePath)) {
@@ -524,11 +521,11 @@ public class DropOffUtil {
     public String getSubDirName(final IBaseDataObject d, @Nullable final String spec, @Nullable final IBaseDataObject tld) {
         String fileName = null;
 
-        if (spec != null && spec.length() > 0) {
+        if (StringUtils.isNotEmpty(spec)) {
             fileName = getPathFromSpec(spec, d);
         }
 
-        if (fileName != null && fileName.length() > 0) {
+        if (StringUtils.isNotEmpty(fileName)) {
             logger.debug("usingPathFromSpec instead of TARGETBIN: {}", fileName);
             return fileName;
         } else if (tld != null && tld.getStringParameter(TARGETBIN) != null) {
@@ -966,8 +963,7 @@ public class DropOffUtil {
      */
     public void processMetadata(final List<IBaseDataObject> payloadList) {
 
-        // Keep track of parent's filetype to output
-        // relies on the attachments being sorted
+        // Keep track of parent's filetype to output; relies on the attachments being sorted
         final Map<String, String> parentTypes = new HashMap<>();
         final IBaseDataObject tld = payloadList.get(0);
         final List<String> extendedFileTypes = new ArrayList<>();
@@ -1025,7 +1021,7 @@ public class DropOffUtil {
 
                 final int parentLevel = level - 1;
                 final String pType = parentTypes.get("" + parentLevel);
-                if (pType != null && pType.length() > 0) {
+                if (StringUtils.isNotEmpty(pType)) {
                     p.setParameter(PARENT_FILETYPE, pType);
                 } else {
                     p.setParameter(PARENT_FILETYPE, parentTypes.get("1"));
