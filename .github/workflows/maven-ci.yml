@@ -59,6 +59,8 @@ jobs:
           context: .
           push: false
           file: contrib/docker/Dockerfile.ubi8
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   site-build:
     name: Standard maven site build
