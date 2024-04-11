@@ -715,6 +715,14 @@ Once the build succeeds, we can start a container:
 docker run -it --rm -p 8001:8001 --hostname emissary --name emissary emissary:test
 ```
 
+### Build and Run Emissary UBI8 Docker Image
+
+From the root of the project, simply run:
+```
+docker compose -f contrib/docker/docker-compose.ubi8.yml up --build
+```
+Then from a browser, assuming container is running locally, go to http://localhost:8001/ to see the endpoints.
+
 ### Running Emissary with Kubernetes
 
 A sample standalone instance of Emissary running in Kubernetes
