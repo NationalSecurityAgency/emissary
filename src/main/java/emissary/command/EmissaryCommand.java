@@ -20,9 +20,9 @@ public interface EmissaryCommand extends Runnable {
     // The run method should call setup to work correctly
     void run(CommandLine c);
 
-    // dump the banner
-    void outputBanner();
-
     @Override
     default void run() {}
+
+    // dump the banner
+    void outputBanner();
 }

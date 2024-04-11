@@ -44,6 +44,30 @@ public class DirectoryXmlContainer {
     }
 
     /**
+     * Build an xml document from the map.
+     * 
+     * @param map the map of entries
+     * @param loc directory location key
+     */
+    public static Document buildDocument(final DirectoryEntryMap map, final String loc) {
+        final Element root = new Element(DIRECTORY);
+        root.setAttribute(LOC_ATTR, loc);
+
+        // Each directory entry
+        for (final Map.Entry<String, DirectoryEntryList> entry : map.entrySet()) {
+            final String dataId = entry.getKey();
+            final DirectoryEntryList list = entry.getValue();
+            if (list != null) {
+                final Element listEl = list.getXML();
+                listEl.setAttribute(DATAID_ATTR, dataId);
+                root.addContent(listEl);
+            }
+        }
+
+        return new Document(root);
+    }
+
+    /**
      * Build an xml document from the contents of the directory as if proxied through the place itself. Except when the
      * entries actually belong to the requester.
      * 
@@ -73,30 +97,6 @@ public class DirectoryXmlContainer {
                 root.addContent(listEl);
             }
         }
-        return new Document(root);
-    }
-
-    /**
-     * Build an xml document from the map.
-     * 
-     * @param map the map of entries
-     * @param loc directory location key
-     */
-    public static Document buildDocument(final DirectoryEntryMap map, final String loc) {
-        final Element root = new Element(DIRECTORY);
-        root.setAttribute(LOC_ATTR, loc);
-
-        // Each directory entry
-        for (final Map.Entry<String, DirectoryEntryList> entry : map.entrySet()) {
-            final String dataId = entry.getKey();
-            final DirectoryEntryList list = entry.getValue();
-            if (list != null) {
-                final Element listEl = list.getXML();
-                listEl.setAttribute(DATAID_ATTR, dataId);
-                root.addContent(listEl);
-            }
-        }
-
         return new Document(root);
     }
 

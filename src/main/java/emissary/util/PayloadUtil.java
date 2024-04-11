@@ -247,15 +247,6 @@ public class PayloadUtil {
     }
 
     /**
-     * Turn the payload into an xml string
-     * 
-     * @param d the payload
-     */
-    public static String toXmlString(final IBaseDataObject d) {
-        return JDOMUtil.toString(toXml(d));
-    }
-
-    /**
      * Turn a list of payload into an xml jdom ocument
      * 
      * @param list the payload list
@@ -268,6 +259,15 @@ public class PayloadUtil {
             logger.debug("Adding xml content for {} to document", d.shortName());
         }
         return new Document(root);
+    }
+
+    /**
+     * Turn the payload into an xml string
+     * 
+     * @param d the payload
+     */
+    public static String toXmlString(final IBaseDataObject d) {
+        return JDOMUtil.toString(toXml(d));
     }
 
     /**

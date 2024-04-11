@@ -28,10 +28,6 @@ public class PathExistsConverter implements ITypeConverter<Path> {
         return convert(optionName, value);
     }
 
-    public String getOptionName() {
-        return optionName;
-    }
-
     public Path convert(String option, String value) {
         Path p = Paths.get(StringUtils.removeEnd(value, "/"));
         // ensure the value exists
@@ -41,6 +37,10 @@ public class PathExistsConverter implements ITypeConverter<Path> {
             throw new IllegalArgumentException(msg);
         }
         return p;
+    }
+
+    public String getOptionName() {
+        return optionName;
     }
 
 }

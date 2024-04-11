@@ -28,11 +28,21 @@ public class Pause {
         return doAction(true);
     }
 
+    protected String pause() throws NamespaceException {
+        EmissaryServer.pause();
+        return "server paused";
+    }
+
     @POST
     @Path("/" + UNPAUSE)
     @Produces(MediaType.TEXT_HTML)
     public Response unpause(@Context HttpServletRequest request) {
         return doAction(false);
+    }
+
+    protected String unpause() throws NamespaceException {
+        EmissaryServer.unpause();
+        return "server unpaused";
     }
 
     private Response doAction(boolean pause) {
@@ -42,15 +52,5 @@ public class Pause {
             LOG.warn("Exception trying to initiate {}", (pause ? "pause" : "unpause"), e);
             return Response.serverError().entity("error trying to " + (pause ? "pause" : "unpause")).build();
         }
-    }
-
-    protected String pause() throws NamespaceException {
-        EmissaryServer.pause();
-        return "server paused";
-    }
-
-    protected String unpause() throws NamespaceException {
-        EmissaryServer.unpause();
-        return "server unpaused";
     }
 }

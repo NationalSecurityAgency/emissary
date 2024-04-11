@@ -230,6 +230,26 @@ public class FastBoyerMoore {
             this.root = o.root;
         }
 
+        public BackwardsTreeScanner(final String[][] keywordStrings) throws Exception {
+            for (int i = 0; i < keywordStrings.length; i++) {
+                for (int j = 0; j < keywordStrings[i].length; j++) {
+                    this.root.learn(keywordStrings[i][j].getBytes(), i);
+                }
+            }
+            // this.root.print(System.out);
+        }
+
+        public BackwardsTreeScanner(final String[] keywordStrings) throws Exception {
+            // make byte arrays
+            final byte[][] keywords = new byte[keywordStrings.length][];
+            // and learn them
+            for (int i = 0; i < keywords.length; i++) {
+                keywords[i] = keywordStrings[i].getBytes();
+                this.root.learn(keywordStrings[i].getBytes(), i);
+            }
+            // this.root.print(System.out);
+        }
+
         public static void main(final String[] args) {
             try {
                 // a list of interesting keywords. */
@@ -301,26 +321,6 @@ public class FastBoyerMoore {
             } catch (Exception e) {
                 logger.error("Exception in test", e);
             }
-        }
-
-        public BackwardsTreeScanner(final String[][] keywordStrings) throws Exception {
-            for (int i = 0; i < keywordStrings.length; i++) {
-                for (int j = 0; j < keywordStrings[i].length; j++) {
-                    this.root.learn(keywordStrings[i][j].getBytes(), i);
-                }
-            }
-            // this.root.print(System.out);
-        }
-
-        public BackwardsTreeScanner(final String[] keywordStrings) throws Exception {
-            // make byte arrays
-            final byte[][] keywords = new byte[keywordStrings.length][];
-            // and learn them
-            for (int i = 0; i < keywords.length; i++) {
-                keywords[i] = keywordStrings[i].getBytes();
-                this.root.learn(keywordStrings[i].getBytes(), i);
-            }
-            // this.root.print(System.out);
         }
 
         public synchronized State getRoot() {

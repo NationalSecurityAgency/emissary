@@ -75,7 +75,6 @@ public class ByteMatcher {
      * @param pattern bytes to find
      * @param startOfs start index
      */
-
     public int indexOf(byte[] pattern, int startOfs) {
 
         if (mydata == null) {
@@ -104,6 +103,48 @@ public class ByteMatcher {
 
         // Use the Boyer-Moore scanning algorithm.
         return scanner.indexOf(pattern, beginIndex, endIndex);
+
+    }
+
+    /**
+     * Match pattern in the text
+     */
+    public int indexOf(byte[] pattern) {
+
+        return indexOf(pattern, 0);
+
+    }
+
+    /**
+     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
+     *
+     * @param pattern bytes to find
+     * @param beginIndex start index
+     * @param endIndex the index to stop searching at, exclusive
+     *
+     * @return position
+     */
+    public int indexOf(String pattern, int beginIndex, int endIndex) {
+
+        return indexOf(pattern.getBytes(), beginIndex, endIndex);
+
+    }
+
+    /**
+     * Match pattern in the text beginning at startOfs
+     */
+    public int indexOf(String pattern, int startOfs) {
+
+        return indexOf(pattern.getBytes(), startOfs);
+
+    }
+
+    /**
+     * Match pattern in the text
+     */
+    public int indexOf(String pattern) {
+
+        return indexOf(pattern.getBytes(), 0);
 
     }
 
@@ -225,48 +266,6 @@ public class ByteMatcher {
         return indexIgnoreCase(pattern, startOfs, mydata.length);
     }
 
-
-    /**
-     * Match pattern in the text
-     */
-    public int indexOf(byte[] pattern) {
-
-        return indexOf(pattern, 0);
-
-    }
-
-    /**
-     * Match pattern in the text from {@code beginIndex} to {@code endIndex} and returns the offset
-     *
-     * @param pattern bytes to find
-     * @param beginIndex start index
-     * @param endIndex the index to stop searching at, exclusive
-     *
-     * @return position
-     */
-    public int indexOf(String pattern, int beginIndex, int endIndex) {
-
-        return indexOf(pattern.getBytes(), beginIndex, endIndex);
-
-    }
-
-    /**
-     * Match pattern in the text beginning at startOfs
-     */
-    public int indexOf(String pattern, int startOfs) {
-
-        return indexOf(pattern.getBytes(), startOfs);
-
-    }
-
-    /**
-     * Match pattern in the text
-     */
-    public int indexOf(String pattern) {
-
-        return indexOf(pattern.getBytes(), 0);
-
-    }
 
     public int indexIgnoreCase(String pattern) {
 

@@ -307,6 +307,42 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     /**
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in questin.
+     *
+     * @param type of the data
+     */
+    protected boolean isOutputtable(final String type) {
+        return this.outputTypes.contains("*") || this.outputTypes.contains(type);
+    }
+
+    /**
+     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
+     * being on the outputTypes list from the run-time type configuration stream for the filter in question.
+     *
+     * @param types types to check
+     * @return true if any one of the types is outputtable
+     */
+    protected boolean isOutputtable(final Collection<String> types) {
+        if (this.outputTypes.contains("*")) {
+            this.logger.debug("Outputtable due to wildcard in output types");
+            return true;
+        }
+
+        final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
+        if (canOutput && this.logger.isDebugEnabled()) {
+            final Set<String> outputFor = new HashSet<>();
+            for (final String s : this.outputTypes) {
+                if (types.contains(s)) {
+                    outputFor.add(s);
+                }
+            }
+            this.logger.debug("Outputtable due to non-disjoint sets: {}", outputFor);
+        }
+        return canOutput;
+    }
+
+    /**
      * Close the filter
      */
     @Override
@@ -386,42 +422,6 @@ public abstract class AbstractFilter implements IDropOffFilter {
         } else {
             return JavaCharSet.get(lang);
         }
-    }
-
-    /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
-     * being on the outputTypes list from the run-time type configuration stream for the filter in questin.
-     *
-     * @param type of the data
-     */
-    protected boolean isOutputtable(final String type) {
-        return this.outputTypes.contains("*") || this.outputTypes.contains(type);
-    }
-
-    /**
-     * Determine is this payload should be output by this filter Usually by the primary view or one of the alternate views
-     * being on the outputTypes list from the run-time type configuration stream for the filter in question.
-     *
-     * @param types types to check
-     * @return true if any one of the types is outputtable
-     */
-    protected boolean isOutputtable(final Collection<String> types) {
-        if (this.outputTypes.contains("*")) {
-            this.logger.debug("Outputtable due to wildcard in output types");
-            return true;
-        }
-
-        final boolean canOutput = !Collections.disjoint(this.outputTypes, types);
-        if (canOutput && this.logger.isDebugEnabled()) {
-            final Set<String> outputFor = new HashSet<>();
-            for (final String s : this.outputTypes) {
-                if (types.contains(s)) {
-                    outputFor.add(s);
-                }
-            }
-            this.logger.debug("Outputtable due to non-disjoint sets: {}", outputFor);
-        }
-        return canOutput;
     }
 
     /**

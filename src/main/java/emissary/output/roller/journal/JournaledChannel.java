@@ -102,6 +102,12 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
         return this.fc.position();
     }
 
+    /* Unsupported operations */
+    @Override
+    public SeekableByteChannel position(final long newPosition) throws IOException {
+        throw new UnsupportedOperationException("This operation is not permitted");
+    }
+
     @Override
     public long size() throws IOException {
         return this.fc.size();
@@ -165,12 +171,6 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
         if (this.fc.position() != this.e.getOffset()) {
             this.fc.position(this.e.getOffset());
         }
-    }
-
-    /* Unsupported operations */
-    @Override
-    public SeekableByteChannel position(final long newPosition) throws IOException {
-        throw new UnsupportedOperationException("This operation is not permitted");
     }
 
     @Override
