@@ -41,6 +41,7 @@ jobs:
         run: contrib/ci/detect-changes.sh
 
   ubi8-build:
+    name: UBI8 standard build with Docker on Java 11 with compiler target 11
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
