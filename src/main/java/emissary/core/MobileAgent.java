@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,7 +81,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected transient volatile boolean timeToQuit = false;
 
     // Queue of DirectoryEntry keys to be processed
-    protected LinkedList<DirectoryEntry> nextKeyQueue = new LinkedList<>();
+    protected ArrayList<DirectoryEntry> nextKeyQueue = new ArrayList<>();
 
     // Track moveErrors on all parts of a given payload
     protected int moveErrorsOccurred = 0;
@@ -449,7 +449,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // choose the next one and spit it out
         if (!this.nextKeyQueue.isEmpty()) {
             logger.debug("Returning next key from stack size={}", this.nextKeyQueue.size());
-            return this.nextKeyQueue.removeFirst();
+            return this.nextKeyQueue.remove(0);
         }
 
         // We would need a current form of the payload to continue
@@ -623,7 +623,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // Dequeue first item and return it to the caller
         DirectoryEntry tmpEntry = null;
         if (!this.nextKeyQueue.isEmpty()) {
-            tmpEntry = this.nextKeyQueue.removeFirst();
+            tmpEntry = this.nextKeyQueue.remove(0);
         }
         logger.debug("nextKeyFromDirectory found {}", tmpEntry);
         return tmpEntry;

@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -69,13 +68,13 @@ public class DumpDirectoryAction {
         }
 
         int rowCount = 0;
-        List<DirectoryInfo> entryKeys = new LinkedList<>();
+        ArrayList<DirectoryInfo> entryKeys = new ArrayList<>();
         long now = System.currentTimeMillis();
 
         if (dir != null) {
             for (String dataId : dir.getEntryKeys()) {
                 LOG.trace("dataId key is {}", dataId);
-                List<DirectoryEntryInfo> list = new LinkedList<>();
+                ArrayList<DirectoryEntryInfo> list = new ArrayList<>();
                 for (DirectoryEntry entry : dir.getEntryList(dataId)) {
                     LOG.trace("Found entry {}", entry);
                     list.add(new DirectoryEntryInfo(rowCount++ % 2 == 0 ? "even" : "odd", entry, now));
@@ -90,7 +89,7 @@ public class DumpDirectoryAction {
             LOG.debug("Found no entry keys");
         }
 
-        List<PeerInfo> peers = new LinkedList<>();
+        ArrayList<PeerInfo> peers = new ArrayList<>();
         if (dir != null) {
             for (String peerkey : dir.getPeerDirectories()) {
                 peers.add(new PeerInfo(peerkey, dir.isRemoteDirectoryAvailable(peerkey)));

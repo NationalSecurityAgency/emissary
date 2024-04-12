@@ -12,8 +12,8 @@ import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ public class MoveSpool implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MoveSpool.class);
 
     // The payload FIFO
-    protected final LinkedList<SpoolItem> spool = new LinkedList<>();
+    protected final ArrayList<SpoolItem> spool = new ArrayList<>();
 
     // Reference to the agent pool
     protected AgentPool pool;
@@ -248,7 +248,7 @@ public class MoveSpool implements Runnable {
                 highWaterMark = spool.size();
             }
 
-            s = spool.removeFirst();
+            s = spool.remove(0);
             dequeCount++;
         }
         return s;
@@ -310,7 +310,7 @@ public class MoveSpool implements Runnable {
         int size = 0;
 
         synchronized (spool) {
-            spool.addLast(s);
+            spool.add(s);
             enqueCount++;
             size = spool.size();
             spool.notifyAll();

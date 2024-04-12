@@ -318,7 +318,7 @@ public final class MagicNumberUtil {
      */
     public String getErrorLog(final List<MagicNumber> magicNumberList, final List<String> zeroDepthErrorList,
             final Map<String, List<String>> continuationErrorMap) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         final String lineBreak = "\n###########################################################";
         sb.append(lineBreak);
         sb.append("\nSUMMARY");

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
  * characters in the range 0 - 255. In other words the ISO8859-1 encoding is used to match the delimiters to the byte
  * array.
  */
-public class ByteTokenizer implements Enumeration<String> {
+public class ByteTokenizer implements Iterator<String> {
     private int currentPosition;
     private int newPosition;
     private int maxPosition;
@@ -325,29 +325,29 @@ public class ByteTokenizer implements Enumeration<String> {
 
     /**
      * Returns the same value as the <code>hasMoreTokens</code> method. It exists so that this class can implement the
-     * <code>Enumeration</code> interface.
+     * <code>Iterator</code> interface.
      *
      * @return <code>true</code> if there are more tokens; <code>false</code> otherwise.
-     * @see java.util.Enumeration
+     * @see java.util.Iterator
      * @see ByteTokenizer#hasMoreTokens()
      */
     @Override
-    public boolean hasMoreElements() {
+    public boolean hasNext() {
         return hasMoreTokens();
     }
 
     /**
      * Returns the same value as the <code>nextToken</code> method, except that its declared return value is
      * <code>Object</code> rather than <code>String</code>. It exists so that this class can implement the
-     * <code>Enumeration</code> interface.
+     * <code>Iterator</code> interface.
      *
      * @return the next token in the string.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
-     * @see java.util.Enumeration
+     * @see java.util.Iterator
      * @see ByteTokenizer#nextToken()
      */
     @Override
-    public String nextElement() {
+    public String next() {
         return nextToken();
     }
 

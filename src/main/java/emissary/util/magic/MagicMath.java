@@ -1,10 +1,10 @@
 package emissary.util.magic;
 
 import java.math.BigInteger;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class MagicMath {
@@ -55,36 +55,36 @@ public class MagicMath {
 
     public static byte[] parseEscapedString(String s) {
         List<Number> array = new ArrayList<>();
-        Stack<Character> chars = new Stack<>();
+        ArrayDeque<Character> chars = new ArrayDeque<>();
         for (int i = (s.length() - 1); i >= 0; i--) {
-            chars.push(s.charAt(i));
+            chars.addFirst(s.charAt(i));
         }
-        while (!chars.empty()) {
-            Character c = chars.pop();
+        while (!chars.isEmpty()) {
+            Character c = chars.removeFirst();
             String val = EMPTYSTRING;
             if (c == '\\') {
-                if (chars.empty()) {
+                if (chars.isEmpty()) {
                     array.add(32);
                     break;
                 }
-                Character next = chars.peek();
+                Character next = chars.peekFirst();
                 if (literals[next] > 0) {
                     array.add(literals[next]);
-                    chars.pop();
+                    chars.removeFirst();
                 } else if (Character.isDigit(next)) {
                     int max = 3;
-                    while (!chars.empty() && Character.isDigit(next) && max-- > 0) {
-                        val += chars.pop();
-                        if (!chars.empty()) {
-                            next = chars.peek();
+                    while (!chars.isEmpty() && Character.isDigit(next) && max-- > 0) {
+                        val += chars.removeFirst();
+                        if (!chars.isEmpty()) {
+                            next = chars.peekFirst();
                         }
                     }
                     array.add(new BigInteger(val, 8));
                     val = EMPTYSTRING;
                 } else if (next == 'x') {
-                    chars.pop(); // pop the hex symbol
-                    val += chars.pop();
-                    val += chars.pop();
+                    chars.removeFirst(); // pop the hex symbol
+                    val += chars.removeFirst();
+                    val += chars.removeFirst();
                     array.add(new BigInteger(val, 16));
                     val = EMPTYSTRING;
                 }
