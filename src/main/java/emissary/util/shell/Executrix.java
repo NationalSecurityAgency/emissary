@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -796,42 +797,48 @@ public class Executrix {
      * @return process exit status
      */
     public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final StringBuilder out, @Nullable final StringBuilder err,
-            @Nullable final String charset,
-            @Nullable final Map<String, String> env) {
+            @Nullable final String charset, @Nullable final Map<String, String> env) {
+        return execute(new ExecuteConfig.SbExecuteConfig(cmd, data, out, err, charset, env));
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final ByteArrayOutputStream out,
+            @Nullable final StringBuilder err) {
+        return execute(cmd, data, out, err, null, null);
+    }
+
+    /**
+     * Executes a command in a new process through Runtime Exec
+     *
+     * @param cmd the command and arguments to execute
+     * @param data the input data to the command
+     * @param out the destination to capture the standard output
+     * @param err the destination to capture the standard error
+     * @param charset character set of the output
+     * @param env environment variables for the new process supplied in name=value format.
+     * @return process exit status
+     */
+    public int execute(final String[] cmd, @Nullable final byte[] data, @Nullable final ByteArrayOutputStream out, @Nullable final StringBuilder err,
+            @Nullable final String charset, @Nullable final Map<String, String> env) {
+        return execute(new ExecuteConfig.BaosExecuteConfig(cmd, data, out, err, charset, env));
+    }
+
+    private int execute(ExecuteConfig eConfig) {
         int exitValue = -1;
         ExecuteWatchdog dog = null;
         try {
-            logger.debug("Executing command: {}", Arrays.asList(cmd));
-            final ProcessBuilder pb = new ProcessBuilder(cmd);
-            if (env != null) {
-                final Map<String, String> pbenv = pb.environment();
-                for (final Map.Entry<String, String> entry : env.entrySet()) {
-                    pbenv.put(entry.getKey(), entry.getValue());
-                }
-            }
+            final ProcessBuilder pb = eConfig.getProcessBuilder();
             final Process p = pb.start();
-
-            final ProcessReader stdOutThread;
-            if (out == null) {
-                stdOutThread = new ReadOutputLogger("stdOut", p.getInputStream());
-            } else {
-                if (charset == null) {
-                    stdOutThread = new ReadOutputBuffer(p.getInputStream(), out);
-                } else {
-                    stdOutThread = new ReadOutputBuffer(p.getInputStream(), out, charset);
-                }
-            }
-
-            final ProcessReader stdErrThread;
-            if (err == null) {
-                stdErrThread = new ReadOutputLogger("stdErr", p.getErrorStream());
-            } else {
-                if (charset == null) {
-                    stdErrThread = new ReadOutputBuffer(p.getErrorStream(), err);
-                } else {
-                    stdErrThread = new ReadOutputBuffer(p.getErrorStream(), err, charset);
-                }
-            }
+            final ProcessReader stdOutThread = eConfig.getStdOutProcessReader(p);
+            final ProcessReader stdErrThread = eConfig.getStdErrProcessReader(p);
 
             // pass context to child threads so the info is available for any messages logged on those threads
             stdOutThread.setContextMap(MDC.getCopyOfContextMap());
@@ -839,7 +846,7 @@ public class Executrix {
 
             stdOutThread.start();
             stdErrThread.start();
-            streamData(p, data);
+            streamData(p, eConfig.getData());
 
             // kill process if it's not done after 5 minutes - would prefer to
             // pass in a timeout value
@@ -854,9 +861,9 @@ public class Executrix {
             stdErrThread.finish();
             exitValue = p.exitValue();
         } catch (IOException e) {
-            logger.warn("Exec exception, args={}", Arrays.asList(cmd), e);
+            logger.warn("Exec exception, args={}", Arrays.asList(eConfig.getCmd()), e);
         } catch (InterruptedException e) {
-            logger.warn("Interrupted exception, args={}", Arrays.asList(cmd), e);
+            logger.warn("Interrupted exception, args={}", Arrays.asList(eConfig.getCmd()), e);
             Thread.currentThread().interrupt();
         } finally {
             if (dog != null) {
@@ -866,6 +873,7 @@ public class Executrix {
         }
         return exitValue;
     }
+
 
     private void streamData(Process p, byte[] data) throws IOException {
         try (OutputStream os = new BufferedOutputStream(new DataOutputStream(p.getOutputStream()))) {
@@ -1271,4 +1279,77 @@ public class Executrix {
     public long getProcessMaxMillis() {
         return this.processMaxMillis;
     }
+
+    private abstract static class ExecuteConfig {
+
+        final String[] cmd;
+        final byte[] data;
+        final StringBuilder err;
+        final String charset;
+        final Map<String, String> env;
+
+        public ExecuteConfig(String[] cmd, byte[] data, StringBuilder err, String charset, Map<String, String> env) {
+            this.cmd = cmd;
+            this.data = data;
+            this.err = err;
+            this.charset = charset;
+            this.env = env;
+        }
+
+        public String[] getCmd() {
+            return cmd;
+        }
+
+        public byte[] getData() {
+            return data;
+        }
+
+        public ProcessBuilder getProcessBuilder() {
+            logger.debug("Executing command: {}", Arrays.asList(cmd));
+            final ProcessBuilder pb = new ProcessBuilder(cmd);
+            if (env != null) {
+                pb.environment().putAll(env);
+            }
+            return pb;
+
+        }
+
+        public ProcessReader getStdOutProcessReader(Process p) {
+            return new ReadOutputLogger("stdOut", p.getInputStream());
+        }
+
+        public ProcessReader getStdErrProcessReader(Process p) {
+            return err == null ? new ReadOutputLogger("stdErr", p.getErrorStream()) : new ReadOutputBuffer(p.getErrorStream(), err, charset);
+        }
+
+        private static class SbExecuteConfig extends ExecuteConfig {
+            final StringBuilder out;
+
+            public SbExecuteConfig(String[] cmd, byte[] data, StringBuilder out, StringBuilder err, String charset, Map<String, String> env) {
+                super(cmd, data, err, charset, env);
+                this.out = out;
+            }
+
+            public ProcessReader getStdOutProcessReader(Process p) {
+                return out == null ? super.getStdOutProcessReader(p) : new ReadOutputBuffer(p.getInputStream(), out);
+            }
+
+        }
+
+        private static class BaosExecuteConfig extends ExecuteConfig {
+            final ByteArrayOutputStream out;
+
+            public BaosExecuteConfig(String[] cmd, byte[] data, ByteArrayOutputStream out, StringBuilder err, String charset,
+                    Map<String, String> env) {
+                super(cmd, data, err, charset, env);
+                this.out = out;
+            }
+
+            public ProcessReader getStdOutProcessReader(Process p) {
+                return out == null ? super.getStdOutProcessReader(p) : new ReadBinaryOutputBuffer(p.getInputStream(), out);
+            }
+        }
+
+    }
+
 }

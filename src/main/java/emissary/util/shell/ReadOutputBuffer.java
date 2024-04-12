@@ -1,11 +1,6 @@
-/*
- * ReadOutputBuffer.java
- *
- * Created on November 19, 2001, 10:44 AM
- */
-
 package emissary.util.shell;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +11,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import javax.annotation.Nullable;
 
-/**
- *
- * @author ce
- * @version 1.0
- */
 public class ReadOutputBuffer extends ProcessReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadOutputBuffer.class);
@@ -34,52 +24,35 @@ public class ReadOutputBuffer extends ProcessReader {
     public boolean finished = false;
 
     public ReadOutputBuffer(final InputStream is, final long maxSize) {
+        this(is, maxSize, null);
+    }
+
+    public ReadOutputBuffer(final InputStream is, final long maxSize, @Nullable final String charset) {
         this.maxSize = maxSize;
-        this.br = new BufferedReader(new InputStreamReader(is));
-    }
-
-    public ReadOutputBuffer(final InputStream is, final long maxSize, final String charset) {
-        this.maxSize = maxSize;
         try {
-            this.br = new BufferedReader(new InputStreamReader(is, charset));
+            this.br = new BufferedReader(StringUtils.isBlank(charset) ? new InputStreamReader(is) : new InputStreamReader(is, charset));
         } catch (UnsupportedEncodingException e) {
             logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
             this.br = new BufferedReader(new InputStreamReader(is));
         }
     }
 
-    public ReadOutputBuffer(final InputStream is, final StringBuffer buf) {
+    public ReadOutputBuffer(final InputStream is, @Nullable final StringBuffer buf) {
+        this(is, buf, null);
+    }
+
+    public ReadOutputBuffer(final InputStream is, @Nullable final StringBuffer buf, @Nullable final String charset) {
+        this(is, -1, charset);
         this.buf = buf;
-        this.maxSize = -1;
-        this.br = new BufferedReader(new InputStreamReader(is));
     }
 
-    public ReadOutputBuffer(final InputStream is, final StringBuilder bld) {
+    public ReadOutputBuffer(final InputStream is, @Nullable final StringBuilder bld) {
+        this(is, bld, null);
+    }
+
+    public ReadOutputBuffer(final InputStream is, @Nullable final StringBuilder bld, @Nullable final String charset) {
+        this(is, -1, charset);
         this.bld = bld;
-        this.maxSize = -1;
-        this.br = new BufferedReader(new InputStreamReader(is));
-    }
-
-    public ReadOutputBuffer(final InputStream is, final StringBuffer buf, final String charset) {
-        this.buf = buf;
-        this.maxSize = -1;
-        try {
-            this.br = new BufferedReader(new InputStreamReader(is, charset));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
-        }
-    }
-
-    public ReadOutputBuffer(final InputStream is, final StringBuilder bld, final String charset) {
-        this.bld = bld;
-        this.maxSize = -1;
-        try {
-            this.br = new BufferedReader(new InputStreamReader(is, charset));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Cannot read output using charset {}, reverting to JVM default", charset);
-            this.br = new BufferedReader(new InputStreamReader(is));
-        }
     }
 
     private int getOutputLength() {
