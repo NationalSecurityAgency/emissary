@@ -240,9 +240,6 @@ public abstract class RegressionTest extends ExtractionTest {
         return Optional.empty();
     }
 
-    // Everything above can be overridden by extending classes to modify behaviour as they see fit.
-    // Below this point, methods should not be able to be overridden as they are inherently part of RegressionTest.
-
     protected class ClearDataBaseDataObject extends BaseDataObject {
         protected void clearData() {
             theData = null;
@@ -253,7 +250,7 @@ public abstract class RegressionTest extends ExtractionTest {
     @ParameterizedTest
     @MethodSource("data")
     @Override
-    public final void testExtractionPlace(final String resource) {
+    public void testExtractionPlace(final String resource) {
         logger.debug("Running {} test on resource {}", place.getClass().getName(), resource);
 
         if (generateAnswers()) {
@@ -272,12 +269,12 @@ public abstract class RegressionTest extends ExtractionTest {
     /**
      * Actually generate the answer file for a given resource
      * 
-     * Takes initial form & final forms from the filename
+     * Takes initial form and final forms from the filename
      * 
      * @param resource to generate against
      * @throws Exception if an error occurs during processing
      */
-    private void generateAnswerFiles(final String resource) throws Exception {
+    protected void generateAnswerFiles(final String resource) throws Exception {
         // Get the data and create a channel factory to it
         final IBaseDataObject initialIbdo = getInitialIbdo(resource);
         // Clone the BDO to create an 'after' copy
@@ -306,7 +303,7 @@ public abstract class RegressionTest extends ExtractionTest {
     }
 
     @Override
-    protected final List<IBaseDataObject> processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload)
+    protected List<IBaseDataObject> processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload)
             throws Exception {
         if (getLogbackLoggerName() == null) {
             actualSimplifiedLogEvents = new ArrayList<>();
@@ -324,18 +321,18 @@ public abstract class RegressionTest extends ExtractionTest {
     }
 
     @Override
-    protected final Document getAnswerDocumentFor(final String resource) {
+    protected Document getAnswerDocumentFor(final String resource) {
         // If generating answers, get the src version, otherwise get the normal XML file
         return generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource) : super.getAnswerDocumentFor(resource);
     }
 
     @Override
-    protected final void setupPayload(final IBaseDataObject payload, final Document answers) {
+    protected void setupPayload(final IBaseDataObject payload, final Document answers) {
         RegressionTestUtil.setupPayload(payload, answers, getDecoders());
     }
 
     @Override
-    protected final void checkAnswers(final Document answers, final IBaseDataObject payload,
+    protected void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) {
         RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders());
     }
