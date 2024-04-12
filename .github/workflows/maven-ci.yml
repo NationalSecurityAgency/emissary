@@ -99,7 +99,7 @@ jobs:
         run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify -DskipTests
 
   slack-notify:
-    if: ${{ github.event_name == 'push' && github.event.repository.fork == 'false' }}
+    if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
     needs: build
     runs-on: ubuntu-latest
     steps:
