@@ -213,7 +213,7 @@
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>         URL logCfg = ConfigurationWatchListUtil.getMainWatchURL(loggerContext);
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> 
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">if</strong> (logCfg != <strong class="jxr_keyword">null</strong> &amp;&amp; (logCfg.toString().endsWith(<span class="jxr_string">"logback-test.xml"</span>) || (logCfg.toString().endsWith(<span class="jxr_string">"logback-test.groovy"</span>)))) {
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">if</strong> (logCfg != <strong class="jxr_keyword">null</strong> &amp;&amp; (logCfg.toString().endsWith(<span class="jxr_string">"logback-test.xml"</span>) || logCfg.toString().endsWith(<span class="jxr_string">"logback-test.groovy"</span>))) {
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>             <em class="jxr_comment">// logCfg can be null if Emissary.setupLogbackForConsole is called</em>
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>             LOG.warn(<span class="jxr_string">"Not using {}, staying with test config {}"</span>, getLogbackConfig(), logCfg);
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>             doLogbackReinit(loggerContext, logCfg.getPath());

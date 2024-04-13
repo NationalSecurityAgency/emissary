@@ -187,7 +187,7 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> LoggerContext setupLogbackForConsole() {
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         <em class="jxr_comment">// So it looks better when commands are run</em>
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         ch.qos.logback.classic.Logger root =
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>                 (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         root.detachAndStopAllAppenders();
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         lc.reset();

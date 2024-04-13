@@ -119,7 +119,7 @@
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     * @param placeLoc the place key</em>
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
 <a class="jxr_linenumber" name="L113" href="#L113">113</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <strong class="jxr_keyword">public</strong> <a name="PickUpPlace" href="../../emissary/pickup/PickUpPlace.html#PickUpPlace">PickUpPlace</a>(String configInfo, String dir, String placeLoc) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>     <strong class="jxr_keyword">public</strong> <a name="PickUpPlace" href="../../emissary/pickup/PickUpPlace.html#PickUpPlace">PickUpPlace</a>(String configInfo, @Nullable String dir, String placeLoc) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L115" href="#L115">115</a>         <strong class="jxr_keyword">super</strong>(configInfo, dir, placeLoc);
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         configurePickUpPlace();
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>     }
@@ -289,245 +289,245 @@
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">return</strong> processDataFile(f, fixedName, isOversize, simpleMode, getDoneArea());
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>     }
 <a class="jxr_linenumber" name="L283" href="#L283">283</a> 
-<a class="jxr_linenumber" name="L284" href="#L284">284</a> 
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * Handle oversize payload item</em>
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * @param theFile the file with the oversize data</em>
-<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     * @param fixedName name to use for the object</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     * @param simpleMode simple flag from the input</em>
-<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     * @return true</em>
-<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> handleOversizePayload(File theFile, String fixedName, <strong class="jxr_keyword">boolean</strong> simpleMode) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <em class="jxr_comment">// Send it away, blocks until an agent is ready</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject =
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>                 DataObjectFactory.getInstance(<strong class="jxr_keyword">new</strong> Object[] {(<span class="jxr_string">"The file is oversize at "</span> + theFile.length() + <span class="jxr_string">" bytes"</span>).getBytes(), fixedName,
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>                         <span class="jxr_string">"OVERSIZE"</span>});
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         dataObject.setParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, Boolean.toString(simpleMode));
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         dataObjectCreated(dataObject, theFile);
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         logger.info(<span class="jxr_string">"**Deploying an agent for oversized {} and object {} simple={}"</span>, fixedName, dataObject.getInternalId(),
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>                 (simpleMode ? <span class="jxr_string">"simple"</span> : <span class="jxr_string">""</span>));
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         assignToPooledAgent(dataObject, -1L);
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     }
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> <em class="jxr_javadoccomment">     * Action to handle a simple mode File</em>
-<a class="jxr_linenumber" name="L308" href="#L308">308</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * @param theFile the file that contains the data</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     * @param fixedName name to use for the dataObject</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @return true if the file is processed successfully</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> handleSimplePayload(File theFile, String fixedName) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         byte[] theContent = Executrix.readDataFromFile(theFile.getAbsolutePath());
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <strong class="jxr_keyword">return</strong> processDataObject(theContent, fixedName, theFile, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>     }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L319" href="#L319">319</a> <em class="jxr_javadoccomment">     * Action to move th file to the done area when successfully processed</em>
-<a class="jxr_linenumber" name="L320" href="#L320">320</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L321" href="#L321">321</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> <em class="jxr_javadoccomment">     * @return true if the file was renamed</em>
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToDoneArea(File theFile) {
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>         <strong class="jxr_keyword">return</strong> renameFileToDoneArea(theFile, getDoneArea());
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>     }
-<a class="jxr_linenumber" name="L327" href="#L327">327</a> 
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * Action to move th file to the done area when successfully processed using the specified outut area</em>
-<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
-<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * @param outputRoot a specified output root</em>
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     * @return true if the file was renamed</em>
-<a class="jxr_linenumber" name="L334" href="#L334">334</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToDoneArea(File theFile, @Nullable String outputRoot) {
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         String base = theFile.getPath();
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">boolean</strong> renamed = false;
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>             base = base.substring(holdingArea.length());
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         }
-<a class="jxr_linenumber" name="L341" href="#L341">341</a> 
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">if</strong> (outputRoot != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>             File dest = <strong class="jxr_keyword">new</strong> File(outputRoot + <span class="jxr_string">"/"</span> + base);
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>             dest.getParentFile().mkdirs();
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>             renamed = theFile.renameTo(dest);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>             <strong class="jxr_keyword">if</strong> (renamed) {
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>                 logger.info(<span class="jxr_string">"{} processed and moved to done area {}"</span>, theFile.getName(), outputRoot);
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>                 logger.warn(<span class="jxr_string">"{} processed but could not be moved to done area as {}"</span>, theFile.getName(), dest);
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>             }
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         }
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">return</strong> renamed;
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> <em class="jxr_javadoccomment">     * Call back from a data server or queue server when a new file is ready to process</em>
+<a class="jxr_linenumber" name="L286" href="#L286">286</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a> <em class="jxr_javadoccomment">     * @param theFile file to process</em>
+<a class="jxr_linenumber" name="L288" href="#L288">288</a> <em class="jxr_javadoccomment">     * @param fixedName the good short name of the file</em>
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> <em class="jxr_javadoccomment">     * @param isOversize true if the content is too big by configuration</em>
+<a class="jxr_linenumber" name="L290" href="#L290">290</a> <em class="jxr_javadoccomment">     * @param simpleMode true if no session parsing is desired</em>
+<a class="jxr_linenumber" name="L291" href="#L291">291</a> <em class="jxr_javadoccomment">     * @param outputRoot the done area</em>
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> <em class="jxr_javadoccomment">     * @return true if it worked</em>
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
+<a class="jxr_linenumber" name="L294" href="#L294">294</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> processDataFile(File theFile, String fixedName, <strong class="jxr_keyword">boolean</strong> isOversize, <strong class="jxr_keyword">boolean</strong> simpleMode, String outputRoot) <strong class="jxr_keyword">throws</strong> IOException,
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>             <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">boolean</strong> success = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         logger.debug(<span class="jxr_string">"Starting processDataFile in PickUpPlace for {}"</span>, theFile);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         ObjectTracingService.emitLifecycleEvent(<strong class="jxr_keyword">null</strong>, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <em class="jxr_comment">// Handle oversize data quickly without reading the file</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">if</strong> (isOversize) {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>             handleOversizePayload(theFile, fixedName, simpleMode);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         }
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <em class="jxr_comment">// Handle it without session parsing if simple mode is on</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (simpleMode) {
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             handleSimplePayload(theFile, fixedName);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         }
+<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>         <em class="jxr_comment">// Parse sessions out of the file</em>
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>         <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>                 logger.debug(<span class="jxr_string">"Starting processSessions on {}"</span>, theFile);
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>                 processSessions(theFile, fixedName);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>                 logger.debug(<span class="jxr_string">"Finished with processSessions on {}"</span>, theFile);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             } <strong class="jxr_keyword">catch</strong> (<a name="ParserException" href="../../emissary/parser/ParserException.html#ParserException">ParserException</a> ex) {
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 logger.error(<span class="jxr_string">"Cannot parse {}"</span>, theFile.getName(), ex);
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>                 success = false;
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>             }
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <strong class="jxr_keyword">if</strong> (success) {
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>             handleFileSuccess(theFile, outputRoot);
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>             handleFileError(theFile);
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>         }
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         logger.debug(<span class="jxr_string">"Ending processDataFile {} {} {}"</span>, theFile, (success ? <span class="jxr_string">"success"</span> : <span class="jxr_string">"failure"</span>), (simpleMode ? <span class="jxr_string">"simple"</span> : <span class="jxr_string">""</span>));
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">return</strong> success;
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>     }
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> <em class="jxr_javadoccomment">     * Handle oversize payload item</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a> <em class="jxr_javadoccomment">     * @param theFile the file with the oversize data</em>
+<a class="jxr_linenumber" name="L338" href="#L338">338</a> <em class="jxr_javadoccomment">     * @param fixedName name to use for the object</em>
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> <em class="jxr_javadoccomment">     * @param simpleMode simple flag from the input</em>
+<a class="jxr_linenumber" name="L340" href="#L340">340</a> <em class="jxr_javadoccomment">     * @return true</em>
+<a class="jxr_linenumber" name="L341" href="#L341">341</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> handleOversizePayload(File theFile, String fixedName, <strong class="jxr_keyword">boolean</strong> simpleMode) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         <em class="jxr_comment">// Send it away, blocks until an agent is ready</em>
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject =
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>                 DataObjectFactory.getInstance(<strong class="jxr_keyword">new</strong> Object[] {(<span class="jxr_string">"The file is oversize at "</span> + theFile.length() + <span class="jxr_string">" bytes"</span>).getBytes(), fixedName,
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>                         <span class="jxr_string">"OVERSIZE"</span>});
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         dataObject.setParameter(<span class="jxr_string">"SIMPLE_MODE"</span>, Boolean.toString(simpleMode));
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         dataObjectCreated(dataObject, theFile);
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         logger.info(<span class="jxr_string">"**Deploying an agent for oversized {} and object {} simple={}"</span>, fixedName, dataObject.getInternalId(),
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>                 (simpleMode ? <span class="jxr_string">"simple"</span> : <span class="jxr_string">""</span>));
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         assignToPooledAgent(dataObject, -1L);
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L353" href="#L353">353</a>     }
 <a class="jxr_linenumber" name="L354" href="#L354">354</a> 
 <a class="jxr_linenumber" name="L355" href="#L355">355</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * Get the endpoint file name for when the file is move to inProcess</em>
+<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * Action to handle a simple mode File</em>
 <a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * @param theFile the file to be considered</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @param eatPrefix optional prefix strip from the work bundle</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     * @return null if no holdingArea, else the new File endpoint</em>
+<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * @param theFile the file that contains the data</em>
+<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     * @param fixedName name to use for the dataObject</em>
+<a class="jxr_linenumber" name="L360" href="#L360">360</a> <em class="jxr_javadoccomment">     * @return true if the file is processed successfully</em>
 <a class="jxr_linenumber" name="L361" href="#L361">361</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <strong class="jxr_keyword">protected</strong> File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>         String base = theFile.getPath();
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>         <strong class="jxr_keyword">if</strong> (eatPrefix != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>             base = base.substring(eatPrefix.length());
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>             logger.debug(<span class="jxr_string">"Using base of {} due to eatPrefix of {} chopped from incoming {}"</span>, base, eatPrefix, theFile);
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>         }
-<a class="jxr_linenumber" name="L368" href="#L368">368</a> 
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>         <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(holdingArea + <span class="jxr_string">"/"</span> + base);
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>         }
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
-<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
-<a class="jxr_linenumber" name="L375" href="#L375">375</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * Action to move the file to inProcess area when taking ownership</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @param source the file to be renamed</em>
-<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * @param dest where it should end up, or use the holdingArea if nil</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @return true if renamed, false if not</em>
-<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L382" href="#L382">382</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameToInProcessAreaAs(File source, @Nullable File dest) {
-<a class="jxr_linenumber" name="L383" href="#L383">383</a>         <strong class="jxr_keyword">if</strong> (holdingArea == <strong class="jxr_keyword">null</strong> &amp;&amp; dest == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L384" href="#L384">384</a>             logger.warn(<span class="jxr_string">"Holding area not configured, cannot rename {}"</span>, source);
-<a class="jxr_linenumber" name="L385" href="#L385">385</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L386" href="#L386">386</a>         }
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> 
-<a class="jxr_linenumber" name="L388" href="#L388">388</a>         <strong class="jxr_keyword">if</strong> (dest == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L389" href="#L389">389</a>             dest = getInProcessFileNameFor(source, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>             dest.getParentFile().mkdirs();
-<a class="jxr_linenumber" name="L392" href="#L392">392</a>         }
-<a class="jxr_linenumber" name="L393" href="#L393">393</a> 
-<a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">boolean</strong> renamed = source.renameTo(dest);
-<a class="jxr_linenumber" name="L395" href="#L395">395</a>         <strong class="jxr_keyword">if</strong> (renamed) {
-<a class="jxr_linenumber" name="L396" href="#L396">396</a>             logger.debug(<span class="jxr_string">"{} moved to inProcess area as {}"</span>, source.getName(), dest);
-<a class="jxr_linenumber" name="L397" href="#L397">397</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L398" href="#L398">398</a>             logger.warn(<span class="jxr_string">"{} could not be moved to inProcess area {}"</span>, source.getName(), dest);
-<a class="jxr_linenumber" name="L399" href="#L399">399</a>         }
-<a class="jxr_linenumber" name="L400" href="#L400">400</a>         <strong class="jxr_keyword">return</strong> renamed;
-<a class="jxr_linenumber" name="L401" href="#L401">401</a>     }
-<a class="jxr_linenumber" name="L402" href="#L402">402</a> 
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> handleSimplePayload(File theFile, String fixedName) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         byte[] theContent = Executrix.readDataFromFile(theFile.getAbsolutePath());
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>         <strong class="jxr_keyword">return</strong> processDataObject(theContent, fixedName, theFile, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>     }
+<a class="jxr_linenumber" name="L366" href="#L366">366</a> 
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     * Action to move th file to the done area when successfully processed</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L370" href="#L370">370</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> <em class="jxr_javadoccomment">     * @return true if the file was renamed</em>
+<a class="jxr_linenumber" name="L372" href="#L372">372</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToDoneArea(File theFile) {
+<a class="jxr_linenumber" name="L374" href="#L374">374</a>         <strong class="jxr_keyword">return</strong> renameFileToDoneArea(theFile, getDoneArea());
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>     }
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> 
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * Action to move th file to the done area when successfully processed using the specified outut area</em>
+<a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L380" href="#L380">380</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
+<a class="jxr_linenumber" name="L381" href="#L381">381</a> <em class="jxr_javadoccomment">     * @param outputRoot a specified output root</em>
+<a class="jxr_linenumber" name="L382" href="#L382">382</a> <em class="jxr_javadoccomment">     * @return true if the file was renamed</em>
+<a class="jxr_linenumber" name="L383" href="#L383">383</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L384" href="#L384">384</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToDoneArea(File theFile, @Nullable String outputRoot) {
+<a class="jxr_linenumber" name="L385" href="#L385">385</a>         String base = theFile.getPath();
+<a class="jxr_linenumber" name="L386" href="#L386">386</a>         <strong class="jxr_keyword">boolean</strong> renamed = false;
+<a class="jxr_linenumber" name="L387" href="#L387">387</a>         <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L388" href="#L388">388</a>             base = base.substring(holdingArea.length());
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>         }
+<a class="jxr_linenumber" name="L390" href="#L390">390</a> 
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>         <strong class="jxr_keyword">if</strong> (outputRoot != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L392" href="#L392">392</a>             File dest = <strong class="jxr_keyword">new</strong> File(outputRoot + <span class="jxr_string">"/"</span> + base);
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>             dest.getParentFile().mkdirs();
+<a class="jxr_linenumber" name="L394" href="#L394">394</a>             renamed = theFile.renameTo(dest);
+<a class="jxr_linenumber" name="L395" href="#L395">395</a>             <strong class="jxr_keyword">if</strong> (renamed) {
+<a class="jxr_linenumber" name="L396" href="#L396">396</a>                 logger.info(<span class="jxr_string">"{} processed and moved to done area {}"</span>, theFile.getName(), outputRoot);
+<a class="jxr_linenumber" name="L397" href="#L397">397</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L398" href="#L398">398</a>                 logger.warn(<span class="jxr_string">"{} processed but could not be moved to done area as {}"</span>, theFile.getName(), dest);
+<a class="jxr_linenumber" name="L399" href="#L399">399</a>             }
+<a class="jxr_linenumber" name="L400" href="#L400">400</a>         }
+<a class="jxr_linenumber" name="L401" href="#L401">401</a>         <strong class="jxr_keyword">return</strong> renamed;
+<a class="jxr_linenumber" name="L402" href="#L402">402</a>     }
 <a class="jxr_linenumber" name="L403" href="#L403">403</a> 
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * Action to move the file to the error area due to failure to process</em>
+<a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     * Get the endpoint file name for when the file is move to inProcess</em>
 <a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @param theFile the file to move</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * @return true if the rename was successful</em>
-<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L410" href="#L410">410</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToErrorArea(File theFile) {
-<a class="jxr_linenumber" name="L411" href="#L411">411</a>         <strong class="jxr_keyword">boolean</strong> renamed = theFile.renameTo(<strong class="jxr_keyword">new</strong> File(errorArea, theFile.getName()));
-<a class="jxr_linenumber" name="L412" href="#L412">412</a>         <strong class="jxr_keyword">if</strong> (renamed) {
-<a class="jxr_linenumber" name="L413" href="#L413">413</a>             logger.warn(<span class="jxr_string">"{} failed and is moved to the error area"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L414" href="#L414">414</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L415" href="#L415">415</a>             logger.error(<span class="jxr_string">"{} failed and could not be moved to the error area"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>         }
-<a class="jxr_linenumber" name="L417" href="#L417">417</a>         <strong class="jxr_keyword">return</strong> renamed;
-<a class="jxr_linenumber" name="L418" href="#L418">418</a>     }
-<a class="jxr_linenumber" name="L419" href="#L419">419</a> 
-<a class="jxr_linenumber" name="L420" href="#L420">420</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L421" href="#L421">421</a> <em class="jxr_javadoccomment">     * Action to delete the file from the holding area</em>
-<a class="jxr_linenumber" name="L422" href="#L422">422</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * @param theFile file to delete</em>
-<a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> deleteFileFromHoldingArea(File theFile) {
-<a class="jxr_linenumber" name="L426" href="#L426">426</a>         <strong class="jxr_keyword">boolean</strong> deleted = theFile.delete();
-<a class="jxr_linenumber" name="L427" href="#L427">427</a>         <strong class="jxr_keyword">if</strong> (deleted) {
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>             logger.info(<span class="jxr_string">"{} processed and deleted"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L429" href="#L429">429</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L430" href="#L430">430</a>             logger.warn(<span class="jxr_string">"{} processed but could not be deleted"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L431" href="#L431">431</a>         }
-<a class="jxr_linenumber" name="L432" href="#L432">432</a>     }
-<a class="jxr_linenumber" name="L433" href="#L433">433</a> 
-<a class="jxr_linenumber" name="L434" href="#L434">434</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L435" href="#L435">435</a> <em class="jxr_javadoccomment">     * File was successfully processed, take appropriate action</em>
-<a class="jxr_linenumber" name="L436" href="#L436">436</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L437" href="#L437">437</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
-<a class="jxr_linenumber" name="L438" href="#L438">438</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L439" href="#L439">439</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileSuccess(File theFile) {
-<a class="jxr_linenumber" name="L440" href="#L440">440</a>         handleFileSuccess(theFile, getDoneArea());
-<a class="jxr_linenumber" name="L441" href="#L441">441</a>     }
-<a class="jxr_linenumber" name="L442" href="#L442">442</a> 
-<a class="jxr_linenumber" name="L443" href="#L443">443</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L444" href="#L444">444</a> <em class="jxr_javadoccomment">     * File was successfully processed, take appropriate action using specified done area</em>
-<a class="jxr_linenumber" name="L445" href="#L445">445</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L446" href="#L446">446</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
-<a class="jxr_linenumber" name="L447" href="#L447">447</a> <em class="jxr_javadoccomment">     * @param outputRoot the specified output done area</em>
-<a class="jxr_linenumber" name="L448" href="#L448">448</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L449" href="#L449">449</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileSuccess(File theFile, @Nullable String outputRoot) {
-<a class="jxr_linenumber" name="L450" href="#L450">450</a>         <strong class="jxr_keyword">if</strong> (outputRoot != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L451" href="#L451">451</a>             logger.debug(<span class="jxr_string">"Handling file success by moving to doneArea {}"</span>, theFile);
-<a class="jxr_linenumber" name="L452" href="#L452">452</a>             renameFileToDoneArea(theFile, outputRoot);
-<a class="jxr_linenumber" name="L453" href="#L453">453</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L454" href="#L454">454</a>             logger.debug(<span class="jxr_string">"Handling file success by deleting from holdingArea {}"</span>, theFile);
-<a class="jxr_linenumber" name="L455" href="#L455">455</a>             deleteFileFromHoldingArea(theFile);
-<a class="jxr_linenumber" name="L456" href="#L456">456</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L457" href="#L457">457</a>             logger.debug(<span class="jxr_string">"Neither Done nor Holding areas defined, leaving file as {}"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L458" href="#L458">458</a>         }
-<a class="jxr_linenumber" name="L459" href="#L459">459</a>     }
-<a class="jxr_linenumber" name="L460" href="#L460">460</a> 
-<a class="jxr_linenumber" name="L461" href="#L461">461</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L462" href="#L462">462</a> <em class="jxr_javadoccomment">     * File failed to process, take appropriate action</em>
-<a class="jxr_linenumber" name="L463" href="#L463">463</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L464" href="#L464">464</a> <em class="jxr_javadoccomment">     * @param theFile the file that failed</em>
-<a class="jxr_linenumber" name="L465" href="#L465">465</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L466" href="#L466">466</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileError(File theFile) {
-<a class="jxr_linenumber" name="L467" href="#L467">467</a>         <strong class="jxr_keyword">if</strong> (errorArea != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L468" href="#L468">468</a>             logger.debug(<span class="jxr_string">"Handling file error case for {}"</span>, theFile);
-<a class="jxr_linenumber" name="L469" href="#L469">469</a>             renameFileToErrorArea(theFile);
-<a class="jxr_linenumber" name="L470" href="#L470">470</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L471" href="#L471">471</a>             logger.warn(<span class="jxr_string">"There is no error location defined and the file did not process. It is stuck at {}"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L472" href="#L472">472</a>         }
-<a class="jxr_linenumber" name="L473" href="#L473">473</a>     }
-<a class="jxr_linenumber" name="L474" href="#L474">474</a> 
-<a class="jxr_linenumber" name="L475" href="#L475">475</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L476" href="#L476">476</a> <em class="jxr_javadoccomment">     * Call back from a data server or queue server when a new file is ready to process</em>
-<a class="jxr_linenumber" name="L477" href="#L477">477</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L478" href="#L478">478</a> <em class="jxr_javadoccomment">     * @param theFile file to process</em>
-<a class="jxr_linenumber" name="L479" href="#L479">479</a> <em class="jxr_javadoccomment">     * @param fixedName the good short name of the file</em>
-<a class="jxr_linenumber" name="L480" href="#L480">480</a> <em class="jxr_javadoccomment">     * @param isOversize true if the content is too big by configuration</em>
-<a class="jxr_linenumber" name="L481" href="#L481">481</a> <em class="jxr_javadoccomment">     * @param simpleMode true if no session parsing is desired</em>
-<a class="jxr_linenumber" name="L482" href="#L482">482</a> <em class="jxr_javadoccomment">     * @param outputRoot the done area</em>
-<a class="jxr_linenumber" name="L483" href="#L483">483</a> <em class="jxr_javadoccomment">     * @return true if it worked</em>
-<a class="jxr_linenumber" name="L484" href="#L484">484</a> <em class="jxr_javadoccomment">     * @throws IOException If there is some I/O problem.</em>
-<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L486" href="#L486">486</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> processDataFile(File theFile, String fixedName, <strong class="jxr_keyword">boolean</strong> isOversize, <strong class="jxr_keyword">boolean</strong> simpleMode, String outputRoot) <strong class="jxr_keyword">throws</strong> IOException,
-<a class="jxr_linenumber" name="L487" href="#L487">487</a>             <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L488" href="#L488">488</a>         <strong class="jxr_keyword">boolean</strong> success = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L489" href="#L489">489</a>         logger.debug(<span class="jxr_string">"Starting processDataFile in PickUpPlace for {}"</span>, theFile);
-<a class="jxr_linenumber" name="L490" href="#L490">490</a> 
-<a class="jxr_linenumber" name="L491" href="#L491">491</a>         ObjectTracingService.emitLifecycleEvent(<strong class="jxr_keyword">null</strong>, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
+<a class="jxr_linenumber" name="L407" href="#L407">407</a> <em class="jxr_javadoccomment">     * @param theFile the file to be considered</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a> <em class="jxr_javadoccomment">     * @param eatPrefix optional prefix strip from the work bundle</em>
+<a class="jxr_linenumber" name="L409" href="#L409">409</a> <em class="jxr_javadoccomment">     * @return null if no holdingArea, else the new File endpoint</em>
+<a class="jxr_linenumber" name="L410" href="#L410">410</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L411" href="#L411">411</a>     @Nullable
+<a class="jxr_linenumber" name="L412" href="#L412">412</a>     <strong class="jxr_keyword">protected</strong> File getInProcessFileNameFor(File theFile, @Nullable String eatPrefix) {
+<a class="jxr_linenumber" name="L413" href="#L413">413</a>         String base = theFile.getPath();
+<a class="jxr_linenumber" name="L414" href="#L414">414</a>         <strong class="jxr_keyword">if</strong> (eatPrefix != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L415" href="#L415">415</a>             base = base.substring(eatPrefix.length());
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>             logger.debug(<span class="jxr_string">"Using base of {} due to eatPrefix of {} chopped from incoming {}"</span>, base, eatPrefix, theFile);
+<a class="jxr_linenumber" name="L417" href="#L417">417</a>         }
+<a class="jxr_linenumber" name="L418" href="#L418">418</a> 
+<a class="jxr_linenumber" name="L419" href="#L419">419</a>         <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L420" href="#L420">420</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> File(holdingArea + <span class="jxr_string">"/"</span> + base);
+<a class="jxr_linenumber" name="L421" href="#L421">421</a>         }
+<a class="jxr_linenumber" name="L422" href="#L422">422</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L423" href="#L423">423</a>     }
+<a class="jxr_linenumber" name="L424" href="#L424">424</a> 
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L426" href="#L426">426</a> <em class="jxr_javadoccomment">     * Action to move the file to inProcess area when taking ownership</em>
+<a class="jxr_linenumber" name="L427" href="#L427">427</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L428" href="#L428">428</a> <em class="jxr_javadoccomment">     * @param source the file to be renamed</em>
+<a class="jxr_linenumber" name="L429" href="#L429">429</a> <em class="jxr_javadoccomment">     * @param dest where it should end up, or use the holdingArea if nil</em>
+<a class="jxr_linenumber" name="L430" href="#L430">430</a> <em class="jxr_javadoccomment">     * @return true if renamed, false if not</em>
+<a class="jxr_linenumber" name="L431" href="#L431">431</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L432" href="#L432">432</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameToInProcessAreaAs(File source, @Nullable File dest) {
+<a class="jxr_linenumber" name="L433" href="#L433">433</a>         <strong class="jxr_keyword">if</strong> (holdingArea == <strong class="jxr_keyword">null</strong> &amp;&amp; dest == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L434" href="#L434">434</a>             logger.warn(<span class="jxr_string">"Holding area not configured, cannot rename {}"</span>, source);
+<a class="jxr_linenumber" name="L435" href="#L435">435</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L436" href="#L436">436</a>         }
+<a class="jxr_linenumber" name="L437" href="#L437">437</a> 
+<a class="jxr_linenumber" name="L438" href="#L438">438</a>         <strong class="jxr_keyword">if</strong> (dest == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L439" href="#L439">439</a>             dest = getInProcessFileNameFor(source, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L440" href="#L440">440</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L441" href="#L441">441</a>             dest.getParentFile().mkdirs();
+<a class="jxr_linenumber" name="L442" href="#L442">442</a>         }
+<a class="jxr_linenumber" name="L443" href="#L443">443</a> 
+<a class="jxr_linenumber" name="L444" href="#L444">444</a>         <strong class="jxr_keyword">boolean</strong> renamed = source.renameTo(dest);
+<a class="jxr_linenumber" name="L445" href="#L445">445</a>         <strong class="jxr_keyword">if</strong> (renamed) {
+<a class="jxr_linenumber" name="L446" href="#L446">446</a>             logger.debug(<span class="jxr_string">"{} moved to inProcess area as {}"</span>, source.getName(), dest);
+<a class="jxr_linenumber" name="L447" href="#L447">447</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L448" href="#L448">448</a>             logger.warn(<span class="jxr_string">"{} could not be moved to inProcess area {}"</span>, source.getName(), dest);
+<a class="jxr_linenumber" name="L449" href="#L449">449</a>         }
+<a class="jxr_linenumber" name="L450" href="#L450">450</a>         <strong class="jxr_keyword">return</strong> renamed;
+<a class="jxr_linenumber" name="L451" href="#L451">451</a>     }
+<a class="jxr_linenumber" name="L452" href="#L452">452</a> 
+<a class="jxr_linenumber" name="L453" href="#L453">453</a> 
+<a class="jxr_linenumber" name="L454" href="#L454">454</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L455" href="#L455">455</a> <em class="jxr_javadoccomment">     * Action to move the file to the error area due to failure to process</em>
+<a class="jxr_linenumber" name="L456" href="#L456">456</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L457" href="#L457">457</a> <em class="jxr_javadoccomment">     * @param theFile the file to move</em>
+<a class="jxr_linenumber" name="L458" href="#L458">458</a> <em class="jxr_javadoccomment">     * @return true if the rename was successful</em>
+<a class="jxr_linenumber" name="L459" href="#L459">459</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L460" href="#L460">460</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> renameFileToErrorArea(File theFile) {
+<a class="jxr_linenumber" name="L461" href="#L461">461</a>         <strong class="jxr_keyword">boolean</strong> renamed = theFile.renameTo(<strong class="jxr_keyword">new</strong> File(errorArea, theFile.getName()));
+<a class="jxr_linenumber" name="L462" href="#L462">462</a>         <strong class="jxr_keyword">if</strong> (renamed) {
+<a class="jxr_linenumber" name="L463" href="#L463">463</a>             logger.warn(<span class="jxr_string">"{} failed and is moved to the error area"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L464" href="#L464">464</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L465" href="#L465">465</a>             logger.error(<span class="jxr_string">"{} failed and could not be moved to the error area"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L466" href="#L466">466</a>         }
+<a class="jxr_linenumber" name="L467" href="#L467">467</a>         <strong class="jxr_keyword">return</strong> renamed;
+<a class="jxr_linenumber" name="L468" href="#L468">468</a>     }
+<a class="jxr_linenumber" name="L469" href="#L469">469</a> 
+<a class="jxr_linenumber" name="L470" href="#L470">470</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L471" href="#L471">471</a> <em class="jxr_javadoccomment">     * Action to delete the file from the holding area</em>
+<a class="jxr_linenumber" name="L472" href="#L472">472</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L473" href="#L473">473</a> <em class="jxr_javadoccomment">     * @param theFile file to delete</em>
+<a class="jxr_linenumber" name="L474" href="#L474">474</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L475" href="#L475">475</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> deleteFileFromHoldingArea(File theFile) {
+<a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">boolean</strong> deleted = theFile.delete();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">if</strong> (deleted) {
+<a class="jxr_linenumber" name="L478" href="#L478">478</a>             logger.info(<span class="jxr_string">"{} processed and deleted"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L479" href="#L479">479</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L480" href="#L480">480</a>             logger.warn(<span class="jxr_string">"{} processed but could not be deleted"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L481" href="#L481">481</a>         }
+<a class="jxr_linenumber" name="L482" href="#L482">482</a>     }
+<a class="jxr_linenumber" name="L483" href="#L483">483</a> 
+<a class="jxr_linenumber" name="L484" href="#L484">484</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L485" href="#L485">485</a> <em class="jxr_javadoccomment">     * File was successfully processed, take appropriate action</em>
+<a class="jxr_linenumber" name="L486" href="#L486">486</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L487" href="#L487">487</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
+<a class="jxr_linenumber" name="L488" href="#L488">488</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L489" href="#L489">489</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileSuccess(File theFile) {
+<a class="jxr_linenumber" name="L490" href="#L490">490</a>         handleFileSuccess(theFile, getDoneArea());
+<a class="jxr_linenumber" name="L491" href="#L491">491</a>     }
 <a class="jxr_linenumber" name="L492" href="#L492">492</a> 
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>         <em class="jxr_comment">// Handle oversize data quickly without reading the file</em>
-<a class="jxr_linenumber" name="L494" href="#L494">494</a>         <strong class="jxr_keyword">if</strong> (isOversize) {
-<a class="jxr_linenumber" name="L495" href="#L495">495</a>             handleOversizePayload(theFile, fixedName, simpleMode);
-<a class="jxr_linenumber" name="L496" href="#L496">496</a>         }
-<a class="jxr_linenumber" name="L497" href="#L497">497</a> 
-<a class="jxr_linenumber" name="L498" href="#L498">498</a>         <em class="jxr_comment">// Handle it without session parsing if simple mode is on</em>
-<a class="jxr_linenumber" name="L499" href="#L499">499</a>         <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (simpleMode) {
-<a class="jxr_linenumber" name="L500" href="#L500">500</a>             handleSimplePayload(theFile, fixedName);
-<a class="jxr_linenumber" name="L501" href="#L501">501</a>         }
-<a class="jxr_linenumber" name="L502" href="#L502">502</a> 
-<a class="jxr_linenumber" name="L503" href="#L503">503</a>         <em class="jxr_comment">// Parse sessions out of the file</em>
-<a class="jxr_linenumber" name="L504" href="#L504">504</a>         <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L505" href="#L505">505</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L506" href="#L506">506</a>                 logger.debug(<span class="jxr_string">"Starting processSessions on {}"</span>, theFile);
-<a class="jxr_linenumber" name="L507" href="#L507">507</a>                 processSessions(theFile, fixedName);
-<a class="jxr_linenumber" name="L508" href="#L508">508</a>                 logger.debug(<span class="jxr_string">"Finished with processSessions on {}"</span>, theFile);
-<a class="jxr_linenumber" name="L509" href="#L509">509</a>             } <strong class="jxr_keyword">catch</strong> (<a name="ParserException" href="../../emissary/parser/ParserException.html#ParserException">ParserException</a> ex) {
-<a class="jxr_linenumber" name="L510" href="#L510">510</a>                 logger.error(<span class="jxr_string">"Cannot parse {}"</span>, theFile.getName(), ex);
-<a class="jxr_linenumber" name="L511" href="#L511">511</a>                 success = false;
-<a class="jxr_linenumber" name="L512" href="#L512">512</a>             }
-<a class="jxr_linenumber" name="L513" href="#L513">513</a>         }
-<a class="jxr_linenumber" name="L514" href="#L514">514</a> 
-<a class="jxr_linenumber" name="L515" href="#L515">515</a>         <strong class="jxr_keyword">if</strong> (success) {
-<a class="jxr_linenumber" name="L516" href="#L516">516</a>             handleFileSuccess(theFile, outputRoot);
-<a class="jxr_linenumber" name="L517" href="#L517">517</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L518" href="#L518">518</a>             handleFileError(theFile);
-<a class="jxr_linenumber" name="L519" href="#L519">519</a>         }
-<a class="jxr_linenumber" name="L520" href="#L520">520</a> 
-<a class="jxr_linenumber" name="L521" href="#L521">521</a>         logger.debug(<span class="jxr_string">"Ending processDataFile {} {} {}"</span>, theFile, (success ? <span class="jxr_string">"success"</span> : <span class="jxr_string">"failure"</span>), (simpleMode ? <span class="jxr_string">"simple"</span> : <span class="jxr_string">""</span>));
-<a class="jxr_linenumber" name="L522" href="#L522">522</a>         <strong class="jxr_keyword">return</strong> success;
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L494" href="#L494">494</a> <em class="jxr_javadoccomment">     * File was successfully processed, take appropriate action using specified done area</em>
+<a class="jxr_linenumber" name="L495" href="#L495">495</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L496" href="#L496">496</a> <em class="jxr_javadoccomment">     * @param theFile the file that was processed</em>
+<a class="jxr_linenumber" name="L497" href="#L497">497</a> <em class="jxr_javadoccomment">     * @param outputRoot the specified output done area</em>
+<a class="jxr_linenumber" name="L498" href="#L498">498</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L499" href="#L499">499</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileSuccess(File theFile, @Nullable String outputRoot) {
+<a class="jxr_linenumber" name="L500" href="#L500">500</a>         <strong class="jxr_keyword">if</strong> (outputRoot != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L501" href="#L501">501</a>             logger.debug(<span class="jxr_string">"Handling file success by moving to doneArea {}"</span>, theFile);
+<a class="jxr_linenumber" name="L502" href="#L502">502</a>             renameFileToDoneArea(theFile, outputRoot);
+<a class="jxr_linenumber" name="L503" href="#L503">503</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (holdingArea != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L504" href="#L504">504</a>             logger.debug(<span class="jxr_string">"Handling file success by deleting from holdingArea {}"</span>, theFile);
+<a class="jxr_linenumber" name="L505" href="#L505">505</a>             deleteFileFromHoldingArea(theFile);
+<a class="jxr_linenumber" name="L506" href="#L506">506</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L507" href="#L507">507</a>             logger.debug(<span class="jxr_string">"Neither Done nor Holding areas defined, leaving file as {}"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L508" href="#L508">508</a>         }
+<a class="jxr_linenumber" name="L509" href="#L509">509</a>     }
+<a class="jxr_linenumber" name="L510" href="#L510">510</a> 
+<a class="jxr_linenumber" name="L511" href="#L511">511</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L512" href="#L512">512</a> <em class="jxr_javadoccomment">     * File failed to process, take appropriate action</em>
+<a class="jxr_linenumber" name="L513" href="#L513">513</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L514" href="#L514">514</a> <em class="jxr_javadoccomment">     * @param theFile the file that failed</em>
+<a class="jxr_linenumber" name="L515" href="#L515">515</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L516" href="#L516">516</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> handleFileError(File theFile) {
+<a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">if</strong> (errorArea != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L518" href="#L518">518</a>             logger.debug(<span class="jxr_string">"Handling file error case for {}"</span>, theFile);
+<a class="jxr_linenumber" name="L519" href="#L519">519</a>             renameFileToErrorArea(theFile);
+<a class="jxr_linenumber" name="L520" href="#L520">520</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L521" href="#L521">521</a>             logger.warn(<span class="jxr_string">"There is no error location defined and the file did not process. It is stuck at {}"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L522" href="#L522">522</a>         }
 <a class="jxr_linenumber" name="L523" href="#L523">523</a>     }
 <a class="jxr_linenumber" name="L524" href="#L524">524</a> 
 <a class="jxr_linenumber" name="L525" href="#L525">525</a>     <em class="jxr_javadoccomment">/**</em>
@@ -617,7 +617,7 @@
 <a class="jxr_linenumber" name="L609" href="#L609">609</a>                     <strong class="jxr_keyword">long</strong> fileEnd = System.currentTimeMillis();
 <a class="jxr_linenumber" name="L610" href="#L610">610</a>                     logger.info(<span class="jxr_string">"fileParseMetric:{},{},{},{},{}"</span>, fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
 <a class="jxr_linenumber" name="L611" href="#L611">611</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>                 } <strong class="jxr_keyword">catch</strong> (emissary.core.EmissaryException ex) {
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                 } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
 <a class="jxr_linenumber" name="L613" href="#L613">613</a>                     logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, theFile.getName(), ex);
 <a class="jxr_linenumber" name="L614" href="#L614">614</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="ParserException" href="../../emissary/parser/ParserException.html#ParserException">ParserException</a>(<span class="jxr_string">"Could not process"</span> + theFile.getName(), ex);
 <a class="jxr_linenumber" name="L615" href="#L615">615</a>                 }
@@ -661,7 +661,7 @@
 <a class="jxr_linenumber" name="L653" href="#L653">653</a>             } <strong class="jxr_keyword">catch</strong> (<a name="ParserEOFException" href="../../emissary/parser/ParserEOFException.html#ParserEOFException">ParserEOFException</a> eof) {
 <a class="jxr_linenumber" name="L654" href="#L654">654</a>                 <em class="jxr_comment">// expected at end of file</em>
 <a class="jxr_linenumber" name="L655" href="#L655">655</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>             } <strong class="jxr_keyword">catch</strong> (emissary.core.EmissaryException ex) {
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
 <a class="jxr_linenumber" name="L657" href="#L657">657</a>                 logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, fixedName, ex);
 <a class="jxr_linenumber" name="L658" href="#L658">658</a>             }
 <a class="jxr_linenumber" name="L659" href="#L659">659</a> 
@@ -676,94 +676,95 @@
 <a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">     * @return fixed filename</em>
 <a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>     <strong class="jxr_keyword">protected</strong> String fixFileName(@Nullable String v) {
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">if</strong> (v == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>         }
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>         String s = v.replace(' ', '_');
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>         s = s.replace('\t', '_');
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>         s = s.replace('\n', '_');
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>         s = s.replace('\r', '_');
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>         s = s.replace('\f', '_');
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>         s = s.replace(':', '_');
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> 
-<a class="jxr_linenumber" name="L682" href="#L682">682</a>         <strong class="jxr_keyword">if</strong> (s.startsWith(<span class="jxr_string">"."</span>)) {
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>             s = <span class="jxr_string">"_dot_"</span> + s.substring(1);
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>         }
-<a class="jxr_linenumber" name="L685" href="#L685">685</a> 
-<a class="jxr_linenumber" name="L686" href="#L686">686</a>         <strong class="jxr_keyword">return</strong> s;
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>     }
-<a class="jxr_linenumber" name="L688" href="#L688">688</a> 
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L690" href="#L690">690</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the pool and assign the payload to it</em>
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L699" href="#L699">699</a>         assignToPooledAgent(payload, agentPool, <strong class="jxr_keyword">this</strong>, timeoutMs);
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>     }
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> 
-<a class="jxr_linenumber" name="L702" href="#L702">702</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the specified pool and assign the payload to it</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * @param agentPool the pool of agents</em>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param startingLocation the agent launch point</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">     * @return mobile agent assigned to pool</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
-<a class="jxr_linenumber" name="L720" href="#L720">720</a> 
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L723" href="#L723">723</a> 
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>                 agentPool = AgentPool.lookup();
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>             }
-<a class="jxr_linenumber" name="L727" href="#L727">727</a> 
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             <strong class="jxr_keyword">do</strong> {
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>                 loopCount++;
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>                     agent = agentPool.borrowAgent();
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>                     }
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>                 }
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
-<a class="jxr_linenumber" name="L739" href="#L739">739</a> 
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>             }
-<a class="jxr_linenumber" name="L745" href="#L745">745</a> 
-<a class="jxr_linenumber" name="L746" href="#L746">746</a>             agent.go(payload, startingLocation);
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>             Thread.yield();
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>             MDC.remove(MDCConstants.SHORT_NAME);
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>         }
-<a class="jxr_linenumber" name="L751" href="#L751">751</a> 
-<a class="jxr_linenumber" name="L752" href="#L752">752</a>         <strong class="jxr_keyword">return</strong> agent;
-<a class="jxr_linenumber" name="L753" href="#L753">753</a>     }
-<a class="jxr_linenumber" name="L754" href="#L754">754</a> 
-<a class="jxr_linenumber" name="L755" href="#L755">755</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
-<a class="jxr_linenumber" name="L756" href="#L756">756</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>     }
-<a class="jxr_linenumber" name="L758" href="#L758">758</a> }
+<a class="jxr_linenumber" name="L671" href="#L671">671</a>     @Nullable
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>     <strong class="jxr_keyword">protected</strong> String fixFileName(@Nullable String v) {
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>         <strong class="jxr_keyword">if</strong> (v == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>         }
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>         String s = v.replace(' ', '_');
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>         s = s.replace('\t', '_');
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>         s = s.replace('\n', '_');
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>         s = s.replace('\r', '_');
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>         s = s.replace('\f', '_');
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         s = s.replace(':', '_');
+<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>         <strong class="jxr_keyword">if</strong> (s.startsWith(<span class="jxr_string">"."</span>)) {
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>             s = <span class="jxr_string">"_dot_"</span> + s.substring(1);
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>         }
+<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">return</strong> s;
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>     }
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the pool and assign the payload to it</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>         assignToPooledAgent(payload, agentPool, <strong class="jxr_keyword">this</strong>, timeoutMs);
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>     }
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the specified pool and assign the payload to it</em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param agentPool the pool of agents</em>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @param startingLocation the agent launch point</em>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
+<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * @return mobile agent assigned to pool</em>
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> 
+<a class="jxr_linenumber" name="L722" href="#L722">722</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> 
+<a class="jxr_linenumber" name="L725" href="#L725">725</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>                 agentPool = AgentPool.lookup();
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>             }
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> 
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>             <strong class="jxr_keyword">do</strong> {
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>                 loopCount++;
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>                     agent = agentPool.borrowAgent();
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>                     }
+<a class="jxr_linenumber" name="L738" href="#L738">738</a>                 }
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
+<a class="jxr_linenumber" name="L740" href="#L740">740</a> 
+<a class="jxr_linenumber" name="L741" href="#L741">741</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L742" href="#L742">742</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>             }
+<a class="jxr_linenumber" name="L746" href="#L746">746</a> 
+<a class="jxr_linenumber" name="L747" href="#L747">747</a>             agent.go(payload, startingLocation);
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>             Thread.yield();
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>             MDC.remove(MDCConstants.SHORT_NAME);
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>         }
+<a class="jxr_linenumber" name="L752" href="#L752">752</a> 
+<a class="jxr_linenumber" name="L753" href="#L753">753</a>         <strong class="jxr_keyword">return</strong> agent;
+<a class="jxr_linenumber" name="L754" href="#L754">754</a>     }
+<a class="jxr_linenumber" name="L755" href="#L755">755</a> 
+<a class="jxr_linenumber" name="L756" href="#L756">756</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>     }
+<a class="jxr_linenumber" name="L759" href="#L759">759</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

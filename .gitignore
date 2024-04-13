@@ -1,0 +1,45 @@
+.DS_Store
+target/
+# IDEs use a different build dir to reduce conflicts
+# when running maven on the commandline at the same time
+target-eclipse/
+target-netbeans/
+target-idea/
+
+# output from continuous-test.sh
+mvn_test.out
+
+# used when running ./Docker_compose_test_script.sh
+target/test_results
+
+# IDE stuff
+nbproject/
+manifest.mf
+nbbuild.xml
+nb-configuration.xml
+nbactions*.xml
+*.iml
+*.ipr
+*.iws
+.idea/
+.project
+.classpath
+.settings/
+*.swp
+*.checkstyle
+.vscode/
+
+# Contrib
+staging/
+
+# Docker mount volumes
+/input/
+/output/
+
+# Broken stuff
+RAR-broken.dat
+7ZIP-PASSWORD.dat
+sample-01.dat
+
+# Linter reports
+megalinter-reports

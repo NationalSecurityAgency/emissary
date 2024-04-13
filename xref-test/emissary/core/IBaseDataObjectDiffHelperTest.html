@@ -30,347 +30,349 @@
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> java.util.TreeMap;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> java.util.TreeSet;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>  <strong class="jxr_keyword">class</strong> <a name="IBaseDataObjectDiffHelperTest" href="../../emissary/core/IBaseDataObjectDiffHelperTest.html#IBaseDataObjectDiffHelperTest">IBaseDataObjectDiffHelperTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdo1;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdo2;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> List&lt;IBaseDataObject&gt; ibdoList1;
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> List&lt;IBaseDataObject&gt; ibdoList2;
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; differences;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> DiffCheckConfiguration EMPTY_OPTIONS = DiffCheckConfiguration.configure().build();
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> DiffCheckConfiguration CHECK_DATA = DiffCheckConfiguration.onlyCheckData();
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>      @BeforeEach
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">void</strong> setup() {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          ibdo1 = <strong class="jxr_keyword">new</strong> BaseDataObject();
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          ibdo2 = <strong class="jxr_keyword">new</strong> BaseDataObject();
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          ibdoList1 = Arrays.asList(ibdo1);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          ibdoList2 = Arrays.asList(ibdo2);
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          differences = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>      }
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiff(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences) {
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          verifyDiff(expectedDifferences, EMPTY_OPTIONS);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiff(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences, <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options) {
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          IBaseDataObjectDiffHelper.diff(ibdo1, ibdo1, differences, options);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          assertEquals(0, differences.size());
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, options);
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertEquals(expectedDifferences, differences.size());
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          differences.clear();
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          IBaseDataObjectDiffHelper.diff(ibdo2, ibdo1, differences, options);
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertEquals(expectedDifferences, differences.size());
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          differences.clear();
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiffList(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; list1, <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; list2) {
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          IBaseDataObjectDiffHelper.diff(list1, list1, <span class="jxr_string">"test"</span>, differences, EMPTY_OPTIONS);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(0, differences.size());
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          IBaseDataObjectDiffHelper.diff(list1, list2, <span class="jxr_string">"test"</span>, differences, EMPTY_OPTIONS);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          assertEquals(expectedDifferences, differences.size());
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          differences.clear();
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      }
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkThrowsNull(<strong class="jxr_keyword">final</strong> Executable e) {
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertThrows(NullPointerException.<strong class="jxr_keyword">class</strong>, e);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      @Test
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">void</strong> testDiffArguments() {
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <em class="jxr_comment">// Objects</em>
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">null</strong>, ibdo2, differences, EMPTY_OPTIONS));
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, <strong class="jxr_keyword">null</strong>, differences, EMPTY_OPTIONS));
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, <strong class="jxr_keyword">null</strong>, EMPTY_OPTIONS));
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, <strong class="jxr_keyword">null</strong>, differences, EMPTY_OPTIONS));
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>, EMPTY_OPTIONS));
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">null</strong>, differences));
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">new</strong> Object(), <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>          <em class="jxr_comment">// Integers</em>
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(0, 0, <strong class="jxr_keyword">null</strong>, differences));
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(0, 0, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          <em class="jxr_comment">// Booleans</em>
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(false, false, <strong class="jxr_keyword">null</strong>, differences));
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(false, false, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <em class="jxr_comment">// Maps</em>
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <span class="jxr_string">"id"</span>, differences));
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"id"</span>, differences));
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">null</strong>, differences));
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>     }
-<a class="jxr_linenumber" name="L101" href="#L101">101</a> 
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     @Test
-<a class="jxr_linenumber" name="L103" href="#L103">103</a>     <strong class="jxr_keyword">void</strong> testDiffChannelFactory() {
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         ibdo2.setData(<strong class="jxr_keyword">new</strong> byte[1]);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>         verifyDiff(1, CHECK_DATA);
-<a class="jxr_linenumber" name="L106" href="#L106">106</a> 
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         ibdo1.setChannelFactory(InMemoryChannelFactory.create(<span class="jxr_string">"0123456789"</span>.getBytes(StandardCharsets.US_ASCII)));
-<a class="jxr_linenumber" name="L108" href="#L108">108</a>         ibdo2.setChannelFactory(InMemoryChannelFactory.create(<span class="jxr_string">"9876543210"</span>.getBytes(StandardCharsets.US_ASCII)));
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>         verifyDiff(1, CHECK_DATA);
-<a class="jxr_linenumber" name="L110" href="#L110">110</a> 
-<a class="jxr_linenumber" name="L111" href="#L111">111</a>         ibdo2.setChannelFactory(<strong class="jxr_keyword">new</strong> SeekableByteChannelFactory() {
-<a class="jxr_linenumber" name="L112" href="#L112">112</a>             @Override
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>             <strong class="jxr_keyword">public</strong> SeekableByteChannel create() {
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> AbstractSeekableByteChannel() {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>                     @Override
-<a class="jxr_linenumber" name="L116" href="#L116">116</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> closeImpl() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
-<a class="jxr_linenumber" name="L118" href="#L118">118</a>                     }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a> 
-<a class="jxr_linenumber" name="L120" href="#L120">120</a>                     @Override
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> readImpl(<strong class="jxr_keyword">final</strong> ByteBuffer byteBuffer) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
-<a class="jxr_linenumber" name="L123" href="#L123">123</a>                     }
-<a class="jxr_linenumber" name="L124" href="#L124">124</a> 
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>                     @Override
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">long</strong> sizeImpl() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>                     }
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>                 };
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>             }
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         });
-<a class="jxr_linenumber" name="L132" href="#L132">132</a> 
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         verifyDiff(1, CHECK_DATA);
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>     }
-<a class="jxr_linenumber" name="L135" href="#L135">135</a> 
-<a class="jxr_linenumber" name="L136" href="#L136">136</a>     @Test
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">void</strong> testDiffCurrentForm() {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"AAA"</span>);
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"BBB"</span>);
-<a class="jxr_linenumber" name="L140" href="#L140">140</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"CCC"</span>);
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     }
-<a class="jxr_linenumber" name="L143" href="#L143">143</a> 
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>     @Test
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>     <strong class="jxr_keyword">void</strong> testDiffHistory() {
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         ibdo1.appendTransformHistory(<span class="jxr_string">"AAA"</span>, false);
-<a class="jxr_linenumber" name="L147" href="#L147">147</a>         ibdo1.appendTransformHistory(<span class="jxr_string">"BBB"</span>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkTransformHistory = DiffCheckConfiguration.configure().enableTransformHistory().build();
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>         verifyDiff(1, checkTransformHistory);
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>     }
-<a class="jxr_linenumber" name="L151" href="#L151">151</a> 
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>     @Test
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>     <strong class="jxr_keyword">void</strong> testDiffParameters() {
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkKeyValueDiffParameter = DiffCheckConfiguration.configure().enableKeyValueParameterDiff().build();
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkDetailedDiffParameter = DiffCheckConfiguration.configure().enableDetailedParameterDiff().build();
-<a class="jxr_linenumber" name="L156" href="#L156">156</a> 
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         ibdo1.putParameter(<span class="jxr_string">"LIST"</span>, Arrays.asList(<span class="jxr_string">"first"</span>, <span class="jxr_string">"second"</span>, <span class="jxr_string">"third"</span>));
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> 
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         verifyDiff(1, checkKeyValueDiffParameter);
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         verifyDiff(1, checkDetailedDiffParameter);
-<a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>         ibdo1.clearParameters();
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         ibdo2.clearParameters();
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         ibdo1.putParameter(<span class="jxr_string">"Integer"</span>, Integer.valueOf(1));
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         verifyDiff(1, checkKeyValueDiffParameter);
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         verifyDiff(1, checkDetailedDiffParameter);
-<a class="jxr_linenumber" name="L173" href="#L173">173</a> 
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         ibdo1.clearParameters();
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         ibdo2.clearParameters();
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         ibdo2.putParameter(<span class="jxr_string">"Integer"</span>, Integer.valueOf(1));
-<a class="jxr_linenumber" name="L179" href="#L179">179</a> 
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         verifyDiff(1, checkKeyValueDiffParameter);
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>         verifyDiff(1, checkDetailedDiffParameter);
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> 
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>         ibdo1.clearParameters();
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>         ibdo2.clearParameters();
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L187" href="#L187">187</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L188" href="#L188">188</a> 
-<a class="jxr_linenumber" name="L189" href="#L189">189</a>         verifyDiff(0);
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>         verifyDiff(0, checkKeyValueDiffParameter);
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         verifyDiff(0, checkDetailedDiffParameter);
-<a class="jxr_linenumber" name="L192" href="#L192">192</a>     }
-<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>     @Test
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>     <strong class="jxr_keyword">void</strong> testDiffAlternateViews() {
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>         ibdo1.addAlternateView(<span class="jxr_string">"AAA"</span>, <span class="jxr_string">"AAA"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>         ibdo1.addAlternateView(<span class="jxr_string">"BBB"</span>, <span class="jxr_string">"BBB"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         ibdo1.addAlternateView(<span class="jxr_string">"CCC"</span>, <span class="jxr_string">"CCC"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L200" href="#L200">200</a> 
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>         ibdo2.addAlternateView(<span class="jxr_string">"DDD"</span>, <span class="jxr_string">"DDD"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>         ibdo2.addAlternateView(<span class="jxr_string">"EEE"</span>, <span class="jxr_string">"EEE"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         ibdo2.addAlternateView(<span class="jxr_string">"FFF"</span>, <span class="jxr_string">"FFF"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>     }
-<a class="jxr_linenumber" name="L206" href="#L206">206</a> 
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>     @Test
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>     <strong class="jxr_keyword">void</strong> testDiffPriority() {
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>         ibdo1.setPriority(13);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>     @Test
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>     <strong class="jxr_keyword">void</strong> testDiffCreationTimestamp() {
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         ibdo1.setCreationTimestamp(<strong class="jxr_keyword">new</strong> Date(1234567890));
-<a class="jxr_linenumber" name="L216" href="#L216">216</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableTimestamp().build();
-<a class="jxr_linenumber" name="L217" href="#L217">217</a>         verifyDiff(1, options);
-<a class="jxr_linenumber" name="L218" href="#L218">218</a>     }
-<a class="jxr_linenumber" name="L219" href="#L219">219</a> 
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>     @Test
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <strong class="jxr_keyword">void</strong> testDiffExtractedRecords() {
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>         ibdo1.addExtractedRecord(<strong class="jxr_keyword">new</strong> BaseDataObject());
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>         ibdo1.addExtractedRecord(<strong class="jxr_keyword">new</strong> BaseDataObject());
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> javax.annotation.Nullable;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  <strong class="jxr_keyword">class</strong> <a name="IBaseDataObjectDiffHelperTest" href="../../emissary/core/IBaseDataObjectDiffHelperTest.html#IBaseDataObjectDiffHelperTest">IBaseDataObjectDiffHelperTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdo1;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdo2;
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> List&lt;IBaseDataObject&gt; ibdoList1;
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">private</strong> List&lt;IBaseDataObject&gt; ibdoList2;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      <strong class="jxr_keyword">private</strong> List&lt;String&gt; differences;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> DiffCheckConfiguration EMPTY_OPTIONS = DiffCheckConfiguration.configure().build();
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> DiffCheckConfiguration CHECK_DATA = DiffCheckConfiguration.onlyCheckData();
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>      @BeforeEach
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">void</strong> setup() {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          ibdo1 = <strong class="jxr_keyword">new</strong> BaseDataObject();
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          ibdo2 = <strong class="jxr_keyword">new</strong> BaseDataObject();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          ibdoList1 = Arrays.asList(ibdo1);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          ibdoList2 = Arrays.asList(ibdo2);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          differences = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiff(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences) {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          verifyDiff(expectedDifferences, EMPTY_OPTIONS);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      }
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiff(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences, <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options) {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          IBaseDataObjectDiffHelper.diff(ibdo1, ibdo1, differences, options);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          assertEquals(0, differences.size());
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, options);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          assertEquals(expectedDifferences, differences.size());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          differences.clear();
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          IBaseDataObjectDiffHelper.diff(ibdo2, ibdo1, differences, options);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(expectedDifferences, differences.size());
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          differences.clear();
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> verifyDiffList(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> expectedDifferences, @Nullable <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; list1,
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              @Nullable <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; list2) {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          IBaseDataObjectDiffHelper.diff(list1, list1, <span class="jxr_string">"test"</span>, differences, EMPTY_OPTIONS);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          assertEquals(0, differences.size());
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          IBaseDataObjectDiffHelper.diff(list1, list2, <span class="jxr_string">"test"</span>, differences, EMPTY_OPTIONS);
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          assertEquals(expectedDifferences, differences.size());
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          differences.clear();
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>  
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkThrowsNull(<strong class="jxr_keyword">final</strong> Executable e) {
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertThrows(NullPointerException.<strong class="jxr_keyword">class</strong>, e);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      @Test
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">void</strong> testDiffArguments() {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <em class="jxr_comment">// Objects</em>
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">null</strong>, ibdo2, differences, EMPTY_OPTIONS));
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, <strong class="jxr_keyword">null</strong>, differences, EMPTY_OPTIONS));
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, <strong class="jxr_keyword">null</strong>, EMPTY_OPTIONS));
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, <strong class="jxr_keyword">null</strong>, differences, EMPTY_OPTIONS));
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdoList1, ibdoList2, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>, EMPTY_OPTIONS));
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(ibdo1, ibdo2, differences, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">null</strong>, differences));
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> Object(), <strong class="jxr_keyword">new</strong> Object(), <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          <em class="jxr_comment">// Integers</em>
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(0, 0, <strong class="jxr_keyword">null</strong>, differences));
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(0, 0, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>  
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <em class="jxr_comment">// Booleans</em>
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(false, false, <strong class="jxr_keyword">null</strong>, differences));
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(false, false, <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>  
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>          <em class="jxr_comment">// Maps</em>
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <span class="jxr_string">"id"</span>, differences));
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>          checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"id"</span>, differences));
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>         checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">null</strong>, differences));
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         checkThrowsNull(() -&gt; IBaseDataObjectDiffHelper.diff(<strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;(), <span class="jxr_string">"id"</span>, <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     }
+<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
+<a class="jxr_linenumber" name="L104" href="#L104">104</a>     @Test
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>     <strong class="jxr_keyword">void</strong> testDiffChannelFactory() {
+<a class="jxr_linenumber" name="L106" href="#L106">106</a>         ibdo2.setData(<strong class="jxr_keyword">new</strong> byte[1]);
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         verifyDiff(1, CHECK_DATA);
+<a class="jxr_linenumber" name="L108" href="#L108">108</a> 
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>         ibdo1.setChannelFactory(InMemoryChannelFactory.create(<span class="jxr_string">"0123456789"</span>.getBytes(StandardCharsets.US_ASCII)));
+<a class="jxr_linenumber" name="L110" href="#L110">110</a>         ibdo2.setChannelFactory(InMemoryChannelFactory.create(<span class="jxr_string">"9876543210"</span>.getBytes(StandardCharsets.US_ASCII)));
+<a class="jxr_linenumber" name="L111" href="#L111">111</a>         verifyDiff(1, CHECK_DATA);
+<a class="jxr_linenumber" name="L112" href="#L112">112</a> 
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>         ibdo2.setChannelFactory(<strong class="jxr_keyword">new</strong> SeekableByteChannelFactory() {
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>             @Override
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             <strong class="jxr_keyword">public</strong> SeekableByteChannel create() {
+<a class="jxr_linenumber" name="L116" href="#L116">116</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> AbstractSeekableByteChannel() {
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>                     @Override
+<a class="jxr_linenumber" name="L118" href="#L118">118</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> closeImpl() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
+<a class="jxr_linenumber" name="L120" href="#L120">120</a>                     }
+<a class="jxr_linenumber" name="L121" href="#L121">121</a> 
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>                     @Override
+<a class="jxr_linenumber" name="L123" href="#L123">123</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> readImpl(<strong class="jxr_keyword">final</strong> ByteBuffer byteBuffer) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L124" href="#L124">124</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>                     }
+<a class="jxr_linenumber" name="L126" href="#L126">126</a> 
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>                     @Override
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>                     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">long</strong> sizeImpl() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Test SBC that always throws IOException!"</span>);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>                     }
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>                 };
+<a class="jxr_linenumber" name="L132" href="#L132">132</a>             }
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         });
+<a class="jxr_linenumber" name="L134" href="#L134">134</a> 
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         verifyDiff(1, CHECK_DATA);
+<a class="jxr_linenumber" name="L136" href="#L136">136</a>     }
+<a class="jxr_linenumber" name="L137" href="#L137">137</a> 
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>     @Test
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>     <strong class="jxr_keyword">void</strong> testDiffCurrentForm() {
+<a class="jxr_linenumber" name="L140" href="#L140">140</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"AAA"</span>);
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"BBB"</span>);
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>         ibdo1.pushCurrentForm(<span class="jxr_string">"CCC"</span>);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>     }
+<a class="jxr_linenumber" name="L145" href="#L145">145</a> 
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>     @Test
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>     <strong class="jxr_keyword">void</strong> testDiffHistory() {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         ibdo1.appendTransformHistory(<span class="jxr_string">"AAA"</span>, false);
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         ibdo1.appendTransformHistory(<span class="jxr_string">"BBB"</span>, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkTransformHistory = DiffCheckConfiguration.configure().enableTransformHistory().build();
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         verifyDiff(1, checkTransformHistory);
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>     }
+<a class="jxr_linenumber" name="L153" href="#L153">153</a> 
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>     @Test
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>     <strong class="jxr_keyword">void</strong> testDiffParameters() {
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkKeyValueDiffParameter = DiffCheckConfiguration.configure().enableKeyValueParameterDiff().build();
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration checkDetailedDiffParameter = DiffCheckConfiguration.configure().enableDetailedParameterDiff().build();
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         ibdo1.putParameter(<span class="jxr_string">"LIST"</span>, Arrays.asList(<span class="jxr_string">"first"</span>, <span class="jxr_string">"second"</span>, <span class="jxr_string">"third"</span>));
+<a class="jxr_linenumber" name="L161" href="#L161">161</a> 
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         verifyDiff(1, checkKeyValueDiffParameter);
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>         verifyDiff(1, checkDetailedDiffParameter);
+<a class="jxr_linenumber" name="L165" href="#L165">165</a> 
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         ibdo1.clearParameters();
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>         ibdo2.clearParameters();
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         ibdo1.putParameter(<span class="jxr_string">"Integer"</span>, Integer.valueOf(1));
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L171" href="#L171">171</a> 
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         verifyDiff(1, checkKeyValueDiffParameter);
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         verifyDiff(1, checkDetailedDiffParameter);
+<a class="jxr_linenumber" name="L175" href="#L175">175</a> 
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         ibdo1.clearParameters();
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         ibdo2.clearParameters();
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         ibdo2.putParameter(<span class="jxr_string">"Integer"</span>, Integer.valueOf(1));
+<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         verifyDiff(1, checkKeyValueDiffParameter);
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>         verifyDiff(1, checkDetailedDiffParameter);
+<a class="jxr_linenumber" name="L185" href="#L185">185</a> 
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>         ibdo1.clearParameters();
+<a class="jxr_linenumber" name="L187" href="#L187">187</a>         ibdo2.clearParameters();
+<a class="jxr_linenumber" name="L188" href="#L188">188</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L189" href="#L189">189</a>         ibdo2.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L190" href="#L190">190</a> 
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>         verifyDiff(0);
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         verifyDiff(0, checkKeyValueDiffParameter);
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>         verifyDiff(0, checkDetailedDiffParameter);
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>     }
+<a class="jxr_linenumber" name="L195" href="#L195">195</a> 
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>     @Test
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>     <strong class="jxr_keyword">void</strong> testDiffAlternateViews() {
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>         ibdo1.addAlternateView(<span class="jxr_string">"AAA"</span>, <span class="jxr_string">"AAA"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         ibdo1.addAlternateView(<span class="jxr_string">"BBB"</span>, <span class="jxr_string">"BBB"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>         ibdo1.addAlternateView(<span class="jxr_string">"CCC"</span>, <span class="jxr_string">"CCC"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L202" href="#L202">202</a> 
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         ibdo2.addAlternateView(<span class="jxr_string">"DDD"</span>, <span class="jxr_string">"DDD"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         ibdo2.addAlternateView(<span class="jxr_string">"EEE"</span>, <span class="jxr_string">"EEE"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>         ibdo2.addAlternateView(<span class="jxr_string">"FFF"</span>, <span class="jxr_string">"FFF"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>     }
+<a class="jxr_linenumber" name="L208" href="#L208">208</a> 
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     @Test
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>     <strong class="jxr_keyword">void</strong> testDiffPriority() {
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         ibdo1.setPriority(13);
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>     }
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> 
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>     @Test
+<a class="jxr_linenumber" name="L216" href="#L216">216</a>     <strong class="jxr_keyword">void</strong> testDiffCreationTimestamp() {
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>         ibdo1.setCreationTimestamp(<strong class="jxr_keyword">new</strong> Date(1234567890));
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableTimestamp().build();
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>         verifyDiff(1, options);
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>     }
+<a class="jxr_linenumber" name="L221" href="#L221">221</a> 
+<a class="jxr_linenumber" name="L222" href="#L222">222</a>     @Test
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     <strong class="jxr_keyword">void</strong> testDiffExtractedRecords() {
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         ibdo1.addExtractedRecord(<strong class="jxr_keyword">new</strong> BaseDataObject());
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>     @Test
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>     <strong class="jxr_keyword">void</strong> testDiffFilename() {
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>         ibdo1.setFilename(<span class="jxr_string">"filename"</span>);
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>         verifyDiff(2);
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     }
-<a class="jxr_linenumber" name="L233" href="#L233">233</a> 
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>     @Test
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <strong class="jxr_keyword">void</strong> testDiffInternalId() {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableInternalId().build();
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         verifyDiff(1, options);
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     }
-<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>     @Test
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>     <strong class="jxr_keyword">void</strong> testDiffProcessingError() {
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         ibdo1.addProcessingError(<span class="jxr_string">"processing_error"</span>);
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>     }
-<a class="jxr_linenumber" name="L245" href="#L245">245</a> 
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>     @Test
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>     <strong class="jxr_keyword">void</strong> testDiffFontEncoding() {
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>         ibdo1.setFontEncoding(<span class="jxr_string">"font_encoding"</span>);
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     }
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     @Test
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>     <strong class="jxr_keyword">void</strong> testDiffNumChildren() {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         ibdo1.setNumChildren(13);
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>     }
-<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>     @Test
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>     <strong class="jxr_keyword">void</strong> testDiffNumSiblings() {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         ibdo1.setNumSiblings(13);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>     }
-<a class="jxr_linenumber" name="L263" href="#L263">263</a> 
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>     @Test
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>     <strong class="jxr_keyword">void</strong> testDiffBirthOrder() {
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         ibdo1.setBirthOrder(13);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>     }
-<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>     @Test
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>     <strong class="jxr_keyword">void</strong> testDiffHeader() {
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>         ibdo1.setHeader(<span class="jxr_string">"header"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>     }
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> 
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>     @Test
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>     <strong class="jxr_keyword">void</strong> testDiffFooter() {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         ibdo1.setFooter(<span class="jxr_string">"footer"</span>.getBytes(StandardCharsets.US_ASCII));
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>     }
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>     @Test
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>     <strong class="jxr_keyword">void</strong> testDiffHeaderEncoding() {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>         ibdo1.setHeaderEncoding(<span class="jxr_string">"header_encoding"</span>);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>     }
-<a class="jxr_linenumber" name="L287" href="#L287">287</a> 
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>     @Test
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <strong class="jxr_keyword">void</strong> testDiffClassification() {
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         ibdo1.setClassification(<span class="jxr_string">"classification"</span>);
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>     }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>     @Test
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>     <strong class="jxr_keyword">void</strong> testDiffBroken() {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         ibdo1.setBroken(<span class="jxr_string">"broken"</span>);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>     }
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>     @Test
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>     <strong class="jxr_keyword">void</strong> testDiffOutputable() {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         ibdo1.setOutputable(false);
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>     }
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     @Test
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>     <strong class="jxr_keyword">void</strong> testDiffId() {
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>         ibdo1.setId(<span class="jxr_string">"id"</span>);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>     }
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>     @Test
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>     <strong class="jxr_keyword">void</strong> testDiffWorkBundleId() {
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>         ibdo1.setWorkBundleId(<span class="jxr_string">"workbundle_id"</span>);
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>     }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>     @Test
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>     <strong class="jxr_keyword">void</strong> testDiffTransactionId() {
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>         ibdo1.setTransactionId(<span class="jxr_string">"transaction_id"</span>);
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>         verifyDiff(1);
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>     }
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>     @Test
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>     <strong class="jxr_keyword">void</strong> testDiffList() {
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>         <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; ibdoList3 = Arrays.asList(ibdo1, ibdo2);
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         verifyDiffList(0, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>         verifyDiffList(0, <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(), <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>         verifyDiffList(0, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;());
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         verifyDiffList(0, ibdoList1, ibdoList1);
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         verifyDiffList(1, ibdoList3, ibdoList2);
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>         verifyDiffList(1, ibdoList1, ibdoList3);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>         ibdo2.setClassification(<span class="jxr_string">"classification"</span>);
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>         verifyDiffList(1, ibdoList1, ibdoList2);
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>     }
-<a class="jxr_linenumber" name="L337" href="#L337">337</a> 
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>     @Test
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">void</strong> testParamSort() {
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>         <em class="jxr_comment">// set-up</em>
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         Set&lt;String&gt; expectedParams = <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;();
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         expectedParams.add(<span class="jxr_string">"LIST"</span>);
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         expectedParams.add(<span class="jxr_string">"STRING"</span>);
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>         expectedParams.add(<span class="jxr_string">"TEST"</span>);
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>         ibdo1.putParameter(<span class="jxr_string">"TEST"</span>, <span class="jxr_string">"test"</span>);
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>         ibdo1.putParameter(<span class="jxr_string">"LIST"</span>, Arrays.asList(<span class="jxr_string">"first"</span>, <span class="jxr_string">"second"</span>, <span class="jxr_string">"third"</span>));
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>         <em class="jxr_comment">// test</em>
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         TreeMap&lt;String, Collection&lt;Object&gt;&gt; sortedParams = <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;(ibdo1.getParameters());
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>         assertEquals(expectedParams, sortedParams.keySet(), <span class="jxr_string">"parameters should be sorted in natural order of keys"</span>);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>     }
-<a class="jxr_linenumber" name="L353" href="#L353">353</a> 
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>     @Test
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <strong class="jxr_keyword">void</strong> testDecoderIOExceptions() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_BOOLEAN_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>,
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>                 () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_BYTE_ARRAY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_INTEGER_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_BYTE_ARRAY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_OBJECT_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>     }
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> }
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         ibdo1.addExtractedRecord(<strong class="jxr_keyword">new</strong> BaseDataObject());
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         ibdo1.addExtractedRecord(<strong class="jxr_keyword">new</strong> BaseDataObject());
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>     }
+<a class="jxr_linenumber" name="L229" href="#L229">229</a> 
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>     @Test
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <strong class="jxr_keyword">void</strong> testDiffFilename() {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>         ibdo1.setFilename(<span class="jxr_string">"filename"</span>);
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>         verifyDiff(2);
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>     }
+<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>     @Test
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>     <strong class="jxr_keyword">void</strong> testDiffInternalId() {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>         <strong class="jxr_keyword">final</strong> DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableInternalId().build();
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         verifyDiff(1, options);
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>     }
+<a class="jxr_linenumber" name="L241" href="#L241">241</a> 
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>     @Test
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">void</strong> testDiffProcessingError() {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         ibdo1.addProcessingError(<span class="jxr_string">"processing_error"</span>);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>     }
+<a class="jxr_linenumber" name="L247" href="#L247">247</a> 
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>     @Test
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>     <strong class="jxr_keyword">void</strong> testDiffFontEncoding() {
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>         ibdo1.setFontEncoding(<span class="jxr_string">"font_encoding"</span>);
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     }
+<a class="jxr_linenumber" name="L253" href="#L253">253</a> 
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     @Test
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>     <strong class="jxr_keyword">void</strong> testDiffNumChildren() {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         ibdo1.setNumChildren(13);
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>     }
+<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>     @Test
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>     <strong class="jxr_keyword">void</strong> testDiffNumSiblings() {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         ibdo1.setNumSiblings(13);
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>     }
+<a class="jxr_linenumber" name="L265" href="#L265">265</a> 
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>     @Test
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>     <strong class="jxr_keyword">void</strong> testDiffBirthOrder() {
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>         ibdo1.setBirthOrder(13);
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>     }
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> 
+<a class="jxr_linenumber" name="L272" href="#L272">272</a>     @Test
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <strong class="jxr_keyword">void</strong> testDiffHeader() {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a>         ibdo1.setHeader(<span class="jxr_string">"header"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>     }
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> 
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>     @Test
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">void</strong> testDiffFooter() {
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         ibdo1.setFooter(<span class="jxr_string">"footer"</span>.getBytes(StandardCharsets.US_ASCII));
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>     }
+<a class="jxr_linenumber" name="L283" href="#L283">283</a> 
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>     @Test
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>     <strong class="jxr_keyword">void</strong> testDiffHeaderEncoding() {
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         ibdo1.setHeaderEncoding(<span class="jxr_string">"header_encoding"</span>);
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>     }
+<a class="jxr_linenumber" name="L289" href="#L289">289</a> 
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>     @Test
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>     <strong class="jxr_keyword">void</strong> testDiffClassification() {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>         ibdo1.setClassification(<span class="jxr_string">"classification"</span>);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>     }
+<a class="jxr_linenumber" name="L295" href="#L295">295</a> 
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>     @Test
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>     <strong class="jxr_keyword">void</strong> testDiffBroken() {
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         ibdo1.setBroken(<span class="jxr_string">"broken"</span>);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>     }
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>     @Test
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>     <strong class="jxr_keyword">void</strong> testDiffOutputable() {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>         ibdo1.setOutputable(false);
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     @Test
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>     <strong class="jxr_keyword">void</strong> testDiffId() {
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         ibdo1.setId(<span class="jxr_string">"id"</span>);
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>     }
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>     @Test
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>     <strong class="jxr_keyword">void</strong> testDiffWorkBundleId() {
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         ibdo1.setWorkBundleId(<span class="jxr_string">"workbundle_id"</span>);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>     }
+<a class="jxr_linenumber" name="L319" href="#L319">319</a> 
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>     @Test
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>     <strong class="jxr_keyword">void</strong> testDiffTransactionId() {
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         ibdo1.setTransactionId(<span class="jxr_string">"transaction_id"</span>);
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>         verifyDiff(1);
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     }
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     @Test
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">void</strong> testDiffList() {
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>         <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; ibdoList3 = Arrays.asList(ibdo1, ibdo2);
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         verifyDiffList(0, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>         verifyDiffList(0, <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;(), <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>         verifyDiffList(0, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;());
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>         verifyDiffList(0, ibdoList1, ibdoList1);
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>         verifyDiffList(1, ibdoList3, ibdoList2);
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>         verifyDiffList(1, ibdoList1, ibdoList3);
+<a class="jxr_linenumber" name="L335" href="#L335">335</a> 
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         ibdo2.setClassification(<span class="jxr_string">"classification"</span>);
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         verifyDiffList(1, ibdoList1, ibdoList2);
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>     }
+<a class="jxr_linenumber" name="L339" href="#L339">339</a> 
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>     @Test
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">void</strong> testParamSort() {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <em class="jxr_comment">// set-up</em>
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         Set&lt;String&gt; expectedParams = <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;();
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         expectedParams.add(<span class="jxr_string">"LIST"</span>);
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         expectedParams.add(<span class="jxr_string">"STRING"</span>);
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>         expectedParams.add(<span class="jxr_string">"TEST"</span>);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         ibdo1.putParameter(<span class="jxr_string">"STRING"</span>, <span class="jxr_string">"string"</span>);
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         ibdo1.putParameter(<span class="jxr_string">"TEST"</span>, <span class="jxr_string">"test"</span>);
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         ibdo1.putParameter(<span class="jxr_string">"LIST"</span>, Arrays.asList(<span class="jxr_string">"first"</span>, <span class="jxr_string">"second"</span>, <span class="jxr_string">"third"</span>));
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <em class="jxr_comment">// test</em>
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         TreeMap&lt;String, Collection&lt;Object&gt;&gt; sortedParams = <strong class="jxr_keyword">new</strong> TreeMap&lt;&gt;(ibdo1.getParameters());
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         assertEquals(expectedParams, sortedParams.keySet(), <span class="jxr_string">"parameters should be sorted in natural order of keys"</span>);
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>     }
+<a class="jxr_linenumber" name="L355" href="#L355">355</a> 
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>     @Test
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>     <strong class="jxr_keyword">void</strong> testDecoderIOExceptions() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_BOOLEAN_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>,
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_SEEKABLE_BYTE_CHANNEL_FACTORY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_BYTE_ARRAY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_INTEGER_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_BYTE_ARRAY_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>         assertThrows(IOException.<strong class="jxr_keyword">class</strong>, () -&gt; IBaseDataObjectXmlCodecs.DEFAULT_STRING_OBJECT_DECODER.decode(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <span class="jxr_string">"badMethodName"</span>));
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     }
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

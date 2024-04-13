@@ -16,13 +16,13 @@
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">class</strong> <a name="MultiKeywordScannerTest" href="../../../emissary/util/search/MultiKeywordScannerTest.html#MultiKeywordScannerTest">MultiKeywordScannerTest</a> {
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String[] defaultKeywords = {<span class="jxr_string">"fox"</span>, <span class="jxr_string">"dog"</span>};
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> String defaultData = <span class="jxr_string">"the quick brown fox jumped over the lazy dog"</span>;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DEFAULT_DATA = <span class="jxr_string">"the quick brown fox jumped over the lazy dog"</span>;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>      @Test
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>      <strong class="jxr_keyword">void</strong> testFindAll() {
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>          HitList hits = multiKeywordScanner.findAll(defaultData.getBytes());
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>          HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes());
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>          assertEquals(2, hits.size());
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>          assertEquals(0, hits.get(0).getID());
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>          assertEquals(16, hits.get(0).getOffset());
@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">void</strong> testFindAllStart() {
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>          HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 28);
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes(), 28);
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          assertEquals(1, hits.get(0).getID());
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          assertEquals(41, hits.get(0).getOffset());
@@ -50,7 +50,7 @@
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">void</strong> testFindAllStartStop() {
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          HitList hits = multiKeywordScanner.findAll(defaultData.getBytes(), 0, 24);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes(), 0, 24);
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>          assertEquals(0, hits.get(0).getID());
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>          assertEquals(16, hits.get(0).getOffset());
@@ -63,12 +63,12 @@
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <strong class="jxr_keyword">void</strong> testFindNext() {
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          HitList hits = multiKeywordScanner.findNext(defaultData.getBytes());
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes());
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(0, hits.get(0).getID());
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(16, hits.get(0).getOffset());
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          hits = multiKeywordScanner.findNext(defaultData.getBytes());
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes());
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(1, hits.get(0).getID());
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          assertEquals(41, hits.get(0).getOffset());
@@ -81,7 +81,7 @@
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">void</strong> testFindNextStart() {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 28);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes(), 28);
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>          assertEquals(1, hits.get(0).getID());
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          assertEquals(41, hits.get(0).getOffset());
@@ -94,7 +94,7 @@
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      <strong class="jxr_keyword">void</strong> testFindNextStartStop() {
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          MultiKeywordScanner multiKeywordScanner = <strong class="jxr_keyword">new</strong> MultiKeywordScanner();
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          multiKeywordScanner.loadKeywords(defaultKeywords);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          HitList hits = multiKeywordScanner.findNext(defaultData.getBytes(), 0, 24);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes(), 0, 24);
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          assertEquals(1, hits.size());
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          assertEquals(0, hits.get(0).getID());
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          assertEquals(16, hits.get(0).getOffset());
@@ -112,7 +112,7 @@
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>         <em class="jxr_comment">// instead of re-instantiating the whole object.</em>
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         String[] keywords = {<span class="jxr_string">"quick"</span>, <span class="jxr_string">"brown"</span>, <span class="jxr_string">"lazy"</span>};
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         multiKeywordScanner.loadKeywords(keywords);
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>         HitList hits = multiKeywordScanner.findAll(defaultData.getBytes());
+<a class="jxr_linenumber" name="L107" href="#L107">107</a>         HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes());
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
 <a class="jxr_linenumber" name="L109" href="#L109">109</a>         assertEquals(3, hits.size());
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         assertEquals(0, hits.get(0).getID());

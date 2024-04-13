@@ -22,7 +22,7 @@
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>      @Test
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">void</strong> testDTDDisallowed() {
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>          <strong class="jxr_keyword">final</strong> String plist_xml =
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>          <strong class="jxr_keyword">final</strong> String plistXml =
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>                  <span class="jxr_string">"&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n"</span>
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>                          + <span class="jxr_string">"&lt;!DOCTYPE note SYSTEM \&quot;http://www.example.com/Note.dtd\&quot;&gt;\n"</span>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>                          + <span class="jxr_string">"&lt;note&gt;\n"</span>
@@ -31,12 +31,12 @@
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>                          + <span class="jxr_string">"&lt;heading&gt;Reminder&lt;/heading&gt;\n"</span>
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>                          + <span class="jxr_string">"&lt;/note&gt;"</span>;
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>          assertThrows(JDOMParseException.<strong class="jxr_keyword">class</strong>, () -&gt; SaferJDOMUtil.createDocument(plist_xml));
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>          assertThrows(JDOMParseException.<strong class="jxr_keyword">class</strong>, () -&gt; SaferJDOMUtil.createDocument(plistXml));
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>      }
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      @Test
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">void</strong> testNonValidating() <strong class="jxr_keyword">throws</strong> JDOMException {
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>          <strong class="jxr_keyword">final</strong> String plist_xml =
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          <strong class="jxr_keyword">final</strong> String plistXml =
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>                  <span class="jxr_string">"&lt;?xml version=\&quot;1.0\&quot; encoding=\&quot;UTF-8\&quot;?&gt;\n"</span>
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>                          + <span class="jxr_string">"&lt;note&gt;\n"</span>
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>                          + <span class="jxr_string">"&lt;to&gt;To&lt;/to&gt;\n"</span>
@@ -44,7 +44,7 @@
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>                          + <span class="jxr_string">"&lt;heading&gt;Reminder&lt;/heading&gt;\n"</span>
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>                          + <span class="jxr_string">"&lt;/note&gt;"</span>;
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>  
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">final</strong> Document doc = SaferJDOMUtil.createDocument(plist_xml);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">final</strong> Document doc = SaferJDOMUtil.createDocument(plistXml);
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          assertNotNull(doc, <span class="jxr_string">"Document should be created"</span>);
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>      }
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  }

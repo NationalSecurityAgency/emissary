@@ -182,7 +182,7 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>     }
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> writeDataStream(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../../emissary/core/IBaseDa<a name="IBaseDataObject" href="../../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>BaseDataObject">IBaseDataObject</a> d, <strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> tld, <strong class="jxr_keyword">final</strong> OutputStream output, <strong class="jxr_keyword">final</strong> byte[] data,
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>             <strong class="jxr_keyword">final</strong> String type) {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>             @Nullable <strong class="jxr_keyword">final</strong> String type) {
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>             output.write(data);
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         } <strong class="jxr_keyword">catch</strong> (IOException ex) {

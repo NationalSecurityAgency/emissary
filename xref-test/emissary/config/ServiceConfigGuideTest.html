@@ -482,7 +482,7 @@
 <a class="jxr_linenumber" name="L474" href="#L474">474</a>         <strong class="jxr_keyword">final</strong> String impname = dir + <span class="jxr_string">"/import.cfg"</span>;
 <a class="jxr_linenumber" name="L475" href="#L475">475</a> 
 <a class="jxr_linenumber" name="L476" href="#L476">476</a>         <strong class="jxr_keyword">final</strong> byte[] primary = (<span class="jxr_string">"IMPORT_FILE = \&quot;"</span> + impname + <span class="jxr_string">"\&quot;\n"</span>).getBytes();
-<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">final</strong> byte[] importfile = (<span class="jxr_string">"FOO = \&quot;BAR\&quot;\n"</span>).getBytes();
+<a class="jxr_linenumber" name="L477" href="#L477">477</a>         <strong class="jxr_keyword">final</strong> byte[] importfile = <span class="jxr_string">"FOO = \&quot;BAR\&quot;\n"</span>.getBytes();
 <a class="jxr_linenumber" name="L478" href="#L478">478</a> 
 <a class="jxr_linenumber" name="L479" href="#L479">479</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L480" href="#L480">480</a>             assertTrue(Executrix.writeDataToFile(primary, priname));
@@ -528,7 +528,7 @@
 <a class="jxr_linenumber" name="L520" href="#L520">520</a>         <strong class="jxr_keyword">final</strong> String optname = dir + <span class="jxr_string">"/optional.cfg"</span>;
 <a class="jxr_linenumber" name="L521" href="#L521">521</a> 
 <a class="jxr_linenumber" name="L522" href="#L522">522</a>         <strong class="jxr_keyword">final</strong> byte[] primary = (<span class="jxr_string">"FOO = \&quot;BAR\&quot;\nOPT_IMPORT_FILE = \&quot;"</span> + optname + <span class="jxr_string">"\&quot;\n"</span>).getBytes();
-<a class="jxr_linenumber" name="L523" href="#L523">523</a>         <strong class="jxr_keyword">final</strong> byte[] optional = (<span class="jxr_string">"FOO = \&quot;BAR2\&quot;\n"</span>).getBytes();
+<a class="jxr_linenumber" name="L523" href="#L523">523</a>         <strong class="jxr_keyword">final</strong> byte[] optional = <span class="jxr_string">"FOO = \&quot;BAR2\&quot;\n"</span>.getBytes();
 <a class="jxr_linenumber" name="L524" href="#L524">524</a> 
 <a class="jxr_linenumber" name="L525" href="#L525">525</a>         <strong class="jxr_keyword">final</strong> Configurator c;
 <a class="jxr_linenumber" name="L526" href="#L526">526</a>         <strong class="jxr_keyword">try</strong> {
@@ -546,7 +546,7 @@
 <a class="jxr_linenumber" name="L538" href="#L538">538</a>     @Test
 <a class="jxr_linenumber" name="L539" href="#L539">539</a>     <strong class="jxr_keyword">void</strong> testOptImportWhenOptionalFileDoesNotExist(@TempDir <strong class="jxr_keyword">final</strong> Path dir) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>         <strong class="jxr_keyword">final</strong> String priname = dir + <span class="jxr_string">"/primary.cfg"</span>;
-<a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">final</strong> byte[] primary = (<span class="jxr_string">"FOO = \&quot;BAR\&quot;\nOPT_IMPORT_FILE = \&quot;/tmp/bogus.cfg\&quot;\n"</span>).getBytes();
+<a class="jxr_linenumber" name="L541" href="#L541">541</a>         <strong class="jxr_keyword">final</strong> byte[] primary = <span class="jxr_string">"FOO = \&quot;BAR\&quot;\nOPT_IMPORT_FILE = \&quot;/tmp/bogus.cfg\&quot;\n"</span>.getBytes();
 <a class="jxr_linenumber" name="L542" href="#L542">542</a> 
 <a class="jxr_linenumber" name="L543" href="#L543">543</a>         <strong class="jxr_keyword">final</strong> Configurator c;
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>         <strong class="jxr_keyword">try</strong> {
@@ -564,7 +564,7 @@
 <a class="jxr_linenumber" name="L556" href="#L556">556</a>         <strong class="jxr_keyword">final</strong> String optname = dir + <span class="jxr_string">"/optional.cfg"</span>;
 <a class="jxr_linenumber" name="L557" href="#L557">557</a> 
 <a class="jxr_linenumber" name="L558" href="#L558">558</a>         <strong class="jxr_keyword">final</strong> byte[] primary = (<span class="jxr_string">"FOO = \&quot;BAR\&quot;\nOPT_IMPORT_FILE = \&quot;"</span> + optname + <span class="jxr_string">"\&quot;\n"</span>).getBytes();
-<a class="jxr_linenumber" name="L559" href="#L559">559</a>         <strong class="jxr_keyword">final</strong> byte[] optional = (<span class="jxr_string">"FOO = \&quot;BAR2\&quot;\&quot;\nBAD = \&quot;LINE\&quot;"</span>).getBytes();
+<a class="jxr_linenumber" name="L559" href="#L559">559</a>         <strong class="jxr_keyword">final</strong> byte[] optional = <span class="jxr_string">"FOO = \&quot;BAR2\&quot;\&quot;\nBAD = \&quot;LINE\&quot;"</span>.getBytes();
 <a class="jxr_linenumber" name="L560" href="#L560">560</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L561" href="#L561">561</a>             assertTrue(Executrix.writeDataToFile(primary, priname));
 <a class="jxr_linenumber" name="L562" href="#L562">562</a>             assertTrue(Executrix.writeDataToFile(optional, optname));

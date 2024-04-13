@@ -77,7 +77,7 @@
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          <em class="jxr_comment">// setup</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <em class="jxr_comment">// needed because it has already been initialize as a static</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>          System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, <span class="jxr_string">"TESTING"</span>);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          emissary.config.ConfigUtil.initialize();
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          ConfigUtil.initialize();
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          arguments.addAll(Arrays.asList(<span class="jxr_string">"--flavor"</span>, <span class="jxr_string">"TESTING"</span>, <span class="jxr_string">"-ih"</span>, <span class="jxr_string">"localhost"</span>));
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>          command = PeersCommand.parse(PeersCommand.<strong class="jxr_keyword">class</strong>, arguments);
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>  
@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          <em class="jxr_comment">// setup</em>
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>          <em class="jxr_comment">// needed because it has already been initialize as a static</em>
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          System.setProperty(ConfigUtil.CONFIG_FLAVOR_PROPERTY, <span class="jxr_string">"TESTING"</span>);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          emissary.config.ConfigUtil.initialize();
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>          ConfigUtil.initialize();
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>          arguments.addAll(Arrays.asList(<span class="jxr_string">"--flavor"</span>, <span class="jxr_string">"TESTING"</span>, <span class="jxr_string">"-d"</span>, <span class="jxr_string">"&#92;&#92;n"</span>));
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          command = PeersCommand.parse(PeersCommand.<strong class="jxr_keyword">class</strong>, arguments);
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          String newLine = System.getProperty(<span class="jxr_string">"line.separator"</span>);

@@ -34,14 +34,14 @@
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> DiffCheckConfiguration DIFF_OPTIONS = DiffCheckConfiguration.onlyCheckData();
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> byte[] configurationBytes = <strong class="jxr_keyword">new</strong> StringBuilder()
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>              .append(<span class="jxr_string">"PLACE_NAME = \&quot;TesterPlace\&quot;"</span>)
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>              .append(<span class="jxr_string">"SERVICE_NAME = \&quot;TESTER\&quot;"</span>)
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>              .append(<span class="jxr_string">"SERVICE_TYPE = \&quot;TRANSFORM\&quot;"</span>)
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>              .append(<span class="jxr_string">"SERVICE_DESCRIPTION = \&quot;Place defined for testing\&quot;"</span>)
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>              .append(<span class="jxr_string">"SERVICE_COST = 50"</span>)
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>              .append(<span class="jxr_string">"SERVICE_QUALITY = 50"</span>)
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>              .append(<span class="jxr_string">"SERVICE_PROXY = \&quot;UNKNOWN\&quot;"</span>).toString().getBytes(StandardCharsets.UTF_8);
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> byte[] configurationBytes =
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>              (<span class="jxr_string">"PLACE_NAME = \&quot;TesterPlace\&quot;"</span> +
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>                      <span class="jxr_string">"SERVICE_NAME = \&quot;TESTER\&quot;"</span> +
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>                      <span class="jxr_string">"SERVICE_TYPE = \&quot;TRANSFORM\&quot;"</span> +
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>                      <span class="jxr_string">"SERVICE_DESCRIPTION = \&quot;Place defined for testing\&quot;"</span> +
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>                      <span class="jxr_string">"SERVICE_COST = 50"</span> +
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>                      <span class="jxr_string">"SERVICE_QUALITY = 50"</span> +
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>                      <span class="jxr_string">"SERVICE_PROXY = \&quot;UNKNOWN\&quot;"</span>).getBytes(StandardCharsets.UTF_8);
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>  
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdoNewPlace;
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">private</strong> IBaseDataObject ibdoOldPlace;
@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          assertNull(PlaceComparisonHelper.getPlaceToCompare(configurator1));
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkThrowsNull(<strong class="jxr_keyword">final</strong> Executable e) {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkThrowsNull(<strong class="jxr_keyword">final</strong> Executable e) {
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertThrows(NullPointerException.<strong class="jxr_keyword">class</strong>, e);
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  

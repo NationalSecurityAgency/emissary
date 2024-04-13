@@ -98,7 +98,7 @@
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>  <em class="jxr_javadoccomment">     * Still have an uncaught exception handler but not really in a true ThreadGroup with other agents</em>
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>      <strong class="jxr_keyword">public</strong> <a name="MobileAgent" href="../../emissary/core/MobileAgent.html#MobileAgent">MobileAgent</a>() {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">new</strong> <a name="AgentThreadGroup" href="../../emissary/pool/AgentThreadGroup.html#AgentThreadGroup">AgentThreadGroup</a>(TG_ID), AGENT_THREAD + (AGENT_COUNTER++));
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          <strong class="jxr_keyword">this</strong>(<strong class="jxr_keyword">new</strong> <a name="AgentThreadGroup" href="../../emissary/pool/AgentThreadGroup.html#AgentThreadGroup">AgentThreadGroup</a>(TG_ID), AGENT_THREAD + AGENT_COUNTER++);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>      }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>      <em class="jxr_javadoccomment">/**</em>
@@ -207,14 +207,14 @@
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     * Set the current place we should kick off with</em>
 <a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setArrivalPlace(<strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p) {
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setArrivalPlace(@Nullable <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> p) {
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">this</strong>.arrivalPlace = p;
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>     }
 <a class="jxr_linenumber" name="L205" href="#L205">205</a> 
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L207" href="#L207">207</a> <em class="jxr_javadoccomment">     * Set the payload</em>
 <a class="jxr_linenumber" name="L208" href="#L208">208</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setPayload(<strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p) {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> setPayload(@Nullable <strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> p) {
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>         <strong class="jxr_keyword">this</strong>.payload = p;
 <a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> 
@@ -663,89 +663,89 @@
 <a class="jxr_linenumber" name="L655" href="#L655">655</a>     }
 <a class="jxr_linenumber" name="L656" href="#L656">656</a> 
 <a class="jxr_linenumber" name="L657" href="#L657">657</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     * Provide access to the move-error counter for the MoveAdapter</em>
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>     @Override
-<a class="jxr_linenumber" name="L661" href="#L661">661</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getMoveErrorCount() {
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.moveErrorsOccurred;
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>     }
-<a class="jxr_linenumber" name="L664" href="#L664">664</a> 
-<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L666" href="#L666">666</a> <em class="jxr_javadoccomment">     * Provide access to the itinerary queue for the MoveAdapter</em>
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a>     @Override
-<a class="jxr_linenumber" name="L669" href="#L669">669</a>     <strong class="jxr_keyword">public</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>[] getItineraryQueueItems() {
-<a class="jxr_linenumber" name="L670" href="#L670">670</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.nextKeyQueue.toArray(<strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>[0]);
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>     }
-<a class="jxr_linenumber" name="L672" href="#L672">672</a> 
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L674" href="#L674">674</a> <em class="jxr_javadoccomment">     * This is for an already in process agent arriving at a new place from a "moveTo". This is different than the above</em>
-<a class="jxr_linenumber" name="L675" href="#L675">675</a> <em class="jxr_javadoccomment">     * method because we presume we have arrived at this place in order to do some processing here, not just because we got</em>
-<a class="jxr_linenumber" name="L676" href="#L676">676</a> <em class="jxr_javadoccomment">     * picked up by it. So we don't need to get a key first, just start processing.</em>
-<a class="jxr_linenumber" name="L677" href="#L677">677</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L678" href="#L678">678</a> <em class="jxr_javadoccomment">     * @param dataObject the real payload, exisitng if any will be cleared</em>
-<a class="jxr_linenumber" name="L679" href="#L679">679</a> <em class="jxr_javadoccomment">     * @param arrivalPlaceArg the place we start at</em>
-<a class="jxr_linenumber" name="L680" href="#L680">680</a> <em class="jxr_javadoccomment">     * @param moveErrorCount transported move error counter</em>
-<a class="jxr_linenumber" name="L681" href="#L681">681</a> <em class="jxr_javadoccomment">     * @param queuedItineraryItems transported itinerary items list of DirectoryEntry</em>
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>     @Override
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> arrive(<strong class="jxr_keyword">final</strong> Object dataObject, <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> arrivalPlaceArg, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> moveErrorCount,
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>             <strong class="jxr_keyword">final</strong> List&lt;DirectoryEntry&gt; queuedItineraryItems) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">if</strong> (dataObject instanceof <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) {
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>             clear();
-<a class="jxr_linenumber" name="L689" href="#L689">689</a>             <strong class="jxr_keyword">this</strong>.moveErrorsOccurred = moveErrorCount;
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>             <strong class="jxr_keyword">this</strong>.nextKeyQueue.addAll(queuedItineraryItems);
-<a class="jxr_linenumber" name="L691" href="#L691">691</a>             go(dataObject, arrivalPlaceArg, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L692" href="#L692">692</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L693" href="#L693">693</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"Illegal payload sent to MobileAgent, cannot handle "</span> + dataObject.getClass().getName());
-<a class="jxr_linenumber" name="L694" href="#L694">694</a>         }
-<a class="jxr_linenumber" name="L695" href="#L695">695</a>     }
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> 
-<a class="jxr_linenumber" name="L697" href="#L697">697</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate on</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     * which path we entered to the agent's thread</em>
-<a class="jxr_linenumber" name="L700" href="#L700">700</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L701" href="#L701">701</a> <em class="jxr_javadoccomment">     * @param dataObject the real payload</em>
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> <em class="jxr_javadoccomment">     * @param arrivalPlaceArg the place we start at</em>
-<a class="jxr_linenumber" name="L703" href="#L703">703</a> <em class="jxr_javadoccomment">     * @param processAtFirstPlace true if we should call process on arrivalPlaceArg</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> go(@Nullable <strong class="jxr_keyword">final</strong> Object dataObject, @Nullable <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> arrivalPlaceArg,
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> processAtFirstPlace) {
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>         <em class="jxr_comment">// Check conditions</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">if</strong> (dataObject != <strong class="jxr_keyword">null</strong> &amp;&amp; !(dataObject instanceof <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>)) {
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal payload sent to MobileAgent, "</span> + <span class="jxr_string">"cannot handle "</span> + dataObject.getClass().getName());
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>         }
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> 
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>         <strong class="jxr_keyword">this</strong>.idle.set(false);
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> 
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>         setProcessFirstPlace(processAtFirstPlace);
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> 
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>         <em class="jxr_comment">// Allow this to be null to that derived classes</em>
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <em class="jxr_comment">// can handle the setting of their payload and still</em>
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <em class="jxr_comment">// be able to use this method</em>
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">if</strong> (dataObject != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>             <strong class="jxr_keyword">final</strong> <a name="IBaseDataObj<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>./emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d = (<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) dataObject;
-<a class="jxr_linenumber" name="L721" href="#L721">721</a>             logger.debug(<span class="jxr_string">"Setting payload {}"</span>, d.shortName());
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>             setPayload(d);
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>             setAgentId(d.shortName());
-<a class="jxr_linenumber" name="L724" href="#L724">724</a>         }
-<a class="jxr_linenumber" name="L725" href="#L725">725</a> 
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>         <em class="jxr_comment">// Likewise...</em>
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>         <strong class="jxr_keyword">if</strong> (arrivalPlaceArg != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L728" href="#L728">728</a>             setArrivalPlace(arrivalPlaceArg);
-<a class="jxr_linenumber" name="L729" href="#L729">729</a> 
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>             <em class="jxr_comment">// If a "go" rather an an "arrive", log the arrivalPlaceArg</em>
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>             <em class="jxr_comment">// on the transform history of the payload</em>
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>             <strong class="jxr_keyword">if</strong> (!processAtFirstPlace) {
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>                 logger.debug(<span class="jxr_string">"Adding history for arrival place {}"</span>, arrivalPlaceArg.getKey());
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>                 recordHistory(arrivalPlaceArg, getPayload());
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>             }
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>         }
-<a class="jxr_linenumber" name="L737" href="#L737">737</a> 
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>         <em class="jxr_comment">// the run() loop now takes over on the agent's thread and we return</em>
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>         <em class="jxr_comment">// control of the currentThread to the caller of this method</em>
-<a class="jxr_linenumber" name="L740" href="#L740">740</a>         notifyAll();
+<a class="jxr_linenumber" name="L658" href="#L658">658</a> <em class="jxr_javadoccomment">     * Private implementation for both of the above arrive and go methods, uses the setProcessFirstPlace to communicate on</em>
+<a class="jxr_linenumber" name="L659" href="#L659">659</a> <em class="jxr_javadoccomment">     * which path we entered to the agent's thread</em>
+<a class="jxr_linenumber" name="L660" href="#L660">660</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L661" href="#L661">661</a> <em class="jxr_javadoccomment">     * @param dataObject the real payload</em>
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> <em class="jxr_javadoccomment">     * @param arrivalPlaceArg the place we start at</em>
+<a class="jxr_linenumber" name="L663" href="#L663">663</a> <em class="jxr_javadoccomment">     * @param processAtFirstPlace true if we should call process on arrivalPlaceArg</em>
+<a class="jxr_linenumber" name="L664" href="#L664">664</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> go(@Nullable <strong class="jxr_keyword">final</strong> Object dataObject, @Nullable <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> arrivalPlaceArg,
+<a class="jxr_linenumber" name="L666" href="#L666">666</a>             <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> processAtFirstPlace) {
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>         <em class="jxr_comment">// Check conditions</em>
+<a class="jxr_linenumber" name="L668" href="#L668">668</a>         <strong class="jxr_keyword">if</strong> (dataObject != <strong class="jxr_keyword">null</strong> &amp;&amp; !(dataObject instanceof <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>)) {
+<a class="jxr_linenumber" name="L669" href="#L669">669</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Illegal payload sent to MobileAgent, "</span> + <span class="jxr_string">"cannot handle "</span> + dataObject.getClass().getName());
+<a class="jxr_linenumber" name="L670" href="#L670">670</a>         }
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> 
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>         <strong class="jxr_keyword">this</strong>.idle.set(false);
+<a class="jxr_linenumber" name="L673" href="#L673">673</a> 
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>         setProcessFirstPlace(processAtFirstPlace);
+<a class="jxr_linenumber" name="L675" href="#L675">675</a> 
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>         <em class="jxr_comment">// Allow this to be null to that derived classes</em>
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>         <em class="jxr_comment">// can handle the setting of their payload and still</em>
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>         <em class="jxr_comment">// be able to use this method</em>
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>         <strong class="jxr_keyword">if</strong> (dataObject != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>             <strong class="jxr_keyword">final</strong> <a name="IBaseDataObj<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>./emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> d = (<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) dataObject;
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>             logger.debug(<span class="jxr_string">"Setting payload {}"</span>, d.shortName());
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>             setPayload(d);
+<a class="jxr_linenumber" name="L683" href="#L683">683</a>             setAgentId(d.shortName());
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>         }
+<a class="jxr_linenumber" name="L685" href="#L685">685</a> 
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>         <em class="jxr_comment">// Likewise...</em>
+<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">if</strong> (arrivalPlaceArg != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>             setArrivalPlace(arrivalPlaceArg);
+<a class="jxr_linenumber" name="L689" href="#L689">689</a> 
+<a class="jxr_linenumber" name="L690" href="#L690">690</a>             <em class="jxr_comment">// If a "go" rather an an "arrive", log the arrivalPlaceArg</em>
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>             <em class="jxr_comment">// on the transform history of the payload</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a>             <strong class="jxr_keyword">if</strong> (!processAtFirstPlace) {
+<a class="jxr_linenumber" name="L693" href="#L693">693</a>                 logger.debug(<span class="jxr_string">"Adding history for arrival place {}"</span>, arrivalPlaceArg.getKey());
+<a class="jxr_linenumber" name="L694" href="#L694">694</a>                 recordHistory(arrivalPlaceArg, getPayload());
+<a class="jxr_linenumber" name="L695" href="#L695">695</a>             }
+<a class="jxr_linenumber" name="L696" href="#L696">696</a>         }
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> 
+<a class="jxr_linenumber" name="L698" href="#L698">698</a>         <em class="jxr_comment">// the run() loop now takes over on the agent's thread and we return</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a>         <em class="jxr_comment">// control of the currentThread to the caller of this method</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>         notifyAll();
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>     }
+<a class="jxr_linenumber" name="L702" href="#L702">702</a> 
+<a class="jxr_linenumber" name="L703" href="#L703">703</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * Provide access to the move-error counter for the MoveAdapter</em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>     @Override
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getMoveErrorCount() {
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.moveErrorsOccurred;
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>     }
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> 
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * Provide access to the itinerary queue for the MoveAdapter</em>
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>     @Override
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <strong class="jxr_keyword">public</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>[] getItineraryQueueItems() {
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.nextKeyQueue.toArray(<strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>[0]);
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>     }
+<a class="jxr_linenumber" name="L718" href="#L718">718</a> 
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L720" href="#L720">720</a> <em class="jxr_javadoccomment">     * This is for an already in process agent arriving at a new place from a "moveTo". This is different than the above</em>
+<a class="jxr_linenumber" name="L721" href="#L721">721</a> <em class="jxr_javadoccomment">     * method because we presume we have arrived at this place in order to do some processing here, not just because we got</em>
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> <em class="jxr_javadoccomment">     * picked up by it. So we don't need to get a key first, just start processing.</em>
+<a class="jxr_linenumber" name="L723" href="#L723">723</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L724" href="#L724">724</a> <em class="jxr_javadoccomment">     * @param dataObject the real payload, exisitng if any will be cleared</em>
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> <em class="jxr_javadoccomment">     * @param arrivalPlaceArg the place we start at</em>
+<a class="jxr_linenumber" name="L726" href="#L726">726</a> <em class="jxr_javadoccomment">     * @param moveErrorCount transported move error counter</em>
+<a class="jxr_linenumber" name="L727" href="#L727">727</a> <em class="jxr_javadoccomment">     * @param queuedItineraryItems transported itinerary items list of DirectoryEntry</em>
+<a class="jxr_linenumber" name="L728" href="#L728">728</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L729" href="#L729">729</a>     @Override
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> arrive(<strong class="jxr_keyword">final</strong> Object dataObject, <strong class="jxr_keyword">final</strong> <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> arrivalPlaceArg, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> moveErrorCount,
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>             <strong class="jxr_keyword">final</strong> List&lt;DirectoryEntry&gt; queuedItineraryItems) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L732" href="#L732">732</a> 
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>         <strong class="jxr_keyword">if</strong> (dataObject instanceof <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a>) {
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>             clear();
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>             <strong class="jxr_keyword">this</strong>.moveErrorsOccurred = moveErrorCount;
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>             <strong class="jxr_keyword">this</strong>.nextKeyQueue.addAll(queuedItineraryItems);
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>             go(dataObject, arrivalPlaceArg, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L738" href="#L738">738</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"Illegal payload sent to MobileAgent, cannot handle "</span> + dataObject.getClass().getName());
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>         }
 <a class="jxr_linenumber" name="L741" href="#L741">741</a>     }
 <a class="jxr_linenumber" name="L742" href="#L742">742</a> 
 <a class="jxr_linenumber" name="L743" href="#L743">743</a>     <em class="jxr_javadoccomment">/**</em>

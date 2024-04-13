@@ -157,7 +157,7 @@
 <a class="jxr_linenumber" name="L149" href="#L149">149</a> 
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">int</strong> count = 0;
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">for</strong> (String k : key) {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>             nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(ADD_KEY + (count++), k));
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>             nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(ADD_KEY + count++, k));
 <a class="jxr_linenumber" name="L153" href="#L153">153</a>         }
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>         nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(ADD_PROPAGATION_FLAG, Boolean.toString(propagating)));
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         method.setEntity(<strong class="jxr_keyword">new</strong> UrlEncodedFormEntity(nvps, StandardCharsets.UTF_8));

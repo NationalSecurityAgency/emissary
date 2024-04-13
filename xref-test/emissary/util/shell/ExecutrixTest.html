@@ -433,7 +433,7 @@
 <a class="jxr_linenumber" name="L425" href="#L425">425</a>         sout.setLength(0);
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>     }
 <a class="jxr_linenumber" name="L427" href="#L427">427</a> 
-<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> readAndNuke(<strong class="jxr_keyword">final</strong> String name) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L428" href="#L428">428</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> readAndNuke(<strong class="jxr_keyword">final</strong> String name) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L429" href="#L429">429</a>         <strong class="jxr_keyword">final</strong> File f = <strong class="jxr_keyword">new</strong> File(name);
 <a class="jxr_linenumber" name="L430" href="#L430">430</a>         assertTrue(f.exists(), <span class="jxr_string">"File "</span> + name + <span class="jxr_string">" must exist"</span>);
 <a class="jxr_linenumber" name="L431" href="#L431">431</a>         <strong class="jxr_keyword">final</strong> byte[] data = Executrix.readDataFromFile(name);

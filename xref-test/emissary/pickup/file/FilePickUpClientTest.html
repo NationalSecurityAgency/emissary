@@ -153,18 +153,19 @@
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         @Override
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>         @Nullable
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>         <strong class="jxr_keyword">protected</strong> String caseIdHook(String initialCaseId, String sessionname, String fileName, Map&lt;String, Collection&lt;Object&gt;&gt; metadata) {
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">if</strong> (nullifyCaseIdInHook)
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">if</strong> (nullifyCaseIdInHook) {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>             <strong class="jxr_keyword">else</strong>
+<a class="jxr_linenumber" name="L150" href="#L150">150</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.caseIdHook(initialCaseId, sessionname, fileName, metadata);
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         }
-<a class="jxr_linenumber" name="L153" href="#L153">153</a> 
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         @Override
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">protected</strong> String createFilename(String filePath, String prefix) {
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.createFilename(filePath, prefix);
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         }
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>     }
-<a class="jxr_linenumber" name="L159" href="#L159">159</a> }
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>             }
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         }
+<a class="jxr_linenumber" name="L154" href="#L154">154</a> 
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         @Override
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">protected</strong> String createFilename(String filePath, String prefix) {
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.createFilename(filePath, prefix);
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         }
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>     }
+<a class="jxr_linenumber" name="L160" href="#L160">160</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

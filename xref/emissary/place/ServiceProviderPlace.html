@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment"> * emissary.directory.IDirectoryPlace to make their respective services available and a specified cost and quality</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment"> * throughout the system.</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a> <strong class="jxr_keyword">implements</strong> emissary.place.IServiceProviderPlace,
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">abstract</strong> <strong class="jxr_keyword">class</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a> <strong class="jxr_keyword">implements</strong> IServiceProviderPlace,
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          <a name="ServiceProviderPlaceMBean" href="../../emissary/place/ServiceProviderPlaceMBean.html#ServiceProviderPlaceMBean">ServiceProviderPlaceMBean</a> {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      <em class="jxr_javadoccomment">/**</em>
@@ -174,7 +174,7 @@
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     * @param theDir string name of our directory</em>
 <a class="jxr_linenumber" name="L167" href="#L167">167</a> <em class="jxr_javadoccomment">     * @param thePlaceLocation string name of our location</em>
 <a class="jxr_linenumber" name="L168" href="#L168">168</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(String configFile, String theDir, String thePlaceLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(String configFile, @Nullable String theDir, String thePlaceLocation) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         configG = loadConfigurator(configFile, thePlaceLocation);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         setupPlace(theDir, thePlaceLocation);
@@ -187,7 +187,7 @@
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> <em class="jxr_javadoccomment">     * @param theDir string name of our directory</em>
 <a class="jxr_linenumber" name="L180" href="#L180">180</a> <em class="jxr_javadoccomment">     * @param thePlaceLocation string name of our location</em>
 <a class="jxr_linenumber" name="L181" href="#L181">181</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(InputStream configStream, String theDir, String thePlaceLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(InputStream configStream, @Nullable String theDir, String thePlaceLocation) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">super</strong>();
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>         configG = loadConfigurator(configStream, thePlaceLocation);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         setupPlace(theDir, thePlaceLocation);
@@ -206,197 +206,197 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     }
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> 
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * Load the configurator</em>
+<a class="jxr_linenumber" name="L201" href="#L201">201</a> <em class="jxr_javadoccomment">     * Create the place with no directory</em>
 <a class="jxr_linenumber" name="L202" href="#L202">202</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * @param configStream the stream to use or null to auto configure</em>
-<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable InputStream configStream, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>         <em class="jxr_comment">// Read the configuration stream</em>
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">if</strong> (configStream != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>             <em class="jxr_comment">// Use supplied stream</em>
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             <strong class="jxr_keyword">return</strong> emissary.config.ConfigUtil.getConfigInfo(configStream);
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         }
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>         <strong class="jxr_keyword">return</strong> loadConfigurator(placeLocation);
-<a class="jxr_linenumber" name="L212" href="#L212">212</a>     }
-<a class="jxr_linenumber" name="L213" href="#L213">213</a> 
-<a class="jxr_linenumber" name="L214" href="#L214">214</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * Load the configurator</em>
-<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L217" href="#L217">217</a> <em class="jxr_javadoccomment">     * @param configFileName the file name to use or null to auto configure</em>
-<a class="jxr_linenumber" name="L218" href="#L218">218</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L219" href="#L219">219</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable String configFileName, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>         <em class="jxr_comment">// Read the configuration stream</em>
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">if</strong> (configFileName != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L222" href="#L222">222</a>             <em class="jxr_comment">// Use supplied stream</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>             <strong class="jxr_keyword">return</strong> emissary.config.ConfigUtil.getConfigInfo(configFileName);
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         }
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">return</strong> loadConfigurator(placeLocation);
-<a class="jxr_linenumber" name="L226" href="#L226">226</a>     }
-<a class="jxr_linenumber" name="L227" href="#L227">227</a> 
-<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     * Load the configurator, figuring out whence automatically</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">if</strong> (placeLocation == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>             placeLocation = <strong class="jxr_keyword">this</strong>.getClass().getSimpleName();
-<a class="jxr_linenumber" name="L235" href="#L235">235</a>         }
-<a class="jxr_linenumber" name="L236" href="#L236">236</a> 
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>         <em class="jxr_comment">// Extract config data stream name from place location</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>         <em class="jxr_comment">// and try finding config info with and without the</em>
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <em class="jxr_comment">// package name of this class (in that order)</em>
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>         String myPackage = <strong class="jxr_keyword">this</strong>.getClass().getPackage().getName();
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>         List&lt;String&gt; configLocs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <em class="jxr_comment">// Dont use KeyManipulator for this, only works when hostname/fqdn has dots</em>
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         <strong class="jxr_keyword">int</strong> pos = placeLocation.lastIndexOf(<span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         String serviceClass = (pos &gt; -1 ? placeLocation.substring(pos + 1) : placeLocation);
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>         configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">return</strong> emissary.config.ConfigUtil.getConfigInfo(configLocs);
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>     }
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     * Help the constructor get the place running</em>
-<a class="jxr_linenumber" name="L252" href="#L252">252</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L253" href="#L253">253</a> <em class="jxr_javadoccomment">     * @param theDir name of our directory</em>
-<a class="jxr_linenumber" name="L254" href="#L254">254</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setupPlace(String theDir, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> <em class="jxr_javadoccomment">     * @param configFile string name of config data file</em>
+<a class="jxr_linenumber" name="L204" href="#L204">204</a> <em class="jxr_javadoccomment">     * @param placeLocation string name of our location</em>
+<a class="jxr_linenumber" name="L205" href="#L205">205</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(String configFile, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>         <strong class="jxr_keyword">this</strong>(configFile, <strong class="jxr_keyword">null</strong>, placeLocation);
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>     }
+<a class="jxr_linenumber" name="L209" href="#L209">209</a> 
+<a class="jxr_linenumber" name="L210" href="#L210">210</a> 
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L212" href="#L212">212</a> <em class="jxr_javadoccomment">     * Create the place with no directory</em>
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L214" href="#L214">214</a> <em class="jxr_javadoccomment">     * @param configStream stream of config data</em>
+<a class="jxr_linenumber" name="L215" href="#L215">215</a> <em class="jxr_javadoccomment">     * @param placeLocation string name of our location</em>
+<a class="jxr_linenumber" name="L216" href="#L216">216</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L217" href="#L217">217</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(InputStream configStream, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L218" href="#L218">218</a>         <strong class="jxr_keyword">this</strong>(configStream, <strong class="jxr_keyword">null</strong>, placeLocation);
+<a class="jxr_linenumber" name="L219" href="#L219">219</a>     }
+<a class="jxr_linenumber" name="L220" href="#L220">220</a> 
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     * Load the configurator</em>
+<a class="jxr_linenumber" name="L223" href="#L223">223</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * @param configStream the stream to use or null to auto configure</em>
+<a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable InputStream configStream, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <em class="jxr_comment">// Read the configuration stream</em>
+<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <strong class="jxr_keyword">if</strong> (configStream != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>             <em class="jxr_comment">// Use supplied stream</em>
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>             <strong class="jxr_keyword">return</strong> ConfigUtil.getConfigInfo(configStream);
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>         }
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>         <strong class="jxr_keyword">return</strong> loadConfigurator(placeLocation);
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>     }
+<a class="jxr_linenumber" name="L234" href="#L234">234</a> 
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * Load the configurator</em>
+<a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> <em class="jxr_javadoccomment">     * @param configFileName the file name to use or null to auto configure</em>
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable String configFileName, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>         <em class="jxr_comment">// Read the configuration stream</em>
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         <strong class="jxr_keyword">if</strong> (configFileName != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <em class="jxr_comment">// Use supplied stream</em>
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">return</strong> ConfigUtil.getConfigInfo(configFileName);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>         }
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">return</strong> loadConfigurator(placeLocation);
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>     }
+<a class="jxr_linenumber" name="L248" href="#L248">248</a> 
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L250" href="#L250">250</a> <em class="jxr_javadoccomment">     * Load the configurator, figuring out whence automatically</em>
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     <strong class="jxr_keyword">protected</strong> <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> loadConfigurator(@Nullable String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>         <strong class="jxr_keyword">if</strong> (placeLocation == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>             placeLocation = <strong class="jxr_keyword">this</strong>.getClass().getSimpleName();
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>         }
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>         <em class="jxr_comment">// Customize the logger to the runtime class</em>
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>         logger = LoggerFactory.getLogger(<strong class="jxr_keyword">this</strong>.getClass());
-<a class="jxr_linenumber" name="L259" href="#L259">259</a> 
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <em class="jxr_comment">// The order of the following initialization calls</em>
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <em class="jxr_comment">// is touchy. NPE all over if you mess up here.</em>
-<a class="jxr_linenumber" name="L262" href="#L262">262</a> 
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>         <em class="jxr_comment">// Set ServicePlace config items</em>
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         configureServicePlace(placeLocation);
-<a class="jxr_linenumber" name="L265" href="#L265">265</a> 
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         <em class="jxr_comment">// Backwards compatibility setup items</em>
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntr<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>ryEntry">DirectoryEntry</a> firstentry = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>         myKey = firstentry.getKey();
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>         serviceCost = firstentry.getCost();
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>         serviceQuality = firstentry.getQuality();
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>         placeName = firstentry.getServiceLocation();
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
-<a class="jxr_linenumber" name="L273" href="#L273">273</a> 
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>         <em class="jxr_comment">// configure directory references</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof <a name="DirectoryPlace" href="../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>)) {
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>             localizeDirectory(theDir);
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>             logger.debug(<span class="jxr_string">"Our localizedDirectory is {}"</span>, dirPlace);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>             logger.debug(<span class="jxr_string">"Not localizing directory since we are a directory"</span>);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         }
-<a class="jxr_linenumber" name="L281" href="#L281">281</a> 
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <em class="jxr_comment">// Set up kff if we need it</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong> instanceof <a name="RehashingPlace" href="../../emissary/place/RehashingPlace.html#RehashingPlace">RehashingPlace</a> || <strong class="jxr_keyword">this</strong> instanceof <a name="MultiFileServerPlace" href="../../emissary/place/MultiFileServerPlace.html#MultiFileServerPlace">MultiFileServerPlace</a>) {
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>             initKff();
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         }
-<a class="jxr_linenumber" name="L286" href="#L286">286</a> 
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <em class="jxr_comment">// Bind to the namespace before registering</em>
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         <em class="jxr_comment">// our keys. This allows incoming traffic to find</em>
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <em class="jxr_comment">// us as soon as they see the keys</em>
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <strong class="jxr_keyword">for</strong> (String key : keys) {
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             String bindKey = KeyManipulator.getServiceLocation(key);
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             logger.debug(<span class="jxr_string">"Binding myself into the namespace as {}"</span>, bindKey);
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>             Namespace.bind(bindKey, <strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         }
-<a class="jxr_linenumber" name="L295" href="#L295">295</a> 
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         <em class="jxr_comment">// Register with the directory</em>
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <em class="jxr_comment">// This pushes all our keys out to the directory which</em>
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         <em class="jxr_comment">// sends them on in turn to peers, &amp;c. in the p2p network</em>
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         register();
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <em class="jxr_comment">// register MBean with JMX</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         JMXUtil.registerMBean(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="L303" href="#L303">303</a> 
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>         <em class="jxr_comment">// Verify and warn of incorrect process/processHeavyDuty implementation</em>
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>         verifyProcessImplementationProvided();
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L309" href="#L309">309</a> <em class="jxr_javadoccomment">     * Get a local reference to the directory.</em>
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> <em class="jxr_javadoccomment">     * @param theDir key for the directory to use, if null will look up default name</em>
-<a class="jxr_linenumber" name="L312" href="#L312">312</a> <em class="jxr_javadoccomment">     * @return true if it worked</em>
-<a class="jxr_linenumber" name="L313" href="#L313">313</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> localizeDirectory(@Nullable String theDir) {
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>         <em class="jxr_comment">// Get a local (non proxy) copy of the directory if possible!</em>
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>         <em class="jxr_comment">// Looking up both if nothing is provided</em>
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <strong class="jxr_keyword">if</strong> (theDir == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 localDirPlace = DirectoryPlace.lookup();
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>                 dirPlace = localDirPlace.toString();
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>                 <strong class="jxr_keyword">if</strong> (EmissaryServer.exists() &amp;&amp; !(<strong class="jxr_keyword">this</strong> instanceof <a name="DirectoryPlace" href="../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>)) {
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     logger.warn(<span class="jxr_string">"Unable to find DirectoryPlace in local namespace"</span>, ex);
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>                     <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>                 }
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>             }
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>             dirPlace = theDir;
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>             localDirPlace = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>                 String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>                 String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>                 <strong class="jxr_keyword">if</strong> (StringUtils.equals(dirUrl, myUrl)) {
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>                     localDirPlace = (<a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a>) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>                 } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>                     logger.debug(<span class="jxr_string">"Not localizing directory since dirPlace {} is not equal to myUrl {}"</span>, dirPlace, myUrl);
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>                 }
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>                 logger.error(<span class="jxr_string">"Exception attempting to get local reference to directory"</span>, ex);
-<a class="jxr_linenumber" name="L340" href="#L340">340</a>                 <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>             }
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         }
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>     }
-<a class="jxr_linenumber" name="L345" href="#L345">345</a> 
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L347" href="#L347">347</a> <em class="jxr_javadoccomment">     * Initialize the Kff Handler with our policy settings</em>
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> initKff() {
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         kff =
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>                 <strong class="jxr_keyword">new</strong> <a name="KffDataObjectHandler" href="../../emissary/kff/KffDataObjectHandler.html#KffDataObjectHandler">KffDataObjectHandler</a>(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>                         KffDataObjectHandler.SET_FILE_TYPE);
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>     }
-<a class="jxr_linenumber" name="L354" href="#L354">354</a> 
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> <em class="jxr_javadoccomment">     * Set the logger to use, allows easier mocking among other things</em>
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L358" href="#L358">358</a> <em class="jxr_javadoccomment">     * @param l the logger instance to use</em>
-<a class="jxr_linenumber" name="L359" href="#L359">359</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setLogger(Logger l) {
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>         <strong class="jxr_keyword">this</strong>.logger = l;
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>     }
-<a class="jxr_linenumber" name="L363" href="#L363">363</a> 
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L365" href="#L365">365</a> <em class="jxr_javadoccomment">     * Return an encapsulation of our key and cost structure Only good for the top key on the list</em>
-<a class="jxr_linenumber" name="L366" href="#L366">366</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * @return a DirectoryEntry for this place</em>
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>         <em class="jxr_comment">// Extract config data stream name from place location</em>
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <em class="jxr_comment">// and try finding config info with and without the</em>
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         <em class="jxr_comment">// package name of this class (in that order)</em>
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>         String myPackage = <strong class="jxr_keyword">this</strong>.getClass().getPackage().getName();
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         List&lt;String&gt; configLocs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         <em class="jxr_comment">// Dont use KeyManipulator for this, only works when hostname/fqdn has dots</em>
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>         <strong class="jxr_keyword">int</strong> pos = placeLocation.lastIndexOf(<span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>         String serviceClass = (pos &gt; -1 ? placeLocation.substring(pos + 1) : placeLocation);
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         configLocs.add(myPackage + DOT + serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
+<a class="jxr_linenumber" name="L266" href="#L266">266</a>         configLocs.add(serviceClass + ConfigUtil.CONFIG_FILE_ENDING);
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>         <strong class="jxr_keyword">return</strong> ConfigUtil.getConfigInfo(configLocs);
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>     }
+<a class="jxr_linenumber" name="L269" href="#L269">269</a> 
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * Help the constructor get the place running</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * @param theDir name of our directory</em>
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setupPlace(@Nullable String theDir, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> 
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <em class="jxr_comment">// Customize the logger to the runtime class</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         logger = LoggerFactory.getLogger(<strong class="jxr_keyword">this</strong>.getClass());
+<a class="jxr_linenumber" name="L279" href="#L279">279</a> 
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <em class="jxr_comment">// The order of the following initialization calls</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <em class="jxr_comment">// is touchy. NPE all over if you mess up here.</em>
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <em class="jxr_comment">// Set ServicePlace config items</em>
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         configureServicePlace(placeLocation);
+<a class="jxr_linenumber" name="L285" href="#L285">285</a> 
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         <em class="jxr_comment">// Backwards compatibility setup items</em>
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntr<a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>ryEntry">DirectoryEntry</a> firstentry = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0));
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>         myKey = firstentry.getKey();
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>         serviceCost = firstentry.getCost();
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>         serviceQuality = firstentry.getQuality();
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>         placeName = firstentry.getServiceLocation();
+<a class="jxr_linenumber" name="L292" href="#L292">292</a> 
+<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>         <em class="jxr_comment">// configure directory references</em>
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof <a name="DirectoryPlace" href="../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>)) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>             localizeDirectory(theDir);
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             logger.debug(<span class="jxr_string">"Our localizedDirectory is {}"</span>, dirPlace);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             logger.debug(<span class="jxr_string">"Not localizing directory since we are a directory"</span>);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         }
+<a class="jxr_linenumber" name="L301" href="#L301">301</a> 
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>         <em class="jxr_comment">// Set up kff if we need it</em>
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong> instanceof <a name="RehashingPlace" href="../../emissary/place/RehashingPlace.html#RehashingPlace">RehashingPlace</a> || <strong class="jxr_keyword">this</strong> instanceof <a name="MultiFileServerPlace" href="../../emissary/place/MultiFileServerPlace.html#MultiFileServerPlace">MultiFileServerPlace</a>) {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>             initKff();
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         }
+<a class="jxr_linenumber" name="L306" href="#L306">306</a> 
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>         <em class="jxr_comment">// Bind to the namespace before registering</em>
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <em class="jxr_comment">// our keys. This allows incoming traffic to find</em>
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>         <em class="jxr_comment">// us as soon as they see the keys</em>
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         <strong class="jxr_keyword">for</strong> (String key : keys) {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>             String bindKey = KeyManipulator.getServiceLocation(key);
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             logger.debug(<span class="jxr_string">"Binding myself into the namespace as {}"</span>, bindKey);
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>             Namespace.bind(bindKey, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>         }
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>         <em class="jxr_comment">// Register with the directory</em>
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>         <em class="jxr_comment">// This pushes all our keys out to the directory which</em>
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>         <em class="jxr_comment">// sends them on in turn to peers, &amp;c. in the p2p network</em>
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>         register();
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>         <em class="jxr_comment">// register MBean with JMX</em>
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>         JMXUtil.registerMBean(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>         <em class="jxr_comment">// Verify and warn of incorrect process/processHeavyDuty implementation</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>         verifyProcessImplementationProvided();
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     }
+<a class="jxr_linenumber" name="L327" href="#L327">327</a> 
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a> <em class="jxr_javadoccomment">     * Get a local reference to the directory.</em>
+<a class="jxr_linenumber" name="L330" href="#L330">330</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> <em class="jxr_javadoccomment">     * @param theDir key for the directory to use, if null will look up default name</em>
+<a class="jxr_linenumber" name="L332" href="#L332">332</a> <em class="jxr_javadoccomment">     * @return true if it worked</em>
+<a class="jxr_linenumber" name="L333" href="#L333">333</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> localizeDirectory(@Nullable String theDir) {
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>         <em class="jxr_comment">// Get a local (non proxy) copy of the directory if possible!</em>
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>         <em class="jxr_comment">// Looking up both if nothing is provided</em>
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">if</strong> (theDir == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>                 localDirPlace = DirectoryPlace.lookup();
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>                 dirPlace = localDirPlace.toString();
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>                 <strong class="jxr_keyword">if</strong> (EmissaryServer.exists() &amp;&amp; !(<strong class="jxr_keyword">this</strong> instanceof <a name="DirectoryPlace" href="../../emissary/directory/DirectoryPlace.html#DirectoryPlace">DirectoryPlace</a>)) {
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>                     logger.warn(<span class="jxr_string">"Unable to find DirectoryPlace in local namespace"</span>, ex);
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>                     <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>                 }
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>             }
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             dirPlace = theDir;
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>             localDirPlace = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>                 String myUrl = KeyManipulator.getServiceHostUrl(keys.get(0));
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>                 String dirUrl = KeyManipulator.getServiceHostUrl(dirPlace);
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>                 <strong class="jxr_keyword">if</strong> (StringUtils.equals(dirUrl, myUrl)) {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>                     localDirPlace = (<a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a>) Namespace.lookup(KeyManipulator.getServiceLocation(theDir));
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>                     logger.debug(<span class="jxr_string">"Not localizing directory since dirPlace {} is not equal to myUrl {}"</span>, dirPlace, myUrl);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>                 }
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>                 logger.error(<span class="jxr_string">"Exception attempting to get local reference to directory"</span>, ex);
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>             }
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>         }
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>     }
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L367" href="#L367">367</a> <em class="jxr_javadoccomment">     * Initialize the Kff Handler with our policy settings</em>
 <a class="jxr_linenumber" name="L368" href="#L368">368</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     @Override
-<a class="jxr_linenumber" name="L370" href="#L370">370</a>     <strong class="jxr_keyword">public</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> getDirectoryEntry() {
-<a class="jxr_linenumber" name="L371" href="#L371">371</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0), serviceDescription, serviceCost, serviceQuality);
-<a class="jxr_linenumber" name="L372" href="#L372">372</a>     }
-<a class="jxr_linenumber" name="L373" href="#L373">373</a> 
-<a class="jxr_linenumber" name="L374" href="#L374">374</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">     * Create the place with no directory</em>
-<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     * @param configFile string name of config data file</em>
-<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @param placeLocation string name of our location</em>
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> initKff() {
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>         kff =
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>                 <strong class="jxr_keyword">new</strong> <a name="KffDataObjectHandler" href="../../emissary/kff/KffDataObjectHandler.html#KffDataObjectHandler">KffDataObjectHandler</a>(KffDataObjectHandler.TRUNCATE_KNOWN_DATA, KffDataObjectHandler.SET_FORM_WHEN_KNOWN,
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>                         KffDataObjectHandler.SET_FILE_TYPE);
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> 
+<a class="jxr_linenumber" name="L375" href="#L375">375</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">     * Set the logger to use, allows easier mocking among other things</em>
+<a class="jxr_linenumber" name="L377" href="#L377">377</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L378" href="#L378">378</a> <em class="jxr_javadoccomment">     * @param l the logger instance to use</em>
 <a class="jxr_linenumber" name="L379" href="#L379">379</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(String configFile, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L381" href="#L381">381</a>         <strong class="jxr_keyword">this</strong>(configFile, <strong class="jxr_keyword">null</strong>, placeLocation);
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setLogger(Logger l) {
+<a class="jxr_linenumber" name="L381" href="#L381">381</a>         <strong class="jxr_keyword">this</strong>.logger = l;
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>     }
 <a class="jxr_linenumber" name="L383" href="#L383">383</a> 
 <a class="jxr_linenumber" name="L384" href="#L384">384</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     * Create the place with no directory</em>
+<a class="jxr_linenumber" name="L385" href="#L385">385</a> <em class="jxr_javadoccomment">     * Return an encapsulation of our key and cost structure Only good for the top key on the list</em>
 <a class="jxr_linenumber" name="L386" href="#L386">386</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     * @param configStream stream of config data</em>
-<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     * @param placeLocation string name of our location</em>
-<a class="jxr_linenumber" name="L389" href="#L389">389</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L390" href="#L390">390</a>     <strong class="jxr_keyword">protected</strong> <a name="ServiceProviderPlace" href="../../emissary/place/ServiceProviderPlace.html#ServiceProviderPlace">ServiceProviderPlace</a>(InputStream configStream, String placeLocation) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L391" href="#L391">391</a>         <strong class="jxr_keyword">this</strong>(configStream, <strong class="jxr_keyword">null</strong>, placeLocation);
+<a class="jxr_linenumber" name="L387" href="#L387">387</a> <em class="jxr_javadoccomment">     * @return a DirectoryEntry for this place</em>
+<a class="jxr_linenumber" name="L388" href="#L388">388</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L389" href="#L389">389</a>     @Override
+<a class="jxr_linenumber" name="L390" href="#L390">390</a>     <strong class="jxr_keyword">public</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> getDirectoryEntry() {
+<a class="jxr_linenumber" name="L391" href="#L391">391</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a>(keys.get(0), serviceDescription, serviceCost, serviceQuality);
 <a class="jxr_linenumber" name="L392" href="#L392">392</a>     }
 <a class="jxr_linenumber" name="L393" href="#L393">393</a> 
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>     <em class="jxr_javadoccomment">/**</em>
@@ -519,7 +519,7 @@
 <a class="jxr_linenumber" name="L511" href="#L511">511</a>     @Nullable
 <a class="jxr_linenumber" name="L512" href="#L512">512</a>     <strong class="jxr_keyword">public</strong> List&lt;DirectoryEntry&gt; nextKeys(<strong class="jxr_keyword">final</strong> String dataId, <strong class="jxr_keyword">final</strong> <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <strong class="jxr_keyword">final</strong> <a name="DirectoryEntry" href="../../emissary/directory/DirectoryEntry.html#DirectoryEntry">DirectoryEntry</a> lastEntry) {
 <a class="jxr_linenumber" name="L513" href="#L513">513</a>         <strong class="jxr_keyword">if</strong> (localDirPlace != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L514" href="#L514">514</a>             <strong class="jxr_keyword">return</strong> (localDirPlace.nextKeys(dataId, payload, lastEntry));
+<a class="jxr_linenumber" name="L514" href="#L514">514</a>             <strong class="jxr_keyword">return</strong> localDirPlace.nextKeys(dataId, payload, lastEntry);
 <a class="jxr_linenumber" name="L515" href="#L515">515</a>         }
 <a class="jxr_linenumber" name="L516" href="#L516">516</a>         logger.error(<span class="jxr_string">"No local directory in place {} with dir={}"</span>, keys.get(0), dirPlace);
 <a class="jxr_linenumber" name="L517" href="#L517">517</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
@@ -857,7 +857,7 @@
 <a class="jxr_linenumber" name="L849" href="#L849">849</a>         <em class="jxr_comment">// Cannot register if we have no directory</em>
 <a class="jxr_linenumber" name="L850" href="#L850">850</a>         <em class="jxr_comment">// If we are the directory, its no problem though</em>
 <a class="jxr_linenumber" name="L851" href="#L851">851</a>         <strong class="jxr_keyword">if</strong> (dirPlace == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L852" href="#L852">852</a>             <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof emissary.directory.IDirectoryPlace)) {
+<a class="jxr_linenumber" name="L852" href="#L852">852</a>             <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof <a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a>)) {
 <a class="jxr_linenumber" name="L853" href="#L853">853</a>                 logger.debug(<span class="jxr_string">"Directory is null: cannot register anything. Illegal configuration."</span>);
 <a class="jxr_linenumber" name="L854" href="#L854">854</a>             }
 <a class="jxr_linenumber" name="L855" href="#L855">855</a>             <strong class="jxr_keyword">return</strong>;
@@ -880,7 +880,7 @@
 <a class="jxr_linenumber" name="L872" href="#L872">872</a>         <em class="jxr_comment">// Cannot register if we have no directory</em>
 <a class="jxr_linenumber" name="L873" href="#L873">873</a>         <em class="jxr_comment">// If we are the directory, its no problem though</em>
 <a class="jxr_linenumber" name="L874" href="#L874">874</a>         <strong class="jxr_keyword">if</strong> (dirPlace == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L875" href="#L875">875</a>             <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof emissary.directory.IDirectoryPlace)) {
+<a class="jxr_linenumber" name="L875" href="#L875">875</a>             <strong class="jxr_keyword">if</strong> (!(<strong class="jxr_keyword">this</strong> instanceof <a name="IDirectoryPlace" href="../../emissary/directory/IDirectoryPlace.html#IDirectoryPlace">IDirectoryPlace</a>)) {
 <a class="jxr_linenumber" name="L876" href="#L876">876</a>                 logger.debug(<span class="jxr_string">"Directory is null: cannot register anything. Illegal configuration."</span>);
 <a class="jxr_linenumber" name="L877" href="#L877">877</a>             }
 <a class="jxr_linenumber" name="L878" href="#L878">878</a>             <strong class="jxr_keyword">return</strong>;

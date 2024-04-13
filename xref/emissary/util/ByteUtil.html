@@ -125,9 +125,9 @@
 <a class="jxr_linenumber" name="L117" href="#L117">117</a> <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="L118" href="#L118">118</a> <em class="jxr_javadoccomment">     * @param b a byte array</em>
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> <em class="jxr_javadoccomment">     * @param pos a position in the byte array</em>
-<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * @return true if byte at pos in array b is a control or whitespace byte</em>
+<a class="jxr_linenumber" name="L120" href="#L120">120</a> <em class="jxr_javadoccomment">     * @return true if byte at pos in array b is a control or blank space byte</em>
 <a class="jxr_linenumber" name="L121" href="#L121">121</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L122" href="#L122">122</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isControlOrWhiteSpace(byte[] b, <strong class="jxr_keyword">int</strong> pos) {
+<a class="jxr_linenumber" name="L122" href="#L122">122</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isControlOrBlankSpace(byte[] b, <strong class="jxr_keyword">int</strong> pos) {
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>         <strong class="jxr_keyword">if</strong> (b[pos] == Ascii_DEL || b[pos] &lt;= Ascii_SP) {
 <a class="jxr_linenumber" name="L124" href="#L124">124</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>         }
@@ -293,7 +293,7 @@
 <a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">boolean</strong> badCharacters = false;
 <a class="jxr_linenumber" name="L286" href="#L286">286</a> 
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>         <strong class="jxr_keyword">for</strong> (byte aByte : bytes) {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>             <strong class="jxr_keyword">if</strong> (aByte &lt; 9 || aByte &gt; 13 &amp;&amp; aByte &lt; 32) {
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>             <strong class="jxr_keyword">if</strong> (aByte &lt; 9 || (aByte &gt; 13 &amp;&amp; aByte &lt; 32)) {
 <a class="jxr_linenumber" name="L289" href="#L289">289</a>                 badCharacters = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>                 <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="L291" href="#L291">291</a>             }
@@ -308,29 +308,30 @@
 <a class="jxr_linenumber" name="L300" href="#L300">300</a> <em class="jxr_javadoccomment">     * @param bytes to be hashed</em>
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> <em class="jxr_javadoccomment">     * @return the hex string of a sha256 hash of the bytes.</em>
 <a class="jxr_linenumber" name="L302" href="#L302">302</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String sha256Bytes(<strong class="jxr_keyword">final</strong> byte[] bytes) {
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>             <strong class="jxr_keyword">final</strong> MessageDigest md = MessageDigest.getInstance(<span class="jxr_string">"SHA-256"</span>);
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>             <strong class="jxr_keyword">final</strong> byte[] hash = md.digest(bytes);
-<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>             <strong class="jxr_keyword">final</strong> StringBuilder hexString = <strong class="jxr_keyword">new</strong> StringBuilder(2 * hash.length);
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             <strong class="jxr_keyword">for</strong> (byte b : hash) {
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>                 <strong class="jxr_keyword">final</strong> String hex = Integer.toHexString(0xff &amp; b);
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                 <strong class="jxr_keyword">if</strong> (hex.length() == 1) {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     hexString.append('0');
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>                 }
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>                 hexString.append(hex);
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>             }
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>             <strong class="jxr_keyword">return</strong> hexString.toString();
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>         } <strong class="jxr_keyword">catch</strong> (NoSuchAlgorithmException e) {
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>         }
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>     }
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> 
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <strong class="jxr_keyword">private</strong> <a name="ByteUtil" href="../../emissary/util/ByteUtil.html#ByteUtil">ByteUtil</a>() {}
-<a class="jxr_linenumber" name="L325" href="#L325">325</a> }
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>     @Nullable
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String sha256Bytes(<strong class="jxr_keyword">final</strong> byte[] bytes) {
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>             <strong class="jxr_keyword">final</strong> MessageDigest md = MessageDigest.getInstance(<span class="jxr_string">"SHA-256"</span>);
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>             <strong class="jxr_keyword">final</strong> byte[] hash = md.digest(bytes);
+<a class="jxr_linenumber" name="L308" href="#L308">308</a> 
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>             <strong class="jxr_keyword">final</strong> StringBuilder hexString = <strong class="jxr_keyword">new</strong> StringBuilder(2 * hash.length);
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             <strong class="jxr_keyword">for</strong> (byte b : hash) {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>                 <strong class="jxr_keyword">final</strong> String hex = Integer.toHexString(0xff &amp; b);
+<a class="jxr_linenumber" name="L312" href="#L312">312</a> 
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>                 <strong class="jxr_keyword">if</strong> (hex.length() == 1) {
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>                     hexString.append('0');
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>                 }
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>                 hexString.append(hex);
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>             }
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>             <strong class="jxr_keyword">return</strong> hexString.toString();
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>         } <strong class="jxr_keyword">catch</strong> (NoSuchAlgorithmException e) {
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>         }
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>     }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>     <strong class="jxr_keyword">private</strong> <a name="ByteUtil" href="../../emissary/util/ByteUtil.html#ByteUtil">ByteUtil</a>() {}
+<a class="jxr_linenumber" name="L326" href="#L326">326</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
