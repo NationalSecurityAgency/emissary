@@ -600,6 +600,8 @@ public class DropOffUtil {
     }
 
     /**
+     * Format string to date path (yyyy-mm-dd/hh/(mm%10))
+     *
      * @param dtg expected format yyyymmddhhmmss
      * @return yyyy-mm-dd/hh/(mm%10)
      */

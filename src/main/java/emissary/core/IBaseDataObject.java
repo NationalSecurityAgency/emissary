@@ -870,6 +870,8 @@ public interface IBaseDataObject {
     int getExtractedRecordCount();
 
     /**
+     * Test if tree is outputable
+     *
      * @return true if this tree is not able to be output, false otherwise
      */
     boolean isOutputable();
@@ -882,6 +884,8 @@ public interface IBaseDataObject {
     void setOutputable(boolean outputable);
 
     /**
+     * Get ID
+     *
      * @return the unique identifier of the IBaseDataObject
      */
     String getId();
@@ -894,6 +898,8 @@ public interface IBaseDataObject {
     void setId(String id);
 
     /**
+     * Get the Work Bundle ID
+     *
      * @return the unique identifier of the {@link emissary.pickup.WorkBundle}
      */
     String getWorkBundleId();
@@ -906,6 +912,8 @@ public interface IBaseDataObject {
     void setWorkBundleId(String workBundleId);
 
     /**
+     * Get the Transaction ID
+     *
      * @return the unique identifier of the transaction
      */
     String getTransactionId();

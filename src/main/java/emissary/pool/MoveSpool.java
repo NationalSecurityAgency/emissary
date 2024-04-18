@@ -453,6 +453,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
+     * Get the lookupCount
+     *
      * @return the lookupCount
      */
     public static long getLookupCount() {
@@ -460,6 +462,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
+     * Get the dequeCount
+     *
      * @return the dequeCount
      */
     public long getDequeCount() {
@@ -467,6 +471,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
+     * Get the enqueCount
+     *
      * @return the enqueCount
      */
     public long getEnqueCount() {
@@ -474,6 +480,8 @@ public class MoveSpool implements Runnable {
     }
 
     /**
+     * Get the highWaterMark
+     *
      * @return the highWaterMark
      */
     public int getHighWaterMark() {

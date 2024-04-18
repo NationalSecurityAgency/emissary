@@ -16,11 +16,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import javax.annotation.Nullable;
 
-/**
- *
- * @author ce
- * @version 1.0
- */
 public class ReadOutputBuffer extends ProcessReader {
 
     private static final Logger logger = LoggerFactory.getLogger(ReadOutputBuffer.class);
