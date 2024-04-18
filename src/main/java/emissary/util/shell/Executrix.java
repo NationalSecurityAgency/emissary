@@ -499,7 +499,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @return process exit status
      */
     public int execute(final String cmd, final StringBuffer out) {
@@ -510,7 +510,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @return process exit status
      */
     public int execute(final String cmd, final StringBuilder out) {
@@ -521,7 +521,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @param err destination for the standard error
      * @return process exit status
      */
@@ -533,7 +533,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @param err destination for the standard error
      * @return process exit status
      */
@@ -545,7 +545,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @param err destination for the standard error
      * @param charset character set of the output stream
      * @return process exit status
@@ -558,7 +558,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the string command to execute
-     * @param out destination for the standard output
+     * @param out destination for the standard output as a string
      * @param err destination for the standard error
      * @param charset character set of the output stream
      * @return process exit status
@@ -583,7 +583,7 @@ public class Executrix {
      *
      * @param cmd the string command to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @return process exit status
      */
     public int execute(final String cmd, final byte[] data, final StringBuilder out) {
@@ -595,7 +595,7 @@ public class Executrix {
      *
      * @param cmd the string command to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -608,7 +608,7 @@ public class Executrix {
      *
      * @param cmd the string command to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @param charset character set of the output
      * @return process exit status
@@ -631,7 +631,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @return process exit status
      */
     public int execute(final String[] cmd, final StringBuffer out) {
@@ -642,7 +642,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @return process exit status
      */
     public int execute(final String[] cmd, final StringBuilder out) {
@@ -653,7 +653,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param charset character set of the output
      * @return process exit status
      */
@@ -665,7 +665,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -677,7 +677,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -689,7 +689,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @param charset character set of the output
      * @return process exit status
@@ -713,7 +713,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -725,7 +725,7 @@ public class Executrix {
      * Executes a command in a new process through Runtime Exec
      * 
      * @param cmd the command and arguments to execute
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @param env environment variables for the new process supplied in name=value format.
      * @return process exit status
@@ -751,7 +751,7 @@ public class Executrix {
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @return process exit status
      */
     public int execute(final String[] cmd, final byte[] data, @Nullable final StringBuilder out) {
@@ -763,7 +763,7 @@ public class Executrix {
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -776,7 +776,7 @@ public class Executrix {
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @param charset character set of the output
      * @return process exit status
@@ -790,7 +790,7 @@ public class Executrix {
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as a string
      * @param err the destination to capture the standard error
      * @param charset character set of the output
      * @param env environment variables for the new process supplied in name=value format.
@@ -802,11 +802,11 @@ public class Executrix {
     }
 
     /**
-     * Executes a command in a new process through Runtime Exec
+     * Executes a command in a new process through Runtime Exec and captures binary output
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as bytes
      * @param err the destination to capture the standard error
      * @return process exit status
      */
@@ -816,11 +816,11 @@ public class Executrix {
     }
 
     /**
-     * Executes a command in a new process through Runtime Exec
+     * Executes a command in a new process through Runtime Exec and captures binary output
      *
      * @param cmd the command and arguments to execute
      * @param data the input data to the command
-     * @param out the destination to capture the standard output
+     * @param out the destination to capture the standard output as bytes
      * @param err the destination to capture the standard error
      * @param charset character set of the output
      * @param env environment variables for the new process supplied in name=value format.
