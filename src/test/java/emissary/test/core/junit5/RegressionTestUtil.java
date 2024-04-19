@@ -118,7 +118,7 @@ public final class RegressionTestUtil {
     }
 
     /**
-     * See {@link ExtractionTest#checkAnswers(Element, IBaseDataObject, List, String)}
+     * See {@link ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)}
      */
     public static void checkAnswers(final Document answers, final IBaseDataObject payload, final List<SimplifiedLogEvent> actualSimplifiedLogEvents,
             final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
