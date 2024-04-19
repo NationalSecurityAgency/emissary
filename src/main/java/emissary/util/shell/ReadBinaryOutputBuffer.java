@@ -28,4 +28,11 @@ public class ReadBinaryOutputBuffer extends ProcessReader {
     @Override
     public void finish() {}
 
+    public byte[] getBytes() {
+        return baos.toByteArray();
+    }
+
+    public ByteArrayOutputStream getByteStream() {
+        return baos;
+    }
 }
