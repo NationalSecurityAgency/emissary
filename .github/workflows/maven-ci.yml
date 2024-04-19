@@ -1,5 +1,5 @@
 ---
-name: Java CI with Maven
+name: "Maven: CI Builds"
 
 on: # yamllint disable-line rule:truthy
   push:
