@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -24,6 +25,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -423,6 +425,29 @@ class ExecutrixTest extends UnitTest {
         assertEquals(expected, sout.toString().trim());
         assertEquals("", serr.toString());
         sout.setLength(0);
+    }
+
+    @Test
+    void testExecuteGetBinary() {
+
+        String expected = "ccc";
+        final String[] cmd = {"/bin/echo", "-n", expected};
+
+        int pstat;
+        final ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
+        final StringBuilder serr = new StringBuilder();
+
+        pstat = e.execute(cmd, null, baosOut, serr);
+        assertTrue(pstat >= 0, "Process return value");
+        assertArrayEquals(expected.getBytes(), baosOut.toByteArray());
+        assertEquals("", serr.toString());
+        baosOut.reset();
+
+        pstat = e.execute(cmd, null, baosOut, serr, "UTF-8", null);
+        assertTrue(pstat >= 0, "Process return value");
+        assertEquals(expected, baosOut.toString());
+        assertEquals("", serr.toString());
+        baosOut.reset();
     }
 
     private static void readAndNuke(final String name) throws IOException {
