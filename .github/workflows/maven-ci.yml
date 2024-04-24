@@ -63,10 +63,7 @@ jobs:
         with:
           context: .
           push: false
-          file: contrib/docker/Dockerfile.ubi8
-          build-args: |
-            IMG_NAME=centos
-            IMG_TAG=7
+          file: contrib/docker/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
