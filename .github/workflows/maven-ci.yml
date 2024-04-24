@@ -9,7 +9,7 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: Standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
+    name: UBI8 standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -66,6 +66,24 @@ jobs:
           file: contrib/docker/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  macos-build:
+    name: MacOS standard build on Java 11 with compiler target 11
+    runs-on: macos-14
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          cache: 'maven'
+          distribution: 'corretto'
+          overwrite-settings: false
+
+      - name: Build with Maven
+        run: mvn -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
 
   site-build:
     name: Standard maven site build
