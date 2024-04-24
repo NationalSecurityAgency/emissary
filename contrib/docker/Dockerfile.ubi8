@@ -17,7 +17,7 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
      && dnf update -y \
      && dnf install -y langpacks-en glibc-all-langpacks \
      && groupadd -g ${gid} ${group} \
-     && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
+     && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
      && dnf clean all -y \
      && rm -rf /var/cache/yum
 
