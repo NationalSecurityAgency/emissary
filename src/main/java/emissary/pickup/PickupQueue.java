@@ -96,7 +96,7 @@ public class PickupQueue {
         synchronized (queue) {
             size = queue.size();
             if (size > 0) {
-                nextFile = queue.remove(queue.size() - 1);
+                nextFile = queue.remove(size - 1);
             }
         }
         return nextFile;
