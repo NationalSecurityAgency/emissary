@@ -252,15 +252,16 @@ public class ByteTokenizer implements Iterator<String> {
 
     /**
      * Tests if there are more tokens available from this tokenizer's string. If this method returns <code>true</code>, then
-     * a subsequent call to <code>nextToken</code> with no argument will successfully return a token.
+     * a subsequent call to <code>next</code> with no argument will successfully return a token.
      *
      * @return <code>true</code> if and only if there is at least one token in the string after the current position;
      *         <code>false</code> otherwise.
      */
-    public boolean hasMoreTokens() {
+    @Override
+    public boolean hasNext() {
         /*
-         * Temporary store this position and use it in the following nextToken() method only if the delimiters haven't been
-         * changed in that nextToken() invocation.
+         * Temporary store this position and use it in the following next() method only if the delimiters haven't been changed
+         * in that next() invocation.
          */
         newPosition = skipDelimiters(currentPosition);
         return (newPosition < maxPosition);
@@ -272,7 +273,8 @@ public class ByteTokenizer implements Iterator<String> {
      * @return the next token from this string tokenizer.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
-    public String nextToken() {
+    @Override
+    public String next() {
         /*
          * If next position already computed in hasMoreElements() and delimiters have changed between the computation and this
          * invocation, then use the computed value.
@@ -313,50 +315,22 @@ public class ByteTokenizer implements Iterator<String> {
      * @return the next token, after switching to the new delimiter set.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
-    public String nextToken(String delim) {
+    public String next(String delim) {
         delimiters = delim;
 
         /* delimiter string specified, so set the appropriate flag. */
         delimsChanged = true;
 
         setMaxDelimChar();
-        return nextToken();
+        return next();
     }
 
     /**
-     * Returns the same value as the <code>hasMoreTokens</code> method. It exists so that this class can implement the
-     * <code>Iterator</code> interface.
-     *
-     * @return <code>true</code> if there are more tokens; <code>false</code> otherwise.
-     * @see java.util.Iterator
-     * @see ByteTokenizer#hasMoreTokens()
-     */
-    @Override
-    public boolean hasNext() {
-        return hasMoreTokens();
-    }
-
-    /**
-     * Returns the same value as the <code>nextToken</code> method, except that its declared return value is
-     * <code>Object</code> rather than <code>String</code>. It exists so that this class can implement the
-     * <code>Iterator</code> interface.
-     *
-     * @return the next token in the string.
-     * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
-     * @see java.util.Iterator
-     * @see ByteTokenizer#nextToken()
-     */
-    @Override
-    public String next() {
-        return nextToken();
-    }
-
-    /**
-     * Calculates the number of times that this tokenizer's <code>nextToken</code> method can be called before it generates
-     * an exception. The current position is not advanced.
+     * Calculates the number of times that this tokenizer's <code>next</code> method can be called before it generates an
+     * exception. The current position is not advanced.
      *
      * @return the number of tokens remaining in the string using the current delimiter set.
-     * @see ByteTokenizer#nextToken()
+     * @see ByteTokenizer#next()
      */
     public int countTokens() {
         int count = 0;
