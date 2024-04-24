@@ -1,6 +1,6 @@
 ARG IMG_NAME=redhat/ubi8
 ARG IMG_TAG=8.8-1067
-FROM ${IMG_NAME}:${IMG_TAG} as base
+FROM ${IMG_NAME}:${IMG_TAG} AS base
 
 ARG java_version=11
 ARG user=emissary
@@ -15,7 +15,7 @@ ENV PROJECT_BASE=/opt/emissary
 RUN rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
-     && dnf install -y langpacks-en glibc-all-langpacks \
+     && yum install -y langpacks-en glibc-all-langpacks \
      && groupadd -g ${gid} ${group} \
      && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
      && yum clean all -y \
@@ -23,9 +23,10 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 
 
 
-FROM base as build
+FROM base AS build
 
 ARG maven_version=3.9.6
+ARG java_compiler=11
 ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -XX:MaxPermSize=128M -Djava.awt.headless=true
 ENV MAVEN_HOME /opt/maven
 
@@ -41,7 +42,9 @@ RUN chown -R ${user}:${group} /opt/emissary \
 
 USER ${user}
 WORKDIR /opt/emissary
-RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 mvn -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
+RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
+    mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist \
+    && ./contrib/ci/detect-changes.sh
 
 
 

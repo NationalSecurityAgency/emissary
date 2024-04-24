@@ -24,24 +24,29 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure Java & Maven
-        uses: actions/setup-java@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v5
         with:
-          java-version: '${{ matrix.java-version }}'
-          cache: "maven"
-          distribution: "corretto"
+          context: .
+          push: false
+          file: contrib/docker/Dockerfile.ubi8
+          buildArgs: |
+            java_version: ${{ matrix.java-version }}
+            java_compiler: ${{ matrix.java-compiler }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${{ matrix.java-compiler }} verify
-
-      - name: Verify Changed Files
-        run: contrib/ci/detect-changes.sh
-
-  ubi8-build:
-    name: UBI8 standard build with Docker on Java 11 with compiler target 11
+  centos7-build:
+    name: Centos7 standard build with Docker
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -59,6 +64,9 @@ jobs:
           context: .
           push: false
           file: contrib/docker/Dockerfile.ubi8
+          buildArgs: |
+            IMG_NAME: centos
+            IMG_TAG: 7
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
