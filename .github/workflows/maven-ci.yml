@@ -9,7 +9,7 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: Standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
+    name: RHEL8 ${{ matrix.build-type }} build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -17,31 +17,41 @@ jobs:
         java-compiler: ['11', '17']
         java-version: ['17']
         experimental: [false]
+        build-type: ["experimental"]
+        verify-build: [false]
         include:
           - java-compiler: '11'
             java-version: '11'
             experimental: false
+            build-type: "standard"
+            verify-build: true
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure Java & Maven
-        uses: actions/setup-java@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v5
         with:
-          java-version: '${{ matrix.java-version }}'
-          cache: "maven"
-          distribution: "corretto"
+          context: .
+          push: false
+          file: contrib/docker/Dockerfile.ci
+          build-args: |
+            java_version=${{ matrix.java-version }}
+            java_compiler=${{ matrix.java-compiler }}
+            verify_build=${{ matrix.verify-build }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${{ matrix.java-compiler }} verify
-
-      - name: Verify Changed Files
-        run: contrib/ci/detect-changes.sh
-
-  ubi8-build:
-    name: UBI8 standard build with Docker on Java 11 with compiler target 11
+  centos7-build:
+    name: Centos7 legacy build on Java 11 with compiler target 11
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -58,12 +68,33 @@ jobs:
         with:
           context: .
           push: false
-          file: contrib/docker/Dockerfile.ubi8
+          file: contrib/docker/Dockerfile.ci
+          build-args: |
+            target_os=centos7
+            verify_build=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  macos-build:
+    name: MacOS non-standard build on Java 11 with compiler target 11
+    runs-on: macos-14
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          cache: 'maven'
+          distribution: 'corretto'
+          overwrite-settings: false
+
+      - name: Build with Maven
+        run: mvn -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
+
   site-build:
-    name: Standard maven site build
+    name: Maven site build
     runs-on: ubuntu-latest
 
     steps:
@@ -81,7 +112,7 @@ jobs:
         run: mvn -B -e -ntp "-Dstyle.color=always" site
 
   error-prone-build:
-    name: Maven build using errorProne profile
+    name: Maven errorProne build
     runs-on: ubuntu-latest
 
     steps:
