@@ -1,5 +1,7 @@
 package emissary.core.channels;
 
+import emissary.util.io.LoggingInputStream;
+
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 

@@ -1,4 +1,4 @@
-package emissary.core.channels;
+package emissary.util.io;
 
 import org.slf4j.Logger;
 
