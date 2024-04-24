@@ -40,8 +40,8 @@ jobs:
           push: false
           file: contrib/docker/Dockerfile.ubi8
           build-args: |
-            java_version: ${{ matrix.java-version }}
-            java_compiler: ${{ matrix.java-compiler }}
+            java_version=${{ matrix.java-version }}
+            java_compiler=${{ matrix.java-compiler }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -65,8 +65,8 @@ jobs:
           push: false
           file: contrib/docker/Dockerfile.ubi8
           build-args: |
-            IMG_NAME: centos
-            IMG_TAG: 7
+            IMG_NAME=centos
+            IMG_TAG=7
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
