@@ -1,6 +1,5 @@
 .github/
 .idea/
-contrib/ci/
 contrib/docker/
 contrib/elasticsearch/
 contrib/helm/

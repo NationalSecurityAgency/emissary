@@ -8,15 +8,15 @@ ARG group=emissary
 ARG uid=1000
 ARG gid=1000
 
-ENV JAVA_HOME /usr/lib/jvm/java-${java_version}-amazon-corretto
 ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
 RUN rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
+     && yum -y update \
      && groupadd -g ${gid} ${group} \
-     && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
+     && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
      && yum clean all -y \
      && rm -rf /var/cache/yum
 
@@ -25,14 +25,13 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 FROM base AS build
 
 ARG maven_version=3.9.6
-ARG java_compiler=11
-ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -XX:MaxPermSize=128M -Djava.awt.headless=true
+ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true
 ENV MAVEN_HOME /opt/maven
 
 RUN curl -L -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz \
      && tar xvf /tmp/maven.tar.gz -C /opt \
      && ln -s /opt/apache-maven-${maven_version} ${MAVEN_HOME} \
-     && ln -s /opt/maven/bin/mvn /usr/bin/mvn
+     && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
 
 COPY . /opt/emissary
 RUN chown -R ${user}:${group} /opt/emissary \
@@ -42,10 +41,8 @@ RUN chown -R ${user}:${group} /opt/emissary \
 USER ${user}
 WORKDIR /opt/emissary
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
-
-#RUN ./contrib/ci/detect-changes.sh
-
+    mvn -V -B -e -ntp "-Dstyle.color=always" clean verify -Pdist \
+    && ./contrib/ci/detect-changes.sh
 
 
 FROM base
