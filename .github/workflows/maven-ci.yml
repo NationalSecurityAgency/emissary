@@ -46,7 +46,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   centos7-build:
-    name: Centos7 standard build with Docker
+    name: Centos7 standard build on Java 11 with compiler target 11
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
