@@ -42,8 +42,7 @@ RUN chown -R ${user}:${group} /opt/emissary \
 USER ${user}
 WORKDIR /opt/emissary
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -V -B -e -ntp "-Dstyle.color=always" clean verify -Pdist \
-    && ./contrib/ci/detect-changes.sh
+    mvn -V -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
 
 
 FROM base
