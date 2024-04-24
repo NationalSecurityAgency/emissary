@@ -1186,7 +1186,7 @@ class BaseDataObjectTest extends UnitTest {
 
         // data() check with byte[]
         byte[] existingData = this.b.data();
-        assertEquals("This is a test", new String(existingData));
+        assertEquals(testData, new String(existingData));
 
         // getSeekableByteChannelFactory() check with byte[]
         ByteBuffer buff = ByteBuffer.allocate(testLength);
@@ -1198,7 +1198,7 @@ class BaseDataObjectTest extends UnitTest {
 
         // data() check with sbcf
         existingData = this.b.data();
-        assertEquals("This is a test", new String(existingData));
+        assertEquals(testData, new String(existingData));
 
         // getSeekableByteChannelFactory() check with sbcf
         buff = ByteBuffer.allocate(testLength);

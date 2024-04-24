@@ -43,11 +43,10 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testResetByteMatcher() {
-        String localDataOne = "The quick brown fox jumped over the lazy dog";
         String localDataTwo = "But the faster dog ate the slower fox.";
         String firstToken = "fox";
         String secondToken = "dog";
-        ByteMatcher byteMatcher = new ByteMatcher(localDataOne);
+        ByteMatcher byteMatcher = new ByteMatcher(DATA);
 
         assertEquals(16, byteMatcher.indexOf(firstToken));
         assertEquals(41, byteMatcher.indexOf(secondToken));
@@ -61,7 +60,7 @@ class ByteMatcherTest extends UnitTest {
 
     @Test
     void testByteMatcherWithCharset() {
-        String localDataOne = "The quick brown fox jumped over the lazy dog";
+        String localDataOne = DATA;
         String localDataTwo = "But the faster dog ate the slower fox.";
         String firstToken = "fox";
         String secondToken = "dog";

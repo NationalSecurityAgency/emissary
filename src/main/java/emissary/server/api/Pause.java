@@ -49,8 +49,8 @@ public class Pause {
         try {
             return Response.ok(pause ? pause() : unpause()).build();
         } catch (Exception e) {
-            LOG.warn("Exception trying to initiate {}", (pause ? "pause" : "unpause"), e);
-            return Response.serverError().entity("error trying to " + (pause ? "pause" : "unpause")).build();
+            LOG.warn("Exception trying to initiate {}", (pause ? PAUSE : UNPAUSE), e);
+            return Response.serverError().entity("error trying to " + (pause ? PAUSE : UNPAUSE)).build();
         }
     }
 }
