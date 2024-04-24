@@ -43,8 +43,9 @@ RUN chown -R ${user}:${group} /opt/emissary \
 USER ${user}
 WORKDIR /opt/emissary
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist \
-    && ./contrib/ci/detect-changes.sh
+    mvn -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist
+
+#RUN ./contrib/ci/detect-changes.sh
 
 
 
