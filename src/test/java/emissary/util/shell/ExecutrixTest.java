@@ -369,13 +369,13 @@ class ExecutrixTest extends UnitTest {
 
         pstat = e.execute(cmd, data, sout, serr);
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertTrue(sout.toString().startsWith(expected));
         assertEquals(expected, sout.toString().trim());
         sout.setLength(0);
 
         pstat = e.execute(cmd, data, sout, serr, "UTF-8");
         assertTrue(pstat >= 0, "Process return value");
-        assertTrue(sout.toString().startsWith("bbb"));
+        assertTrue(sout.toString().startsWith(expected));
         assertEquals(expected, sout.toString().trim());
         sout.setLength(0);
 

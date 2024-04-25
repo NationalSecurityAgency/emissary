@@ -116,7 +116,7 @@ public class MagicMath {
         if (stringValue == null || stringValue.length() == 0) {
             return null;
         }
-        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
+        if (stringValue.length() > 2 && HEX_PREFIX.equals(stringValue.substring(0, 2))) {
             return hexStringToByteArray(stringValue);
         } else {
             return integerToByteArray(arraySize, stringToLong(stringValue));
@@ -212,7 +212,7 @@ public class MagicMath {
     }
 
     public static long stringToLong(String stringValue) {
-        if (stringValue.length() > 2 && "0x".equals(stringValue.substring(0, 2))) {
+        if (stringValue.length() > 2 && HEX_PREFIX.equals(stringValue.substring(0, 2))) {
             return Long.parseLong(stringValue.substring(2), 16);
         } else if (stringValue.length() > 1 && stringValue.charAt(0) == '0') {
             return Long.parseLong(stringValue.substring(1), 8);
