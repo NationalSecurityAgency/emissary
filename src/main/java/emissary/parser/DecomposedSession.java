@@ -129,6 +129,8 @@ public class DecomposedSession {
     }
 
     /**
+     * Get the classification
+     *
      * @return the classification entry or null if none
      */
     public String getClassification() {
@@ -162,6 +164,8 @@ public class DecomposedSession {
     }
 
     /**
+     * Test for header presence
+     *
      * @return true if there is a header entry
      */
     public boolean hasHeader() {

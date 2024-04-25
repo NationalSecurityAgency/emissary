@@ -14,11 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/**
- *
- * @author ce
- * @version 1.0
- */
 public class ReadOutputLogger extends ProcessReader {
 
     private static Logger logger = LoggerFactory.getLogger(ReadOutputLogger.class);

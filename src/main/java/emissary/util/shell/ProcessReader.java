@@ -10,11 +10,6 @@ import org.slf4j.MDC;
 
 import java.util.Map;
 
-/**
- *
- * @author ce
- * @version 1.0
- */
 public abstract class ProcessReader extends Thread {
 
     private Map<String, String> contextMap;

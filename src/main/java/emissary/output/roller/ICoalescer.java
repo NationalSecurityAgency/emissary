@@ -18,7 +18,8 @@ public interface ICoalescer {
     void coalesce() throws IOException;
 
     /**
-     * @see ICoalescer#coalesce()
+     * Combine files into a single output file
+     *
      * @param journals the paths to the journal files
      * @throws IOException If there is some I/O problem.
      */

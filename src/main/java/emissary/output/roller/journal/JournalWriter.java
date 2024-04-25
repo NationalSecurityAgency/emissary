@@ -62,7 +62,8 @@ public class JournalWriter implements Closeable {
     }
 
     /**
-     * 
+     * Write to journal
+     *
      * @return position difference between last entry and current
      */
     public long write(JournalEntry e) throws IOException {

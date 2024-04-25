@@ -27,6 +27,8 @@ public class ByteUtil {
     public static final String HEX = "0123456789abcdefABCDEF";
 
     /**
+     * Check if byte is hexadecimal
+     *
      * @param b a byte
      * @return true if b is a hexadecimal
      */
@@ -35,6 +37,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if all bytes in array are hexadecimal
      *
      * @param array a byte array
      * @return true if all bytes in array are hexadecimal
@@ -49,6 +52,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if character is hexadecimal
      *
      * @param c a char
      * @return true if c is a hexadecimal
@@ -58,6 +62,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if all bytes are alphabetical
      *
      * @param array a byte array
      * @return true if all bytes in array are alpha
@@ -72,6 +77,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if byte is alphabetical
      *
      * @param b a byte
      * @return true if b is alphabetical
@@ -81,6 +87,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if byte is alphanumeric
      *
      * @param b a byte
      * @return true if b is alphanumeric
@@ -90,9 +97,10 @@ public class ByteUtil {
     }
 
     /**
+     * Check if byte is a digit
      *
      * @param b a byte
-     * @return true if b is a digt
+     * @return true if b is a digit
      */
     public static boolean isDigit(byte b) {
         // check ascii value of b for digit-ness
@@ -100,6 +108,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if all bytes are digits
      *
      * @param array a byte array
      * @return true if all bytes in array are digits
@@ -114,6 +123,7 @@ public class ByteUtil {
     }
 
     /**
+     * Check if byte at position in array is a control or blank space byte
      *
      * @param b a byte array
      * @param pos a position in the byte array
