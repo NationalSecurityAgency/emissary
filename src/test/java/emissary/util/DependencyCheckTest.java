@@ -19,7 +19,7 @@ class DependencyCheckTest extends UnitTest {
 
     @Test
     void testExecutableExist() {
-        boolean exists = DependencyCheck.executableExists("cat");
+        boolean exists = DependencyCheck.executableExists("bash");
         assertTrue(exists, "Executable should exist");
     }
 
