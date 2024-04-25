@@ -14,7 +14,6 @@ ENV PROJECT_BASE=/opt/emissary
 RUN rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
-     && yum update -y \
      && yum install -y which \
      && groupadd -g ${gid} ${group} \
      && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
