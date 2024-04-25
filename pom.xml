@@ -1575,6 +1575,41 @@
       </build>
     </profile>
     <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>docker-build</id>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <phase>install</phase>
+                <configuration>
+                  <executable>docker</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <arguments>
+                    <argument>build</argument>
+                    <argument>-f</argument>
+                    <argument>contrib/docker/Dockerfile</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:${project.version}</argument>
+                    <argument>-t</argument>
+                    <argument>${project.artifactId}:latest</argument>
+                    <argument>.</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
       <id>jdk-release-flag</id>
       <activation>
         <jdk>[11,)</jdk>
