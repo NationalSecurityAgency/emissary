@@ -601,8 +601,18 @@ a non-root user.
 
 ### Build Emissary Docker Image
 
-We can use Docker directly to build Emissary:
+Maven can be used to create the docker image. There is a profile that was created to run the docker image build that, by default,
+has been turned off. We'll need to add the docker profile, along with the dist profile, to trigger an assembly. From the
+project root, run the following maven command:
+
 ```
+mvn clean install -Pdist,docker
+```
+
+Alternatively, we can use Docker directly. First run a full maven build and then run the ```docker build``` command:
+
+```
+mvn clean install -Pdist
 docker build -f contrib/docker/Dockerfile . -t emissary
 ```
 

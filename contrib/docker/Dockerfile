@@ -1,71 +1,28 @@
-ARG IMG_NAME=centos
-ARG IMG_TAG=7
-FROM ${IMG_NAME}:${IMG_TAG} AS base
+FROM centos:7
 
-ARG java_version=11
-ARG user=emissary
-ARG group=emissary
-ARG uid=1000
-ARG gid=1000
+RUN yum update -y \
+    && rpm --import https://yum.corretto.aws/corretto.key \
+    && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
+    && yum install -y java-11-amazon-corretto-devel \
+    && yum clean all -y \
+    && rm -rf /var/cache/yum
 
-ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
+ADD target/emissary-*-dist.tar.gz /opt
+
+RUN ls -al /opt && \
+    version=`ls /opt | grep emissary- | awk '{ print $1 }'` && \
+    echo "Linking /opt/${version} to /opt/emissary" && \
+    ln -s /opt/${version} /opt/emissary && \
+    mkdir -p /opt/emissary/localoutput && \
+    chmod -R a+rw /opt/emissary
+
 ENV PROJECT_BASE=/opt/emissary
 
-RUN rpm --import https://yum.corretto.aws/corretto.key \
-     && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
-     && yum install -y java-${java_version}-amazon-corretto-devel \
-     && yum install -y which \
-     && groupadd -g ${gid} ${group} \
-     && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
-     && yum clean all -y \
-     && rm -rf /var/cache/yum
-
-
-
-FROM base AS build
-
-ARG maven_version=3.9.6
-ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true
-ENV MAVEN_HOME /opt/maven
-
-RUN curl -L -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${maven_version}/binaries/apache-maven-${maven_version}-bin.tar.gz \
-     && tar xvf /tmp/maven.tar.gz -C /opt \
-     && ln -s /opt/apache-maven-${maven_version} ${MAVEN_HOME} \
-     && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
-
-COPY . /opt/emissary
-RUN chown -R ${user}:${group} /opt/emissary \
-    && chmod -R 744 /opt/emissary  \
-    && (rm -f .mvn-classpath || true)
-
-USER ${user}
-WORKDIR /opt/emissary
-RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -V -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
-
-
-FROM base
-
-COPY --from=build /opt/emissary/target/emissary-*-dist.tar.gz /tmp
-
-RUN tar -xf /tmp/emissary-*-dist.tar.gz -C /opt/ \
-    && version=`ls /opt | grep emissary- | awk '{ print $1 }'`  \
-    && echo "Linking /opt/${version} to /opt/emissary"  \
-    && ln -s /opt/${version} /opt/emissary  \
-    && mkdir -p /opt/emissary/localoutput  \
-    && mkdir -p /opt/emissary/target/data  \
-    && chmod -R a+rw /opt/emissary \
-    && chown -R ${user}:${group} /opt/emissary* \
-    && rm -f /tmp/*
-
-USER ${user}
-
 WORKDIR /opt/emissary
 
-VOLUME /opt/emissary/target/data
 VOLUME /opt/emissary/localoutput
 
-EXPOSE 8001
+EXPOSE 8000 8001
 
 ENTRYPOINT ["./emissary"]
 
