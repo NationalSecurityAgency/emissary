@@ -226,9 +226,8 @@ public class FlexibleDateTimeParser {
         }
 
         // date strings over 100 characters are more than likely invalid
-        String cleanedDateString = StringUtils.substring(date, 0, 100);
+        String cleanedDateString = REMOVE.matcher(StringUtils.substring(date, 0, 100)).replaceAll(EMPTY);
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
-        cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
         return StringUtils.trimToNull(cleanedDateString);
     }
 
