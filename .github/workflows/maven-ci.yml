@@ -9,7 +9,7 @@ on: # yamllint disable-line rule:truthy
 
 jobs:
   build:
-    name: UBI8 standard build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
+    name: RHEL8 ${{ matrix.build-type }} build on Java ${{ matrix.java-version }} with compiler target ${{ matrix.java-compiler }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -17,10 +17,14 @@ jobs:
         java-compiler: ['11', '17']
         java-version: ['17']
         experimental: [false]
+        build-type: ["experimental"]
+        verify-build: [false]
         include:
           - java-compiler: '11'
             java-version: '11'
             experimental: false
+            build-type: "standard"
+            verify-build: true
     continue-on-error: ${{ matrix.experimental }}
 
     steps:
@@ -42,11 +46,12 @@ jobs:
           build-args: |
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
+            verify_build=${{ matrix.verify-build }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   centos7-build:
-    name: Centos7 standard build on Java 11 with compiler target 11
+    name: Centos7 legacy build on Java 11 with compiler target 11
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -64,11 +69,13 @@ jobs:
           context: .
           push: false
           file: contrib/docker/Dockerfile.centos7
+          build-args: |
+            verify_build=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   macos-build:
-    name: MacOS standard build on Java 11 with compiler target 11
+    name: MacOS nonstandard build on Java 11 with compiler target 11
     runs-on: macos-14
     steps:
       - name: Checkout repo
@@ -86,7 +93,7 @@ jobs:
         run: mvn -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
 
   site-build:
-    name: Standard maven site build
+    name: Maven site build
     runs-on: ubuntu-latest
 
     steps:
@@ -104,7 +111,7 @@ jobs:
         run: mvn -B -e -ntp "-Dstyle.color=always" site
 
   error-prone-build:
-    name: Maven build using errorProne profile
+    name: Maven errorProne build
     runs-on: ubuntu-latest
 
     steps:
@@ -120,26 +127,6 @@ jobs:
 
       - name: Build with Maven
         run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify -DskipTests
-
-  detect-changes-build:
-    name: Maven build to detect formatter changes
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Configure Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: '11'
-          cache: 'maven'
-          distribution: 'corretto'
-
-      - name: Build with Maven
-        run: mvn -B -e -ntp "-Dstyle.color=always" clean package -DskipTests
-
-      - name: Verify Changed Files
-        run: contrib/ci/detect-changes.sh
 
   slack-notify:
     if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}

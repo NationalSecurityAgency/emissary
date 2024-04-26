@@ -25,6 +25,7 @@ RUN rpm --import https://yum.corretto.aws/corretto.key \
 FROM base AS build
 
 ARG maven_version=3.9.6
+ARG java_compiler=11
 ENV MAVEN_OPTS -Xms512M -Xmx1024M -Xss1M -Djava.awt.headless=true
 ENV MAVEN_HOME /opt/maven
 
@@ -41,8 +42,10 @@ RUN chown -R ${user}:${group} /opt/emissary \
 USER ${user}
 WORKDIR /opt/emissary
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -V -B -e -ntp "-Dstyle.color=always" clean verify -Pdist
+    mvn -V -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist
 
+ARG verify_build=false
+RUN if ${verify_build} ; then ./contrib/ci/detect-changes.sh ; fi
 
 FROM base
 
