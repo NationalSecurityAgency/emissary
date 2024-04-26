@@ -75,7 +75,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   macos-build:
-    name: MacOS nonstandard build on Java 11 with compiler target 11
+    name: MacOS non-standard build on Java 11 with compiler target 11
     runs-on: macos-14
     steps:
       - name: Checkout repo
