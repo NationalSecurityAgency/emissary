@@ -372,6 +372,8 @@ public class EmissaryServer {
             LOG.warn("No metrics manager available");
         }
 
+        RollManager.shutdown();
+
         // Print the stats
         try {
             ResourceWatcher rw = ResourceWatcher.lookup();
@@ -382,8 +384,6 @@ public class EmissaryServer {
         }
 
         SPILoader.unload();
-
-        RollManager.shutdown();
 
         LOG.info("Done stopping all services");
 
