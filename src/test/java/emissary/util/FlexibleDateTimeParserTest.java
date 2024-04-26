@@ -420,6 +420,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
     @Test
     void testCleanDateString() {
         test("2016-01-04 18:20<br>", EXPECTED_NO_SECS, "HTML");
+        test("2016-01-04 18:20<br>br>", EXPECTED_NO_SECS, "HTML");
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
         test("2016-01-04 18:20=0D", EXPECTED_NO_SECS, "qp'ified ending");
