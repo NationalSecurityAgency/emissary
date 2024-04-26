@@ -366,6 +366,12 @@ public class EmissaryServer {
         }
         LOG.info("Done stopping all places");
 
+        try {
+            MetricsManager.lookup().shutdown();
+        } catch (Exception ex) {
+            LOG.warn("No metrics manager available");
+        }
+
         // Print the stats
         try {
             ResourceWatcher rw = ResourceWatcher.lookup();
@@ -373,12 +379,6 @@ public class EmissaryServer {
             rw.quit();
         } catch (Exception ex) {
             LOG.warn("No resource statistics available");
-        }
-
-        try {
-            MetricsManager.lookup().shutdown();
-        } catch (Exception ex) {
-            LOG.warn("No metrics manager available");
         }
 
         SPILoader.unload();
