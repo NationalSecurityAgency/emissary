@@ -51,7 +51,7 @@ public class FlexibleDateTimeParser {
     private static final Pattern REPLACE = Pattern.compile("\t+|[ ]+", Pattern.DOTALL);
 
     /* Remove other junk */
-    private static final Pattern REMOVE = Pattern.compile("<.+>$|=0D$", Pattern.DOTALL);
+    private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$", Pattern.DOTALL);
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
@@ -225,7 +225,8 @@ public class FlexibleDateTimeParser {
             return date;
         }
 
-        String cleanedDateString = date;
+        // date strings over 100 characters are more than likely invalid
+        String cleanedDateString = StringUtils.substring(date, 0, 100);
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
         cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
         return StringUtils.trimToNull(cleanedDateString);
