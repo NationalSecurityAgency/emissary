@@ -51,7 +51,7 @@ public class FlexibleDateTimeParser {
     private static final Pattern REPLACE = Pattern.compile("\t+|[ ]+", Pattern.DOTALL);
 
     /* Remove other junk */
-    private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$", Pattern.DOTALL);
+    private static final Pattern REMOVE = Pattern.compile("<.+>$|=0D$", Pattern.DOTALL);
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
