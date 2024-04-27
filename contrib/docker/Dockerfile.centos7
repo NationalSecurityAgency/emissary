@@ -11,7 +11,9 @@ ARG gid=1000
 ENV JAVA_TOOL_OPTIONS -Dfile.encoding=UTF8
 ENV PROJECT_BASE=/opt/emissary
 
-RUN rpm --import https://yum.corretto.aws/corretto.key \
+RUN yum update -y \
+     && yum upgrade -y \
+     && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
      && yum install -y which \
@@ -34,13 +36,13 @@ RUN curl -L -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${maven_
      && ln -s /opt/apache-maven-${maven_version} ${MAVEN_HOME} \
      && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
 
-COPY . /opt/emissary
-RUN chown -R ${user}:${group} /opt/emissary \
-    && chmod -R 744 /opt/emissary  \
+COPY . ${PROJECT_BASE}
+RUN chown -R ${user}:${group} ${PROJECT_BASE} \
+    && chmod -R 744 ${PROJECT_BASE}  \
     && (rm -f .mvn-classpath || true)
 
 USER ${user}
-WORKDIR /opt/emissary
+WORKDIR ${PROJECT_BASE}
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
     mvn -V -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist
 
@@ -49,24 +51,24 @@ RUN if ${verify_build} ; then ./contrib/ci/detect-changes.sh ; fi
 
 FROM base
 
-COPY --from=build /opt/emissary/target/emissary-*-dist.tar.gz /tmp
+COPY --from=build ${PROJECT_BASE}/target/emissary-*-dist.tar.gz /tmp
 
 RUN tar -xf /tmp/emissary-*-dist.tar.gz -C /opt/ \
     && version=`ls /opt | grep emissary- | awk '{ print $1 }'`  \
-    && echo "Linking /opt/${version} to /opt/emissary"  \
-    && ln -s /opt/${version} /opt/emissary  \
-    && mkdir -p /opt/emissary/localoutput  \
-    && mkdir -p /opt/emissary/target/data  \
-    && chmod -R a+rw /opt/emissary \
-    && chown -R ${user}:${group} /opt/emissary* \
+    && echo "Linking /opt/${version} to ${PROJECT_BASE}"  \
+    && ln -s /opt/${version} ${PROJECT_BASE}  \
+    && mkdir -p ${PROJECT_BASE}/localoutput  \
+    && mkdir -p ${PROJECT_BASE}/target/data  \
+    && chmod -R a+rw ${PROJECT_BASE} \
+    && chown -R ${user}:${group} ${PROJECT_BASE}* \
     && rm -f /tmp/*
 
 USER ${user}
 
-WORKDIR /opt/emissary
+WORKDIR ${PROJECT_BASE}
 
-VOLUME /opt/emissary/target/data
-VOLUME /opt/emissary/localoutput
+VOLUME ${PROJECT_BASE}/target/data
+VOLUME ${PROJECT_BASE}/localoutput
 
 EXPOSE 8001
 

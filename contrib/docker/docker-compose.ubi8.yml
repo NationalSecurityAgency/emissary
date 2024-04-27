@@ -8,7 +8,6 @@ services:
       context: ../../
       dockerfile: contrib/docker/Dockerfile.ubi8
     environment:
-      - PROJECT_BASE=/opt/emissary
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
     hostname: "emissary-server"
     command: "server -a 5 -p 8001 -s http -h emissary-server"
