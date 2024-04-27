@@ -35,8 +35,8 @@ ARG user=emissary
 ARG group=emissary
 ARG uid=1000
 ARG gid=1000
-RUN yum update -y  \
-     && yum upgrade y \
+RUN yum update -y \
+     && yum upgrade -y \
      && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
@@ -68,6 +68,7 @@ RUN  apk update \
      && addgroup --gid ${gid} ${group} \
      && adduser --disabled-password --uid ${uid} --ingroup ${group} ${user} \
      && rm -rf /var/cache/apk/*
+
 
 
 FROM base_${target_os} AS build
