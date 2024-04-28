@@ -110,6 +110,8 @@ jobs:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
           payload: |
             {
+              "unfurl_links": false,
+              "unfurl_media": false,
               "blocks": [
                 {
                   "type": "section",
