@@ -17,7 +17,7 @@ RUN dnf update -y \
      && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && dnf install -y java-${java_version}-amazon-corretto-devel \
-     && dnf install -y langpacks-en glibc-all-langpacks lsof \
+     && dnf install -y glibc-langpack-en lsof \
      && groupadd -g ${gid} ${group} \
      && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
      && dnf clean all -y \
