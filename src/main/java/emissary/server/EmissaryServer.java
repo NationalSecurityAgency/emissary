@@ -366,13 +366,13 @@ public class EmissaryServer {
         }
         LOG.info("Done stopping all places");
 
+        RollManager.shutdown();
+
         try {
             MetricsManager.lookup().shutdown();
         } catch (Exception ex) {
             LOG.warn("No metrics manager available");
         }
-
-        RollManager.shutdown();
 
         // Print the stats
         try {
