@@ -3,10 +3,10 @@ version: "3"
 
 services:
   emissary-server:
-    image: emissary-ubi8
+    image: emissary
     build:
       context: ../../
-      dockerfile: contrib/docker/Dockerfile.ubi8
+      dockerfile: contrib/docker/Dockerfile.ci
     environment:
       - PROJECT_BASE=/opt/emissary
       - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
