@@ -17,7 +17,7 @@ RUN dnf update -y \
      && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && dnf install -y java-${java_version}-amazon-corretto-devel \
-     && dnf install -y glibc-langpack-en lsof \
+     && dnf install -y glibc-langpack-en lsof git \
      && groupadd -g ${gid} ${group} \
      && useradd -u ${uid} -g ${group} -m -s /bin/sh ${user} \
      && dnf clean all -y \
@@ -40,7 +40,7 @@ RUN yum update -y \
      && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
      && yum install -y java-${java_version}-amazon-corretto-devel \
-     && yum install -y which lsof \
+     && yum install -y which lsof git \
      && groupadd -g ${gid} ${group} \
      && useradd -u ${uid} -g ${group} -m -s /bin/bash ${user} \
      && yum clean all -y \
@@ -63,7 +63,7 @@ RUN  apk update \
      && apk add ca-certificates \
      && update-ca-certificates \
      && apk add --update coreutils && rm -rf /var/cache/apk/*   \
-     && apk add --update openjdk${java_version} tzdata curl unzip bash which lsof \
+     && apk add --update openjdk${java_version} tzdata curl unzip bash which lsof git \
      && apk add --no-cache nss \
      && addgroup --gid ${gid} ${group} \
      && adduser --disabled-password --uid ${uid} --ingroup ${group} ${user} \
@@ -84,11 +84,16 @@ RUN curl -L -o /tmp/maven.tar.gz https://dlcdn.apache.org/maven/maven-3/${maven_
 
 COPY . ${PROJECT_BASE}
 RUN chown -R ${user}:${group} ${PROJECT_BASE} \
-    && chmod -R 744 ${PROJECT_BASE}  \
-    && (rm -f .mvn-classpath || true)
+    && chmod -R 744 ${PROJECT_BASE}
 
 USER ${user}
 WORKDIR ${PROJECT_BASE}
+
+RUN git init --quiet \
+    && git config user.email "emissary@build.dne" \
+    && git config user.name "emissary" \
+    && git add . \
+    && git commit --quiet -am.
 
 ARG java_compiler=11
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
