@@ -366,6 +366,8 @@ public class EmissaryServer {
         }
         LOG.info("Done stopping all places");
 
+        RollManager.shutdown();
+
         // Print the stats
         try {
             ResourceWatcher rw = ResourceWatcher.lookup();
@@ -382,8 +384,6 @@ public class EmissaryServer {
         }
 
         SPILoader.unload();
-
-        RollManager.shutdown();
 
         LOG.info("Done stopping all services");
 
