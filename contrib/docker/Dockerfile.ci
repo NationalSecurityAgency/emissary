@@ -89,7 +89,11 @@ RUN chown -R ${user}:${group} ${PROJECT_BASE} \
 USER ${user}
 WORKDIR ${PROJECT_BASE}
 
-RUN git init --quiet && git config user.email "emissary@build.dne" && git config user.name "Emissary" && git add . && git commit --quiet  -m "verify build"
+RUN git init --quiet \
+    && git config user.email "emissary@build.dne" \
+    && git config user.name "emissary" \
+    && git add . \
+    && git commit --quiet -am.
 
 ARG java_compiler=11
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
