@@ -75,7 +75,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      */
     @Test
     void parseOffsetWhenThereIsAThreeLetterTimeZone() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][[(]z[)]]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][z]]");
 
         // without offset we expect the default ZoneId
         test("Mon, 4 Jan 2016 13:20:30 EST", EXPECTED_FULL, pattern);
@@ -185,7 +185,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_EdMMMyyyyHmmssZz() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][(z)]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][z]]");
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Europe/Dublin)", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Zulu)", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 (UTC)", EXPECTED_FULL, pattern);
@@ -425,7 +425,15 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
         test("2016-01-04 18:20=0D", EXPECTED_NO_SECS, "qp'ified ending");
+
+        //TODO -- expand to add new things we are removing
     }
+
+    // TODO -- add tests for all the "extra" formats
+
+    // TODO Things that are currently not parsed -- wrong day of the week (I think this is okay),
+    // not all short timezone offsets not loaded by default
+    // extra text at the end: Thu 02 May 2024 12:00:00 +0000.1234
 
     @Test
     void testBad() {

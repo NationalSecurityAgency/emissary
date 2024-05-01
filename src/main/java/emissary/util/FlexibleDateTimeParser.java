@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
@@ -35,13 +37,14 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * Natty - It handled a good chunk of the formats but not all.
  */
-public class FlexibleDateTimeParser {
+public final class FlexibleDateTimeParser {
 
     /* Logger */
     private static final Logger logger = LoggerFactory.getLogger(FlexibleDateTimeParser.class);
 
     /* Configuration Variables */
-    private static final String CFG_FORMAT = "FORMAT_DATETIME";
+    private static final String CFG_FORMAT_MAIN = "FORMAT_DATETIME_MAIN";
+    private static final String CFG_FORMAT_EXTRA = "FORMAT_DATETIME_EXTRA";
     private static final String CFG_TIMEZONE = "TIMEZONE";
     private static final String DEFAULT_TIMEZONE = "GMT";
     private static final String SPACE = " ";
@@ -50,14 +53,20 @@ public class FlexibleDateTimeParser {
     /* Remove all tabs and extra spaces */
     private static final Pattern REPLACE = Pattern.compile("\t+|[ ]+", Pattern.DOTALL);
 
-    /* Remove other junk */
-    private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$", Pattern.DOTALL);
+    /*
+     * Remove other junk -- anything in an html tag, all parenthesis and quotes, and any non-word characters at the
+     * beginning or end
+     */
+    private static final Pattern REMOVE = Pattern.compile("<.+?>|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
 
-    /* date time formats - vars: FORMAT_DATETIME */
-    private static List<DateTimeFormatter> dateFormats = new ArrayList<>();
+    /* date time formats - vars: FORMAT_DATETIME_MAIN */
+    private static List<DateTimeFormatter> dateFormatsMain = new ArrayList<>();
+
+    /* Extra date time formats - lits to try if our main list has failed - vars: FORMAT_DATETIME_EXTRA */
+    private static List<DateTimeFormatter> dateFormatsExtra = new ArrayList<>();
 
     /* init */
     static {
@@ -74,13 +83,27 @@ public class FlexibleDateTimeParser {
     }
 
     /**
-     * Attempts to parse a string date using pre-configured patterns
+     * Attempts to parse a string date using pre-configured patterns. Default not trying the extensive date/time format list
      *
      * @param dateString the string to parse
      * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
      */
     public static ZonedDateTime parse(final String dateString) {
-        return parse(dateString, dateFormats);
+        return parse(dateString, false);
+    }
+
+    /**
+     * Attempts to parse a string date using pre-configured patterns
+     *
+     * @param dateString the string to parse
+     * @param tryExtensiveFormatList True if we want to try out complete list of date/time formats False if we only want to
+     *        attempt the most common date/time formats
+     * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
+     */
+    public static ZonedDateTime parse(final String dateString, boolean tryExtensiveFormatList) {
+        ZonedDateTime zdt = parse(dateString, dateFormatsMain);
+
+        return zdt == null && tryExtensiveFormatList ? parse(dateString, dateFormatsExtra) : zdt;
     }
 
     /**
@@ -116,9 +139,12 @@ public class FlexibleDateTimeParser {
 
             try {
                 // try for a zoned date (has timezone), local date time (no time zone), or just a local date (no time)
-                TemporalAccessor accessor = formatter.parseBest(cleanedDateString, ZonedDateTime::from, LocalDateTime::from, LocalDate::from);
+                TemporalAccessor accessor =
+                        formatter.parseBest(cleanedDateString, ZonedDateTime::from, OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
                 if (accessor instanceof ZonedDateTime) {
                     return (ZonedDateTime) accessor; // return the date time w/ timezone
+                } else if (accessor instanceof OffsetDateTime) {
+                    return ((OffsetDateTime) accessor).atZoneSameInstant(timezone);
                 } else if (accessor instanceof LocalDateTime) {
                     return ((LocalDateTime) accessor).atZone(timezone); // set the timezone
                 } else if (accessor instanceof LocalDate) {
@@ -143,7 +169,7 @@ public class FlexibleDateTimeParser {
             // fire up the configurator
             Configurator configurator = ConfigUtil.getConfigInfo(FlexibleDateTimeParser.class);
             setupTimezone(configurator.findStringEntry(CFG_TIMEZONE, DEFAULT_TIMEZONE));
-            setupDateFormats(configurator.findStringMatchEntries(CFG_FORMAT));
+            setupDateFormats(configurator.findStringMatchEntries(CFG_FORMAT_MAIN), configurator.findStringMatchEntries(CFG_FORMAT_EXTRA));
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not configure parser!!", e);
         }
@@ -170,13 +196,23 @@ public class FlexibleDateTimeParser {
     /**
      * Override the default date formats
      *
-     * @param configEntries the list of override formats from the config file
+     * @param configEntriesMain the list of main override formats from the config file
+     * @param configEntriesExtra the list of extra override formats from the config file
      */
-    private static void setupDateFormats(final List<ConfigEntry> configEntries) {
-        List<DateTimeFormatter> dateTimeFormats = getConfigFormats(configEntries);
-        if (CollectionUtils.isNotEmpty(dateTimeFormats)) {
-            dateFormats = Collections.unmodifiableList(dateTimeFormats);
-            logger.debug("Created successfully. Created {} of {} formats from config", dateFormats.size(), configEntries.size());
+    private static void setupDateFormats(final List<ConfigEntry> configEntriesMain, final List<ConfigEntry> configEntriesExtra) {
+        List<DateTimeFormatter> dateTimeFormatsMain = getConfigFormats(configEntriesMain);
+        if (CollectionUtils.isNotEmpty(dateTimeFormatsMain)) {
+            dateFormatsMain = Collections.unmodifiableList(dateTimeFormatsMain);
+            logger.debug("Created successfully. Created {} of {} formats from config", dateFormatsMain.size(), configEntriesMain.size());
+        } else {
+            logger.error("Could not create with configured variables");
+            throw new IllegalArgumentException("No date/time formats configured!!");
+        }
+
+        List<DateTimeFormatter> dateTimeFormatsExtra = getConfigFormats(configEntriesExtra);
+        if (CollectionUtils.isNotEmpty(dateTimeFormatsExtra)) {
+            dateFormatsExtra = Collections.unmodifiableList(dateTimeFormatsExtra);
+            logger.debug("Created successfully. Created {} of {} formats from config", dateFormatsExtra.size(), configEntriesExtra.size());
         } else {
             logger.error("Could not create with configured variables");
             throw new IllegalArgumentException("No date/time formats configured!!");
@@ -206,7 +242,7 @@ public class FlexibleDateTimeParser {
     @Nullable
     private static DateTimeFormatter getFormatter(ConfigEntry entry) {
         try {
-            return DateTimeFormatter.ofPattern(entry.getValue());
+            return new DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(entry.getValue()).toFormatter();
         } catch (IllegalArgumentException e) {
             // log the bad one and move on because there could be other possible patterns
             logger.error("Error parsing pattern [{}]: {}", entry.getValue(), e.getLocalizedMessage());
