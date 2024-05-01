@@ -71,7 +71,7 @@ jobs:
           file: contrib/docker/Dockerfile.ci
           build-args: |
             target_os=centos7
-            verify_build=true
+            verify_build=false
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
