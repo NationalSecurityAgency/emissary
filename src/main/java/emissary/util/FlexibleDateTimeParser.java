@@ -59,6 +59,9 @@ public final class FlexibleDateTimeParser {
      */
     private static final Pattern REMOVE = Pattern.compile("<.+?>|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
 
+    private static final Pattern PHT_REPLACE = Pattern.compile("PHT");
+    private static final String PT_TIMEZONE = "PT";
+
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
 
@@ -265,6 +268,11 @@ public final class FlexibleDateTimeParser {
         String cleanedDateString = StringUtils.substring(date, 0, 100);
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
         cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
+
+        // I haven't found any information about this online, but PHT does not appear to be a valid time zone in java - if it
+        // is in a date string, we get an exception. Replace with PT instead. TODO - can I find any info about this online?
+        cleanedDateString = PHT_REPLACE.matcher(cleanedDateString).replaceAll(PT_TIMEZONE);
+
         return StringUtils.trimToNull(cleanedDateString);
     }
 
