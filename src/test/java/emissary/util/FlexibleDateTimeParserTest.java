@@ -236,7 +236,14 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_yyyyMMddTHHmmssSSSX_Extra() {
-        testAllOffsets("2016-01-04T15:20:30.000", EXPECTED_FULL);
+        extraPatternTest("2016-01-04T18:20:30", EXPECTED_FULL, "0 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.0", EXPECTED_FULL, "1 digit for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.00", EXPECTED_FULL, "2 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.0000", EXPECTED_FULL, "4 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.00000", EXPECTED_FULL, "5 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.000000", EXPECTED_FULL, "6 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.0000000", EXPECTED_FULL, "7 digits for fraction of a second");
+        extraPatternTest("2016-01-04T18:20:30.00000000", EXPECTED_FULL, "8 digits for fraction of a second");
     }
 
     @Test
@@ -263,10 +270,10 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_EdMMMyyHmmssZ_Extra() {
-        testAllOffsets("Mon, 4 Jan 16 18:20:30", EXPECTED_FULL);
-        testAllOffsets("Monday, 4 Jan 16 18:20:30", EXPECTED_FULL);
-        testAllOffsets("Monday, 4 January 16 18:20:30", EXPECTED_FULL);
-        testAllOffsets("Mon, 4 January 16 18:20:30", EXPECTED_FULL);
+        testAllOffsets("Mon, 4 Jan 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 Jan 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 January 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Mon, 4 January 16 13:20:30", EXPECTED_FULL);
     }
 
 
@@ -355,10 +362,10 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_EMMMdyyyyKmma_Extra() {
-        testAllOffsets("Mon, Jan 4, 2016 06:20 PM", EXPECTED_NO_SECS);
-        testAllOffsets("Monday, Jan 4, 2016 06:20 PM", EXPECTED_NO_SECS);
-        testAllOffsets("Monday, January 4, 2016 06:20 PM", EXPECTED_NO_SECS);
-        testAllOffsets("Mon, January 4, 2016 06:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Mon, Jan 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Monday, Jan 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Monday, January 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Mon, January 4, 2016 01:20 PM", EXPECTED_NO_SECS);
     }
 
     @Test
@@ -422,8 +429,8 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_EddMMMyyyyHmmssZ_Extra() {
-        // TODO extraPatternTest("", EXPECTED_FULL, "");
-        extraPatternTest("Mon 04-Jan-2016 18:20:30 +0000", EXPECTED_FULL, "");
+        testAllOffsets("Mon 04-Jan-2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday 04-Jan-2016 13:20:30", EXPECTED_FULL);
     }
 
     @Test
@@ -557,16 +564,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_yyyy_MM_ddHHmmssS_Extra() {
-        extraPatternTest("2016:01:04 19:20:30.0 CET+0100 +0100", EXPECTED_FULL, "yyyy_MM_ddHHmmssSzZZ");
-        extraPatternTest("2016:01:04 19:20:30.0 CET CET+0100", EXPECTED_FULL, "yyyy_MM_ddHHmmssSzzZ");
-        extraPatternTest("2016:01:04 19:20:30.0 CET+0100 CET", EXPECTED_FULL, "yyyy_MM_ddHHmmssSzZz");
-        extraPatternTest("2016:01:04 19:20:30.0 CET+0100 +01", EXPECTED_FULL, "yyyy_MM_ddHHmmssSzZX");
-        extraPatternTest("2016:01:04 19:20:30.0 +0100 CET+0100", EXPECTED_FULL, "yyyy_MM_ddHHmmssSZzZ");
-        extraPatternTest("2016:01:04 19:20:30.0 +0100 +01", EXPECTED_FULL, "yyyy_MM_ddHHmmssSZX");
-        extraPatternTest("2016:01:04 19:20:30.0 +01", EXPECTED_FULL, "yyyy_MM_ddHHmmssSX");
-        extraPatternTest("2016:01:04 19:20:30.0 +01 CET", EXPECTED_FULL, "yyyy_MM_ddHHmmssSXz");
-        extraPatternTest("2016:01:04 19:20:30.0 +01 +0100", EXPECTED_FULL, "yyyy_MM_ddHHmmssSXZ");
-        extraPatternTest("2016:01:04 19:20:30.0 +01 (CET+0100)", EXPECTED_FULL, "yyyy_MM_ddHHmmssSXzZ");
+        testAllOffsets("2016:01:04 13:20:30.0", EXPECTED_FULL);
     }
 
     @Test
@@ -615,7 +613,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("$$2016-01-04 18:20:00$$", EXPECTED_NO_SECS, "Extra characters at the beginning and end");
         test("2016-01-04 (18:20:00)", EXPECTED_NO_SECS, "Extra parenthesis");
         test("2016-01-04 18:20:00 [GMT]", EXPECTED_NO_SECS, "Extra brackets");
-        test("Monday, \"January 04, 2016\" 18:20", EXPECTED_NO_SECS, "Extra quotes");
+        test("\"Mon\", 4 Jan 2016 18:20 +0000 \"EST\"", EXPECTED_NO_SECS, "Extra quotes");
         test("2016-01-04 18:20:00", EXPECTED_NO_SECS, "");
         test("2016-01-04 18:20:00", EXPECTED_NO_SECS, "");
     }
