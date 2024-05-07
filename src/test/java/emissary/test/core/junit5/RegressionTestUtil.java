@@ -117,6 +117,9 @@ public final class RegressionTestUtil {
         return pathBuilder.resolve("test/resources");
     }
 
+    /**
+     * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
+     */
     public static void checkAnswers(final Document answers, final IBaseDataObject payload, final List<SimplifiedLogEvent> actualSimplifiedLogEvents,
             final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
@@ -129,7 +132,7 @@ public final class RegressionTestUtil {
         final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
                 attachments, placeName, DIFF_CHECK);
 
-        assertNull(differences, differences);
+        assertNull(differences);
 
         final List<SimplifiedLogEvent> expectedSimplifiedLogEvents = getSimplifiedLogEvents(parent);
 

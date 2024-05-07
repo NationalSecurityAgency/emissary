@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -157,8 +158,10 @@ public class IBaseDataObjectDiffHelper {
                     InputStream is1 = Channels.newInputStream(sbc1);
                     InputStream is2 = Channels.newInputStream(sbc2)) {
                 if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s not equal. 1.cs=%s 2.cs=%s",
-                            identifier, sbc1.size(), sbc2.size()));
+                    differences.add(String.format("%s not equal. 1.is=%s 2.is=%s",
+                            identifier,
+                            IOUtils.toString(Channels.newInputStream(sbcf1.create()), StandardCharsets.UTF_8),
+                            IOUtils.toString(Channels.newInputStream(sbcf2.create()), StandardCharsets.UTF_8)));
                 }
             } catch (IOException e) {
                 differences.add(String.format("Failed to compare %s: %s", identifier, e.getMessage()));
