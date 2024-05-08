@@ -117,9 +117,6 @@ public final class RegressionTestUtil {
         return pathBuilder.resolve("test/resources");
     }
 
-    /**
-     * @see ExtractionTest#checkAnswers(Document, IBaseDataObject, List, String)
-     */
     public static void checkAnswers(final Document answers, final IBaseDataObject payload, final List<SimplifiedLogEvent> actualSimplifiedLogEvents,
             final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
         final Element root = answers.getRootElement();
