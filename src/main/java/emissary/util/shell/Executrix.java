@@ -1330,6 +1330,7 @@ public class Executrix {
                 this.out = out;
             }
 
+            @Override
             public ProcessReader getStdOutProcessReader(Process p) {
                 return out == null ? super.getStdOutProcessReader(p) : new ReadOutputBuffer(p.getInputStream(), out);
             }
@@ -1345,6 +1346,7 @@ public class Executrix {
                 this.out = out;
             }
 
+            @Override
             public ProcessReader getStdOutProcessReader(Process p) {
                 return out == null ? super.getStdOutProcessReader(p) : new ReadBinaryOutputBuffer(p.getInputStream(), out);
             }

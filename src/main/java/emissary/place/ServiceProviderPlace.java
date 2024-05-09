@@ -1121,6 +1121,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
         return null;
     }
 
+    @Override
     public boolean isDenied(String s) {
         return denyList.contains(s);
     }
