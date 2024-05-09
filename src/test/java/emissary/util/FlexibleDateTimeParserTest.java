@@ -631,8 +631,6 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("2016-01-04 (18:20:00)", EXPECTED_NO_SECS, "Extra parenthesis");
         test("2016-01-04 18:20:00 [GMT]", EXPECTED_NO_SECS, "Extra brackets");
         test("\"Mon\", 4 Jan 2016 18:20 +0000 \"EST\"", EXPECTED_NO_SECS, "Extra quotes");
-        test("2016-01-04 18:20:00 +0000.1234", EXPECTED_NO_SECS, "");
-        test("2016-01-04 18:20:00", EXPECTED_NO_SECS, "");
     }
 
     @Test

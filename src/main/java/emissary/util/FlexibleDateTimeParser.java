@@ -57,7 +57,7 @@ public final class FlexibleDateTimeParser {
      * Remove other junk -- anything in an html tag, all parenthesis and quotes, and any non-word characters at the
      * beginning or end
      */
-    private static final Pattern REMOVE = Pattern.compile("<.+?>|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
+    private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
 
     private static final Pattern PHT_REPLACE = Pattern.compile("PHT");
     private static final String PT_TIMEZONE = "PT";
