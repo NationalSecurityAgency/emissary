@@ -269,8 +269,10 @@ public final class FlexibleDateTimeParser {
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
         cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
 
-        // I haven't found any information about this online, but PHT does not appear to be a valid time zone in java - if it
-        // is in a date string, we get an exception. Replace with PT instead. TODO - can I find any info about this online?
+        // PHT does not appear to be a valid time zone in java, but is included in the IANA timezone list. If PHT is in
+        // a date string, we get an exception. This was the only information I could find about this issue online -
+        // it suggests "PT" is the valid Philippines time zone in java:
+        // https://stackoverflow.com/questions/70605148/why-is-the-short-display-name-for-asia-manila-timezone-pt-in-java
         cleanedDateString = PHT_REPLACE.matcher(cleanedDateString).replaceAll(PT_TIMEZONE);
 
         return StringUtils.trimToNull(cleanedDateString);
