@@ -2,6 +2,7 @@ package emissary.util;
 
 import emissary.test.core.junit5.UnitTest;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -420,6 +421,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
     @Test
     void testCleanDateString() {
         test("2016-01-04 18:20<br>", EXPECTED_NO_SECS, "HTML");
+        test("2016-01-04 18:20<br>br>", EXPECTED_NO_SECS, "HTML");
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
         test("2016-01-04 18:20=0D", EXPECTED_NO_SECS, "qp'ified ending");
@@ -433,5 +435,6 @@ class FlexibleDateTimeParserTest extends UnitTest {
         assertNull(FlexibleDateTimeParser.parse("1234", Collections.singletonList(null)));
         test("17.Mar.2016", 0L, "UNKNOWN");
         test("Mon, 2 Feb 2017 06:20:30 PM +0000", 0L, "UNKNOWN");
+        test("2016:01:04 18:20:30 GMT+0000<" + RandomStringUtils.randomAlphanumeric(75) + ">", 0L, "UNKNOWN");
     }
 }
