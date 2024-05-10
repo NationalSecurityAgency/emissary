@@ -4,6 +4,7 @@ import emissary.core.channels.SeekableByteChannelFactory;
 import emissary.core.constants.IbdoXmlElementNames;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
 import java.io.IOException;
@@ -25,10 +26,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class IBaseDataObjectDiffHelper {
-    private static final String DIFF_OUTPUT_FORMAT = "%s%s: %s : %s";
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
     private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
-    private static final String ARE_NOT_EQUAL = " are not equal";
+    private static final String ARE_NOT_EQUAL = " elements are not equal";
     private static final String SHORT_NAME = "shortName";
     private static final String INTERNAL_ID = "internalId";
     private static final String TRANSFORM_HISTORY = "transformHistory";
@@ -122,7 +122,8 @@ public class IBaseDataObjectDiffHelper {
         final int ibdoList2Size = (ibdoList2 == null) ? 0 : ibdoList2.size();
 
         if (ibdoList1Size != ibdoList2Size) {
-            differences.add(String.format("%s%s: 1.s=%s 2.s=%s", identifier, ARE_NOT_EQUAL, ibdoList1Size, ibdoList2Size));
+            differences.add(String.format("%s%s%sIBaseDataObject List Size 1: %s%sIBaseDataObject List Size 2: %s",
+                    identifier, ARE_NOT_EQUAL, StringUtils.LF, ibdoList1Size, StringUtils.LF, ibdoList2Size));
         } else if (ibdoList1 != null && ibdoList2 != null) {
             final List<String> childDifferences = new ArrayList<>();
             for (int i = 0; i < ibdoList1.size(); i++) {
@@ -152,25 +153,31 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (sbcf1 != null && sbcf2 != null) {
-            try (SeekableByteChannel sbc1 = sbcf1.create();
+        if (!(sbcf1 == null && sbcf2 == null)) {
+            final String sbcfName = "SeekableByteChannelFactory";
+            try {
+                if (sbcf1 == null)
+                    differences.add(diffNotEqStr(identifier, sbcfName,
+                            null, IOUtils.toString(Channels.newInputStream(sbcf2.create()), StandardCharsets.UTF_8)));
+                else if (sbcf2 == null)
+                    differences.add(diffNotEqStr(identifier, sbcfName,
+                            IOUtils.toString(Channels.newInputStream(sbcf1.create()), StandardCharsets.UTF_8), null));
+                else {
+                    SeekableByteChannel sbc1 = sbcf1.create();
                     SeekableByteChannel sbc2 = sbcf2.create();
                     InputStream is1 = Channels.newInputStream(sbc1);
-                    InputStream is2 = Channels.newInputStream(sbc2)) {
-                if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s not equal. 1.is=%s 2.is=%s",
-                            identifier,
-                            IOUtils.toString(Channels.newInputStream(sbcf1.create()), StandardCharsets.UTF_8),
-                            IOUtils.toString(Channels.newInputStream(sbcf2.create()), StandardCharsets.UTF_8)));
+                    InputStream is2 = Channels.newInputStream(sbc2);
+                    if (!IOUtils.contentEquals(is1, is2)) {
+                        differences.add(diffNotEqStr(identifier, sbcfName,
+                                IOUtils.toString(Channels.newInputStream(sbcf1.create()), StandardCharsets.UTF_8),
+                                IOUtils.toString(Channels.newInputStream(sbcf2.create()), StandardCharsets.UTF_8)));
+                    }
                 }
             } catch (IOException e) {
                 differences.add(String.format("Failed to compare %s: %s", identifier, e.getMessage()));
             }
-        } else if (sbcf1 == null && sbcf2 == null) {
-            // Do nothing as they are considered equal.
-        } else {
-            differences.add(String.format("%s not equal. sbcf1=%s sbcf2=%s", identifier, sbcf1, sbcf2));
-        }
+        } // if both null, do nothing as they're considered equal
+
     }
 
     /**
@@ -187,7 +194,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (!Objects.deepEquals(object1, object2)) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL, object1, object2));
+            differences.add(diffNotEqStr(identifier, "Object", object1, object2));
         }
     }
 
@@ -205,7 +212,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (integer1 != integer2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+            differences.add(diffNotEqStr(identifier, "Integer", integer1, integer2));
         }
     }
 
@@ -223,7 +230,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (boolean1 != boolean2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+            differences.add(diffNotEqStr(identifier, "Boolean", boolean1, boolean2));
         }
     }
 
@@ -271,7 +278,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1.isEmpty() || !p2.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
+            differences.add(diffNotEqStr(identifier, "Key/Value Set", p1, p2));
         }
     }
 
@@ -298,7 +305,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
+            differences.add(diffNotEqStr(identifier, "Minimal Map Key Set", p1Keys, p2Keys));
         }
     }
 
@@ -322,5 +329,11 @@ public class IBaseDataObjectDiffHelper {
         }
 
         return newMap;
+    }
+
+    public static String diffNotEqStr(String id, String objName, Object comparand1, Object comparand2) {
+        String comp1Msg = String.format("%s 1: %s%s", objName, comparand1, StringUtils.LF);
+        String comp2Msg = String.format("%s 2: %s%s", objName, comparand2, StringUtils.LF);
+        return id + ARE_NOT_EQUAL + StringUtils.LF + comp1Msg + comp2Msg;
     }
 }
