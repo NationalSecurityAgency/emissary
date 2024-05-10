@@ -39,6 +39,7 @@ public abstract class ProcessReader extends Thread {
      * Wrapper method to ensure that the {@link #applyLogContextMap()} method is always invoked before executing the core
      * functionality of ProcessReader subclasses
      */
+    @Override
     public void run() {
         applyLogContextMap();
         runImpl();
