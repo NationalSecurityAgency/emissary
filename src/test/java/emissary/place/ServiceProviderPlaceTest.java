@@ -267,6 +267,7 @@ class ServiceProviderPlaceTest extends UnitTest {
                 try {
                     fos.close();
                 } catch (IOException ignore) {
+                    // Ignore
                 }
             }
             Files.deleteIfExists(cfg);
