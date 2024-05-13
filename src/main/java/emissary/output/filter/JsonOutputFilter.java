@@ -25,12 +25,13 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,6 +85,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected void initJsonMapper() {
         jsonMapper = new ObjectMapper();
         jsonMapper.registerModule(new IbdoModule());
+        jsonMapper.registerModule(new JavaTimeModule());
         jsonMapper.addMixIn(IBaseDataObject.class, emitPayload ? IbdoPayloadMixin.class : IbdoParameterMixin.class);
         // the id in addFilter must match the annotation for JsonFilter
         jsonMapper.setFilterProvider(new SimpleFilterProvider().addFilter("param_filter", new IbdoParameterFilter()));
@@ -253,7 +255,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract UUID getInternalId();
 
         @JsonProperty("creationTimestamp")
-        abstract Date getCreationTimestamp();
+        abstract Instant getCreationTimestamp();
 
         @JsonProperty("shortName")
         abstract String shortName();

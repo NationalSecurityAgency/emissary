@@ -14,9 +14,10 @@ import emissary.util.DisposeHelper;
 import emissary.util.ShortNameComparator;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -229,11 +230,13 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
             if (outputCompletionPayloadSize && tld.hasContent()) {
                 logger.info(
                         "Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes",
-                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
+                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
+                        Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
                         tld.getFileType(), tld.getChannelSize());
             } else {
                 logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
-                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld), (new Date().getTime() - tld.getCreationTimestamp().getTime()),
+                        tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
+                        Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
                         tld.getFileType());
             }
 

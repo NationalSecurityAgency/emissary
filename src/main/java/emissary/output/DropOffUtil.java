@@ -163,10 +163,10 @@ public class DropOffUtil {
      */
     public String generateBuildFileName() {
         if (this.uuidInOutputFilenames) {
-            return (prefix + getDateOrdinalWithTime(new Date()) + UUID.randomUUID());
+            return (prefix + getDateOrdinalWithTime(Instant.now()) + UUID.randomUUID());
         } else {
             // Using some constants plus yyyyJJJhhmmss plus random digit, letter, digit
-            return (prefix + getDateOrdinalWithTime(new Date()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
+            return (prefix + getDateOrdinalWithTime(Instant.now()) + prng.nextInt(10) + ALPHABET[prng.nextInt(ALPHABET.length)] + prng.nextInt(10));
         }
     }
 

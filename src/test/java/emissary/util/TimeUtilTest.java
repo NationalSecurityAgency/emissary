@@ -4,13 +4,13 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
-import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -22,7 +22,7 @@ class TimeUtilTest extends UnitTest {
     private static final ZoneId GMT = ZoneId.of("GMT");
     private static final ZoneId PARIS = ZoneId.of("Europe/Paris");
     private static final LocalDateTime testLocalDate = LocalDateTime.of(2016, Month.DECEMBER, 25, 15, 30, 25);
-    private static final Date testUtilDate = Date.from(testLocalDate.toInstant(ZoneOffset.UTC));
+    private static final Instant testUtilDate = testLocalDate.toInstant(ZoneOffset.UTC);
     private static final ZonedDateTime testZoneDate = ZonedDateTime.of(testLocalDate, GMT);
 
     @Test
@@ -56,7 +56,7 @@ class TimeUtilTest extends UnitTest {
 
     @Test
     void testGetDateAsISO8601Long() {
-        assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate.getTime()), "GetDateAsISO8601Long");
+        assertEquals("2016-12-25 15:30:25", TimeUtil.getDateAsISO8601(testUtilDate), "GetDateAsISO8601Long");
     }
 
     @Deprecated

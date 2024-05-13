@@ -10,8 +10,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -44,14 +44,17 @@ public class PayloadUtilTest extends UnitTest {
 
     @Test
     void testOneLineString() {
+
+        Instant now = Instant.now();
+
         // setup
         final String fn = "fname" + Family.SEP + "4";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("BAR.BURP.BURPPLACE.http://example.com:1234/BurpPlace");
-        d.setCreationTimestamp(new Date(0));
-        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + new Date(0);
+        d.setCreationTimestamp(now);
+        final String expected = "att-4 FOO,BAR>>[UNKNOWN]//UNKNOWN//" + now;
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -63,12 +66,14 @@ public class PayloadUtilTest extends UnitTest {
 
     @Test
     void testOneLineStringOnTLD() {
+        Instant now = Instant.now();
+
         // setup
         final String fn = "fname";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
-        d.setCreationTimestamp(new Date(0));
+        d.setCreationTimestamp(now);
         d.appendTransformHistory("BOGUSKEYELEMENT");
-        final String expected = ">>[UNKNOWN]//UNKNOWN//" + new Date(0);
+        final String expected = ">>[UNKNOWN]//UNKNOWN//" + now;
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, true);
@@ -80,12 +85,15 @@ public class PayloadUtilTest extends UnitTest {
 
     @Test
     void testMultiLineString() {
+
+        Instant now = Instant.now();
+
         // setup
         final String fn = "fname" + Family.SEP + "4";
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
-        d.setCreationTimestamp(new Date(0));
+        d.setCreationTimestamp(now);
 
         // test
         final String answer = PayloadUtil.getPayloadDisplayString(d, false);
@@ -93,7 +101,7 @@ public class PayloadUtilTest extends UnitTest {
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
         assertTrue(answer.contains("filename: fname-att-4"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("creationTimestamp: " + new Date(0)), "Answer did not contain the creationTimestamp");
+        assertTrue(answer.contains("creationTimestamp: " + now), "Answer did not contain the creationTimestamp");
         assertTrue(answer.contains("currentForms: [UNKNOWN]"), "Answer did not contain the currentForms");
         assertTrue(answer.contains("filetype: UNKNOWN"), "Answer did not contain the correct filetype");
         assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
@@ -111,7 +119,7 @@ public class PayloadUtilTest extends UnitTest {
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
         d.appendTransformHistory("TEST.DROPOFFPLACE.http://example.com:1234/DropOffPlace");
-        d.setCreationTimestamp(new Date(0));
+        d.setCreationTimestamp(Instant.now());
 
         // test
         PayloadUtil.historyPreference.put("UNKNOWN", "REDUCED_HISTORY");
@@ -137,7 +145,7 @@ public class PayloadUtilTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
-        d.setCreationTimestamp(new Date(0));
+        d.setCreationTimestamp(Instant.now());
 
         // test
         PayloadUtil.historyPreference.put("UNKNOWN", "NO_URL");
@@ -162,7 +170,7 @@ public class PayloadUtilTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
         d.appendTransformHistory("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace");
         d.appendTransformHistory("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace");
-        d.setCreationTimestamp(new Date(0));
+        d.setCreationTimestamp(Instant.now());
 
         // test
         PayloadUtil.historyPreference.put("REDUCED", "REDUCED_HISTORY");

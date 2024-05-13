@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -115,7 +114,7 @@ public class HeartbeatManager {
         }
 
         // "smooth" execution every 30 seconds starting in 2 minutes
-        this.timer.schedule(new HeartbeatTask(), new Date(System.currentTimeMillis() + (this.initialDelaySeconds * 1000L)),
+        this.timer.schedule(new HeartbeatTask(), System.currentTimeMillis() + (this.initialDelaySeconds * 1000L),
                 (this.intervalSeconds * 1000L));
     }
 

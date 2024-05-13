@@ -9,7 +9,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpCommand {
@@ -51,7 +51,7 @@ public abstract class MonitorCommand<T extends BaseResponseEntity> extends HttpC
         setup();
         try {
             do {
-                LOG.info(new Date().toString());
+                LOG.info(Instant.now().toString());
                 collectEndpointData();
                 if (getMonitor()) {
                     TimeUnit.SECONDS.sleep(getSleepInterval());

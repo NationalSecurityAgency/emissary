@@ -13,10 +13,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -214,7 +214,7 @@ class IBaseDataObjectDiffHelperTest extends UnitTest {
 
     @Test
     void testDiffCreationTimestamp() {
-        ibdo1.setCreationTimestamp(new Date(1234567890));
+        ibdo1.setCreationTimestamp(Instant.ofEpochSecond(1234567890));
         final DiffCheckConfiguration options = DiffCheckConfiguration.configure().enableTimestamp().build();
         verifyDiff(1, options);
     }

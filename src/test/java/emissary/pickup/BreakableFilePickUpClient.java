@@ -5,7 +5,7 @@ import emissary.pickup.file.FilePickUpClient;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.Instant;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +31,7 @@ public class BreakableFilePickUpClient extends FilePickUpClient {
         actBrokenDuringProcessing = value;
         if (value == true) {
             Timer t = new Timer("BreakableFilePickupClientMonitor", true);
-            t.schedule(new TimeToActBrokenTask(), new Date(System.currentTimeMillis()), 10L);
+            t.schedule(new TimeToActBrokenTask(), Instant.now().toEpochMilli(), 10L);
 
         }
     }
