@@ -36,8 +36,6 @@ class ComparisonPlaceTest extends UnitTest {
     private static final String PROCESSHD_PLACE_A_CHANGES = "emissary.place.ComparisonPlaceTest.ProcessHDPlaceAChanges";
     private static final String PROCESSHD_PLACE_B_CHANGES = "emissary.place.ComparisonPlaceTest.ProcessHDPlaceBChanges";
 
-    private static final String nl = StringUtils.LF;
-
     @Test
     void testConfiguration() throws Exception {
         assertThrows(NullPointerException.class, () -> new ComparisonPlace(null, null, MISSING_LOGGING_IDENTIFIER));
@@ -61,20 +59,16 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessPlaceAChanges() throws Exception {
-        final String logMessage = "Differences found for COMPARISONPLACETEST" + nl + nl +
-                "---Old place differences---" + nl + nl +
-                "meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: [KEY]" + nl + "Minimal Map Key Set 2: []" + nl + nl;
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] ";
 
         testComparisonPlace(PROCESS_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessPlaceBChanges() throws Exception {
-        final String logMessage = "Differences found for COMPARISONPLACETEST" + nl + nl +
-                "---Old place differences---" + nl + nl +
-                "meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: []" + nl + "Minimal Map Key Set 2: [KEY]" + nl + nl;
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] ";
 
         testComparisonPlace(PROCESS_PLACE_B_CHANGES, logMessage);
     }
@@ -86,26 +80,20 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessHDPlaceAChanges() throws Exception {
-        final String logMessage = "Differences found for COMPARISONPLACETEST" + nl + nl +
-                "---Old place differences---" + nl + nl +
-                "meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: [KEY]" + nl + "Minimal Map Key Set 2: []" + nl + nl + nl + nl +
-                "---New place differences---" + nl + nl +
-                "COMPARISONPLACETEST : 0 : meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: [KEY]" + nl + "Minimal Map Key Set 2: []" + nl + nl;
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] " + StringUtils.LF +
+                "COMPARISONPLACETEST: child_difference: COMPARISONPLACETEST : 0 : <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] ";
 
         testComparisonPlace(PROCESSHD_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessHDPlaceBChanges() throws Exception {
-        final String logMessage = "Differences found for COMPARISONPLACETEST" + nl + nl +
-                "---Old place differences---" + nl + nl +
-                "meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: []" + nl + "Minimal Map Key Set 2: [KEY]" + nl + nl + nl + nl +
-                "---New place differences---" + nl + nl +
-                "COMPARISONPLACETEST : 0 : meta elements are not equal" + nl +
-                "Minimal Map Key Set 1: []" + nl + "Minimal Map Key Set 2: [KEY]" + nl + nl;
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] " + StringUtils.LF +
+                "COMPARISONPLACETEST: child_difference: COMPARISONPLACETEST : 0 : <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] ";
 
         testComparisonPlace(PROCESSHD_PLACE_B_CHANGES, logMessage);
     }

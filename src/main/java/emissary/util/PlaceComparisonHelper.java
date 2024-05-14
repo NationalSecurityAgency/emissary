@@ -142,19 +142,22 @@ public class PlaceComparisonHelper {
 
         if (!parentDifferences.isEmpty() || !childDifferences.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
-            sb.append(String.format("Differences found for %s%s", identifier, StringUtils.LF));
             for (int i = 0; i < parentDifferences.size(); i++) {
-                if (i == 0)
-                    sb.append(String.format("%s---Old place differences---%s%s", StringUtils.LF, StringUtils.LF, StringUtils.LF));
-                sb.append(String.format("%s%s", parentDifferences.get(i), StringUtils.LF));
+                if (i != 0) {
+                    sb.append(StringUtils.LF);
+                }
+                sb.append(identifier).append(": parent_difference: ");
+                sb.append(parentDifferences.get(i));
             }
             if (!parentDifferences.isEmpty() && !childDifferences.isEmpty()) {
                 sb.append(StringUtils.LF);
             }
             for (int i = 0; i < childDifferences.size(); i++) {
-                if (i == 0)
-                    sb.append(String.format("%s---New place differences---%s%s", StringUtils.LF, StringUtils.LF, StringUtils.LF));
-                sb.append(String.format("%s%s", childDifferences.get(i), StringUtils.LF));
+                if (i != 0) {
+                    sb.append(StringUtils.LF);
+                }
+                sb.append(identifier).append(": child_difference: ");
+                sb.append(childDifferences.get(i));
             }
             return sb.toString();
         }
