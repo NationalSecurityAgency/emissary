@@ -1,13 +1,12 @@
 package emissary.place.sample;
 
 import emissary.core.IBaseDataObject;
-import emissary.core.ResourceException;
 import emissary.place.ServiceProviderPlace;
 
 import java.io.IOException;
 
 /**
- * This place is a sink hole for everything it registers for
+ * This place performs no action other than holding everything it processes for a configurable amount of milliseconds
  */
 public class DelayPlace extends ServiceProviderPlace {
 
@@ -37,18 +36,18 @@ public class DelayPlace extends ServiceProviderPlace {
      * Consume the data object
      */
     @Override
-    public void process(IBaseDataObject tData) throws ResourceException {
+    public void process(IBaseDataObject tData) {
         if (logger.isDebugEnabled()) {
             logger.debug("Delay starting {}", tData.getAllCurrentForms());
         }
         try {
             Thread.sleep(delayTimeMillis);
         } catch (InterruptedException e) {
-            throw new ResourceException("Timed out before delay expired", e);
+            logger.warn("Interrupted before delay expired", e);
+            Thread.currentThread().interrupt();
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Delay ended {}", tData.getAllCurrentForms());
         }
     }
-
 }
