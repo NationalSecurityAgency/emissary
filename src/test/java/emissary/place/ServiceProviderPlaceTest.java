@@ -223,16 +223,15 @@ class ServiceProviderPlaceTest extends UnitTest {
     }
 
     private void runFileConfiguredTest(boolean usePackage, int ctorType) throws IOException, EmissaryException {
-        Path cfg = null;
-        OutputStream fos = null;
-        try {
-            // Write out the config data to the temp config dir
-            if (usePackage) {
-                cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
-            } else {
-                cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
-            }
-            fos = Files.newOutputStream(cfg);
+        Path cfg;
+        // Write out the config data to the temp config dir
+        if (usePackage) {
+            cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+        } else {
+            cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+        }
+
+        try (OutputStream fos = Files.newOutputStream(cfg)) {
             fos.write(configData);
 
             MyFileConfigedTestPlace mtp = null;
@@ -260,16 +259,6 @@ class ServiceProviderPlaceTest extends UnitTest {
             // Clean up the tmp config settings
             restoreConfig();
 
-            assert cfg != null;
-            Files.deleteIfExists(cfg);
-
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ignore) {
-                    // Ignore
-                }
-            }
             Files.deleteIfExists(cfg);
         }
     }
