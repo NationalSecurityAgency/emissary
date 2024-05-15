@@ -5,8 +5,6 @@ import emissary.config.Configurator;
 import emissary.directory.KeyManipulator;
 
 import com.google.common.net.HostAndPort;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -17,8 +15,6 @@ import java.util.TreeSet;
 
 @Command(description = "Read the peers.cfg (respective flavors) and return hosts as bashable list", subcommands = {HelpCommand.class})
 public class PeersCommand extends HttpCommand {
-
-    private static final Logger logger = LoggerFactory.getLogger(PeersCommand.class);
 
     public static final String COMMAND_NAME = "peers";
 
