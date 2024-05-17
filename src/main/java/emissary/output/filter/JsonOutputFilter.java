@@ -29,7 +29,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
@@ -96,9 +95,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         return jsonMapper.writeValueAsBytes(list);
     }
 
-    class IbdoParameterFilter extends SimpleBeanPropertyFilter implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    class IbdoParameterFilter extends SimpleBeanPropertyFilter {
 
         protected final boolean outputAll;
         protected final boolean emptyDenylist;
@@ -250,7 +247,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
      * This class is used so we do not have to annotate the IBaseDataObject. Set custom annotations on the method signatures
      * to include/exclude fields in the ibdo.
      */
-    static abstract class IbdoMixin {
+    abstract static class IbdoMixin {
         @JsonProperty("internalId")
         abstract UUID getInternalId();
 
@@ -338,7 +335,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract String getProcessingError();
     }
 
-    static abstract class IbdoParameterMixin extends IbdoMixin {
+    abstract static class IbdoParameterMixin extends IbdoMixin {
         @JsonIgnore
         abstract byte[] data();
 
@@ -346,7 +343,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract Map<String, byte[]> getAlternateViews();
     }
 
-    static abstract class IbdoPayloadMixin extends IbdoMixin {
+    abstract static class IbdoPayloadMixin extends IbdoMixin {
         @JsonProperty("payload")
         @JsonInclude(NON_EMPTY)
         abstract byte[] data();

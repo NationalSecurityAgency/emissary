@@ -29,6 +29,7 @@ public class AnyMaxTime extends Rule {
      * @param placeAgentStats the stats of a place that is currently processing
      * @return true if any places in mobile agents are over the configured time limit, false otherwise
      */
+    @Override
     protected boolean overTimeLimit(Collection<Protocol.PlaceAgentStats> placeAgentStats) {
         long maxTimeInPlace = placeAgentStats.stream().mapToLong(Protocol.PlaceAgentStats::getMaxTimeInPlace).max().orElse(0);
         logger.debug("Testing timeLimit for place={}, maxTime={}, timeLimit={}", place, maxTimeInPlace, timeLimit);
