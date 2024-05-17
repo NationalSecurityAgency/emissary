@@ -798,6 +798,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    public void addTimeInLastPlace(long timeInPlace) {
+        this.history.addTimeInPlace(timeInPlace);
+    }
+
+    @Override
     public void setHistory(TransformHistory newHistory) {
         this.history.set(newHistory);
     }

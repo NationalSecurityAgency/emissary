@@ -404,6 +404,7 @@ public class HDMobileAgent extends MobileAgent {
      */
     protected List<IBaseDataObject> atPlaceHD(final IServiceProviderPlace place, final List<IBaseDataObject> payloadListArg) {
         MDC.put(MDCConstants.SERVICE_LOCATION, place.toString());
+        long timeInPlace;
         logger.debug("In atPlaceHD {} with {} payload items", place, payloadListArg.size());
 
         List<IBaseDataObject> ret = Collections.emptyList();
@@ -418,7 +419,13 @@ public class HDMobileAgent extends MobileAgent {
                 addMoveErrorCount(payloadListArg);
             }
 
+            long startTime = System.nanoTime();
             ret = place.agentProcessHeavyDuty(payloadListArg);
+            long endTime = System.nanoTime();
+            timeInPlace = (endTime - startTime);
+            for (IBaseDataObject payload : payloadListArg) {
+                payload.addTimeInLastPlace(timeInPlace);
+            }
 
             for (Iterator<IBaseDataObject> it = ret.iterator(); it.hasNext();) {
                 final IBaseDataObject ibdo = it.next();
