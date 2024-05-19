@@ -124,7 +124,7 @@ public class SimpleNioParser extends NIOSessionParser {
      * @return next session
      */
     @Override
-    public DecomposedSession getNextSession() throws ParserException, ParserEOFException {
+    public DecomposedSession getNextSession() throws ParserException {
         try {
             if (isFullyParsed()) {
                 throw new ParserEOFException("Past end of data");
