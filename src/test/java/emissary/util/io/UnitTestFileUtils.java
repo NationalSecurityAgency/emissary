@@ -40,10 +40,12 @@ public class UnitTestFileUtils {
         return paths;
     }
 
+    @SuppressWarnings("PreferredInterfaceType")
     public static Collection<Path> findFilesByExtension(Path dir, String ext) throws IOException {
         return findFilesByExtension(dir, ext, Integer.MAX_VALUE);
     }
 
+    @SuppressWarnings("PreferredInterfaceType")
     public static Collection<Path> findFilesByExtension(Path dir, String ext, int depth) throws IOException {
         try (Stream<Path> walk = Files.find(dir, depth, (path, attrs) -> path.toString().endsWith(ext))) {
             return walk.collect(Collectors.toList());

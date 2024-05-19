@@ -172,7 +172,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         }
 
         protected Collection<Object> filter(String key, Collection<Object> values) {
-            Collection<Object> keep = new TreeSet<>();
+            Set<Object> keep = new TreeSet<>();
             for (final Object value : values) {
                 if (!(denylistValues.containsKey(key) && denylistValues.get(key).contains(value.toString()))) {
                     keep.add(value);

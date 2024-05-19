@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
@@ -350,8 +349,8 @@ public abstract class ExtractionTest extends UnitTest {
             Attribute separatorAttribute = meta.getAttribute("collectionSeparator");
             String separator = null != separatorAttribute ? separatorAttribute.getValue() : ","; // comma is default
             // separator
-            Collection<String> expectedValues = Arrays.asList(value.split(separator));
-            Collection<String> actualValues = Arrays.asList(data.split(separator));
+            List<String> expectedValues = Arrays.asList(value.split(separator));
+            List<String> actualValues = Arrays.asList(data.split(separator));
             assertTrue(CollectionUtils.isEqualCollection(expectedValues, actualValues),
                     String.format(
                             "%s element '%s' problem in %s did not have equal collection, value '%s' does not equal '%s' split by separator '%s'",
