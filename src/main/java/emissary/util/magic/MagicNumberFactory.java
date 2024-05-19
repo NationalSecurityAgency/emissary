@@ -1,5 +1,7 @@
 package emissary.util.magic;
 
+import emissary.core.EmissaryRuntimeException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +155,7 @@ public class MagicNumberFactory {
         } catch (IOException ioe) {
             log.error("Caught IOException on buildMagicNumberList (throwing a runtime exception): {}", ioe.getMessage(), ioe);
             /** Doing all of this in memory - yes, one could erroneously use one of the IO objects but ... */
-            throw new RuntimeException(ioe);
+            throw new EmissaryRuntimeException(ioe);
         }
         return magicNumberList;
     }

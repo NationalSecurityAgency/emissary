@@ -8,6 +8,7 @@ import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IPausable;
 import emissary.core.MetricsManager;
 import emissary.core.Namespace;
@@ -207,7 +208,7 @@ public class EmissaryServer {
             return configuredServer;
         } catch (Throwable t) {
             String errorMsg = "Emissary server didn't start";
-            throw new RuntimeException(errorMsg, t);
+            throw new EmissaryRuntimeException(errorMsg, t);
         }
     }
 

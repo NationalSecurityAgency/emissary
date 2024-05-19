@@ -913,7 +913,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                             this.parameters.put(name, v);
                         }
                     } else {
-                        throw new RuntimeException("Unhandled parameter merge policy " + policy + " for " + name);
+                        throw new IllegalStateException("Unhandled parameter merge policy " + policy + " for " + name);
                     }
                 }
             } else {
@@ -924,7 +924,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                         this.parameters.put(name, value);
                     }
                 } else {
-                    throw new RuntimeException("Unhandled parameter merge policy " + policy + " for " + name);
+                    throw new IllegalStateException("Unhandled parameter merge policy " + policy + " for " + name);
                 }
             }
         }

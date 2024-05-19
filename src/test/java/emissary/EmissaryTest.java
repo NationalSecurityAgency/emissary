@@ -2,6 +2,7 @@ package emissary;
 
 import emissary.command.BaseCommand;
 import emissary.command.EmissaryCommand;
+import emissary.core.EmissaryRuntimeException;
 import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
@@ -214,7 +215,7 @@ class EmissaryTest extends UnitTest {
         @Override
         public void run(CommandLine c) {
             setup();
-            throw new RuntimeException("Still broken here");
+            throw new EmissaryRuntimeException("Still broken here");
         }
 
         @Override
