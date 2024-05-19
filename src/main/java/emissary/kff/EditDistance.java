@@ -57,33 +57,33 @@ public class EditDistance {
     // #define SAFE_ASSIGN(x,y) (((x) != NULL) ? (*(x) = (y)) : (y))
 
     // #define swap_int(x,y) (_iswap = (x), (x) = (y), (y) = _iswap)
-    private static void swap_int(int[] x, int[] y) {
-        int _iswap = x[0];
+    private static void swapInt(int[] x, int[] y) {
+        int iswap = x[0];
         x[0] = y[0];
-        y[0] = _iswap;
+        y[0] = iswap;
     }
 
     // #define swap_char(x,y) (_cswap = (x), (x) = (y), (y) = _cswap)
-    private static void swap_char(/* ref */byte[][] x, /* ref */byte[][] y) {
-        byte[] _cswap = x[0];
+    private static void swapChar(/* ref */byte[][] x, /* ref */byte[][] y) {
+        byte[] cswap = x[0];
         x[0] = y[0];
-        y[0] = _cswap;
+        y[0] = cswap;
     }
 
     // #define min3(x,y,z) (_mx = (x), _my = (y), _mz = (z), (_mx < _my ? (_mx < _mz ? _mx : _mz) : (_mz < _my) ? _mz :
     // _my))
     private static int min3(int x, int y, int z) {
-        int _mx = x;
-        int _my = y;
-        int _mz = z;
-        return (_mx < _my ? (_mx < _mz ? _mx : _mz) : (_mz < _my) ? _mz : _my);
+        int mx = x;
+        int my = y;
+        int mz = z;
+        return (mx < my ? (mx < mz ? mx : mz) : (mz < my) ? mz : my);
     }
 
     // #define min2(x,y) (_mx = (x), _my = (y), (_mx < _my ? _mx : _my))
     private static int min2(int x, int y) {
-        int _mx = x;
-        int _my = y;
-        return (_mx < _my ? _mx : _my);
+        int mx = x;
+        int my = y;
+        return (mx < my ? mx : my);
     }
 
     static int insert_cost = 1;
@@ -126,19 +126,19 @@ public class EditDistance {
         return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
     }
 
-    private static int NW(int x, int y) {
+    private static int nw(int x, int y) {
         return ar(x, y, index + from_len + 2);
     }
 
-    private static int N(int x, int y) {
+    private static int n(int x, int y) {
         return ar(x, y, index + from_len + 3);
     }
 
-    private static int W(int x, int y) {
+    private static int w(int x, int y) {
         return ar(x, y, index + radix - 1);
     }
 
-    private static int NNWW(int x, int y) {
+    private static int nnww(int x, int y) {
         return ar(x, y, index + 1);
     }
 
@@ -174,12 +174,12 @@ public class EditDistance {
             int[] y = new int[1];
             x[0] = from_len;
             y[0] = to_len;
-            swap_int(x, y);
+            swapInt(x, y);
             byte[][] xx = new byte[1][];
             byte[][] yy = new byte[1][];
             xx[0] = from;
             yy[0] = to;
-            swap_char(xx, yy);
+            swapChar(xx, yy);
         } // if from_len > to_len
 
         /* Allocate the array storage (from the heap if necessary) */
@@ -233,10 +233,10 @@ public class EditDistance {
         /* Now handle the rest of the matrix */
         for (row = 1; row < to_len; row++) {
             for (col = 0; col < from_len; col++) {
-                buffer[index] = min3(NW(row, col) + ((from[col] == to[row]) ? 0 : ch), N(row, col + 1) + ins, W(row + 1, col) + del);
+                buffer[index] = min3(nw(row, col) + ((from[col] == to[row]) ? 0 : ch), n(row, col + 1) + ins, w(row + 1, col) + del);
 
                 if (from[col] == to[row - 1] && col > 0 && from[col - 1] == to[row]) {
-                    buffer[index] = min2(buffer[index], NNWW(row - 1, col - 1) + swap_cost);
+                    buffer[index] = min2(buffer[index], nnww(row - 1, col - 1) + swap_cost);
                 }
 
                 if (buffer[index] < low || col == 0) {

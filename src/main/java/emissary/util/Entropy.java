@@ -27,8 +27,8 @@ public class Entropy {
         // ******************************************************************
         // ****************** scan the document ******************
         // ******************************************************************
-        for (int cur_pos = 0; cur_pos < size; ++cur_pos) {
-            ++histogramArray[data[cur_pos] & 0xff];
+        for (int curPos = 0; curPos < size; ++curPos) {
+            ++histogramArray[data[curPos] & 0xff];
             ++bytes;
         }
 
