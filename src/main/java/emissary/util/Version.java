@@ -30,16 +30,14 @@ public final class Version {
      * Does not create a Configurator due to logging restrictions on this method.
      */
     private void readHardWiredConfigInfo() {
-        InputStream rstream = null;
-        try {
-            // This configurator is not overridable by
-            // the normal config.pkg or config.dir mechanisms.
-            // It also cannot call any method in ConfigUtil that
-            // will end up calling a logger.* method, since we
-            // are here producing the header for the log file
-            String rez = Version.class.getName().replace('.', '/') + ConfigUtil.CONFIG_FILE_ENDING;
+        // This configurator is not overridable by
+        // the normal config.pkg or config.dir mechanisms.
+        // It also cannot call any method in ConfigUtil that
+        // will end up calling a logger.* method, since we
+        // are here producing the header for the log file
+        String rez = Version.class.getName().replace('.', '/') + ConfigUtil.CONFIG_FILE_ENDING;
+        try (InputStream rstream = new ResourceReader().getResourceAsStream(rez)) {
             // System.out.println("Reading " + rez);
-            rstream = new ResourceReader().getResourceAsStream(rez);
             if (rstream != null) {
                 byte[] data = IOUtils.toByteArray(rstream);
                 String sdata = new String(data);
@@ -58,13 +56,6 @@ public final class Version {
             }
         } catch (IOException iox) {
             // System.out.println("Bad read: " + iox);
-        } finally {
-            if (rstream != null) {
-                try {
-                    rstream.close();
-                } catch (IOException ignore) {
-                }
-            }
         }
     }
 
