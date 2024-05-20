@@ -6,6 +6,7 @@ import emissary.core.EmissaryException;
 import emissary.util.ThreadDump;
 import emissary.util.io.ResourceReader;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
@@ -136,23 +137,25 @@ public abstract class UnitTest {
      * Get all test resources (*.dat) for this class in a format suitable for Junit Parameterized Tests
      */
     public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
-        ResourceReader rr = new ResourceReader();
-        List<String> rs = rr.findDataResourcesFor(clz);
-        return rs.stream().map(Arguments::of);
+        return getMyTestParameterFiles(clz, clz);
     }
 
     /**
      * Get test resources (*.dat) and test answers when they are in two different directories.
-     * 
-     * @param answerClass class that provides the test answer files
-     * @param dataClass class that provides the test resource (*.dat) files
+     *
+     * @param dataClz class that provides the test resource (*.dat) files
+     * @param ansClz class that provides the test answer files
      * @return the stream of test resource files to be used for JUnit Parameterized Tests
      */
-    public static Stream<? extends Arguments> getMyTestAnswerFiles(Class<?> answerClass, Class<?> dataClass) {
+    public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> dataClz, Class<?> ansClz) {
         ResourceReader rr = new ResourceReader();
-        answerFiles = rr.findXmlResourcesFor(answerClass);
-        List<String> rs = rr.findDataResourcesFor(dataClass);
+        List<String> rs = rr.findDataResourcesFor(dataClz);
+        answerFiles = getMyTestAnswerFiles(rr, ansClz);
         return rs.stream().map(Arguments::of);
+    }
+
+    private static List<String> getMyTestAnswerFiles(ResourceReader resourceReader, Class<?> ansClz) {
+        return resourceReader.findXmlResourcesFor(ansClz);
     }
 
     /**
@@ -227,9 +230,9 @@ public abstract class UnitTest {
             aname = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
         } else {
             // if answer files are in different directory than data files, this will be used to find matching answer to data pair
-            int testFileName = resource.lastIndexOf("/");
+            String testFileName = FilenameUtils.getBaseName(resource);
             for (String answer : answerFiles) {
-                if (answer.contains(resource.substring(testFileName + 1, datPos))) {
+                if (FilenameUtils.getBaseName(answer).equals(testFileName)) {
                     aname = answer;
                 }
             }
