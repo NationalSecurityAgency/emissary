@@ -234,6 +234,7 @@ public abstract class UnitTest {
             for (String answer : answerFiles) {
                 if (FilenameUtils.getBaseName(answer).equals(testFileName)) {
                     aname = answer;
+                    break;
                 }
             }
         }
