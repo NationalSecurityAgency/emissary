@@ -184,6 +184,7 @@ public class JournalReader implements Closeable {
         }
     }
 
+    @SuppressWarnings("PreferredInterfaceType")
     public static Collection<Path> getJournalPaths(Path dir) throws IOException {
         ArrayList<Path> paths = new ArrayList<>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*" + EXT)) {

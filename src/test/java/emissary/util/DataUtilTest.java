@@ -9,7 +9,7 @@ import emissary.test.core.junit5.UnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -34,7 +34,7 @@ class DataUtilTest extends UnitTest {
     void testPushDedupedForms() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         // this has a duplicate value
-        final Collection<String> myforms = Arrays.asList("FOO", "FOO", "BAR");
+        final List<String> myforms = Arrays.asList("FOO", "FOO", "BAR");
         DataUtil.pushDedupedForms(d, myforms);
         assertTrue(d.getAllCurrentForms().contains("FOO"), "failed to add FOO");
         assertTrue(d.getAllCurrentForms().contains("BAR"), "failed to add BAR");
