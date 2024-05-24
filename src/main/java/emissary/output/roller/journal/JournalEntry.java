@@ -34,13 +34,13 @@ public final class JournalEntry {
     }
 
     static JournalEntry deserialize(final ByteBuffer b) {
-        final int _keyLen = b.getInt();
+        final int keyLen = b.getInt();
         validateSep(b.get());
-        final byte[] _keyBytes = new byte[_keyLen];
-        b.get(_keyBytes, 0, _keyLen);
+        final byte[] keyBytes = new byte[keyLen];
+        b.get(keyBytes, 0, keyLen);
         validateSep(b.get());
-        final long _offset = b.getLong();
-        return new JournalEntry(new String(_keyBytes), _offset);
+        final long offset = b.getLong();
+        return new JournalEntry(new String(keyBytes), offset);
     }
 
     static void validateSep(final byte b) {

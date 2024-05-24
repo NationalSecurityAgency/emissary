@@ -100,17 +100,17 @@ public final class ConstructorLookupCache {
     private static final ThreadLocal<SoftReference<KnownConstructor>> cachedConstructorLookup = new ThreadLocal<>();
 
     /** A table mapping boxed classes to their primitive types. */
-    private static final Map<Class<?>, Class<?>> PrimClass = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> primClass = new HashMap<>();
 
     // Initialize the mappings.
     static {
-        PrimClass.put(Integer.class, Integer.TYPE);
-        PrimClass.put(Boolean.class, Boolean.TYPE);
-        PrimClass.put(Float.class, Float.TYPE);
-        PrimClass.put(Character.class, Character.TYPE);
-        PrimClass.put(Long.class, Long.TYPE);
-        PrimClass.put(Double.class, Double.TYPE);
-        PrimClass.put(Byte.class, Byte.TYPE);
+        primClass.put(Integer.class, Integer.TYPE);
+        primClass.put(Boolean.class, Boolean.TYPE);
+        primClass.put(Float.class, Float.TYPE);
+        primClass.put(Character.class, Character.TYPE);
+        primClass.put(Long.class, Long.TYPE);
+        primClass.put(Double.class, Double.TYPE);
+        primClass.put(Byte.class, Byte.TYPE);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class ConstructorLookupCache {
      * @return If {@code clazz} is a boxed primitive, return the primitive type; otherwise just return {@code clazz}.
      */
     private static Class<?> getPrim(final Class<?> clazz) {
-        final Class<?> prim = PrimClass.get(clazz);
+        final Class<?> prim = primClass.get(clazz);
         return (prim != null) ? prim : clazz;
     }
 
