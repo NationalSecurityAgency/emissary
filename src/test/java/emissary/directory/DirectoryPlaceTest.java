@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,7 +112,7 @@ class DirectoryPlaceTest extends UnitTest {
         assertTrue(d.isLocal(), "Entry points to local place");
         final IServiceProviderPlace p = d.getLocalPlace();
         assertNotNull(p, "Entry points to local place");
-        assertTrue(p instanceof IDirectoryPlace, "Entry is directory");
+        assertInstanceOf(IDirectoryPlace.class, p, "Entry is directory");
     }
 
     @Test

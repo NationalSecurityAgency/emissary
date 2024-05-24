@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -80,7 +81,7 @@ class EmissaryMvcTest extends EndpointTestBase {
             assertNotNull(out);
             assertEquals(1, out.size());
             Object namespaceInfoSet = out.get("namespaces");
-            assertTrue(namespaceInfoSet instanceof Set);
+            assertInstanceOf(Set.class, namespaceInfoSet);
             AtomicBoolean found = new AtomicBoolean(false);
             ((Set<NamespaceAction.NamespaceInfo>) namespaceInfoSet).forEach(info -> {
                 if ("TestDirectoryPlace".equals(info.key)) {

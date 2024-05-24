@@ -16,6 +16,7 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +37,7 @@ class SimpleNioParserTest extends UnitTest {
         // They will have to look here :-)
         try {
             SimpleNioParser sp = new SimpleNioParser(channel);
-            assertTrue(sp instanceof SessionParser, "SessionParser interface definition");
+            assertInstanceOf(SessionParser.class, sp, "SessionParser interface definition");
         } catch (ParserException ex) {
             fail("SimpleNioParser is not a SessionParser", ex);
         }
