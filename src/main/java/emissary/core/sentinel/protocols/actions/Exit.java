@@ -10,6 +10,7 @@ import java.util.Map;
 public class Exit extends Action {
 
     @Override
+    @SuppressWarnings("SystemExitOutsideMain")
     public void trigger(Map<String, Sentinel.Tracker> trackers) {
         logger.error("Sentinel detected unrecoverable agents, exiting now -- {}", format(trackers));
         System.exit(1);
