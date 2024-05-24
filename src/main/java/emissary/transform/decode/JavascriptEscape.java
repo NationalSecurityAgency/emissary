@@ -2,17 +2,10 @@ package emissary.transform.decode;
 
 import emissary.util.shell.Executrix;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class JavascriptEscape {
-
-    /* our logger */
-    private final static Logger logger = LoggerFactory.getLogger(JavascriptEscape.class);
-
 
     /**
      * Unescape javascript unicode characters in the form backslash-u-nnnn. Browser tests show that only lowercase "u" and

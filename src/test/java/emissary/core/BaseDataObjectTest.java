@@ -11,7 +11,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -818,7 +818,7 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testPutParametersWithMultimapAsMap() {
-        final Multimap<String, String> map = ArrayListMultimap.create();
+        final ListMultimap<String, String> map = ArrayListMultimap.create();
         map.put("ONE", "uno");
         map.put("ONE", "ein");
         map.put("ONE", "neo");

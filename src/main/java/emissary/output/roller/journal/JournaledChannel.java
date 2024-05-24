@@ -68,7 +68,7 @@ public class JournaledChannel extends OutputStream implements SeekableByteChanne
             this.directBuff.flip();
             while (this.directBuff.hasRemaining()) {
                 if (this.fc.write(this.directBuff) <= 0) {
-                    throw new RuntimeException("no bytes written");
+                    throw new IllegalStateException("no bytes written");
                 }
             }
             offset += limit;

@@ -82,11 +82,8 @@ public class WatcherThread extends Thread {
 
         wt.setProcess(proc);
 
-        PrintStream out = null;
-        PrintStream err = null;
-
-        out = System.out;
-        err = System.err;
+        PrintStream out = System.out;
+        PrintStream err = System.err;
 
         Thread t1 = new Thread(new ReadOutput(proc.getInputStream(), name, out));
         Thread t2 = new Thread(new ReadOutput(proc.getErrorStream(), name, err));

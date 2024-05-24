@@ -86,12 +86,14 @@ public abstract class FunctionalTest extends UnitTest {
             jserver = new EmissaryServer(cmd);
             jetty = jserver.startServer();
         } catch (Exception ignored) {
+            // Ignore
         }
 
         // Wait for jetty to come up
         try {
             Thread.sleep(500);
         } catch (InterruptedException ignored) {
+            // Ignore
         }
         referenceServices(port);
     }

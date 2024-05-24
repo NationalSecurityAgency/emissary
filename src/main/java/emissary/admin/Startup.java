@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.Namespace;
 import emissary.directory.DirectoryEntry;
 import emissary.directory.DirectoryPlace;
@@ -538,7 +539,7 @@ public class Startup {
             // start all other places, so it isn't per se "announced", but it is known and logged
             activeDirPlaces.removeIf(dir -> dir.equalsIgnoreCase("DirectoryPlace"));
         } catch (EmissaryException e) {
-            throw new RuntimeException(e);
+            throw new EmissaryRuntimeException(e);
         }
 
         // compares place names in active dirs and active places, removes them from set if found

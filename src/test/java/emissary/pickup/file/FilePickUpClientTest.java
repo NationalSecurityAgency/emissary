@@ -151,10 +151,5 @@ class FilePickUpClientTest extends UnitTest {
                 return super.caseIdHook(initialCaseId, sessionname, fileName, metadata);
             }
         }
-
-        @Override
-        protected String createFilename(String filePath, String prefix) {
-            return super.createFilename(filePath, prefix);
-        }
     }
 }

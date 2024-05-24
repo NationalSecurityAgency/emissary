@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nsa.emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>8.3.0-SNAPSHOT</version>
+  <version>8.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description>Distributed P2P Data-driven Workflow Framework</description>
@@ -1440,11 +1440,13 @@
                   -XepDisableWarningsInGeneratedCode \
                   -Xep:AndroidJdkLibsChecker:OFF \
                   -Xep:BooleanParameter:OFF \
+                  -Xep:CanIgnoreReturnValueSuggester:OFF \
                   -Xep:DefaultCharset:OFF \
                   -Xep:InlineMeSuggester:OFF \
                   -Xep:InlineTrivialConstant:OFF \
                   -Xep:Java7ApiChecker:OFF \
                   -Xep:Java8ApiChecker:OFF \
+                  -Xep:StringSplitter:OFF \
                   -Xep:UnnecessaryFinal:OFF \
                   -Xep:Var:OFF \
                   -Xep:Varifier:OFF \

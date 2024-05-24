@@ -1,6 +1,7 @@
 package emissary.util;
 
 import emissary.core.BaseDataObject;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
@@ -29,7 +30,7 @@ class DisposeHelperTest extends UnitTest {
     private static final Runnable THIRD = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestThirdRunnable");
 
     private static final Runnable THROWS = () -> {
-        throw new RuntimeException("DisposeHelperTest");
+        throw new EmissaryRuntimeException("DisposeHelperTest");
     };
 
     @Nullable

@@ -1196,11 +1196,11 @@ public class WorkSpace implements Runnable {
             long bytesInBundle = 0;
 
             try {
-                int ff_options = FileFind.FILES_FLAG;
+                int ffOptions = FileFind.FILES_FLAG;
                 if (wantDirectories) {
-                    ff_options |= FileFind.DIRECTORIES_FLAG;
+                    ffOptions |= FileFind.DIRECTORIES_FLAG;
                 }
-                final FileFind ff = new FileFind(ff_options);
+                final FileFind ff = new FileFind(ffOptions);
                 final Iterator<?> f = ff.find(dir.getDirectoryName());
 
                 WorkBundle paths = new WorkBundle(basePath);

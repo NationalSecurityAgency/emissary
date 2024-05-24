@@ -202,7 +202,7 @@ public class MagicNumber {
                         }
                     }
                 } catch (UnsupportedEncodingException e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalArgumentException(e);
                 }
                 if (subType.charValue() == 'l' && !stack.empty() && stack.peek().charValue() == 'd') {
                     stack.pop();
@@ -355,7 +355,7 @@ public class MagicNumber {
                 }
                 return true;
             default:
-                throw new RuntimeException(
+                throw new IllegalStateException(
                         "This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value.");
 
         }

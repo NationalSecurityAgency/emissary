@@ -8,6 +8,7 @@ import emissary.command.ServerCommand;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IPausable;
 import emissary.core.MetricsManager;
 import emissary.core.Namespace;
@@ -138,7 +139,7 @@ public class EmissaryServer {
             lbConfigHandler.setContextPath("/lbConfig");
             ContextHandler apiHandler = buildApiHandler();
             apiHandler.setContextPath("/api");
-            ContextHandler mvcHandler = buildMVCHandler();
+            ContextHandler mvcHandler = buildMvcHandler();
             mvcHandler.setContextPath("/emissary");
             // needs to be loaded last into the server so other contexts can match or fall through
             ContextHandler staticHandler = buildStaticHandler();
@@ -182,8 +183,8 @@ public class EmissaryServer {
                 LOG.debug("Removing old {}", envsh.toAbsolutePath());
                 Files.delete(envsh);
             }
-            String envURI = serverLocation + "/api/env.sh";
-            EmissaryResponse er = new EmissaryClient().send(new HttpGet(envURI));
+            String envUri = serverLocation + "/api/env.sh";
+            EmissaryResponse er = new EmissaryClient().send(new HttpGet(envUri));
             String envString = er.getContentString();
             Files.createFile(envsh);
             Files.write(envsh, envString.getBytes());
@@ -207,7 +208,7 @@ public class EmissaryServer {
             return configuredServer;
         } catch (Throwable t) {
             String errorMsg = "Emissary server didn't start";
-            throw new RuntimeException(errorMsg, t);
+            throw new EmissaryRuntimeException(errorMsg, t);
         }
     }
 
@@ -612,7 +613,7 @@ public class EmissaryServer {
         return apiHolderContext;
     }
 
-    private ContextHandler buildMVCHandler() {
+    private ContextHandler buildMvcHandler() {
 
         final ResourceConfig application = new ResourceConfig();
         application.setApplicationName("mvc");

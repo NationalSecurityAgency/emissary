@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static emissary.util.io.UnitTestFileUtils.findFilesByExtension;
@@ -27,7 +27,7 @@ public class FTestServiceConfigGuide extends FunctionalTest {
         ConfigUtil.initialize();
 
         // look in config dir
-        Collection<Path> configFiles = new ArrayList<>();
+        List<Path> configFiles = new ArrayList<>();
 
         for (String dir : ConfigUtil.getConfigDirs()) {
             configFiles.addAll(findFilesByExtension(Paths.get(dir), ".cfg"));

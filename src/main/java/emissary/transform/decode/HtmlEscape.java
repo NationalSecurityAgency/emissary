@@ -240,7 +240,7 @@ public class HtmlEscape {
                     }
 
                     if (ent != null) {
-                        String val = getValueForHTMLEntity(ent);
+                        String val = getValueForHtmlEntity(ent);
                         if (val != null) {
                             sb.append(val);
                             if (counters != null) {
@@ -327,7 +327,7 @@ public class HtmlEscape {
     }
 
     @Nullable
-    private static String getValueForHTMLEntity(String entity) {
+    private static String getValueForHtmlEntity(String entity) {
         String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
         if (s != null) {
             return s;

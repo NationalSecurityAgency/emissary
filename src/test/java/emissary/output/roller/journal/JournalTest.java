@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +47,7 @@ class JournalTest extends UnitTest {
         long twoOffset = 0;
         try (JournalReader instance = new JournalReader(this.tmpDir.resolve(uuid + Journal.EXT))) {
             Journal j = instance.getJournal();
-            final Collection<JournalEntry> entries = j.getEntries();
+            final List<JournalEntry> entries = j.getEntries();
             assertEquals(4, entries.size(), "Expected 4 entries but was " + entries.size());
             for (final JournalEntry entry : entries) {
                 if ((uuid + "-1").equals(entry.getVal())) {
