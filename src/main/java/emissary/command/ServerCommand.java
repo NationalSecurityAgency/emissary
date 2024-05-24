@@ -4,6 +4,7 @@ import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
 import emissary.command.validator.ServerModeValidator;
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
 
@@ -90,7 +91,7 @@ public class ServerCommand extends ServiceCommand {
             setupServer();
         } catch (EmissaryException e) {
             LOG.error("Got an exception", e);
-            throw new RuntimeException(e);
+            throw new EmissaryRuntimeException(e);
         }
     }
 
@@ -113,7 +114,7 @@ public class ServerCommand extends ServiceCommand {
         }
 
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {
-            throw new RuntimeException("Can not run a server in both STANDALONE and CLUSTER");
+            throw new IllegalArgumentException("Can not run a server in both STANDALONE and CLUSTER");
         } else {
             overrideFlavor(String.join(",", flavorSet));
         }

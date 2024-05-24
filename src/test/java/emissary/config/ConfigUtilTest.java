@@ -1,6 +1,7 @@
 package emissary.config;
 
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.shell.Executrix;
 
@@ -655,7 +656,7 @@ class ConfigUtilTest extends UnitTest {
             ros.write(contents.getBytes());
         } catch (IOException ex) {
             logger.error("Problem making {}", file, ex);
-            throw new RuntimeException(ex);
+            throw new EmissaryRuntimeException(ex);
         }
         return file;
     }

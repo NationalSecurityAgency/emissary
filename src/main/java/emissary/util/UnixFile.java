@@ -50,7 +50,7 @@ public class UnixFile {
      */
     public UnixFile(File magicFile, boolean swallowParseException) throws IOException {
         if (!magicFile.exists()) {
-            throw new RuntimeException("Magic file not found at: " + magicFile.getAbsolutePath());
+            throw new IllegalArgumentException("Magic file not found at: " + magicFile.getAbsolutePath());
         }
 
         this.magicFiles.add(magicFile);
@@ -76,7 +76,7 @@ public class UnixFile {
         for (String mPath : magicPaths) {
             File mFile = new File(mPath);
             if (!mFile.exists() || !mFile.canRead()) {
-                throw new RuntimeException("Magic file not found at " + mFile.getAbsolutePath());
+                throw new IllegalArgumentException("Magic file not found at " + mFile.getAbsolutePath());
             }
             this.magicFiles.add(mFile);
             util.load(mFile, swallowParseException);

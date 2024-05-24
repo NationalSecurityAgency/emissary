@@ -209,7 +209,7 @@ class FactoryTest extends UnitTest {
 
     static class DemoClassThatThrowsThrowableFromConstructor {
         public DemoClassThatThrowsThrowableFromConstructor() throws Throwable {
-            throw new Throwable("Bogus");
+            throw new AssertionError("Bogus");
         }
     }
 }
