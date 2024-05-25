@@ -247,9 +247,7 @@ public class CharsetUtil {
                 int srcptr = pos + len;
 
                 switch (len) {
-                    default:
-                        return false;
-                    // everything else falls through when true
+                    // everything falls through when true
                     case 4:
                         a = (data[--srcptr] & 0xff);
                         if (a < 0x80 || a > 0xbf) {
@@ -295,6 +293,9 @@ public class CharsetUtil {
                         if (val >= 0xf0) {
                             return false;
                         }
+                        break;
+                    default:
+                        return false;
                 }
                 pos += len;
             } catch (ArrayIndexOutOfBoundsException x) {
