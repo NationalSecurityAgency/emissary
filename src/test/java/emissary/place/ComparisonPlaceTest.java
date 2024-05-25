@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -91,7 +92,7 @@ class ComparisonPlaceTest extends UnitTest {
         testComparisonPlace(PROCESSHD_PLACE_B_CHANGES, logMessage);
     }
 
-    private static void testComparisonPlace(final String configuration, final String logMessage) throws Exception {
+    private static void testComparisonPlace(final String configuration, final @Nullable String logMessage) throws Exception {
         try (LogbackTester logbackTester = new LogbackTester(ComparisonPlace.class.getName())) {
             final ComparisonPlace comparisonPlace = new ComparisonPlace(null, null, configuration);
             final byte[] data = configuration.getBytes(StandardCharsets.UTF_8);
