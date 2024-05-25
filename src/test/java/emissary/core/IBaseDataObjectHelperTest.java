@@ -59,7 +59,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     private static void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
-            final Boolean switchWithFullClone) {
+            final boolean switchWithFullClone) {
         try {
             final Method method = IBaseDataObject.class.getMethod(methodName);
             final boolean isArrayType = "[B".equals(method.getReturnType().getName());
