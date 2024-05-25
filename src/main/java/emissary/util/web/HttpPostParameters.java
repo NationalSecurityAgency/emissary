@@ -3,22 +3,16 @@ package emissary.util.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- $Id$
- */
-/**
- * Hold onto fielded data that should be posted to a URL
- * in x-www-urlencoded format.
- *
- * For convenience also keep it around in unencoded format
- *
- * @author MJF, 2000-08-01
- */
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
+/**
+ * Hold onto fielded data that should be posted to a URL in x-www-urlencoded format.
+ *
+ * For convenience also keep it around in unencoded format
+ */
 public class HttpPostParameters {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpPostParameters.class);
