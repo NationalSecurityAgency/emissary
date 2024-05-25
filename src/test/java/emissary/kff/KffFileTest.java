@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -90,7 +91,7 @@ class KffFileTest extends UnitTest {
      * Tests concurrent {@link KffFile#check(String, ChecksumResults)} invocations to ensure that method's thread-safety
      */
     @Test
-    void testConcurrentKffFileCheckCalls() throws Exception {
+    void testConcurrentKffFileCheckCalls() throws ExecutionException, IOException, InterruptedException {
         int EXPECTED_FAILURE_COUNT = 200;
 
         // the inputs we'll submit, along wth their expected KffFile.check return values

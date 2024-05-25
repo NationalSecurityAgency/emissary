@@ -129,7 +129,9 @@ class FTestMovingAgent extends FunctionalTest {
             try {
                 Thread.sleep(250);
             } catch (Exception ex) {
-                // empty catch block
+                if (ex instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
             }
             waitCounter++;
         }

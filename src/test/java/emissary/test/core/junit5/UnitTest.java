@@ -177,6 +177,9 @@ public abstract class UnitTest {
             Thread.sleep(millis);
         } catch (Exception ex) {
             // empty exception block
+            if (ex instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             logger.debug("Thread interrupted", ex);
         }
     }

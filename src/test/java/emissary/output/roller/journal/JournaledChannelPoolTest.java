@@ -46,7 +46,7 @@ class JournaledChannelPoolTest extends UnitTest {
      * Test of freeChannel method, of class JournaledChannelPool.
      */
     @Test
-    void testGetAndFree() throws Exception {
+    void testGetAndFree() throws IOException, InterruptedException {
         final SeekableByteChannel out = this.instance.getFree();
         final int created = this.instance.getCreatedCount();
         assertTrue(created > 0, "Should have recorded creation of at least 1 object");
@@ -60,7 +60,7 @@ class JournaledChannelPoolTest extends UnitTest {
      * Test of getJournalEntries method, of class JournaledChannelPool.
      */
     @Test
-    void testGetJournalEntries() throws Exception {
+    void testGetJournalEntries() throws IOException, InterruptedException {
         final String onetext = "one line of text";
         final String twotext = "two lines of text\nthe second line";
         try (KeyedOutput k1 = this.instance.getFree(); KeyedOutput k2 = this.instance.getFree()) {

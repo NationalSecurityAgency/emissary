@@ -124,6 +124,9 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             logger.info("Added Roller for {} running every {} {}(s) or on size {} (bytes).", getFilterName(), this.rollInterval,
                     this.rollIntervalUnits, this.maxRollFileSize);
         } catch (Exception ex) {
+            if (ex instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             logger.error("Unable to instantiate Roller for handling {} file output", getFilterName(), ex);
             System.exit(1);
         }
