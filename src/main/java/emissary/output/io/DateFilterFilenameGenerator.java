@@ -6,6 +6,7 @@ import emissary.util.io.FileNameGenerator;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class DateFilterFilenameGenerator implements FileNameGenerator {
     }
 
     private static String now() {
-        return DATE_PATTERN.format(LocalDateTime.now());
+        return DATE_PATTERN.format(LocalDateTime.now(ZoneId.systemDefault()));
     }
 
 }
