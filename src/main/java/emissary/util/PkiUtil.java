@@ -107,4 +107,7 @@ public class PkiUtil {
         }
         return realPw.toCharArray();
     }
+
+
+    private PkiUtil() {}
 }

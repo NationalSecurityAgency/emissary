@@ -30,4 +30,7 @@ public class SPILoader {
         ServiceLoader<InitializationProvider> loader = ServiceLoader.load(InitializationProvider.class);
         loader.forEach(InitializationProvider::shutdown);
     }
+
+
+    private SPILoader() {}
 }
