@@ -50,7 +50,7 @@ public class BackwardsTreeScanner {
      */
     public synchronized void resetKeywords(String[] keywordStrings) throws Exception {
         // make byte arrays
-        /** Original list of keywords stored in byte array form. */
+        // Original list of keywords stored in byte array form.
         byte[][] keywords = new byte[keywordStrings.length][];
         root = new State((byte) 0); // reset state
         // and learn them
