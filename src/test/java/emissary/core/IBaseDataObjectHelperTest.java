@@ -51,6 +51,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     private static final Boolean DONT_CHECK = null;
     private static final Boolean EQUAL_WITHOUT_FULL_CLONE = false;
     private static final Boolean EQUAL_AFTER_FULL_CLONE = true;
+    private static final Pattern EXCLUDED_PARAMETERS = Pattern.compile("FILETYPE|WILDCARDED_.*");
 
     @BeforeEach
     void setup() {
@@ -353,16 +354,15 @@ class IBaseDataObjectHelperTest extends UnitTest {
     void testAddParentInformationToChildExcluding() throws Exception {
         final IBaseDataObject parentIbdo = ibdo1;
         final IBaseDataObject childIbdo = ibdo2;
-        final Pattern excludedParameters = Pattern.compile("FILETYPE|WILDCARDED_.*");
 
-        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(null, childIbdo, excludedParameters));
-        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, null, excludedParameters));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(null, childIbdo, EXCLUDED_PARAMETERS));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, null, EXCLUDED_PARAMETERS));
         checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, null));
 
         parentIbdo.setFileType("filetype");
         parentIbdo.setParameter("NON_EXCLUDED", "hereIam");
         parentIbdo.setParameter("WILDCARDED_KEYNAME", "anyValueWillDo");
-        IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, excludedParameters);
+        IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, EXCLUDED_PARAMETERS);
         assertNull(childIbdo.getFileType(), "Child should not contain simple excluded parameter from parent");
         assertNull(childIbdo.getParameter("WILDCARDED_KEYNAME"), "Child should not contain wildcard excluded parameter from parent");
         assertEquals(parentIbdo.getParameter("NON_EXCLUDED").get(0), childIbdo.getParameter("NON_EXCLUDED").get(0),

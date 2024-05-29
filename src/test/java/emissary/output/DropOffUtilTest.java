@@ -39,6 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests for DropOffUtil
  */
 class DropOffUtilTest extends UnitTest {
+    private static final Pattern SUBDIR_NAME_PATTERN = Pattern.compile("NO-CASE/\\d{4}-\\d{2}-\\d{2}/\\d{2}/\\d{2}");
     @Nullable
     private DropOffUtil util = null;
     @Nullable
@@ -485,7 +486,7 @@ class DropOffUtilTest extends UnitTest {
     @Test
     void testGetSubdirName() {
         String subdirName = this.util.getSubDirName(new BaseDataObject(), null, new BaseDataObject());
-        assertTrue(Pattern.compile("NO-CASE/\\d{4}-\\d{2}-\\d{2}/\\d{2}/\\d{2}").matcher(subdirName).matches());
+        assertTrue(SUBDIR_NAME_PATTERN.matcher(subdirName).matches());
     }
 
     @Test
