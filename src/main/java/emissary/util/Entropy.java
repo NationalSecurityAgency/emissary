@@ -1,8 +1,3 @@
-/*
-  $Id$
- */
-
-
 package emissary.util;
 
 public class Entropy {
@@ -16,12 +11,10 @@ public class Entropy {
 
     public static boolean checkText(final byte[] data, int length) {
         int bytes = 0;
-        int[] histogramArray;
         double entropy = 0;
         double relativeFreq;
         int size = Math.min(length, data.length);
-
-        histogramArray = new int[256];
+        int[] histogramArray = new int[256];
 
 
         // ******************************************************************

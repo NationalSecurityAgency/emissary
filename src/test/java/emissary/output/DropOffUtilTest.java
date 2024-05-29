@@ -639,8 +639,7 @@ class DropOffUtilTest extends UnitTest {
     }
 
     private static void testFileType(IBaseDataObject bdo, @Nullable Map<String, String> metadata, String expectedResults, @Nullable String formsArg) {
-        String fileType;
-        fileType = DropOffUtil.getAndPutFileType(bdo, metadata, formsArg);
+        String fileType = DropOffUtil.getAndPutFileType(bdo, metadata, formsArg);
         assertEquals(expectedResults, fileType);
     }
 }
