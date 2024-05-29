@@ -38,8 +38,7 @@ class ResourceReaderTest extends UnitTest {
         // Make sure we built the resource names correctly
         // by opening each one as a stream
         for (String rez : resources) {
-            InputStream is;
-            is = rr.getResourceAsStream(rez);
+            InputStream is = rr.getResourceAsStream(rez);
             assertNotNull(is, "Failed to open " + rez);
             try {
                 is.close();

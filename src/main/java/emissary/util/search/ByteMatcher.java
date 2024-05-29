@@ -237,13 +237,12 @@ public class ByteMatcher {
             return NOTFOUND;
         }
 
-        int matchPos;
 
         // Use the Boyer-Moore scanner. Set it to
         // ignore case.
 
         scanner.setCaseSensitive(false);
-        matchPos = scanner.indexOf(pattern, beginIndex, endIndex);
+        int matchPos = scanner.indexOf(pattern, beginIndex, endIndex);
 
         // Reset scanner to default state.
         scanner.setCaseSensitive(true);
