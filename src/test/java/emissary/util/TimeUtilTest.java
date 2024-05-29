@@ -100,7 +100,7 @@ class TimeUtilTest extends UnitTest {
         assertTrue(currentTime.contains("T"), "Full ISO8601 must have a 'T'");
         assertTrue(currentTime.contains("Z"), "Full ISO8601 must have a 'Z'");
 
-        final String time = TimeUtil.getDateAsFullISO8601(ZonedDateTime.now());
+        final String time = TimeUtil.getDateAsFullISO8601(ZonedDateTime.now(ZoneId.systemDefault()));
         assertTrue(time.contains("T"), "Full ISO8601 must have a 'T'");
         assertTrue(time.contains("Z"), "Full ISO8601 must have a 'Z'");
     }
