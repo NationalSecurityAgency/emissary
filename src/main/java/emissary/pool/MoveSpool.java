@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -120,8 +119,7 @@ public class MoveSpool implements Runnable {
      */
     private IDirectoryPlace getLocalDirectory() {
         if (localDirectory == null) {
-            for (Iterator<String> i = Namespace.keySet().iterator(); i.hasNext();) {
-                String key = i.next();
+            for (String key : Namespace.keySet()) {
                 try {
                     Object value = Namespace.lookup(key);
                     if (value instanceof IDirectoryPlace) {

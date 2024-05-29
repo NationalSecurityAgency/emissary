@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -323,8 +322,7 @@ public class DirectoryEntryMap extends ConcurrentHashMap<String, DirectoryEntryL
         int count = 0;
 
         for (final DirectoryEntryList list : values()) {
-            for (final Iterator<DirectoryEntry> i = list.iterator(); i.hasNext();) {
-                final DirectoryEntry entry = i.next();
+            for (DirectoryEntry entry : list) {
                 if (KeyManipulator.gmatch(entry.getKey(), key)) {
                     count++;
                 }
