@@ -85,4 +85,6 @@ public class DateTimeFormatParserLegacy {
         return date;
     }
 
+
+    private DateTimeFormatParserLegacy() {}
 }
