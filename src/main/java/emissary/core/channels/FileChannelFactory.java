@@ -66,7 +66,7 @@ public final class FileChannelFactory {
             this.path = path;
         }
 
-        protected void initialiseChannel() throws IOException {
+        void initialiseChannel() throws IOException {
             if (channel == null) {
                 channel = FileChannel.open(path, OPTIONS);
             }
