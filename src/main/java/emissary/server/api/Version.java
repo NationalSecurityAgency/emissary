@@ -23,8 +23,8 @@ import static emissary.server.api.ApiUtils.lookupPeers;
 import static emissary.server.api.ApiUtils.stripPeerString;
 
 /**
- * The version Emissary API endpoint. Currently contains the local (/api/version) call and cluster (/api/clusterVersion)
- * calls.
+ * The version Emissary API endpoint. Currently, contains the local (/api/version) call and cluster
+ * (/api/clusterVersion) calls.
  */
 @Path("")
 // context is /api
@@ -66,7 +66,7 @@ public class Version {
 
     private MapResponseEntity lookupVersion() {
         MapResponseEntity entity = new MapResponseEntity();
-        // Get the server so we can be ready to talk to ourself then the peers
+        // Get the server, so we can be ready to talk to ourselves then the peers
         try {
             EmissaryServer emissaryServer = (EmissaryServer) Namespace.lookup("EmissaryServer");
             EmissaryNode localNode = emissaryServer.getNode();
