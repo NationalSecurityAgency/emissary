@@ -46,6 +46,7 @@ import static emissary.core.SafeUsageChecker.UNSAFE_MODIFICATION_DETECTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -78,7 +79,7 @@ class BaseDataObjectTest extends UnitTest {
     void testInterface() {
         // This should pass by compilation, but in case anyone
         // ever thinks of taking it out, this may remind them...
-        assertTrue(this.b instanceof IBaseDataObject, "Implements the interface");
+        assertInstanceOf(IBaseDataObject.class, this.b, "Implements the interface");
     }
 
     @Test

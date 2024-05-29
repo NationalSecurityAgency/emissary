@@ -25,6 +25,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -276,22 +278,19 @@ class ServiceProviderPlaceTest extends UnitTest {
         InputStream config = new ByteArrayInputStream(configDataWithResourceLimit);
         place = new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
 
-        if (place instanceof ServiceProviderPlaceMBean) {
-            List<String> a = ((ServiceProviderPlaceMBean) place).getRunningConfig();
-            assertTrue(a.size() > 0, "Running config must have some entries");
-            String stats = ((ServiceProviderPlaceMBean) place).getPlaceStats();
-            assertNotNull(stats, "Stats expected");
-            long resourceLimit = ((ServiceProviderPlaceMBean) place).getResourceLimitMillis();
-            assertEquals(10, resourceLimit, "Resource limit must be saved and returned");
+        assertInstanceOf(ServiceProviderPlaceMBean.class, place, "Place is not an instance of ServiceProviderPlaceMBean");
+        List<String> a = ((ServiceProviderPlaceMBean) place).getRunningConfig();
+        assertFalse(a.isEmpty(), "Running config must have some entries");
+        String stats = ((ServiceProviderPlaceMBean) place).getPlaceStats();
+        assertNotNull(stats, "Stats expected");
+        long resourceLimit = ((ServiceProviderPlaceMBean) place).getResourceLimitMillis();
+        assertEquals(10, resourceLimit, "Resource limit must be saved and returned");
 
-            // These send output to the logger, just verify that they don't npe, they are
-            // slightly useful to keep around for using in jconsole
-            ((ServiceProviderPlaceMBean) place).dumpPlaceStats();
-            ((ServiceProviderPlaceMBean) place).dumpRunningConfig();
+        // These send output to the logger, just verify that they don't npe, they are
+        // slightly useful to keep around for using in jconsole
+        ((ServiceProviderPlaceMBean) place).dumpPlaceStats();
+        ((ServiceProviderPlaceMBean) place).dumpRunningConfig();
 
-        } else {
-            fail("Place should be an instance of ServiceProviderPlaceMBean");
-        }
     }
 
 

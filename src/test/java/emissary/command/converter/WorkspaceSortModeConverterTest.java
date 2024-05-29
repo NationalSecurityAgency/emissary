@@ -10,8 +10,8 @@ import java.util.Comparator;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkspaceSortModeConverterTest extends UnitTest {
     @Nullable
@@ -33,7 +33,7 @@ class WorkspaceSortModeConverterTest extends UnitTest {
     @Test
     void convertYoungestFirst() {
         comparator = converter.convert(WorkspaceSortModeConverter.YOUNGEST_FIRST);
-        assertTrue(comparator instanceof WorkspaceSortModeConverter.YoungestFirstComparator);
+        assertInstanceOf(WorkspaceSortModeConverter.YoungestFirstComparator.class, comparator);
         testComparePriority(comparator);
 
         WorkBundle one = new WorkBundle();
@@ -51,7 +51,7 @@ class WorkspaceSortModeConverterTest extends UnitTest {
     @Test
     void convertOldestFirst() {
         comparator = converter.convert(WorkspaceSortModeConverter.OLDEST_FIRST);
-        assertTrue(comparator instanceof WorkspaceSortModeConverter.OldestFirstComparator);
+        assertInstanceOf(WorkspaceSortModeConverter.OldestFirstComparator.class, comparator);
         testComparePriority(comparator);
 
         WorkBundle one = new WorkBundle();
@@ -69,7 +69,7 @@ class WorkspaceSortModeConverterTest extends UnitTest {
     @Test
     void convertSmallestFirst() {
         comparator = converter.convert(WorkspaceSortModeConverter.SMALLEST_FIRST);
-        assertTrue(comparator instanceof WorkspaceSortModeConverter.SmallestFirstComparator);
+        assertInstanceOf(WorkspaceSortModeConverter.SmallestFirstComparator.class, comparator);
         testComparePriority(comparator);
 
         WorkBundle one = new WorkBundle();
@@ -87,7 +87,7 @@ class WorkspaceSortModeConverterTest extends UnitTest {
     @Test
     void convertLargestFirst() {
         comparator = converter.convert(WorkspaceSortModeConverter.LARGEST_FIRST);
-        assertTrue(comparator instanceof WorkspaceSortModeConverter.LargestFirstComparator);
+        assertInstanceOf(WorkspaceSortModeConverter.LargestFirstComparator.class, comparator);
         testComparePriority(comparator);
 
         WorkBundle one = new WorkBundle();

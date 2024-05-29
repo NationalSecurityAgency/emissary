@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -43,7 +44,7 @@ class ServiceConfigGuideTest extends UnitTest {
     @Test
     void testInterface() {
         final ServiceConfigGuide s = new ServiceConfigGuide();
-        assertTrue(s instanceof Configurator, "Meets interface");
+        assertInstanceOf(Configurator.class, s, "Meets interface");
     }
 
     static Stream<Arguments> arguments() {

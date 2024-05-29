@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataObjectFactoryTest extends UnitTest {
     private String defaultPayloadClass;
@@ -34,7 +34,7 @@ class DataObjectFactoryTest extends UnitTest {
     void testFactory() {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
-        assertTrue(d instanceof IBaseDataObject, "Proper class hierarchy");
+        assertInstanceOf(IBaseDataObject.class, d, "Proper class hierarchy");
     }
 
     @Test
@@ -43,9 +43,9 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals(MyDataObject.class.getName(), DataObjectFactory.getImplementingClass(), "Impl class set");
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
-        assertTrue(d instanceof IBaseDataObject, "Proper class hierarchy");
-        assertTrue(d instanceof BaseDataObject, "Proper class hierarchy");
-        assertTrue(d instanceof MyDataObject, "Proper class hierarchy");
+        assertNotNull(d, "Proper class hierarchy");
+        assertInstanceOf(BaseDataObject.class, d, "Proper class hierarchy");
+        assertInstanceOf(MyDataObject.class, d, "Proper class hierarchy");
     }
 
     @Test
