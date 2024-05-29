@@ -113,7 +113,7 @@ class KffMemcachedTest extends UnitTest {
     }
 
 
-    private KffMemcached createTestFilter(Boolean storeIdDupe, Boolean simulateHit, @Nullable String _expectedKey)
+    private KffMemcached createTestFilter(Boolean storeIdDupe, boolean simulateHit, @Nullable String _expectedKey)
             throws IOException, NoSuchFieldException,
             IllegalAccessException {
         KffMemcached filter = new KffMemcached(TEST_ID_WITH_SPACES, "KFF", FilterType.Duplicate, mockMemcachedClient);
