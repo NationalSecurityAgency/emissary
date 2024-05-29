@@ -103,6 +103,6 @@ public class WatcherThread extends Thread {
 
         System.out.println(name + " ends at " + new Date());
 
-        return;
+
     }
 }
