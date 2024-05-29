@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.annotation.Nullable;
@@ -248,8 +247,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
     public static DirectoryEntryList fromXML(final Element e) {
         final DirectoryEntryList d = new DirectoryEntryList();
         final List<Element> entryElements = e.getChildren(DirectoryEntry.ENTRY);
-        for (Iterator<Element> i = entryElements.iterator(); i.hasNext();) {
-            final Element entryElement = i.next();
+        for (Element entryElement : entryElements) {
             d.add(DirectoryEntry.fromXml(entryElement));
         }
         return d;
