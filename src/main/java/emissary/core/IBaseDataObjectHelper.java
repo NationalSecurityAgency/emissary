@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,7 +67,7 @@ public final class IBaseDataObjectHelper {
             bdo.addAlternateView(entry.getKey(), entry.getValue());
         }
         bdo.setPriority(iBaseDataObject.getPriority());
-        bdo.setCreationTimestamp((Date) iBaseDataObject.getCreationTimestamp().clone());
+        bdo.setCreationTimestamp(iBaseDataObject.getCreationTimestamp());
         if (iBaseDataObject.getExtractedRecords() != null) {
             bdo.setExtractedRecords(iBaseDataObject.getExtractedRecords());
         }

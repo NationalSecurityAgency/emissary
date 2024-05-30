@@ -28,11 +28,11 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1123,7 +1123,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testDefaultConstructor_getSetDateTime() {
         // setup
-        final Date date = new Date(0);
+        final Instant date = Instant.now();
 
         // test
         this.b.setCreationTimestamp(date);

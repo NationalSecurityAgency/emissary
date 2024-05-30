@@ -6,8 +6,8 @@ import emissary.directory.DirectoryEntry;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -814,17 +814,17 @@ public interface IBaseDataObject {
 
     /**
      * Get the timestamp for when the object was created. This attribute will be used for data provenance.
-     * 
+     *
      * @return date - the timestamp the object was created
      */
-    Date getCreationTimestamp();
+    Instant getCreationTimestamp();
 
     /**
      * Set the timestamp for when the object was created
      * 
      * @param creationTimestamp - the date the object was created
      */
-    void setCreationTimestamp(Date creationTimestamp);
+    void setCreationTimestamp(Instant creationTimestamp);
 
     /**
      * Get the List of extracted records

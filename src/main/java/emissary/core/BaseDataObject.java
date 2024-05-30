@@ -23,9 +23,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.rmi.Remote;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -160,7 +160,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The timestamp for when the BaseDataObject was created. Used in data provenance tracking.
      */
-    protected Date creationTimestamp;
+    protected Instant creationTimestamp;
 
     /**
      * The extracted records, if any
@@ -252,7 +252,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     public BaseDataObject() {
         this.theData = null;
-        setCreationTimestamp(new Date(System.currentTimeMillis()));
+        setCreationTimestamp(Instant.now());
     }
 
     /**
@@ -265,7 +265,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject(final byte[] newData, final String name) {
         setData(newData);
         setFilename(name);
-        setCreationTimestamp(new Date(System.currentTimeMillis()));
+        setCreationTimestamp(Instant.now());
     }
 
     /**
@@ -1373,7 +1373,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public Date getCreationTimestamp() {
+    public Instant getCreationTimestamp() {
         return this.creationTimestamp;
     }
 
@@ -1384,7 +1384,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param creationTimestamp when this item was created
      */
     @Override
-    public void setCreationTimestamp(final Date creationTimestamp) {
+    public void setCreationTimestamp(final Instant creationTimestamp) {
         if (creationTimestamp == null) {
             throw new IllegalArgumentException("Timestamp must not be null");
         }

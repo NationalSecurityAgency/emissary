@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -116,7 +116,7 @@ public class PayloadUtil {
         final String fileName = payload.getFilename();
         final String fileType = payload.getFileType();
         final List<String> currentForms = payload.getAllCurrentForms();
-        final Date creationTimestamp = payload.getCreationTimestamp();
+        final Instant creationTimestamp = payload.getCreationTimestamp();
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
                 .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")

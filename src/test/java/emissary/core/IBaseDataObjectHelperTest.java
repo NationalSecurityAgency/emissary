@@ -15,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -165,8 +165,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     @Test
     void testCloneCreationTimestamp() {
-        ibdo1.setCreationTimestamp(new Date(1234567890));
-        verifyClone("getCreationTimestamp", ibdo1, IS_NOT_SAME, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
+        ibdo1.setCreationTimestamp(Instant.ofEpochSecond(1234567890));
+        verifyClone("getCreationTimestamp", ibdo1, DONT_CHECK, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
     }
 
     @Test

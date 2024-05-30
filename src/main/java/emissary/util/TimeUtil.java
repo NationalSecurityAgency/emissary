@@ -14,7 +14,6 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.zone.ZoneRulesException;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -242,8 +241,8 @@ public class TimeUtil {
     }
 
 
-    public static String getDateOrdinalWithTime(final Date d) {
-        return DATE_ORDINAL_WITH_TIME.format(d.toInstant().atZone(ZoneId.systemDefault()));
+    public static String getDateOrdinalWithTime(final Instant d) {
+        return DATE_ORDINAL_WITH_TIME.format(d.atZone(ZoneId.systemDefault()));
     }
 
     /** This class is not meant to be instantiated. */
