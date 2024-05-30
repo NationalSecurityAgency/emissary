@@ -40,7 +40,7 @@ class ShortNameComparatorTest extends UnitTest {
     private void fillList(final List<IBaseDataObject> l) {
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "1"));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3"));
-        l.add(DataObjectFactory.getInstance(this.nobytes, this.b));
+        l.add(DataObjectFactory.getInstance(this.nobytes, b));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(2)));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "3" + Family.getSep(1)));
         l.add(DataObjectFactory.getInstance(this.nobytes, this.ba + "2"));
@@ -48,7 +48,7 @@ class ShortNameComparatorTest extends UnitTest {
     }
 
     private void checkList(final List<IBaseDataObject> l) {
-        assertEquals(this.b, l.get(0).shortName(), "Ordering of sort");
+        assertEquals(b, l.get(0).shortName(), "Ordering of sort");
         assertEquals(this.ba + "1", l.get(1).shortName(), "Ordering of sort");
         assertEquals(this.ba + "2", l.get(2).shortName(), "Ordering of sort");
         assertEquals(this.ba + "3", l.get(3).shortName(), "Ordering of sort");
