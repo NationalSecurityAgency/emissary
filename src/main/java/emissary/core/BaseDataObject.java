@@ -9,6 +9,7 @@ import emissary.util.PayloadUtil;
 
 import com.google.common.collect.LinkedListMultimap;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -367,6 +368,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public SeekableByteChannelFactory getChannelFactory() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
@@ -413,6 +415,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public byte[] data() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
@@ -490,12 +493,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return the channel size
      */
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public long getChannelSize() throws IOException {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
                 throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
-                return theData.length;
+                return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
                 try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
                     return sbc.size();
@@ -513,12 +517,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      *         {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}.
      */
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public int dataLength() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
                 throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
-                return theData.length;
+                return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
                 try {
                     return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
