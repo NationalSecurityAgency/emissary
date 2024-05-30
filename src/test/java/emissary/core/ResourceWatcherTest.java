@@ -56,7 +56,7 @@ class ResourceWatcherTest extends UnitTest {
         final Timer s = stats.get("DevNullPlace");
         assertNotNull(s, "Events must be measured");
 
-        assertEquals(threadCount * iterations, s.getCount(), "Events must not be lost");
+        assertEquals(threadCount * ((long) iterations), s.getCount(), "Events must not be lost");
 
         this.resourceWatcher.resetStats();
         assertTrue(resourceWatcher.getStats().size() > 0, "Namespaces were not preserved");
