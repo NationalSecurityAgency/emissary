@@ -8,6 +8,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -27,7 +28,7 @@ public class JournaledChannelPool implements AutoCloseable {
     final int max;
     final Path directory;
     final String key;
-    private final ArrayList<JournaledChannel> free = new ArrayList<>();
+    private final List<JournaledChannel> free = new ArrayList<>();
     private int created;
     @Nullable
     private JournaledChannel[] allchannels;

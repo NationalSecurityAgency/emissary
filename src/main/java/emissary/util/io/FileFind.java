@@ -9,8 +9,9 @@ package emissary.util.io;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
@@ -91,7 +92,7 @@ public class FileFind {
         /**
          * Stack of Files and directory lists keeping track of where in the tree we are.
          */
-        private ArrayDeque<Object> currentPath = new ArrayDeque<>();
+        private List<Object> currentPath = new ArrayList<>();
         @Nullable
         private FileFilter filter = null;
 
@@ -104,7 +105,7 @@ public class FileFind {
             if (!f.exists() || !f.canRead()) {
                 throw new IOException("File not Found:" + filename);
             }
-            currentPath.addFirst(f);
+            currentPath.add(f);
             this.filter = filter;
             findNextFile();
         }
@@ -121,7 +122,7 @@ public class FileFind {
         @Override
         public Object next() {
             if (!currentPath.isEmpty()) {
-                Object tmp = currentPath.removeFirst();
+                Object tmp = currentPath.remove(0);
                 findNextFile();
                 return tmp;
             }
@@ -140,31 +141,31 @@ public class FileFind {
             boolean found = false;
             // While the stack is not empty, and we have not found the type of file that we are looking for.
             while (!currentPath.isEmpty() && !found) {
-                Object tmp = currentPath.peekFirst();
+                Object tmp = currentPath.get(0);
                 if (tmp instanceof File && !((File) tmp).isDirectory()) {
                     // We found one. Leave it on the stack for 'next()'
                     found = true;
                 } else if (tmp instanceof File && ((File) tmp).isDirectory()) {
 
                     // Pop the entry for the directory name if not desired
-                    Object theDir = currentPath.removeFirst();
+                    Object theDir = currentPath.remove(0);
 
                     // Add the directory contents to the stack
                     File[] tmpContents = ((File) tmp).listFiles(filter);
-                    currentPath.addFirst(new DirectoryList(tmpContents));
+                    currentPath.add(new DirectoryList(tmpContents));
 
                     // Put back the directory if we are supposed to return thm
                     if (wantDirectories) {
-                        currentPath.addFirst(theDir);
+                        currentPath.add(theDir);
                         found = true;
                     }
 
                 } else if (tmp instanceof DirectoryList) {
                     // This is a directories contents. Check for the next entry.
                     if (((DirectoryList) tmp).hasNext()) {
-                        currentPath.addFirst(((DirectoryList) tmp).next());
+                        currentPath.add(((DirectoryList) tmp).next());
                     } else {
-                        currentPath.removeFirst();
+                        currentPath.remove(0);
                     }
                 }
             }

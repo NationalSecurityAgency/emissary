@@ -30,7 +30,7 @@ public class MoveSpool implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MoveSpool.class);
 
     // The payload FIFO
-    protected final ArrayList<SpoolItem> spool = new ArrayList<>();
+    protected final List<SpoolItem> spool = new ArrayList<>();
 
     // Reference to the agent pool
     protected AgentPool pool;

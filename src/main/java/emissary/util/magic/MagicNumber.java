@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -169,16 +168,16 @@ public class MagicNumber {
         if (!substitute) {
             return desc;
         }
-        ArrayDeque<Character> chars = new ArrayDeque<>();
+        List<Character> chars = new ArrayList<>();
         for (int i = (desc.length() - 1); i >= 0; --i) {
-            chars.addFirst(desc.charAt(i));
+            chars.add(0, desc.charAt(i));
         }
         StringBuilder sb = new StringBuilder();
 
         while (!chars.isEmpty()) {
-            Character next = chars.removeFirst();
+            Character next = chars.remove(0);
             if (!chars.isEmpty() && next.charValue() == '%') {
-                Character subType = chars.removeFirst();
+                Character subType = chars.remove(0);
                 try {
                     if (dataType == TYPE_STRING) {
                         if (offset < (data.length - 2)) {
@@ -204,8 +203,8 @@ public class MagicNumber {
                 } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e);
                 }
-                if (subType.charValue() == 'l' && !chars.isEmpty() && chars.peekFirst().charValue() == 'd') {
-                    chars.removeFirst();
+                if (subType.charValue() == 'l' && !chars.isEmpty() && chars.get(0).charValue() == 'd') {
+                    chars.remove(0);
                 }
                 continue;
             }

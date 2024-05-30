@@ -68,13 +68,13 @@ public class DumpDirectoryAction {
         }
 
         int rowCount = 0;
-        ArrayList<DirectoryInfo> entryKeys = new ArrayList<>();
+        List<DirectoryInfo> entryKeys = new ArrayList<>();
         long now = System.currentTimeMillis();
 
         if (dir != null) {
             for (String dataId : dir.getEntryKeys()) {
                 LOG.trace("dataId key is {}", dataId);
-                ArrayList<DirectoryEntryInfo> list = new ArrayList<>();
+                List<DirectoryEntryInfo> list = new ArrayList<>();
                 for (DirectoryEntry entry : dir.getEntryList(dataId)) {
                     LOG.trace("Found entry {}", entry);
                     list.add(new DirectoryEntryInfo(rowCount++ % 2 == 0 ? "even" : "odd", entry, now));
@@ -89,7 +89,7 @@ public class DumpDirectoryAction {
             LOG.debug("Found no entry keys");
         }
 
-        ArrayList<PeerInfo> peers = new ArrayList<>();
+        List<PeerInfo> peers = new ArrayList<>();
         if (dir != null) {
             for (String peerkey : dir.getPeerDirectories()) {
                 peers.add(new PeerInfo(peerkey, dir.isRemoteDirectoryAvailable(peerkey)));

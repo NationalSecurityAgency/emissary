@@ -1,7 +1,6 @@
 package emissary.util.magic;
 
 import java.math.BigInteger;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -55,36 +54,36 @@ public class MagicMath {
 
     public static byte[] parseEscapedString(String s) {
         List<Number> array = new ArrayList<>();
-        ArrayDeque<Character> chars = new ArrayDeque<>();
+        List<Character> chars = new ArrayList<>();
         for (int i = (s.length() - 1); i >= 0; i--) {
-            chars.addFirst(s.charAt(i));
+            chars.add(0, s.charAt(i));
         }
         while (!chars.isEmpty()) {
-            Character c = chars.removeFirst();
+            Character c = chars.remove(0);
             String val = EMPTYSTRING;
             if (c == '\\') {
                 if (chars.isEmpty()) {
                     array.add(32);
                     break;
                 }
-                Character next = chars.peekFirst();
+                Character next = chars.get(0);
                 if (literals[next] > 0) {
                     array.add(literals[next]);
-                    chars.removeFirst();
+                    chars.remove(0);
                 } else if (Character.isDigit(next)) {
                     int max = 3;
                     while (!chars.isEmpty() && Character.isDigit(next) && max-- > 0) {
-                        val += chars.removeFirst();
+                        val += chars.remove(0);
                         if (!chars.isEmpty()) {
-                            next = chars.peekFirst();
+                            next = chars.get(0);
                         }
                     }
                     array.add(new BigInteger(val, 8));
                     val = EMPTYSTRING;
                 } else if (next == 'x') {
-                    chars.removeFirst(); // pop the hex symbol
-                    val += chars.removeFirst();
-                    val += chars.removeFirst();
+                    chars.remove(0); // pop the hex symbol
+                    val += chars.remove(0);
+                    val += chars.remove(0);
                     array.add(new BigInteger(val, 16));
                     val = EMPTYSTRING;
                 }

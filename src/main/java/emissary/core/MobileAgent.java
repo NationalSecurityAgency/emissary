@@ -81,7 +81,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected transient volatile boolean timeToQuit = false;
 
     // Queue of DirectoryEntry keys to be processed
-    protected ArrayList<DirectoryEntry> nextKeyQueue = new ArrayList<>();
+    protected List<DirectoryEntry> nextKeyQueue = new ArrayList<>();
 
     // Track moveErrors on all parts of a given payload
     protected int moveErrorsOccurred = 0;

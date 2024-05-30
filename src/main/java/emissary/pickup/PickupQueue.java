@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -11,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public class PickupQueue {
     // Data structure for the bundles
-    protected final ArrayList<WorkBundle> queue = new ArrayList<>();
+    protected final List<WorkBundle> queue = new ArrayList<>();
 
     // Our logger
     private static final Logger logger = LoggerFactory.getLogger(PickupQueue.class);
