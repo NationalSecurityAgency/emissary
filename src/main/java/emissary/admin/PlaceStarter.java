@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 /**
  * Static methods to start places in the system.
  */
+@SuppressWarnings("SystemExitOutsideMain")
 public class PlaceStarter {
     private static final Logger logger = LoggerFactory.getLogger(PlaceStarter.class);
 
