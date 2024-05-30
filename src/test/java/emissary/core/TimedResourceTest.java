@@ -40,7 +40,7 @@ class TimedResourceTest extends UnitTest {
     }
 
     @TestAttempts
-    void test() throws Exception {
+    void test() throws InterruptedException {
         TestMobileAgent tma = new TestMobileAgent();
         // timeout almost immediately
         try (TimedResource tr = new TimedResource(tma, tp, 1, new Timer())) {

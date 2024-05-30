@@ -56,7 +56,7 @@ class RollManagerTest extends UnitTest {
     }
 
     @Test
-    void testFailedRoller() throws Exception {
+    void testFailedRoller() throws IOException, InterruptedException {
         RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         CountDownLatch latch = new CountDownLatch(1);
         Roller r = new Roller(TimeUnit.MILLISECONDS, 250, new Rollable() {

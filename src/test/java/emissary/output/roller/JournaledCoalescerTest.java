@@ -56,7 +56,7 @@ class JournaledCoalescerTest extends UnitTest {
     private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
 
     @BeforeEach
-    public void setUp(@TempDir final Path tempFilesPath) throws Exception {
+    public void setUp(@TempDir final Path tempFilesPath) throws IOException, InterruptedException {
         fileNameGenerator = new SimpleFileNameGenerator();
         targetBudPath = tempFilesPath;
         journaledCoalescer = new JournaledCoalescer(targetBudPath, fileNameGenerator);
@@ -119,7 +119,7 @@ class JournaledCoalescerTest extends UnitTest {
     }
 
     @Test
-    void testRollOrphanedFiles() throws Exception {
+    void testRollOrphanedFiles() throws IOException, InterruptedException {
         // setup
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBudPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
@@ -205,7 +205,7 @@ class JournaledCoalescerTest extends UnitTest {
      * run, which should be deleted and normal operations carried out from there.
      */
     @Test
-    void testCrashWhileRolling() throws Exception {
+    void testCrashWhileRolling() throws IOException, InterruptedException {
         // setup
         Path finalBudOutput;
         try (KeyedOutput one = journaledCoalescer.getOutput()) {
@@ -232,7 +232,7 @@ class JournaledCoalescerTest extends UnitTest {
      * Test to see the rolled and part files are cleaned up without rolling again.
      */
     @Test
-    void testCrashAfterRolled() throws Exception {
+    void testCrashAfterRolled() throws IOException, InterruptedException {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBudPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
@@ -261,7 +261,7 @@ class JournaledCoalescerTest extends UnitTest {
      * are deleted, but the rolled file is not renamed.
      */
     @Test
-    void testCrashAfterRolledNoPartFiles() throws Exception {
+    void testCrashAfterRolledNoPartFiles() throws IOException, InterruptedException {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBudPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
         Files.write(oldRolled, BUD1_LINES, StandardCharsets.UTF_8, StandardOpenOption.WRITE);
@@ -274,7 +274,7 @@ class JournaledCoalescerTest extends UnitTest {
     }
 
     @Test
-    void testCrashAfterRolledEmpty() throws Exception {
+    void testCrashAfterRolledEmpty() throws IOException, InterruptedException {
         try (JournaledChannelPool pool = new JournaledChannelPool(targetBudPath, BUD1_NAME, 2);
                 KeyedOutput one = pool.getFree();
                 KeyedOutput two = pool.getFree()) {
@@ -295,7 +295,7 @@ class JournaledCoalescerTest extends UnitTest {
     }
 
     @Test
-    void testCrashAfterRolledEmptyNoPartFiles() throws Exception {
+    void testCrashAfterRolledEmptyNoPartFiles() throws IOException, InterruptedException {
         // create the rolled file without any part/journal files
         Path oldRolled = Files.createFile(targetBudPath.resolve(BUD1_NAME + JournaledCoalescer.ROLLED_EXT));
 

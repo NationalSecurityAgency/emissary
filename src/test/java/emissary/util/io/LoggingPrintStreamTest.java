@@ -237,7 +237,7 @@ class LoggingPrintStreamTest {
     }
 
     @Test
-    void testMultiThread() throws Exception {
+    void testMultiThread() throws InterruptedException {
         final org.slf4j.event.Level slf4jLevel = org.slf4j.event.Level.INFO;
 
         LogbackTester logbackTester = new LogbackTester(LoggingPrintStreamTest.class.getName());
