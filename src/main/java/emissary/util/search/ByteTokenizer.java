@@ -353,7 +353,7 @@ public class ByteTokenizer implements Enumeration<String> {
 
     /**
      * Calculates the number of times that this tokenizer's <code>nextToken</code> method can be called before it generates
-     * a exception. The current position is not advanced.
+     * an exception. The current position is not advanced.
      *
      * @return the number of tokens remaining in the string using the current delimiter set.
      * @see ByteTokenizer#nextToken()
