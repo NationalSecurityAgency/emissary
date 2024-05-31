@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 /**
@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
  * characters in the range 0 - 255. In other words the ISO8859-1 encoding is used to match the delimiters to the byte
  * array.
  */
-public class ByteTokenizer implements Iterator<String> {
+public class ByteTokenizer implements Enumeration<String> {
     private int currentPosition;
     private int newPosition;
     private int maxPosition;
@@ -252,16 +252,15 @@ public class ByteTokenizer implements Iterator<String> {
 
     /**
      * Tests if there are more tokens available from this tokenizer's string. If this method returns <code>true</code>, then
-     * a subsequent call to <code>next</code> with no argument will successfully return a token.
+     * a subsequent call to <code>nextToken</code> with no argument will successfully return a token.
      *
      * @return <code>true</code> if and only if there is at least one token in the string after the current position;
      *         <code>false</code> otherwise.
      */
-    @Override
-    public boolean hasNext() {
+    public boolean hasMoreTokens() {
         /*
-         * Temporary store this position and use it in the following next() method only if the delimiters haven't been changed
-         * in that next() invocation.
+         * Temporary store this position and use it in the following nextToken() method only if the delimiters haven't been
+         * changed in that nextToken() invocation.
          */
         newPosition = skipDelimiters(currentPosition);
         return (newPosition < maxPosition);
@@ -273,8 +272,7 @@ public class ByteTokenizer implements Iterator<String> {
      * @return the next token from this string tokenizer.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
-    @Override
-    public String next() {
+    public String nextToken() {
         /*
          * If next position already computed in hasMoreElements() and delimiters have changed between the computation and this
          * invocation, then use the computed value.
@@ -315,22 +313,50 @@ public class ByteTokenizer implements Iterator<String> {
      * @return the next token, after switching to the new delimiter set.
      * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
      */
-    public String next(String delim) {
+    public String nextToken(String delim) {
         delimiters = delim;
 
         /* delimiter string specified, so set the appropriate flag. */
         delimsChanged = true;
 
         setMaxDelimChar();
-        return next();
+        return nextToken();
     }
 
     /**
-     * Calculates the number of times that this tokenizer's <code>next</code> method can be called before it generates an
-     * exception. The current position is not advanced.
+     * Returns the same value as the <code>hasMoreTokens</code> method. It exists so that this class can implement the
+     * <code>Enumeration</code> interface.
+     *
+     * @return <code>true</code> if there are more tokens; <code>false</code> otherwise.
+     * @see java.util.Enumeration
+     * @see ByteTokenizer#hasMoreTokens()
+     */
+    @Override
+    public boolean hasMoreElements() {
+        return hasMoreTokens();
+    }
+
+    /**
+     * Returns the same value as the <code>nextToken</code> method, except that its declared return value is
+     * <code>Object</code> rather than <code>String</code>. It exists so that this class can implement the
+     * <code>Enumeration</code> interface.
+     *
+     * @return the next token in the string.
+     * @exception NoSuchElementException if there are no more tokens in this tokenizer's string.
+     * @see java.util.Enumeration
+     * @see ByteTokenizer#nextToken()
+     */
+    @Override
+    public String nextElement() {
+        return nextToken();
+    }
+
+    /**
+     * Calculates the number of times that this tokenizer's <code>nextToken</code> method can be called before it generates
+     * a exception. The current position is not advanced.
      *
      * @return the number of tokens remaining in the string using the current delimiter set.
-     * @see ByteTokenizer#next()
+     * @see ByteTokenizer#nextToken()
      */
     public int countTokens() {
         int count = 0;
