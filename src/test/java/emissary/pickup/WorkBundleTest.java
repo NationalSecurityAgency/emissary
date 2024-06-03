@@ -145,7 +145,7 @@ class WorkBundleTest extends UnitTest {
         String xml = null;
         try {
             xml = w.toXml();
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             fail("Cannot generate xml", ex);
         }
         assertNotNull(xml, "Generated xml");
@@ -180,7 +180,7 @@ class WorkBundleTest extends UnitTest {
         String xml = null;
         try {
             xml = w.toXml();
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             fail("Cannot generate xml", ex);
         }
         assertNotNull(xml, "Generated xml");
@@ -212,7 +212,7 @@ class WorkBundleTest extends UnitTest {
         String xml = null;
         try {
             xml = w.toXml();
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             fail("Cannot generate xml", ex);
         }
         assertNotNull(xml, "Generated xml");

@@ -76,7 +76,7 @@ class ShortNameComparatorTest extends UnitTest {
             fillList(l);
             l.sort(new ShortNameComparator());
             checkList(l);
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             fail("Cannot operate Comparator in subclass", ex);
         } finally {
             DataObjectFactory.setImplementingClass(defaultPayloadClass);

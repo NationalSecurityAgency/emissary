@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KeywordScannerTest extends UnitTest {
-    private final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();
+    private static final byte[] DATA = "THIS is a test of the Emergency broadcasting system.".getBytes();
     private KeywordScanner ks;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        this.ks = new KeywordScanner(this.DATA);
+        this.ks = new KeywordScanner(DATA);
     }
 
     @Test
@@ -72,7 +72,7 @@ class KeywordScannerTest extends UnitTest {
 
     @Test
     void testEndOfRegion() {
-        assertEquals(this.DATA.length - 1, this.ks.indexOf(".".getBytes()), "Hit at end of region");
+        assertEquals(DATA.length - 1, this.ks.indexOf(".".getBytes()), "Hit at end of region");
     }
 
     @Test
@@ -102,23 +102,23 @@ class KeywordScannerTest extends UnitTest {
         assertEquals(22, this.ks.indexOf("Emergency".getBytes(), 0));
         assertEquals(-1, this.ks.indexOf("Emergency".getBytes(), 40));
         assertEquals(12, this.ks.indexOf("st".getBytes(), 0, 30));
-        assertEquals(12, this.ks.indexOf("st".getBytes(), 0, this.DATA.length));
-        assertEquals(12, this.ks.indexOf("st".getBytes(), 12, this.DATA.length));
+        assertEquals(12, this.ks.indexOf("st".getBytes(), 0, DATA.length));
+        assertEquals(12, this.ks.indexOf("st".getBytes(), 12, DATA.length));
         assertEquals(39, this.ks.indexOf("st".getBytes(), 30, 41));
-        assertEquals(39, this.ks.indexOf("st".getBytes(), 39, this.DATA.length));
+        assertEquals(39, this.ks.indexOf("st".getBytes(), 39, DATA.length));
         // no matches in this range
         assertEquals(-1, this.ks.indexOf("st".getBytes(), 30, 40));
-        assertEquals(22, this.ks.indexOf("E".getBytes(), 0, this.DATA.length));
+        assertEquals(22, this.ks.indexOf("E".getBytes(), 0, DATA.length));
         // start offset < 0
-        assertEquals(22, this.ks.indexOf("E".getBytes(), -1, this.DATA.length));
+        assertEquals(22, this.ks.indexOf("E".getBytes(), -1, DATA.length));
         // stop index > data length
-        assertEquals(-1, this.ks.indexOf("st".getBytes(), 0, this.DATA.length + 1));
+        assertEquals(-1, this.ks.indexOf("st".getBytes(), 0, DATA.length + 1));
         // start offset == data length
-        assertEquals(-1, this.ks.indexOf("st".getBytes(), this.DATA.length, this.DATA.length));
+        assertEquals(-1, this.ks.indexOf("st".getBytes(), DATA.length, DATA.length));
         // start offset > data length
-        assertEquals(-1, this.ks.indexOf("st".getBytes(), this.DATA.length + 1, this.DATA.length));
+        assertEquals(-1, this.ks.indexOf("st".getBytes(), DATA.length + 1, DATA.length));
         // pattern is null
-        assertEquals(-1, this.ks.indexOf(null, 0, this.DATA.length));
+        assertEquals(-1, this.ks.indexOf(null, 0, DATA.length));
         // stop index is exclusive
         assertEquals(-1, this.ks.indexOf("HI".getBytes(), 0, 2));
         assertEquals(1, this.ks.indexOf("HI".getBytes(), 0, 3));
@@ -132,7 +132,7 @@ class KeywordScannerTest extends UnitTest {
         // pattern is longer than stop - start
         assertEquals(-1, this.ks.indexOf("Emergency".getBytes(), 0, 5));
         // pattern is longer than the data
-        assertEquals(-1, this.ks.indexOf(new byte[75], 0, this.DATA.length));
+        assertEquals(-1, this.ks.indexOf(new byte[75], 0, DATA.length));
 
         // try using an array of negative byte values and a negative byte pattern
         this.ks = new KeywordScanner(new byte[] {-1, -1, -1, -3, -5, -7});
@@ -160,8 +160,8 @@ class KeywordScannerTest extends UnitTest {
         // stop < previous position
         assertEquals(-1, this.ks.findNext(5));
         // stop == data length
-        assertEquals(-1, this.ks.findNext(this.DATA.length));
-        assertEquals(35, this.ks.findNext(this.DATA.length - 1));
+        assertEquals(-1, this.ks.findNext(DATA.length));
+        assertEquals(35, this.ks.findNext(DATA.length - 1));
         // changing the pattern, we should have reset the position
         assertEquals(6, this.ks.indexOf("s".getBytes()));
         // stop is exclusive

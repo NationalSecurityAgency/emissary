@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class InterruptibleCharSequenceTest extends UnitTest {
-    public static String BACKTRACKER = "^(((((a+)*)*)*)*)*$";
-    public static String INPUT = "aaaaab";
+    public static final String BACKTRACKER = "^(((((a+)*)*)*)*)*$";
+    public static final String INPUT = "aaaaab";
 
     // Enable to test overhead. This method does not perform any assertions.
     @Test

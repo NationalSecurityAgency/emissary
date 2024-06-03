@@ -106,7 +106,7 @@ class KffMemcachedTest extends UnitTest {
         assertTrue(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), "Filter should hit");
     }
 
-    private ChecksumResults createSums(KffMemcached mcd) throws NoSuchAlgorithmException {
+    private static ChecksumResults createSums(KffMemcached mcd) throws NoSuchAlgorithmException {
         List<String> kffalgs = new ArrayList<>();
         kffalgs.add(mcd.getPreferredAlgorithm());
         return new ChecksumCalculator(kffalgs).digest(TEST_PAYLOAD.getBytes());
