@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-class StartupTest extends UnitTest {
+class StartupIT extends UnitTest {
     @Test
     void testSortPlaces() throws IOException {
         List<String> somePlaces = new ArrayList<>();
