@@ -23,17 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JournaledChannelTest extends UnitTest {
 
     @Nullable
-    @TempDir
-    private static Path TEMP_DIR = null;
-    @Nullable
     private JournaledChannel channel;
     private String onekstring = "";
 
     @BeforeEach
-    @Override
-    public void setUp() throws Exception {
+    public void setUp(@TempDir final Path tmpDir) throws Exception {
         super.setUp();
-        this.channel = new JournaledChannel(TEMP_DIR.resolve(UUID.randomUUID().toString()), "unittest", 0);
+        this.channel = new JournaledChannel(tmpDir.resolve(UUID.randomUUID().toString()), "unittest", 0);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
             sb.append(i % 10);

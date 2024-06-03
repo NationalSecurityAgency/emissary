@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
  * </ol>
  */
 public class EmissaryNode {
-    private static Logger logger = LoggerFactory.getLogger(EmissaryNode.class);
+    private static final Logger logger = LoggerFactory.getLogger(EmissaryNode.class);
 
     /** Node name property is {@value} */
     public static final String NODE_NAME_PROPERTY = "emissary.node.name";

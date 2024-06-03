@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
  */
 public class JavaCharSet {
 
-    private static Map<String, String> charsets = new HashMap<>();
+    private static final Map<String, String> charsets = new HashMap<>();
 
     private static boolean initialized = false;
 

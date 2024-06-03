@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class UnixFile {
 
-    private static Logger log = LoggerFactory.getLogger(UnixFile.class);
+    private static final Logger log = LoggerFactory.getLogger(UnixFile.class);
 
     /** The magic number configuration file. The file which contains all magic number entries */
     private List<File> magicFiles = new ArrayList<>();

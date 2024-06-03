@@ -28,7 +28,7 @@ public class Namespace {
     private static final Logger logger = LoggerFactory.getLogger(Namespace.class);
 
     /** We will hold registerd class names in here */
-    private static Map<String, Object> map = new ConcurrentHashMap<>();
+    private static final Map<String, Object> map = new ConcurrentHashMap<>();
 
     /**
      * Hide the creation a new instance of NameSpace

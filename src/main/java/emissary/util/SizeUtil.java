@@ -26,7 +26,7 @@ public class SizeUtil {
     /**
      * Object overhead
      */
-    private static long objOverhead = 8L;
+    private static final long objOverhead = 8L;
 
     static {
         if (System.getProperty("os.arch").contains("64")) {
