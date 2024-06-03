@@ -430,7 +430,7 @@ public class UnixCommandPlace extends ServiceProviderPlace {
         } else {
             serviceHook(serviceType, tData, outputData);
         }
-        return;
+
     }
 
     /**

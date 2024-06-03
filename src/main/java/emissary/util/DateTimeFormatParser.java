@@ -146,7 +146,7 @@ public class DateTimeFormatParser {
 
             // If none of these methods worked, use the default if required
             if (supplyDefaultOnBad) {
-                return LocalDateTime.now();
+                return LocalDateTime.now(ZoneId.systemDefault());
             }
         }
         return null;

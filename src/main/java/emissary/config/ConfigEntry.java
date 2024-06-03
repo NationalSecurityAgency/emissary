@@ -64,7 +64,7 @@ public class ConfigEntry implements Serializable {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof ConfigEntry)) {
             return false;
         }
 

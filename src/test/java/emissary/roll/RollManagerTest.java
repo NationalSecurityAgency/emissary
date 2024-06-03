@@ -1,6 +1,7 @@
 package emissary.roll;
 
 import emissary.config.ConfigUtil;
+import emissary.core.EmissaryRuntimeException;
 import emissary.test.core.junit5.UnitTest;
 import emissary.util.EmissaryIsolatedClassLoaderExtension;
 
@@ -55,7 +56,7 @@ class RollManagerTest extends UnitTest {
     }
 
     @Test
-    void testFailedRoller() throws Exception {
+    void testFailedRoller() throws IOException, InterruptedException {
         RollManager rm = new RollManager(ConfigUtil.getConfigInfo(this.getClass()));
         CountDownLatch latch = new CountDownLatch(1);
         Roller r = new Roller(TimeUnit.MILLISECONDS, 250, new Rollable() {
@@ -65,7 +66,7 @@ class RollManagerTest extends UnitTest {
             public void roll() {
                 if (i++ == 2) {
                     latch.countDown();
-                    throw new RuntimeException("Not supported yet.");
+                    throw new EmissaryRuntimeException("Not supported yet.");
                 }
             }
 

@@ -231,12 +231,16 @@ public class DirectoryObserverManager {
                 if (KeyManipulator.gmatch(placeKey, p.getPattern())) {
                     matchcount++;
                     logger.debug("Match! Doing {} for {}", action, placeKey);
-                    if (action == Action.PLACE_ADD) {
-                        p.placeRegistered(this.directoryKey, placeKey);
-                    } else if (action == Action.PLACE_REMOVE) {
-                        p.placeDeregistered(this.directoryKey, placeKey);
-                    } else if (action == Action.PLACE_COST_CHANGE) {
-                        p.placeCostChanged(this.directoryKey, placeKey);
+                    switch (action) {
+                        case PLACE_ADD:
+                            p.placeRegistered(this.directoryKey, placeKey);
+                            break;
+                        case PLACE_REMOVE:
+                            p.placeDeregistered(this.directoryKey, placeKey);
+                            break;
+                        case PLACE_COST_CHANGE:
+                            p.placeCostChanged(this.directoryKey, placeKey);
+                            break;
                     }
                 } else {
                     logger.debug("No match for {} using pattern {}", placeKey, p.getPattern());

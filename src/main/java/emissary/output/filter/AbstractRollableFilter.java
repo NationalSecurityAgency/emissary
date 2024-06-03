@@ -101,6 +101,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     /**
      * Create the local output directories
      */
+    @SuppressWarnings("SystemExitOutsideMain")
     protected void setupLocalOutputDir() {
         if (!Files.exists(this.outputPath)) {
             logger.info("Attempting to create {} output directory, {}", getFilterName(), this.outputPath);
@@ -116,6 +117,7 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
     /**
      * Create the {@link JournaledCoalescer} and {@link Roller}
      */
+    @SuppressWarnings("SystemExitOutsideMain")
     protected void setupRoller() {
         try {
             this.rollable = createRollable();
@@ -124,6 +126,9 @@ public abstract class AbstractRollableFilter extends AbstractFilter {
             logger.info("Added Roller for {} running every {} {}(s) or on size {} (bytes).", getFilterName(), this.rollInterval,
                     this.rollIntervalUnits, this.maxRollFileSize);
         } catch (Exception ex) {
+            if (ex instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             logger.error("Unable to instantiate Roller for handling {} file output", getFilterName(), ex);
             System.exit(1);
         }

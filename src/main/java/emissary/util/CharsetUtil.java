@@ -43,7 +43,7 @@ import javax.annotation.Nullable;
  * specific language governing permissions and limitations under the License.
  */
 public class CharsetUtil {
-    private static final int[] TrailingBytesForUTF8 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    private static final int[] trailingBytesForUtF8 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -51,7 +51,7 @@ public class CharsetUtil {
             1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
 
     @SuppressWarnings("unused")
-    private static final long[] OffsetsFromUTF8 = {0x00000000L, 0x00003080L, 0x000e2080L, 0x03c82080L, 0xfa082080L, 0x82082080L};
+    private static final long[] offsetsFromUtF8 = {0x00000000L, 0x00003080L, 0x000e2080L, 0x03c82080L, 0xfa082080L, 0x82082080L};
 
     // Our logger
     private static final Logger logger = LoggerFactory.getLogger(CharsetUtil.class);
@@ -243,13 +243,11 @@ public class CharsetUtil {
         while (pos < dlen) {
             try {
                 final int val = data[pos] & 0xff;
-                final int len = TrailingBytesForUTF8[val] + 1;
+                final int len = trailingBytesForUtF8[val] + 1;
                 int srcptr = pos + len;
 
                 switch (len) {
-                    default:
-                        return false;
-                    // everything else falls through when true
+                    // everything falls through when true
                     case 4:
                         a = (data[--srcptr] & 0xff);
                         if (a < 0x80 || a > 0xbf) {
@@ -295,6 +293,9 @@ public class CharsetUtil {
                         if (val >= 0xf0) {
                             return false;
                         }
+                        break;
+                    default:
+                        return false;
                 }
                 pos += len;
             } catch (ArrayIndexOutOfBoundsException x) {

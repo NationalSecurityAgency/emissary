@@ -42,6 +42,7 @@ public class RollManager implements PropertyChangeListener {
     /**
      * Load the configurator
      */
+    @SuppressWarnings("SystemExitOutsideMain")
     protected void init() {
         try {
             Configurator configG = ConfigUtil.getConfigInfo(this.getClass());

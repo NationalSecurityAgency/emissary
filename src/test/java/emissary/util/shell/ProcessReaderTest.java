@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 import static emissary.log.MDCConstants.SERVICE_LOCATION;
@@ -78,7 +79,7 @@ class ProcessReaderTest extends UnitTest {
      * {@link ProcessReader#applyLogContextMap()}
      */
     @Test
-    void testFormattedLogMessageWithMDCTransfer() throws Exception {
+    void testFormattedLogMessageWithMDCTransfer() throws IOException, InterruptedException {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             appender.setOutputStream(outputStream);
@@ -95,7 +96,7 @@ class ProcessReaderTest extends UnitTest {
     }
 
     @Test
-    void testFormattedLogMessageWithoutMDCTransfer() throws Exception {
+    void testFormattedLogMessageWithoutMDCTransfer() throws IOException, InterruptedException {
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             appender.setOutputStream(outputStream);

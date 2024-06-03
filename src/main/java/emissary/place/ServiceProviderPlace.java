@@ -624,7 +624,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                 logger.error("Sprouting is no longer supported, lost {} children", children.size());
             }
         } else {
-            throw new RuntimeException("Neither process nor processHeavyDuty appears to be implemented");
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
         }
     }
 
@@ -642,7 +642,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             process(payload);
             return Collections.emptyList();
         } else {
-            throw new RuntimeException("Neither process nor processHeavyDuty appears to be implemented");
+            throw new IllegalStateException("Neither process nor processHeavyDuty appears to be implemented");
         }
     }
 

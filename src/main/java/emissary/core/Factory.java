@@ -63,25 +63,25 @@ public class Factory {
             final Constructor<?> constructor = ConstructorLookupCache.lookup(clazz, types.toArray(new Class<?>[0]));
             if (constructor == null) {
                 logger.info("Failed to find constructor for args({}) types ({}) : {}", args.length, types.size(), types);
-                throw new Error("failed to find suitable constructor for class " + className);
+                throw new AssertionError("failed to find suitable constructor for class " + className);
             } else {
                 return constructor.newInstance(args);
             }
         } catch (ClassNotFoundException e1) {
             logger.error("Could not find class", e1);
-            throw new Error(e1);
+            throw new AssertionError(e1);
         } catch (InstantiationException e3) {
             logger.error("Could not instantiate", e3);
-            throw new Error(e3);
+            throw new AssertionError(e3);
         } catch (IllegalAccessException e4) {
             logger.error("Could not call constructor", e4);
-            throw new Error(e4);
+            throw new AssertionError(e4);
         } catch (InvocationTargetException e5) {
             logger.error("Constructor failed", e5);
-            throw new Error(e5);
+            throw new AssertionError(e5);
         } catch (Throwable t) {
             logger.error("Problem in factory", t);
-            throw new Error(t);
+            throw new AssertionError(t);
         }
     }
 

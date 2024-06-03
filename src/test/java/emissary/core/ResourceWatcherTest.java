@@ -8,6 +8,7 @@ import emissary.test.core.junit5.UnitTest;
 import com.codahale.metrics.Timer;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -26,7 +27,7 @@ class ResourceWatcherTest extends UnitTest {
     public IServiceProviderPlace place = null;
 
     @Test
-    void testResourceWatcherWithMultipleThreads() throws Exception {
+    void testResourceWatcherWithMultipleThreads() throws IOException, InterruptedException {
         this.resourceWatcher = new ResourceWatcher();
         this.place = new DevNullPlace();
         int threadCount = 10;
@@ -55,7 +56,7 @@ class ResourceWatcherTest extends UnitTest {
         final Timer s = stats.get("DevNullPlace");
         assertNotNull(s, "Events must be measured");
 
-        assertEquals(threadCount * iterations, s.getCount(), "Events must not be lost");
+        assertEquals(threadCount * ((long) iterations), s.getCount(), "Events must not be lost");
 
         this.resourceWatcher.resetStats();
         assertTrue(resourceWatcher.getStats().size() > 0, "Namespaces were not preserved");

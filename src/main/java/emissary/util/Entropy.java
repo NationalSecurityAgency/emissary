@@ -1,8 +1,3 @@
-/*
-  $Id$
- */
-
-
 package emissary.util;
 
 public class Entropy {
@@ -16,19 +11,17 @@ public class Entropy {
 
     public static boolean checkText(final byte[] data, int length) {
         int bytes = 0;
-        int[] histogramArray;
         double entropy = 0;
         double relativeFreq;
         int size = Math.min(length, data.length);
-
-        histogramArray = new int[256];
+        int[] histogramArray = new int[256];
 
 
         // ******************************************************************
         // ****************** scan the document ******************
         // ******************************************************************
-        for (int cur_pos = 0; cur_pos < size; ++cur_pos) {
-            ++histogramArray[data[cur_pos] & 0xff];
+        for (int curPos = 0; curPos < size; ++curPos) {
+            ++histogramArray[data[curPos] & 0xff];
             ++bytes;
         }
 

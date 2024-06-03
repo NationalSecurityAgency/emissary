@@ -11,7 +11,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,11 +28,11 @@ import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +46,7 @@ import static emissary.core.SafeUsageChecker.UNSAFE_MODIFICATION_DETECTED;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -78,7 +79,7 @@ class BaseDataObjectTest extends UnitTest {
     void testInterface() {
         // This should pass by compilation, but in case anyone
         // ever thinks of taking it out, this may remind them...
-        assertTrue(this.b instanceof IBaseDataObject, "Implements the interface");
+        assertInstanceOf(IBaseDataObject.class, this.b, "Implements the interface");
     }
 
     @Test
@@ -818,7 +819,7 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testPutParametersWithMultimapAsMap() {
-        final Multimap<String, String> map = ArrayListMultimap.create();
+        final ListMultimap<String, String> map = ArrayListMultimap.create();
         map.put("ONE", "uno");
         map.put("ONE", "ein");
         map.put("ONE", "neo");
@@ -1122,7 +1123,7 @@ class BaseDataObjectTest extends UnitTest {
     @Test
     void testDefaultConstructor_getSetDateTime() {
         // setup
-        final Date date = new Date(0);
+        final Instant date = Instant.now();
 
         // test
         this.b.setCreationTimestamp(date);

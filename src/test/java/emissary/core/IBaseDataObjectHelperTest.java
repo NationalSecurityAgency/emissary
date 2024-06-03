@@ -15,9 +15,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,6 +51,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     private static final Boolean DONT_CHECK = null;
     private static final Boolean EQUAL_WITHOUT_FULL_CLONE = false;
     private static final Boolean EQUAL_AFTER_FULL_CLONE = true;
+    private static final Pattern EXCLUDED_PARAMETERS = Pattern.compile("FILETYPE|WILDCARDED_.*");
 
     @BeforeEach
     void setup() {
@@ -59,7 +60,7 @@ class IBaseDataObjectHelperTest extends UnitTest {
     }
 
     private static void verifyClone(final String methodName, final IBaseDataObject origObj, final Boolean isSame, final Boolean isEquals,
-            final Boolean switchWithFullClone) {
+            final boolean switchWithFullClone) {
         try {
             final Method method = IBaseDataObject.class.getMethod(methodName);
             final boolean isArrayType = "[B".equals(method.getReturnType().getName());
@@ -164,8 +165,8 @@ class IBaseDataObjectHelperTest extends UnitTest {
 
     @Test
     void testCloneCreationTimestamp() {
-        ibdo1.setCreationTimestamp(new Date(1234567890));
-        verifyClone("getCreationTimestamp", ibdo1, IS_NOT_SAME, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
+        ibdo1.setCreationTimestamp(Instant.ofEpochSecond(1234567890));
+        verifyClone("getCreationTimestamp", ibdo1, DONT_CHECK, IS_EQUALS, EQUAL_WITHOUT_FULL_CLONE);
     }
 
     @Test
@@ -353,16 +354,15 @@ class IBaseDataObjectHelperTest extends UnitTest {
     void testAddParentInformationToChildExcluding() throws Exception {
         final IBaseDataObject parentIbdo = ibdo1;
         final IBaseDataObject childIbdo = ibdo2;
-        final Pattern excludedParameters = Pattern.compile("FILETYPE|WILDCARDED_.*");
 
-        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(null, childIbdo, excludedParameters));
-        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, null, excludedParameters));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(null, childIbdo, EXCLUDED_PARAMETERS));
+        checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, null, EXCLUDED_PARAMETERS));
         checkThrowsNull(() -> IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, null));
 
         parentIbdo.setFileType("filetype");
         parentIbdo.setParameter("NON_EXCLUDED", "hereIam");
         parentIbdo.setParameter("WILDCARDED_KEYNAME", "anyValueWillDo");
-        IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, excludedParameters);
+        IBaseDataObjectHelper.addParentInformationToChildExcluding(parentIbdo, childIbdo, EXCLUDED_PARAMETERS);
         assertNull(childIbdo.getFileType(), "Child should not contain simple excluded parameter from parent");
         assertNull(childIbdo.getParameter("WILDCARDED_KEYNAME"), "Child should not contain wildcard excluded parameter from parent");
         assertEquals(parentIbdo.getParameter("NON_EXCLUDED").get(0), childIbdo.getParameter("NON_EXCLUDED").get(0),

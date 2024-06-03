@@ -25,6 +25,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -223,16 +225,15 @@ class ServiceProviderPlaceTest extends UnitTest {
     }
 
     private void runFileConfiguredTest(boolean usePackage, int ctorType) throws IOException, EmissaryException {
-        Path cfg = null;
-        OutputStream fos = null;
-        try {
-            // Write out the config data to the temp config dir
-            if (usePackage) {
-                cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
-            } else {
-                cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
-            }
-            fos = Files.newOutputStream(cfg);
+        Path cfg;
+        // Write out the config data to the temp config dir
+        if (usePackage) {
+            cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+        } else {
+            cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+        }
+
+        try (OutputStream fos = Files.newOutputStream(cfg)) {
             fos.write(configData);
 
             MyFileConfigedTestPlace mtp = null;
@@ -260,15 +261,6 @@ class ServiceProviderPlaceTest extends UnitTest {
             // Clean up the tmp config settings
             restoreConfig();
 
-            assert cfg != null;
-            Files.deleteIfExists(cfg);
-
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ignore) {
-                }
-            }
             Files.deleteIfExists(cfg);
         }
     }
@@ -286,22 +278,19 @@ class ServiceProviderPlaceTest extends UnitTest {
         InputStream config = new ByteArrayInputStream(configDataWithResourceLimit);
         place = new PlaceTest(config, null, "http://example.com:8001/PlaceTest");
 
-        if (place instanceof ServiceProviderPlaceMBean) {
-            List<String> a = ((ServiceProviderPlaceMBean) place).getRunningConfig();
-            assertTrue(a.size() > 0, "Running config must have some entries");
-            String stats = ((ServiceProviderPlaceMBean) place).getPlaceStats();
-            assertNotNull(stats, "Stats expected");
-            long resourceLimit = ((ServiceProviderPlaceMBean) place).getResourceLimitMillis();
-            assertEquals(10, resourceLimit, "Resource limit must be saved and returned");
+        assertInstanceOf(ServiceProviderPlaceMBean.class, place, "Place is not an instance of ServiceProviderPlaceMBean");
+        List<String> a = ((ServiceProviderPlaceMBean) place).getRunningConfig();
+        assertFalse(a.isEmpty(), "Running config must have some entries");
+        String stats = ((ServiceProviderPlaceMBean) place).getPlaceStats();
+        assertNotNull(stats, "Stats expected");
+        long resourceLimit = ((ServiceProviderPlaceMBean) place).getResourceLimitMillis();
+        assertEquals(10, resourceLimit, "Resource limit must be saved and returned");
 
-            // These send output to the logger, just verify that they don't npe, they are
-            // slightly useful to keep around for using in jconsole
-            ((ServiceProviderPlaceMBean) place).dumpPlaceStats();
-            ((ServiceProviderPlaceMBean) place).dumpRunningConfig();
+        // These send output to the logger, just verify that they don't npe, they are
+        // slightly useful to keep around for using in jconsole
+        ((ServiceProviderPlaceMBean) place).dumpPlaceStats();
+        ((ServiceProviderPlaceMBean) place).dumpRunningConfig();
 
-        } else {
-            fail("Place should be an instance of ServiceProviderPlaceMBean");
-        }
     }
 
 

@@ -236,10 +236,10 @@ public class KffMemcached implements KffFilter {
 
         // Send the query
         Future<Object> future = client.asyncGet(key);
-        Object result;
+
 
         // Let the TimeoutException propagate up
-        result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);
+        Object result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);
 
         if (result != null) {
             if (storeIdDupe) {

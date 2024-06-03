@@ -5,7 +5,7 @@ import emissary.util.io.ReadOutput;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Date;
+import java.time.Instant;
 import javax.annotation.Nullable;
 
 public class WatcherThread extends Thread {
@@ -76,17 +76,14 @@ public class WatcherThread extends Thread {
 
         wt.setDelay(Integer.parseInt(args[0]));
 
-        System.out.println(name + " begins at " + new Date());
+        System.out.println(name + " begins at " + Instant.now());
 
         Process proc = Runtime.getRuntime().exec(args[1]);
 
         wt.setProcess(proc);
 
-        PrintStream out = null;
-        PrintStream err = null;
-
-        out = System.out;
-        err = System.err;
+        PrintStream out = System.out;
+        PrintStream err = System.err;
 
         Thread t1 = new Thread(new ReadOutput(proc.getInputStream(), name, out));
         Thread t2 = new Thread(new ReadOutput(proc.getErrorStream(), name, err));
@@ -104,8 +101,8 @@ public class WatcherThread extends Thread {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println(name + " ends at " + new Date());
+        System.out.println(name + " ends at " + Instant.now());
 
-        return;
+
     }
 }

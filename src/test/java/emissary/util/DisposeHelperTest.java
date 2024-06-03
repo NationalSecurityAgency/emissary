@@ -1,6 +1,7 @@
 package emissary.util;
 
 import emissary.core.BaseDataObject;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
@@ -14,14 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SuppressWarnings("UnnecessaryLambda")
 class DisposeHelperTest extends UnitTest {
 
     private static final Runnable FIRST = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestFirstRunnable");
@@ -29,7 +32,7 @@ class DisposeHelperTest extends UnitTest {
     private static final Runnable THIRD = () -> LoggerFactory.getLogger("DisposeHelperRunnable").warn("DisposeHelperTestThirdRunnable");
 
     private static final Runnable THROWS = () -> {
-        throw new RuntimeException("DisposeHelperTest");
+        throw new EmissaryRuntimeException("DisposeHelperTest");
     };
 
     @Nullable
@@ -57,12 +60,13 @@ class DisposeHelperTest extends UnitTest {
 
     @Test
     void testInvalidRunnable() {
-        final List<Object> objs = new ArrayList<>();
-        objs.add(FIRST);
-        objs.add("InvalidRunnable");
-        bdo.setParameter(DisposeHelper.KEY, objs);
+        final List<Object> objectList = new ArrayList<>();
+        objectList.add(FIRST);
+        objectList.add("InvalidRunnable");
+        bdo.setParameter(DisposeHelper.KEY, objectList);
 
         DisposeHelper.execute(bdo);
+        assertNotNull(appender);
         assertTrue(appender.list.stream()
                 .anyMatch(i -> i.getLevel().equals(Level.WARN) &&
                         i.getFormattedMessage().contains("Not a valid Runnable on object DisposeHelperTestBdo")));
@@ -72,6 +76,7 @@ class DisposeHelperTest extends UnitTest {
     void testExecuteDisposable() {
         DisposeHelper.set(bdo, FIRST);
         DisposeHelper.execute(bdo);
+        assertNotNull(appender);
         assertTrue(appender.list.stream()
                 .anyMatch(i -> i.getFormattedMessage().contains("DisposeHelperTestFirstRunnable")));
     }
@@ -80,6 +85,7 @@ class DisposeHelperTest extends UnitTest {
     void testThrowsDisposable() {
         DisposeHelper.set(bdo, THROWS);
         DisposeHelper.execute(bdo);
+        assertNotNull(appender);
         assertTrue(appender.list.stream()
                 .anyMatch(i -> i.getLevel().equals(Level.WARN) &&
                         i.getFormattedMessage().contains("Exception while executing Runnable for " + TEST_BDO_NAME)));
@@ -156,7 +162,7 @@ class DisposeHelperTest extends UnitTest {
         assertEquals(FIRST, lr.get(0));
         assertEquals(SECOND, lr.get(1));
 
-        DisposeHelper.add(bdo, Arrays.asList(THIRD));
+        DisposeHelper.add(bdo, Collections.singletonList(THIRD));
         lr = DisposeHelper.get(bdo);
         assertEquals(3, lr.size());
         assertEquals(FIRST, lr.get(0));

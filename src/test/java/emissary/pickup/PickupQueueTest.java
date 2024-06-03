@@ -109,6 +109,7 @@ class PickupQueueTest extends UnitTest {
                         pq.wait(0);
                         hitcount++;
                     } catch (InterruptedException ignored) {
+                        // Ignore
                     }
                 }
             }

@@ -220,7 +220,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * 
      * @return the new id value
      */
-    protected static String generateId() {
+    static String generateId() {
         return UUID.randomUUID().toString();
     }
 
@@ -325,7 +325,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @throws IllegalStateException if adding the units would cause the bundle to contain more than <code>MAX_UNITS</code>
      *         work units
      */
-    protected int addWorkUnits(List<WorkUnit> list) { // This appears to only be used by unit tests and the copy constructor
+    int addWorkUnits(List<WorkUnit> list) { // This appears to only be used by unit tests and the copy constructor
         if (workUnitList.size() + list.size() > MAX_UNITS) {
             throw new IllegalStateException("WorkBundle may not contain more than " + MAX_UNITS + " WorkUnits.");
         }
@@ -390,7 +390,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
      *         work units
      */
-    protected int addFileNames(String[] file) { // This appears to only be used by unit tests
+    int addFileNames(String[] file) { // This appears to only be used by unit tests
         for (String f : file) {
             addWorkUnit(new WorkUnit(f));
         }
@@ -404,8 +404,8 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @throws IllegalStateException if adding the files would cause the bundle to contain more than <code>MAX_UNITS</code>
      *         work units
      */
-    protected int addFileNames(List<String> list) { // This appears to only be used by unit tests and the copy
-                                                    // constructor
+    int addFileNames(List<String> list) { // This appears to only be used by unit tests and the copy
+                                          // constructor
         for (String file : list) {
             addWorkUnit(new WorkUnit(file));
         }
@@ -422,7 +422,7 @@ public final class WorkBundle implements Comparable<WorkBundle> {
     /**
      * Clear the files from the list
      */
-    protected void clearFiles() {
+    void clearFiles() {
         // This is only used for testing
         workUnitList.clear();
         oldestFileModificationTime = Long.MAX_VALUE;

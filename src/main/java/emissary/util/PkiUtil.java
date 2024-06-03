@@ -87,24 +87,27 @@ public class PkiUtil {
         if (pazz == null) {
             return null;
         }
-        String realPW;
+        String realPw;
         if (pazz.startsWith(FILE_PRE)) {
             final String pth = pazz.substring(FILE_PRE.length());
             log.debug("Loading key password from file " + pth);
             try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
-                realPW = r.readLine();
+                realPw = r.readLine();
             }
-            if (realPW == null) {
+            if (realPw == null) {
                 throw new IOException("Unable to load store password from " + pazz);
             }
         } else {
             Matcher matcher = ENV_VARIABLE_PATTERN.matcher(pazz);
             if (matcher.matches()) {
-                realPW = System.getenv(matcher.group(1));
+                realPw = System.getenv(matcher.group(1));
             } else {
-                realPW = pazz;
+                realPw = pazz;
             }
         }
-        return realPW.toCharArray();
+        return realPw.toCharArray();
     }
+
+
+    private PkiUtil() {}
 }

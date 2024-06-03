@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class FactoryTest extends UnitTest {
@@ -34,7 +34,7 @@ class FactoryTest extends UnitTest {
         Object[] args = {"Here is a string", null};
         Object o = Factory.create("java.lang.Throwable", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof Throwable, "Type of object");
+        assertInstanceOf(Throwable.class, o, "Type of object");
     }
 
     @Test
@@ -43,21 +43,21 @@ class FactoryTest extends UnitTest {
         Object[] args = {"Here is a string", ex};
         Object o = Factory.create("java.lang.Throwable", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof Throwable, "Type of object");
+        assertInstanceOf(Throwable.class, o, "Type of object");
     }
 
     @Test
     void testWithVarArgs() {
         Object o = Factory.create("java.lang.Throwable", "Here is a string");
         assertNotNull(o, "Factory vararg creation");
-        assertTrue(o instanceof Throwable, "Type of object on vararg create");
+        assertInstanceOf(Throwable.class, o, "Type of object on vararg create");
     }
 
     @Test
     void testWithVarArgsAndNull() {
         Object o = Factory.create("java.lang.Throwable", "Here is a string", null);
         assertNotNull(o, "Factory vararg with null");
-        assertTrue(o instanceof Throwable, "Type of object on vararg with null");
+        assertInstanceOf(Throwable.class, o, "Type of object on vararg with null");
     }
 
     @Test
@@ -82,7 +82,7 @@ class FactoryTest extends UnitTest {
         Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof Integer, "Type of object");
+        assertInstanceOf(Integer.class, o, "Type of object");
         for (String s : Namespace.keySet()) {
             fail("Namespace should be empty but has " + s);
         }
@@ -94,10 +94,10 @@ class FactoryTest extends UnitTest {
         Object[] args = {5};
         Object o = Factory.create("java.lang.Integer", args, key);
         assertNotNull(o, "Factory creation");
-        assertTrue(o instanceof Integer, "Type of object");
+        assertInstanceOf(Integer.class, o, "Type of object");
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Registered object");
-        assertTrue(o2 instanceof Integer, "Type of registered object");
+        assertInstanceOf(Integer.class, o2, "Type of registered object");
         assertEquals(o, o2, "Creation matches registration");
     }
 
@@ -107,7 +107,7 @@ class FactoryTest extends UnitTest {
         Object o = Factory.createV("emissary.core.FactoryTest$SelfBinder", key, key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Self registered object should be found");
-        assertTrue(o2 instanceof SelfBinder, "Type of self registered object");
+        assertInstanceOf(SelfBinder.class, o2, "Type of self registered object");
         assertEquals(o2, o, "Proper instance should be self bound");
         Namespace.unbind(key);
     }
@@ -118,7 +118,7 @@ class FactoryTest extends UnitTest {
         Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Self registered object should be found");
-        assertTrue(o2 instanceof SelfBinder, "Type of self registered object");
+        assertInstanceOf(SelfBinder.class, o2, "Type of self registered object");
         assertEquals(o2, o, "Proper instance should be self bound");
         Namespace.unbind(key);
     }
@@ -129,7 +129,7 @@ class FactoryTest extends UnitTest {
         Object o = Factory.createV("emissary.core.FactoryTest$FactoryBinder", key, key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Factory registered object should be found");
-        assertTrue(o2 instanceof FactoryBinder, "Type of factory registered object");
+        assertInstanceOf(FactoryBinder.class, o2, "Type of factory registered object");
         assertEquals(o2, o, "Proper instance should be bound by factory");
         Namespace.unbind(key);
     }
@@ -140,7 +140,7 @@ class FactoryTest extends UnitTest {
         Object o = Factory.create("emissary.core.FactoryTest$SelfBinder", new Object[] {key}, key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Self registered object should be found");
-        assertTrue(o2 instanceof SelfBinder, "Type of self registered object");
+        assertInstanceOf(SelfBinder.class, o2, "Type of self registered object");
         assertEquals(o2, o, "Proper instance should be self bound");
         Namespace.unbind(key);
     }
@@ -176,7 +176,7 @@ class FactoryTest extends UnitTest {
         Object o = Factory.create("emissary.core.FactoryTest$FactoryBinder", new Object[] {key}, key);
         Object o2 = Namespace.lookup(key);
         assertNotNull(o2, "Factory registered object should be found");
-        assertTrue(o2 instanceof FactoryBinder, "Type of factory registered object");
+        assertInstanceOf(FactoryBinder.class, o2, "Type of factory registered object");
         assertEquals(o2, o, "Proper instance should be factory bound");
         Namespace.unbind(key);
     }
@@ -209,7 +209,7 @@ class FactoryTest extends UnitTest {
 
     static class DemoClassThatThrowsThrowableFromConstructor {
         public DemoClassThatThrowsThrowableFromConstructor() throws Throwable {
-            throw new Throwable("Bogus");
+            throw new AssertionError("Bogus");
         }
     }
 }

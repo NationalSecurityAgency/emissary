@@ -375,7 +375,7 @@ public final class Ssdeep {
          * @return The state is updated and the resulting unsigned 32-bit hash value is returned.
          */
         public long roll(final int b) {
-            this.h2 = (this.h2 - this.h1 + (ROLLING_WINDOW_SIZE * b)) & MASK32;
+            this.h2 = (this.h2 - this.h1 + (ROLLING_WINDOW_SIZE * ((long) b))) & MASK32;
             this.h1 = (this.h1 + b - this.window[this.windowPosition]) & MASK32;
             this.window[this.windowPosition] = b;
 

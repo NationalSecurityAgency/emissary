@@ -1,6 +1,7 @@
 package emissary.command;
 
 import emissary.client.EmissaryResponse;
+import emissary.core.EmissaryRuntimeException;
 import emissary.directory.EmissaryNode;
 
 import org.apache.commons.lang3.StringUtils;
@@ -109,7 +110,7 @@ public abstract class ServiceCommand extends HttpCommand {
                 } else if (isUnpause()) {
                     unpauseService();
                 } else {
-                    throw new RuntimeException("Emissary " + getServiceName() + " is already running");
+                    throw new EmissaryRuntimeException("Emissary " + getServiceName() + " is already running");
                 }
             } else {
                 // no running server so fire it up

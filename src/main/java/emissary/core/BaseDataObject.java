@@ -9,6 +9,7 @@ import emissary.util.PayloadUtil;
 
 import com.google.common.collect.LinkedListMultimap;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.rmi.Remote;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -160,7 +161,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     /**
      * The timestamp for when the BaseDataObject was created. Used in data provenance tracking.
      */
-    protected Date creationTimestamp;
+    protected Instant creationTimestamp;
 
     /**
      * The extracted records, if any
@@ -252,7 +253,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     public BaseDataObject() {
         this.theData = null;
-        setCreationTimestamp(new Date(System.currentTimeMillis()));
+        setCreationTimestamp(Instant.now());
     }
 
     /**
@@ -265,7 +266,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     public BaseDataObject(final byte[] newData, final String name) {
         setData(newData);
         setFilename(name);
-        setCreationTimestamp(new Date(System.currentTimeMillis()));
+        setCreationTimestamp(Instant.now());
     }
 
     /**
@@ -367,6 +368,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public SeekableByteChannelFactory getChannelFactory() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
@@ -413,6 +415,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public byte[] data() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
@@ -490,12 +493,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @return the channel size
      */
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public long getChannelSize() throws IOException {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
                 throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
-                return theData.length;
+                return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
                 try (final SeekableByteChannel sbc = this.seekableByteChannelFactory.create()) {
                     return sbc.size();
@@ -513,12 +517,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      *         {@link BaseDataObject#MAX_BYTE_ARRAY_SIZE}.
      */
     @Override
+    @SuppressWarnings("UnnecessaryDefaultInEnumSwitch")
     public int dataLength() {
         switch (getDataState()) {
             case BYTE_ARRAY_AND_CHANNEL:
                 throw new IllegalStateException(String.format(INVALID_STATE_MSG, shortName()));
             case BYTE_ARRAY_ONLY:
-                return theData.length;
+                return ArrayUtils.getLength(theData);
             case CHANNEL_ONLY:
                 try {
                     return (int) Math.min(getChannelSize(), MAX_BYTE_ARRAY_SIZE);
@@ -913,7 +918,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                             this.parameters.put(name, v);
                         }
                     } else {
-                        throw new RuntimeException("Unhandled parameter merge policy " + policy + " for " + name);
+                        throw new IllegalStateException("Unhandled parameter merge policy " + policy + " for " + name);
                     }
                 }
             } else {
@@ -924,7 +929,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
                         this.parameters.put(name, value);
                     }
                 } else {
-                    throw new RuntimeException("Unhandled parameter merge policy " + policy + " for " + name);
+                    throw new IllegalStateException("Unhandled parameter merge policy " + policy + " for " + name);
                 }
             }
         }
@@ -1373,7 +1378,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
-    public Date getCreationTimestamp() {
+    public Instant getCreationTimestamp() {
         return this.creationTimestamp;
     }
 
@@ -1384,7 +1389,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param creationTimestamp when this item was created
      */
     @Override
-    public void setCreationTimestamp(final Date creationTimestamp) {
+    public void setCreationTimestamp(final Instant creationTimestamp) {
         if (creationTimestamp == null) {
             throw new IllegalArgumentException("Timestamp must not be null");
         }

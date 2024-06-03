@@ -25,12 +25,12 @@ import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,6 +84,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
     protected void initJsonMapper() {
         jsonMapper = new ObjectMapper();
         jsonMapper.registerModule(new IbdoModule());
+        jsonMapper.registerModule(new JavaTimeModule());
         jsonMapper.addMixIn(IBaseDataObject.class, emitPayload ? IbdoPayloadMixin.class : IbdoParameterMixin.class);
         // the id in addFilter must match the annotation for JsonFilter
         jsonMapper.setFilterProvider(new SimpleFilterProvider().addFilter("param_filter", new IbdoParameterFilter()));
@@ -94,9 +95,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         return jsonMapper.writeValueAsBytes(list);
     }
 
-    class IbdoParameterFilter extends SimpleBeanPropertyFilter implements Serializable {
-
-        private static final long serialVersionUID = 1L;
+    class IbdoParameterFilter extends SimpleBeanPropertyFilter {
 
         protected final boolean outputAll;
         protected final boolean emptyDenylist;
@@ -172,7 +171,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         }
 
         protected Collection<Object> filter(String key, Collection<Object> values) {
-            Collection<Object> keep = new TreeSet<>();
+            Set<Object> keep = new TreeSet<>();
             for (final Object value : values) {
                 if (!(denylistValues.containsKey(key) && denylistValues.get(key).contains(value.toString()))) {
                     keep.add(value);
@@ -248,12 +247,12 @@ public class JsonOutputFilter extends AbstractRollableFilter {
      * This class is used so we do not have to annotate the IBaseDataObject. Set custom annotations on the method signatures
      * to include/exclude fields in the ibdo.
      */
-    static abstract class IbdoMixin {
+    abstract static class IbdoMixin {
         @JsonProperty("internalId")
         abstract UUID getInternalId();
 
         @JsonProperty("creationTimestamp")
-        abstract Date getCreationTimestamp();
+        abstract Instant getCreationTimestamp();
 
         @JsonProperty("shortName")
         abstract String shortName();
@@ -336,7 +335,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract String getProcessingError();
     }
 
-    static abstract class IbdoParameterMixin extends IbdoMixin {
+    abstract static class IbdoParameterMixin extends IbdoMixin {
         @JsonIgnore
         abstract byte[] data();
 
@@ -344,7 +343,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         abstract Map<String, byte[]> getAlternateViews();
     }
 
-    static abstract class IbdoPayloadMixin extends IbdoMixin {
+    abstract static class IbdoPayloadMixin extends IbdoMixin {
         @JsonProperty("payload")
         @JsonInclude(NON_EMPTY)
         abstract byte[] data();

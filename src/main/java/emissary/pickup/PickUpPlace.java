@@ -584,16 +584,18 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
             SessionParser sp = parserFactory.makeSessionParser(raf.getChannel());
             logger.debug("Using session parser from raf ident {}", sp.getClass().getName());
 
-            // .. and a session producer to crank out the data objects...
+            // ... and a session producer to crank out the data objects...
             SessionProducer dof = new SessionProducer(sp, myKey, null);
 
             long fileStart = System.currentTimeMillis();
             long totalSize = 0;
+
             // For each session get a data object from the producer
-            while (true) {
+            boolean isParserComplete = false;
+            while (!isParserComplete) {
                 long sessionStart = System.currentTimeMillis();
                 try {
-                    // Use filename-xx for defualt name
+                    // Use filename-xx for default name
                     String sessionName = fixedName + "-" + (sessionNum + 1);
 
                     IBaseDataObject dataObject = dof.getNextSession(sessionName);
@@ -606,15 +608,14 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
                     processDataObject(dataObject, sessionName, theFile, false);
                 } catch (ParserEOFException eof) {
                     // expected at end of file
+                    isParserComplete = true;
                     long fileEnd = System.currentTimeMillis();
                     logger.info("fileParseMetric:{},{},{},{},{}", fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
-                    break;
                 } catch (EmissaryException ex) {
                     logger.error("Could not dispatch {}", theFile.getName(), ex);
                     throw new ParserException("Could not process" + theFile.getName(), ex);
                 }
-
-            } // end while(true)
+            }
         }
 
         logger.debug("Done processing {} sessions from {}", sessionNum, theFile.getName());
@@ -642,7 +643,8 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         SessionProducer dof = new SessionProducer(sp, myKey, null);
 
         // For each session get a data object from the producer
-        while (true) {
+        boolean isParserComplete = false;
+        while (!isParserComplete) {
             try {
                 // Use filename-xx for default name
                 String sessionName = fixedName + "-" + (sessionNum + 1);
@@ -652,12 +654,11 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
                 processDataObject(dataObject, sessionName, theFile, false);
             } catch (ParserEOFException eof) {
                 // expected at end of file
-                break;
+                isParserComplete = true;
             } catch (EmissaryException ex) {
                 logger.error("Could not dispatch {}", fixedName, ex);
             }
-
-        } // end while(true)
+        }
 
         logger.debug("Done processing {} sessions from {}", sessionNum, theFile.getName());
         return sessionNum;

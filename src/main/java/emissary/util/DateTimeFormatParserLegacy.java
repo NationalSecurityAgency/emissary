@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @Deprecated
+@SuppressWarnings("JavaUtilDate")
 public class DateTimeFormatParserLegacy {
 
     protected static final Logger logger = LoggerFactory.getLogger(DateTimeFormatParserLegacy.class);
@@ -85,4 +86,6 @@ public class DateTimeFormatParserLegacy {
         return date;
     }
 
+
+    private DateTimeFormatParserLegacy() {}
 }

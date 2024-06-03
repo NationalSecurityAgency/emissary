@@ -175,7 +175,7 @@ class FTestSpacePlaceInteraction extends FunctionalTest {
 
         assertEquals(2, space.getFilesProcessed(), "File has been processed");
         assertEquals(1, space.getBundlesProcessed(), "Bundle was created");
-        assertEquals("This is a test".length() * 2, space.getBytesProcessed(), "Byte count matches file");
+        assertEquals("This is a test".length() * 2L, space.getBytesProcessed(), "Byte count matches file");
 
         pause(t2);
 
