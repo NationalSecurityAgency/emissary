@@ -39,3 +39,6 @@ nbactions*.xml
 
 # Linter reports
 megalinter-reports
+
+# Maven stuff
+pom.xml.versionsBackup

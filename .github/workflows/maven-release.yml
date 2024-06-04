@@ -176,7 +176,7 @@ jobs:
 
       - name: Set the next snapshot version
         run: |
-          mvn -B -V -e -ntp versions:set -DnewVersion=${{ env.NEXT_DEV_VERSION }}
+          mvn -B -V -e -ntp versions:set -DnewVersion=${{ env.NEXT_DEV_VERSION }} -DgenerateBackupPoms=false
           mvn -B -V -e -ntp versions:commit
           git add .
           git commit -m "[github-actions](${{ github.actor }}) next development iteration"
