@@ -10,7 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class FastBoyerMoore {
-    private static Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);
+    private static final Logger logger = LoggerFactory.getLogger(FastBoyerMoore.class);
     public byte[][] keywords;
     int minKeywordLength;
     int[] lookup = new int[259];
