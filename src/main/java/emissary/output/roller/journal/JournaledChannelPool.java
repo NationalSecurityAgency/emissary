@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +28,7 @@ public class JournaledChannelPool implements AutoCloseable {
     final int max;
     final Path directory;
     final String key;
-    private final List<JournaledChannel> free = new ArrayList<>();
+    private final Deque<JournaledChannel> free = new ArrayDeque<>();
     private int created;
     @Nullable
     private JournaledChannel[] allchannels;
@@ -95,7 +95,7 @@ public class JournaledChannelPool implements AutoCloseable {
         }
         this.lock.lock();
         try {
-            if (this.free.contains(jc) || !this.free.add(jc)) {
+            if (this.free.contains(jc) || !this.free.offer(jc)) {
                 LOG.warn("Could not return the channel to the pool {}", this.key);
             }
             // signal everyone since close and find may be waiting
@@ -145,7 +145,7 @@ public class JournaledChannelPool implements AutoCloseable {
                 checkClosed();
             }
         }
-        return this.free.remove(0);
+        return this.free.poll();
     }
 
     private void createChannel() throws IOException {
