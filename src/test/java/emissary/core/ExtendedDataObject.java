@@ -19,7 +19,7 @@ public class ExtendedDataObject extends BaseDataObject implements Serializable, 
 
     private static final Logger logger = LoggerFactory.getLogger(ExtendedDataObject.class);
 
-    protected String[] NEW_FILETYPE_EMPTY = {"FOO", "BAR", "QUUX", "UNKNOWN"};
+    protected static final String[] NEW_FILETYPE_EMPTY = {"FOO", "BAR", "QUUX", "UNKNOWN"};
 
     protected int intVar = -1;
     protected long longVar = 100L;
@@ -29,7 +29,7 @@ public class ExtendedDataObject extends BaseDataObject implements Serializable, 
     public ExtendedDataObject() {
         super();
         this.theData = null;
-        FILETYPE_EMPTY = this.NEW_FILETYPE_EMPTY;
+        FILETYPE_EMPTY = NEW_FILETYPE_EMPTY;
         this.intVar = 37;
     }
 

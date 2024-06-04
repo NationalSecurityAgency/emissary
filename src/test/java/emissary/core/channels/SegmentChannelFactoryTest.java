@@ -91,17 +91,17 @@ class SegmentChannelFactoryTest extends UnitTest {
                 final int myInstanceNumber = instanceNumber.getAndIncrement();
 
                 @Override
-                protected void closeImpl() throws IOException {
+                protected void closeImpl() {
                     isClosedList.set(myInstanceNumber, true);
                 }
 
                 @Override
-                protected int readImpl(ByteBuffer byteBuffer) throws IOException {
+                protected int readImpl(ByteBuffer byteBuffer) {
                     return 0;
                 }
 
                 @Override
-                protected long sizeImpl() throws IOException {
+                protected long sizeImpl() {
                     return 1;
                 }
             };

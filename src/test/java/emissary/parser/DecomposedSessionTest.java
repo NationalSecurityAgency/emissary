@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DecomposedSessionTest extends UnitTest {
 
-    byte[] DATA = new byte[1000];
+    static final byte[] DATA = new byte[1000];
 
     @Override
     @BeforeEach

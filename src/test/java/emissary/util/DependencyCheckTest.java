@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DependencyCheckTest extends UnitTest {
 
-    private final String BIN_DIR = System.getProperty(ConfigUtil.CONFIG_BIN_PROPERTY);
+    private static final String BIN_DIR = System.getProperty(ConfigUtil.CONFIG_BIN_PROPERTY);
 
     @Test
     void testExecutableExist() {

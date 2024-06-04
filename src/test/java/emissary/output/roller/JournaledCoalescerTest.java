@@ -52,8 +52,8 @@ class JournaledCoalescerTest extends UnitTest {
     private static final String BUD1_NAME = "bud1";
     private Path tempBud2;
     private static final String BUD2_NAME = "bud2";
-    private final List<String> BUD1_LINES = Arrays.asList("Line1", "Line2");
-    private final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
+    private static final List<String> BUD1_LINES = Arrays.asList("Line1", "Line2");
+    private static final List<String> BUD2_LINES = Arrays.asList("Line3", "Line4");
 
     @BeforeEach
     public void setUp(@TempDir final Path tempFilesPath) throws IOException, InterruptedException {

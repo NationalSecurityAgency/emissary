@@ -54,15 +54,15 @@ class HDMobileAgentBugIT extends UnitTest {
         validate.shutDown();
     }
 
-    private IServiceProviderPlace addDir(String key, String clsName) {
+    private static IServiceProviderPlace addDir(String key, String clsName) {
         return PlaceStarter.createPlace(key, null, clsName, null, new EmissaryNode());
     }
 
-    private IServiceProviderPlace addPlace(String key, String clsName) {
+    private static IServiceProviderPlace addPlace(String key, String clsName) {
         return PlaceStarter.createPlace(key, null, clsName, null);
     }
 
-    private IBaseDataObject generateIbdo(int index, String form) {
+    private static IBaseDataObject generateIbdo(int index, String form) {
         IBaseDataObject ibdo = DataObjectFactory.getInstance(new byte[] {}, "testing_file" + Family.getSep(index), form, "TST");
         ibdo.pushCurrentForm("FRM-PROCESSED-alternative");
         ibdo.appendTransformHistory("*.FAKE_ANALYZE.ANALYZE.http://localhost:8543/VisitedHereFirstPlace");

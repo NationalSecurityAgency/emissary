@@ -80,7 +80,7 @@ class FileChannelFactoryTest extends UnitTest {
         final SeekableByteChannel sbc = sbcf.create();
         final ByteBuffer buff = ByteBuffer.wrap("New data".getBytes());
         assertThrows(NonWritableChannelException.class, () -> sbc.write(buff), "Can't write to byte channel as it's immutable");
-        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(5l), "Can't truncate byte channel as it's immutable");
+        assertThrows(NonWritableChannelException.class, () -> sbc.truncate(5L), "Can't truncate byte channel as it's immutable");
     }
 
     @Test

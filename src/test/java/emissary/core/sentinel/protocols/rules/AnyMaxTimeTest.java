@@ -66,11 +66,11 @@ class AnyMaxTimeTest extends UnitTest {
     @Nested
     class ConditionTest extends UnitTest {
 
-        final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
-        final String TO_LOWER_PLACE = "ToLowerPlace";
-        final String TO_UPPER_PLACE = "ToUpperPlace";
-        final int DEFAULT_POOL_SIZE = 5;
-        final int DEFAULT_TIME_LIMIT = 5;
+        final String toUpperLowerPattern = "To(?:Lower|Upper)Place";
+        final String toLowerPlace = "ToLowerPlace";
+        final String toUpperPlace = "ToUpperPlace";
+        final int defaultPoolSize = 5;
+        final int defaultTimeLimit = 5;
 
         AgentPool pool;
         List<Protocol.PlaceAgentStats> stats;
@@ -85,47 +85,47 @@ class AnyMaxTimeTest extends UnitTest {
 
         @Test
         void condition1() {
-            assertTrue(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0, DEFAULT_POOL_SIZE));
+            assertTrue(testRule(toUpperLowerPattern, defaultTimeLimit, 1.0, defaultPoolSize));
         }
 
         @Test
         void condition2() {
-            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT, 1.0, DEFAULT_POOL_SIZE + 1));
+            assertFalse(testRule(toUpperLowerPattern, defaultTimeLimit, 1.0, defaultPoolSize + 1));
         }
 
         @Test
         void condition3() {
-            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0, DEFAULT_POOL_SIZE));
+            assertFalse(testRule(toUpperLowerPattern, defaultTimeLimit + 1, 1.0, defaultPoolSize));
         }
 
         @Test
         void condition4() {
-            assertFalse(testRule(TO_UPPER_LOWER_PATTERN, DEFAULT_TIME_LIMIT + 1, 1.0, DEFAULT_POOL_SIZE + 1));
+            assertFalse(testRule(toUpperLowerPattern, defaultTimeLimit + 1, 1.0, defaultPoolSize + 1));
         }
 
         @Test
         void condition5() {
-            assertTrue(testRule(TO_LOWER_PLACE, DEFAULT_TIME_LIMIT - 1, 0.5, DEFAULT_POOL_SIZE));
+            assertTrue(testRule(toLowerPlace, defaultTimeLimit - 1, 0.5, defaultPoolSize));
         }
 
         @Test
         void condition6() {
-            assertFalse(testRule(TO_LOWER_PLACE, DEFAULT_TIME_LIMIT, 0.5, DEFAULT_POOL_SIZE));
+            assertFalse(testRule(toLowerPlace, defaultTimeLimit, 0.5, defaultPoolSize));
         }
 
         @Test
         void condition7() {
-            assertFalse(testRule(TO_LOWER_PLACE, DEFAULT_TIME_LIMIT - 1, 0.75, DEFAULT_POOL_SIZE));
+            assertFalse(testRule(toLowerPlace, defaultTimeLimit - 1, 0.75, defaultPoolSize));
         }
 
         @Test
         void condition8() {
-            assertTrue(testRule(TO_UPPER_PLACE, DEFAULT_TIME_LIMIT, 0.2, DEFAULT_POOL_SIZE));
+            assertTrue(testRule(toUpperPlace, defaultTimeLimit, 0.2, defaultPoolSize));
         }
 
         @Test
         void condition9() {
-            assertFalse(testRule(TO_UPPER_PLACE, DEFAULT_TIME_LIMIT, 0.5, DEFAULT_POOL_SIZE));
+            assertFalse(testRule(toUpperPlace, defaultTimeLimit, 0.5, defaultPoolSize));
         }
 
         boolean testRule(String matcher, int time, double threshold, int poolSize) {
@@ -139,13 +139,13 @@ class AnyMaxTimeTest extends UnitTest {
 
         List<Protocol.PlaceAgentStats> stats() {
             Protocol.PlaceAgentStats lowerStats = new Protocol.PlaceAgentStats("ToLowerPlace");
-            lowerStats.update(DEFAULT_TIME_LIMIT - 4); // MobileAgent-01
-            lowerStats.update(DEFAULT_TIME_LIMIT - 2); // MobileAgent-02
-            lowerStats.update(DEFAULT_TIME_LIMIT - 1); // MobileAgent-03
+            lowerStats.update(defaultTimeLimit - 4); // MobileAgent-01
+            lowerStats.update(defaultTimeLimit - 2); // MobileAgent-02
+            lowerStats.update(defaultTimeLimit - 1); // MobileAgent-03
 
             Protocol.PlaceAgentStats upperStats = new Protocol.PlaceAgentStats("ToUpperPlace");
-            upperStats.update(DEFAULT_TIME_LIMIT - 3); // MobileAgent-04
-            upperStats.update(DEFAULT_TIME_LIMIT); // MobileAgent-05
+            upperStats.update(defaultTimeLimit - 3); // MobileAgent-04
+            upperStats.update(defaultTimeLimit); // MobileAgent-05
 
             return List.of(lowerStats, upperStats);
         }

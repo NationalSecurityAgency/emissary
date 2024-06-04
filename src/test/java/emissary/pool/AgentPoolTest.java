@@ -33,7 +33,7 @@ public class AgentPoolTest extends UnitTest {
             Integer propertyOverride,
             int expectedPoolSize,
             @Nullable Class<? extends Exception> expectedException,
-            String expectedExceptionMsg) throws IllegalArgumentException {
+            String expectedExceptionMsg) {
         // setup expected exception
         if (expectedException != null) {
             Exception e = assertThrows(expectedException, () -> AgentPool.computePoolSize(maxMemoryInBytes, propertyOverride));

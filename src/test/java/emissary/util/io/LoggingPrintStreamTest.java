@@ -254,7 +254,7 @@ class LoggingPrintStreamTest {
             final String message = "Message from instance " + i;
             final Exception exception = new Exception("Exception from instance " + i);
 
-            executorService.submit(() -> {
+            var unused = executorService.submit(() -> {
                 for (int j = 0; j < iterations; j++) {
                     loggingPrintStream.println(message);
                     exception.printStackTrace(loggingPrintStream);

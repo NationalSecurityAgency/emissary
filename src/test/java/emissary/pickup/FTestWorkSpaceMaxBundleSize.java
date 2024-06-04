@@ -188,7 +188,7 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
             super();
         }
 
-        public MyWorkSpace(FeedCommand command) throws Exception {
+        public MyWorkSpace(FeedCommand command) {
             super(command);
         }
 

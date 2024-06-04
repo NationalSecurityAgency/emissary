@@ -1164,7 +1164,7 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testBothDataFieldsHaveValue()
-            throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+            throws IOException, NoSuchFieldException, IllegalAccessException {
         final BaseDataObject bdo = new BaseDataObject();
         final String testData = "This is a test";
         bdo.setChannelFactory(SeekableByteChannelHelper.memory(testData.getBytes()));

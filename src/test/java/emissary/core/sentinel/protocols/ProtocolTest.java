@@ -148,10 +148,10 @@ class ProtocolTest extends UnitTest {
     @Nested
     class RunTest extends UnitTest {
 
-        final String TO_UPPER_LOWER_PATTERN = "To(?:Lower|Upper)Place";
-        final String TO_LOWER_PLACE = "ToLowerPlace";
-        final String TO_UPPER_PLACE = "ToUpperPlace";
-        final int DEFAULT_POOL_SIZE = 5;
+        final String toUpperLowerPattern = "To(?:Lower|Upper)Place";
+        final String toLowerPlace = "ToLowerPlace";
+        final String toUpperPlace = "ToUpperPlace";
+        final int defaultPoolSize = 5;
 
         Action action;
         AgentPool pool;
@@ -170,57 +170,57 @@ class ProtocolTest extends UnitTest {
         void protocol1() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
-            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 30, 0.2));
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 30, 0.2));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+            testProtocol(protocol, defaultPoolSize, 1);
         }
 
         @Test
         void protocol2() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
-            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 40, 0.2));
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 40, 0.2));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+            testProtocol(protocol, defaultPoolSize, 0);
         }
 
         @Test
         void protocol3() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_LOWER_PATTERN, 30, 0.01));
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toUpperLowerPattern, 30, 0.01));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+            testProtocol(protocol, defaultPoolSize, 1);
         }
 
         @Test
         void protocol4() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_LOWER_PLACE, 30, 0.01));
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toLowerPlace, 30, 0.01));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+            testProtocol(protocol, defaultPoolSize, 0);
         }
 
         @Test
         void protocol5() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", TO_UPPER_PLACE, 30, 0.01));
+            protocol.rules.put("TEST_RULE", new AnyMaxTime("LongRunning", toUpperPlace, 30, 0.01));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+            testProtocol(protocol, defaultPoolSize, 1);
         }
 
         @Test
         void protocol6() {
             Protocol protocol = new Protocol();
             protocol.action = action;
-            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", TO_UPPER_LOWER_PATTERN, 5, 1.0));
-            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", TO_UPPER_LOWER_PATTERN, 30, 0.2));
+            protocol.rules.put("TEST_RULE1", new AllMaxTime("rule1", toUpperLowerPattern, 5, 1.0));
+            protocol.rules.put("TEST_RULE2", new AnyMaxTime("rule2", toUpperLowerPattern, 30, 0.2));
 
-            testProtocol(protocol, DEFAULT_POOL_SIZE + 1, 0);
+            testProtocol(protocol, defaultPoolSize + 1, 0);
         }
 
         void testProtocol(Protocol protocol, int poolSize, int expected) {

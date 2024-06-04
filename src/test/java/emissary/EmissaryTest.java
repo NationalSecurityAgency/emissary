@@ -175,7 +175,7 @@ class EmissaryTest extends UnitTest {
 
     @Command()
     static class JunkCommand implements EmissaryCommand {
-        final Logger LOG = LoggerFactory.getLogger(JunkCommand.class);
+        static final Logger LOG = LoggerFactory.getLogger(JunkCommand.class);
 
         @Override
         public String getCommandName() {
@@ -227,7 +227,7 @@ class EmissaryTest extends UnitTest {
     @Command()
     static class AnotherBaseCommand extends BaseCommand {
         // need to extend BaseCommand to get verbose options
-        final Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.class);
+        static final Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.class);
 
         @Override
         public String getCommandName() {

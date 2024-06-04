@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataIdentifierTest extends UnitTest {
 
-    byte[] DATA = new byte[1000];
+    static final byte[] DATA = new byte[1000];
 
     @Override
     @BeforeEach
@@ -72,12 +72,12 @@ class DataIdentifierTest extends UnitTest {
             return DATA_ID_STR_SZ;
         }
 
-        public String checkString(byte[] data) {
-            return super.getTestString(data);
+        public String checkString(byte[] DATA) {
+            return super.getTestString(DATA);
         }
 
-        public String checkString(byte[] data, int limit) {
-            return super.getTestString(data, limit);
+        public String checkString(byte[] DATA, int limit) {
+            return super.getTestString(DATA, limit);
         }
     }
 
