@@ -54,7 +54,7 @@
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <em class="jxr_javadoccomment">     * Test of freeChannel method, of class JournaledChannelPool.</em>
 <a class="jxr_linenumber" name="L47" href="#L47">47</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>      @Test
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">void</strong> testGetAndFree() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">void</strong> testGetAndFree() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">final</strong> SeekableByteChannel out = <strong class="jxr_keyword">this</strong>.instance.getFree();
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> created = <strong class="jxr_keyword">this</strong>.instance.getCreatedCount();
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertTrue(created &gt; 0, <span class="jxr_string">"Should have recorded creation of at least 1 object"</span>);
@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  <em class="jxr_javadoccomment">     * Test of getJournalEntries method, of class JournaledChannelPool.</em>
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>      @Test
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">void</strong> testGetJournalEntries() <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">void</strong> testGetJournalEntries() <strong class="jxr_keyword">throws</strong> IOException, InterruptedException {
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">final</strong> String onetext = <span class="jxr_string">"one line of text"</span>;
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">final</strong> String twotext = <span class="jxr_string">"two lines of text\nthe second line"</span>;
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>          <strong class="jxr_keyword">try</strong> (KeyedOutput k1 = <strong class="jxr_keyword">this</strong>.instance.getFree(); KeyedOutput k2 = <strong class="jxr_keyword">this</strong>.instance.getFree()) {

@@ -71,25 +71,25 @@
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>              <strong class="jxr_keyword">final</strong> Constructor&lt;?&gt; constructor = ConstructorLookupCache.lookup(clazz, types.toArray(<strong class="jxr_keyword">new</strong> Class&lt;?&gt;[0]));
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              <strong class="jxr_keyword">if</strong> (constructor == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>                  logger.info(<span class="jxr_string">"Failed to find constructor for args({}) types ({}) : {}"</span>, args.length, types.size(), types);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(<span class="jxr_string">"failed to find suitable constructor for class "</span> + className);
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(<span class="jxr_string">"failed to find suitable constructor for class "</span> + className);
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>              } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>                  <strong class="jxr_keyword">return</strong> constructor.newInstance(args);
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>              }
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          } <strong class="jxr_keyword">catch</strong> (ClassNotFoundException e1) {
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              logger.error(<span class="jxr_string">"Could not find class"</span>, e1);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(e1);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(e1);
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>          } <strong class="jxr_keyword">catch</strong> (InstantiationException e3) {
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>              logger.error(<span class="jxr_string">"Could not instantiate"</span>, e3);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(e3);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(e3);
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>          } <strong class="jxr_keyword">catch</strong> (IllegalAccessException e4) {
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>              logger.error(<span class="jxr_string">"Could not call constructor"</span>, e4);
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(e4);
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(e4);
 <a class="jxr_linenumber" name="L79" href="#L79">79</a>          } <strong class="jxr_keyword">catch</strong> (InvocationTargetException e5) {
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>              logger.error(<span class="jxr_string">"Constructor failed"</span>, e5);
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(e5);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(e5);
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          } <strong class="jxr_keyword">catch</strong> (Throwable t) {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>              logger.error(<span class="jxr_string">"Problem in factory"</span>, t);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> Error(t);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> AssertionError(t);
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          }
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      }
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>  

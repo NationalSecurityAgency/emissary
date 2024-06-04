@@ -13,80 +13,76 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.directory.KeyManipulator;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> com.google.common.net.HostAndPort;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Command;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Option;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.TreeSet;
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  @Command(description = <span class="jxr_string">"Read the peers.cfg (respective flavors) and return hosts as bashable list"</span>, subcommands = {HelpCommand.<strong class="jxr_keyword">class</strong>})
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> PeersCommand <strong class="jxr_keyword">extends</strong> <a name="HttpCommand" href="../../emissary/command/HttpCommand.html#HttpCommand">HttpCommand</a> {
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> picocli.CommandLine;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> picocli.CommandLine.Command;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> picocli.CommandLine.Option;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.TreeSet;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  @Command(description = <span class="jxr_string">"Read the peers.cfg (respective flavors) and return hosts as bashable list"</span>, subcommands = {HelpCommand.<strong class="jxr_keyword">class</strong>})
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> PeersCommand <strong class="jxr_keyword">extends</strong> <a name="HttpCommand" href="../../emissary/command/HttpCommand.html#HttpCommand">HttpCommand</a> {
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMMAND_NAME = <span class="jxr_string">"peers"</span>;
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>  
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = LoggerFactory.getLogger(PeersCommand.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PEER_CONFIG = <span class="jxr_string">"peer.cfg"</span>;
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String COMMAND_NAME = <span class="jxr_string">"peers"</span>;
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PEER_CONFIG = <span class="jxr_string">"peer.cfg"</span>;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      @Option(names = {<span class="jxr_string">"-d"</span>, <span class="jxr_string">"--delimiter"</span>},
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>              description = <span class="jxr_string">"delimiter to use when writing host output (note: newline needs to be &#92;&#92;n\nDefault: ${DEFAULT-VALUE}"</span>)
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      <strong class="jxr_keyword">private</strong> String delimiter = <span class="jxr_string">","</span>;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      @Option(names = {<span class="jxr_string">"-d"</span>, <span class="jxr_string">"--delimiter"</span>},
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>              description = <span class="jxr_string">"delimiter to use when writing host output (note: newline needs to be &#92;&#92;n\nDefault: ${DEFAULT-VALUE}"</span>)
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> String delimiter = <span class="jxr_string">","</span>;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      @Option(names = {<span class="jxr_string">"-ih"</span>, <span class="jxr_string">"--ignoreHost"</span>}, description = <span class="jxr_string">"the host to ignore with optional port (host[:port])\nDefault: &lt;empty string&gt;"</span>)
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> String ignoreHost = <span class="jxr_string">""</span>;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Option(names = <span class="jxr_string">"--withPort"</span>, description = <span class="jxr_string">"returns each peer with associated port\nDefault: ${DEFAULT-VALUE}"</span>)
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> withPort = false;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      @Override
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> String getCommandName() {
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <strong class="jxr_keyword">return</strong> COMMAND_NAME;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>      }
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>      @Override
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run(CommandLine c) {
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          setup();
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>              System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), <strong class="jxr_keyword">this</strong>.withPort)));
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              LOG.debug(<span class="jxr_string">"Problem reading file"</span>, e);
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>          }
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>      @Override
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup() {
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">super</strong>.setup();
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">if</strong> (delimiter.contains(<span class="jxr_string">"&#92;&#92;n"</span>)) {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>              String replaced = delimiter.replaceAll(<span class="jxr_string">"&#92;&#92;&#92;&#92;n"</span>, System.getProperty(<span class="jxr_string">"line.separator"</span>));
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>              delimiter = replaced;
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      }
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getPeers(<strong class="jxr_keyword">final</strong> HostAndPort ignoreHost, <strong class="jxr_keyword">boolean</strong> wantPort) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> peerConfig = ConfigUtil.getConfigInfo(PEER_CONFIG);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">final</strong> Set&lt;String&gt; peers = peerConfig.findEntriesAsSet(<span class="jxr_string">"RENDEZVOUS_PEER"</span>);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">final</strong> Set&lt;String&gt; added = <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          peers.forEach(peerString -&gt; {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>              <em class="jxr_comment">// form peer config files</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>              HostAndPort peer = HostAndPort.fromString(KeyManipulator.getServiceHost(peerString));
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">if</strong> ((ignoreHost.hasPort() &amp;&amp; !ignoreHost.equals(peer)) || !ignoreHost.getHost().equals(peer.getHost())) {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  <strong class="jxr_keyword">if</strong> (wantPort) {
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>                      added.add(peer.toString());
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>                  } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>                      added.add(peer.getHost());
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>                  }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>              }
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          });
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> added;
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>  }
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      @Option(names = {<span class="jxr_string">"-ih"</span>, <span class="jxr_string">"--ignoreHost"</span>}, description = <span class="jxr_string">"the host to ignore with optional port (host[:port])\nDefault: &lt;empty string&gt;"</span>)
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">private</strong> String ignoreHost = <span class="jxr_string">""</span>;
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>  
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      @Option(names = <span class="jxr_string">"--withPort"</span>, description = <span class="jxr_string">"returns each peer with associated port\nDefault: ${DEFAULT-VALUE}"</span>)
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> withPort = false;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      @Override
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">public</strong> String getCommandName() {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">return</strong> COMMAND_NAME;
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      }
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      @Override
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> run(CommandLine c) {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          setup();
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>              System.out.print(String.join(delimiter, getPeers(HostAndPort.fromString(ignoreHost), <strong class="jxr_keyword">this</strong>.withPort)));
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>              LOG.debug(<span class="jxr_string">"Problem reading file"</span>, e);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          }
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>      }
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>      @Override
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> setup() {
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          <strong class="jxr_keyword">super</strong>.setup();
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          <strong class="jxr_keyword">if</strong> (delimiter.contains(<span class="jxr_string">"&#92;&#92;n"</span>)) {
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              String replaced = delimiter.replaceAll(<span class="jxr_string">"&#92;&#92;&#92;&#92;n"</span>, System.getProperty(<span class="jxr_string">"line.separator"</span>));
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              delimiter = replaced;
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      }
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> Set&lt;String&gt; getPeers(<strong class="jxr_keyword">final</strong> HostAndPort ignoreHost, <strong class="jxr_keyword">boolean</strong> wantPort) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> peerConfig = ConfigUtil.getConfigInfo(PEER_CONFIG);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">final</strong> Set&lt;String&gt; peers = peerConfig.findEntriesAsSet(<span class="jxr_string">"RENDEZVOUS_PEER"</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">final</strong> Set&lt;String&gt; added = <strong class="jxr_keyword">new</strong> TreeSet&lt;&gt;();
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          peers.forEach(peerString -&gt; {
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>              <em class="jxr_comment">// form peer config files</em>
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>              HostAndPort peer = HostAndPort.fromString(KeyManipulator.getServiceHost(peerString));
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>              <strong class="jxr_keyword">if</strong> ((ignoreHost.hasPort() &amp;&amp; !ignoreHost.equals(peer)) || !ignoreHost.getHost().equals(peer.getHost())) {
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>                  <strong class="jxr_keyword">if</strong> (wantPort) {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>                      added.add(peer.toString());
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>                  } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>                      added.add(peer.getHost());
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  }
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>              }
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          });
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          <strong class="jxr_keyword">return</strong> added;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

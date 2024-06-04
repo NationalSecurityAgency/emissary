@@ -15,9 +15,9 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertEquals;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNotNull;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertSame;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertInstanceOf;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertNotNull;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertSame;
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">class</strong> <a name="DataObjectFactoryTest" href="../../emissary/core/DataObjectFactoryTest.html#DataObjectFactoryTest">DataObjectFactoryTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>      <strong class="jxr_keyword">private</strong> String defaultPayloadClass;
@@ -42,7 +42,7 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">void</strong> testFactory() {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          <strong class="jxr_keyword">final</strong> IBaseDataObject d = DataObjectFactory.getInstance();
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          assertNotNull(d, <span class="jxr_string">"DataObject created"</span>);
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>          assertTrue(d instanceof IBaseDataObject, <span class="jxr_string">"Proper class hierarchy"</span>);
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>          assertInstanceOf(IBaseDataObject.<strong class="jxr_keyword">class</strong>, d, <span class="jxr_string">"Proper class hierarchy"</span>);
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>      }
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>      @Test
@@ -51,9 +51,9 @@
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          assertEquals(MyDataObject.<strong class="jxr_keyword">class</strong>.getName(), DataObjectFactory.getImplementingClass(), <span class="jxr_string">"Impl class set"</span>);
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          <strong class="jxr_keyword">final</strong> IBaseDataObject d = DataObjectFactory.getInstance();
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          assertNotNull(d, <span class="jxr_string">"DataObject created"</span>);
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>          assertTrue(d instanceof IBaseDataObject, <span class="jxr_string">"Proper class hierarchy"</span>);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          assertTrue(d instanceof BaseDataObject, <span class="jxr_string">"Proper class hierarchy"</span>);
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          assertTrue(d instanceof MyDataObject, <span class="jxr_string">"Proper class hierarchy"</span>);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          assertNotNull(d, <span class="jxr_string">"Proper class hierarchy"</span>);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          assertInstanceOf(BaseDataObject.<strong class="jxr_keyword">class</strong>, d, <span class="jxr_string">"Proper class hierarchy"</span>);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          assertInstanceOf(MyDataObject.<strong class="jxr_keyword">class</strong>, d, <span class="jxr_string">"Proper class hierarchy"</span>);
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Test

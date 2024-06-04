@@ -124,7 +124,7 @@
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         <strong class="jxr_keyword">if</strong> (stringValue == <strong class="jxr_keyword">null</strong> || stringValue.length() == 0) {
 <a class="jxr_linenumber" name="L117" href="#L117">117</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         }
-<a class="jxr_linenumber" name="L119" href="#L119">119</a>         <strong class="jxr_keyword">if</strong> (stringValue.length() &gt; 2 &amp;&amp; <span class="jxr_string">"0x"</span>.equals(stringValue.substring(0, 2))) {
+<a class="jxr_linenumber" name="L119" href="#L119">119</a>         <strong class="jxr_keyword">if</strong> (stringValue.length() &gt; 2 &amp;&amp; HEX_PREFIX.equals(stringValue.substring(0, 2))) {
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>             <strong class="jxr_keyword">return</strong> hexStringToByteArray(stringValue);
 <a class="jxr_linenumber" name="L121" href="#L121">121</a>         } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>             <strong class="jxr_keyword">return</strong> integerToByteArray(arraySize, stringToLong(stringValue));
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>     }
 <a class="jxr_linenumber" name="L213" href="#L213">213</a> 
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> stringToLong(String stringValue) {
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">if</strong> (stringValue.length() &gt; 2 &amp;&amp; <span class="jxr_string">"0x"</span>.equals(stringValue.substring(0, 2))) {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         <strong class="jxr_keyword">if</strong> (stringValue.length() &gt; 2 &amp;&amp; HEX_PREFIX.equals(stringValue.substring(0, 2))) {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>             <strong class="jxr_keyword">return</strong> Long.parseLong(stringValue.substring(2), 16);
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (stringValue.length() &gt; 1 &amp;&amp; stringValue.charAt(0) == '0') {
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>             <strong class="jxr_keyword">return</strong> Long.parseLong(stringValue.substring(1), 8);

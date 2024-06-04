@@ -46,45 +46,44 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>          <em class="jxr_comment">// Make sure we built the resource names correctly</em>
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>          <em class="jxr_comment">// by opening each one as a stream</em>
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">for</strong> (String rez : resources) {
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>              InputStream is;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>              is = rr.getResourceAsStream(rez);
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>              assertNotNull(is, <span class="jxr_string">"Failed to open "</span> + rez);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>              <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>                  is.close();
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>              } <strong class="jxr_keyword">catch</strong> (IOException ignore) {
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>              }
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>          }
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>              InputStream is = rr.getResourceAsStream(rez);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>              assertNotNull(is, <span class="jxr_string">"Failed to open "</span> + rez);
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>              <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>                  is.close();
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>              } <strong class="jxr_keyword">catch</strong> (IOException ignore) {
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>              }
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          }
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          resources = rr.findConfigResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          resources = rr.findXmlResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>          resources = rr.findPropertyResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          resources = rr.findConfigResourcesFor(Version.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          assertEquals(1, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>  
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      @Test
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">void</strong> testNaming() {
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          ResourceReader rr = <strong class="jxr_keyword">new</strong> ResourceReader();
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          assertEquals(<span class="jxr_string">"emissary/util/Version"</span>, rr.getResourceName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource naming"</span>);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertEquals(<span class="jxr_string">"emissary/util/Version.xml"</span>, rr.getXmlName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource xml naming"</span>);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertEquals(<span class="jxr_string">"emissary/util/Version.cfg"</span>, rr.getConfigDataName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource config naming"</span>);
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo.xml"</span>, rr.getXmlName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          assertEquals(<span class="jxr_string">"emissary/util/io/sample.dat"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.thisPackage, <span class="jxr_string">"sample.dat"</span>), <span class="jxr_string">"Sample file with extension naming"</span>);
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      }
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>  }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          resources = rr.findConfigResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>  
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          resources = rr.findXmlResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          resources = rr.findPropertyResourcesFor(<strong class="jxr_keyword">this</strong>.getClass());
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertEquals(0, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          resources = rr.findConfigResourcesFor(Version.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          assertNotNull(resources, <span class="jxr_string">"Resources must not be null"</span>);
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          assertEquals(1, resources.size(), <span class="jxr_string">"All config resources not found"</span>);
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      @Test
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">void</strong> testNaming() {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          ResourceReader rr = <strong class="jxr_keyword">new</strong> ResourceReader();
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          assertEquals(<span class="jxr_string">"emissary/util/Version"</span>, rr.getResourceName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource naming"</span>);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          assertEquals(<span class="jxr_string">"emissary/util/Version.xml"</span>, rr.getXmlName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource xml naming"</span>);
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          assertEquals(<span class="jxr_string">"emissary/util/Version.cfg"</span>, rr.getConfigDataName(Version.<strong class="jxr_keyword">class</strong>), <span class="jxr_string">"Resource config naming"</span>);
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertEquals(<span class="jxr_string">"emissary/util/io/foo.xml"</span>, rr.getXmlName(<strong class="jxr_keyword">this</strong>.getClass().getPackage(), <span class="jxr_string">"foo"</span>), <span class="jxr_string">"Resource package naming"</span>);
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>          assertEquals(<span class="jxr_string">"emissary/util/io/sample.dat"</span>, rr.getResourceName(<strong class="jxr_keyword">this</strong>.thisPackage, <span class="jxr_string">"sample.dat"</span>), <span class="jxr_string">"Sample file with extension naming"</span>);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

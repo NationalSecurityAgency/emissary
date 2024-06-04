@@ -1204,11 +1204,11 @@
 <a class="jxr_linenumber" name="L1196" href="#L1196">1196</a>             <strong class="jxr_keyword">long</strong> bytesInBundle = 0;
 <a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> 
 <a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>                 <strong class="jxr_keyword">int</strong> ff_options = FileFind.FILES_FLAG;
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>                 <strong class="jxr_keyword">int</strong> ffOptions = FileFind.FILES_FLAG;
 <a class="jxr_linenumber" name="L1200" href="#L1200">1200</a>                 <strong class="jxr_keyword">if</strong> (wantDirectories) {
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>                     ff_options |= FileFind.DIRECTORIES_FLAG;
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>                     ffOptions |= FileFind.DIRECTORIES_FLAG;
 <a class="jxr_linenumber" name="L1202" href="#L1202">1202</a>                 }
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>                 <strong class="jxr_keyword">final</strong> <a name="FileFind" href="../../emissary/util/io/FileFin<a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>ileFind">FileFind</a> ff = <strong class="jxr_keyword">new</strong> <a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>(ff_options);
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a>                 <strong class="jxr_keyword">final</strong> <a name="FileFind" href="../../emissary/util/io/FileFin<a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>ileFind">FileFind</a> ff = <strong class="jxr_keyword">new</strong> <a name="FileFind" href="../../emissary/util/io/FileFind.html#FileFind">FileFind</a>(ffOptions);
 <a class="jxr_linenumber" name="L1204" href="#L1204">1204</a>                 <strong class="jxr_keyword">final</strong> Iterator&lt;?&gt; f = ff.find(dir.getDirectoryName());
 <a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> 
 <a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>                 <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>undle">WorkBundle</a> paths = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>(basePath);

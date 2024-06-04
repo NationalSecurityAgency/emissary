@@ -592,179 +592,180 @@
 <a class="jxr_linenumber" name="L584" href="#L584">584</a>             <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = parserFactory.makeSessionParser(raf.getChannel());
 <a class="jxr_linenumber" name="L585" href="#L585">585</a>             logger.debug(<span class="jxr_string">"Using session parser from raf ident {}"</span>, sp.getClass().getName());
 <a class="jxr_linenumber" name="L586" href="#L586">586</a> 
-<a class="jxr_linenumber" name="L587" href="#L587">587</a>             <em class="jxr_comment">// .. and a session producer to crank out the data objects...</em>
+<a class="jxr_linenumber" name="L587" href="#L587">587</a>             <em class="jxr_comment">// ... and a session producer to crank out the data objects...</em>
 <a class="jxr_linenumber" name="L588" href="#L588">588</a>             <a name="SessionProducer" href="../../emissary/parser/SessionPr<a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>sionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L589" href="#L589">589</a> 
 <a class="jxr_linenumber" name="L590" href="#L590">590</a>             <strong class="jxr_keyword">long</strong> fileStart = System.currentTimeMillis();
 <a class="jxr_linenumber" name="L591" href="#L591">591</a>             <strong class="jxr_keyword">long</strong> totalSize = 0;
-<a class="jxr_linenumber" name="L592" href="#L592">592</a>             <em class="jxr_comment">// For each session get a data object from the producer</em>
-<a class="jxr_linenumber" name="L593" href="#L593">593</a>             <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
-<a class="jxr_linenumber" name="L594" href="#L594">594</a>                 <strong class="jxr_keyword">long</strong> sessionStart = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L595" href="#L595">595</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L596" href="#L596">596</a>                     <em class="jxr_comment">// Use filename-xx for defualt name</em>
-<a class="jxr_linenumber" name="L597" href="#L597">597</a>                     String sessionName = fixedName + <span class="jxr_string">"-"</span> + (sessionNum + 1);
-<a class="jxr_linenumber" name="L598" href="#L598">598</a> 
-<a class="jxr_linenumber" name="L599" href="#L599">599</a>                     <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject = dof.getNextSession(sessionName);
-<a class="jxr_linenumber" name="L600" href="#L600">600</a>                     logger.debug(<span class="jxr_string">"Pulled session {} from {} shortName={}"</span>, sessionName, theFile.getName(), dataObject.shortName());
-<a class="jxr_linenumber" name="L601" href="#L601">601</a>                     sessionNum++;
-<a class="jxr_linenumber" name="L602" href="#L602">602</a>                     <strong class="jxr_keyword">long</strong> sessionEnd = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L603" href="#L603">603</a>                     totalSize += dataObject.data().length;
-<a class="jxr_linenumber" name="L604" href="#L604">604</a>                     logger.info(<span class="jxr_string">"sessionParseMetric:{},{},{},{},{},{}"</span>, sessionEnd - sessionStart, sp.getClass().getName(), theFile, sessionName,
-<a class="jxr_linenumber" name="L605" href="#L605">605</a>                             sessionNum, dataObject.data().length);
-<a class="jxr_linenumber" name="L606" href="#L606">606</a>                     processDataObject(dataObject, sessionName, theFile, false);
-<a class="jxr_linenumber" name="L607" href="#L607">607</a>                 } <strong class="jxr_keyword">catch</strong> (<a name="ParserEOFException" href="../../emissary/parser/ParserEOFException.html#ParserEOFException">ParserEOFException</a> eof) {
-<a class="jxr_linenumber" name="L608" href="#L608">608</a>                     <em class="jxr_comment">// expected at end of file</em>
-<a class="jxr_linenumber" name="L609" href="#L609">609</a>                     <strong class="jxr_keyword">long</strong> fileEnd = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L610" href="#L610">610</a>                     logger.info(<span class="jxr_string">"fileParseMetric:{},{},{},{},{}"</span>, fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
-<a class="jxr_linenumber" name="L611" href="#L611">611</a>                     <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L612" href="#L612">612</a>                 } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
-<a class="jxr_linenumber" name="L613" href="#L613">613</a>                     logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, theFile.getName(), ex);
-<a class="jxr_linenumber" name="L614" href="#L614">614</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="ParserException" href="../../emissary/parser/ParserException.html#ParserException">ParserException</a>(<span class="jxr_string">"Could not process"</span> + theFile.getName(), ex);
-<a class="jxr_linenumber" name="L615" href="#L615">615</a>                 }
-<a class="jxr_linenumber" name="L616" href="#L616">616</a> 
-<a class="jxr_linenumber" name="L617" href="#L617">617</a>             } <em class="jxr_comment">// end while(true)</em>
-<a class="jxr_linenumber" name="L618" href="#L618">618</a>         }
-<a class="jxr_linenumber" name="L619" href="#L619">619</a> 
-<a class="jxr_linenumber" name="L620" href="#L620">620</a>         logger.debug(<span class="jxr_string">"Done processing {} sessions from {}"</span>, sessionNum, theFile.getName());
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>         <strong class="jxr_keyword">return</strong> sessionNum;
-<a class="jxr_linenumber" name="L622" href="#L622">622</a>     }
-<a class="jxr_linenumber" name="L623" href="#L623">623</a> 
-<a class="jxr_linenumber" name="L624" href="#L624">624</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L625" href="#L625">625</a> <em class="jxr_javadoccomment">     * Parse out sessions and process data from a byte array</em>
-<a class="jxr_linenumber" name="L626" href="#L626">626</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L627" href="#L627">627</a> <em class="jxr_javadoccomment">     * @param data the bytes to process</em>
-<a class="jxr_linenumber" name="L628" href="#L628">628</a> <em class="jxr_javadoccomment">     * @param fixedName the good short name of the file</em>
-<a class="jxr_linenumber" name="L629" href="#L629">629</a> <em class="jxr_javadoccomment">     * @param theFile file object representing path data belongs to</em>
-<a class="jxr_linenumber" name="L630" href="#L630">630</a> <em class="jxr_javadoccomment">     * @return count of sessions parsed</em>
-<a class="jxr_linenumber" name="L631" href="#L631">631</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L632" href="#L632">632</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> processSessions(byte[] data, String fixedName, File theFile) {
-<a class="jxr_linenumber" name="L633" href="#L633">633</a>         <em class="jxr_comment">// We are going to prefer a byte array parser since</em>
-<a class="jxr_linenumber" name="L634" href="#L634">634</a>         <em class="jxr_comment">// the data is already in memory</em>
-<a class="jxr_linenumber" name="L635" href="#L635">635</a>         logger.debug(<span class="jxr_string">"PickUpPlace: Starting on {}"</span>, theFile.getName());
-<a class="jxr_linenumber" name="L636" href="#L636">636</a>         <strong class="jxr_keyword">int</strong> sessionNum = 0;
-<a class="jxr_linenumber" name="L637" href="#L637">637</a> 
-<a class="jxr_linenumber" name="L638" href="#L638">638</a>         <em class="jxr_comment">// Get the right type of session parser</em>
-<a class="jxr_linenumber" name="L639" href="#L639">639</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());
-<a class="jxr_linenumber" name="L640" href="#L640">640</a> 
-<a class="jxr_linenumber" name="L641" href="#L641">641</a>         <em class="jxr_comment">// .. and a session producer to crank out the data objects...</em>
-<a class="jxr_linenumber" name="L642" href="#L642">642</a>         <a name="SessionProducer" href="../../emissary/parser/SessionPr<a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>sionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L643" href="#L643">643</a> 
-<a class="jxr_linenumber" name="L644" href="#L644">644</a>         <em class="jxr_comment">// For each session get a data object from the producer</em>
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>         <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">true</strong>) {
-<a class="jxr_linenumber" name="L646" href="#L646">646</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L647" href="#L647">647</a>                 <em class="jxr_comment">// Use filename-xx for default name</em>
-<a class="jxr_linenumber" name="L648" href="#L648">648</a>                 String sessionName = fixedName + <span class="jxr_string">"-"</span> + (sessionNum + 1);
-<a class="jxr_linenumber" name="L649" href="#L649">649</a> 
-<a class="jxr_linenumber" name="L650" href="#L650">650</a>                 <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject = dof.getNextSession(sessionName);
-<a class="jxr_linenumber" name="L651" href="#L651">651</a>                 sessionNum++;
-<a class="jxr_linenumber" name="L652" href="#L652">652</a>                 processDataObject(dataObject, sessionName, theFile, false);
-<a class="jxr_linenumber" name="L653" href="#L653">653</a>             } <strong class="jxr_keyword">catch</strong> (<a name="ParserEOFException" href="../../emissary/parser/ParserEOFException.html#ParserEOFException">ParserEOFException</a> eof) {
-<a class="jxr_linenumber" name="L654" href="#L654">654</a>                 <em class="jxr_comment">// expected at end of file</em>
-<a class="jxr_linenumber" name="L655" href="#L655">655</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L656" href="#L656">656</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
-<a class="jxr_linenumber" name="L657" href="#L657">657</a>                 logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, fixedName, ex);
-<a class="jxr_linenumber" name="L658" href="#L658">658</a>             }
-<a class="jxr_linenumber" name="L659" href="#L659">659</a> 
-<a class="jxr_linenumber" name="L660" href="#L660">660</a>         } <em class="jxr_comment">// end while(true)</em>
-<a class="jxr_linenumber" name="L661" href="#L661">661</a> 
-<a class="jxr_linenumber" name="L662" href="#L662">662</a>         logger.debug(<span class="jxr_string">"Done processing {} sessions from {}"</span>, sessionNum, theFile.getName());
-<a class="jxr_linenumber" name="L663" href="#L663">663</a>         <strong class="jxr_keyword">return</strong> sessionNum;
-<a class="jxr_linenumber" name="L664" href="#L664">664</a>     }
-<a class="jxr_linenumber" name="L665" href="#L665">665</a> 
-<a class="jxr_linenumber" name="L666" href="#L666">666</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L667" href="#L667">667</a> <em class="jxr_javadoccomment">     * Produce a legal tracking filename from the disk filename</em>
-<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">     * @return fixed filename</em>
-<a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L671" href="#L671">671</a>     @Nullable
-<a class="jxr_linenumber" name="L672" href="#L672">672</a>     <strong class="jxr_keyword">protected</strong> String fixFileName(@Nullable String v) {
-<a class="jxr_linenumber" name="L673" href="#L673">673</a>         <strong class="jxr_keyword">if</strong> (v == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L674" href="#L674">674</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L675" href="#L675">675</a>         }
-<a class="jxr_linenumber" name="L676" href="#L676">676</a>         String s = v.replace(' ', '_');
-<a class="jxr_linenumber" name="L677" href="#L677">677</a>         s = s.replace('\t', '_');
-<a class="jxr_linenumber" name="L678" href="#L678">678</a>         s = s.replace('\n', '_');
-<a class="jxr_linenumber" name="L679" href="#L679">679</a>         s = s.replace('\r', '_');
-<a class="jxr_linenumber" name="L680" href="#L680">680</a>         s = s.replace('\f', '_');
-<a class="jxr_linenumber" name="L681" href="#L681">681</a>         s = s.replace(':', '_');
-<a class="jxr_linenumber" name="L682" href="#L682">682</a> 
-<a class="jxr_linenumber" name="L683" href="#L683">683</a>         <strong class="jxr_keyword">if</strong> (s.startsWith(<span class="jxr_string">"."</span>)) {
-<a class="jxr_linenumber" name="L684" href="#L684">684</a>             s = <span class="jxr_string">"_dot_"</span> + s.substring(1);
-<a class="jxr_linenumber" name="L685" href="#L685">685</a>         }
-<a class="jxr_linenumber" name="L686" href="#L686">686</a> 
-<a class="jxr_linenumber" name="L687" href="#L687">687</a>         <strong class="jxr_keyword">return</strong> s;
-<a class="jxr_linenumber" name="L688" href="#L688">688</a>     }
-<a class="jxr_linenumber" name="L689" href="#L689">689</a> 
-<a class="jxr_linenumber" name="L690" href="#L690">690</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L691" href="#L691">691</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the pool and assign the payload to it</em>
-<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
-<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
-<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
-<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
-<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
-<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L699" href="#L699">699</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L700" href="#L700">700</a>         assignToPooledAgent(payload, agentPool, <strong class="jxr_keyword">this</strong>, timeoutMs);
-<a class="jxr_linenumber" name="L701" href="#L701">701</a>     }
-<a class="jxr_linenumber" name="L702" href="#L702">702</a> 
-<a class="jxr_linenumber" name="L703" href="#L703">703</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L704" href="#L704">704</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the specified pool and assign the payload to it</em>
-<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
-<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param agentPool the pool of agents</em>
-<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @param startingLocation the agent launch point</em>
-<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
-<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
-<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     * @return mobile agent assigned to pool</em>
-<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
-<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L715" href="#L715">715</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
-<a class="jxr_linenumber" name="L716" href="#L716">716</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L717" href="#L717">717</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
-<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
-<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
-<a class="jxr_linenumber" name="L721" href="#L721">721</a> 
-<a class="jxr_linenumber" name="L722" href="#L722">722</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
-<a class="jxr_linenumber" name="L723" href="#L723">723</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L724" href="#L724">724</a> 
-<a class="jxr_linenumber" name="L725" href="#L725">725</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L726" href="#L726">726</a>                 agentPool = AgentPool.lookup();
-<a class="jxr_linenumber" name="L727" href="#L727">727</a>             }
-<a class="jxr_linenumber" name="L728" href="#L728">728</a> 
-<a class="jxr_linenumber" name="L729" href="#L729">729</a>             <strong class="jxr_keyword">do</strong> {
-<a class="jxr_linenumber" name="L730" href="#L730">730</a>                 loopCount++;
-<a class="jxr_linenumber" name="L731" href="#L731">731</a>                 <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L732" href="#L732">732</a>                     agent = agentPool.borrowAgent();
-<a class="jxr_linenumber" name="L733" href="#L733">733</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L734" href="#L734">734</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
-<a class="jxr_linenumber" name="L735" href="#L735">735</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
-<a class="jxr_linenumber" name="L736" href="#L736">736</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L737" href="#L737">737</a>                     }
-<a class="jxr_linenumber" name="L738" href="#L738">738</a>                 }
-<a class="jxr_linenumber" name="L739" href="#L739">739</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
-<a class="jxr_linenumber" name="L740" href="#L740">740</a> 
-<a class="jxr_linenumber" name="L741" href="#L741">741</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L742" href="#L742">742</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
-<a class="jxr_linenumber" name="L743" href="#L743">743</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
-<a class="jxr_linenumber" name="L744" href="#L744">744</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
-<a class="jxr_linenumber" name="L745" href="#L745">745</a>             }
-<a class="jxr_linenumber" name="L746" href="#L746">746</a> 
-<a class="jxr_linenumber" name="L747" href="#L747">747</a>             agent.go(payload, startingLocation);
-<a class="jxr_linenumber" name="L748" href="#L748">748</a>             Thread.yield();
-<a class="jxr_linenumber" name="L749" href="#L749">749</a>         } <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="L750" href="#L750">750</a>             MDC.remove(MDCConstants.SHORT_NAME);
-<a class="jxr_linenumber" name="L751" href="#L751">751</a>         }
-<a class="jxr_linenumber" name="L752" href="#L752">752</a> 
-<a class="jxr_linenumber" name="L753" href="#L753">753</a>         <strong class="jxr_keyword">return</strong> agent;
-<a class="jxr_linenumber" name="L754" href="#L754">754</a>     }
-<a class="jxr_linenumber" name="L755" href="#L755">755</a> 
-<a class="jxr_linenumber" name="L756" href="#L756">756</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
-<a class="jxr_linenumber" name="L757" href="#L757">757</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L758" href="#L758">758</a>     }
-<a class="jxr_linenumber" name="L759" href="#L759">759</a> }
+<a class="jxr_linenumber" name="L592" href="#L592">592</a> 
+<a class="jxr_linenumber" name="L593" href="#L593">593</a>             <em class="jxr_comment">// For each session get a data object from the producer</em>
+<a class="jxr_linenumber" name="L594" href="#L594">594</a>             <strong class="jxr_keyword">boolean</strong> isParserComplete = false;
+<a class="jxr_linenumber" name="L595" href="#L595">595</a>             <strong class="jxr_keyword">while</strong> (!isParserComplete) {
+<a class="jxr_linenumber" name="L596" href="#L596">596</a>                 <strong class="jxr_keyword">long</strong> sessionStart = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L597" href="#L597">597</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L598" href="#L598">598</a>                     <em class="jxr_comment">// Use filename-xx for default name</em>
+<a class="jxr_linenumber" name="L599" href="#L599">599</a>                     String sessionName = fixedName + <span class="jxr_string">"-"</span> + (sessionNum + 1);
+<a class="jxr_linenumber" name="L600" href="#L600">600</a> 
+<a class="jxr_linenumber" name="L601" href="#L601">601</a>                     <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject = dof.getNextSession(sessionName);
+<a class="jxr_linenumber" name="L602" href="#L602">602</a>                     logger.debug(<span class="jxr_string">"Pulled session {} from {} shortName={}"</span>, sessionName, theFile.getName(), dataObject.shortName());
+<a class="jxr_linenumber" name="L603" href="#L603">603</a>                     sessionNum++;
+<a class="jxr_linenumber" name="L604" href="#L604">604</a>                     <strong class="jxr_keyword">long</strong> sessionEnd = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L605" href="#L605">605</a>                     totalSize += dataObject.data().length;
+<a class="jxr_linenumber" name="L606" href="#L606">606</a>                     logger.info(<span class="jxr_string">"sessionParseMetric:{},{},{},{},{},{}"</span>, sessionEnd - sessionStart, sp.getClass().getName(), theFile, sessionName,
+<a class="jxr_linenumber" name="L607" href="#L607">607</a>                             sessionNum, dataObject.data().length);
+<a class="jxr_linenumber" name="L608" href="#L608">608</a>                     processDataObject(dataObject, sessionName, theFile, false);
+<a class="jxr_linenumber" name="L609" href="#L609">609</a>                 } <strong class="jxr_keyword">catch</strong> (<a name="ParserEOFException" href="../../emissary/parser/ParserEOFException.html#ParserEOFException">ParserEOFException</a> eof) {
+<a class="jxr_linenumber" name="L610" href="#L610">610</a>                     <em class="jxr_comment">// expected at end of file</em>
+<a class="jxr_linenumber" name="L611" href="#L611">611</a>                     isParserComplete = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L612" href="#L612">612</a>                     <strong class="jxr_keyword">long</strong> fileEnd = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L613" href="#L613">613</a>                     logger.info(<span class="jxr_string">"fileParseMetric:{},{},{},{},{}"</span>, fileEnd - fileStart, sp.getClass().getName(), theFile, sessionNum, totalSize);
+<a class="jxr_linenumber" name="L614" href="#L614">614</a>                 } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
+<a class="jxr_linenumber" name="L615" href="#L615">615</a>                     logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, theFile.getName(), ex);
+<a class="jxr_linenumber" name="L616" href="#L616">616</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="ParserException" href="../../emissary/parser/ParserException.html#ParserException">ParserException</a>(<span class="jxr_string">"Could not process"</span> + theFile.getName(), ex);
+<a class="jxr_linenumber" name="L617" href="#L617">617</a>                 }
+<a class="jxr_linenumber" name="L618" href="#L618">618</a>             }
+<a class="jxr_linenumber" name="L619" href="#L619">619</a>         }
+<a class="jxr_linenumber" name="L620" href="#L620">620</a> 
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>         logger.debug(<span class="jxr_string">"Done processing {} sessions from {}"</span>, sessionNum, theFile.getName());
+<a class="jxr_linenumber" name="L622" href="#L622">622</a>         <strong class="jxr_keyword">return</strong> sessionNum;
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>     }
+<a class="jxr_linenumber" name="L624" href="#L624">624</a> 
+<a class="jxr_linenumber" name="L625" href="#L625">625</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L626" href="#L626">626</a> <em class="jxr_javadoccomment">     * Parse out sessions and process data from a byte array</em>
+<a class="jxr_linenumber" name="L627" href="#L627">627</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L628" href="#L628">628</a> <em class="jxr_javadoccomment">     * @param data the bytes to process</em>
+<a class="jxr_linenumber" name="L629" href="#L629">629</a> <em class="jxr_javadoccomment">     * @param fixedName the good short name of the file</em>
+<a class="jxr_linenumber" name="L630" href="#L630">630</a> <em class="jxr_javadoccomment">     * @param theFile file object representing path data belongs to</em>
+<a class="jxr_linenumber" name="L631" href="#L631">631</a> <em class="jxr_javadoccomment">     * @return count of sessions parsed</em>
+<a class="jxr_linenumber" name="L632" href="#L632">632</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L633" href="#L633">633</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> processSessions(byte[] data, String fixedName, File theFile) {
+<a class="jxr_linenumber" name="L634" href="#L634">634</a>         <em class="jxr_comment">// We are going to prefer a byte array parser since</em>
+<a class="jxr_linenumber" name="L635" href="#L635">635</a>         <em class="jxr_comment">// the data is already in memory</em>
+<a class="jxr_linenumber" name="L636" href="#L636">636</a>         logger.debug(<span class="jxr_string">"PickUpPlace: Starting on {}"</span>, theFile.getName());
+<a class="jxr_linenumber" name="L637" href="#L637">637</a>         <strong class="jxr_keyword">int</strong> sessionNum = 0;
+<a class="jxr_linenumber" name="L638" href="#L638">638</a> 
+<a class="jxr_linenumber" name="L639" href="#L639">639</a>         <em class="jxr_comment">// Get the right type of session parser</em>
+<a class="jxr_linenumber" name="L640" href="#L640">640</a>         <a name="SessionParser" href="../../emissary/parser/SessionParser.html#SessionParser">SessionParser</a> sp = parserFactory.makeSessionParser(InMemoryChannelFactory.create(data).create());
+<a class="jxr_linenumber" name="L641" href="#L641">641</a> 
+<a class="jxr_linenumber" name="L642" href="#L642">642</a>         <em class="jxr_comment">// .. and a session producer to crank out the data objects...</em>
+<a class="jxr_linenumber" name="L643" href="#L643">643</a>         <a name="SessionProducer" href="../../emissary/parser/SessionPr<a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>sionProducer">SessionProducer</a> dof = <strong class="jxr_keyword">new</strong> <a name="SessionProducer" href="../../emissary/parser/SessionProducer.html#SessionProducer">SessionProducer</a>(sp, myKey, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L644" href="#L644">644</a> 
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>         <em class="jxr_comment">// For each session get a data object from the producer</em>
+<a class="jxr_linenumber" name="L646" href="#L646">646</a>         <strong class="jxr_keyword">boolean</strong> isParserComplete = false;
+<a class="jxr_linenumber" name="L647" href="#L647">647</a>         <strong class="jxr_keyword">while</strong> (!isParserComplete) {
+<a class="jxr_linenumber" name="L648" href="#L648">648</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L649" href="#L649">649</a>                 <em class="jxr_comment">// Use filename-xx for default name</em>
+<a class="jxr_linenumber" name="L650" href="#L650">650</a>                 String sessionName = fixedName + <span class="jxr_string">"-"</span> + (sessionNum + 1);
+<a class="jxr_linenumber" name="L651" href="#L651">651</a> 
+<a class="jxr_linenumber" name="L652" href="#L652">652</a>                 <a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> dataObject = dof.getNextSession(sessionName);
+<a class="jxr_linenumber" name="L653" href="#L653">653</a>                 sessionNum++;
+<a class="jxr_linenumber" name="L654" href="#L654">654</a>                 processDataObject(dataObject, sessionName, theFile, false);
+<a class="jxr_linenumber" name="L655" href="#L655">655</a>             } <strong class="jxr_keyword">catch</strong> (<a name="ParserEOFException" href="../../emissary/parser/ParserEOFException.html#ParserEOFException">ParserEOFException</a> eof) {
+<a class="jxr_linenumber" name="L656" href="#L656">656</a>                 <em class="jxr_comment">// expected at end of file</em>
+<a class="jxr_linenumber" name="L657" href="#L657">657</a>                 isParserComplete = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L658" href="#L658">658</a>             } <strong class="jxr_keyword">catch</strong> (<a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> ex) {
+<a class="jxr_linenumber" name="L659" href="#L659">659</a>                 logger.error(<span class="jxr_string">"Could not dispatch {}"</span>, fixedName, ex);
+<a class="jxr_linenumber" name="L660" href="#L660">660</a>             }
+<a class="jxr_linenumber" name="L661" href="#L661">661</a>         }
+<a class="jxr_linenumber" name="L662" href="#L662">662</a> 
+<a class="jxr_linenumber" name="L663" href="#L663">663</a>         logger.debug(<span class="jxr_string">"Done processing {} sessions from {}"</span>, sessionNum, theFile.getName());
+<a class="jxr_linenumber" name="L664" href="#L664">664</a>         <strong class="jxr_keyword">return</strong> sessionNum;
+<a class="jxr_linenumber" name="L665" href="#L665">665</a>     }
+<a class="jxr_linenumber" name="L666" href="#L666">666</a> 
+<a class="jxr_linenumber" name="L667" href="#L667">667</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L668" href="#L668">668</a> <em class="jxr_javadoccomment">     * Produce a legal tracking filename from the disk filename</em>
+<a class="jxr_linenumber" name="L669" href="#L669">669</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L670" href="#L670">670</a> <em class="jxr_javadoccomment">     * @return fixed filename</em>
+<a class="jxr_linenumber" name="L671" href="#L671">671</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L672" href="#L672">672</a>     @Nullable
+<a class="jxr_linenumber" name="L673" href="#L673">673</a>     <strong class="jxr_keyword">protected</strong> String fixFileName(@Nullable String v) {
+<a class="jxr_linenumber" name="L674" href="#L674">674</a>         <strong class="jxr_keyword">if</strong> (v == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L675" href="#L675">675</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L676" href="#L676">676</a>         }
+<a class="jxr_linenumber" name="L677" href="#L677">677</a>         String s = v.replace(' ', '_');
+<a class="jxr_linenumber" name="L678" href="#L678">678</a>         s = s.replace('\t', '_');
+<a class="jxr_linenumber" name="L679" href="#L679">679</a>         s = s.replace('\n', '_');
+<a class="jxr_linenumber" name="L680" href="#L680">680</a>         s = s.replace('\r', '_');
+<a class="jxr_linenumber" name="L681" href="#L681">681</a>         s = s.replace('\f', '_');
+<a class="jxr_linenumber" name="L682" href="#L682">682</a>         s = s.replace(':', '_');
+<a class="jxr_linenumber" name="L683" href="#L683">683</a> 
+<a class="jxr_linenumber" name="L684" href="#L684">684</a>         <strong class="jxr_keyword">if</strong> (s.startsWith(<span class="jxr_string">"."</span>)) {
+<a class="jxr_linenumber" name="L685" href="#L685">685</a>             s = <span class="jxr_string">"_dot_"</span> + s.substring(1);
+<a class="jxr_linenumber" name="L686" href="#L686">686</a>         }
+<a class="jxr_linenumber" name="L687" href="#L687">687</a> 
+<a class="jxr_linenumber" name="L688" href="#L688">688</a>         <strong class="jxr_keyword">return</strong> s;
+<a class="jxr_linenumber" name="L689" href="#L689">689</a>     }
+<a class="jxr_linenumber" name="L690" href="#L690">690</a> 
+<a class="jxr_linenumber" name="L691" href="#L691">691</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L692" href="#L692">692</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the pool and assign the payload to it</em>
+<a class="jxr_linenumber" name="L693" href="#L693">693</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L694" href="#L694">694</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
+<a class="jxr_linenumber" name="L695" href="#L695">695</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
+<a class="jxr_linenumber" name="L696" href="#L696">696</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
+<a class="jxr_linenumber" name="L697" href="#L697">697</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
+<a class="jxr_linenumber" name="L698" href="#L698">698</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
+<a class="jxr_linenumber" name="L699" href="#L699">699</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L700" href="#L700">700</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L701" href="#L701">701</a>         assignToPooledAgent(payload, agentPool, <strong class="jxr_keyword">this</strong>, timeoutMs);
+<a class="jxr_linenumber" name="L702" href="#L702">702</a>     }
+<a class="jxr_linenumber" name="L703" href="#L703">703</a> 
+<a class="jxr_linenumber" name="L704" href="#L704">704</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L705" href="#L705">705</a> <em class="jxr_javadoccomment">     * Retrieve and agent from the specified pool and assign the payload to it</em>
+<a class="jxr_linenumber" name="L706" href="#L706">706</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L707" href="#L707">707</a> <em class="jxr_javadoccomment">     * @param payload the payload for the agent</em>
+<a class="jxr_linenumber" name="L708" href="#L708">708</a> <em class="jxr_javadoccomment">     * @param agentPool the pool of agents</em>
+<a class="jxr_linenumber" name="L709" href="#L709">709</a> <em class="jxr_javadoccomment">     * @param startingLocation the agent launch point</em>
+<a class="jxr_linenumber" name="L710" href="#L710">710</a> <em class="jxr_javadoccomment">     * @param timeoutMs maximum time in millis to wait for an agent from the pool. Set to -1 to wait forever. The specified</em>
+<a class="jxr_linenumber" name="L711" href="#L711">711</a> <em class="jxr_javadoccomment">     *        time will not be strictly observed because the pool itself blocks for a configurable amount of time when</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a> <em class="jxr_javadoccomment">     *        requesting an agent. We will wait no more than the specified timeoutMs + the configured pool timeout value.</em>
+<a class="jxr_linenumber" name="L713" href="#L713">713</a> <em class="jxr_javadoccomment">     * @return mobile agent assigned to pool</em>
+<a class="jxr_linenumber" name="L714" href="#L714">714</a> <em class="jxr_javadoccomment">     * @throws EmissaryException when an agent cannot be obtained</em>
+<a class="jxr_linenumber" name="L715" href="#L715">715</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L716" href="#L716">716</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> assignToPooledAgent(<a name="IBaseDataObject" href="../../emissary/core/IBaseDataObject.html#IBaseDataObject">IBaseDataObject</a> payload, @Nullable <a name="AgentPool" href="../../emissary/pool/AgentPool.html#AgentPool">AgentPool</a> agentPool, <a name="IServiceProviderPlace" href="../../emissary/place/IServiceProviderPlace.html#IServiceProviderPlace">IServiceProviderPlace</a> startingLocation,
+<a class="jxr_linenumber" name="L717" href="#L717">717</a>             <strong class="jxr_keyword">long</strong> timeoutMs) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L718" href="#L718">718</a>         <a name="IMobileAgent" href="../../emissary/core/IMobileAgent.html#IMobileAgent">IMobileAgent</a> agent = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L719" href="#L719">719</a>         <strong class="jxr_keyword">long</strong> startTime = System.currentTimeMillis();
+<a class="jxr_linenumber" name="L720" href="#L720">720</a>         <strong class="jxr_keyword">boolean</strong> warningGiven = false;
+<a class="jxr_linenumber" name="L721" href="#L721">721</a>         <strong class="jxr_keyword">int</strong> loopCount = 0;
+<a class="jxr_linenumber" name="L722" href="#L722">722</a> 
+<a class="jxr_linenumber" name="L723" href="#L723">723</a>         MDC.put(MDCConstants.SHORT_NAME, payload.shortName());
+<a class="jxr_linenumber" name="L724" href="#L724">724</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L725" href="#L725">725</a> 
+<a class="jxr_linenumber" name="L726" href="#L726">726</a>             <strong class="jxr_keyword">if</strong> (agentPool == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L727" href="#L727">727</a>                 agentPool = AgentPool.lookup();
+<a class="jxr_linenumber" name="L728" href="#L728">728</a>             }
+<a class="jxr_linenumber" name="L729" href="#L729">729</a> 
+<a class="jxr_linenumber" name="L730" href="#L730">730</a>             <strong class="jxr_keyword">do</strong> {
+<a class="jxr_linenumber" name="L731" href="#L731">731</a>                 loopCount++;
+<a class="jxr_linenumber" name="L732" href="#L732">732</a>                 <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L733" href="#L733">733</a>                     agent = agentPool.borrowAgent();
+<a class="jxr_linenumber" name="L734" href="#L734">734</a>                 } <strong class="jxr_keyword">catch</strong> (Exception e) {
+<a class="jxr_linenumber" name="L735" href="#L735">735</a>                     <strong class="jxr_keyword">if</strong> (!warningGiven) {
+<a class="jxr_linenumber" name="L736" href="#L736">736</a>                         slogger.debug(<span class="jxr_string">"Cannot get agent from pool, trying again "</span>, e);
+<a class="jxr_linenumber" name="L737" href="#L737">737</a>                         warningGiven = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L738" href="#L738">738</a>                     }
+<a class="jxr_linenumber" name="L739" href="#L739">739</a>                 }
+<a class="jxr_linenumber" name="L740" href="#L740">740</a>             } <strong class="jxr_keyword">while</strong> (agent == <strong class="jxr_keyword">null</strong> &amp;&amp; (timeoutMs &lt; 0 || (startTime + timeoutMs) &lt; System.currentTimeMillis()));
+<a class="jxr_linenumber" name="L741" href="#L741">741</a> 
+<a class="jxr_linenumber" name="L742" href="#L742">742</a>             <strong class="jxr_keyword">if</strong> (agent == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L743" href="#L743">743</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryException" href="../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a>(<span class="jxr_string">"No agent found for "</span> + payload.shortName() + <span class="jxr_string">" after "</span> + loopCount + <span class="jxr_string">" tries."</span>);
+<a class="jxr_linenumber" name="L744" href="#L744">744</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (loopCount &gt; 1) {
+<a class="jxr_linenumber" name="L745" href="#L745">745</a>                 slogger.info(<span class="jxr_string">"Found agent after {} tries"</span>, loopCount);
+<a class="jxr_linenumber" name="L746" href="#L746">746</a>             }
+<a class="jxr_linenumber" name="L747" href="#L747">747</a> 
+<a class="jxr_linenumber" name="L748" href="#L748">748</a>             agent.go(payload, startingLocation);
+<a class="jxr_linenumber" name="L749" href="#L749">749</a>             Thread.yield();
+<a class="jxr_linenumber" name="L750" href="#L750">750</a>         } <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="L751" href="#L751">751</a>             MDC.remove(MDCConstants.SHORT_NAME);
+<a class="jxr_linenumber" name="L752" href="#L752">752</a>         }
+<a class="jxr_linenumber" name="L753" href="#L753">753</a> 
+<a class="jxr_linenumber" name="L754" href="#L754">754</a>         <strong class="jxr_keyword">return</strong> agent;
+<a class="jxr_linenumber" name="L755" href="#L755">755</a>     }
+<a class="jxr_linenumber" name="L756" href="#L756">756</a> 
+<a class="jxr_linenumber" name="L757" href="#L757">757</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> implementsPickUpPlace(Class&lt;? <strong class="jxr_keyword">extends</strong> Object&gt; clazz) {
+<a class="jxr_linenumber" name="L758" href="#L758">758</a>         <strong class="jxr_keyword">return</strong> ClassComparator.isaImplementation(clazz, IPickUpPlace.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L759" href="#L759">759</a>     }
+<a class="jxr_linenumber" name="L760" href="#L760">760</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

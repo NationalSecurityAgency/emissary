@@ -244,10 +244,10 @@
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> 
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>         <em class="jxr_comment">// Send the query</em>
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>         Future&lt;Object&gt; future = client.asyncGet(key);
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         Object result;
+<a class="jxr_linenumber" name="L239" href="#L239">239</a> 
 <a class="jxr_linenumber" name="L240" href="#L240">240</a> 
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>         <em class="jxr_comment">// Let the TimeoutException propagate up</em>
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>         result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>         Object result = future.get(opTimeoutMillis, TimeUnit.MILLISECONDS);
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> 
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">if</strong> (result != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">if</strong> (storeIdDupe) {

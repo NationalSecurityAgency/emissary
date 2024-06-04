@@ -65,33 +65,33 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>      <em class="jxr_comment">// #define SAFE_ASSIGN(x,y) (((x) != NULL) ? (*(x) = (y)) : (y))</em>
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>  
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <em class="jxr_comment">// #define swap_int(x,y) (_iswap = (x), (x) = (y), (y) = _iswap)</em>
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swap_<strong class="jxr_keyword">int</strong>(<strong class="jxr_keyword">int</strong>[] x, <strong class="jxr_keyword">int</strong>[] y) {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">int</strong> _iswap = x[0];
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swapInt(<strong class="jxr_keyword">int</strong>[] x, <strong class="jxr_keyword">int</strong>[] y) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">int</strong> iswap = x[0];
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          x[0] = y[0];
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          y[0] = _iswap;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>          y[0] = iswap;
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>      }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>  
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>      <em class="jxr_comment">// #define swap_char(x,y) (_cswap = (x), (x) = (y), (y) = _cswap)</em>
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swap_<strong class="jxr_keyword">char</strong>(<em class="jxr_comment">/* ref */</em>byte[][] x, <em class="jxr_comment">/* ref */</em>byte[][] y) {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          byte[] _cswap = x[0];
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> swapChar(<em class="jxr_comment">/* ref */</em>byte[][] x, <em class="jxr_comment">/* ref */</em>byte[][] y) {
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          byte[] cswap = x[0];
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>          x[0] = y[0];
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          y[0] = _cswap;
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          y[0] = cswap;
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>      }
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>  
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      <em class="jxr_comment">// #define min3(x,y,z) (_mx = (x), _my = (y), _mz = (z), (_mx &lt; _my ? (_mx &lt; _mz ? _mx : _mz) : (_mz &lt; _my) ? _mz :</em>
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <em class="jxr_comment">// _my))</em>
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> min3(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y, <strong class="jxr_keyword">int</strong> z) {
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">int</strong> _mx = x;
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">int</strong> _my = y;
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">int</strong> _mz = z;
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> (_mx &lt; _my ? (_mx &lt; _mz ? _mx : _mz) : (_mz &lt; _my) ? _mz : _my);
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          <strong class="jxr_keyword">int</strong> mx = x;
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>          <strong class="jxr_keyword">int</strong> my = y;
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">int</strong> mz = z;
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <strong class="jxr_keyword">return</strong> (mx &lt; my ? (mx &lt; mz ? mx : mz) : (mz &lt; my) ? mz : my);
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>      }
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>  
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <em class="jxr_comment">// #define min2(x,y) (_mx = (x), _my = (y), (_mx &lt; _my ? _mx : _my))</em>
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> min2(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          <strong class="jxr_keyword">int</strong> _mx = x;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">int</strong> _my = y;
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> (_mx &lt; _my ? _mx : _my);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          <strong class="jxr_keyword">int</strong> mx = x;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">int</strong> my = y;
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">return</strong> (mx &lt; my ? mx : my);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> insert_cost = 1;
@@ -134,19 +134,19 @@
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">return</strong> ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> NW(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> nw(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + from_len + 2);
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>     }
 <a class="jxr_linenumber" name="L132" href="#L132">132</a> 
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> N(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> n(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + from_len + 3);
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
-<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> W(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> w(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + radix - 1);
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     }
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> 
-<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> NNWW(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
+<a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> nnww(<strong class="jxr_keyword">int</strong> x, <strong class="jxr_keyword">int</strong> y) {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">return</strong> ar(x, y, index + 1);
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>     }
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 
@@ -182,12 +182,12 @@
 <a class="jxr_linenumber" name="L174" href="#L174">174</a>             <strong class="jxr_keyword">int</strong>[] y = <strong class="jxr_keyword">new</strong> <strong class="jxr_keyword">int</strong>[1];
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>             x[0] = from_len;
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>             y[0] = to_len;
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>             swap_<strong class="jxr_keyword">int</strong>(x, y);
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>             swapInt(x, y);
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>             byte[][] xx = <strong class="jxr_keyword">new</strong> byte[1][];
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>             byte[][] yy = <strong class="jxr_keyword">new</strong> byte[1][];
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>             xx[0] = from;
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>             yy[0] = to;
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>             swap_<strong class="jxr_keyword">char</strong>(xx, yy);
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>             swapChar(xx, yy);
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>         } <em class="jxr_comment">// if from_len &gt; to_len</em>
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> 
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         <em class="jxr_comment">/* Allocate the array storage (from the heap if necessary) */</em>
@@ -241,10 +241,10 @@
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>         <em class="jxr_comment">/* Now handle the rest of the matrix */</em>
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>         <strong class="jxr_keyword">for</strong> (row = 1; row &lt; to_len; row++) {
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>             <strong class="jxr_keyword">for</strong> (col = 0; col &lt; from_len; col++) {
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>                 buffer[index] = min3(NW(row, col) + ((from[col] == to[row]) ? 0 : ch), N(row, col + 1) + ins, W(row + 1, col) + del);
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>                 buffer[index] = min3(nw(row, col) + ((from[col] == to[row]) ? 0 : ch), n(row, col + 1) + ins, w(row + 1, col) + del);
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> 
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>                 <strong class="jxr_keyword">if</strong> (from[col] == to[row - 1] &amp;&amp; col &gt; 0 &amp;&amp; from[col - 1] == to[row]) {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>                     buffer[index] = min2(buffer[index], NNWW(row - 1, col - 1) + swap_cost);
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>                     buffer[index] = min2(buffer[index], nnww(row - 1, col - 1) + swap_cost);
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>                 }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>                 <strong class="jxr_keyword">if</strong> (buffer[index] &lt; low || col == 0) {

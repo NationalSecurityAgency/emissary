@@ -210,7 +210,7 @@
 <a class="jxr_linenumber" name="L202" href="#L202">202</a>                         }
 <a class="jxr_linenumber" name="L203" href="#L203">203</a>                     }
 <a class="jxr_linenumber" name="L204" href="#L204">204</a>                 } <strong class="jxr_keyword">catch</strong> (UnsupportedEncodingException e) {
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(e);
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(e);
 <a class="jxr_linenumber" name="L206" href="#L206">206</a>                 }
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>                 <strong class="jxr_keyword">if</strong> (subType.charValue() == 'l' &amp;&amp; !stack.empty() &amp;&amp; stack.peek().charValue() == 'd') {
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>                     stack.pop();
@@ -363,7 +363,7 @@
 <a class="jxr_linenumber" name="L355" href="#L355">355</a>                 }
 <a class="jxr_linenumber" name="L356" href="#L356">356</a>                 <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L357" href="#L357">357</a>             <strong class="jxr_keyword">default</strong>:
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(
 <a class="jxr_linenumber" name="L359" href="#L359">359</a>                         <span class="jxr_string">"This MagicNumber instance is configured incorrectly. The unary operator is set to an unknown or unconfigured value."</span>);
 <a class="jxr_linenumber" name="L360" href="#L360">360</a> 
 <a class="jxr_linenumber" name="L361" href="#L361">361</a>         }

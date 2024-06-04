@@ -10,100 +10,95 @@
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
 <a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> emissary.util.shell.Executrix;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.io.ByteArrayOutputStream;
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a> {
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>      <em class="jxr_comment">/* our logger */</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Logger logger = LoggerFactory.getLogger(JsonEscape.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String ESCAPES = <span class="jxr_string">"ntr\&quot;'/"</span>;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment">     * Unescape a bunch of JSON bytes that might have &#92;&#92;uxxxx character values. Should already be UTF-8 since JSON is</em>
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment">     * specified as UTF-8 by RFC 4627</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] unescape(byte[] data) {
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>          ByteArrayOutputStream out = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.length; i++) {
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>              <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 5) &lt; data.length &amp;&amp; (data[i + 1] == 'u' || data[i + 1] == 'U')) {
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>                  <em class="jxr_comment">// process unicode escape</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>                  <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>                      String s = <strong class="jxr_keyword">new</strong> String(data, i + 2, 4);
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>                      <strong class="jxr_keyword">char</strong>[] c = HtmlEscape.unescapeHtmlChar(s, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>                      <strong class="jxr_keyword">if</strong> (c != <strong class="jxr_keyword">null</strong> &amp;&amp; c.length &gt; 0) {
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>                          out.write(<strong class="jxr_keyword">new</strong> String(c).getBytes());
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>                          <em class="jxr_comment">// logger.debug("Unicode '{}' ==&gt; '{}'", s, new String(c));</em>
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>                          i += 5;
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>                      } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>                          out.write(data[i]);
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>                      }
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>                  } <strong class="jxr_keyword">catch</strong> (IOException iox) {
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>                      out.write(data[i]);
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>                  }
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>              } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 1) &lt; data.length &amp;&amp; isOctalDigit(data[i + 1])) {
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>                  <em class="jxr_comment">// Process octal escape</em>
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>                  <strong class="jxr_keyword">int</strong> end = i + 1;
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>                  <strong class="jxr_keyword">if</strong> ((i + 2) &lt; data.length &amp;&amp; isOctalDigit(data[i + 2])) {
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>                      end++;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>                  }
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>                  <strong class="jxr_keyword">if</strong> ((i + 3) &lt; data.length &amp;&amp; isOctalDigit(data[i + 3])) {
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>                      end++;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>                  }
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>                  String s = <strong class="jxr_keyword">new</strong> String(data, i + 1, (end - i));
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>                  <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>                      <strong class="jxr_keyword">int</strong> num = Integer.parseInt(s, 8);
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>                      <strong class="jxr_keyword">char</strong>[] ch = Character.toChars(num);
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>                      out.write(<strong class="jxr_keyword">new</strong> String(ch).getBytes());
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>                      <em class="jxr_comment">// logger.debug("Octal '{}' ==&gt; '{}'", s, new String(ch));</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>                      i += s.length();
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>                  } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>                      out.write(data[i]);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>                  }
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>              } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 1) &lt; data.length &amp;&amp; ESCAPES.indexOf(data[i + 1]) != -1) {
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>                  byte b = data[i + 1];
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>                  <strong class="jxr_keyword">if</strong> (b == 'n') {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>                      out.write('\n');
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>                  } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (b == 't') {
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>                      out.write('\t');
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>                  } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (b == 'r') {
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>                      out.write('\r');
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>                      out.write(b);
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>                  }
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>                  i++;
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>              } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>                  out.write(data[i]);
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              }
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          }
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>          <strong class="jxr_keyword">return</strong> out.toByteArray();
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isOctalDigit(byte b) {
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <strong class="jxr_keyword">return</strong> (b &gt;= '0' &amp;&amp; b &lt;= '7');
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      }
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">private</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a>() {}
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; args.length; i++) {
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>              byte[] content = Executrix.readDataFromFile(args[i]);
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>                  System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>                  <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>              }
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>              System.out.println(args[i]);
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>              byte[] escaped = JsonEscape.unescape(content);
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>              System.out.write(escaped, 0, escaped.length);
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>              System.out.println();
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>          }
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      }
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>  }
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a> {
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String ESCAPES = <span class="jxr_string">"ntr\&quot;'/"</span>;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">     * Unescape a bunch of JSON bytes that might have &#92;&#92;uxxxx character values. Should already be UTF-8 since JSON is</em>
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment">     * specified as UTF-8 by RFC 4627</em>
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> byte[] unescape(byte[] data) {
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>          ByteArrayOutputStream out = <strong class="jxr_keyword">new</strong> ByteArrayOutputStream();
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; data.length; i++) {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>              <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 5) &lt; data.length &amp;&amp; (data[i + 1] == 'u' || data[i + 1] == 'U')) {
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>                  <em class="jxr_comment">// process unicode escape</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>                  <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>                      String s = <strong class="jxr_keyword">new</strong> String(data, i + 2, 4);
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>                      <strong class="jxr_keyword">char</strong>[] c = HtmlEscape.unescapeHtmlChar(s, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>                      <strong class="jxr_keyword">if</strong> (c != <strong class="jxr_keyword">null</strong> &amp;&amp; c.length &gt; 0) {
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>                          out.write(<strong class="jxr_keyword">new</strong> String(c).getBytes());
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>                          <em class="jxr_comment">// logger.debug("Unicode '{}' ==&gt; '{}'", s, new String(c));</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>                          i += 5;
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>                      } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>                          out.write(data[i]);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>                      }
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>                  } <strong class="jxr_keyword">catch</strong> (IOException iox) {
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>                      out.write(data[i]);
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>                  }
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>              } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 1) &lt; data.length &amp;&amp; isOctalDigit(data[i + 1])) {
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>                  <em class="jxr_comment">// Process octal escape</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>                  <strong class="jxr_keyword">int</strong> end = i + 1;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>                  <strong class="jxr_keyword">if</strong> ((i + 2) &lt; data.length &amp;&amp; isOctalDigit(data[i + 2])) {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>                      end++;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>                  }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>                  <strong class="jxr_keyword">if</strong> ((i + 3) &lt; data.length &amp;&amp; isOctalDigit(data[i + 3])) {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>                      end++;
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>                  }
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>                  String s = <strong class="jxr_keyword">new</strong> String(data, i + 1, (end - i));
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>                  <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>                      <strong class="jxr_keyword">int</strong> num = Integer.parseInt(s, 8);
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>                      <strong class="jxr_keyword">char</strong>[] ch = Character.toChars(num);
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>                      out.write(<strong class="jxr_keyword">new</strong> String(ch).getBytes());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>                      <em class="jxr_comment">// logger.debug("Octal '{}' ==&gt; '{}'", s, new String(ch));</em>
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>                      i += s.length();
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>                  } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>                      out.write(data[i]);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>                  }
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (data[i] == '&#92;&#92;' &amp;&amp; (i + 1) &lt; data.length &amp;&amp; ESCAPES.indexOf(data[i + 1]) != -1) {
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>                  byte b = data[i + 1];
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>                  <strong class="jxr_keyword">if</strong> (b == 'n') {
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>                      out.write('\n');
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>                  } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (b == 't') {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>                      out.write('\t');
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>                  } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (b == 'r') {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>                      out.write('\r');
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>                  } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>                      out.write(b);
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>                  }
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>                  i++;
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>              } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>                  out.write(data[i]);
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>              }
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          }
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <strong class="jxr_keyword">return</strong> out.toByteArray();
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      }
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">boolean</strong> isOctalDigit(byte b) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>          <strong class="jxr_keyword">return</strong> (b &gt;= '0' &amp;&amp; b &lt;= '7');
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">private</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a>() {}
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; args.length; i++) {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>              byte[] content = Executrix.readDataFromFile(args[i]);
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>                  System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>              }
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>              System.out.println(args[i]);
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              byte[] escaped = JsonEscape.unescape(content);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>              System.out.write(escaped, 0, escaped.length);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>              System.out.println();
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>          }
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

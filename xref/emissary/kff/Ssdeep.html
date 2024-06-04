@@ -383,7 +383,7 @@
 <a class="jxr_linenumber" name="L375" href="#L375">375</a> <em class="jxr_javadoccomment">         * @return The state is updated and the resulting unsigned 32-bit hash value is returned.</em>
 <a class="jxr_linenumber" name="L376" href="#L376">376</a> <em class="jxr_javadoccomment">         */</em>
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">long</strong> roll(<strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> b) {
-<a class="jxr_linenumber" name="L378" href="#L378">378</a>             <strong class="jxr_keyword">this</strong>.h2 = (<strong class="jxr_keyword">this</strong>.h2 - <strong class="jxr_keyword">this</strong>.h1 + (ROLLING_WINDOW_SIZE * b)) &amp; MASK32;
+<a class="jxr_linenumber" name="L378" href="#L378">378</a>             <strong class="jxr_keyword">this</strong>.h2 = (<strong class="jxr_keyword">this</strong>.h2 - <strong class="jxr_keyword">this</strong>.h1 + (ROLLING_WINDOW_SIZE * ((<strong class="jxr_keyword">long</strong>) b))) &amp; MASK32;
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>             <strong class="jxr_keyword">this</strong>.h1 = (<strong class="jxr_keyword">this</strong>.h1 + b - <strong class="jxr_keyword">this</strong>.window[<strong class="jxr_keyword">this</strong>.windowPosition]) &amp; MASK32;
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>             <strong class="jxr_keyword">this</strong>.window[<strong class="jxr_keyword">this</strong>.windowPosition] = b;
 <a class="jxr_linenumber" name="L381" href="#L381">381</a> 

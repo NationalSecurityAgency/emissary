@@ -48,7 +48,7 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> fillList(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; l) {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"1"</span>));
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"3"</span>));
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.b));
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, b));
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"3"</span> + Family.getSep(2)));
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"3"</span> + Family.getSep(1)));
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>          l.add(DataObjectFactory.getInstance(<strong class="jxr_keyword">this</strong>.nobytes, <strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"2"</span>));
@@ -56,7 +56,7 @@
 <a class="jxr_linenumber" name="L48" href="#L48">48</a>      }
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>  
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkList(<strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; l) {
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>          assertEquals(<strong class="jxr_keyword">this</strong>.b, l.get(0).shortName(), <span class="jxr_string">"Ordering of sort"</span>);
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          assertEquals(b, l.get(0).shortName(), <span class="jxr_string">"Ordering of sort"</span>);
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>          assertEquals(<strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"1"</span>, l.get(1).shortName(), <span class="jxr_string">"Ordering of sort"</span>);
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertEquals(<strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"2"</span>, l.get(2).shortName(), <span class="jxr_string">"Ordering of sort"</span>);
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          assertEquals(<strong class="jxr_keyword">this</strong>.ba + <span class="jxr_string">"3"</span>, l.get(3).shortName(), <span class="jxr_string">"Ordering of sort"</span>);

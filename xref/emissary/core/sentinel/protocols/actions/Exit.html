@@ -18,11 +18,12 @@
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="Exit" href="../../../../../emissary/core/sentinel/protocols/actions/Exit.html#Exit">Exit</a> <strong class="jxr_keyword">extends</strong> <a name="Action" href="../../../../../emissary/core/sentinel/protocols/actions/Action.html#Action">Action</a> {
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>      @Override
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> trigger(Map&lt;String, Sentinel.Tracker&gt; trackers) {
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>          logger.error(<span class="jxr_string">"Sentinel detected unrecoverable agents, exiting now -- {}"</span>, format(trackers));
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>          System.exit(1);
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>      }
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  }
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>      @SuppressWarnings(<span class="jxr_string">"SystemExitOutsideMain"</span>)
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> trigger(Map&lt;String, Sentinel.Tracker&gt; trackers) {
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>          logger.error(<span class="jxr_string">"Sentinel detected unrecoverable agents, exiting now -- {}"</span>, format(trackers));
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>          System.exit(1);
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      }
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

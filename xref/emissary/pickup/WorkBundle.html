@@ -228,7 +228,7 @@
 <a class="jxr_linenumber" name="L220" href="#L220">220</a> <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="L221" href="#L221">221</a> <em class="jxr_javadoccomment">     * @return the new id value</em>
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> String generateId() {
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>     <strong class="jxr_keyword">static</strong> String generateId() {
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">return</strong> UUID.randomUUID().toString();
 <a class="jxr_linenumber" name="L225" href="#L225">225</a>     }
 <a class="jxr_linenumber" name="L226" href="#L226">226</a> 
@@ -333,7 +333,7 @@
 <a class="jxr_linenumber" name="L325" href="#L325">325</a> <em class="jxr_javadoccomment">     * @throws IllegalStateException if adding the units would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;</em>
 <a class="jxr_linenumber" name="L326" href="#L326">326</a> <em class="jxr_javadoccomment">     *         work units</em>
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> addWorkUnits(List&lt;WorkUnit&gt; list) { <em class="jxr_comment">// This appears to only be used by unit tests and the copy constructor</em>
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">int</strong> addWorkUnits(List&lt;WorkUnit&gt; list) { <em class="jxr_comment">// This appears to only be used by unit tests and the copy constructor</em>
 <a class="jxr_linenumber" name="L329" href="#L329">329</a>         <strong class="jxr_keyword">if</strong> (workUnitList.size() + list.size() &gt; MAX_UNITS) {
 <a class="jxr_linenumber" name="L330" href="#L330">330</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"WorkBundle may not contain more than "</span> + MAX_UNITS + <span class="jxr_string">" WorkUnits."</span>);
 <a class="jxr_linenumber" name="L331" href="#L331">331</a>         }
@@ -398,7 +398,7 @@
 <a class="jxr_linenumber" name="L390" href="#L390">390</a> <em class="jxr_javadoccomment">     * @throws IllegalStateException if adding the files would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;</em>
 <a class="jxr_linenumber" name="L391" href="#L391">391</a> <em class="jxr_javadoccomment">     *         work units</em>
 <a class="jxr_linenumber" name="L392" href="#L392">392</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> addFileNames(String[] file) { <em class="jxr_comment">// This appears to only be used by unit tests</em>
+<a class="jxr_linenumber" name="L393" href="#L393">393</a>     <strong class="jxr_keyword">int</strong> addFileNames(String[] file) { <em class="jxr_comment">// This appears to only be used by unit tests</em>
 <a class="jxr_linenumber" name="L394" href="#L394">394</a>         <strong class="jxr_keyword">for</strong> (String f : file) {
 <a class="jxr_linenumber" name="L395" href="#L395">395</a>             addWorkUnit(<strong class="jxr_keyword">new</strong> <a name="WorkUnit" href="../../emissary/pickup/WorkUnit.html#WorkUnit">WorkUnit</a>(f));
 <a class="jxr_linenumber" name="L396" href="#L396">396</a>         }
@@ -412,8 +412,8 @@
 <a class="jxr_linenumber" name="L404" href="#L404">404</a> <em class="jxr_javadoccomment">     * @throws IllegalStateException if adding the files would cause the bundle to contain more than &lt;code&gt;MAX_UNITS&lt;/code&gt;</em>
 <a class="jxr_linenumber" name="L405" href="#L405">405</a> <em class="jxr_javadoccomment">     *         work units</em>
 <a class="jxr_linenumber" name="L406" href="#L406">406</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> addFileNames(List&lt;String&gt; list) { <em class="jxr_comment">// This appears to only be used by unit tests and the copy</em>
-<a class="jxr_linenumber" name="L408" href="#L408">408</a>                                                     <em class="jxr_comment">// constructor</em>
+<a class="jxr_linenumber" name="L407" href="#L407">407</a>     <strong class="jxr_keyword">int</strong> addFileNames(List&lt;String&gt; list) { <em class="jxr_comment">// This appears to only be used by unit tests and the copy</em>
+<a class="jxr_linenumber" name="L408" href="#L408">408</a>                                           <em class="jxr_comment">// constructor</em>
 <a class="jxr_linenumber" name="L409" href="#L409">409</a>         <strong class="jxr_keyword">for</strong> (String file : list) {
 <a class="jxr_linenumber" name="L410" href="#L410">410</a>             addWorkUnit(<strong class="jxr_keyword">new</strong> <a name="WorkUnit" href="../../emissary/pickup/WorkUnit.html#WorkUnit">WorkUnit</a>(file));
 <a class="jxr_linenumber" name="L411" href="#L411">411</a>         }
@@ -430,7 +430,7 @@
 <a class="jxr_linenumber" name="L422" href="#L422">422</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L423" href="#L423">423</a> <em class="jxr_javadoccomment">     * Clear the files from the list</em>
 <a class="jxr_linenumber" name="L424" href="#L424">424</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> clearFiles() {
+<a class="jxr_linenumber" name="L425" href="#L425">425</a>     <strong class="jxr_keyword">void</strong> clearFiles() {
 <a class="jxr_linenumber" name="L426" href="#L426">426</a>         <em class="jxr_comment">// This is only used for testing</em>
 <a class="jxr_linenumber" name="L427" href="#L427">427</a>         workUnitList.clear();
 <a class="jxr_linenumber" name="L428" href="#L428">428</a>         oldestFileModificationTime = Long.MAX_VALUE;

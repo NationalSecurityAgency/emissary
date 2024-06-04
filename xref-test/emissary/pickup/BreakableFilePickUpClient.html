@@ -13,7 +13,7 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> java.io.File;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.io.InputStream;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.util.Date;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.time.Instant;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.util.Timer;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.TimerTask;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  
@@ -39,7 +39,7 @@
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>          actBrokenDuringProcessing = value;
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          <strong class="jxr_keyword">if</strong> (value == <strong class="jxr_keyword">true</strong>) {
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>              Timer t = <strong class="jxr_keyword">new</strong> Timer(<span class="jxr_string">"BreakableFilePickupClientMonitor"</span>, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>              t.schedule(<strong class="jxr_keyword">new</strong> TimeToActBrokenTask(), <strong class="jxr_keyword">new</strong> Date(System.currentTimeMillis()), 10L);
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>              t.schedule(<strong class="jxr_keyword">new</strong> TimeToActBrokenTask(), Instant.now().toEpochMilli(), 10L);
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>          }
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>      }

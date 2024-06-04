@@ -154,7 +154,7 @@
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             <em class="jxr_comment">// If none of these methods worked, use the default if required</em>
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>             <strong class="jxr_keyword">if</strong> (supplyDefaultOnBad) {
-<a class="jxr_linenumber" name="L149" href="#L149">149</a>                 <strong class="jxr_keyword">return</strong> LocalDateTime.now();
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>                 <strong class="jxr_keyword">return</strong> LocalDateTime.now(ZoneId.systemDefault());
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>             }
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         }
 <a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;

@@ -31,8 +31,8 @@
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> emissary.server.api.ApiUtils.stripPeerString;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  
 <a class="jxr_linenumber" name="L25" href="#L25">25</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * The version Emissary API endpoint. Currently contains the local (/api/version) call and cluster (/api/clusterVersion)</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * calls.</em>
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  <em class="jxr_javadoccomment"> * The version Emissary API endpoint. Currently, contains the local (/api/version) call and cluster</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment"> * (/api/clusterVersion) calls.</em>
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>  @Path(<span class="jxr_string">""</span>)
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  <em class="jxr_comment">// context is /api</em>
@@ -74,7 +74,7 @@
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">private</strong> <a name="MapResponseEntity" href="../../../emissary/client/response/MapResponseEntity.html#MapResponseEntity">MapResponseEntity</a> lookupVersion() {
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>          <a name="MapResponseEntity" href="../../../emissary/client/response/<a name="MapResponseEntity" href="../../../emissary/client/response/MapResponseEntity.html#MapResponseEntity">MapResponseEntity</a>.html#MapResponseEntity">MapResponseEntity</a> entity = <strong class="jxr_keyword">new</strong> <a name="MapResponseEntity" href="../../../emissary/client/response/MapResponseEntity.html#MapResponseEntity">MapResponseEntity</a>();
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <em class="jxr_comment">// Get the server so we can be ready to talk to ourself then the peers</em>
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <em class="jxr_comment">// Get the server, so we can be ready to talk to ourselves then the peers</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>          <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>              <a name="EmissaryServer" href="..<a name="EmissaryServer" href="../../../emissary/server/EmissaryServer.html#EmissaryServer">EmissaryServer</a>y/server/EmissaryServer.html#EmissaryServer">EmissaryServer</a> emissaryServer = (<a name="EmissaryServer" href="../../../emissary/server/EmissaryServer.html#EmissaryServer">EmissaryServer</a>) Namespace.lookup(<span class="jxr_string">"EmissaryServer"</span>);
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              <a name="EmissaryNode" href="../../../emissary/directory/EmissaryNode.html#EmissaryNode">EmissaryNode</a> localNode = emissaryServer.getNode();

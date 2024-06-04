@@ -248,7 +248,7 @@
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>                     }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>                     <strong class="jxr_keyword">if</strong> (ent != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>                         String val = getValueForHTMLEntity(ent);
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>                         String val = getValueForHtmlEntity(ent);
 <a class="jxr_linenumber" name="L244" href="#L244">244</a>                         <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>                             sb.append(val);
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>                             <strong class="jxr_keyword">if</strong> (counters != <strong class="jxr_keyword">null</strong>) {
@@ -335,7 +335,7 @@
 <a class="jxr_linenumber" name="L327" href="#L327">327</a>     }
 <a class="jxr_linenumber" name="L328" href="#L328">328</a> 
 <a class="jxr_linenumber" name="L329" href="#L329">329</a>     @Nullable
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String getValueForHTMLEntity(String entity) {
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String getValueForHtmlEntity(String entity) {
 <a class="jxr_linenumber" name="L331" href="#L331">331</a>         String s = HTML_ENTITY_MAP.getValueForHTMLEntity(entity);
 <a class="jxr_linenumber" name="L332" href="#L332">332</a>         <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L333" href="#L333">333</a>             <strong class="jxr_keyword">return</strong> s;

@@ -632,7 +632,7 @@
 <a class="jxr_linenumber" name="L624" href="#L624">624</a>                 logger.error(<span class="jxr_string">"Sprouting is no longer supported, lost {} children"</span>, children.size());
 <a class="jxr_linenumber" name="L625" href="#L625">625</a>             }
 <a class="jxr_linenumber" name="L626" href="#L626">626</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L627" href="#L627">627</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Neither process nor processHeavyDuty appears to be implemented"</span>);
+<a class="jxr_linenumber" name="L627" href="#L627">627</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Neither process nor processHeavyDuty appears to be implemented"</span>);
 <a class="jxr_linenumber" name="L628" href="#L628">628</a>         }
 <a class="jxr_linenumber" name="L629" href="#L629">629</a>     }
 <a class="jxr_linenumber" name="L630" href="#L630">630</a> 
@@ -650,7 +650,7 @@
 <a class="jxr_linenumber" name="L642" href="#L642">642</a>             process(payload);
 <a class="jxr_linenumber" name="L643" href="#L643">643</a>             <strong class="jxr_keyword">return</strong> Collections.emptyList();
 <a class="jxr_linenumber" name="L644" href="#L644">644</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L645" href="#L645">645</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> RuntimeException(<span class="jxr_string">"Neither process nor processHeavyDuty appears to be implemented"</span>);
+<a class="jxr_linenumber" name="L645" href="#L645">645</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Neither process nor processHeavyDuty appears to be implemented"</span>);
 <a class="jxr_linenumber" name="L646" href="#L646">646</a>         }
 <a class="jxr_linenumber" name="L647" href="#L647">647</a>     }
 <a class="jxr_linenumber" name="L648" href="#L648">648</a> 
@@ -1129,94 +1129,95 @@
 <a class="jxr_linenumber" name="L1121" href="#L1121">1121</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L1122" href="#L1122">1122</a>     }
 <a class="jxr_linenumber" name="L1123" href="#L1123">1123</a> 
-<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isDenied(String s) {
-<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>         <strong class="jxr_keyword">return</strong> denyList.contains(s);
-<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>     }
-<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a> 
-<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a> <em class="jxr_javadoccomment">     * This method should return a list of all the parameters that a subclass Place will potentially modify (this includes</em>
-<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     * adding, removing, or changing the value of).</em>
-<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
-<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
-<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">     * become abstract.</em>
-<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all parameter names that a Place will add, remove, or change the value of</em>
-<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getParametersModified() {
-<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>     }
-<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a> 
-<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a> <em class="jxr_javadoccomment">     * This method should return a list of all the alternate views that a subclass Place will potentially modify (this</em>
-<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     * includes adding, removing, or changing the value of).</em>
-<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
-<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
-<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> <em class="jxr_javadoccomment">     * become abstract.</em>
-<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all alternate view names that a Place will add, remove, or change the value of</em>
-<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getAlternateViewsModified() {
-<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>     }
-<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a> 
-<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a> <em class="jxr_javadoccomment">     * This method should return a list of all the output forms that a subclass Place will potentially output</em>
-<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
-<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
-<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> <em class="jxr_javadoccomment">     * become abstract.</em>
-<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all output forms that a Place may output</em>
-<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getOutputForms() {
-<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>     }
-<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a> 
-<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a> <em class="jxr_javadoccomment">     * This method should return a list of all the file types that a subclass Place will potentially output</em>
-<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
-<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
-<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a> <em class="jxr_javadoccomment">     * become abstract.</em>
-<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all file types that a Place may output</em>
-<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getFileTypes() {
-<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>     }
-<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a> 
-<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may alter the IBaseDataObject data[] (i.e.PrimaryView) in any way, and</em>
-<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     * false otherwise</em>
-<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     * @return true if the data[] member may be altered by the Place, false otherwise</em>
-<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> changesPrimaryView() {
-<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a>     }
-<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a> 
-<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may create any "extracted" records, and false otherwise</em>
-<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> <em class="jxr_javadoccomment">     * @return true if the Place may create "extracted" records, false otherwise</em>
-<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> createsExtractedRecords() {
-<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>     }
-<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a> 
-<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may sprout "child" IBaseDataObjects, and false otherwise</em>
-<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">     * @return true if the Place may sprout children, false otherwise</em>
-<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> sproutsChildren() {
-<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>         <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>     }
-<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a> 
+<a class="jxr_linenumber" name="L1124" href="#L1124">1124</a>     @Override
+<a class="jxr_linenumber" name="L1125" href="#L1125">1125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isDenied(String s) {
+<a class="jxr_linenumber" name="L1126" href="#L1126">1126</a>         <strong class="jxr_keyword">return</strong> denyList.contains(s);
+<a class="jxr_linenumber" name="L1127" href="#L1127">1127</a>     }
+<a class="jxr_linenumber" name="L1128" href="#L1128">1128</a> 
+<a class="jxr_linenumber" name="L1129" href="#L1129">1129</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1130" href="#L1130">1130</a> <em class="jxr_javadoccomment">     * This method should return a list of all the parameters that a subclass Place will potentially modify (this includes</em>
+<a class="jxr_linenumber" name="L1131" href="#L1131">1131</a> <em class="jxr_javadoccomment">     * adding, removing, or changing the value of).</em>
+<a class="jxr_linenumber" name="L1132" href="#L1132">1132</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1133" href="#L1133">1133</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
+<a class="jxr_linenumber" name="L1134" href="#L1134">1134</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
+<a class="jxr_linenumber" name="L1135" href="#L1135">1135</a> <em class="jxr_javadoccomment">     * become abstract.</em>
+<a class="jxr_linenumber" name="L1136" href="#L1136">1136</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1137" href="#L1137">1137</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all parameter names that a Place will add, remove, or change the value of</em>
+<a class="jxr_linenumber" name="L1138" href="#L1138">1138</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1139" href="#L1139">1139</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getParametersModified() {
+<a class="jxr_linenumber" name="L1140" href="#L1140">1140</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L1141" href="#L1141">1141</a>     }
+<a class="jxr_linenumber" name="L1142" href="#L1142">1142</a> 
+<a class="jxr_linenumber" name="L1143" href="#L1143">1143</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1144" href="#L1144">1144</a> <em class="jxr_javadoccomment">     * This method should return a list of all the alternate views that a subclass Place will potentially modify (this</em>
+<a class="jxr_linenumber" name="L1145" href="#L1145">1145</a> <em class="jxr_javadoccomment">     * includes adding, removing, or changing the value of).</em>
+<a class="jxr_linenumber" name="L1146" href="#L1146">1146</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1147" href="#L1147">1147</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
+<a class="jxr_linenumber" name="L1148" href="#L1148">1148</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
+<a class="jxr_linenumber" name="L1149" href="#L1149">1149</a> <em class="jxr_javadoccomment">     * become abstract.</em>
+<a class="jxr_linenumber" name="L1150" href="#L1150">1150</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1151" href="#L1151">1151</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all alternate view names that a Place will add, remove, or change the value of</em>
+<a class="jxr_linenumber" name="L1152" href="#L1152">1152</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1153" href="#L1153">1153</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getAlternateViewsModified() {
+<a class="jxr_linenumber" name="L1154" href="#L1154">1154</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L1155" href="#L1155">1155</a>     }
+<a class="jxr_linenumber" name="L1156" href="#L1156">1156</a> 
+<a class="jxr_linenumber" name="L1157" href="#L1157">1157</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1158" href="#L1158">1158</a> <em class="jxr_javadoccomment">     * This method should return a list of all the output forms that a subclass Place will potentially output</em>
+<a class="jxr_linenumber" name="L1159" href="#L1159">1159</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1160" href="#L1160">1160</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
+<a class="jxr_linenumber" name="L1161" href="#L1161">1161</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
+<a class="jxr_linenumber" name="L1162" href="#L1162">1162</a> <em class="jxr_javadoccomment">     * become abstract.</em>
+<a class="jxr_linenumber" name="L1163" href="#L1163">1163</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1164" href="#L1164">1164</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all output forms that a Place may output</em>
+<a class="jxr_linenumber" name="L1165" href="#L1165">1165</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1166" href="#L1166">1166</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getOutputForms() {
+<a class="jxr_linenumber" name="L1167" href="#L1167">1167</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L1168" href="#L1168">1168</a>     }
+<a class="jxr_linenumber" name="L1169" href="#L1169">1169</a> 
+<a class="jxr_linenumber" name="L1170" href="#L1170">1170</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1171" href="#L1171">1171</a> <em class="jxr_javadoccomment">     * This method should return a list of all the file types that a subclass Place will potentially output</em>
+<a class="jxr_linenumber" name="L1172" href="#L1172">1172</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1173" href="#L1173">1173</a> <em class="jxr_javadoccomment">     * Currently, this implementation in ServiceProviderPlace will return an empty List, but subclass implementers (i.e.</em>
+<a class="jxr_linenumber" name="L1174" href="#L1174">1174</a> <em class="jxr_javadoccomment">     * Place authors) are urged to override this method. Ultimately, this body of this method will be removed and it will</em>
+<a class="jxr_linenumber" name="L1175" href="#L1175">1175</a> <em class="jxr_javadoccomment">     * become abstract.</em>
+<a class="jxr_linenumber" name="L1176" href="#L1176">1176</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1177" href="#L1177">1177</a> <em class="jxr_javadoccomment">     * @return a List&amp;lt;String&amp;gt; of all file types that a Place may output</em>
+<a class="jxr_linenumber" name="L1178" href="#L1178">1178</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1179" href="#L1179">1179</a>     <strong class="jxr_keyword">protected</strong> List&lt;String&gt; getFileTypes() {
+<a class="jxr_linenumber" name="L1180" href="#L1180">1180</a>         <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L1181" href="#L1181">1181</a>     }
+<a class="jxr_linenumber" name="L1182" href="#L1182">1182</a> 
+<a class="jxr_linenumber" name="L1183" href="#L1183">1183</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1184" href="#L1184">1184</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may alter the IBaseDataObject data[] (i.e.PrimaryView) in any way, and</em>
+<a class="jxr_linenumber" name="L1185" href="#L1185">1185</a> <em class="jxr_javadoccomment">     * false otherwise</em>
+<a class="jxr_linenumber" name="L1186" href="#L1186">1186</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1187" href="#L1187">1187</a> <em class="jxr_javadoccomment">     * @return true if the data[] member may be altered by the Place, false otherwise</em>
+<a class="jxr_linenumber" name="L1188" href="#L1188">1188</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1189" href="#L1189">1189</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> changesPrimaryView() {
+<a class="jxr_linenumber" name="L1190" href="#L1190">1190</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1191" href="#L1191">1191</a>     }
+<a class="jxr_linenumber" name="L1192" href="#L1192">1192</a> 
+<a class="jxr_linenumber" name="L1193" href="#L1193">1193</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1194" href="#L1194">1194</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may create any "extracted" records, and false otherwise</em>
+<a class="jxr_linenumber" name="L1195" href="#L1195">1195</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1196" href="#L1196">1196</a> <em class="jxr_javadoccomment">     * @return true if the Place may create "extracted" records, false otherwise</em>
+<a class="jxr_linenumber" name="L1197" href="#L1197">1197</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1198" href="#L1198">1198</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> createsExtractedRecords() {
+<a class="jxr_linenumber" name="L1199" href="#L1199">1199</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1200" href="#L1200">1200</a>     }
+<a class="jxr_linenumber" name="L1201" href="#L1201">1201</a> 
+<a class="jxr_linenumber" name="L1202" href="#L1202">1202</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L1203" href="#L1203">1203</a> <em class="jxr_javadoccomment">     * This method should return true if the Place may sprout "child" IBaseDataObjects, and false otherwise</em>
+<a class="jxr_linenumber" name="L1204" href="#L1204">1204</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="L1205" href="#L1205">1205</a> <em class="jxr_javadoccomment">     * @return true if the Place may sprout children, false otherwise</em>
+<a class="jxr_linenumber" name="L1206" href="#L1206">1206</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L1207" href="#L1207">1207</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">boolean</strong> sproutsChildren() {
+<a class="jxr_linenumber" name="L1208" href="#L1208">1208</a>         <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="L1209" href="#L1209">1209</a>     }
 <a class="jxr_linenumber" name="L1210" href="#L1210">1210</a> 
-<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> }
+<a class="jxr_linenumber" name="L1211" href="#L1211">1211</a> 
+<a class="jxr_linenumber" name="L1212" href="#L1212">1212</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>
