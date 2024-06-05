@@ -16,7 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -81,7 +82,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected transient volatile boolean timeToQuit = false;
 
     // Queue of DirectoryEntry keys to be processed
-    protected List<DirectoryEntry> nextKeyQueue = new ArrayList<>();
+    protected Deque<DirectoryEntry> nextKeyQueue = new ArrayDeque<>();
 
     // Track moveErrors on all parts of a given payload
     protected int moveErrorsOccurred = 0;
@@ -449,7 +450,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // choose the next one and spit it out
         if (!this.nextKeyQueue.isEmpty()) {
             logger.debug("Returning next key from stack size={}", this.nextKeyQueue.size());
-            return this.nextKeyQueue.remove(0);
+            return this.nextKeyQueue.removeFirst();
         }
 
         // We would need a current form of the payload to continue
@@ -623,7 +624,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         // Dequeue first item and return it to the caller
         DirectoryEntry tmpEntry = null;
         if (!this.nextKeyQueue.isEmpty()) {
-            tmpEntry = this.nextKeyQueue.remove(0);
+            tmpEntry = this.nextKeyQueue.removeFirst();
         }
         logger.debug("nextKeyFromDirectory found {}", tmpEntry);
         return tmpEntry;

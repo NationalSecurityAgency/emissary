@@ -12,7 +12,8 @@ import emissary.util.PayloadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class MoveSpool implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MoveSpool.class);
 
     // The payload FIFO
-    protected final List<SpoolItem> spool = new ArrayList<>();
+    protected final Deque<SpoolItem> spool = new ArrayDeque<>();
 
     // Reference to the agent pool
     protected AgentPool pool;
@@ -248,7 +249,7 @@ public class MoveSpool implements Runnable {
                 highWaterMark = spool.size();
             }
 
-            s = spool.remove(0);
+            s = spool.removeFirst();
             dequeCount++;
         }
         return s;
@@ -310,7 +311,7 @@ public class MoveSpool implements Runnable {
         int size = 0;
 
         synchronized (spool) {
-            spool.add(s);
+            spool.addLast(s);
             enqueCount++;
             size = spool.size();
             spool.notifyAll();
