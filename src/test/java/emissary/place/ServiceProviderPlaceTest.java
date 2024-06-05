@@ -84,7 +84,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n"
             + "SERVICE_PROXY_DENY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY != \"*\"\n").getBytes();
 
-    static final String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
+    String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 
     @Override
     @BeforeEach
