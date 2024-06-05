@@ -286,8 +286,8 @@ class ExecutrixTest extends UnitTest {
         logger.debug("Command to exec is " + Arrays.asList(c));
 
         int pstat;
-        final StringBuffer out = new StringBuffer();
-        final StringBuffer err = new StringBuffer();
+        final StringBuilder out = new StringBuilder();
+        final StringBuilder err = new StringBuilder();
 
         pstat = e.execute(c, out, err);
         logger.debug("Stdout: " + out);
@@ -299,7 +299,7 @@ class ExecutrixTest extends UnitTest {
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 
-        pstat = e.execute(c, out, "UTF-8");
+        pstat = e.execute(c, out, new StringBuilder("UTF-8"));
         assertTrue(pstat >= 0, "Process return value");
         readAndNuke(names[Executrix.OUTPATH]);
 

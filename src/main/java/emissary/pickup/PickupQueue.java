@@ -3,7 +3,8 @@ package emissary.pickup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import javax.annotation.Nullable;
 
 /**
@@ -11,7 +12,7 @@ import javax.annotation.Nullable;
  */
 public class PickupQueue {
     // Data structure for the bundles
-    protected final LinkedList<WorkBundle> queue = new LinkedList<>();
+    protected final Deque<WorkBundle> queue = new ArrayDeque<>();
 
     // Our logger
     private static final Logger logger = LoggerFactory.getLogger(PickupQueue.class);
@@ -53,7 +54,7 @@ public class PickupQueue {
 
         synchronized (queue) {
             // Add it to the queue
-            queue.add(0, paths);
+            queue.addFirst(paths);
             queue.notifyAll();
         }
 

@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -135,7 +135,7 @@ public class KffMemcached implements KffFilter {
 
         // Load up the list of servers
         Set<String> serversFromConfig = configG.findEntriesAsSet("MEMCACHED_SERVER");
-        List<InetSocketAddress> servers = new LinkedList<>();
+        List<InetSocketAddress> servers = new ArrayList<>();
         for (String serverFromConfig : serversFromConfig) {
             // Transform to an InetSocketAddress
             if (serverFromConfig.contains(":")) {

@@ -1,10 +1,11 @@
 package emissary.util.magic;
 
 import java.math.BigInteger;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class MagicMath {
@@ -55,15 +56,15 @@ public class MagicMath {
 
     public static byte[] parseEscapedString(String s) {
         List<Number> array = new ArrayList<>();
-        Stack<Character> chars = new Stack<>();
+        Deque<Character> chars = new ArrayDeque<>();
         for (int i = (s.length() - 1); i >= 0; i--) {
             chars.push(s.charAt(i));
         }
-        while (!chars.empty()) {
+        while (!chars.isEmpty()) {
             Character c = chars.pop();
             String val = EMPTYSTRING;
             if (c == '\\') {
-                if (chars.empty()) {
+                if (chars.isEmpty()) {
                     array.add(32);
                     break;
                 }
@@ -73,9 +74,9 @@ public class MagicMath {
                     chars.pop();
                 } else if (Character.isDigit(next)) {
                     int max = 3;
-                    while (!chars.empty() && Character.isDigit(next) && max-- > 0) {
+                    while (!chars.isEmpty() && Character.isDigit(next) && max-- > 0) {
                         val += chars.pop();
-                        if (!chars.empty()) {
+                        if (!chars.isEmpty()) {
                             next = chars.peek();
                         }
                     }

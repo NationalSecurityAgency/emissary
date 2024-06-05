@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.UUID;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +28,7 @@ public class JournaledChannelPool implements AutoCloseable {
     final int max;
     final Path directory;
     final String key;
-    private final Queue<JournaledChannel> free = new LinkedList<>();
+    private final Deque<JournaledChannel> free = new ArrayDeque<>();
     private int created;
     @Nullable
     private JournaledChannel[] allchannels;
@@ -135,8 +135,8 @@ public class JournaledChannelPool implements AutoCloseable {
     }
 
     private JournaledChannel findFree() throws InterruptedException, IOException {
-        // if nothing is available and we can create additional channels, do it
-        // clould get closed when we await
+        // if nothing is available, and we can create additional channels, do it
+        // could get closed when we await
         while (this.free.isEmpty()) {
             if (this.created < this.max) {
                 createChannel();

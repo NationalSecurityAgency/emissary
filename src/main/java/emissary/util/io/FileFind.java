@@ -9,9 +9,10 @@ package emissary.util.io;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 /**
@@ -91,7 +92,7 @@ public class FileFind {
         /**
          * Stack of Files and directory lists keeping track of where in the tree we are.
          */
-        private Stack<Object> currentPath = new Stack<>();
+        private Deque<Object> currentPath = new ArrayDeque<>();
         @Nullable
         private FileFilter filter = null;
 

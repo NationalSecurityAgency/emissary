@@ -4,9 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 import javax.annotation.Nullable;
 
 public class MagicNumber {
@@ -169,16 +170,16 @@ public class MagicNumber {
         if (!substitute) {
             return desc;
         }
-        Stack<Character> stack = new Stack<>();
+        Deque<Character> chars = new ArrayDeque<>();
         for (int i = (desc.length() - 1); i >= 0; --i) {
-            stack.push(desc.charAt(i));
+            chars.push(desc.charAt(i));
         }
         StringBuilder sb = new StringBuilder();
 
-        while (!stack.empty()) {
-            Character next = stack.pop();
-            if (!stack.empty() && next.charValue() == '%') {
-                Character subType = stack.pop();
+        while (!chars.isEmpty()) {
+            Character next = chars.pop();
+            if (!chars.isEmpty() && next.charValue() == '%') {
+                Character subType = chars.pop();
                 try {
                     if (dataType == TYPE_STRING) {
                         if (offset < (data.length - 2)) {
@@ -204,8 +205,8 @@ public class MagicNumber {
                 } catch (UnsupportedEncodingException e) {
                     throw new IllegalArgumentException(e);
                 }
-                if (subType.charValue() == 'l' && !stack.empty() && stack.peek().charValue() == 'd') {
-                    stack.pop();
+                if (subType.charValue() == 'l' && !chars.isEmpty() && chars.peek().charValue() == 'd') {
+                    chars.pop();
                 }
                 continue;
             }

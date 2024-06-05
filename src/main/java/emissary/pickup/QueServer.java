@@ -130,7 +130,7 @@ public abstract class QueServer extends Pausable {
                 logger.debug("Initiating bundle completed msg for {}, status={}", paths.getBundleId(), status);
                 space.bundleCompleted(paths.getBundleId(), status);
             } catch (Exception e) {
-                StringBuffer fnb = new StringBuffer();
+                StringBuilder fnb = new StringBuilder();
                 // Report filenames on error
                 for (Iterator<String> i = paths.getFileNameIterator(); i.hasNext();) {
                     String fn = i.next();

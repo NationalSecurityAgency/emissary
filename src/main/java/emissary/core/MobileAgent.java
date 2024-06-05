@@ -16,8 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,7 +82,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
     protected transient volatile boolean timeToQuit = false;
 
     // Queue of DirectoryEntry keys to be processed
-    protected LinkedList<DirectoryEntry> nextKeyQueue = new LinkedList<>();
+    protected Deque<DirectoryEntry> nextKeyQueue = new ArrayDeque<>();
 
     // Track moveErrors on all parts of a given payload
     protected int moveErrorsOccurred = 0;
