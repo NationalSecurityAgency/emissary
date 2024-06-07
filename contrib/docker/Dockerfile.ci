@@ -96,8 +96,10 @@ RUN git init --quiet \
     && git commit --quiet -am.
 
 ARG java_compiler=11
+ARG maven_phases='clean verify'
+ARG maven_profiles='-Pdist'
 RUN --mount=type=cache,uid=${uid},gid=${gid},target=/home/${user}/.m2 \
-    mvn -V -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} clean verify -Pdist
+    mvn -V -B -e -ntp "-Dstyle.color=always" -Dmaven.compiler.release=${java_compiler} ${maven_phases} ${maven_profiles}
 
 ARG verify_build=false
 RUN if ${verify_build} ; then ./contrib/ci/detect-changes.sh ; fi
