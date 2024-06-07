@@ -48,7 +48,7 @@ jobs:
             java_compiler=${{ matrix.java-compiler }}
             verify_build=${{ matrix.verify-build }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   centos7-build:
     name: Centos7 legacy build on Java 11 with compiler target 11
@@ -73,7 +73,7 @@ jobs:
             target_os=centos7
             verify_build=false
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
 
   macos-build:
     name: MacOS non-standard build on Java 11 with compiler target 11
