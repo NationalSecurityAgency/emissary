@@ -50,13 +50,13 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     /**
-     * Test parsing date strings and include the extra/ more comprehensive patterns in the config file
+     * Test parsing date strings with tryExtensiveParsing set to true
      *
      * @param date the string representation of a date
      * @param expected the expected parsed and formatted date
      * @param msg the error message to display if the test fails
      */
-    private static void extraPatternTest(@Nullable String date, long expected, String msg) {
+    private static void testExtensiveParsing(@Nullable String date, long expected, String msg) {
         ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date, true);
         Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
     }
@@ -82,7 +82,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
         for (String offset : offsets) {
             String dateAndOffset = dateString + " " + offset;
-            extraPatternTest(dateAndOffset, expected, "Did not parse this string correctly: " + dateAndOffset);
+            testExtensiveParsing(dateAndOffset, expected, "Did not parse this string correctly: " + dateAndOffset);
         }
     }
 
@@ -176,7 +176,6 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("Tue, 5 Jan 2016 02:20:30 +0800 AWST", EXPECTED_FULL, pattern);
         test("Tue, 5 Jan 2016 02:20:30 +0800 CST", EXPECTED_FULL, pattern);
         test("Tue, 5 Jan 2016 02:20:30 +0800 HKT", EXPECTED_FULL, pattern);
-        test("Tue, 5 Jan 2016 02:20:30 +0800 PHT", EXPECTED_FULL, pattern);
         test("Tue, 5 Jan 2016 02:20:30 +0800 PT", EXPECTED_FULL, pattern);
         test("Tue, 5 Jan 2016 02:20:30 +0800 WITA", EXPECTED_FULL, pattern);
         test("Tue, 5 Jan 2016 03:20:30 +0900 JST", EXPECTED_FULL, pattern);
@@ -238,14 +237,14 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_yyyyMMddTHHmmssSSSX_Extra() {
-        extraPatternTest("2016-01-04T18:20:30", EXPECTED_FULL, "0 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.0", EXPECTED_FULL, "1 digit for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.00", EXPECTED_FULL, "2 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.0000", EXPECTED_FULL, "4 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.00000", EXPECTED_FULL, "5 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.000000", EXPECTED_FULL, "6 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.0000000", EXPECTED_FULL, "7 digits for fraction of a second");
-        extraPatternTest("2016-01-04T18:20:30.00000000", EXPECTED_FULL, "8 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30", EXPECTED_FULL, "0 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0", EXPECTED_FULL, "1 digit for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00", EXPECTED_FULL, "2 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0000", EXPECTED_FULL, "4 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00000", EXPECTED_FULL, "5 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.000000", EXPECTED_FULL, "6 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0000000", EXPECTED_FULL, "7 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00000000", EXPECTED_FULL, "8 digits for fraction of a second");
     }
 
     @Test
@@ -665,6 +664,19 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("2016-01-04 (18:20:00)", EXPECTED_NO_SECS, "Extra parenthesis");
         test("2016-01-04 18:20:00 [GMT]", EXPECTED_NO_SECS, "Extra brackets");
         test("\"Mon\", 4 Jan 2016 18:20 +0000 \"EST\"", EXPECTED_NO_SECS, "Extra quotes");
+    }
+
+    @Test
+    void testLastDitchEffortParsing() {
+        testExtensiveParsing("Jan 04 2016 18:20:30 +0000.5555555", EXPECTED_FULL, "Removing text at the end should be successful");
+        testExtensiveParsing("Jan 04 2016 18:20:30 +0000 (This is not a date offset)", EXPECTED_FULL,
+                "Removing text at the end should be successful");
+        testExtensiveParsing("Tue, 5 Jan 2016 02:20:30 +0800 PHT", EXPECTED_FULL,
+                "PHT is a timezone not parsed by DateTimeFormatter, but we should still parse correctly with the numeric time zone offset.");
+
+        // we should not attempt to remove random text at the end when we are not specifying tryExtensiveFormatList to be true
+        test("Jan 04 2016 18:20:30 +0000.5555555", 0L, "Fail to parse when tryExtensiveFormatList is false");
+        test("Jan 04 2016 18:20:30 +0000 (This is not a date offset)", 0L, "Fail to parse when tryExtensiveFormatList is false");
     }
 
     @Test

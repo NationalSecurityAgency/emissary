@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
@@ -58,9 +59,11 @@ public final class FlexibleDateTimeParser {
      * beginning or end
      */
     private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
-
-    private static final Pattern PHT_REPLACE = Pattern.compile("PHT");
-    private static final String PT_TIMEZONE = "PT";
+    /*
+     * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
+     * zone offset
+     */
+    private static final Pattern EXTRA_TEXT_REMOVE = Pattern.compile("(\\+\\d{4}).*$");
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
@@ -68,7 +71,7 @@ public final class FlexibleDateTimeParser {
     /* date time formats - vars: FORMAT_DATETIME_MAIN */
     private static List<DateTimeFormatter> dateFormatsMain = new ArrayList<>();
 
-    /* Extra date time formats - lits to try if our main list has failed - vars: FORMAT_DATETIME_EXTRA */
+    /* Extra date time formats - list to try if our main list has failed - vars: FORMAT_DATETIME_EXTRA */
     private static List<DateTimeFormatter> dateFormatsExtra = new ArrayList<>();
 
     /* init */
@@ -99,14 +102,61 @@ public final class FlexibleDateTimeParser {
      * Attempts to parse a string date using pre-configured patterns
      *
      * @param dateString the string to parse
-     * @param tryExtensiveFormatList True if we want to try out complete list of date/time formats False if we only want to
+     * @param tryExtensiveParsing True if we want to try out complete list of date/time formats False if we only want to
      *        attempt the most common date/time formats
      * @return the parsed immutable and thread-safe zoned-date, or null if it failed to parse
      */
-    public static ZonedDateTime parse(final String dateString, boolean tryExtensiveFormatList) {
+    public static ZonedDateTime parse(final String dateString, boolean tryExtensiveParsing) {
+        ZonedDateTime zdt = parsingHelper(dateString, tryExtensiveParsing);
+
+        if (zdt != null || !tryExtensiveParsing) {
+            return zdt;
+        } else {
+            // if that all failed and we want to attempt extensive parsing, attempt the last ditch efforts we can try
+            return lastDitchParsingEffort(dateString);
+        }
+    }
+
+    /**
+     * If all our formats failed to parse a date string, give it one last try to parse it. Look for a numeric offset (e.g.
+     * +0000) and remove all text afterwards. This should cover another set of cases where there is random text appended to
+     * the end of the string, as well as removing invalid non-numeric time zone offsets while still picking up the numeric
+     * offset Assumption - that tryExtensiveParsing is true - we should only get to this point if we want to try our best to
+     * parse
+     * 
+     * @param date The date string to parse
+     * @return the ZonedDateTime object if removing text at the end was successful, or null otherwise
+     */
+    static ZonedDateTime lastDitchParsingEffort(final String date) {
+
+        // Attempt to remove all text after the numeric offset and try again - this should give us a valid date string
+        // to work with
+        Matcher matcher = EXTRA_TEXT_REMOVE.matcher(date);
+        if (matcher.find()) {
+            String secondChanceDate = matcher.replaceAll(matcher.group(1));
+            // if we removed text, attempt to parse again to see if we are more successful this time
+            return parsingHelper(secondChanceDate, true);
+        }
+        return null;
+    }
+
+    /**
+     * Created to help against code duplication. Calls parse with the standard set of date formats, and then if
+     * that fails, attempt the extra set of date formats if tryExtensiveParsing is set to true.
+     * 
+     * @param dateString The string we are attempting to parse
+     * @param tryExtensiveParsing Whether or not to use the extensive set of date formats
+     * @return The ZonedDateTime object if our parsing was successful, or null if not
+     */
+    private static ZonedDateTime parsingHelper(final String dateString, boolean tryExtensiveParsing) {
         ZonedDateTime zdt = parse(dateString, dateFormatsMain);
 
-        return zdt == null && tryExtensiveFormatList ? parse(dateString, dateFormatsExtra) : zdt;
+        // if we got a successful parse or we don't want to attempt "extensive parsing", return here
+        if (!tryExtensiveParsing || zdt != null) {
+            return zdt;
+        }
+        zdt = parse(dateString, dateFormatsExtra);
+        return zdt;
     }
 
     /**
@@ -268,12 +318,6 @@ public final class FlexibleDateTimeParser {
         String cleanedDateString = StringUtils.substring(date, 0, 100);
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
         cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
-
-        // PHT does not appear to be a valid time zone in java, but is included in the IANA timezone list. If PHT is in
-        // a date string, we get an exception. This was the only information I could find about this issue online -
-        // it suggests "PT" is the valid Philippines time zone in java:
-        // https://stackoverflow.com/questions/70605148/why-is-the-short-display-name-for-asia-manila-timezone-pt-in-java
-        cleanedDateString = PHT_REPLACE.matcher(cleanedDateString).replaceAll(PT_TIMEZONE);
 
         return StringUtils.trimToNull(cleanedDateString);
     }
