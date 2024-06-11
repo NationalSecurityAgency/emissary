@@ -141,8 +141,8 @@ public final class FlexibleDateTimeParser {
     }
 
     /**
-     * Created to help against code duplication. Calls parse with the standard set of date formats, and then if
-     * that fails, attempt the extra set of date formats if tryExtensiveParsing is set to true.
+     * Created to help against code duplication. Calls parse with the standard set of date formats, and then if that fails,
+     * attempt the extra set of date formats if tryExtensiveParsing is set to true.
      * 
      * @param dateString The string we are attempting to parse
      * @param tryExtensiveParsing Whether or not to use the extensive set of date formats
