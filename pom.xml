@@ -73,8 +73,7 @@
     <dep.jetty.version>11.0.16</dep.jetty.version>
     <dep.junit-jupiter.version>5.10.0</dep.junit-jupiter.version>
     <dep.logback.version>1.4.14</dep.logback.version>
-    <!-- seems to have an impact with java 11 integration, update with
-		caution -->
+    <!-- seems to have an impact with java 11 integration, update with caution -->
     <dep.maven-surefire-plugin.version>3.1.0</dep.maven-surefire-plugin.version>
     <dep.mockito.version>5.5.0</dep.mockito.version>
     <dep.picocli.version>4.7.4</dep.picocli.version>
@@ -94,19 +93,15 @@
     <maven.min-version>3.5.0</maven.min-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <!-- With Java 8 and the latest version of surefire, user.timezone is
-		not read correctly.  Reevaluate one day.
+    <!-- With Java 8 and the latest version of surefire, user.timezone is not read correctly.  Reevaluate one day.
          See https://issues.apache.org/jira/browse/SUREFIRE-1176 or
-		http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
+		 http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
 
-         The COMPAT locale provider is used because the date formatter parsing has
-		changed significantly
+         The COMPAT locale provider is used because the date formatter parsing has changed significantly
          when using the CLDR locale provider, which is the default in JDK11.
-		https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
+		 https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
       -->
-    <surefire.argline>@{argLine} -Xmx1024m -Xms256m
-			-Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true
-			-Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
+    <surefire.argline>@{argLine} -Xmx1024m -Xms256m	-Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
     <surefire.forkCount>.5C</surefire.forkCount>
   </properties>
   <dependencyManagement>
@@ -695,12 +690,9 @@
             <!-- this combination of these two configurations
               (failOnViolation=true and violationSeverity=error) means
               any checks with severity=error will fail the build -->
-            <!-- TODO enforce more checkstyle categories as the
-						build gets cleaned up -->
-            <!-- As you fix checkstyle warning categories, change
-						the severity of that category
-              to "error" so it will fail the build if new violations of that category get
-						introduced. -->
+            <!-- TODO enforce more checkstyle categories as the	build gets cleaned up -->
+            <!-- As you fix checkstyle warning categories, change the severity of that category
+              to "error" so it will fail the build if new violations of that category get introduced. -->
             <failOnViolation>true</failOnViolation>
             <violationSeverity>error</violationSeverity>
             <includeTestSourceDirectory>true</includeTestSourceDirectory>
@@ -1406,8 +1398,7 @@
       </build>
     </profile>
     <profile>
-      <!-- on by default, but disable with '-P !autoformat' or
-			'-DskipFormat' -->
+      <!-- on by default, but disable with '-P !autoformat' or '-DskipFormat' -->
       <id>autoformat</id>
       <activation>
         <property>
@@ -1468,23 +1459,23 @@
                 <!--arg>-Xlint:all</arg-->
                 <arg>-XDcompilePolicy=simple</arg>
                 <arg>-Xplugin:ErrorProne \
-									-XepAllDisabledChecksAsWarnings \
-									-XepAllErrorsAsWarnings \
-									-XepAllSuggestionsAsWarnings \
-									-XepDisableWarningsInGeneratedCode \
-									-Xep:AndroidJdkLibsChecker:OFF \
-									-Xep:BooleanParameter:OFF \
-									-Xep:CanIgnoreReturnValueSuggester:OFF \
-									-Xep:DefaultCharset:OFF \
-									-Xep:InlineMeSuggester:OFF \
-									-Xep:InlineTrivialConstant:OFF \
-									-Xep:Java7ApiChecker:OFF \
-									-Xep:Java8ApiChecker:OFF \
-									-Xep:StringSplitter:OFF \
-									-Xep:UnnecessaryFinal:OFF \
-									-Xep:Var:OFF \
-									-Xep:Varifier:OFF \
-									-Xep:YodaCondition:OFF</arg>
+                  -XepAllDisabledChecksAsWarnings \
+                  -XepAllErrorsAsWarnings \
+                  -XepAllSuggestionsAsWarnings \
+                  -XepDisableWarningsInGeneratedCode \
+                  -Xep:AndroidJdkLibsChecker:OFF \
+                  -Xep:BooleanParameter:OFF \
+                  -Xep:CanIgnoreReturnValueSuggester:OFF \
+                  -Xep:DefaultCharset:OFF \
+                  -Xep:InlineMeSuggester:OFF \
+                  -Xep:InlineTrivialConstant:OFF \
+                  -Xep:Java7ApiChecker:OFF \
+                  -Xep:Java8ApiChecker:OFF \
+                  -Xep:StringSplitter:OFF \
+                  -Xep:UnnecessaryFinal:OFF \
+                  -Xep:Var:OFF \
+                  -Xep:Varifier:OFF \
+                  -Xep:YodaCondition:OFF</arg>
               </compilerArgs>
               <annotationProcessorPaths>
                 <path>
