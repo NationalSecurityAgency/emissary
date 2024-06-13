@@ -140,6 +140,13 @@ public final class ClassLookupCache {
         }
     }
 
+    /**
+     * Destroy the ThreadLocal cache object
+     */
+    public static void unload() {
+        cachedLookupResult.remove();
+    }
+
     /** This is a static utility class, so prevent instantiation. */
     private ClassLookupCache() {}
 }

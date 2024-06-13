@@ -1,7 +1,3 @@
-/*
-  $Id$
- */
-
 package emissary.util.io;
 
 import java.io.File;
@@ -11,8 +7,6 @@ import java.security.SecureRandom;
 /**
  * A class of utility methods for manipulating files.
  */
-
-
 public class FileManipulator implements Serializable {
 
     static final long serialVersionUID = 365259266882118692L;
@@ -52,6 +46,13 @@ public class FileManipulator implements Serializable {
 
     public static String mkTempFile(final String dirPath) {
         return mkTempFile(dirPath, "temp");
+    }
+
+    /**
+     * Destroy the ThreadLocal SecureRandom object
+     */
+    public static void unload() {
+        secureRandomThreadLocal.remove();
     }
 
     /** This class is not meant to be instantiated. */

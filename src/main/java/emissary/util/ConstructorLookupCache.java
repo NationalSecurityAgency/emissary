@@ -256,6 +256,13 @@ public final class ConstructorLookupCache {
         }
     }
 
+    /**
+     * Destroy the ThreadLocal cache object
+     */
+    public static void unload() {
+        cachedConstructorLookup.remove();
+    }
+
     /** This is a static utility class, so prevent instantiation. */
     private ConstructorLookupCache() {}
 }
