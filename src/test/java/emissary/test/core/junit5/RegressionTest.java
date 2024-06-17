@@ -60,7 +60,7 @@ public abstract class RegressionTest extends ExtractionTest {
      *         automatically
      */
     @ForOverride
-    protected boolean generateAnswers() {
+    protected static boolean generateAnswers() {
         return Boolean.getBoolean("generateAnswers");
     }
 

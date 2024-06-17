@@ -95,6 +95,13 @@ public final class RegressionTestUtil {
      */
     private static final Path TEST_RESX = getTestResx();
 
+    /**
+     * Used for RegressionTest generateAnswer when {@link UnitTest#getMyTestParameterFiles(Class, Class)} has two different
+     * classes, and we need to generate answer files in the ansClass directory
+     */
+    @Nullable
+    private static String ansClass = null;
+
     private RegressionTestUtil() {}
 
     /**
@@ -200,7 +207,14 @@ public final class RegressionTestUtil {
             return null;
         }
 
-        final String xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
+        String xmlPath;
+        if (ansClass == null) {
+            xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
+        } else {
+            String ansPath = ansClass.replace(".", "/");
+            int testNamePos = resource.lastIndexOf("/");
+            xmlPath = ansPath + resource.substring(testNamePos, datPos) + ResourceReader.XML_SUFFIX;
+        }
         return TEST_RESX.resolve(xmlPath);
     }
 
@@ -349,5 +363,9 @@ public final class RegressionTestUtil {
         } catch (final URISyntaxException e) {
             fail("Couldn't get path for resource: " + resource, e);
         }
+    }
+
+    public static void setAnsClass(String ansClass) {
+        RegressionTestUtil.ansClass = ansClass;
     }
 }

@@ -145,7 +145,7 @@ public abstract class UnitTest {
 
     /**
      * Specifies a non-default source of test answer files
-     * 
+     *
      * @param ansClz Class that provides the test answer files.
      */
     protected synchronized void useAlternateAnswerFileSource(Class<?> ansClz) {
