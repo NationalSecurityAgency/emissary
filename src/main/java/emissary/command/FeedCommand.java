@@ -104,7 +104,7 @@ public class FeedCommand extends ServiceCommand {
 
         LOG.info("Starting feeder using {} as the workspace class", workspaceClass);
         try {
-            WorkSpace ws = Class.forName(workspaceClass).asSubclass(WorkSpace.class).getDeclaredConstructor(FeedCommand.class).newInstance();
+            WorkSpace ws = Class.forName(workspaceClass).asSubclass(WorkSpace.class).getDeclaredConstructor(FeedCommand.class).newInstance(this);
             ws.run();
         } catch (Exception e) {
             LOG.error("Error running WorkSpace class: {} ", workspaceClass, e);
