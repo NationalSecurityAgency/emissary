@@ -95,13 +95,13 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- With Java 8 and the latest version of surefire, user.timezone is not read correctly.  Reevaluate one day.
          See https://issues.apache.org/jira/browse/SUREFIRE-1176 or
-		 http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
+         http://stackoverflow.com/questions/19121928/java-system-getproperty-user-timezone-does-not-work
 
          The COMPAT locale provider is used because the date formatter parsing has changed significantly
          when using the CLDR locale provider, which is the default in JDK11.
-		 https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
+         https://www.oracle.com/technetwork/java/javase/documentation/java11locales-5069639.html
       -->
-    <surefire.argline>@{argLine} -Xmx1024m -Xms256m	-Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
+    <surefire.argline>@{argLine} -Xmx1024m -Xms256m -Djava.locale.providers=COMPAT -Djava.net.preferIPv4Stack=true -Duser.timezone=GMT -Djava.awt.headless=true</surefire.argline>
     <surefire.forkCount>.5C</surefire.forkCount>
   </properties>
   <dependencyManagement>
@@ -1492,8 +1492,7 @@
     <profile>
       <id>eclipse</id>
       <activation>
-        <!-- when eclipse runs a build, this system property is already
-				present -->
+        <!-- when eclipse runs a build, this system property is already present -->
         <property>
           <name>m2e.version</name>
         </property>
@@ -1503,8 +1502,7 @@
         <maven.compiler.release>11</maven.compiler.release>
       </properties>
       <build>
-        <!--  different build directory for eclipse, so running maven and
-				clicking in IDE don't conflict -->
+        <!--  different build directory for eclipse, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-eclipse</directory>
         <pluginManagement>
           <plugins>
@@ -1580,30 +1578,26 @@
       <id>netbeans</id>
       <activation>
         <property>
-          <!-- You must add -Dnetbeans.ide as global option to the
-					maven command for this to work
+          <!-- You must add -Dnetbeans.ide as global option to the maven command for this to work
                Could not find any property existing when Netbeans was running the build -->
           <name>netbeans.ide</name>
         </property>
       </activation>
       <build>
-        <!--  different build directory for netbeans, so running maven
-				and clicking in IDE don't conflict -->
+        <!--  different build directory for netbeans, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-netbeans</directory>
       </build>
     </profile>
     <profile>
       <id>intellij</id>
       <activation>
-        <!-- when intellij runs a build, this system property is already
-				present -->
+        <!-- when intellij runs a build, this system property is already present -->
         <property>
           <name>idea.version</name>
         </property>
       </activation>
       <build>
-        <!--  different build directory for intellij, so running maven
-				and clicking in IDE don't conflict -->
+        <!--  different build directory for intellij, so running maven and clicking in IDE don't conflict -->
         <directory>${project.basedir}/target-idea</directory>
       </build>
     </profile>
