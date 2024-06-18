@@ -47,6 +47,8 @@ public final class FlexibleDateTimeParser {
     private static final String CFG_FORMAT_MAIN = "FORMAT_DATETIME_MAIN";
     private static final String CFG_FORMAT_EXTRA = "FORMAT_DATETIME_EXTRA";
     private static final String CFG_TIMEZONE = "TIMEZONE";
+    private static final String CFG_REMOVE_REGEX = "REMOVE_REGEX";
+    private static final String CFG_EXTRA_TEXT_REMOVE_REGEX = "EXTRA_TEXT_REMOVE_REGEX";
     private static final String DEFAULT_TIMEZONE = "GMT";
     private static final String SPACE = " ";
     private static final String EMPTY = "";
@@ -58,12 +60,12 @@ public final class FlexibleDateTimeParser {
      * Remove other junk -- anything in an html tag, all parenthesis and quotes, and any non-word characters at the
      * beginning or end
      */
-    private static final Pattern REMOVE = Pattern.compile("<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+", Pattern.DOTALL);
+    private static Pattern remove;
     /*
      * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
      * zone offset
      */
-    private static final Pattern EXTRA_TEXT_REMOVE = Pattern.compile("(\\+\\d{4}).*$");
+    private static Pattern extraTextRemove;
 
     /* timezone - config var: TIMEZONE */
     private static ZoneId timezone = ZoneId.of(DEFAULT_TIMEZONE);
@@ -131,7 +133,7 @@ public final class FlexibleDateTimeParser {
 
         // Attempt to remove all text after the numeric offset and try again - this should give us a valid date string
         // to work with
-        Matcher matcher = EXTRA_TEXT_REMOVE.matcher(date);
+        Matcher matcher = extraTextRemove.matcher(date);
         if (matcher.find()) {
             String secondChanceDate = matcher.replaceAll(matcher.group(1));
             // if we removed text, attempt to parse again to see if we are more successful this time
@@ -223,9 +225,22 @@ public final class FlexibleDateTimeParser {
             Configurator configurator = ConfigUtil.getConfigInfo(FlexibleDateTimeParser.class);
             setupTimezone(configurator.findStringEntry(CFG_TIMEZONE, DEFAULT_TIMEZONE));
             setupDateFormats(configurator.findStringMatchEntries(CFG_FORMAT_MAIN), configurator.findStringMatchEntries(CFG_FORMAT_EXTRA));
+
+            setupRemoveRegex(configurator);
         } catch (IOException e) {
             throw new IllegalArgumentException("Could not configure parser!!", e);
         }
+    }
+
+    private static void setupRemoveRegex(Configurator configurator) {
+        String removeRegex = configurator.findStringEntry(CFG_REMOVE_REGEX, "<.+?>$|=0D$|\\(|\\)|\"|\\[|]|\\W+$|^\\W+");
+        remove = Pattern.compile(removeRegex, Pattern.DOTALL);
+        /*
+         * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
+         * zone offset
+         */
+        String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((?\\+|-)\\d{4}).*$");
+        extraTextRemove = Pattern.compile(extraTextRemoveRegex);
     }
 
     /**
@@ -317,7 +332,7 @@ public final class FlexibleDateTimeParser {
         // date strings over 100 characters are more than likely invalid
         String cleanedDateString = StringUtils.substring(date, 0, 100);
         cleanedDateString = REPLACE.matcher(cleanedDateString).replaceAll(SPACE);
-        cleanedDateString = REMOVE.matcher(cleanedDateString).replaceAll(EMPTY);
+        cleanedDateString = remove.matcher(cleanedDateString).replaceAll(EMPTY);
 
         return StringUtils.trimToNull(cleanedDateString);
     }
