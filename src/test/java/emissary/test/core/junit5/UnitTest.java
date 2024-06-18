@@ -10,7 +10,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.InputStream;
 import java.lang.management.ThreadInfo;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -41,8 +39,6 @@ public abstract class UnitTest {
 
     // Runtime typed logger
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    protected static List<String> answerFiles = new ArrayList<>();
 
     @TempDir
     public static File temporaryDirectory;
@@ -82,10 +78,6 @@ public abstract class UnitTest {
         assertMaxNonSystemThreadCount(1);
     }
 
-    @AfterAll
-    public static void clearAnswerFiles() {
-        answerFiles.clear();
-    }
 
     /**
      * Configure the test stuff
@@ -137,31 +129,15 @@ public abstract class UnitTest {
      * Get all test resources (*.dat) for this class in a format suitable for Junit Parameterized Tests
      */
     public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
-        return getMyTestParameterFiles(clz, clz);
-    }
-
-    /**
-     * Get test resources (*.dat) and test answers when they are in two different directories.
-     *
-     * @param dataClz class that provides the test resource (*.dat) files
-     * @param ansClz class that provides the test answer files
-     * @return the stream of test resource files to be used for JUnit Parameterized Tests
-     */
-    public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> dataClz, Class<?> ansClz) {
         ResourceReader rr = new ResourceReader();
-        List<String> rs = rr.findDataResourcesFor(dataClz);
-        answerFiles = getMyTestAnswerFiles(rr, ansClz);
+        List<String> rs = rr.findDataResourcesFor(clz);
         return rs.stream().map(Arguments::of);
-    }
-
-    private static List<String> getMyTestAnswerFiles(ResourceReader resourceReader, Class<?> ansClz) {
-        return resourceReader.findXmlResourcesFor(ansClz);
     }
 
     /**
      * Get all xml resources (*.xml) for this class
      */
-    protected List<String> getMyXmlResources() {
+    protected List<String> getMyTestXmlResources() {
         ResourceReader rr = new ResourceReader();
         return rr.findXmlResourcesFor(this.getClass());
     }
@@ -228,13 +204,19 @@ public abstract class UnitTest {
             return null;
         }
 
+        // get String of resource's test location, to see if data files are in different directory than answer files
+        int resourceDir = resource.lastIndexOf("/");
+        String cutResource = resource.substring(0, resourceDir);
+        int classDir = cutResource.lastIndexOf("/") + 1;
+        String datClass = cutResource.substring(classDir);
+
         String aname = "";
-        if (answerFiles.isEmpty()) {
+        if (datClass.equals(this.getClass().getSimpleName())) {
             aname = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
         } else {
             // if answer files are in different directory than data files, this will be used to find matching answer to data pair
             String testFileName = FilenameUtils.getBaseName(resource);
-            for (String answer : answerFiles) {
+            for (String answer : getMyTestXmlResources()) {
                 if (FilenameUtils.getBaseName(answer).equals(testFileName)) {
                     aname = answer;
                     break;

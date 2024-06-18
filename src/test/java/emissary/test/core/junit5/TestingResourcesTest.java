@@ -16,11 +16,13 @@ import java.util.stream.Stream;
 public class TestingResourcesTest extends ExtractionTest {
 
     public static Stream<? extends Arguments> data() {
-        return getMyTestParameterFiles(HtmlEscapePlaceTest.class, TestingResourcesTest.class);
+        return getMyTestParameterFiles(HtmlEscapePlaceTest.class);
     }
 
     @Override
     public IServiceProviderPlace createPlace() throws IOException {
         return new HtmlEscapePlace();
     }
+
+
 }
