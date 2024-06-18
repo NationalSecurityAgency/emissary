@@ -50,6 +50,43 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     /**
+     * Test parsing date strings with tryExtensiveParsing set to true
+     *
+     * @param date the string representation of a date
+     * @param expected the expected parsed and formatted date
+     * @param msg the error message to display if the test fails
+     */
+    private static void testExtensiveParsing(@Nullable String date, long expected, String msg) {
+        ZonedDateTime unknownParse = FlexibleDateTimeParser.parse(date, true);
+        Assertions.assertEquals(expected, unknownParse == null ? 0L : unknownParse.toEpochSecond(), "Error on: " + msg);
+    }
+
+
+    /**
+     * Helps assist in testing all the possible offset patterns that we want to attempt to parse for a given date
+     * 
+     * @param dateString the string representation of a date
+     * @param expected the expected parsed and formatted date
+     */
+    private void testAllOffsets(String dateString, long expected) {
+        String[] offsets = {"EST-0500 -0500", // zZZ
+                "EST EST-0500", // zzZ
+                "EST-0500 EST", // zZz
+                "EST-0500 -05", // zZX
+                "-0500 EST-0500", // ZzZ
+                "-0500 -05", // ZX
+                "-05", // X
+                "-05 EST", // Xz
+                "-05 -0500", // XZ
+                "-05 (EST-0500)"}; // XzZ
+
+        for (String offset : offsets) {
+            String dateAndOffset = dateString + " " + offset;
+            testExtensiveParsing(dateAndOffset, expected, "Did not parse this string correctly: " + dateAndOffset);
+        }
+    }
+
+    /**
      * Test the date string against the expected output
      *
      * @param date the string representation of a date
@@ -75,7 +112,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      */
     @Test
     void parseOffsetWhenThereIsAThreeLetterTimeZone() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][[(]z[)]]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][z]]");
 
         // without offset we expect the default ZoneId
         test("Mon, 4 Jan 2016 13:20:30 EST", EXPECTED_FULL, pattern);
@@ -96,6 +133,59 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("Mon, 4 Jan 2016 18:20:30 +0000 CST", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 ACT", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 BST", EXPECTED_FULL, pattern);
+
+        // test full set of short offsets to make sure DateTimeFormatter can handle them
+        // list taken from https://www.iana.org/time-zones
+        test("Mon, 4 Jan 2016 07:20:30 -1100 SST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 08:20:30 -1000 HST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 09:20:30 -0900 HDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 09:20:30 -0900 AKST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 10:20:30 -0800 AKDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 10:20:30 -0800 PST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 11:20:30 -0700 PDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 11:20:30 -0700 MST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 12:20:30 -0600 MDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 12:20:30 -0600 CST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 13:20:30 -0500 CDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 13:20:30 -0500 EST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 13:20:30 -0500 CST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 14:20:30 -0400 CDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 14:20:30 -0400 AST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 14:50:30 -0330 NST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 15:20:30 -0300 ADT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 15:50:30 -0230 NDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 GMT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 19:20:30 +0100 BST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 18:20:30 +0000 WET", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 19:20:30 +0100 WEST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 19:20:30 +0100 CET", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 19:20:30 +0100 WAT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 19:20:30 +0100 IST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 20:20:30 +0200 IST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 20:20:30 +0200 CEST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 20:20:30 +0200 CAT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 20:20:30 +0200 EET", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 20:20:30 +0200 SAST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 21:20:30 +0300 EEST", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 21:20:30 +0300 IDT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 21:20:30 +0300 EAT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 21:20:30 +0300 MSK", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 23:20:30 +0500 PKT", EXPECTED_FULL, pattern);
+        test("Mon, 4 Jan 2016 23:50:30 +0530 IST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 01:20:30 +0700 WIB", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 02:20:30 +0800 AWST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 02:20:30 +0800 CST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 02:20:30 +0800 HKT", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 02:20:30 +0800 PT", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 02:20:30 +0800 WITA", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 03:20:30 +0900 JST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 03:20:30 +0900 KST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 03:20:30 +0900 WIT", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 03:50:30 +0930 ACST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 04:50:30 +1030 ACDT", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 04:20:30 +1000 AEST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 04:20:30 +1000 ChST", EXPECTED_FULL, pattern);
+        test("Tue, 5 Jan 2016 05:20:30 +1100 AEDT", EXPECTED_FULL, pattern);
     }
 
     /**
@@ -146,8 +236,20 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_yyyyMMddTHHmmssSSSX_Extra() {
+        testExtensiveParsing("2016-01-04T18:20:30", EXPECTED_FULL, "0 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0", EXPECTED_FULL, "1 digit for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00", EXPECTED_FULL, "2 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0000", EXPECTED_FULL, "4 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00000", EXPECTED_FULL, "5 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.000000", EXPECTED_FULL, "6 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.0000000", EXPECTED_FULL, "7 digits for fraction of a second");
+        testExtensiveParsing("2016-01-04T18:20:30.00000000", EXPECTED_FULL, "8 digits for fraction of a second");
+    }
+
+    @Test
     void parse_EdMMMyyHmmssZ() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[,][ ]yy[ H:mm[:ss][ ][z][ ][Z]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[,][ ]yy[ H:mm[:ss][ ][z][ ][Z][ ][Z]]");
         test("Mon, 4 Jan 16 18:20:30 +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 16 18:20:30+0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 16 18:20:30 GMT+0000", EXPECTED_FULL, pattern);
@@ -167,10 +269,18 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("4Jan16", EXPECTED_NO_TIME, pattern);
     }
 
+    @Test
+    void parse_EdMMMyyHmmssZ_Extra() {
+        testAllOffsets("Mon, 4 Jan 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 Jan 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 January 16 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Mon, 4 January 16 13:20:30", EXPECTED_FULL);
+    }
+
 
     @Test
     void parse_EdMMMyyyyKmmssaZ() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d MMM yyyy K:mm:ss a[ ][z][ ][Z]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d MMM yyyy K:mm:ss a[ ][z][ ][Z][ ][Z]");
         test("Mon, 4 Jan 2016 06:20:30 PM +0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 06:20:30 PM GMT+0000", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 06:20:30 PM GMT", EXPECTED_FULL, pattern);
@@ -184,8 +294,16 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_EdMMMyyyyKmmssaZ_Extra() {
+        testAllOffsets("Mon, 4 Jan 2016 01:20:30 PM", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 Jan 2016 01:20:30 PM", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 January 2016 01:20:30 PM", EXPECTED_FULL);
+        testAllOffsets("Mon, 4 January 2016 01:20:30 PM", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_EdMMMyyyyHmmssZz() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][(z)]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]d[ ]MMM[.][,][ ]yyyy[ H:mm[:ss][ ][a][ ][z][ ][Z][ ][z]]");
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Europe/Dublin)", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 (Zulu)", EXPECTED_FULL, pattern);
         test("Mon, 4 Jan 2016 18:20:30 +0000 (UTC)", EXPECTED_FULL, pattern);
@@ -225,8 +343,16 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_EdMMMyyyyHmmssZz_Extra() {
+        testAllOffsets("Mon, 4 Jan 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 Jan 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, 4 January 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Mon, 4 January 2016 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_EMMMdyyyyKmma() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[,] K:mm[:ss] a");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[,] K:mm[:ss] a[ ][z][ ][Z][ ][Z]");
         test("Mon, Jan 4, 2016 06:20 PM", EXPECTED_NO_SECS, pattern);
         test("Mon, Jan 4, 2016 6:20 PM", EXPECTED_NO_SECS, pattern);
         test("Mon, Jan 04, 2016 06:20 PM", EXPECTED_NO_SECS, pattern);
@@ -236,8 +362,16 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_EMMMdyyyyKmma_Extra() {
+        testAllOffsets("Mon, Jan 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Monday, Jan 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Monday, January 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+        testAllOffsets("Mon, January 4, 2016 01:20 PM", EXPECTED_NO_SECS);
+    }
+
+    @Test
     void parse_EMMMdyyyyHmmssz() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[[,] H:mm[:ss][ ][a][ ][z][ ][Z]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d[,] yyyy[[,] H:mm[:ss][ ][a][ ][z][ ][Z][ ][Z]]");
         test("Mon, Jan 4, 2016 18:20:30 UTC", EXPECTED_FULL, pattern);
         test("Mon, Jan 04, 2016 18:20:30 UTC", EXPECTED_FULL, pattern);
         test("Mon, Jan 4, 2016 13:20:30 -0500", EXPECTED_FULL, pattern);
@@ -267,6 +401,14 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_EMMMdyyyyHmmssz_Extra() {
+        testAllOffsets("Mon, Jan 04, 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, Jan 04, 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday, January 04, 2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Mon, January 04, 2016 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_EddMMMyyyyHmmssZ() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]dd-MMM-yyyy[ H:mm:ss[ ][z][ ][Z]]");
         test("Mon 04-Jan-2016 18:20:30 +0000", EXPECTED_FULL, pattern);
@@ -287,8 +429,14 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_EddMMMyyyyHmmssZ_Extra() {
+        testAllOffsets("Mon 04-Jan-2016 13:20:30", EXPECTED_FULL);
+        testAllOffsets("Monday 04-Jan-2016 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_EMMMdHHmmsszzzyyyy() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d H:mm[:ss][ z] yyyy");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[E[,][ ]]MMM d H:mm[:ss][ z] yyyy[ ][z][ ][Z][ ][Z]");
         test("Mon Jan 04 18:20:30 GMT 2016", EXPECTED_FULL, pattern);
         test("Mon Jan 04 13:20:30 EST 2016", EXPECTED_FULL, pattern);
         test("Mon Jan 04 13:20 EST 2016", EXPECTED_NO_SECS, pattern);
@@ -302,6 +450,14 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("Jan 04 13:20:30 EST 2016", EXPECTED_FULL, pattern);
         test("Jan 04 13:20 EST 2016", EXPECTED_NO_SECS, pattern);
         test("Jan 04 18:20:30 2016", EXPECTED_FULL, pattern);
+    }
+
+    @Test
+    void parse_EMMMdHHmmsszzzyyyy_Extra() {
+        testAllOffsets("Mon Jan 04 13:20:30 EST 2016", EXPECTED_FULL);
+        testAllOffsets("Monday Jan 04 13:20:30 EST 2016", EXPECTED_FULL);
+        testAllOffsets("Monday January 04 13:20:30 EST 2016", EXPECTED_FULL);
+        testAllOffsets("Mon January 04 13:20:30 EST 2016", EXPECTED_FULL);
     }
 
     @Test
@@ -319,7 +475,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_MdyyHmmssaz() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yy[ ]H:mm[:ss][ ][a][ ][z][ ][Z]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yy[ ]H:mm[:ss][ ][a][ ][z][ ][Z][ ][Z]");
         test("01/04/16 18:20:30 GMT", EXPECTED_FULL, pattern);
         test("1/4/16 18:20:30 GMT", EXPECTED_FULL, pattern);
         test("01/04/16 18:20:30 PM +0000", EXPECTED_FULL, pattern);
@@ -343,6 +499,75 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_MdyyHmmssaz_Extra() {
+        testAllOffsets("01/04/16 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
+    void parse_MdyyyyKmma() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yyyy[ ]K:mm[:ss][ ]a");
+        test("01/04/2016 06:20 PM", EXPECTED_NO_SECS, pattern);
+        test("1/4/2016 6:20 PM", EXPECTED_NO_SECS, pattern);
+        test("01/04/2016 06:20:30 PM", EXPECTED_FULL, pattern);
+        test("1/4/2016 06:20:30 PM", EXPECTED_FULL, pattern);
+        test("01/04/2016 00:20 AM", EXPECTED_NO_HR_SEC, pattern);
+    }
+
+    @Test
+    void parse_MdyyyyHmmssaz() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("M/d/yyyy[ ]H:mm[:ss][ ][a][ ][z][ ][Z][ ][Z]");
+        test("01/04/2016 18:20:30 GMT", EXPECTED_FULL, pattern);
+        test("1/4/2016 18:20:30 GMT", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20:30 PM +0000", EXPECTED_FULL, pattern);
+        test("1/4/2016 18:20:30 PM +0000", EXPECTED_FULL, pattern);
+        test("1/4/2016 8:20:30 AM -1000", EXPECTED_FULL, pattern);
+        test("1/4/2016 8:20:30 -1000", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20:30 PM GMT", EXPECTED_FULL, pattern);
+        test("1/4/2016 18:20:30 PM GMT", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20:30 PM GMT+0000", EXPECTED_FULL, pattern);
+        test("1/4/2016 18:20:30 PM GMT+0000", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20:30 PM", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20:30", EXPECTED_FULL, pattern);
+        test("01/04/2016 18:20", EXPECTED_NO_SECS, pattern);
+        test("1/4/2016 18:20", EXPECTED_NO_SECS, pattern);
+    }
+
+    @Test
+    void parse_MdyyyyHmmssaz_Extra() {
+        testAllOffsets("01/04/2016 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
+    void parse_dMyyyKmmssa() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("d.M.yyyy[ ]K:mm[:ss][ ]a");
+        test("04.01.2016 06:20 PM", EXPECTED_NO_SECS, pattern);
+        test("04.01.2016 06:20PM", EXPECTED_NO_SECS, pattern);
+        test("04.01.2016 06:20:30 PM", EXPECTED_FULL, pattern);
+        test("04.01.2016 06:20:30PM", EXPECTED_FULL, pattern);
+        test("4.1.2016 6:20 PM", EXPECTED_NO_SECS, pattern);
+        test("4.1.2016 6:20PM", EXPECTED_NO_SECS, pattern);
+        test("4.1.2016 6:20:30 PM", EXPECTED_FULL, pattern);
+        test("4.1.2016 6:20:30PM", EXPECTED_FULL, pattern);
+    }
+
+    @Test
+    void parse_dMyyyHmmssaz() {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("d.M.yyyy[ ]H:mm[:ss][ ][a][ ][z][ ][Z][ ][Z]");
+        test("04.01.2016 18:20:30", EXPECTED_FULL, pattern);
+        test("4.1.2016 18:20:30", EXPECTED_FULL, pattern);
+        test("4.1.2016 18:20", EXPECTED_NO_SECS, pattern);
+        test("04.01.2016 18:20:30 +0000", EXPECTED_FULL, pattern);
+        test("04.01.2016 18:20:30 GMT+0000", EXPECTED_FULL, pattern);
+        test("04.01.2016 18:20:30 GMT", EXPECTED_FULL, pattern);
+        test("04.01.2016 18:20:30+0000", EXPECTED_FULL, pattern);
+    }
+
+    @Test
+    void parse_dMyyyHmmssaz_Extra() {
+        testAllOffsets("04.01.2016 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_HHmmddMMyyyy() {
         DateTimeFormatter pattern = DateTimeFormatter.ofPattern("[HHmm]dd[-][.][/]MM[-][.][/]yyyy");
         test("04-01-2016", EXPECTED_NO_TIME, pattern);
@@ -353,7 +578,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
 
     @Test
     void parse_yyyyMMddHHmmssS() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd[[ ]HH[:]mm[[:]ss[[.]S]][ ][z][ ][Z]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd[[ ]HH[:]mm[[:]ss[[.]S]][ ][z][ ][Z][ ][Z]]");
         test("2016/01/04 18:20:30.0", EXPECTED_FULL, pattern);
         test("2016/01/0418:20:30.0", EXPECTED_FULL, pattern);
         test("2016/01/041820300", EXPECTED_FULL, pattern);
@@ -370,8 +595,13 @@ class FlexibleDateTimeParserTest extends UnitTest {
     }
 
     @Test
+    void parse_yyyyMMddHHmmssS_Extra() {
+        testAllOffsets("2016/01/04 13:20:30", EXPECTED_FULL);
+    }
+
+    @Test
     void parse_yyyy_MM_ddHHmmssS() {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy:MM:dd[ H:m[:ss[.S]][ ][z][ ][Z]]");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy:MM:dd[ H:m[:ss[.S]][ ][z][ ][Z][ ][Z]]");
         test("2016:01:04 18:20:30.0", EXPECTED_FULL, pattern);
         test("2016:01:04 18:20:30", EXPECTED_FULL, pattern);
         test("2016:01:04 18:20:30 +0000", EXPECTED_FULL, pattern);
@@ -380,6 +610,11 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("2016:01:04 18:20:30+0000", EXPECTED_FULL, pattern);
         test("2016:01:04 18:20", EXPECTED_NO_SECS, pattern);
         test("2016:01:04", EXPECTED_NO_TIME, pattern);
+    }
+
+    @Test
+    void parse_yyyy_MM_ddHHmmssS_Extra() {
+        testAllOffsets("2016:01:04 13:20:30.0", EXPECTED_FULL);
     }
 
     @Test
@@ -425,6 +660,23 @@ class FlexibleDateTimeParserTest extends UnitTest {
         test("2016-01-04\t\t18:20", EXPECTED_NO_SECS, "TABS");
         test("2016-01-04        18:20", EXPECTED_NO_SECS, "SPACES");
         test("2016-01-04 18:20=0D", EXPECTED_NO_SECS, "qp'ified ending");
+        test("$$2016-01-04 18:20:00$$", EXPECTED_NO_SECS, "Extra characters at the beginning and end");
+        test("2016-01-04 (18:20:00)", EXPECTED_NO_SECS, "Extra parenthesis");
+        test("2016-01-04 18:20:00 [GMT]", EXPECTED_NO_SECS, "Extra brackets");
+        test("\"Mon\", 4 Jan 2016 18:20 +0000 \"EST\"", EXPECTED_NO_SECS, "Extra quotes");
+    }
+
+    @Test
+    void testLastDitchEffortParsing() {
+        testExtensiveParsing("Jan 04 2016 18:20:30 +0000.5555555", EXPECTED_FULL, "Removing text at the end should be successful");
+        testExtensiveParsing("Jan 04 2016 18:20:30 +0000 (This is not a date offset)", EXPECTED_FULL,
+                "Removing text at the end should be successful");
+        testExtensiveParsing("Tue, 5 Jan 2016 02:20:30 +0800 PHT", EXPECTED_FULL,
+                "PHT is a timezone not parsed by DateTimeFormatter, but we should still parse correctly with the numeric time zone offset.");
+
+        // we should not attempt to remove random text at the end when we are not specifying tryExtensiveFormatList to be true
+        test("Jan 04 2016 18:20:30 +0000.5555555", 0L, "Fail to parse when tryExtensiveFormatList is false");
+        test("Jan 04 2016 18:20:30 +0000 (This is not a date offset)", 0L, "Fail to parse when tryExtensiveFormatList is false");
     }
 
     @Test
