@@ -239,7 +239,7 @@ public final class FlexibleDateTimeParser {
          * This is our last ditch parsing effort if we failed to parse the string - remove all extra text after the numeric time
          * zone offset
          */
-        String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((?\\+|-)\\d{4}).*$");
+        String extraTextRemoveRegex = configurator.findStringEntry(CFG_EXTRA_TEXT_REMOVE_REGEX, "((\\+|-)\\d{4}).*$");
         extraTextRemove = Pattern.compile(extraTextRemoveRegex);
     }
 
