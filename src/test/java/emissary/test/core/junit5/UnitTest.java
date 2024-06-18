@@ -10,7 +10,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.jdom2.Document;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.input.sax.XMLReaders;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +26,7 @@ import java.io.InputStream;
 import java.lang.management.ThreadInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
@@ -42,7 +42,13 @@ public abstract class UnitTest {
     // Runtime typed logger
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    protected static List<String> answerFiles = new ArrayList<>();
+    /**
+     * Alternative answer files to use if loading answer files from a non-default location. This list should be populated
+     * using the {@link #useAlternateAnswerFileSource(Class)} method.
+     */
+    private final List<String> answerFiles = new ArrayList<>();
+
+    protected final AtomicReference<Class<?>> answerFileClassRef = new AtomicReference<>(getClass());
 
     @TempDir
     public static File temporaryDirectory;
@@ -80,11 +86,6 @@ public abstract class UnitTest {
     public void tearDown() throws Exception {
         restoreConfig();
         assertMaxNonSystemThreadCount(1);
-    }
-
-    @AfterAll
-    public static void clearAnswerFiles() {
-        answerFiles.clear();
     }
 
     /**
@@ -137,24 +138,28 @@ public abstract class UnitTest {
      * Get all test resources (*.dat) for this class in a format suitable for Junit Parameterized Tests
      */
     public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> clz) {
-        return getMyTestParameterFiles(clz, clz);
-    }
-
-    /**
-     * Get test resources (*.dat) and test answers when they are in two different directories.
-     *
-     * @param dataClz class that provides the test resource (*.dat) files
-     * @param ansClz class that provides the test answer files
-     * @return the stream of test resource files to be used for JUnit Parameterized Tests
-     */
-    public static Stream<? extends Arguments> getMyTestParameterFiles(Class<?> dataClz, Class<?> ansClz) {
         ResourceReader rr = new ResourceReader();
-        List<String> rs = rr.findDataResourcesFor(dataClz);
-        answerFiles = getMyTestAnswerFiles(rr, ansClz);
+        List<String> rs = rr.findDataResourcesFor(clz);
         return rs.stream().map(Arguments::of);
     }
 
-    private static List<String> getMyTestAnswerFiles(ResourceReader resourceReader, Class<?> ansClz) {
+    /**
+     * Specifies a non-default source of test answer files
+     * 
+     * @param ansClz Class that provides the test answer files.
+     */
+    protected synchronized void useAlternateAnswerFileSource(Class<?> ansClz) {
+        answerFiles.clear();
+        answerFiles.addAll(getMyTestAnswerFiles(ansClz));
+        answerFileClassRef.set(ansClz);
+    }
+
+    private List<String> getMyTestAnswerFiles(Class<?> ansClz) {
+        ResourceReader rr = new ResourceReader();
+        return getMyTestAnswerFiles(rr, ansClz);
+    }
+
+    private List<String> getMyTestAnswerFiles(ResourceReader resourceReader, Class<?> ansClz) {
         return resourceReader.findXmlResourcesFor(ansClz);
     }
 
