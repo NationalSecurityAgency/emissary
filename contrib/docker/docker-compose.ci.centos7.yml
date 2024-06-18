@@ -1,0 +1,44 @@
+---
+services:
+  emissary-server:
+    image: emissary
+    extends:
+      file: docker-compose.ci.common.yml
+      service: emissary-server
+    build:
+      args:
+        java_version: 11
+        java_compiler: 11
+        target_os: centos7
+        verify_build: false
+        maven_phases: 'clean package'
+        maven_profiles: '-DskipTests -Pdist'
+
+  emissary-feeder:
+    image: emissary
+    extends:
+      file: docker-compose.ci.common.yml
+      service: emissary-feeder
+    build:
+      args:
+        java_version: 11
+        java_compiler: 11
+        target_os: centos7
+        verify_build: false
+        maven_phases: 'clean package'
+        maven_profiles: '-DskipTests -Pdist'
+    depends_on:
+      emissary-server:
+        condition: service_healthy
+
+  emissary-ci:
+    extends:
+      file: docker-compose.ci.common.yml
+      service: emissary-ci
+    depends_on:
+      emissary-feeder:
+        condition: service_healthy
+
+volumes:
+  input:
+  output:

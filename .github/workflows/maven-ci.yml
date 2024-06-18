@@ -43,6 +43,7 @@ jobs:
           context: .
           push: false
           file: contrib/docker/Dockerfile.ci
+          tags: emissary:latest
           build-args: |
             java_version=${{ matrix.java-version }}
             java_compiler=${{ matrix.java-compiler }}
@@ -69,11 +70,17 @@ jobs:
           context: .
           push: false
           file: contrib/docker/Dockerfile.ci
+          tags: emissary-server:latest , emissary-feeder:latest
           build-args: |
             target_os=centos7
             verify_build=false
           cache-from: type=gha
           cache-to: ${{ github.event_name == 'push' && 'type=gha,mode=max' || '' }}
+
+      - name: Test
+        run: |
+          docker compose -f contrib/docker/docker-compose.ci.centos7.yml up --exit-code-from emissary-ci
+          docker compose -f contrib/docker/docker-compose.ci.centos7.yml down
 
   macos-build:
     name: MacOS non-standard build on Java 11 with compiler target 11
