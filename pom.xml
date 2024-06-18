@@ -1425,7 +1425,7 @@
     <profile>
       <id>errorProne</id>
       <activation>
-        <jdk>[11,15]</jdk>
+        <jdk>[11,)</jdk>
         <property>
           <name>errorProne</name>
         </property>
