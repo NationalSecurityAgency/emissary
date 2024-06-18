@@ -15,8 +15,15 @@ import java.util.stream.Stream;
  */
 public class TestingResourcesTest extends ExtractionTest {
 
+    static final Class<?> DATA_FILE_CLASS = HtmlEscapePlaceTest.class;
+    static final Class<?> ANSWER_FILE_CLASS = TestingResourcesTest.class;
+
     public static Stream<? extends Arguments> data() {
-        return getMyTestParameterFiles(HtmlEscapePlaceTest.class, TestingResourcesTest.class);
+        return getMyTestParameterFiles(DATA_FILE_CLASS);
+    }
+
+    public TestingResourcesTest() {
+        useAlternateAnswerFileSource(ANSWER_FILE_CLASS);
     }
 
     @Override
