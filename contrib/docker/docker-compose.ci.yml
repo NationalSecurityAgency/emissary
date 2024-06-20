@@ -40,6 +40,9 @@ services:
     expose:
       - '7000'
       - '7001'
+    depends_on:
+      emissary-server:
+        condition: service_healthy
     volumes:
       - input:/opt/emissary/target/data
     healthcheck:
@@ -53,6 +56,9 @@ services:
     image: redhat/ubi8:8.9
     network_mode: host
     command: curl --fail http://localhost:7001/api/health || exit 1
+    depends_on:
+      emissary-feeder:
+        condition: service_healthy
 
 volumes:
   input:
