@@ -346,8 +346,8 @@ public class Startup {
             final String localDirectory = localDirectoriesArg.get(thePlaceHost);
 
             if (localDirectory == null) {
-                hostParameters.forEach(Startup.this.placesToStart::remove);
-                if (Startup.this.failedLocalDirectories.get(thePlaceHost) != null) {
+                hostParameters.forEach(placesToStart::remove);
+                if (failedLocalDirectories.get(thePlaceHost) != null) {
                     logger.warn("Skipping {} due to previously failed directory", thePlaceHost);
                 } else {
                     logger.warn("Skipping {} : local Directory not found", thePlaceHost);
@@ -356,7 +356,7 @@ public class Startup {
             }
 
             if (directoryActionArg != DIRECTORYSTART && directoryActionArg != DIRECTORYADD) {
-                hostParameters.forEach(Startup.this.placesToStart::remove);
+                hostParameters.forEach(placesToStart::remove);
                 return;
             }
 
@@ -376,15 +376,15 @@ public class Startup {
                 final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);
                 if (thePlaceClassString == null) {
                     logger.warn("Skipping {}, no class string", thePlaceLocation);
-                    Startup.this.placesToStart.remove(thePlaceLocation);
+                    placesToStart.remove(thePlaceLocation);
                     return;
                 }
                 logger.debug("Starting place {}", thePlaceLocation);
                 if (KeyManipulator.isLocalTo(thePlaceLocation,
-                        String.format("http://%s:%s/StartupEngine", Startup.this.node.getNodeName(), Startup.this.node.getNodePort()))) {
+                        String.format("http://%s:%s/StartupEngine", node.getNodeName(), node.getNodePort()))) {
                     if (directoryActionArg == DIRECTORYADD && Namespace.exists(thePlaceLocation)) {
                         logger.info("Local place already exists: {}", thePlaceLocation);
-                        Startup.this.placesToStart.remove(thePlaceLocation);
+                        placesToStart.remove(thePlaceLocation);
                         // add place to placeAlreadyStarted list, so can be verified in verifyNoInvisibleStartPlaces
                         placeAlreadyStarted.add(thePlaceLocation.substring(thePlaceLocation.lastIndexOf("/") + 1));
                         return;
@@ -398,8 +398,8 @@ public class Startup {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                     } else {
                         logger.error("{} failed to start!", thePlaceLocation);
-                        Startup.this.failedPlaces.add(thePlaceLocation);
-                        Startup.this.placesToStart.remove(thePlaceLocation);
+                        failedPlaces.add(thePlaceLocation);
+                        placesToStart.remove(thePlaceLocation);
                     }
                 }
             });
@@ -521,7 +521,7 @@ public class Startup {
     /**
      * Verifies the active directory places vs places started up. Log if any places are started without being announced in
      * start-up.
-     * 
+     *
      * @return true if no invisible places started, false if yes
      */
     public static boolean verifyNoInvisiblePlacesStarted() {
