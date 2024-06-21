@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 /**
@@ -447,7 +448,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final String currentForm = d.currentForm();
 
         // skip over denylisted alt views
-        if (this.denylist.contains(viewName) || this.denylist.contains(fileType + "." + viewName)) {
+        if (denyListContains(viewName) || denyListContains(fileType + "." + viewName)) {
             return checkTypes;
         }
 
@@ -472,6 +473,20 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         this.logger.debug("Types to be checked for named view {}: {}", viewName, checkTypes);
         return checkTypes;
+    }
+
+    protected boolean denyListContains(final String viewName) {
+        if (this.denylist.contains(viewName))
+            return true;
+        for (String entry : this.denylist) {
+            if (entry.endsWith("*")) { // Wildcard char
+                String base = entry.substring(0, entry.length() - 1);
+                Pattern pattern = Pattern.compile(base + "[a-zA-Z0-9]*");
+                if (pattern.matcher(viewName).find())
+                    return true;
+            }
+        }
+        return false;
     }
 
     /**
