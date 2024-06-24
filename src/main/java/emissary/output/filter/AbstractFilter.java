@@ -476,14 +476,16 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     protected boolean denyListContains(final String viewName) {
-        if (this.denylist.contains(viewName))
+        if (this.denylist.contains(viewName)) {
             return true;
+        }
         for (String entry : this.denylist) {
             if (entry.endsWith("*")) { // Wildcard char
                 String base = entry.substring(0, entry.length() - 1);
                 Pattern pattern = Pattern.compile(base + "[a-zA-Z0-9]*");
-                if (pattern.matcher(viewName).find())
+                if (pattern.matcher(viewName).find()) {
                     return true;
+                }
             }
         }
         return false;
