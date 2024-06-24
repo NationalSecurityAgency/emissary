@@ -5,16 +5,17 @@ import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
-public class AbstractFilterTest extends UnitTest  {
+public class AbstractFilterTest extends UnitTest {
 
     AbstractFilter getAbstractFilterInstance() {
         return new AbstractFilter() {
