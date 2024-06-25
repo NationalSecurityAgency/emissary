@@ -307,7 +307,6 @@ public abstract class RegressionTest extends ExtractionTest {
             RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
                     super.answerFileClassRef);
         }
-        // RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
     }
 
     @Override
