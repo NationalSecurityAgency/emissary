@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
@@ -95,12 +96,7 @@ public final class RegressionTestUtil {
      */
     private static final Path TEST_RESX = getTestResx();
 
-    /**
-     * Used for RegressionTest generateAnswer when {@link UnitTest#getMyTestParameterFiles(Class, Class)} has two different
-     * classes, and we need to generate answer files in the ansClass directory
-     */
-    @Nullable
-    private static String ansClass = null;
+    private static AtomicReference<Class<?>> answerFileClassRef = null;
 
     private RegressionTestUtil() {}
 
@@ -208,10 +204,10 @@ public final class RegressionTestUtil {
         }
 
         String xmlPath;
-        if (ansClass == null) {
+        if (answerFileClassRef == null) {
             xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
         } else {
-            String ansPath = ansClass.replace(".", "/");
+            String ansPath = answerFileClassRef.get().getName().replace(".", "/");
             int testNamePos = resource.lastIndexOf("/");
             xmlPath = ansPath + resource.substring(testNamePos, datPos) + ResourceReader.XML_SUFFIX;
         }
@@ -252,6 +248,23 @@ public final class RegressionTestUtil {
         final String xmlContent = AbstractJDOMUtil.toString(new Document(rootElement));
         // Write out the XML to disk
         writeXml(resource, xmlContent);
+    }
+
+    /**
+     * Generate the relevant XML and write to disk. Used when answer file class and data file class are not the same.
+     *
+     * @param resource referencing the DAT file
+     * @param initialIbdo for 'setup' section
+     * @param finalIbdo for 'answers' section
+     * @param encoders for encoding ibdo into XML
+     * @param results for 'answers' section
+     * @param answerFileClassRef test class for answer files
+     */
+    public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
+            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders,
+            final AtomicReference<Class<?>> answerFileClassRef) {
+        RegressionTestUtil.answerFileClassRef = answerFileClassRef;
+        writeAnswerXml(resource, initialIbdo, finalIbdo, results, logEvents, encoders);
     }
 
     /**
@@ -363,9 +376,5 @@ public final class RegressionTestUtil {
         } catch (final URISyntaxException e) {
             fail("Couldn't get path for resource: " + resource, e);
         }
-    }
-
-    public static void setAnsClass(String ansClass) {
-        RegressionTestUtil.ansClass = ansClass;
     }
 }

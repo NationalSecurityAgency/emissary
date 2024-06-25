@@ -60,7 +60,7 @@ public abstract class RegressionTest extends ExtractionTest {
      *         automatically
      */
     @ForOverride
-    protected static boolean generateAnswers() {
+    protected boolean generateAnswers() {
         return Boolean.getBoolean("generateAnswers");
     }
 
@@ -301,7 +301,13 @@ public abstract class RegressionTest extends ExtractionTest {
         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
 
         // Generate the full XML (setup & answers from before & after)
-        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
+        if (super.answerFileClassRef == null) {
+            RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
+        } else {
+            RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
+                    super.answerFileClassRef);
+        }
+        // RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
     }
 
     @Override
