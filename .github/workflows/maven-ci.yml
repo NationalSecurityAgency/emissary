@@ -129,6 +129,18 @@ jobs:
       - name: Build with Maven
         run: mvn -B -e -ntp "-Dstyle.color=always" -PerrorProne verify -DskipTests
 
+  publish-snapshot:
+    name: Publish snapshot to GitHub Packages
+    if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish to GitHub Packages Apache Maven
+        run: mvn -B -e -ntp "-Dstyle.color=always" deploy -Pgithub-publish -DskipTests
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   slack-notify:
     if: ${{ github.event_name == 'push' && github.repository == 'NationalSecurityAgency/emissary' }}
     needs: build
