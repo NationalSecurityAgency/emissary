@@ -175,7 +175,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
                     .filter(i -> i.endsWith("*"))
                     .map(i -> i.substring(0, i.length() - 1))
                     .collect(Collectors.toSet());
-            this.wildCardDenylist.forEach(i -> this.denylist.remove(i));
+            this.wildCardDenylist.forEach(i -> this.denylist.remove(i + "*"));
             this.logger.debug("Loaded {} ignorelist types for filter {}", this.denylist.size(), this.denylist);
             this.logger.debug("Loaded {} wildcard suffix ignorelist types for filter {}", this.wildCardDenylist.size(), this.wildCardDenylist);
         } else {
@@ -455,7 +455,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final String currentForm = d.currentForm();
 
         // skip over denylisted alt views
-        if (denyListContains(viewName) || denyListContains(fileType + "." + viewName)) {
+        if (denyListContains(fileType, viewName)) {
             return checkTypes;
         }
 
@@ -482,11 +482,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
         return checkTypes;
     }
 
-    protected boolean denyListContains(final String viewName) {
-        if (this.denylist.contains(viewName)) {
+    protected boolean denyListContains(final String fileType, final String viewName) {
+        String fullName = fileType + "." + viewName;
+        if (this.denylist.contains(viewName) || this.denylist.contains(fullName)) {
             return true;
         }
-        return this.wildCardDenylist.stream().anyMatch(viewName::startsWith);
+        if (this.denylist.stream().anyMatch(i -> i.replaceAll("^\\*\\.", "").equals(viewName))) {
+            return true;
+        }
+        return this.wildCardDenylist.stream().anyMatch(i -> fullName.startsWith(i) || fullName.startsWith(i.replaceAll("^\\*", fileType)));
     }
 
     /**
