@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 import static emissary.core.constants.IbdoXmlElementNames.ANSWERS;
@@ -171,12 +172,13 @@ public final class RegressionTestUtil {
      * This method returns the XML file from that location.
      * 
      * @param resource to get the answer file for
+     * @param answerFileClassRef answer file class (if different from data class)
      * @return the XML file in the src directory (not target)
      */
     @Nullable
-    public static Document getAnswerDocumentFor(final String resource) {
+    public static Document getAnswerDocumentFor(final String resource, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         try {
-            final Path path = RegressionTestUtil.getXmlPath(resource);
+            final Path path = RegressionTestUtil.getXmlPath(resource, answerFileClassRef);
 
             return path == null ? null : XML_BUILDER.build(path.toFile());
         } catch (final JDOMException | IOException e) {
@@ -190,17 +192,25 @@ public final class RegressionTestUtil {
      * Gets the XML filename/path for the given resource (a .dat file)
      * 
      * @param resource path to the .dat file
+     * @param answerFileClassRef answer file class (if different from data class)
      * @return path to the corresponding .xml file
      */
     @Nullable
-    public static Path getXmlPath(final String resource) {
+    public static Path getXmlPath(final String resource, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
             LOGGER.debug("Resource is not a DATA file {}", resource);
             return null;
         }
 
-        final String xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
+        String xmlPath;
+        if (answerFileClassRef == null) {
+            xmlPath = resource.substring(0, datPos) + ResourceReader.XML_SUFFIX;
+        } else {
+            String ansPath = answerFileClassRef.get().getName().replace(".", "/");
+            int testNamePos = resource.lastIndexOf("/");
+            xmlPath = ansPath + resource.substring(testNamePos, datPos) + ResourceReader.XML_SUFFIX;
+        }
         return TEST_RESX.resolve(xmlPath);
     }
 
@@ -212,9 +222,11 @@ public final class RegressionTestUtil {
      * @param finalIbdo for 'answers' section
      * @param encoders for encoding ibdo into XML
      * @param results for 'answers' section
+     * @param answerFileClassRef answer file class (if different from data class)
      */
     public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
-            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders) {
+            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders,
+            @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         final Element rootElement = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, results, initialIbdo, encoders);
         final Element answerElement = rootElement.getChild(ANSWERS);
 
@@ -237,7 +249,7 @@ public final class RegressionTestUtil {
         // Generate the full XML (setup & answers from before & after)
         final String xmlContent = AbstractJDOMUtil.toString(new Document(rootElement));
         // Write out the XML to disk
-        writeXml(resource, xmlContent);
+        writeXml(resource, xmlContent, answerFileClassRef);
     }
 
     /**
@@ -245,9 +257,10 @@ public final class RegressionTestUtil {
      * 
      * @param resource referencing the DAT file
      * @param xmlContent to write to the XML answer file
+     * @param answerFileClassRef answer file class (if different from data class)
      */
-    public static void writeXml(final String resource, final String xmlContent) {
-        final Path path = getXmlPath(resource);
+    public static void writeXml(final String resource, final String xmlContent, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
+        final Path path = getXmlPath(resource, answerFileClassRef);
         if (path == null) {
             fail(String.format("Could not get path for resource = %s", resource));
         }
