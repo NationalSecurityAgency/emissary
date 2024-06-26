@@ -231,12 +231,12 @@ public class DropOffPlace extends ServiceProviderPlace implements EmptyFormPlace
                 logger.info(
                         "Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes",
                         tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
-                        Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
+                        Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
                         tld.getFileType(), tld.getChannelSize());
             } else {
                 logger.info("Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}",
                         tld.getInternalId(), this.dropOffUtil.getBestId(tld, tld),
-                        Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
+                        Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
                         tld.getFileType());
             }
 
