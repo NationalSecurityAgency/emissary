@@ -114,8 +114,7 @@ public class HeartbeatManager {
         }
 
         // "smooth" execution every 30 seconds starting in 2 minutes
-        this.timer.schedule(new HeartbeatTask(), System.currentTimeMillis() + (this.initialDelaySeconds * 1000L),
-                (this.intervalSeconds * 1000L));
+        this.timer.schedule(new HeartbeatTask(), (this.initialDelaySeconds * 1000L), (this.intervalSeconds * 1000L));
     }
 
     /**
