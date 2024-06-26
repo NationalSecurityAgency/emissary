@@ -5,6 +5,7 @@ import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.test.core.junit5.UnitTest;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -15,7 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DependencyCheckTest extends UnitTest {
 
-    private static final String BIN_DIR = System.getProperty(ConfigUtil.CONFIG_BIN_PROPERTY);
+    private static String binDir;
+
+    @BeforeAll
+    static void beforeAll() {
+        UnitTest.setupSystemProperties();
+        binDir = System.getProperty(ConfigUtil.CONFIG_BIN_PROPERTY);
+    }
 
     @Test
     void testExecutableExist() {
@@ -37,7 +44,7 @@ class DependencyCheckTest extends UnitTest {
 
     @Test
     void testFileDoesNotExists() {
-        boolean exists = DependencyCheck.fileExists(BIN_DIR + "/missing.txt");
+        boolean exists = DependencyCheck.fileExists(binDir + "/missing.txt");
         assertFalse(exists, "File should not exist");
     }
 
@@ -45,7 +52,7 @@ class DependencyCheckTest extends UnitTest {
     void testDependencyReport() {
         Configurator conf = new ServiceConfigGuide();
         conf.addEntry("REQUIRED_EXECUTABLE", "bash");
-        conf.addEntry("REQUIRED_DIRECTORY", BIN_DIR);
+        conf.addEntry("REQUIRED_DIRECTORY", binDir);
         conf.addEntry("REQUIRED_FILE", "./scrips/run.sh");
         conf.addEntry("OPTIONAL_EXECUTABLE", "peterpan");
         conf.addEntry("OPTIONAL_DIRECTORY", "./captain-hook");
