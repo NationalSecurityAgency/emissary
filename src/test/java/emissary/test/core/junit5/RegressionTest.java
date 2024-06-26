@@ -301,12 +301,8 @@ public abstract class RegressionTest extends ExtractionTest {
         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
 
         // Generate the full XML (setup & answers from before & after)
-        if (super.answerFileClassRef == null) {
-            RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
-        } else {
-            RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
-                    super.answerFileClassRef);
-        }
+        RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
+                super.answerFileClassRef);
     }
 
     @Override
@@ -330,7 +326,7 @@ public abstract class RegressionTest extends ExtractionTest {
     @Override
     protected Document getAnswerDocumentFor(final String resource) {
         // If generating answers, get the src version, otherwise get the normal XML file
-        return generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource) : super.getAnswerDocumentFor(resource);
+        return generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource, super.answerFileClassRef) : super.getAnswerDocumentFor(resource);
     }
 
     @Override

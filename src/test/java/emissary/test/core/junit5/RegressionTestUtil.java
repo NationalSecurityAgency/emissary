@@ -96,8 +96,6 @@ public final class RegressionTestUtil {
      */
     private static final Path TEST_RESX = getTestResx();
 
-    private static AtomicReference<Class<?>> answerFileClassRef = null;
-
     private RegressionTestUtil() {}
 
     /**
@@ -174,12 +172,13 @@ public final class RegressionTestUtil {
      * This method returns the XML file from that location.
      * 
      * @param resource to get the answer file for
+     * @param answerFileClassRef answer file class (if different from data class)
      * @return the XML file in the src directory (not target)
      */
     @Nullable
-    public static Document getAnswerDocumentFor(final String resource) {
+    public static Document getAnswerDocumentFor(final String resource, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         try {
-            final Path path = RegressionTestUtil.getXmlPath(resource);
+            final Path path = RegressionTestUtil.getXmlPath(resource, answerFileClassRef);
 
             return path == null ? null : XML_BUILDER.build(path.toFile());
         } catch (final JDOMException | IOException e) {
@@ -193,10 +192,11 @@ public final class RegressionTestUtil {
      * Gets the XML filename/path for the given resource (a .dat file)
      * 
      * @param resource path to the .dat file
+     * @param answerFileClassRef answer file class (if different from data class)
      * @return path to the corresponding .xml file
      */
     @Nullable
-    public static Path getXmlPath(final String resource) {
+    public static Path getXmlPath(final String resource, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         final int datPos = resource.lastIndexOf(ResourceReader.DATA_SUFFIX);
         if (datPos == -1) {
             LOGGER.debug("Resource is not a DATA file {}", resource);
@@ -222,9 +222,11 @@ public final class RegressionTestUtil {
      * @param finalIbdo for 'answers' section
      * @param encoders for encoding ibdo into XML
      * @param results for 'answers' section
+     * @param answerFileClassRef answer file class (if different from data class)
      */
     public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
-            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders) {
+            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders,
+            @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
         final Element rootElement = IBaseDataObjectXmlHelper.xmlElementFromIbdo(finalIbdo, results, initialIbdo, encoders);
         final Element answerElement = rootElement.getChild(ANSWERS);
 
@@ -247,24 +249,7 @@ public final class RegressionTestUtil {
         // Generate the full XML (setup & answers from before & after)
         final String xmlContent = AbstractJDOMUtil.toString(new Document(rootElement));
         // Write out the XML to disk
-        writeXml(resource, xmlContent);
-    }
-
-    /**
-     * Generate the relevant XML and write to disk. Used when answer file class and data file class are not the same.
-     *
-     * @param resource referencing the DAT file
-     * @param initialIbdo for 'setup' section
-     * @param finalIbdo for 'answers' section
-     * @param encoders for encoding ibdo into XML
-     * @param results for 'answers' section
-     * @param answerFileClassRef test class for answer files
-     */
-    public static void writeAnswerXml(final String resource, final IBaseDataObject initialIbdo, final IBaseDataObject finalIbdo,
-            final List<IBaseDataObject> results, final List<SimplifiedLogEvent> logEvents, final ElementEncoders encoders,
-            final AtomicReference<Class<?>> answerFileClassRef) {
-        RegressionTestUtil.answerFileClassRef = answerFileClassRef;
-        writeAnswerXml(resource, initialIbdo, finalIbdo, results, logEvents, encoders);
+        writeXml(resource, xmlContent, answerFileClassRef);
     }
 
     /**
@@ -272,9 +257,10 @@ public final class RegressionTestUtil {
      * 
      * @param resource referencing the DAT file
      * @param xmlContent to write to the XML answer file
+     * @param answerFileClassRef answer file class (if different from data class)
      */
-    public static void writeXml(final String resource, final String xmlContent) {
-        final Path path = getXmlPath(resource);
+    public static void writeXml(final String resource, final String xmlContent, @Nullable final AtomicReference<Class<?>> answerFileClassRef) {
+        final Path path = getXmlPath(resource, answerFileClassRef);
         if (path == null) {
             fail(String.format("Could not get path for resource = %s", resource));
         }
