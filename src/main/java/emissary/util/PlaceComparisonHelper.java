@@ -146,7 +146,7 @@ public class PlaceComparisonHelper {
                 if (i != 0) {
                     sb.append(StringUtils.LF);
                 }
-                sb.append(identifier).append(": PDiff: ");
+                sb.append(identifier).append(": parent_difference: ");
                 sb.append(parentDifferences.get(i));
             }
             if (!parentDifferences.isEmpty() && !childDifferences.isEmpty()) {
@@ -156,10 +156,9 @@ public class PlaceComparisonHelper {
                 if (i != 0) {
                     sb.append(StringUtils.LF);
                 }
-                sb.append(identifier).append(": CDiff: ");
+                sb.append(identifier).append(": child_difference: ");
                 sb.append(childDifferences.get(i));
             }
-
             return sb.toString();
         }
 

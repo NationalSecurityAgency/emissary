@@ -7,6 +7,7 @@ import emissary.test.core.junit5.LogbackTester.SimplifiedLogEvent;
 import emissary.test.core.junit5.UnitTest;
 
 import ch.qos.logback.classic.Level;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -59,14 +60,16 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessPlaceAChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []";
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] ";
 
         testComparisonPlace(PROCESS_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessPlaceBChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]";
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] ";
 
         testComparisonPlace(PROCESS_PLACE_B_CHANGES, logMessage);
     }
@@ -78,16 +81,20 @@ class ComparisonPlaceTest extends UnitTest {
 
     @Test
     void testProcessHDPlaceAChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [KEY] : []\n" +
-                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [KEY] : []";
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] " + StringUtils.LF +
+                "COMPARISONPLACETEST: child_difference: COMPARISONPLACETEST : 0 : <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[KEY] : minimal_map_key_set_2=[] ";
 
         testComparisonPlace(PROCESSHD_PLACE_A_CHANGES, logMessage);
     }
 
     @Test
     void testProcessHDPlaceBChanges() throws Exception {
-        final String logMessage = "COMPARISONPLACETEST: PDiff: meta are not equal-Differing Keys: [] : [KEY]\n" +
-                "COMPARISONPLACETEST: CDiff: COMPARISONPLACETEST : 0 : meta are not equal-Differing Keys: [] : [KEY]";
+        final String logMessage = "COMPARISONPLACETEST: parent_difference: <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] " + StringUtils.LF +
+                "COMPARISONPLACETEST: child_difference: COMPARISONPLACETEST : 0 : <meta> elements are not equal: " +
+                "minimal_map_key_set_1=[] : minimal_map_key_set_2=[KEY] ";
 
         testComparisonPlace(PROCESSHD_PLACE_B_CHANGES, logMessage);
     }

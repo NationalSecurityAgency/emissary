@@ -24,10 +24,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class IBaseDataObjectDiffHelper {
-    private static final String DIFF_OUTPUT_FORMAT = "%s%s: %s : %s";
     private static final String DIFF_NOT_NULL_MSG = "Required: differences not null";
     private static final String ID_NOT_NULL_MSG = "Required: identifier not null";
-    private static final String ARE_NOT_EQUAL = " are not equal";
+    private static final String ARE_NOT_EQUAL = " elements are not equal";
     private static final String SHORT_NAME = "shortName";
     private static final String INTERNAL_ID = "internalId";
     private static final String TRANSFORM_HISTORY = "transformHistory";
@@ -121,7 +120,7 @@ public class IBaseDataObjectDiffHelper {
         final int ibdoList2Size = (ibdoList2 == null) ? 0 : ibdoList2.size();
 
         if (ibdoList1Size != ibdoList2Size) {
-            differences.add(String.format("%s%s: 1.s=%s 2.s=%s", identifier, ARE_NOT_EQUAL, ibdoList1Size, ibdoList2Size));
+            differences.add(diffNotEqStr(identifier, "IBaseDataObject_list_size", ibdoList1Size, ibdoList2Size));
         } else if (ibdoList1 != null && ibdoList2 != null) {
             final List<String> childDifferences = new ArrayList<>();
             for (int i = 0; i < ibdoList1.size(); i++) {
@@ -151,23 +150,26 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(identifier, ID_NOT_NULL_MSG);
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
-        if (sbcf1 != null && sbcf2 != null) {
-            try (SeekableByteChannel sbc1 = sbcf1.create();
+        if (!(sbcf1 == null && sbcf2 == null)) {
+            try {
+                if (sbcf1 == null || sbcf2 == null)
+                    differences.add(diffNotEqStr(identifier, "SeekableByteChannelFactory", sbcf1, sbcf2));
+                else {
+                    SeekableByteChannel sbc1 = sbcf1.create();
                     SeekableByteChannel sbc2 = sbcf2.create();
                     InputStream is1 = Channels.newInputStream(sbc1);
-                    InputStream is2 = Channels.newInputStream(sbc2)) {
-                if (!IOUtils.contentEquals(is1, is2)) {
-                    differences.add(String.format("%s not equal. 1.cs=%s 2.cs=%s",
-                            identifier, sbc1.size(), sbc2.size()));
+                    InputStream is2 = Channels.newInputStream(sbc2);
+                    if (!IOUtils.contentEquals(is1, is2)) {
+                        final String suffix = "%s_byte_stream";
+                        differences.add(diffNotEqStr(identifier, "SeekableByteChannelFactory",
+                                String.format(suffix, sbc1.size()), String.format(suffix, sbc2.size())));
+                    }
                 }
             } catch (IOException e) {
                 differences.add(String.format("Failed to compare %s: %s", identifier, e.getMessage()));
             }
-        } else if (sbcf1 == null && sbcf2 == null) {
-            // Do nothing as they are considered equal.
-        } else {
-            differences.add(String.format("%s not equal. sbcf1=%s sbcf2=%s", identifier, sbcf1, sbcf2));
-        }
+        } // if both null, do nothing as they're considered equal
+
     }
 
     /**
@@ -184,7 +186,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (!Objects.deepEquals(object1, object2)) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL, object1, object2));
+            differences.add(diffNotEqStr(identifier, "Object", object1, object2));
         }
     }
 
@@ -202,7 +204,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (integer1 != integer2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+            differences.add(diffNotEqStr(identifier, "Integer", integer1, integer2));
         }
     }
 
@@ -220,7 +222,7 @@ public class IBaseDataObjectDiffHelper {
         Validate.notNull(differences, DIFF_NOT_NULL_MSG);
 
         if (boolean1 != boolean2) {
-            differences.add(identifier + ARE_NOT_EQUAL);
+            differences.add(diffNotEqStr(identifier, "Boolean", boolean1, boolean2));
         }
     }
 
@@ -268,7 +270,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1.isEmpty() || !p2.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys/Values", p1, p2));
+            differences.add(diffNotEqStr(identifier, "key_value_set", p1, p2));
         }
     }
 
@@ -295,7 +297,7 @@ public class IBaseDataObjectDiffHelper {
         }
 
         if (!p1Keys.isEmpty() || !p2Keys.isEmpty()) {
-            differences.add(String.format(DIFF_OUTPUT_FORMAT, identifier, ARE_NOT_EQUAL + "-Differing Keys", p1Keys, p2Keys));
+            differences.add(diffNotEqStr(identifier, "minimal_map_key_set", p1Keys, p2Keys));
         }
     }
 
@@ -319,5 +321,11 @@ public class IBaseDataObjectDiffHelper {
         }
 
         return newMap;
+    }
+
+    public static String diffNotEqStr(String id, String objName, Object comparand1, Object comparand2) {
+        String comp1Msg = String.format("%s_1=%s : ", objName, comparand1);
+        String comp2Msg = String.format("%s_2=%s ", objName, comparand2);
+        return String.format("<%s>%s: ", id, ARE_NOT_EQUAL) + comp1Msg + comp2Msg;
     }
 }

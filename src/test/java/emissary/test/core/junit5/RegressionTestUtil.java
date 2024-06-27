@@ -130,7 +130,7 @@ public final class RegressionTestUtil {
         final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
                 attachments, placeName, DIFF_CHECK);
 
-        assertNull(differences, differences);
+        assertNull(differences);
 
         final List<SimplifiedLogEvent> expectedSimplifiedLogEvents = getSimplifiedLogEvents(parent);
 
