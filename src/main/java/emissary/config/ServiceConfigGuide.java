@@ -67,18 +67,18 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     // Shared map of all environment properties
     // Access them with @ENV{'os.name'} for example
     // This is obsolete, all values from properties and
-    // environment are now in the main VALUES map and available
-    // for immediate subsitution
+    // environment are now in the main values map and available
+    // for immediate substitution
     protected static final String ENVSTART = "@ENV{'";
     protected static final String ENVSTOP = "'}";
 
     // Map of last values seen
-    protected Map<String, String> VALUES = new HashMap<>();
+    protected Map<String, String> values = new HashMap<>();
 
     // Get this once per jvm
     private static String THIS_HOST_NAME = "localhost";
 
-    // Grab the hostname for @{HOST} replacemant
+    // Grab the hostname for @{HOST} replacement
     static {
         try {
             THIS_HOST_NAME = InetAddress.getLocalHost().getCanonicalHostName();
@@ -152,35 +152,35 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * Initialize the values map, which is used to replace stuff in the configs
      */
     protected void initializeValues() {
-        this.VALUES.clear();
+        this.values.clear();
 
         // TODO: see if we can stop adding all env variables and
         // system properties to the replace values
 
         // Add all the environment variables
-        this.VALUES.putAll(System.getenv());
+        this.values.putAll(System.getenv());
 
         // Add all the system properties
         final Properties props = System.getProperties();
         for (Enumeration<?> e = props.propertyNames(); e.hasMoreElements();) {
             final String key = (String) e.nextElement();
             logger.trace("Adding {} to replaceable properties", key);
-            this.VALUES.put(key, props.getProperty(key));
+            this.values.put(key, props.getProperty(key));
         }
 
         // used for substitution when reading cfg files
-        this.VALUES.put("CONFIG_DIR", StringUtils.join(ConfigUtil.getConfigDirs(), ","));
-        this.VALUES.put("PRJ_BASE", ConfigUtil.getProjectBase());
-        this.VALUES.put("PROJECT_BASE", ConfigUtil.getProjectBase());
-        this.VALUES.put("OUTPUT_ROOT", ConfigUtil.getOutputRoot());
-        this.VALUES.put("BIN_DIR", ConfigUtil.getBinDir());
-        this.VALUES.put("HOST", THIS_HOST_NAME);
-        this.VALUES.put("/", File.separator);
-        this.VALUES.put("TMPDIR", System.getProperty("java.io.tmpdir"));
-        this.VALUES.put("NULL", null);
-        this.VALUES.put("OS.NAME", System.getProperty("os.name").replace(' ', '_'));
-        this.VALUES.put("OS.VER", System.getProperty("os.version").replace(' ', '_'));
-        this.VALUES.put("OS.ARCH", System.getProperty("os.arch").replace(' ', '_'));
+        this.values.put("CONFIG_DIR", StringUtils.join(ConfigUtil.getConfigDirs(), ","));
+        this.values.put("PRJ_BASE", ConfigUtil.getProjectBase());
+        this.values.put("PROJECT_BASE", ConfigUtil.getProjectBase());
+        this.values.put("OUTPUT_ROOT", ConfigUtil.getOutputRoot());
+        this.values.put("BIN_DIR", ConfigUtil.getBinDir());
+        this.values.put("HOST", THIS_HOST_NAME);
+        this.values.put("/", File.separator);
+        this.values.put("TMPDIR", System.getProperty("java.io.tmpdir"));
+        this.values.put("NULL", null);
+        this.values.put("OS.NAME", System.getProperty("os.name").replace(' ', '_'));
+        this.values.put("OS.VER", System.getProperty("os.version").replace(' ', '_'));
+        this.values.put("OS.ARCH", System.getProperty("os.arch").replace(' ', '_'));
     }
 
     /**
@@ -275,11 +275,11 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         if ("!=".equals(operatorArg)) {
             if ("*".equals(sval)) {
                 removeAllEntries(parmName);
-                this.VALUES.remove(parmName);
+                this.values.remove(parmName);
             } else {
                 removeEntry(anEntry);
-                if (sval.equals(this.VALUES.get(parmName))) {
-                    this.VALUES.remove(parmName);
+                if (sval.equals(this.values.get(parmName))) {
+                    this.values.remove(parmName);
                 }
             }
             this.p_remove_parameters.add(anEntry);
@@ -292,7 +292,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             }
 
             // Save this pair in the map
-            this.VALUES.put(parmName, sval);
+            this.values.put(parmName, sval);
         }
 
         if ("IMPORT_FILE".equals(parmName) || "OPT_IMPORT_FILE".equals(parmName)) {
@@ -354,7 +354,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
             }
             final String tok = sval.substring(ndx + VSTART.length(), edx);
             logger.debug("Replacement token is {}", tok);
-            final String mapval = this.VALUES.get(tok);
+            final String mapval = this.values.get(tok);
             if (mapval != null) {
                 sval = sval.substring(0, ndx) + mapval + sval.substring(edx + VEND.length());
             } else {
@@ -1089,7 +1089,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
      * @param name the name of the parameter
      */
     protected int getNumericParameter(final String name) {
-        final String val = this.VALUES.get(name);
+        final String val = this.values.get(name);
         int i = -1;
         if (val != null) {
             try {
@@ -1102,7 +1102,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     }
 
     public boolean debug() {
-        return "TRUE".equalsIgnoreCase(this.VALUES.get("DEBUG"));
+        return "TRUE".equalsIgnoreCase(this.values.get("DEBUG"));
     }
 
     /**
