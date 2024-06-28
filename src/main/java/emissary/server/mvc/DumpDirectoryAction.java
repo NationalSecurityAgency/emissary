@@ -111,7 +111,7 @@ public class DumpDirectoryAction {
 
 
     // TODO: move these to proper response objects
-    public class PeerInfo {
+    public static class PeerInfo {
         final String link;
         final String peerkey;
         final String status;
@@ -125,7 +125,7 @@ public class DumpDirectoryAction {
         }
     }
 
-    public class DirectoryInfo {
+    public static class DirectoryInfo {
         final String dataId;
         final List<DirectoryEntryInfo> entrylist;
 
@@ -136,7 +136,7 @@ public class DumpDirectoryAction {
     }
 
 
-    public class DirectoryEntryInfo {
+    public static class DirectoryEntryInfo {
         final String stripe;
         final String key;
         final int cost;
