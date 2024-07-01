@@ -35,7 +35,10 @@ ARG user=emissary
 ARG group=emissary
 ARG uid=1000
 ARG gid=1000
-RUN yum update -y \
+RUN sed -i s/mirrorlist.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo \
+     && sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS-*.repo \
+     && sed -i s/#baseurl/baseurl/g /etc/yum.repos.d/CentOS-*.repo \
+     && yum update -y \
      && yum upgrade -y \
      && rpm --import https://yum.corretto.aws/corretto.key \
      && curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo \
