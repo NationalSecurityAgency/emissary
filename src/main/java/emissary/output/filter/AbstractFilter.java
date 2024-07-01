@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 /**
@@ -81,6 +82,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
     /* alternate views to NOT output if only a file type/form is specified */
     protected Set<String> denylist = Collections.emptySet();
+    protected Set<String> wildCardDenylist = new HashSet<>();
 
     @Nullable
     protected DropOffUtil dropOffUtil = null;
@@ -169,7 +171,13 @@ public abstract class AbstractFilter implements IDropOffFilter {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.denylist = config.findEntriesAsSet("DENYLIST");
+            this.wildCardDenylist = this.denylist.stream()
+                    .filter(i -> i.endsWith("*"))
+                    .map(i -> i.substring(0, i.length() - 1))
+                    .collect(Collectors.toSet());
+            this.wildCardDenylist.forEach(i -> this.denylist.remove(i + "*"));
             this.logger.debug("Loaded {} ignorelist types for filter {}", this.denylist.size(), this.denylist);
+            this.logger.debug("Loaded {} wildcard suffix ignorelist types for filter {}", this.wildCardDenylist.size(), this.wildCardDenylist);
         } else {
             this.logger.debug("InitializeCustom has null filter config");
         }
@@ -447,7 +455,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
         final String currentForm = d.currentForm();
 
         // skip over denylisted alt views
-        if (this.denylist.contains(viewName) || this.denylist.contains(fileType + "." + viewName)) {
+        if (denyListContains(fileType, viewName)) {
             return checkTypes;
         }
 
@@ -472,6 +480,17 @@ public abstract class AbstractFilter implements IDropOffFilter {
         }
         this.logger.debug("Types to be checked for named view {}: {}", viewName, checkTypes);
         return checkTypes;
+    }
+
+    protected boolean denyListContains(final String fileType, final String viewName) {
+        String fullName = fileType + "." + viewName;
+        if (this.denylist.contains(viewName) || this.denylist.contains(fullName)) {
+            return true;
+        }
+        if (this.denylist.stream().anyMatch(i -> i.replaceAll("^\\*\\.", "").equals(viewName))) {
+            return true;
+        }
+        return this.wildCardDenylist.stream().anyMatch(i -> fullName.startsWith(i) || fullName.startsWith(i.replaceAll("^\\*", fileType)));
     }
 
     /**
