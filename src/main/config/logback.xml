@@ -15,8 +15,9 @@
   </appender>
   -->
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <withJansi>true</withJansi>
     <encoder>
-      <pattern>%d ${emissary.node.name}-${emissary.node.port} %5p %c - %X{shortName} %X{serviceLocation} - %m%n</pattern>
+      <pattern>%d{"yyyy-MM-dd'T'HH:mm:ss.SSS"} [%magenta(${emissary.node.name}-${emissary.node.port})] %highlight(%-5p) %cyan(%c) - %X{shortName} %X{serviceLocation} - %m%n</pattern>
     </encoder>
   </appender>
 
