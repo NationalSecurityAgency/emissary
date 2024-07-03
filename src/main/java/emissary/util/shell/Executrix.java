@@ -875,7 +875,7 @@ public class Executrix {
     }
 
 
-    private void streamData(Process p, byte[] data) throws IOException {
+    private static void streamData(Process p, byte[] data) throws IOException {
         try (OutputStream os = new BufferedOutputStream(new DataOutputStream(p.getOutputStream()))) {
             if (ArrayUtils.isNotEmpty(data)) {
                 os.write(data);

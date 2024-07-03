@@ -57,7 +57,7 @@ public class WorkSpaceClientSpaceTakeAction {
         }
     }
 
-    private Response doClientSpaceTake(String placeName, String spaceName) throws EmissaryException {
+    private static Response doClientSpaceTake(String placeName, String spaceName) throws EmissaryException {
         // TODO Figure out why we have to remove the key prefix now
         String workspaceKey = spaceName.substring("WORKSPACE.WORK_SPACE.INPUT.".length());
         final WorkSpace space = (WorkSpace) Namespace.lookup(workspaceKey);

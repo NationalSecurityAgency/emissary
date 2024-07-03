@@ -68,7 +68,7 @@ public class ExtractResource {
         }
     }
 
-    private boolean hasFileEnding(final String resource) {
+    private static boolean hasFileEnding(final String resource) {
         return resource.endsWith(ResourceReader.CONFIG_SUFFIX) || resource.endsWith(ResourceReader.PROP_SUFFIX)
                 || resource.endsWith(ResourceReader.XML_SUFFIX) || resource.endsWith(ResourceReader.JS_SUFFIX);
     }

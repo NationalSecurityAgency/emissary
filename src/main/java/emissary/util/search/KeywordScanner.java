@@ -202,7 +202,7 @@ public class KeywordScanner {
         return matchIndex;
     }
 
-    private int lowercase(final int i) {
+    private static int lowercase(final int i) {
         if ((i >= 'A') && (i <= 'Z')) {
             return i + 32;
         } else {

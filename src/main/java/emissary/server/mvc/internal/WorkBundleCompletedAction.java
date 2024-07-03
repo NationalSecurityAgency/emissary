@@ -62,7 +62,7 @@ public class WorkBundleCompletedAction {
         }
     }
 
-    private Response workBundleCompleted(String spaceName, String placeName, String bundleId, boolean itWorked) throws NamespaceException,
+    private static Response workBundleCompleted(String spaceName, String placeName, String bundleId, boolean itWorked) throws NamespaceException,
             IllegalArgumentException {
         // Look up the place reference
         // TODO Figure out why we have to remove the key prefix now

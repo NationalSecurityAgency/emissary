@@ -224,7 +224,7 @@ public class WindowedSeekableByteChannel implements SeekableByteChannel {
      * Safely fill a destination buffer avoiding a buffer overflow if necessary. <p> Copies byte from src to dest. The
      * number of bytes copied is the minimum of the amount of space remaining in the destination buffer
      */
-    private void filldst(final ByteBuffer src, final ByteBuffer dst) {
+    private static void filldst(final ByteBuffer src, final ByteBuffer dst) {
         while (src.hasRemaining() && dst.hasRemaining()) {
             final int origLimit = src.limit();
             // avoid buffer overflow

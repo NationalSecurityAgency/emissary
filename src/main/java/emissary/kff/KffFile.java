@@ -188,7 +188,7 @@ public class KffFile implements KffFilter {
      * @param crc CRC to compare to record
      * @return &lt;0 if given value is less than record, &gt;0 if given value is greater than record, 0 if they match
      */
-    private int compare(@Nonnull byte[] record, @Nonnull byte[] hash, long crc) {
+    private static int compare(@Nonnull byte[] record, @Nonnull byte[] hash, long crc) {
         int i;
 
         // Compare the hashes first. We can't compare the bytes directly because a Java byte is signed and may generate the
