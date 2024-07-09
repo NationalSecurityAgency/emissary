@@ -15,6 +15,7 @@ import emissary.pickup.PickUpPlace;
 import emissary.place.CoordinationPlace;
 import emissary.place.IServiceProviderPlace;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -212,11 +214,11 @@ public class Startup {
         }
 
         //
-        // Setup the rest of the Places except no pickups
+        // Set up the rest of the Places except no pickups
         //
         sortPlaces(this.hostsConfig.findEntries("PLACE"));
 
-        logger.info("Ready to start {}  places and {} PickUp places.", hashListSize(this.placeLists), hashListSize(this.pickupLists));
+        logger.info("Ready to start {} place(s) and {} PickUp place(s).", hashListSize(this.placeLists), hashListSize(this.pickupLists));
 
         logger.info("Processing non-pickup places...");
         startMapOfPlaces(this.placeLists);
@@ -226,7 +228,7 @@ public class Startup {
         //
         this.stopAndWaitForPlaceCreation();
 
-        logger.info("Done with bootstrap phase");
+        logger.debug("Done with bootstrap phase");
         return true;
     }
 
@@ -237,7 +239,7 @@ public class Startup {
 
         startMapOfPlaces(this.pickupLists);
 
-        logger.info("Done starting pickup places, waiting for them...");
+        logger.info("Processing pickup places...");
 
         //
         // Wait for all places to get started and registered
@@ -260,7 +262,7 @@ public class Startup {
 
         }
 
-        logger.info("done with map of {} places", hashListSize(m));
+        logger.debug("done with map of {} places", hashListSize(m));
     }
 
     /**
@@ -290,8 +292,10 @@ public class Startup {
             final String host = placeHost(thePlaceLocation);
 
             if (KeyManipulator.isLocalTo(thePlaceLocation, "http://" + this.node.getNodeName() + ":" + this.node.getNodePort() + "/StartupEngine")) {
-                logger.info("Doing local startup for directory {} ", thePlaceLocation);
                 final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
+                if (logger.isInfoEnabled()) {
+                    logger.info("Doing local startup for directory {}({}) ", getLocationName(thePlaceLocation), thePlaceClassStr);
+                }
                 final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, null, emissaryNode);
                 if (p != null) {
                     dirStarts.put(host, thePlaceLocation);
@@ -322,8 +326,8 @@ public class Startup {
             }
         }
 
-        if (logger.isInfoEnabled()) {
-            logger.info("Directories all up in {}s", (System.currentTimeMillis() - start) / 1000.0);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Directories all up in {}s", (System.currentTimeMillis() - start) / 1000.0);
         }
 
         return true;
@@ -350,7 +354,7 @@ public class Startup {
                 if (failedLocalDirectories.get(thePlaceHost) != null) {
                     logger.warn("Skipping {} due to previously failed directory", thePlaceHost);
                 } else {
-                    logger.warn("Skipping {} : local Directory not found", thePlaceHost);
+                    logger.warn("Skipping {} due to local Directory not found", thePlaceHost);
                 }
                 return;
             }
@@ -360,12 +364,12 @@ public class Startup {
                 return;
             }
 
-            logger.info("Using localDir={} to create {} places on {}", localDirectory, hostParameters.size(), thePlaceHost);
+            logger.debug("Using localDir={} to create {} places on {}", localDirectory, hostParameters.size(), thePlaceHost);
 
             // Create a stream of places that can be configured to start in parallel
             boolean parallelPlaceStartup = hostsConfig.findBooleanEntry(PARALLEL_PLACE_STARTUP_CONFIG, false);
             Stream<String> hostParametersStream = StreamSupport.stream(hostParameters.spliterator(), parallelPlaceStartup);
-            logger.info("Parallel place startup: {}", hostParametersStream.isParallel());
+            logger.info("Using parallel place startup: {}", hostParametersStream.isParallel());
 
             // Start everything in hostParameters
             // (PLACE lines from cfg file for a given host
@@ -373,33 +377,45 @@ public class Startup {
                 placeName(thePlaceLocation);
 
                 // Get the class name and Class object for what we want to make
+                final String thePlaceLocName = getLocationName(thePlaceLocation);
                 final String thePlaceClassString = PlaceStarter.getClassString(thePlaceLocation);
+                StringBuilder startupBuilder =
+                        new StringBuilder("Doing local startup on ")
+                                .append(thePlaceLocName)
+                                .append("(")
+                                .append(thePlaceClassString).append(")...");
                 if (thePlaceClassString == null) {
-                    logger.warn("Skipping {}, no class string", thePlaceLocation);
+                    startupBuilder.append("skipping, no class string!!");
                     placesToStart.remove(thePlaceLocation);
+                    logger.warn(startupBuilder.toString());
                     return;
                 }
                 logger.debug("Starting place {}", thePlaceLocation);
-                if (KeyManipulator.isLocalTo(thePlaceLocation,
-                        String.format("http://%s:%s/StartupEngine", node.getNodeName(), node.getNodePort()))) {
+                if (KeyManipulator.isLocalTo(thePlaceLocation, String.format("http://%s:%s/StartupEngine", node.getNodeName(), node.getNodePort()))) {
                     if (directoryActionArg == DIRECTORYADD && Namespace.exists(thePlaceLocation)) {
-                        logger.info("Local place already exists: {}", thePlaceLocation);
+                        // logger.info("Local place already exists: {}", thePlaceLocation);
+                        startupBuilder.append("local place already exists");
                         placesToStart.remove(thePlaceLocation);
                         // add place to placeAlreadyStarted list, so can be verified in verifyNoInvisibleStartPlaces
                         placeAlreadyStarted.add(thePlaceLocation.substring(thePlaceLocation.lastIndexOf("/") + 1));
+                        logger.info(startupBuilder.toString());
                         return;
                     }
 
-                    logger.info("Doing local startup on place {}", thePlaceLocation);
+                    // logger.debug("Doing local startup on place {}", thePlaceLocation);
                     final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-                    final IServiceProviderPlace p =
-                            PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, localDirectory);
+
+                    final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, localDirectory);
                     if (p != null) {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
+                        startupBuilder.append("done!");
+                        logger.info(startupBuilder.toString());
                     } else {
-                        logger.error("{} failed to start!", thePlaceLocation);
+                        // logger.error("{} failed to start!", thePlaceLocation);
                         failedPlaces.add(thePlaceLocation);
                         placesToStart.remove(thePlaceLocation);
+                        startupBuilder.append("FAILED!!");
+                        logger.error(startupBuilder.toString());
                     }
                 }
             });
@@ -417,10 +433,11 @@ public class Startup {
         int numPlacesFound;
         int numPlacesFoundPreviously = 0;
 
-        logger.info("Waiting for {} places to start.", numPlacesExpected);
+        logger.info("Waiting for {} places to start {}", placesToStart.size(),
+                placesToStart.stream().map(s -> StringUtils.substringAfterLast(s, "/")).sorted().collect(Collectors.toList()));
         do {
             if (this.placesToStart.size() != numPlacesExpected) {
-                logger.info("NOW Waiting for {} places to start. (originally {} places)", this.placesToStart.size(), numPlacesExpected);
+                logger.info("Now waiting for {} places to start. (originally {} places)", this.placesToStart.size(), numPlacesExpected);
                 numPlacesExpected = this.placesToStart.size();
             }
 
@@ -442,15 +459,14 @@ public class Startup {
 
                 // check if strict startup & places/coordination places failed, if yes, shut down server
                 if (this.node.isStrictStartupMode() && failedPlaceStartups) {
-                    logger.error(
-                            "Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
-                                    "run server start command without the --strict flag");
+                    logger.error("Server failed to start due to Strict mode being enabled.  To disable strict mode, " +
+                            "run server start command without the --strict flag");
                     logger.error("Server shutting down");
                     System.exit(1);
                 }
 
                 // normal termination of the loop
-                logger.info("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
+                logger.debug("Woohoo! {} of {} places are up and running.", numPlacesFound, numPlacesExpected);
                 break;
             }
 
@@ -481,7 +497,7 @@ public class Startup {
                     leadString = "Yeah! ";
                 }
 
-                logger.info("{}{} of {} places are up and running.", leadString, numPlacesFound, numPlacesExpected);
+                logger.debug("{}{} of {} places are up and running.", leadString, numPlacesFound, numPlacesExpected);
             }
 
         } while (true); // break terminated loop
@@ -490,22 +506,17 @@ public class Startup {
     /**
      * sort all the PLACE entries into either a processing place or a pickup place
      */
-    protected void sortPlaces(final List<String> allPlaces) {
+    protected void sortPlaces(final List<String> placeList) {
 
-        for (final String theLocation : allPlaces) {
-            Startup.placeName(theLocation);
-            final String className = PlaceStarter.getClassString(theLocation);
+        for (final String location : placeList) {
+            final String placeName = Startup.placeName(location);
+            final String className = PlaceStarter.getClassString(location);
             if (className == null) {
                 continue;
             }
 
-
             try {
-                if (PickUpPlace.implementsPickUpPlace(Class.forName(className))) {
-                    sortPickupOrPlace(theLocation, this.pickupLists);
-                } else {
-                    sortPickupOrPlace(theLocation, this.placeLists);
-                }
+                sortPickupOrPlace(location, PickUpPlace.implementsPickUpPlace(Class.forName(className)) ? this.pickupLists : this.placeLists);
             } catch (ClassNotFoundException e) {
                 logger.error("Could not create place {}", className, e);
             }
@@ -515,7 +526,15 @@ public class Startup {
     private void sortPickupOrPlace(String theLocation, Map<String, Set<String>> placeList) {
         final String host = placeHost(theLocation);
         Set<String> l = placeList.computeIfAbsent(host, k -> new LinkedHashSet<>());
-        l.add(theLocation);
+        if (l.contains(theLocation)) {
+            logger.warn("Sorting places found duplicate {}({}), skipping!", getLocationName(theLocation), PlaceStarter.getClassString(theLocation));
+        } else {
+            l.add(theLocation);
+        }
+    }
+
+    protected static String getLocationName(String location) {
+        return StringUtils.substringAfterLast(location, "/");
     }
 
     /**
