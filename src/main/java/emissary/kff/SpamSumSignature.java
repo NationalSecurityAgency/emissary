@@ -13,8 +13,8 @@ public class SpamSumSignature {
      * FIELDS
      *****************************************************/
     private/* uint */long blockSize;
-    private byte[] hash1;
-    private byte[] hash2;
+    private final byte[] hash1;
+    private final byte[] hash2;
 
     /*****************************************************
      * UTILS
