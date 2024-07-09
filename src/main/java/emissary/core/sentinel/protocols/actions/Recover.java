@@ -27,7 +27,7 @@ public class Recover extends Action {
                 logger.warn("Sentinel attempting recovery for {}", agentName);
                 mobileAgent.interrupt();
             } catch (Exception e) {
-                throw new IllegalStateException("Recovery unavailable");
+                throw new IllegalStateException("Recovery unavailable ", e);
             }
         }
     }
