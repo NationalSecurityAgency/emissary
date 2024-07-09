@@ -68,7 +68,7 @@ class FlexibleDateTimeParserTest extends UnitTest {
      * @param dateString the string representation of a date
      * @param expected the expected parsed and formatted date
      */
-    private void testAllOffsets(String dateString, long expected) {
+    private static void testAllOffsets(String dateString, long expected) {
         String[] offsets = {"EST-0500 -0500", // zZZ
                 "EST EST-0500", // zzZ
                 "EST-0500 EST", // zZz

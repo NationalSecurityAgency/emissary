@@ -33,7 +33,7 @@ public class PauseAction {
         return generateMessage("Unpausing server...");
     }
 
-    private Map<String, String> generateMessage(String message) {
+    private static Map<String, String> generateMessage(String message) {
         Map<String, String> model = new HashMap<>();
         model.put(MESSAGE, message);
         return model;

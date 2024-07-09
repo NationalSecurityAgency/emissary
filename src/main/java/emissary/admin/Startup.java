@@ -266,7 +266,7 @@ public class Startup {
     /**
      * Count all entries in lists of a map
      */
-    private int hashListSize(@Nullable final Map<String, Set<String>> m) {
+    private static int hashListSize(@Nullable final Map<String, Set<String>> m) {
         int total = 0;
         if (m != null) {
             for (final Set<String> l : m.values()) {

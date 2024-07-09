@@ -22,7 +22,7 @@ public class HeartbeatAction {
 
     private static final Logger logger = LoggerFactory.getLogger(HeartbeatAction.class);
 
-    private Response processHeartbeat(final String fromPlace, final String toPlace) {
+    private static Response processHeartbeat(final String fromPlace, final String toPlace) {
         final IServiceProviderPlace thePlace;
         try {
             final HeartbeatAdapter da = new HeartbeatAdapter();

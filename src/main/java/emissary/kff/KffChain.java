@@ -183,7 +183,7 @@ public class KffChain {
      * @param csum the precomputed hash sums for our content
      * @return results of testing
      */
-    private KffResult checkAgainst(List<KffFilter> l, String itemName, ChecksumResults csum) throws Exception {
+    private static KffResult checkAgainst(List<KffFilter> l, String itemName, ChecksumResults csum) throws Exception {
         KffResult r = new KffResult(csum);
         r.setItemName(itemName);
 

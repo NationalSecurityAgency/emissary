@@ -108,7 +108,7 @@ public class EmissaryResponse {
         }
     }
 
-    private <T extends BaseEntity> T makeErrorEntity(String msg, Class<T> mapper) {
+    private static <T extends BaseEntity> T makeErrorEntity(String msg, Class<T> mapper) {
         T r = null;
         try {
             Object c = Class.forName(mapper.getName()).getDeclaredConstructor().newInstance();

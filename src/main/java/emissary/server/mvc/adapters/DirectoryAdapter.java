@@ -286,7 +286,7 @@ public class DirectoryAdapter extends EmissaryClient {
         }
     }
 
-    private DirectoryEntryMap filterDirectoryEntryMap(DirectoryEntryMap map) {
+    private static DirectoryEntryMap filterDirectoryEntryMap(DirectoryEntryMap map) {
         DirectoryEntryMap filtered = new DirectoryEntryMap();
         if (map.containsKey(DIRECTORY_KEY)) {
             filtered.put(DIRECTORY_KEY, map.get(DIRECTORY_KEY));

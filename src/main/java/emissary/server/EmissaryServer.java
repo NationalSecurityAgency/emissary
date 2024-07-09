@@ -532,7 +532,7 @@ public class EmissaryServer {
         return (EmissaryServer) Namespace.lookup(name);
     }
 
-    private ConstraintSecurityHandler buildSecurityHandler() {
+    private static ConstraintSecurityHandler buildSecurityHandler() {
         ConstraintSecurityHandler handler = new ConstraintSecurityHandler();
 
         Constraint authConstraint = new Constraint();
