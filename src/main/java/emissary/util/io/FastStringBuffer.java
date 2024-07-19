@@ -94,12 +94,12 @@ public class FastStringBuffer extends OutputStream {
     }
 
     /** Appends constant string literals only!!!!! */
-    public FastStringBuffer appendCLS(final String s) throws IOException {
-        return appendCLS(s, StandardCharsets.ISO_8859_1.name());
+    public FastStringBuffer appendCls(final String s) throws IOException {
+        return appendCls(s, StandardCharsets.ISO_8859_1.name());
     }
 
     /** Appends constant string literals only!!!!! */
-    public FastStringBuffer appendCLS(@Nullable final String s, final String charset) throws IOException {
+    public FastStringBuffer appendCls(@Nullable final String s, final String charset) throws IOException {
         if (s == null) {
             return this;
         }
@@ -118,11 +118,11 @@ public class FastStringBuffer extends OutputStream {
         return append(tmp);
     }
 
-    public FastStringBuffer appendCR() throws IOException {
+    public FastStringBuffer appendCr() throws IOException {
         return append(CRBYTES);
     }
 
-    public FastStringBuffer appendCRLF() throws IOException {
+    public FastStringBuffer appendCrLf() throws IOException {
         return append(CRLFBYTES);
     }
 
@@ -228,21 +228,21 @@ public class FastStringBuffer extends OutputStream {
     /**
      * Write UTF8 data to the output page buffer without specifying a start or end position, defaults to 0,-1
      */
-    public FastStringBuffer appendUTF8(final byte[] data, final String charset) throws IOException {
-        return appendUTF8(data, charset, 0, -1);
+    public FastStringBuffer appendUtf8(final byte[] data, final String charset) throws IOException {
+        return appendUtf8(data, charset, 0, -1);
     }
 
     /**
      * Write UTF8 data to the output page buffer without specifying a start position, defaults to 0
      */
-    public FastStringBuffer appendUTF8(final byte[] data, final String charset, final int end) throws IOException {
-        return appendUTF8(data, charset, 0, end);
+    public FastStringBuffer appendUtf8(final byte[] data, final String charset, final int end) throws IOException {
+        return appendUtf8(data, charset, 0, end);
     }
 
     /**
      * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing
      */
-    public FastStringBuffer appendUTF8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
+    public FastStringBuffer appendUtf8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
         final int actualEnd;
         if (end < 0) {
             actualEnd = data.length;
@@ -276,7 +276,7 @@ public class FastStringBuffer extends OutputStream {
         return append(data, actualStart, actualEnd - actualStart);
     }
 
-    public FastStringBuffer appendEscapedUTF8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
+    public FastStringBuffer appendEscapedUtf8(final byte[] data, @Nullable final String charset, final int start, final int end) throws IOException {
         final int actualEnd;
         if (end < 0) {
             actualEnd = data.length;
