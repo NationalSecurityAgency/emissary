@@ -37,10 +37,10 @@ public class HtmlEntityMap {
     /**
      * Give the value for the specified entity from the configuration file
      * 
-     * @param entity can be with or without ampersand and semi-colon
+     * @param entity can be with or without ampersand and semicolon
      * @return the configured value or null if unknown
      */
-    public String getValueForHTMLEntity(String entity) {
+    public String getValueForHtmlEntity(String entity) {
         if (entity.startsWith("&")) {
             if (entity.endsWith(";")) {
                 entity = entity.substring(1, entity.length() - 1);
@@ -67,7 +67,7 @@ public class HtmlEntityMap {
         out.println("      </thead>");
         out.println("      <tbody>");
         for (String ent : entityMap.keySet()) {
-            String val = getValueForHTMLEntity(ent);
+            String val = getValueForHtmlEntity(ent);
             int cpc = val.codePointCount(0, val.length());
             out.print("        <tr><td>&amp;" + ent + ";</td>");
             if (cpc == 1) {

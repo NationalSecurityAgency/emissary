@@ -16,9 +16,9 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes());
         assertEquals(2, hits.size());
-        assertEquals(0, hits.get(0).getID());
+        assertEquals(0, hits.get(0).getId());
         assertEquals(16, hits.get(0).getOffset());
-        assertEquals(1, hits.get(1).getID());
+        assertEquals(1, hits.get(1).getId());
         assertEquals(41, hits.get(1).getOffset());
 
         hits = multiKeywordScanner.findAll(null);
@@ -31,7 +31,7 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes(), 28);
         assertEquals(1, hits.size());
-        assertEquals(1, hits.get(0).getID());
+        assertEquals(1, hits.get(0).getId());
         assertEquals(41, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findAll(null, 0);
@@ -44,7 +44,7 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes(), 0, 24);
         assertEquals(1, hits.size());
-        assertEquals(0, hits.get(0).getID());
+        assertEquals(0, hits.get(0).getId());
         assertEquals(16, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findAll(null, 0, 0);
@@ -57,12 +57,12 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes());
         assertEquals(1, hits.size());
-        assertEquals(0, hits.get(0).getID());
+        assertEquals(0, hits.get(0).getId());
         assertEquals(16, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes());
         assertEquals(1, hits.size());
-        assertEquals(1, hits.get(0).getID());
+        assertEquals(1, hits.get(0).getId());
         assertEquals(41, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findNext(null);
@@ -75,7 +75,7 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes(), 28);
         assertEquals(1, hits.size());
-        assertEquals(1, hits.get(0).getID());
+        assertEquals(1, hits.get(0).getId());
         assertEquals(41, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findNext(null, 28);
@@ -88,7 +88,7 @@ class MultiKeywordScannerTest {
         multiKeywordScanner.loadKeywords(defaultKeywords);
         HitList hits = multiKeywordScanner.findNext(DEFAULT_DATA.getBytes(), 0, 24);
         assertEquals(1, hits.size());
-        assertEquals(0, hits.get(0).getID());
+        assertEquals(0, hits.get(0).getId());
         assertEquals(16, hits.get(0).getOffset());
 
         hits = multiKeywordScanner.findNext(null, 0, 0);
@@ -107,11 +107,11 @@ class MultiKeywordScannerTest {
         HitList hits = multiKeywordScanner.findAll(DEFAULT_DATA.getBytes());
 
         assertEquals(3, hits.size());
-        assertEquals(0, hits.get(0).getID());
+        assertEquals(0, hits.get(0).getId());
         assertEquals(4, hits.get(0).getOffset());
-        assertEquals(1, hits.get(1).getID());
+        assertEquals(1, hits.get(1).getId());
         assertEquals(10, hits.get(1).getOffset());
-        assertEquals(2, hits.get(2).getID());
+        assertEquals(2, hits.get(2).getId());
         assertEquals(36, hits.get(2).getOffset());
     }
 }
