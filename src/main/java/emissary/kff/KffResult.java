@@ -101,14 +101,14 @@ public class KffResult implements Serializable {
      * It is a dupe if the hit indicator is on and the reporting filter is a DUPE type filter
      */
     public boolean isDupe() {
-        return isHit() && getHitType() != null && getHitType() == FilterType.Duplicate;
+        return isHit() && getHitType() != null && getHitType() == FilterType.DUPLICATE;
     }
 
     /**
      * It is a known file if the hit indicator is on and the reporting filter is a IGNORE type filter
      */
     public boolean isKnown() {
-        return isHit() && getHitType() != null && getHitType() == FilterType.Ignore;
+        return isHit() && getHitType() != null && getHitType() == FilterType.IGNORE;
     }
 
     /**
