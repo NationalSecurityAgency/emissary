@@ -65,7 +65,7 @@ class ServiceProviderPlaceGetTLDTest extends UnitTest {
 
         @Override
         public void process(IBaseDataObject d) {
-            IBaseDataObject p = getTLD();
+            IBaseDataObject p = getTld();
             if (p != null && p.hasParameter("PARENT_INFO")) {
                 d.putParameter("CHILD_INFO", p.getStringParameter("PARENT_INFO").toUpperCase(Locale.getDefault()));
             } else {
