@@ -83,26 +83,26 @@ public class PkiUtil {
      * Build char array from password, load from file or read from environment variable.
      */
     @Nullable
-    public static char[] loadPW(@Nullable final String pazz) throws IOException {
-        if (pazz == null) {
+    public static char[] loadPassword(@Nullable final String password) throws IOException {
+        if (password == null) {
             return null;
         }
         String realPw;
-        if (pazz.startsWith(FILE_PRE)) {
-            final String pth = pazz.substring(FILE_PRE.length());
+        if (password.startsWith(FILE_PRE)) {
+            final String pth = password.substring(FILE_PRE.length());
             log.debug("Loading key password from file " + pth);
             try (BufferedReader r = new BufferedReader(new FileReader(pth))) {
                 realPw = r.readLine();
             }
             if (realPw == null) {
-                throw new IOException("Unable to load store password from " + pazz);
+                throw new IOException("Unable to load store password from " + password);
             }
         } else {
-            Matcher matcher = ENV_VARIABLE_PATTERN.matcher(pazz);
+            Matcher matcher = ENV_VARIABLE_PATTERN.matcher(password);
             if (matcher.matches()) {
                 realPw = System.getenv(matcher.group(1));
             } else {
-                realPw = pazz;
+                realPw = password;
             }
         }
         return realPw.toCharArray();
