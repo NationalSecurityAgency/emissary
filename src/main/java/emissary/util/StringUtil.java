@@ -10,13 +10,13 @@ public class StringUtil {
      * @param in String the raw string
      * @return String the corrected string where invalid characters become "/0x"+ascii value of character
      */
-    public static String XMLcorrect(String in) {
+    public static String escapeInvalidXml(String in) {
         // this is stolen from the implementation of Verifier.checkCharacterData(in);
         for (int i = 0, len = in.length(); i < len; i++) {
             char c = in.charAt(i);
             if (!(c > 0x1F && c < 0xD800)) { // for performance
                 if (!Verifier.isXMLCharacter(c)) {
-                    return in.substring(0, i) + "/0x" + Integer.toHexString(c) + XMLcorrect(in.substring(i + 1));
+                    return in.substring(0, i) + "/0x" + Integer.toHexString(c) + escapeInvalidXml(in.substring(i + 1));
                 }
             }
         }
