@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class JsonEscape {
 
-    private final static String ESCAPES = "ntr\"'/";
+    private static final String ESCAPES = "ntr\"'/\\";
 
     /**
      * Unescape a bunch of JSON bytes that might have \\uxxxx character values. Should already be UTF-8 since JSON is
