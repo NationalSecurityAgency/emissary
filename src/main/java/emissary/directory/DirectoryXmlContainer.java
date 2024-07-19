@@ -34,7 +34,7 @@ public class DirectoryXmlContainer {
         for (final String dataId : dir.getEntryKeys()) {
             final DirectoryEntryList list = dir.getEntryList(dataId);
             if (list != null) {
-                final Element listEl = list.getXML();
+                final Element listEl = list.getXml();
                 listEl.setAttribute(DATAID_ATTR, dataId);
                 root.addContent(listEl);
             }
@@ -58,7 +58,7 @@ public class DirectoryXmlContainer {
             final String dataId = entry.getKey();
             final DirectoryEntryList list = entry.getValue();
             if (list != null) {
-                final Element listEl = list.getXML();
+                final Element listEl = list.getXml();
                 listEl.setAttribute(DATAID_ATTR, dataId);
                 root.addContent(listEl);
             }
@@ -92,7 +92,7 @@ public class DirectoryXmlContainer {
 
             // Add them to the xml
             if (list.size() > 0) {
-                final Element listEl = list.getXML();
+                final Element listEl = list.getXml();
                 listEl.setAttribute(DATAID_ATTR, dataId);
                 root.addContent(listEl);
             }
@@ -155,7 +155,7 @@ public class DirectoryXmlContainer {
         final DirectoryEntryMap map = new DirectoryEntryMap();
         final List<Element> entryLists = el.getChildren(DirectoryEntryList.ENTRYLIST);
         for (final Element listElement : entryLists) {
-            final DirectoryEntryList d = DirectoryEntryList.fromXML(listElement);
+            final DirectoryEntryList d = DirectoryEntryList.fromXml(listElement);
             final String dataId = listElement.getAttributeValue(DATAID_ATTR);
             map.put(dataId, d);
         }

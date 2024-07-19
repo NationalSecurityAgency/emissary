@@ -244,7 +244,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
     /**
      * Build an entry list from the supplied xml fragment
      */
-    public static DirectoryEntryList fromXML(final Element e) {
+    public static DirectoryEntryList fromXml(final Element e) {
         final DirectoryEntryList d = new DirectoryEntryList();
         final List<Element> entryElements = e.getChildren(DirectoryEntry.ENTRY);
         for (Element entryElement : entryElements) {
@@ -256,7 +256,7 @@ public class DirectoryEntryList extends CopyOnWriteArrayList<DirectoryEntry> {
     /**
      * Turn this list into an XML fragment
      */
-    public Element getXML() {
+    public Element getXml() {
         final Element root = new Element(ENTRYLIST);
         for (final DirectoryEntry entry : this) {
             root.addContent(entry.getXml());
