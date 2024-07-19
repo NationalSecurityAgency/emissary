@@ -45,12 +45,12 @@ public class ChecksumCalculator {
      * Constructor initializes specified algorithm
      * 
      * @param alg string name of algorightm, e.g. SHA
-     * @param useCRC true if CRC32 should be calculated
+     * @param useCrc true if CRC32 should be calculated
      * @throws NoSuchAlgorithmException if the algorithm isn't available
      */
-    public ChecksumCalculator(String alg, boolean useCRC) throws NoSuchAlgorithmException {
+    public ChecksumCalculator(String alg, boolean useCrc) throws NoSuchAlgorithmException {
         this(new String[] {alg});
-        setUseCRC(useCRC);
+        setUseCrc(useCrc);
     }
 
     /**
@@ -63,7 +63,7 @@ public class ChecksumCalculator {
         if (algs != null && algs.length > 0) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
-                    setUseCRC(true);
+                    setUseCrc(true);
                 } else if (alg.equals("SSDEEP")) {
                     setUseSsdeep(true);
                 } else {
@@ -83,7 +83,7 @@ public class ChecksumCalculator {
         if (CollectionUtils.isNotEmpty(algs)) {
             for (String alg : algs) {
                 if (alg.equals("CRC32")) {
-                    setUseCRC(true);
+                    setUseCrc(true);
                 } else if (alg.equals("SSDEEP")) {
                     setUseSsdeep(true);
                 } else {
@@ -97,7 +97,7 @@ public class ChecksumCalculator {
     /**
      * Determine if we are using CRC summing
      */
-    public boolean getUseCRC() {
+    public boolean getUseCrc() {
         return (crc != null);
     }
 
@@ -106,7 +106,7 @@ public class ChecksumCalculator {
      * 
      * @param use true if CRC processing is desired
      */
-    public void setUseCRC(boolean use) {
+    public void setUseCrc(boolean use) {
         if (use) {
             crc = new CRC32();
         } else {
@@ -160,7 +160,7 @@ public class ChecksumCalculator {
 
         // Only use ssdeep if non-null
         if (ssdeep != null) {
-            res.setSsdeep(ssdeep.fuzzy_hash(buffer));
+            res.setSsdeep(ssdeep.fuzzyHash(buffer));
         }
 
         return res;
@@ -207,7 +207,7 @@ public class ChecksumCalculator {
         }
 
         if (ssdeep != null) {
-            res.setSsdeep(ssdeep.fuzzy_hash(sbcf));
+            res.setSsdeep(ssdeep.fuzzyHash(sbcf));
         }
 
         return res;

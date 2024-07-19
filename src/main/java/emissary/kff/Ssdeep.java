@@ -31,8 +31,6 @@ public final class Ssdeep {
     private static final int SPAMSUM_LENGTH = 64;
     private static final int MIN_BLOCKSIZE = 3;
 
-    public final int FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
-
     /** The window size for the rolling hash. */
     private static final int ROLLING_WINDOW_SIZE = 7;
 
@@ -52,7 +50,7 @@ public final class Ssdeep {
      * Base64 encoding table. Given a 5-bit value {@code n}, position {@code n} in the array is the code point (expressed as
      * a byte) that should appear.
      */
-    private static final byte[] b64Table = SpamSumSignature.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+    private static final byte[] b64Table = SpamSumSignature.getBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 
     /**
      * Get the base64 encoding of the low 6 bits of the given value.
@@ -400,7 +398,7 @@ public final class Ssdeep {
      * @param data The bytes to be hashed.
      * @return The SpamSum signature for the bytes.
      */
-    public String fuzzy_hash(final byte[] data) {
+    public String fuzzyHash(final byte[] data) {
         final SsContext ctx = new SsContext(data);
         while (true) {
             final SpamSumSignature signature = ctx.generateHash(data);
@@ -415,7 +413,7 @@ public final class Ssdeep {
         }
     }
 
-    public String fuzzy_hash(final SeekableByteChannelFactory sbcf) {
+    public String fuzzyHash(final SeekableByteChannelFactory sbcf) {
         final SsContext ctx = new SsContext(sbcf);
         while (true) {
             final SpamSumSignature signature = ctx.generateHash(sbcf);
@@ -437,7 +435,7 @@ public final class Ssdeep {
      * @return The SpamSum signature for the file.
      * @throws IOException If there is some I/O problem accessing the file.
      */
-    public String fuzzy_hash_file(final File file) throws IOException {
+    public String fuzzyHashFile(final File file) throws IOException {
         try (final RandomAccessFile stream = new RandomAccessFile(file, "r")) {
             final SsContext ctx = new SsContext(file);
             while (true) {
@@ -462,8 +460,8 @@ public final class Ssdeep {
      * @return The SpamSum signature for the file.
      * @throws IOException If there is some I/O problem accessing the file.
      */
-    public String fuzzy_hash_file(final String fileName) throws IOException {
-        return this.fuzzy_hash_file(new File(fileName));
+    public String fuzzyHashFile(final String fileName) throws IOException {
+        return this.fuzzyHashFile(new File(fileName));
     }
 
     /**
@@ -610,7 +608,7 @@ public final class Ssdeep {
         // Compute the edit distance between the two strings. The edit
         // distance gives us a pretty good idea of how closely related
         // the two strings are.
-        long score = EditDistance.edit_distn(s1, len1, s2, len2);
+        long score = EditDistance.calculateEditDistance(s1, len1, s2, len2);
         if (logger.isDebugEnabled()) {
             logger.debug("edit_dist: {}", score);
         }
@@ -654,7 +652,7 @@ public final class Ssdeep {
      * @return The score for the two signatures. The value is in the range 0..100, where 0 is a terrible match and 100 is a
      *         great match.
      */
-    public int Compare(@Nullable final SpamSumSignature signature1, @Nullable final SpamSumSignature signature2) {
+    public int compare(@Nullable final SpamSumSignature signature1, @Nullable final SpamSumSignature signature2) {
         if ((null == signature1) || (null == signature2)) {
             return -1;
         }
@@ -708,7 +706,7 @@ public final class Ssdeep {
             try (final InputStream is = Files.newInputStream(Paths.get(f))) {
                 final byte[] buffer = IOUtils.toByteArray(is);
                 // output format matches the original ssdeep program
-                System.out.println(ss.fuzzy_hash(buffer) + ",\"" + f + "\"");
+                System.out.println(ss.fuzzyHash(buffer) + ",\"" + f + "\"");
             }
         }
     }

@@ -23,7 +23,7 @@ public class SpamSumSignature {
      * <p>
      * Change a string into an array of bytes
      */
-    public static byte[] GetBytes(String str) {
+    public static byte[] getBytes(String str) {
         byte[] r = new byte[str.length()];
         for (int i = 0; i < r.length; i++) {
             r[i] = (byte) str.charAt(i);
@@ -35,7 +35,7 @@ public class SpamSumSignature {
      * <p>
      * Change a string into an array of bytes
      */
-    public static String GetString(byte[] hsh) {
+    public static String getString(byte[] hsh) {
         String r = "";
         for (int i = 0; i < hsh.length; i++) {
             r += (char) hsh[i];
@@ -70,8 +70,8 @@ public class SpamSumSignature {
         }
 
         blockSize = Integer.parseInt(signature.substring(0, 0 + idx1));
-        hash1 = GetBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));
-        hash2 = GetBytes(signature.substring(idx2 + 1));
+        hash1 = getBytes(signature.substring(idx1 + 1, idx1 + 1 + idx2 - idx1 - 1));
+        hash2 = getBytes(signature.substring(idx2 + 1));
     }
 
     public SpamSumSignature(long blockSize, byte[] hash1, byte[] hash2) {
@@ -128,8 +128,8 @@ public class SpamSumSignature {
 
     @Override
     public String toString() {
-        String hashText1 = GetString(hash1);
-        String hashText2 = GetString(hash2);
+        String hashText1 = getString(hash1);
+        String hashText2 = getString(hash2);
         return blockSize + ":" + hashText1 + ":" + hashText2;
     }
 
@@ -170,6 +170,6 @@ public class SpamSumSignature {
         SpamSumSignature sss1 = new SpamSumSignature(args[0]);
         SpamSumSignature sss2 = new SpamSumSignature(args[1]);
         Ssdeep ssdeep = new Ssdeep();
-        System.out.println("" + ssdeep.Compare(sss1, sss2));
+        System.out.println("" + ssdeep.compare(sss1, sss2));
     }
 }
