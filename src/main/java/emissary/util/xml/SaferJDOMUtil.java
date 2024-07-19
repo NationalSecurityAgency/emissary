@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
  */
 public class SaferJDOMUtil extends AbstractJDOMUtil {
 
+    @SuppressWarnings("MemberName")
     protected static SAXBuilder createSAXBuilder() {
         SAXBuilder builder = createSAXBuilder(false);
         // This is the PRIMARY defense. If DTDs (doctypes) are disallowed, almost all XML entity attacks are prevented
