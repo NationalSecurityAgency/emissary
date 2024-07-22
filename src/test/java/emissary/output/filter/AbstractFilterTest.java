@@ -3,6 +3,7 @@ package emissary.output.filter;
 import emissary.config.Configurator;
 import emissary.config.ServiceConfigGuide;
 import emissary.core.DataObjectFactory;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.test.core.junit5.UnitTest;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AbstractFilterTest extends UnitTest {
@@ -43,22 +45,20 @@ public class AbstractFilterTest extends UnitTest {
 
     @Test
     void testIncorrectConfigs() {
-         /* TODO
-         AbstractFilter f = getAbstractFilterInstance();
-         Configurator config = new ServiceConfigGuide();
-         config.addEntry("DENYLIST", "J*");
-         EmissaryRuntimeException e = assertThrows(
-         EmissaryRuntimeException.class,
-         () -> f.initialize(new ServiceConfigGuide(), "FOO", config));
-         assertTrue(e.getMessage().contains("Invalid filter configuration: DENYLIST = J*"));
-
-         config = new ServiceConfigGuide();
-         config.addEntry("DENYLIST", "*filetype.J*");
-         e = assertThrows(
-         EmissaryRuntimeException.class,
-         () -> f.initialize(new ServiceConfigGuide(), "FOO", config));
-         assertTrue(e.getMessage().contains("Invalid filter configuration: DENYLIST = *filetype.J*"));
-         */
+        AbstractFilter f = getAbstractFilterInstance();
+        String[] invalidEntries = {
+                "type*", "*type", "ty*pe", "type*.view", "*type.view", "ty*pe.view",
+                "type*.view*", "*type.view*", "ty*pe.view*", "type*.*", "*type.*", "ty*pe.*",
+                "type.*view", "type.vi*ew", "*.*view", "*.vi*ew",
+                "type.", ".view", "."};
+        for (String entry : invalidEntries) {
+            final Configurator config = new ServiceConfigGuide();
+            config.addEntry("DENYLIST", entry);
+            EmissaryRuntimeException e = assertThrows(
+                    EmissaryRuntimeException.class,
+                    () -> f.initialize(new ServiceConfigGuide(), "FOO", config));
+            assertTrue(e.getMessage().contains(String.format("Invalid filter configuration: `DENYLIST = %s`", entry)));
+        }
     }
 
     @Test

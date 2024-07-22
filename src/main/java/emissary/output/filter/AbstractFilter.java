@@ -2,6 +2,7 @@ package emissary.output.filter;
 
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.IBaseDataObject;
 import emissary.output.DropOffUtil;
 import emissary.util.JavaCharSet;
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -171,6 +173,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
             this.outputTypes = config.findEntriesAsSet("OUTPUT_TYPE");
             this.logger.debug("Loaded {} output types for filter {}", this.outputTypes.size(), this.outputTypes);
             this.denylist = config.findEntriesAsSet("DENYLIST");
+            this.validateDenylist();
             this.wildCardDenylist = this.denylist.stream()
                     .filter(i -> i.endsWith("*"))
                     .map(i -> i.substring(0, i.length() - 1))
@@ -180,6 +183,40 @@ public abstract class AbstractFilter implements IDropOffFilter {
             this.logger.debug("Loaded {} wildcard suffix ignorelist types for filter {}", this.wildCardDenylist.size(), this.wildCardDenylist);
         } else {
             this.logger.debug("InitializeCustom has null filter config");
+        }
+    }
+
+    protected void validateDenylist() {
+        Pattern charSet = Pattern.compile("^[\\w*]+[\\w*.]*[\\w*]+$"); // Match if acceptable characters are in correct order
+        Pattern repeatedPeriods = Pattern.compile("\\.\\."); // Match if any sequential `.` characters
+        Pattern typeWildcardFormat = Pattern.compile("^(\\*|\\w+)$"); // Match if String is `*` or word sequence
+        Pattern viewWildcardFormat = Pattern.compile("^[\\w.]*\\*?$"); // Match if String is word sequence with optional `*` suffix
+        final String errorPrefix = "Invalid filter configuration: `DENYLIST = %s` ";
+
+        for (String entry : this.denylist) {
+            if (charSet.matcher(entry).matches() && !repeatedPeriods.matcher(entry).matches()) {
+                String[] names = entry.split("\\.", 2);
+                String filetype = names[0];
+                if (!typeWildcardFormat.matcher(filetype).matches()) {
+                    throw new EmissaryRuntimeException(String.format(errorPrefix +
+                            "filetype `%s` must be wildcard `*` only or sequence of [A-Z, a-z, 0-9, _].",
+                            entry, filetype));
+                }
+                if (names.length > 1) {
+                    String viewName = names[1];
+                    if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
+                        logger.warn("`DENYLIST = {}` viewName `{}` should not contain any `.` characters", entry, viewName);
+                    }
+                    if (!viewWildcardFormat.matcher(viewName).matches()) {
+                        throw new EmissaryRuntimeException(String.format(errorPrefix +
+                                "viewName `%s` must be sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
+                                entry, viewName));
+                    }
+                }
+            } else {
+                throw new EmissaryRuntimeException(String.format(errorPrefix +
+                        "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.", entry));
+            }
         }
     }
 
