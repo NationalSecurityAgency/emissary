@@ -191,14 +191,14 @@ public abstract class AbstractFilter implements IDropOffFilter {
         Pattern repeatedPeriods = Pattern.compile("\\.\\."); // Match if any sequential `.` characters
         Pattern typeWildcardFormat = Pattern.compile("^(\\*|\\w+)$"); // Match if String is `*` or word sequence
         Pattern viewWildcardFormat = Pattern.compile("^[\\w.]*\\*?$"); // Match if String is word sequence with optional `*` suffix
-        final String errorPrefix = "Invalid filter configuration: `DENYLIST = %s` ";
 
         for (String entry : this.denylist) {
             if (charSet.matcher(entry).matches() && !repeatedPeriods.matcher(entry).matches()) {
                 String[] names = entry.split("\\.", 2);
                 String filetype = names[0];
                 if (!typeWildcardFormat.matcher(filetype).matches()) {
-                    throw new EmissaryRuntimeException(String.format(errorPrefix +
+                    throw new EmissaryRuntimeException(String.format(
+                            "Invalid filter configuration: `DENYLIST = %s` " +
                             "filetype `%s` must be wildcard `*` only or sequence of [A-Z, a-z, 0-9, _].",
                             entry, filetype));
                 }
@@ -208,13 +208,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
                         logger.warn("`DENYLIST = {}` viewName `{}` should not contain any `.` characters", entry, viewName);
                     }
                     if (!viewWildcardFormat.matcher(viewName).matches()) {
-                        throw new EmissaryRuntimeException(String.format(errorPrefix +
+                        throw new EmissaryRuntimeException(String.format(
+                                "Invalid filter configuration: `DENYLIST = %s` " +
                                 "viewName `%s` must be sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
                                 entry, viewName));
                     }
                 }
             } else {
-                throw new EmissaryRuntimeException(String.format(errorPrefix +
+                throw new EmissaryRuntimeException(String.format(
+                        "Invalid filter configuration: `DENYLIST = %s` " +
                         "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.", entry));
             }
         }
