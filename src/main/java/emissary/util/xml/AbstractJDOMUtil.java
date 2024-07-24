@@ -33,6 +33,7 @@ public abstract class AbstractJDOMUtil {
 
     public static final String ERR_MSG = "Could not parse document: ";
 
+    @SuppressWarnings("MemberName")
     protected static SAXBuilder createSAXBuilder(final boolean validate) {
         SAXBuilder builder;
         if (validate) {
