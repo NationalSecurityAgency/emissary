@@ -199,7 +199,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 if (!typeWildcardFormat.matcher(filetype).matches()) {
                     throw new EmissaryRuntimeException(String.format(
                             "Invalid filter configuration: `DENYLIST = %s` " +
-                            "filetype `%s` must be wildcard `*` only or sequence of [A-Z, a-z, 0-9, _].",
+                                    "filetype `%s` must be wildcard `*` only or sequence of [A-Z, a-z, 0-9, _].",
                             entry, filetype));
                 }
                 if (names.length > 1) {
@@ -210,14 +210,15 @@ public abstract class AbstractFilter implements IDropOffFilter {
                     if (!viewWildcardFormat.matcher(viewName).matches()) {
                         throw new EmissaryRuntimeException(String.format(
                                 "Invalid filter configuration: `DENYLIST = %s` " +
-                                "viewName `%s` must be sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
+                                        "viewName `%s` must be sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
                                 entry, viewName));
                     }
                 }
             } else {
                 throw new EmissaryRuntimeException(String.format(
                         "Invalid filter configuration: `DENYLIST = %s` " +
-                        "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.", entry));
+                                "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.",
+                        entry));
             }
         }
     }
