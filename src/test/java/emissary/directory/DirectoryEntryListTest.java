@@ -186,7 +186,7 @@ class DirectoryEntryListTest extends UnitTest {
         root.addContent(this.d.getXml());
         root.addContent(this.d2.getXml());
 
-        final DirectoryEntryList dl2 = DirectoryEntryList.fromXML(root);
+        final DirectoryEntryList dl2 = DirectoryEntryList.fromXml(root);
         assertNotNull(dl2, "From xml");
         assertEquals(2, dl2.size(), "Size from xml");
     }
