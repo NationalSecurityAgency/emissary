@@ -7,23 +7,23 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * Common place for the logic to glue byte arrays back together This is error prone and shouldn't be thought about any
+ * Common place for the logic to glue byte arrays back together. This is error-prone and shouldn't be thought about any
  * more than necessary
  */
 public class ByteUtil {
-    public static final byte Ascii_0 = '0';
-    public static final byte Ascii_9 = '9';
-    public static final byte Ascii_a = 'a';
-    public static final byte Ascii_f = 'f';
-    public static final byte Ascii_z = 'z';
-    public static final byte Ascii_A = 'A';
-    public static final byte Ascii_F = 'F';
-    public static final byte Ascii_Z = 'Z';
-    public static final byte Ascii_Slash = '/';
-    public static final byte Ascii_b = 'b';
-    public static final byte Ascii_ESC = 0x1b;
-    public static final byte Ascii_SP = 0x20;
-    public static final byte Ascii_DEL = 0x7f;
+    public static final byte ASCII_0 = '0';
+    public static final byte ASCII_9 = '9';
+    public static final byte ASCII_A_LC = 'a';
+    public static final byte ASCII_B_LC = 'b';
+    public static final byte ASCII_F_LC = 'f';
+    public static final byte ASCII_Z_LC = 'z';
+    public static final byte ASCII_A_UC = 'A';
+    public static final byte ASCII_F_UC = 'F';
+    public static final byte ASCII_Z_UC = 'Z';
+    public static final byte ASCII_SLASH = '/';
+    public static final byte ASCII_ESC = 0x1b;
+    public static final byte ASCII_SP = 0x20;
+    public static final byte ASCII_DEL = 0x7f;
     public static final String HEX = "0123456789abcdefABCDEF";
 
     /**
@@ -33,7 +33,7 @@ public class ByteUtil {
      * @return true if b is a hexadecimal
      */
     public static boolean isHexadecimal(byte b) {
-        return (b >= Ascii_A && b <= Ascii_F) || (b >= Ascii_a && b <= Ascii_f) || isDigit(b);
+        return (b >= ASCII_A_UC && b <= ASCII_F_UC) || (b >= ASCII_A_LC && b <= ASCII_F_LC) || isDigit(b);
     }
 
     /**
@@ -130,10 +130,10 @@ public class ByteUtil {
      * @return true if byte at pos in array b is a control or blank space byte
      */
     public static boolean isControlOrBlankSpace(byte[] b, int pos) {
-        if (b[pos] == Ascii_DEL || b[pos] <= Ascii_SP) {
+        if (b[pos] == ASCII_DEL || b[pos] <= ASCII_SP) {
             return true;
         }
-        if (b[pos] == Ascii_b && pos > 0 && b[pos - 1] == Ascii_ESC) {
+        if (b[pos] == ASCII_B_LC && pos > 0 && b[pos - 1] == ASCII_ESC) {
             return true;
         }
 
