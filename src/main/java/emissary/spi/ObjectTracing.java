@@ -7,7 +7,7 @@ import java.util.Map;
 public interface ObjectTracing {
 
     enum Stage {
-        PickUp, DropOff
+        PICK_UP, DROP_OFF
     }
 
     /**

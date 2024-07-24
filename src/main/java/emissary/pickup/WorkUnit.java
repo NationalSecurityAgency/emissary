@@ -43,16 +43,16 @@ public final class WorkUnit {
 
     public static WorkUnit readFromStream(DataInputStream in) throws IOException {
         final WorkUnit u = new WorkUnit(null);
-        u.fileName = WorkBundle.readUTFOrNull(in);
-        u.transactionId = WorkBundle.readUTFOrNull(in);
+        u.fileName = WorkBundle.readUtfOrNull(in);
+        u.transactionId = WorkBundle.readUtfOrNull(in);
         u.failedToParse = in.readBoolean();
         u.failedToProcess = in.readBoolean();
         return u;
     }
 
     public void writeToStream(DataOutputStream out) throws IOException {
-        WorkBundle.writeUTFOrNull(fileName, out);
-        WorkBundle.writeUTFOrNull(transactionId, out);
+        WorkBundle.writeUtfOrNull(fileName, out);
+        WorkBundle.writeUtfOrNull(transactionId, out);
         out.writeBoolean(failedToParse);
         out.writeBoolean(failedToProcess);
     }
