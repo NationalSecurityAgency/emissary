@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class AgentPoolTest extends UnitTest {
+class AgentPoolTest extends UnitTest {
 
     public static Stream<Arguments> poolSizeVales() {
         return Stream.of(
