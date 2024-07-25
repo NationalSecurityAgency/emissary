@@ -40,6 +40,7 @@ public class XmlOutputFilter extends AbstractRollableFilter {
     /**
      * Main to test output types
      */
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws IOException {
         String name = args.length > 0 ? args[0] : null;
 

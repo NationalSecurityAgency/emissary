@@ -125,6 +125,7 @@ public class Startup {
     /**
      * The main entry point
      */
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) throws IOException, EmissaryException {
 
 

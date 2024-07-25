@@ -116,6 +116,7 @@ public class DataIdentifier {
         return DATA_ID_STR_SZ;
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         DataIdentifier dataIdentifier = new DataIdentifier();
 

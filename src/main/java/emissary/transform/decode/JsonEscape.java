@@ -76,6 +76,7 @@ public class JsonEscape {
     /** This class is not meant to be instantiated. */
     private JsonEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < args.length; i++) {
             byte[] content = Executrix.readDataFromFile(args[i]);

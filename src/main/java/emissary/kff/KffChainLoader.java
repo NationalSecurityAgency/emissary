@@ -105,6 +105,7 @@ public class KffChainLoader {
     /**
      * Load the configured chain and run some data
      */
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         KffChain kff = getChainInstance();
 

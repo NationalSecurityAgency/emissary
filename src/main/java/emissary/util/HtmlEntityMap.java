@@ -90,6 +90,7 @@ public class HtmlEntityMap {
         out.println("</html>");
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) {
         HtmlEntityMap h = new HtmlEntityMap();
         h.dumpTestPage(System.out);

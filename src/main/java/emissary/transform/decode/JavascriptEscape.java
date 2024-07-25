@@ -42,6 +42,7 @@ public class JavascriptEscape {
     /** This class is not meant to be instantiated. */
     private JavascriptEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         int i = 0;
 

@@ -35,6 +35,7 @@ public class Banner {
         }
     }
 
+    @SuppressWarnings("SystemOut")
     public void dump() {
         System.out.println(bannerText);
     }
