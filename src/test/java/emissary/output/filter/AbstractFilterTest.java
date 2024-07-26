@@ -29,21 +29,6 @@ public class AbstractFilterTest extends UnitTest {
         };
     }
 
-    // AbstractFilter getDenyFilter(final String outputType) {
-    // Configurator config = new ServiceConfigGuide();
-    // config.addEntry("OUTPUT_SPEC_FOO", "/tmp/%S%.%F%");
-    // config.addEntry("OUTPUT_TYPE", outputType);
-    // config.addEntry("DENYLIST", "JSON.BSON.V_1.*");
-    // config.addEntry("DENYLIST", "JSON.JSON_ONE_LINE");
-    // config.addEntry("DENYLIST", "JSON.JSON_LANG_*");
-    // config.addEntry("DENYLIST", "*.PLAINTEXT");
-    // config.addEntry("DENYLIST", "*.MEDIA_*");
-    //
-    // AbstractFilter f = getAbstractFilterInstance();
-    // f.initialize(new ServiceConfigGuide(), "FOO", config);
-    // return f;
-    // }
-
     AbstractFilter getDenylistFilter(final List<String> denylist) {
         Configurator config = new ServiceConfigGuide();
         config.addEntry("OUTPUT_SPEC_FOO", "SPEC");
