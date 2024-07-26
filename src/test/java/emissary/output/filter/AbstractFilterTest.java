@@ -75,19 +75,20 @@ public class AbstractFilterTest extends UnitTest {
 
         String filetype1 = "JSON";
         for (String accepted : Arrays.asList(
-                "PrimaryView", "JSON_PRETTY", "JSON_LANG", "Geo", "JSON_1", "JSON_2_10")) {
+                "PrimaryView", "JSON_PRETTY", "JSON_LANG", "Geo", "JSON_1", "JSON_2_10", "JSON_2_10.1")) {
             assertFalse(f.denyListContains(filetype1, accepted), accepted + " should not be in denyList");
         }
 
         for (String denied : Arrays.asList(
-                "JSON_ML", "JSON_LANG_ENG", "JSON_LANG_RUS", "JSON_LANG_FRE", "GeoJSON", "JSON_1_", "JSON_1_0", "JSON_1_2")) {
+                "JSON_ML", "JSON_LANG_ENG", "JSON_LANG_RUS", "JSON_LANG_FRE",
+                "GeoJSON", "JSON_1_", "JSON_1_0", "JSON_1_2", "JSON_1_2.1")) {
             assertTrue(f.denyListContains(filetype1, denied), denied + " should be in denyList");
         }
 
         String filetype2 = "XML";
         for (String accepted : Arrays.asList(
                 "PrimaryView", "JSON_PRETTY", "JSON_LANG", "Geo", "GeoJSON",
-                "JSON_1_", "JSON_1", "JSON_1_0", "JSON_1_2", "JSON_2_10")) {
+                "JSON_1_", "JSON_1", "JSON_1_0", "JSON_1_2", "JSON_1_2.1", "JSON_2_10", "JSON_2_10.1")) {
             assertFalse(f.denyListContains(filetype2, accepted), accepted + " should not be in denyList");
         }
 
@@ -106,7 +107,7 @@ public class AbstractFilterTest extends UnitTest {
 
         IBaseDataObject payload = getTestPayload("JSON", Arrays.asList(
                 "JSON_PRETTY", "JSON_ML", "Geo", "GeoJSON",
-                "JSON_1_", "JSON_1", "JSON_1_0", "JSON_1_2", "JSON_2_10",
+                "JSON_1_", "JSON_1", "JSON_1_0", "JSON_1_2", "JSON_1_2.1", "JSON_2_10", "JSON_2_10.1",
                 "JSON_LANG", "JSON_LANG_ENG", "JSON_LANG_RUS", "JSON_LANG_FRE"));
 
         Set<String> checkTypes = f.getTypesToCheck(payload);
@@ -117,6 +118,7 @@ public class AbstractFilterTest extends UnitTest {
                 "JSON.JSON_PRETTY", ".JSON_PRETTY", "*.JSON_PRETTY",
                 "JSON.JSON_1", ".JSON_1", "*.JSON_1",
                 "JSON.JSON_2_10", ".JSON_2_10", "*.JSON_2_10",
+                "JSON.JSON_2_10.1", ".JSON_2_10.1", "*.JSON_2_10.1",
                 "JSON.PrimaryView", ".PrimaryView", "*.PrimaryView",
                 "JSON.Metadata", ".Metadata", "*.Metadata",
                 "*.AlternateView", "NONE.Language", "*.Language", "JSON")) {
@@ -131,7 +133,8 @@ public class AbstractFilterTest extends UnitTest {
                 "JSON.JSON_LANG_RUS", ".JSON_LANG_RUS", "*.JSON_LANG_RUS",
                 "JSON.JSON_1_", ".JSON_1_", "*.JSON_1_",
                 "JSON.JSON_1_0", ".JSON_1_0", "*.JSON_1_0",
-                "JSON.JSON_1_2", ".JSON_1_2", "*.JSON_1_2")) {
+                "JSON.JSON_1_2", ".JSON_1_2", "*.JSON_1_2",
+                "JSON.JSON_1_2.1", ".JSON_1_2.1", "*.JSON_1_2.1")) {
             assertFalse(checkTypes.contains(notChecked), notChecked + " should not be a checked type");
         }
     }

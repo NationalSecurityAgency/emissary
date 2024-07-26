@@ -180,7 +180,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
     protected void initializeDenylist(final Configurator config) {
         Pattern charSet = Pattern.compile("^[\\w*]+[\\w*.]*[\\w*]+$"); // Match if acceptable characters are in correct order
         Pattern repeatedPeriods = Pattern.compile("\\.\\."); // Match if any sequential `.` characters
-        Pattern wordSequenceWithPeriod = Pattern.compile("\\w+([\\w.]+\\w+)*"); // Match if string is made of [A-Z, a-z, 0-9, _] with . delimiters
+        Pattern wordSequenceWithPeriod = Pattern.compile("\\w+(\\.\\w+)?"); // Match if string is made of [A-Z, a-z, 0-9, _] with . delimiter
         Pattern wildcardSuffix = Pattern.compile("^[\\w.]*\\*?$"); // Match if String is word sequence with optional `*` suffix
 
         for (String entry : config.findEntriesAsSet("DENYLIST")) {
