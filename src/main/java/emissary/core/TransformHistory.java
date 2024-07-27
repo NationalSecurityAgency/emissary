@@ -160,8 +160,8 @@ public class TransformHistory implements Serializable {
      * @return true is place has been visited
      */
     public boolean hasVisited(final String pattern) {
-        for (final String historyValue : get()) {
-            if (KeyManipulator.gmatch(historyValue, pattern)) {
+        for (final History hist : history) {
+            if (KeyManipulator.gmatch(hist.getKey(), pattern)) {
                 return true;
             }
         }
@@ -174,11 +174,10 @@ public class TransformHistory implements Serializable {
      * @return true if not yet started
      */
     public boolean beforeStart() {
-        List<String> historyList = get();
-        if (historyList.isEmpty()) {
+        if (history.isEmpty()) {
             return true;
         }
-        final String s = historyList.get(historyList.size() - 1);
+        final String s = history.get(history.size() - 1).getKey();
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
