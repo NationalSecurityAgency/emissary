@@ -74,8 +74,9 @@ public class TransformHistory implements Serializable {
      */
     public void append(String key, boolean coordinated) {
         if (coordinated) {
-            if (CollectionUtils.isNotEmpty(history)) {
-                history.get(history.size() - 1).addCoordinated(key);
+            History last = lastVisit();
+            if (last != null) {
+                last.addCoordinated(key);
             }
         } else {
             history.add(new History(key));
@@ -134,11 +135,11 @@ public class TransformHistory implements Serializable {
      * @return last place visited
      */
     @Nullable
-    public String lastVisit() {
+    public History lastVisit() {
         if (CollectionUtils.isEmpty(history)) {
             return null;
         }
-        return history.get(history.size() - 1).getKey();
+        return history.get(history.size() - 1);
     }
 
     /**
@@ -147,11 +148,11 @@ public class TransformHistory implements Serializable {
      * @return second-to-last place visited
      */
     @Nullable
-    public String penultimateVisit() {
+    public History penultimateVisit() {
         if (CollectionUtils.isEmpty(history) || history.size() < 2) {
             return null;
         }
-        return history.get(history.size() - 2).getKey();
+        return history.get(history.size() - 2);
     }
 
     /**
