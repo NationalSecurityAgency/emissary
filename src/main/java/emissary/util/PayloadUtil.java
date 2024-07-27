@@ -131,12 +131,10 @@ public class PayloadUtil {
                     .append("\n");
         } else {
             for (final TransformHistory.History h : th) {
-                sb.append(" ");
-                if (h.wasCoordinated()) {
-                    sb.append(" ");
+                sb.append("     ").append(h.getKey(historyCase.equals(NO_URL))).append("\n");
+                for (final String coord : h.getCoordinated(historyCase.equals(NO_URL))) {
+                    sb.append("      ").append(coord).append("\n");
                 }
-                // check is NO_URL or not
-                sb.append("    ").append(historyCase.equals(NO_URL) ? h.getKeyNoUrl() : h.getKey()).append("\n");
             }
         }
         return sb.toString();
