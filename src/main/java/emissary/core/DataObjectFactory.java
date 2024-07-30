@@ -16,7 +16,7 @@ public class DataObjectFactory {
 
     public static final String DEFAULT_CLASS = BaseDataObject.class.getName();
 
-    private static String CLAZZ;
+    private static String clazz;
 
     private static final Logger logger = LoggerFactory.getLogger(DataObjectFactory.class);
 
@@ -26,10 +26,10 @@ public class DataObjectFactory {
     static {
         try {
             final Configurator c = ConfigUtil.getConfigInfo(AgentPool.class);
-            CLAZZ = c.findStringEntry("payload.class", DEFAULT_CLASS);
+            clazz = c.findStringEntry("payload.class", DEFAULT_CLASS);
         } catch (IOException ioe) {
             logger.warn("Unable to configure DataObjectFactory", ioe);
-            CLAZZ = DEFAULT_CLASS;
+            clazz = DEFAULT_CLASS;
         }
     }
 
@@ -44,21 +44,21 @@ public class DataObjectFactory {
      * Override implementation details
      */
     public static void setImplementingClass(final String clazz) {
-        CLAZZ = clazz;
+        DataObjectFactory.clazz = clazz;
     }
 
     /**
      * Get the name of the impl we are using
      */
     public static String getImplementingClass() {
-        return CLAZZ;
+        return clazz;
     }
 
     /**
      * Get an instance of the configured DataObject impl
      */
     public static IBaseDataObject getInstance() {
-        final Object o = Factory.create(CLAZZ);
+        final Object o = Factory.create(clazz);
         return (IBaseDataObject) o;
     }
 
@@ -68,7 +68,7 @@ public class DataObjectFactory {
      * @param args the arguments to the BaseDataObject constructor
      */
     public static IBaseDataObject getInstance(final Object... args) {
-        final Object o = Factory.create(CLAZZ, args);
+        final Object o = Factory.create(clazz, args);
         return (IBaseDataObject) o;
     }
 
@@ -94,7 +94,7 @@ public class DataObjectFactory {
      * @return an IBDO with the payload, filename, file type, and form set
      */
     public static IBaseDataObject getInstance(final byte[] payload, final String filename, final String form, final String fileType) {
-        final Object o = Factory.create(CLAZZ, payload, filename, form, fileType);
+        final Object o = Factory.create(clazz, payload, filename, form, fileType);
         return (IBaseDataObject) o;
     }
 }

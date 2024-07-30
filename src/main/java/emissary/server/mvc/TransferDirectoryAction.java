@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class TransferDirectoryAction {
     private static final Logger LOG = LoggerFactory.getLogger(TransferDirectoryAction.class);
 
-    public final String TARGET_DIR_PARAM = "targetDir";
+    public static final String TARGET_DIR_PARAM = "targetDir";
 
     @GET
     @Path("/TransferDirectory.action")
