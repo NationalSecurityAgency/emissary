@@ -402,6 +402,7 @@ public class HDMobileAgent extends MobileAgent {
      * @param payloadListArg list of IBaseDataObject for the place to operate on
      * @return list of &quot;sprouted&quot; payloads
      */
+    @SuppressWarnings("MemberName")
     protected List<IBaseDataObject> atPlaceHD(final IServiceProviderPlace place, final List<IBaseDataObject> payloadListArg) {
         MDC.put(MDCConstants.SERVICE_LOCATION, place.toString());
         logger.debug("In atPlaceHD {} with {} payload items", place, payloadListArg.size());

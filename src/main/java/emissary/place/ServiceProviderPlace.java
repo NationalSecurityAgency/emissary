@@ -130,10 +130,10 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
     private static final String UNUSED_PROXY = "UNUSABLE-XyZZy";
 
     /**
-     * These are used to track process vs processHD impelementations to know whether one can proxy for the other one
+     * These are used to track process vs processHD implementations to know whether one can proxy for the other one
      */
     protected boolean processMethodImplemented = false;
-    protected boolean processHDMethodImplemented = false;
+    protected boolean heavyDutyMethodImplemented = false;
 
     /**
      * Create a place and register it in the local directory. The default config must contain at least one SERVICE_KEY
@@ -618,7 +618,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      */
     @Override
     public void process(IBaseDataObject payload) throws ResourceException {
-        if (processHDMethodImplemented) {
+        if (heavyDutyMethodImplemented) {
             List<IBaseDataObject> children = processHeavyDuty(payload);
             if (children != null && !children.isEmpty()) {
                 logger.error("Sprouting is no longer supported, lost {} children", children.size());
@@ -663,12 +663,12 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
                     if (mname.equals("process") && rname.equals("void")) {
                         processMethodImplemented = true;
                     } else if (mname.equals("processHeavyDuty") && rname.equals(List.class.getName())) {
-                        processHDMethodImplemented = true;
+                        heavyDutyMethodImplemented = true;
                     }
                 }
             }
 
-            if (processHDMethodImplemented || processMethodImplemented) {
+            if (heavyDutyMethodImplemented || processMethodImplemented) {
                 logger.debug("Found enough process implementation at level {}", c.getName());
                 break;
             } else {
@@ -676,7 +676,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
             }
         }
 
-        if (!processMethodImplemented && !processHDMethodImplemented && !(this instanceof AgentsNotSupportedPlace)) {
+        if (!processMethodImplemented && !heavyDutyMethodImplemented && !(this instanceof AgentsNotSupportedPlace)) {
             logger.error("It appears that neither process nor processHeavyDuty is implemented. "
                     + "If that is incorrect you can directly set one of the corresponding "
                     + "boolean flags or override verifyProcessImplementationProvided or "
@@ -1089,7 +1089,7 @@ public abstract class ServiceProviderPlace implements IServiceProviderPlace,
      * payload.shortName().indexOf(Family.SEP) &gt; -1
      */
     @Nullable
-    protected IBaseDataObject getTLD() {
+    protected IBaseDataObject getTld() {
         try {
             MobileAgent agent = getAgent();
 
