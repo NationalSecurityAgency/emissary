@@ -12,7 +12,7 @@ import static emissary.server.api.Agents.AGENTS_ENDPOINT;
         subcommands = {HelpCommand.class})
 public class AgentsCommand extends MonitorCommand<AgentsResponseEntity> {
 
-    public static String COMMAND_NAME = "agents";
+    public static final String COMMAND_NAME = "agents";
 
     @Override
     public String getCommandName() {

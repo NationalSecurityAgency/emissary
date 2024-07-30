@@ -93,17 +93,16 @@ public class FileDataServer extends Pausable {
             // Process files currently in the pickup directory, list
             // the first bundleSize in a batch
             String[] fileList = theDirectory.list(new FilenameFilter() {
-                final int MAXFILESTOLIST = bundleSize;
+                final int maxFileToList = bundleSize;
                 int filesInList = 0;
 
                 @Override
                 public boolean accept(File dir, String name) {
-                    return !name.startsWith(".") && ++filesInList <= MAXFILESTOLIST;
+                    return !name.startsWith(".") && ++filesInList <= maxFileToList;
                 }
             });
 
-            // Rename all of the selected files out of the
-            // polling area
+            // Rename all the selected files out of the polling area
             for (int i = 0; fileList != null && i < fileList.length; i++) {
                 File f = new File(theDataDir, fileList[i]);
 
