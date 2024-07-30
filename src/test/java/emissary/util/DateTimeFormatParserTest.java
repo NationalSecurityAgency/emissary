@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class DateTimeFormatParserTest extends UnitTest {
+class DateTimeFormatParserTest extends UnitTest {
 
     private static final long EXPECTED_FULL = 1451931630; // 2016-01-04 18:20:30
     private static final long EXPECTED_NO_TIME = 1451865600; // 2016-01-04 00:00:00
