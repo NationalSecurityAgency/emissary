@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class LoggingInputStreamFactoryTest extends UnitTest {
     @Nullable
     private ListAppender<ILoggingEvent> appender = null;
+    @SuppressWarnings("HidingField")
     private final Logger logger = (Logger) LoggerFactory.getLogger(LoggingInputStreamFactoryTest.class);
 
     @BeforeEach

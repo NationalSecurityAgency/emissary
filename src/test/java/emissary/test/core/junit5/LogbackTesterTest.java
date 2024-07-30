@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LogbackTesterTest extends UnitTest {
+    @SuppressWarnings("HidingField")
     protected Logger logger = LoggerFactory.getLogger("TESTY");
 
     @Test
