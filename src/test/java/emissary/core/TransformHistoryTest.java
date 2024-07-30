@@ -68,14 +68,14 @@ public class TransformHistoryTest extends UnitTest {
         th.append(key2);
         assertEquals(2, th.getHistory().size());
         assertTrue(th.get().contains(key2));
-        assertFalse(th.getHistory().get(1).wasCoordinated());
+        assertTrue(th.getHistory().get(1).getCoordinated().isEmpty());
 
         // now append a coordinated value
         th.append(key3, true);
-        assertEquals(3, th.getHistory().size());
+        assertEquals(2, th.getHistory().size());
         assertFalse(th.get().contains(key3)); // does not include coordinated results
         assertTrue(th.get(true).contains(key3));
-        assertTrue(th.getHistory().get(2).wasCoordinated());
+        assertEquals(key3, th.getHistory().get(1).getCoordinated().get(0));
     }
 
     @Test
@@ -91,17 +91,17 @@ public class TransformHistoryTest extends UnitTest {
         th.append(key1);
         th.append(key2);
         th.append(key3, true);
-        assertEquals(3, th.getHistory().size());
+        assertEquals(2, th.getHistory().size());
 
-        assertEquals(key2, th.lastVisit()); // skips the coordinated place
-        assertEquals(key1, th.penultimateVisit());
+        assertEquals(key2, th.lastVisit().getKey()); // skips the coordinated place
+        assertEquals(key1, th.penultimateVisit().getKey());
 
         // set and check the history with the last place visited was not coordinated
         th.append(key4);
-        assertEquals(4, th.getHistory().size());
+        assertEquals(3, th.getHistory().size());
 
-        assertEquals(key4, th.lastVisit());
-        assertEquals(key2, th.penultimateVisit()); // skips the coordinated place
+        assertEquals(key4, th.lastVisit().getKey());
+        assertEquals(key2, th.penultimateVisit().getKey()); // skips the coordinated place
 
         // check if a place has been visited
         assertFalse(th.hasVisited("*.ONE_THING.*.*")); // coordinated place is ignored
@@ -151,7 +151,7 @@ public class TransformHistoryTest extends UnitTest {
 
         String newline = System.getProperty("line.separator");
         StringBuilder expected = new StringBuilder();
-        expected.append("transform history (6) :").append(newline);
+        expected.append("transform history (5) :").append(newline);
         expected.append("        -> ").append(key1).append(newline);
         expected.append("        -> ").append(key2).append(newline);
         expected.append("        -> ").append(key3).append(newline);
@@ -177,6 +177,6 @@ public class TransformHistoryTest extends UnitTest {
         TransformHistory th = new TransformHistory();
         th.append(key1);
 
-        assertEquals("UNKNOWN.FILE_PICK_UP.INPUT", th.getHistory().get(0).getKeyNoUrl());
+        assertEquals("UNKNOWN.FILE_PICK_UP.INPUT", th.getHistory().get(0).getKey(true));
     }
 }
