@@ -338,6 +338,7 @@ public class HtmlEscape {
     /** This class is not meant to be instantiated. */
     private HtmlEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         boolean useString = false;
         int i = 0;

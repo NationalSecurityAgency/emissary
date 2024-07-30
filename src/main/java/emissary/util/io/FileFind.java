@@ -60,6 +60,7 @@ public class FileFind {
         return new FileIterator(filename, filter);
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) {
 
         FileFind ff = new FileFind(FILES_FLAG | DIRECTORIES_FLAG);

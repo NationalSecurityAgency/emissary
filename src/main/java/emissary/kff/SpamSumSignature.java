@@ -161,6 +161,7 @@ public class SpamSumSignature {
         return hash2;
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) {
         if (args.length != 2) {
             System.out.println("Usage: SpamSumSignature ssdeep1 ssdeep2\nUse the full ssdeep value (xx:yyy:zzz)."

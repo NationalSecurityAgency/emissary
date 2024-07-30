@@ -198,6 +198,7 @@ public class JournalReader implements Closeable {
     /**
      * Prints contents of a Journal to stdout.
      */
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         String path = args[0];
         try (JournalReader jr = new JournalReader(Paths.get(path))) {

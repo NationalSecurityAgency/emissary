@@ -64,6 +64,7 @@ public class WatcherThread extends Thread {
         }
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws IOException {
         WatcherThread wt = new WatcherThread();
         String name = wt.getClass().getName();

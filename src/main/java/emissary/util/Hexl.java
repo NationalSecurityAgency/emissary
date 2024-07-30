@@ -111,6 +111,7 @@ public class Hexl {
     /** This class is not meant to be instantiated. */
     private Hexl() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] argv) {
 
         if (argv.length < 1) {

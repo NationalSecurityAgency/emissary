@@ -702,6 +702,7 @@ public final class Ssdeep {
         return (int) score;
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {

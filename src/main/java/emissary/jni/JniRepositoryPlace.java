@@ -161,6 +161,7 @@ public class JniRepositoryPlace extends ServiceProviderPlace {
      * Test standalone main
      */
 
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] argv) {
 
         if (argv.length < 1) {

@@ -76,6 +76,7 @@ public class ExtractResource {
     /**
      * Run from the command line specifying a set of resources to be extracted
      */
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) {
         final ExtractResource ex = new ExtractResource();
 
