@@ -63,7 +63,7 @@ public class AbstractFilterTest extends UnitTest {
             EmissaryRuntimeException e = assertThrows(
                     EmissaryRuntimeException.class,
                     () -> f.initialize(new ServiceConfigGuide(), "FOO", config));
-            assertTrue(e.getMessage().contains(String.format("Invalid filter configuration: `DENYLIST = %s`", entry)));
+            assertTrue(e.getMessage().contains(String.format("Invalid filter configuration: `DENYLIST = \"%s\"`", entry)));
         }
     }
 
