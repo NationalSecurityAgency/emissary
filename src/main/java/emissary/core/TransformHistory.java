@@ -182,11 +182,23 @@ public class TransformHistory implements Serializable {
         return s.contains(IServiceProviderPlace.SPROUT_KEY);
     }
 
+    public int size() {
+        return size(false);
+    }
+
+    public int size(boolean includeCoordinated) {
+        int size = history.size();
+        if (includeCoordinated) {
+            size += (int) history.stream().mapToLong(h -> h.coordinated.size()).sum();
+        }
+        return size;
+    }
+
     @Override
     public String toString() {
         final StringBuilder myOutput = new StringBuilder();
         final String ls = System.lineSeparator();
-        myOutput.append("transform history (").append(this.history.size()).append(") :").append(ls);
+        myOutput.append("transform history (").append(size(true)).append(") :").append(ls);
         history.forEach(x -> myOutput.append(x.toString()).append(ls));
         return myOutput.toString();
     }

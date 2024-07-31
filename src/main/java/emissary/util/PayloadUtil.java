@@ -112,7 +112,7 @@ public class PayloadUtil {
      */
     public static String getPayloadDisplayString(final IBaseDataObject payload) {
         final StringBuilder sb = new StringBuilder();
-        final List<TransformHistory.History> th = payload.getTransformHistory().getHistory();
+        final TransformHistory th = payload.getTransformHistory();
         final String fileName = payload.getFilename();
         final String fileType = payload.getFileType();
         final List<String> currentForms = payload.getAllCurrentForms();
@@ -120,7 +120,7 @@ public class PayloadUtil {
 
         sb.append("\n").append("filename: ").append(fileName).append("\n").append("   creationTimestamp: ").append(creationTimestamp).append("\n")
                 .append("   currentForms: ").append(currentForms).append("\n").append("   filetype: ").append(fileType).append("\n")
-                .append("   transform history (").append(th.size()).append(") :").append("\n");
+                .append("   transform history (").append(th.size(true)).append(") :").append("\n");
 
         // transform history output
         String historyCase = configureHistoryCase(fileType);
@@ -130,7 +130,7 @@ public class PayloadUtil {
                     .append(payload.getLastPlaceVisited())
                     .append("\n");
         } else {
-            for (final TransformHistory.History h : th) {
+            for (final TransformHistory.History h : th.getHistory()) {
                 sb.append("     ").append(h.getKey(historyCase.equals(NO_URL))).append("\n");
                 for (final String coord : h.getCoordinated(historyCase.equals(NO_URL))) {
                     sb.append("      ").append(coord).append("\n");

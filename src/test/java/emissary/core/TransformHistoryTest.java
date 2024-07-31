@@ -151,7 +151,7 @@ public class TransformHistoryTest extends UnitTest {
 
         String newline = System.getProperty("line.separator");
         StringBuilder expected = new StringBuilder();
-        expected.append("transform history (5) :").append(newline);
+        expected.append("transform history (6) :").append(newline);
         expected.append("        -> ").append(key1).append(newline);
         expected.append("        -> ").append(key2).append(newline);
         expected.append("        -> ").append(key3).append(newline);
