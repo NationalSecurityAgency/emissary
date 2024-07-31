@@ -187,7 +187,7 @@ public abstract class AbstractFilter implements IDropOffFilter {
                 String viewName = validateAndRemoveDenylistFiletype(entry);
 
                 if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
-                    logger.warn("`DENYLIST = {}` viewName `{}` should not contain any `.` characters", entry, viewName);
+                    logger.warn("`DENYLIST = \"{}\"` viewName `{}` should not contain any `.` characters", entry, viewName);
                 }
                 if (viewNameFormat.matcher(viewName).matches()) {
                     if (viewName.endsWith("*")) {
@@ -198,14 +198,14 @@ public abstract class AbstractFilter implements IDropOffFilter {
                     }
                 } else {
                     throw new EmissaryRuntimeException(String.format(
-                            "Invalid filter configuration: `DENYLIST = %s` " +
+                            "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                     "viewName `%s` must be a sequence of [A-Z, a-z, 0-9, _] with optional wildcard `*` suffix.",
                             entry, viewName));
                 }
 
             } else {
                 throw new EmissaryRuntimeException(String.format(
-                        "Invalid filter configuration: `DENYLIST = %s` " +
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                 "must be one sequence of [A-Z, a-z, 0-9, _] or two sequences separated with `.` delimiter.",
                         entry));
             }
@@ -224,12 +224,12 @@ public abstract class AbstractFilter implements IDropOffFilter {
 
             if (filetype.equals("*")) { // DENYLIST = "*.<viewName>" not allowed
                 throw new EmissaryRuntimeException(String.format(
-                        "Invalid filter configuration: `DENYLIST = %s` " +
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                 "wildcarded filetypes not allowed in denylist - Did you mean `DENYLIST = \"%s\"`?",
                         entry, viewName));
             } else if (!filetype.chars().allMatch(ch -> Character.isLetterOrDigit(ch) || ch == '_')) { // DENYLIST = "<type>*.<viewName>" not allowed
                 throw new EmissaryRuntimeException(String.format(
-                        "Invalid filter configuration: `DENYLIST = %s` " +
+                        "Invalid filter configuration: `DENYLIST = \"%s\"` " +
                                 "filetype `%s` must be a sequence of [A-Z, a-z, 0-9, _]",
                         entry, filetype));
             }
