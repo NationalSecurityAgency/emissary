@@ -55,7 +55,8 @@ public class AbstractFilterTest extends UnitTest {
                 "type*.*view", "*type.*view", "ty*pe.*view", "*.*view", ".*view", "*view",
                 "type*.vi*ew", "*type.vi*ew", "ty*pe.vi*ew", "*.vi*ew", ".vi*ew", "vi*ew",
                 "type*.view*", "*type.view*", "ty*pe.view*", "*.view*", ".view*",
-                "type.", "*", "type.*", ".", "type.view.", ".type.view", ".type.view.");
+                "type.", "*", "type.*", ".", "type.view.", ".type.view", ".type.view.",
+                "type..view", "type.view.view.view", "type.view*.view*", "type.view**", "view**");
         for (String entry : invalidEntries) {
             final Configurator config = new ServiceConfigGuide();
             config.addEntry("DENYLIST", entry);

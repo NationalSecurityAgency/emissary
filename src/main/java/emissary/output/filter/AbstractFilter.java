@@ -178,12 +178,11 @@ public abstract class AbstractFilter implements IDropOffFilter {
     }
 
     protected void initializeDenylist(final Configurator config) {
-        Pattern charSet = Pattern.compile("^[\\w*]+[\\w*.]*[\\w*]+$"); // Match if acceptable characters are in correct order
-        Pattern repeatedPeriods = Pattern.compile("\\.\\."); // Match if any sequential `.` characters
+        Pattern charSetOrdering = Pattern.compile("^[\\w*]+(\\.[\\w*]+)*$"); // Match if acceptable characters are in correct order
         Pattern viewNameFormat = Pattern.compile("^\\w+(\\.\\w+)?\\*?$"); // Match if String is word sequence with optional `*` suffix
 
         for (String entry : config.findEntriesAsSet("DENYLIST")) {
-            if (charSet.matcher(entry).matches() && !repeatedPeriods.matcher(entry).matches()) {
+            if (charSetOrdering.matcher(entry).matches()) {
                 String viewName = validateAndRemoveDenylistFiletype(entry);
 
                 if (viewName.chars().filter(ch -> ch == '.').count() > 0) {
