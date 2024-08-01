@@ -818,15 +818,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     @Override
     public DirectoryEntry getLastPlaceVisited() {
-        String entry = history.lastVisit();
-        return entry == null ? null : new DirectoryEntry(entry);
+        TransformHistory.History entry = history.lastVisit();
+        return entry == null ? null : new DirectoryEntry(entry.getKey());
     }
 
     @Nullable
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
-        String entry = history.penultimateVisit();
-        return entry == null ? null : new DirectoryEntry(entry);
+        TransformHistory.History entry = history.penultimateVisit();
+        return entry == null ? null : new DirectoryEntry(entry.getKey());
     }
 
     @Override
