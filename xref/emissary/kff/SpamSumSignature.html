@@ -169,18 +169,19 @@
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">return</strong> hash2;
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>     }
 <a class="jxr_linenumber" name="L163" href="#L163">163</a> 
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">if</strong> (args.length != 2) {
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             System.out.println(<span class="jxr_string">"Usage: SpamSumSignature ssdeep1 ssdeep2\nUse the full ssdeep value (xx:yyy:zzz)."</span>
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>                     + <span class="jxr_string">"\nReturns the score between the two values."</span>);
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             System.exit(1);
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         }
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss1 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[0]);
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss2 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[1]);
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssd<a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>sdeep</a> ssdeep = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         System.out.println(<span class="jxr_string">""</span> + ssdeep.Compare(sss1, sss2));
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>     }
-<a class="jxr_linenumber" name="L175" href="#L175">175</a> }
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>         <strong class="jxr_keyword">if</strong> (args.length != 2) {
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>             System.out.println(<span class="jxr_string">"Usage: SpamSumSignature ssdeep1 ssdeep2\nUse the full ssdeep value (xx:yyy:zzz)."</span>
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>                     + <span class="jxr_string">"\nReturns the score between the two values."</span>);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>             System.exit(1);
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         }
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss1 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[0]);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignat<a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>Signature">SpamSumSignature</a> sss2 = <strong class="jxr_keyword">new</strong> <a name="SpamSumSignature" href="../../emissary/kff/SpamSumSignature.html#SpamSumSignature">SpamSumSignature</a>(args[1]);
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssd<a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>sdeep</a> ssdeep = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         System.out.println(<span class="jxr_string">""</span> + ssdeep.Compare(sss1, sss2));
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
+<a class="jxr_linenumber" name="L176" href="#L176">176</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -132,11 +132,11 @@
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> readFromStream(DataInputStream in) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         <a name="WorkBundle" href="../../emissary/pickup/WorkBund<a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>rkBundle">WorkBundle</a> wb = <strong class="jxr_keyword">new</strong> <a name="WorkBundle" href="../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a>();
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>         wb.bundleId = readUTFOrNull(in);
-<a class="jxr_linenumber" name="L128" href="#L128">128</a>         wb.outputRoot = readUTFOrNull(in);
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         wb.eatPrefix = readUTFOrNull(in);
-<a class="jxr_linenumber" name="L130" href="#L130">130</a>         wb.caseId = readUTFOrNull(in);
-<a class="jxr_linenumber" name="L131" href="#L131">131</a>         wb.sentTo = readUTFOrNull(in);
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>         wb.bundleId = readUtfOrNull(in);
+<a class="jxr_linenumber" name="L128" href="#L128">128</a>         wb.outputRoot = readUtfOrNull(in);
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         wb.eatPrefix = readUtfOrNull(in);
+<a class="jxr_linenumber" name="L130" href="#L130">130</a>         wb.caseId = readUtfOrNull(in);
+<a class="jxr_linenumber" name="L131" href="#L131">131</a>         wb.sentTo = readUtfOrNull(in);
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>         wb.errorCount = in.readInt();
 <a class="jxr_linenumber" name="L133" href="#L133">133</a>         wb.priority = in.readInt();
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>         wb.simpleMode = in.readBoolean();
@@ -161,11 +161,11 @@
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     * @throws IOException if there is a problem writing to the stream.</em>
 <a class="jxr_linenumber" name="L154" href="#L154">154</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeToStream(DataOutputStream out) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>         writeUTFOrNull(bundleId, out);
-<a class="jxr_linenumber" name="L157" href="#L157">157</a>         writeUTFOrNull(outputRoot, out);
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         writeUTFOrNull(eatPrefix, out);
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         writeUTFOrNull(caseId, out);
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         writeUTFOrNull(sentTo, out);
+<a class="jxr_linenumber" name="L156" href="#L156">156</a>         writeUtfOrNull(bundleId, out);
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         writeUtfOrNull(outputRoot, out);
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>         writeUtfOrNull(eatPrefix, out);
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         writeUtfOrNull(caseId, out);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         writeUtfOrNull(sentTo, out);
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         out.writeInt(errorCount);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>         out.writeInt(priority);
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         out.writeBoolean(simpleMode);
@@ -183,14 +183,14 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a>     }
 <a class="jxr_linenumber" name="L176" href="#L176">176</a> 
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     @Nullable
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">static</strong> String readUTFOrNull(DataInputStream in) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">static</strong> String readUtfOrNull(DataInputStream in) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">if</strong> (in.readBoolean()) {
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">return</strong> in.readUTF();
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         }
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L183" href="#L183">183</a>     }
 <a class="jxr_linenumber" name="L184" href="#L184">184</a> 
-<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> writeUTFOrNull(@Nullable String s, DataOutputStream out) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L185" href="#L185">185</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> writeUtfOrNull(@Nullable String s, DataOutputStream out) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         out.writeBoolean(s != <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         <strong class="jxr_keyword">if</strong> (s != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L188" href="#L188">188</a>             out.writeUTF(s);

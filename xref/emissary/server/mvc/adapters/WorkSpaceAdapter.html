@@ -46,7 +46,7 @@
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">public</strong> <a name="EmissaryResponse" href="../../../../emissary/client/EmissaryResponse.html#EmissaryResponse">EmissaryResponse</a> outboundOpenWorkSpace(<strong class="jxr_keyword">final</strong> String place, <strong class="jxr_keyword">final</strong> String space) {
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>  
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>          <strong class="jxr_keyword">final</strong> String placeUrl = KeyManipulator.getServiceHostUrl(place);
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, CONTEXT, <span class="jxr_string">"/WorkSpaceClientOpenWorkSpace.action"</span>);
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, context, <span class="jxr_string">"/WorkSpaceClientOpenWorkSpace.action"</span>);
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">final</strong> List&lt;NameValuePair&gt; nvps = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>          nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(CLIENT_NAME, place));
@@ -67,7 +67,7 @@
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">public</strong> <a name="WorkBundle" href="../../../../emissary/pickup/WorkBundle.html#WorkBundle">WorkBundle</a> outboundWorkSpaceTake(<strong class="jxr_keyword">final</strong> String space, <strong class="jxr_keyword">final</strong> String place) {
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">final</strong> String placeUrl = KeyManipulator.getServiceHostUrl(space);
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, CONTEXT, <span class="jxr_string">"/WorkSpaceClientSpaceTake.action"</span>);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, context, <span class="jxr_string">"/WorkSpaceClientSpaceTake.action"</span>);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>  
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          <strong class="jxr_keyword">final</strong> List&lt;NameValuePair&gt; nvps = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>          nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(CLIENT_NAME, place));
@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>  <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> outboundBundleCompletion(<strong class="jxr_keyword">final</strong> String space, <strong class="jxr_keyword">final</strong> String place, <strong class="jxr_keyword">final</strong> String bundleId, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> itWorked) {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">final</strong> String placeUrl = KeyManipulator.getServiceHostUrl(space);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, CONTEXT, <span class="jxr_string">"/WorkBundleCompleted.action"</span>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(placeUrl, context, <span class="jxr_string">"/WorkBundleCompleted.action"</span>);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          <strong class="jxr_keyword">final</strong> List&lt;NameValuePair&gt; nvps = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>          nvps.add(<strong class="jxr_keyword">new</strong> BasicNameValuePair(CLIENT_NAME, place));

@@ -262,7 +262,7 @@
 <a class="jxr_linenumber" name="L254" href="#L254">254</a>             <strong class="jxr_keyword">final</strong> String message = <span class="jxr_string">"Message from instance "</span> + i;
 <a class="jxr_linenumber" name="L255" href="#L255">255</a>             <strong class="jxr_keyword">final</strong> Exception exception = <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"Exception from instance "</span> + i);
 <a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>             executorService.submit(() -&gt; {
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">var</strong> unused = executorService.submit(() -&gt; {
 <a class="jxr_linenumber" name="L258" href="#L258">258</a>                 <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> j = 0; j &lt; iterations; j++) {
 <a class="jxr_linenumber" name="L259" href="#L259">259</a>                     loggingPrintStream.println(message);
 <a class="jxr_linenumber" name="L260" href="#L260">260</a>                     exception.printStackTrace(loggingPrintStream);

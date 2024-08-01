@@ -72,48 +72,49 @@
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>          }
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      }
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          <a name="WatcherThread" href="../../emissary/util/WatcherThr<a name="WatcherThread" href="../../emissary/util/WatcherThread.html#WatcherThread">WatcherThread</a>herThread">WatcherThread</a> wt = <strong class="jxr_keyword">new</strong> <a name="WatcherThread" href="../../emissary/util/WatcherThread.html#WatcherThread">WatcherThread</a>();
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          String name = wt.getClass().getName();
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          <strong class="jxr_keyword">if</strong> (args.length != 2) {
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>              System.out.println(<span class="jxr_string">"usage: "</span> + name + <span class="jxr_string">" time cmd"</span>);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>  
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>          }
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>          wt.setDelay(Integer.parseInt(args[0]));
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          System.out.println(name + <span class="jxr_string">" begins at "</span> + Instant.now());
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          Process proc = Runtime.getRuntime().exec(args[1]);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>  
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          wt.setProcess(proc);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>  
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>          PrintStream out = System.out;
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          PrintStream err = System.err;
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>          Thread t1 = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> <a name="ReadOutput" href="../../emissary/util/io/ReadOutput.html#ReadOutput">ReadOutput</a>(proc.getInputStream(), name, out));
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Thread t2 = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> <a name="ReadOutput" href="../../emissary/util/io/ReadOutput.html#ReadOutput">ReadOutput</a>(proc.getErrorStream(), name, err));
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>  
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          wt.start();
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          t1.start();
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>          t2.start();
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>  
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>              proc.waitFor();
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>              wt.killMe();
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>              t1.join();
-<a class="jxr_linenumber" name="L99" href="#L99">99</a>              t2.join();
-<a class="jxr_linenumber" name="L100" href="#L100">100</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException ix) {
-<a class="jxr_linenumber" name="L101" href="#L101">101</a>             Thread.currentThread().interrupt();
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>         }
-<a class="jxr_linenumber" name="L103" href="#L103">103</a> 
-<a class="jxr_linenumber" name="L104" href="#L104">104</a>         System.out.println(name + <span class="jxr_string">" ends at "</span> + Instant.now());
-<a class="jxr_linenumber" name="L105" href="#L105">105</a> 
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          <a name="WatcherThread" href="../../emissary/util/WatcherThr<a name="WatcherThread" href="../../emissary/util/WatcherThread.html#WatcherThread">WatcherThread</a>herThread">WatcherThread</a> wt = <strong class="jxr_keyword">new</strong> <a name="WatcherThread" href="../../emissary/util/WatcherThread.html#WatcherThread">WatcherThread</a>();
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          String name = wt.getClass().getName();
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>  
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          <strong class="jxr_keyword">if</strong> (args.length != 2) {
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>              System.out.println(<span class="jxr_string">"usage: "</span> + name + <span class="jxr_string">" time cmd"</span>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>  
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>              <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>          }
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>  
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>          wt.setDelay(Integer.parseInt(args[0]));
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>  
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          System.out.println(name + <span class="jxr_string">" begins at "</span> + Instant.now());
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>  
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          Process proc = Runtime.getRuntime().exec(args[1]);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>  
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          wt.setProcess(proc);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>  
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          PrintStream out = System.out;
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          PrintStream err = System.err;
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>          Thread t1 = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> <a name="ReadOutput" href="../../emissary/util/io/ReadOutput.html#ReadOutput">ReadOutput</a>(proc.getInputStream(), name, out));
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>          Thread t2 = <strong class="jxr_keyword">new</strong> Thread(<strong class="jxr_keyword">new</strong> <a name="ReadOutput" href="../../emissary/util/io/ReadOutput.html#ReadOutput">ReadOutput</a>(proc.getErrorStream(), name, err));
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>  
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          wt.start();
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>          t1.start();
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>          t2.start();
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>  
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>          <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>              proc.waitFor();
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>              wt.killMe();
+<a class="jxr_linenumber" name="L99" href="#L99">99</a>              t1.join();
+<a class="jxr_linenumber" name="L100" href="#L100">100</a>             t2.join();
+<a class="jxr_linenumber" name="L101" href="#L101">101</a>         } <strong class="jxr_keyword">catch</strong> (InterruptedException ix) {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>             Thread.currentThread().interrupt();
+<a class="jxr_linenumber" name="L103" href="#L103">103</a>         }
+<a class="jxr_linenumber" name="L104" href="#L104">104</a> 
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>         System.out.println(name + <span class="jxr_string">" ends at "</span> + Instant.now());
 <a class="jxr_linenumber" name="L106" href="#L106">106</a> 
-<a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
-<a class="jxr_linenumber" name="L108" href="#L108">108</a> }
+<a class="jxr_linenumber" name="L107" href="#L107">107</a> 
+<a class="jxr_linenumber" name="L108" href="#L108">108</a>     }
+<a class="jxr_linenumber" name="L109" href="#L109">109</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

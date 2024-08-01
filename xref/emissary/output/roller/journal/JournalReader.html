@@ -206,18 +206,19 @@
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L199" href="#L199">199</a> <em class="jxr_javadoccomment">     * Prints contents of a Journal to stdout.</em>
 <a class="jxr_linenumber" name="L200" href="#L200">200</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>         String path = args[0];
-<a class="jxr_linenumber" name="L203" href="#L203">203</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../../emissary/output/ro<a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>JournalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(Paths.get(path))) {
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             <a name="Journal" href="../../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> j = jr.getJournal();
-<a class="jxr_linenumber" name="L205" href="#L205">205</a>             System.out.println(<span class="jxr_string">"Journal File: "</span> + path);
-<a class="jxr_linenumber" name="L206" href="#L206">206</a>             System.out.println(<span class="jxr_string">"Journal Version: "</span> + j.getKey());
-<a class="jxr_linenumber" name="L207" href="#L207">207</a>             <strong class="jxr_keyword">for</strong> (<a name="JournalEntry" href="../../../../emissary/output/roller/journal/JournalEntry.html#JournalEntry">JournalEntry</a> je : j.getEntries()) {
-<a class="jxr_linenumber" name="L208" href="#L208">208</a>                 System.out.println(je.toString());
-<a class="jxr_linenumber" name="L209" href="#L209">209</a>             }
-<a class="jxr_linenumber" name="L210" href="#L210">210</a>         }
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>     }
-<a class="jxr_linenumber" name="L212" href="#L212">212</a> }
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L203" href="#L203">203</a>         String path = args[0];
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>         <strong class="jxr_keyword">try</strong> (<a name="JournalReader" href="../../../../emissary/output/ro<a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>JournalReader.html#JournalReader">JournalReader</a> jr = <strong class="jxr_keyword">new</strong> <a name="JournalReader" href="../../../../emissary/output/roller/journal/JournalReader.html#JournalReader">JournalReader</a>(Paths.get(path))) {
+<a class="jxr_linenumber" name="L205" href="#L205">205</a>             <a name="Journal" href="../../../../emissary/output/roller/journal/Journal.html#Journal">Journal</a> j = jr.getJournal();
+<a class="jxr_linenumber" name="L206" href="#L206">206</a>             System.out.println(<span class="jxr_string">"Journal File: "</span> + path);
+<a class="jxr_linenumber" name="L207" href="#L207">207</a>             System.out.println(<span class="jxr_string">"Journal Version: "</span> + j.getKey());
+<a class="jxr_linenumber" name="L208" href="#L208">208</a>             <strong class="jxr_keyword">for</strong> (<a name="JournalEntry" href="../../../../emissary/output/roller/journal/JournalEntry.html#JournalEntry">JournalEntry</a> je : j.getEntries()) {
+<a class="jxr_linenumber" name="L209" href="#L209">209</a>                 System.out.println(je.toString());
+<a class="jxr_linenumber" name="L210" href="#L210">210</a>             }
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>         }
+<a class="jxr_linenumber" name="L212" href="#L212">212</a>     }
+<a class="jxr_linenumber" name="L213" href="#L213">213</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

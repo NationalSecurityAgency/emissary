@@ -165,7 +165,7 @@
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> runHttpTest() {
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         <strong class="jxr_keyword">final</strong> Version version = <strong class="jxr_keyword">new</strong> Version();
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">final</strong> EmissaryClient h = <strong class="jxr_keyword">new</strong> EmissaryClient();
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>         <strong class="jxr_keyword">final</strong> String urlBase = KeyManipulator.getServiceHostUrl(<strong class="jxr_keyword">this</strong>.dir1.getKey()) + EmissaryClient.CONTEXT + <span class="jxr_string">"/"</span>;
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         <strong class="jxr_keyword">final</strong> String urlBase = KeyManipulator.getServiceHostUrl(<strong class="jxr_keyword">this</strong>.dir1.getKey()) + EmissaryClient.context + <span class="jxr_string">"/"</span>;
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         HttpGet get = <strong class="jxr_keyword">new</strong> HttpGet(urlBase + <span class="jxr_string">"welcome.jsp"</span>);
 <a class="jxr_linenumber" name="L162" href="#L162">162</a>         EmissaryResponse ws = h.send(get);
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         String msg = ws.getContentString();

@@ -114,7 +114,7 @@
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         assertTrue(mcdFilter.check(TEST_ID_WITH_SPACES, createSums(mcdFilter)), <span class="jxr_string">"Filter should hit"</span>);
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>     }
 <a class="jxr_linenumber" name="L108" href="#L108">108</a> 
-<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">private</strong> ChecksumResults createSums(KffMemcached mcd) <strong class="jxr_keyword">throws</strong> NoSuchAlgorithmException {
+<a class="jxr_linenumber" name="L109" href="#L109">109</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ChecksumResults createSums(KffMemcached mcd) <strong class="jxr_keyword">throws</strong> NoSuchAlgorithmException {
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>         List&lt;String&gt; kffalgs = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>         kffalgs.add(mcd.getPreferredAlgorithm());
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ChecksumCalculator(kffalgs).digest(TEST_PAYLOAD.getBytes());

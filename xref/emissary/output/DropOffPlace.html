@@ -239,12 +239,12 @@
 <a class="jxr_linenumber" name="L231" href="#L231">231</a>                 logger.info(
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>                         <span class="jxr_string">"Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}, payload size: {} bytes"</span>,
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>                         tld.getInternalId(), <strong class="jxr_keyword">this</strong>.dropOffUtil.getBestId(tld, tld),
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>                         Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>                         Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>                         tld.getFileType(), tld.getChannelSize());
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L237" href="#L237">237</a>                 logger.info(<span class="jxr_string">"Finished DropOff for object {}, with external id: {}, with total processing time: {}ms, with filetype: {}"</span>,
 <a class="jxr_linenumber" name="L238" href="#L238">238</a>                         tld.getInternalId(), <strong class="jxr_keyword">this</strong>.dropOffUtil.getBestId(tld, tld),
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>                         Duration.between(Instant.now(), tld.getCreationTimestamp()).toMillis(),
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>                         Duration.between(tld.getCreationTimestamp(), Instant.now()).toMillis(),
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>                         tld.getFileType());
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>             }
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 

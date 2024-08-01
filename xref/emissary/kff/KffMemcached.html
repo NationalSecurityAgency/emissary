@@ -21,7 +21,7 @@
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.net.InetSocketAddress;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.LinkedList;
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
 <a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.Future;
@@ -143,7 +143,7 @@
 <a class="jxr_linenumber" name="L135" href="#L135">135</a> 
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>         <em class="jxr_comment">// Load up the list of servers</em>
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>         Set&lt;String&gt; serversFromConfig = configG.findEntriesAsSet(<span class="jxr_string">"MEMCACHED_SERVER"</span>);
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         List&lt;InetSocketAddress&gt; servers = <strong class="jxr_keyword">new</strong> LinkedList&lt;&gt;();
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         List&lt;InetSocketAddress&gt; servers = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>         <strong class="jxr_keyword">for</strong> (String serverFromConfig : serversFromConfig) {
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>             <em class="jxr_comment">// Transform to an InetSocketAddress</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>             <strong class="jxr_keyword">if</strong> (serverFromConfig.contains(<span class="jxr_string">":"</span>)) {

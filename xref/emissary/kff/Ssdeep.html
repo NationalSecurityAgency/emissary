@@ -710,17 +710,18 @@
 <a class="jxr_linenumber" name="L702" href="#L702">702</a>         <strong class="jxr_keyword">return</strong> (<strong class="jxr_keyword">int</strong>) score;
 <a class="jxr_linenumber" name="L703" href="#L703">703</a>     }
 <a class="jxr_linenumber" name="L704" href="#L704">704</a> 
-<a class="jxr_linenumber" name="L705" href="#L705">705</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L706" href="#L706">706</a>         <strong class="jxr_keyword">final</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html<a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>p">Ssdeep</a> ss = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
-<a class="jxr_linenumber" name="L707" href="#L707">707</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String f : args) {
-<a class="jxr_linenumber" name="L708" href="#L708">708</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Files.newInputStream(Paths.get(f))) {
-<a class="jxr_linenumber" name="L709" href="#L709">709</a>                 <strong class="jxr_keyword">final</strong> byte[] buffer = IOUtils.toByteArray(is);
-<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <em class="jxr_comment">// output format matches the original ssdeep program</em>
-<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 System.out.println(ss.fuzzy_hash(buffer) + <span class="jxr_string">",\&quot;"</span> + f + <span class="jxr_string">"\&quot;"</span>);
-<a class="jxr_linenumber" name="L712" href="#L712">712</a>             }
-<a class="jxr_linenumber" name="L713" href="#L713">713</a>         }
-<a class="jxr_linenumber" name="L714" href="#L714">714</a>     }
-<a class="jxr_linenumber" name="L715" href="#L715">715</a> }
+<a class="jxr_linenumber" name="L705" href="#L705">705</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L706" href="#L706">706</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L707" href="#L707">707</a>         <strong class="jxr_keyword">final</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html<a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>p">Ssdeep</a> ss = <strong class="jxr_keyword">new</strong> <a name="Ssdeep" href="../../emissary/kff/Ssdeep.html#Ssdeep">Ssdeep</a>();
+<a class="jxr_linenumber" name="L708" href="#L708">708</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String f : args) {
+<a class="jxr_linenumber" name="L709" href="#L709">709</a>             <strong class="jxr_keyword">try</strong> (<strong class="jxr_keyword">final</strong> InputStream is = Files.newInputStream(Paths.get(f))) {
+<a class="jxr_linenumber" name="L710" href="#L710">710</a>                 <strong class="jxr_keyword">final</strong> byte[] buffer = IOUtils.toByteArray(is);
+<a class="jxr_linenumber" name="L711" href="#L711">711</a>                 <em class="jxr_comment">// output format matches the original ssdeep program</em>
+<a class="jxr_linenumber" name="L712" href="#L712">712</a>                 System.out.println(ss.fuzzy_hash(buffer) + <span class="jxr_string">",\&quot;"</span> + f + <span class="jxr_string">"\&quot;"</span>);
+<a class="jxr_linenumber" name="L713" href="#L713">713</a>             }
+<a class="jxr_linenumber" name="L714" href="#L714">714</a>         }
+<a class="jxr_linenumber" name="L715" href="#L715">715</a>     }
+<a class="jxr_linenumber" name="L716" href="#L716">716</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

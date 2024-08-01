@@ -153,7 +153,7 @@
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         String xml = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L146" href="#L146">146</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>             xml = w.toXml();
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L148" href="#L148">148</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>             fail(<span class="jxr_string">"Cannot generate xml"</span>, ex);
 <a class="jxr_linenumber" name="L150" href="#L150">150</a>         }
 <a class="jxr_linenumber" name="L151" href="#L151">151</a>         assertNotNull(xml, <span class="jxr_string">"Generated xml"</span>);
@@ -188,7 +188,7 @@
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         String xml = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>             xml = w.toXml();
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>             fail(<span class="jxr_string">"Cannot generate xml"</span>, ex);
 <a class="jxr_linenumber" name="L185" href="#L185">185</a>         }
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>         assertNotNull(xml, <span class="jxr_string">"Generated xml"</span>);
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="L212" href="#L212">212</a>         String xml = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L213" href="#L213">213</a>         <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>             xml = w.toXml();
-<a class="jxr_linenumber" name="L215" href="#L215">215</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L215" href="#L215">215</a>         } <strong class="jxr_keyword">catch</strong> (RuntimeException ex) {
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>             fail(<span class="jxr_string">"Cannot generate xml"</span>, ex);
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         }
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>         assertNotNull(xml, <span class="jxr_string">"Generated xml"</span>);
@@ -301,11 +301,11 @@
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>             wul.add(<strong class="jxr_keyword">new</strong> WorkUnit(fileName));
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>         }
 <a class="jxr_linenumber" name="L295" href="#L295">295</a> 
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         WorkBundle.writeUTFOrNull(wb1.bundleId, out);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         WorkBundle.writeUTFOrNull(wb1.outputRoot, out);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         WorkBundle.writeUTFOrNull(wb1.eatPrefix, out);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         WorkBundle.writeUTFOrNull(wb1.caseId, out);
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         WorkBundle.writeUTFOrNull(wb1.sentTo, out);
+<a class="jxr_linenumber" name="L296" href="#L296">296</a>         WorkBundle.writeUtfOrNull(wb1.bundleId, out);
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         WorkBundle.writeUtfOrNull(wb1.outputRoot, out);
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         WorkBundle.writeUtfOrNull(wb1.eatPrefix, out);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>         WorkBundle.writeUtfOrNull(wb1.caseId, out);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         WorkBundle.writeUtfOrNull(wb1.sentTo, out);
 <a class="jxr_linenumber" name="L301" href="#L301">301</a>         out.writeInt(wb1.errorCount);
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>         out.writeInt(wb1.priority);
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>         out.writeBoolean(wb1.simpleMode);

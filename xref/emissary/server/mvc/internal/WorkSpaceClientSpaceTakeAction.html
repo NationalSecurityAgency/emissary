@@ -65,7 +65,7 @@
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>          }
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>      }
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>  
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> Response doClientSpaceTake(String placeName, String spaceName) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Response doClientSpaceTake(String placeName, String spaceName) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>          <em class="jxr_comment">// TODO Figure out why we have to remove the key prefix now</em>
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>          String workspaceKey = spaceName.substring(<span class="jxr_string">"WORKSPACE.WORK_SPACE.INPUT."</span>.length());
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>          <strong class="jxr_keyword">final</strong> <a name="WorkSpace"<a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>/../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a> space = (<a name="WorkSpace" href="../../../../emissary/pickup/WorkSpace.html#WorkSpace">WorkSpace</a>) Namespace.lookup(workspaceKey);

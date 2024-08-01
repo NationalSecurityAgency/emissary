@@ -15,8 +15,8 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> java.nio.channels.ClosedChannelException;
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> java.nio.file.Path;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> java.nio.file.Paths;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.LinkedList;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Queue;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayDeque;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> java.util.Deque;
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> java.util.UUID;
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.Condition;
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.ReentrantLock;
@@ -36,7 +36,7 @@
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> max;
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">final</strong> Path directory;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">final</strong> String key;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Queue&lt;JournaledChannel&gt; free = <strong class="jxr_keyword">new</strong> LinkedList&lt;&gt;();
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Deque&lt;JournaledChannel&gt; free = <strong class="jxr_keyword">new</strong> ArrayDeque&lt;&gt;();
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">int</strong> created;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      @Nullable
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">private</strong> <a name="JournaledChannel" href="../../../../emissary/output/roller/journal/JournaledChannel.html#JournaledChannel">JournaledChannel</a>[] allchannels;
@@ -143,8 +143,8 @@
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>     }
 <a class="jxr_linenumber" name="L136" href="#L136">136</a> 
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>     <strong class="jxr_keyword">private</strong> <a name="JournaledChannel" href="../../../../emissary/output/roller/journal/JournaledChannel.html#JournaledChannel">JournaledChannel</a> findFree() <strong class="jxr_keyword">throws</strong> InterruptedException, IOException {
-<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <em class="jxr_comment">// if nothing is available and we can create additional channels, do it</em>
-<a class="jxr_linenumber" name="L139" href="#L139">139</a>         <em class="jxr_comment">// clould get closed when we await</em>
+<a class="jxr_linenumber" name="L138" href="#L138">138</a>         <em class="jxr_comment">// if nothing is available, and we can create additional channels, do it</em>
+<a class="jxr_linenumber" name="L139" href="#L139">139</a>         <em class="jxr_comment">// could get closed when we await</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a>         <strong class="jxr_keyword">while</strong> (<strong class="jxr_keyword">this</strong>.free.isEmpty()) {
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>             <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.created &lt; <strong class="jxr_keyword">this</strong>.max) {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>                 createChannel();

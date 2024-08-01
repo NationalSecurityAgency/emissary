@@ -305,7 +305,7 @@
 <a class="jxr_linenumber" name="L297" href="#L297">297</a>         <strong class="jxr_keyword">boolean</strong> success = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>         logger.debug(<span class="jxr_string">"Starting processDataFile in PickUpPlace for {}"</span>, theFile);
 <a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>         ObjectTracingService.emitLifecycleEvent(<strong class="jxr_keyword">null</strong>, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         ObjectTracingService.emitLifecycleEvent(<strong class="jxr_keyword">null</strong>, fixedName, ObjectTracing.Stage.PICK_UP, useObjectTraceLogger);
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
 <a class="jxr_linenumber" name="L302" href="#L302">302</a>         <em class="jxr_comment">// Handle oversize data quickly without reading the file</em>
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>         <strong class="jxr_keyword">if</strong> (isOversize) {

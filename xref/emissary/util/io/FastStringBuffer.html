@@ -102,12 +102,12 @@
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>      }
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>  
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>      <em class="jxr_javadoccomment">/** Appends constant string literals only!!!!! */</em>
-<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCLS(<strong class="jxr_keyword">final</strong> String s) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">return</strong> appendCLS(s, StandardCharsets.ISO_8859_1.name());
+<a class="jxr_linenumber" name="L97" href="#L97">97</a>      <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCls(<strong class="jxr_keyword">final</strong> String s) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L98" href="#L98">98</a>          <strong class="jxr_keyword">return</strong> appendCls(s, StandardCharsets.ISO_8859_1.name());
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>      }
 <a class="jxr_linenumber" name="L100" href="#L100">100</a> 
 <a class="jxr_linenumber" name="L101" href="#L101">101</a>     <em class="jxr_javadoccomment">/** Appends constant string literals only!!!!! */</em>
-<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCLS(@Nullable <strong class="jxr_keyword">final</strong> String s, <strong class="jxr_keyword">final</strong> String charset) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L102" href="#L102">102</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCls(@Nullable <strong class="jxr_keyword">final</strong> String s, <strong class="jxr_keyword">final</strong> String charset) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>         <strong class="jxr_keyword">if</strong> (s == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="L105" href="#L105">105</a>         }
@@ -126,11 +126,11 @@
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>         <strong class="jxr_keyword">return</strong> append(tmp);
 <a class="jxr_linenumber" name="L119" href="#L119">119</a>     }
 <a class="jxr_linenumber" name="L120" href="#L120">120</a> 
-<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCR() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L121" href="#L121">121</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCr() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L122" href="#L122">122</a>         <strong class="jxr_keyword">return</strong> append(CRBYTES);
 <a class="jxr_linenumber" name="L123" href="#L123">123</a>     }
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> 
-<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCRLF() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendCrLf() <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">return</strong> append(CRLFBYTES);
 <a class="jxr_linenumber" name="L127" href="#L127">127</a>     }
 <a class="jxr_linenumber" name="L128" href="#L128">128</a> 
@@ -236,21 +236,21 @@
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L229" href="#L229">229</a> <em class="jxr_javadoccomment">     * Write UTF8 data to the output page buffer without specifying a start or end position, defaults to 0,-1</em>
 <a class="jxr_linenumber" name="L230" href="#L230">230</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUTF8(<strong class="jxr_keyword">final</strong> byte[] data, <strong class="jxr_keyword">final</strong> String charset) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>         <strong class="jxr_keyword">return</strong> appendUTF8(data, charset, 0, -1);
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUtf8(<strong class="jxr_keyword">final</strong> byte[] data, <strong class="jxr_keyword">final</strong> String charset) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>         <strong class="jxr_keyword">return</strong> appendUtf8(data, charset, 0, -1);
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>     }
 <a class="jxr_linenumber" name="L234" href="#L234">234</a> 
 <a class="jxr_linenumber" name="L235" href="#L235">235</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L236" href="#L236">236</a> <em class="jxr_javadoccomment">     * Write UTF8 data to the output page buffer without specifying a start position, defaults to 0</em>
 <a class="jxr_linenumber" name="L237" href="#L237">237</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUTF8(<strong class="jxr_keyword">final</strong> byte[] data, <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">return</strong> appendUTF8(data, charset, 0, end);
+<a class="jxr_linenumber" name="L238" href="#L238">238</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUtf8(<strong class="jxr_keyword">final</strong> byte[] data, <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>         <strong class="jxr_keyword">return</strong> appendUtf8(data, charset, 0, end);
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>     }
 <a class="jxr_linenumber" name="L241" href="#L241">241</a> 
 <a class="jxr_linenumber" name="L242" href="#L242">242</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * Write UTF8 data to the output page buffer Pass in 0 and -1 for start and end to do the whole thing</em>
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUTF8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
 <a class="jxr_linenumber" name="L247" href="#L247">247</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>             actualEnd = data.length;
@@ -284,7 +284,7 @@
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>         <strong class="jxr_keyword">return</strong> append(data, actualStart, actualEnd - actualStart);
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>     }
 <a class="jxr_linenumber" name="L278" href="#L278">278</a> 
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendEscapedUTF8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">public</strong> <a name="FastStringBuffer" href="../../../emissary/util/io/FastStringBuffer.html#FastStringBuffer">FastStringBuffer</a> appendEscapedUtf8(<strong class="jxr_keyword">final</strong> byte[] data, @Nullable <strong class="jxr_keyword">final</strong> String charset, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> start, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> end) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> actualEnd;
 <a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">if</strong> (end &lt; 0) {
 <a class="jxr_linenumber" name="L282" href="#L282">282</a>             actualEnd = data.length;

@@ -35,7 +35,7 @@
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>                  logger.warn(<span class="jxr_string">"Sentinel attempting recovery for {}"</span>, agentName);
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>                  mobileAgent.interrupt();
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>              } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Recovery unavailable"</span>);
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException(<span class="jxr_string">"Recovery unavailable "</span>, e);
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>              }
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          }
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>      }

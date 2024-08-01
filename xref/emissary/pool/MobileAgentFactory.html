@@ -12,33 +12,33 @@
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> emissary.config.Configurator;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> emissary.core.Factory;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> emissary.core.IMobileAgent;
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.core.Namespace;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.PooledObject;
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.PooledObjectFactory;
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.impl.DefaultPooledObject;
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
-<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="MobileAgentFactory" href="../../emissary/pool/MobileAgentFactory.html#MobileAgentFactory">MobileAgentFactory</a> <strong class="jxr_keyword">implements</strong> PooledObjectFactory&lt;IMobileAgent&gt; {
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <em class="jxr_comment">// This is the default class when nothing else is</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <em class="jxr_comment">// configured or passed on on a constructor. This value</em>
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <em class="jxr_comment">// can be overridden from the AgentPool.cfg file</em>
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>      <strong class="jxr_keyword">static</strong> String DEFAULT_CLASS_STRING = <span class="jxr_string">"emissary.core.MobileAgent"</span>;
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>  
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String AGENT_NAME = <span class="jxr_string">"MobileAgent"</span>;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <em class="jxr_comment">// This is the class we are going to be pooling</em>
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <em class="jxr_comment">// The value can be set by constructor, by public setter</em>
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <em class="jxr_comment">// or from the value in DEFAULT_CLASS_STRING</em>
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>      String classString = DEFAULT_CLASS_STRING;
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">int</strong> maxAgentMoveErrors = 3;
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>  
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">int</strong> maxAgentItinerary = 100;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> emissary.core.MobileAgent;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> emissary.core.Namespace;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.PooledObject;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.PooledObjectFactory;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> org.apache.commons.pool2.impl.DefaultPooledObject;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="MobileAgentFactory" href="../../emissary/pool/MobileAgentFactory.html#MobileAgentFactory">MobileAgentFactory</a> <strong class="jxr_keyword">implements</strong> PooledObjectFactory&lt;IMobileAgent&gt; {
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      <em class="jxr_comment">// This is the default class when nothing else is</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <em class="jxr_comment">// configured or passed on a constructor. This value</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      <em class="jxr_comment">// can be overridden from the AgentPool.cfg file</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String DEFAULT_CLASS_STRING = <span class="jxr_string">"emissary.core.MobileAgent"</span>;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String AGENT_NAME = <span class="jxr_string">"MobileAgent"</span>;
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <em class="jxr_comment">// This is the class we are going to be pooling</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <em class="jxr_comment">// The value can be set by constructor, by public setter</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <em class="jxr_comment">// or from the value in DEFAULT_CLASS_STRING</em>
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      String classString = DEFAULT_CLASS_STRING;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>  
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">int</strong> maxAgentMoveErrors;
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      <strong class="jxr_keyword">int</strong> maxAgentItinerary;
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = LoggerFactory.getLogger(MobileAgentFactory.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  
@@ -57,8 +57,8 @@
 <a class="jxr_linenumber" name="L49" href="#L49">49</a>              <a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> conf = ConfigUtil.getConfigInfo(AgentPool.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>              classString = conf.findStringEntry(<span class="jxr_string">"agent.class"</span>, DEFAULT_CLASS_STRING);
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>              maxAgentMoveErrors = conf.findIntEntry(<span class="jxr_string">"agent.move.errors"</span>, maxAgentMoveErrors);
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>              maxAgentItinerary = conf.findIntEntry(<span class="jxr_string">"agent.max.itinerary"</span>, maxAgentItinerary);
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>              maxAgentMoveErrors = conf.findIntEntry(<span class="jxr_string">"agent.move.errors"</span>, MobileAgent.DEFAULT_MAX_MOVE_ERRORS);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>              maxAgentItinerary = conf.findIntEntry(<span class="jxr_string">"agent.max.itinerary"</span>, MobileAgent.DEFAULT_MAX_ITINERARY_STEPS);
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>          } <strong class="jxr_keyword">catch</strong> (IOException e) {
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>              logger.debug(<span class="jxr_string">"Cannot read AgentPool.cfg, taking default values"</span>);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          }

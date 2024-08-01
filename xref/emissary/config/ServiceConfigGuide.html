@@ -58,7 +58,7 @@
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>      <em class="jxr_comment">// Used on the RHS to make a null assignment</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>      <em class="jxr_comment">// Obsolete, use @{NULL}</em>
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">protected</strong> String NULL_VALUE = <span class="jxr_string">"&lt;null&gt;"</span>;
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String NULL_VALUE = <span class="jxr_string">"&lt;null&gt;"</span>;
 <a class="jxr_linenumber" name="L54" href="#L54">54</a>  
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_comment">// Hold all service specific parameters in a list</em>
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>      <strong class="jxr_keyword">protected</strong> List&lt;ConfigEntry&gt; p_service_parameters = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
@@ -75,21 +75,21 @@
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>      <em class="jxr_comment">// Shared map of all environment properties</em>
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>      <em class="jxr_comment">// Access them with @ENV{'os.name'} for example</em>
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_comment">// This is obsolete, all values from properties and</em>
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <em class="jxr_comment">// environment are now in the main VALUES map and available</em>
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <em class="jxr_comment">// for immediate subsitution</em>
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>      <em class="jxr_comment">// environment are now in the main values map and available</em>
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>      <em class="jxr_comment">// for immediate substitution</em>
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ENVSTART = <span class="jxr_string">"@ENV{'"</span>;
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ENVSTOP = <span class="jxr_string">"'}"</span>;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      <em class="jxr_comment">// Map of last values seen</em>
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">protected</strong> Map&lt;String, String&gt; VALUES = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>      <strong class="jxr_keyword">protected</strong> Map&lt;String, String&gt; values = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>  
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>      <em class="jxr_comment">// Get this once per jvm</em>
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String THIS_HOST_NAME = <span class="jxr_string">"localhost"</span>;
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String hostname = <span class="jxr_string">"localhost"</span>;
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>  
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_comment">// Grab the hostname for @{HOST} replacemant</em>
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>      <em class="jxr_comment">// Grab the hostname for @{HOST} replacement</em>
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>      <strong class="jxr_keyword">static</strong> {
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>          <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>              THIS_HOST_NAME = InetAddress.getLocalHost().getCanonicalHostName();
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>              hostname = InetAddress.getLocalHost().getCanonicalHostName();
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>          } <strong class="jxr_keyword">catch</strong> (UnknownHostException e) {
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>              logger.error(<span class="jxr_string">"Error getting host name"</span>, e);
 <a class="jxr_linenumber" name="L87" href="#L87">87</a>          }
@@ -160,35 +160,35 @@
 <a class="jxr_linenumber" name="L152" href="#L152">152</a> <em class="jxr_javadoccomment">     * Initialize the values map, which is used to replace stuff in the configs</em>
 <a class="jxr_linenumber" name="L153" href="#L153">153</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L154" href="#L154">154</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> initializeValues() {
-<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">this</strong>.VALUES.clear();
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">this</strong>.values.clear();
 <a class="jxr_linenumber" name="L156" href="#L156">156</a> 
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         <em class="jxr_comment">// TODO: see if we can stop adding all env variables and</em>
 <a class="jxr_linenumber" name="L158" href="#L158">158</a>         <em class="jxr_comment">// system properties to the replace values</em>
 <a class="jxr_linenumber" name="L159" href="#L159">159</a> 
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>         <em class="jxr_comment">// Add all the environment variables</em>
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">this</strong>.VALUES.putAll(System.getenv());
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>         <strong class="jxr_keyword">this</strong>.values.putAll(System.getenv());
 <a class="jxr_linenumber" name="L162" href="#L162">162</a> 
 <a class="jxr_linenumber" name="L163" href="#L163">163</a>         <em class="jxr_comment">// Add all the system properties</em>
 <a class="jxr_linenumber" name="L164" href="#L164">164</a>         <strong class="jxr_keyword">final</strong> Properties props = System.getProperties();
 <a class="jxr_linenumber" name="L165" href="#L165">165</a>         <strong class="jxr_keyword">for</strong> (Enumeration&lt;?&gt; e = props.propertyNames(); e.hasMoreElements();) {
 <a class="jxr_linenumber" name="L166" href="#L166">166</a>             <strong class="jxr_keyword">final</strong> String key = (String) e.nextElement();
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>             logger.trace(<span class="jxr_string">"Adding {} to replaceable properties"</span>, key);
-<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">this</strong>.VALUES.put(key, props.getProperty(key));
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>             <strong class="jxr_keyword">this</strong>.values.put(key, props.getProperty(key));
 <a class="jxr_linenumber" name="L169" href="#L169">169</a>         }
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         <em class="jxr_comment">// used for substitution when reading cfg files</em>
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"CONFIG_DIR"</span>, StringUtils.join(ConfigUtil.getConfigDirs(), <span class="jxr_string">","</span>));
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"PRJ_BASE"</span>, ConfigUtil.getProjectBase());
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"PROJECT_BASE"</span>, ConfigUtil.getProjectBase());
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"OUTPUT_ROOT"</span>, ConfigUtil.getOutputRoot());
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"BIN_DIR"</span>, ConfigUtil.getBinDir());
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"HOST"</span>, THIS_HOST_NAME);
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"/"</span>, File.separator);
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"TMPDIR"</span>, System.getProperty(<span class="jxr_string">"java.io.tmpdir"</span>));
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"NULL"</span>, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"OS.NAME"</span>, System.getProperty(<span class="jxr_string">"os.name"</span>).replace(' ', '_'));
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"OS.VER"</span>, System.getProperty(<span class="jxr_string">"os.version"</span>).replace(' ', '_'));
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">this</strong>.VALUES.put(<span class="jxr_string">"OS.ARCH"</span>, System.getProperty(<span class="jxr_string">"os.arch"</span>).replace(' ', '_'));
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"CONFIG_DIR"</span>, StringUtils.join(ConfigUtil.getConfigDirs(), <span class="jxr_string">","</span>));
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"PRJ_BASE"</span>, ConfigUtil.getProjectBase());
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"PROJECT_BASE"</span>, ConfigUtil.getProjectBase());
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"OUTPUT_ROOT"</span>, ConfigUtil.getOutputRoot());
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"BIN_DIR"</span>, ConfigUtil.getBinDir());
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"HOST"</span>, hostname);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"/"</span>, File.separator);
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"TMPDIR"</span>, System.getProperty(<span class="jxr_string">"java.io.tmpdir"</span>));
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"NULL"</span>, <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"OS.NAME"</span>, System.getProperty(<span class="jxr_string">"os.name"</span>).replace(' ', '_'));
+<a class="jxr_linenumber" name="L182" href="#L182">182</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"OS.VER"</span>, System.getProperty(<span class="jxr_string">"os.version"</span>).replace(' ', '_'));
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>         <strong class="jxr_keyword">this</strong>.values.put(<span class="jxr_string">"OS.ARCH"</span>, System.getProperty(<span class="jxr_string">"os.arch"</span>).replace(' ', '_'));
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>     }
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 
 <a class="jxr_linenumber" name="L186" href="#L186">186</a>     <em class="jxr_javadoccomment">/**</em>
@@ -283,11 +283,11 @@
 <a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"!="</span>.equals(operatorArg)) {
 <a class="jxr_linenumber" name="L276" href="#L276">276</a>             <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"*"</span>.equals(sval)) {
 <a class="jxr_linenumber" name="L277" href="#L277">277</a>                 removeAllEntries(parmName);
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>                 <strong class="jxr_keyword">this</strong>.VALUES.remove(parmName);
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>                 <strong class="jxr_keyword">this</strong>.values.remove(parmName);
 <a class="jxr_linenumber" name="L279" href="#L279">279</a>             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L280" href="#L280">280</a>                 removeEntry(anEntry);
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>                 <strong class="jxr_keyword">if</strong> (sval.equals(<strong class="jxr_keyword">this</strong>.VALUES.get(parmName))) {
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>                     <strong class="jxr_keyword">this</strong>.VALUES.remove(parmName);
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>                 <strong class="jxr_keyword">if</strong> (sval.equals(<strong class="jxr_keyword">this</strong>.values.get(parmName))) {
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>                     <strong class="jxr_keyword">this</strong>.values.remove(parmName);
 <a class="jxr_linenumber" name="L283" href="#L283">283</a>                 }
 <a class="jxr_linenumber" name="L284" href="#L284">284</a>             }
 <a class="jxr_linenumber" name="L285" href="#L285">285</a>             <strong class="jxr_keyword">this</strong>.p_remove_parameters.add(anEntry);
@@ -300,7 +300,7 @@
 <a class="jxr_linenumber" name="L292" href="#L292">292</a>             }
 <a class="jxr_linenumber" name="L293" href="#L293">293</a> 
 <a class="jxr_linenumber" name="L294" href="#L294">294</a>             <em class="jxr_comment">// Save this pair in the map</em>
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">this</strong>.VALUES.put(parmName, sval);
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>             <strong class="jxr_keyword">this</strong>.values.put(parmName, sval);
 <a class="jxr_linenumber" name="L296" href="#L296">296</a>         }
 <a class="jxr_linenumber" name="L297" href="#L297">297</a> 
 <a class="jxr_linenumber" name="L298" href="#L298">298</a>         <strong class="jxr_keyword">if</strong> (<span class="jxr_string">"IMPORT_FILE"</span>.equals(parmName) || <span class="jxr_string">"OPT_IMPORT_FILE"</span>.equals(parmName)) {
@@ -362,7 +362,7 @@
 <a class="jxr_linenumber" name="L354" href="#L354">354</a>             }
 <a class="jxr_linenumber" name="L355" href="#L355">355</a>             <strong class="jxr_keyword">final</strong> String tok = sval.substring(ndx + VSTART.length(), edx);
 <a class="jxr_linenumber" name="L356" href="#L356">356</a>             logger.debug(<span class="jxr_string">"Replacement token is {}"</span>, tok);
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             <strong class="jxr_keyword">final</strong> String mapval = <strong class="jxr_keyword">this</strong>.VALUES.get(tok);
+<a class="jxr_linenumber" name="L357" href="#L357">357</a>             <strong class="jxr_keyword">final</strong> String mapval = <strong class="jxr_keyword">this</strong>.values.get(tok);
 <a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">if</strong> (mapval != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L359" href="#L359">359</a>                 sval = sval.substring(0, ndx) + mapval + sval.substring(edx + VEND.length());
 <a class="jxr_linenumber" name="L360" href="#L360">360</a>             } <strong class="jxr_keyword">else</strong> {
@@ -382,9 +382,9 @@
 <a class="jxr_linenumber" name="L374" href="#L374">374</a>         }
 <a class="jxr_linenumber" name="L375" href="#L375">375</a> 
 <a class="jxr_linenumber" name="L376" href="#L376">376</a>         <em class="jxr_comment">// This is obsolete</em>
-<a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">if</strong> (sval != <strong class="jxr_keyword">null</strong> &amp;&amp; sval.equals(<strong class="jxr_keyword">this</strong>.NULL_VALUE)) {
+<a class="jxr_linenumber" name="L377" href="#L377">377</a>         <strong class="jxr_keyword">if</strong> (sval != <strong class="jxr_keyword">null</strong> &amp;&amp; sval.equals(NULL_VALUE)) {
 <a class="jxr_linenumber" name="L378" href="#L378">378</a>             sval = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L379" href="#L379">379</a>             logger.debug(<span class="jxr_string">"Using {} is deprecated, please just use {}NULL{}"</span>, <strong class="jxr_keyword">this</strong>.NULL_VALUE, VSTART, VEND);
+<a class="jxr_linenumber" name="L379" href="#L379">379</a>             logger.debug(<span class="jxr_string">"Using {} is deprecated, please just use {}NULL{}"</span>, NULL_VALUE, VSTART, VEND);
 <a class="jxr_linenumber" name="L380" href="#L380">380</a>         }
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>         <strong class="jxr_keyword">return</strong> sval;
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>     }
@@ -1097,7 +1097,7 @@
 <a class="jxr_linenumber" name="L1089" href="#L1089">1089</a> <em class="jxr_javadoccomment">     * @param name the name of the parameter</em>
 <a class="jxr_linenumber" name="L1090" href="#L1090">1090</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L1091" href="#L1091">1091</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">int</strong> getNumericParameter(<strong class="jxr_keyword">final</strong> String name) {
-<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>         <strong class="jxr_keyword">final</strong> String val = <strong class="jxr_keyword">this</strong>.VALUES.get(name);
+<a class="jxr_linenumber" name="L1092" href="#L1092">1092</a>         <strong class="jxr_keyword">final</strong> String val = <strong class="jxr_keyword">this</strong>.values.get(name);
 <a class="jxr_linenumber" name="L1093" href="#L1093">1093</a>         <strong class="jxr_keyword">int</strong> i = -1;
 <a class="jxr_linenumber" name="L1094" href="#L1094">1094</a>         <strong class="jxr_keyword">if</strong> (val != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L1095" href="#L1095">1095</a>             <strong class="jxr_keyword">try</strong> {
@@ -1110,7 +1110,7 @@
 <a class="jxr_linenumber" name="L1102" href="#L1102">1102</a>     }
 <a class="jxr_linenumber" name="L1103" href="#L1103">1103</a> 
 <a class="jxr_linenumber" name="L1104" href="#L1104">1104</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> debug() {
-<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"TRUE"</span>.equalsIgnoreCase(<strong class="jxr_keyword">this</strong>.VALUES.get(<span class="jxr_string">"DEBUG"</span>));
+<a class="jxr_linenumber" name="L1105" href="#L1105">1105</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"TRUE"</span>.equalsIgnoreCase(<strong class="jxr_keyword">this</strong>.values.get(<span class="jxr_string">"DEBUG"</span>));
 <a class="jxr_linenumber" name="L1106" href="#L1106">1106</a>     }
 <a class="jxr_linenumber" name="L1107" href="#L1107">1107</a> 
 <a class="jxr_linenumber" name="L1108" href="#L1108">1108</a>     <em class="jxr_javadoccomment">/**</em>

@@ -15,7 +15,7 @@
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   
 <a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a> {
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String ESCAPES = <span class="jxr_string">"ntr\&quot;'/"</span>;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ESCAPES = <span class="jxr_string">"ntr\&quot;'/&#92;&#92;"</span>;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  
 <a class="jxr_linenumber" name="L12" href="#L12">12</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment">     * Unescape a bunch of JSON bytes that might have &#92;&#92;uxxxx character values. Should already be UTF-8 since JSON is</em>
@@ -84,21 +84,22 @@
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
 <a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">private</strong> <a name="JsonEscape" href="../../../emissary/transform/decode/JsonEscape.html#JsonEscape">JsonEscape</a>() {}
 <a class="jxr_linenumber" name="L78" href="#L78">78</a>  
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; args.length; i++) {
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>              byte[] content = Executrix.readDataFromFile(args[i]);
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>              <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>                  System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>              }
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              System.out.println(args[i]);
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>              byte[] escaped = JsonEscape.unescape(content);
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>              System.out.write(escaped, 0, escaped.length);
-<a class="jxr_linenumber" name="L90" href="#L90">90</a>              System.out.println();
-<a class="jxr_linenumber" name="L91" href="#L91">91</a>          }
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>      }
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>  }
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>      @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; args.length; i++) {
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>              byte[] content = Executrix.readDataFromFile(args[i]);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>              <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>                  System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>                  <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>              }
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>  
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>              System.out.println(args[i]);
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>              byte[] escaped = JsonEscape.unescape(content);
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>              System.out.write(escaped, 0, escaped.length);
+<a class="jxr_linenumber" name="L91" href="#L91">91</a>              System.out.println();
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          }
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>      }
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

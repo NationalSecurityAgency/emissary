@@ -88,7 +88,7 @@
 <a class="jxr_linenumber" name="L80" href="#L80">80</a>          <strong class="jxr_keyword">final</strong> SeekableByteChannel sbc = sbcf.create();
 <a class="jxr_linenumber" name="L81" href="#L81">81</a>          <strong class="jxr_keyword">final</strong> ByteBuffer buff = ByteBuffer.wrap(<span class="jxr_string">"New data"</span>.getBytes());
 <a class="jxr_linenumber" name="L82" href="#L82">82</a>          assertThrows(NonWritableChannelException.<strong class="jxr_keyword">class</strong>, () -&gt; sbc.write(buff), <span class="jxr_string">"Can't write to byte channel as it's immutable"</span>);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          assertThrows(NonWritableChannelException.<strong class="jxr_keyword">class</strong>, () -&gt; sbc.truncate(5l), <span class="jxr_string">"Can't truncate byte channel as it's immutable"</span>);
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          assertThrows(NonWritableChannelException.<strong class="jxr_keyword">class</strong>, () -&gt; sbc.truncate(5L), <span class="jxr_string">"Can't truncate byte channel as it's immutable"</span>);
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>      }
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>      @Test

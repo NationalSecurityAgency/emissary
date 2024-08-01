@@ -156,10 +156,10 @@
 <a class="jxr_linenumber" name="L148" href="#L148">148</a>     @Nested
 <a class="jxr_linenumber" name="L149" href="#L149">149</a>     <strong class="jxr_keyword">class</strong> RunTest <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
 <a class="jxr_linenumber" name="L150" href="#L150">150</a> 
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">final</strong> String TO_UPPER_LOWER_PATTERN = <span class="jxr_string">"To(?:Lower|Upper)Place"</span>;
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">final</strong> String TO_LOWER_PLACE = <span class="jxr_string">"ToLowerPlace"</span>;
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">final</strong> String TO_UPPER_PLACE = <span class="jxr_string">"ToUpperPlace"</span>;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> DEFAULT_POOL_SIZE = 5;
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">final</strong> String toUpperLowerPattern = <span class="jxr_string">"To(?:Lower|Upper)Place"</span>;
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">final</strong> String toLowerPlace = <span class="jxr_string">"ToLowerPlace"</span>;
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>         <strong class="jxr_keyword">final</strong> String toUpperPlace = <span class="jxr_string">"ToUpperPlace"</span>;
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>         <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">int</strong> defaultPoolSize = 5;
 <a class="jxr_linenumber" name="L155" href="#L155">155</a> 
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         Action action;
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         AgentPool pool;
@@ -178,57 +178,57 @@
 <a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">void</strong> protocol1() {
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, TO_UPPER_LOWER_PATTERN, 5, 1.0));
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, TO_UPPER_LOWER_PATTERN, 30, 0.2));
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, toUpperLowerPattern, 5, 1.0));
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, toUpperLowerPattern, 30, 0.2));
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>             testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             testProtocol(protocol, defaultPoolSize, 1);
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>         }
 <a class="jxr_linenumber" name="L178" href="#L178">178</a> 
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         @Test
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         <strong class="jxr_keyword">void</strong> protocol2() {
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L183" href="#L183">183</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, TO_UPPER_LOWER_PATTERN, 5, 1.0));
-<a class="jxr_linenumber" name="L184" href="#L184">184</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, TO_UPPER_LOWER_PATTERN, 40, 0.2));
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, toUpperLowerPattern, 5, 1.0));
+<a class="jxr_linenumber" name="L184" href="#L184">184</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, toUpperLowerPattern, 40, 0.2));
 <a class="jxr_linenumber" name="L185" href="#L185">185</a> 
-<a class="jxr_linenumber" name="L186" href="#L186">186</a>             testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+<a class="jxr_linenumber" name="L186" href="#L186">186</a>             testProtocol(protocol, defaultPoolSize, 0);
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>         }
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> 
 <a class="jxr_linenumber" name="L189" href="#L189">189</a>         @Test
 <a class="jxr_linenumber" name="L190" href="#L190">190</a>         <strong class="jxr_keyword">void</strong> protocol3() {
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, TO_UPPER_LOWER_PATTERN, 30, 0.01));
+<a class="jxr_linenumber" name="L193" href="#L193">193</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, toUpperLowerPattern, 30, 0.01));
 <a class="jxr_linenumber" name="L194" href="#L194">194</a> 
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>             testProtocol(protocol, defaultPoolSize, 1);
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         }
 <a class="jxr_linenumber" name="L197" href="#L197">197</a> 
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>         @Test
 <a class="jxr_linenumber" name="L199" href="#L199">199</a>         <strong class="jxr_keyword">void</strong> protocol4() {
 <a class="jxr_linenumber" name="L200" href="#L200">200</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L201" href="#L201">201</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L202" href="#L202">202</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, TO_LOWER_PLACE, 30, 0.01));
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, toLowerPlace, 30, 0.01));
 <a class="jxr_linenumber" name="L203" href="#L203">203</a> 
-<a class="jxr_linenumber" name="L204" href="#L204">204</a>             testProtocol(protocol, DEFAULT_POOL_SIZE, 0);
+<a class="jxr_linenumber" name="L204" href="#L204">204</a>             testProtocol(protocol, defaultPoolSize, 0);
 <a class="jxr_linenumber" name="L205" href="#L205">205</a>         }
 <a class="jxr_linenumber" name="L206" href="#L206">206</a> 
 <a class="jxr_linenumber" name="L207" href="#L207">207</a>         @Test
 <a class="jxr_linenumber" name="L208" href="#L208">208</a>         <strong class="jxr_keyword">void</strong> protocol5() {
 <a class="jxr_linenumber" name="L209" href="#L209">209</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L210" href="#L210">210</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L211" href="#L211">211</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, TO_UPPER_PLACE, 30, 0.01));
+<a class="jxr_linenumber" name="L211" href="#L211">211</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"LongRunning"</span>, toUpperPlace, 30, 0.01));
 <a class="jxr_linenumber" name="L212" href="#L212">212</a> 
-<a class="jxr_linenumber" name="L213" href="#L213">213</a>             testProtocol(protocol, DEFAULT_POOL_SIZE, 1);
+<a class="jxr_linenumber" name="L213" href="#L213">213</a>             testProtocol(protocol, defaultPoolSize, 1);
 <a class="jxr_linenumber" name="L214" href="#L214">214</a>         }
 <a class="jxr_linenumber" name="L215" href="#L215">215</a> 
 <a class="jxr_linenumber" name="L216" href="#L216">216</a>         @Test
 <a class="jxr_linenumber" name="L217" href="#L217">217</a>         <strong class="jxr_keyword">void</strong> protocol6() {
 <a class="jxr_linenumber" name="L218" href="#L218">218</a>             Protocol protocol = <strong class="jxr_keyword">new</strong> Protocol();
 <a class="jxr_linenumber" name="L219" href="#L219">219</a>             protocol.action = action;
-<a class="jxr_linenumber" name="L220" href="#L220">220</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, TO_UPPER_LOWER_PATTERN, 5, 1.0));
-<a class="jxr_linenumber" name="L221" href="#L221">221</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, TO_UPPER_LOWER_PATTERN, 30, 0.2));
+<a class="jxr_linenumber" name="L220" href="#L220">220</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE1"</span>, <strong class="jxr_keyword">new</strong> AllMaxTime(<span class="jxr_string">"rule1"</span>, toUpperLowerPattern, 5, 1.0));
+<a class="jxr_linenumber" name="L221" href="#L221">221</a>             protocol.rules.put(<span class="jxr_string">"TEST_RULE2"</span>, <strong class="jxr_keyword">new</strong> AnyMaxTime(<span class="jxr_string">"rule2"</span>, toUpperLowerPattern, 30, 0.2));
 <a class="jxr_linenumber" name="L222" href="#L222">222</a> 
-<a class="jxr_linenumber" name="L223" href="#L223">223</a>             testProtocol(protocol, DEFAULT_POOL_SIZE + 1, 0);
+<a class="jxr_linenumber" name="L223" href="#L223">223</a>             testProtocol(protocol, defaultPoolSize + 1, 0);
 <a class="jxr_linenumber" name="L224" href="#L224">224</a>         }
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> 
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">void</strong> testProtocol(Protocol protocol, <strong class="jxr_keyword">int</strong> poolSize, <strong class="jxr_keyword">int</strong> expected) {

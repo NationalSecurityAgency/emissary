@@ -346,36 +346,37 @@
 <a class="jxr_linenumber" name="L338" href="#L338">338</a>     <em class="jxr_javadoccomment">/** This class is not meant to be instantiated. */</em>
 <a class="jxr_linenumber" name="L339" href="#L339">339</a>     <strong class="jxr_keyword">private</strong> <a name="HtmlEscape" href="../../../emissary/transform/decode/HtmlEscape.html#HtmlEscape">HtmlEscape</a>() {}
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> 
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <strong class="jxr_keyword">boolean</strong> useString = false;
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>         <strong class="jxr_keyword">int</strong> i = 0;
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <strong class="jxr_keyword">if</strong> (args.length &gt; 0 &amp;&amp; args[i].equals(<span class="jxr_string">"-s"</span>)) {
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>             System.out.println(<span class="jxr_string">"Switching to string mode"</span>);
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>             useString = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>             i++;
-<a class="jxr_linenumber" name="L348" href="#L348">348</a>         }
-<a class="jxr_linenumber" name="L349" href="#L349">349</a> 
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">for</strong> (; i &lt; args.length; i++) {
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>             byte[] content = Executrix.readDataFromFile(args[i]);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>                 System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>             }
-<a class="jxr_linenumber" name="L356" href="#L356">356</a> 
-<a class="jxr_linenumber" name="L357" href="#L357">357</a>             System.out.println(args[i]);
-<a class="jxr_linenumber" name="L358" href="#L358">358</a>             <strong class="jxr_keyword">if</strong> (useString) {
-<a class="jxr_linenumber" name="L359" href="#L359">359</a>                 String escaped = HtmlEscape.unescapeHtml(<strong class="jxr_keyword">new</strong> String(content));
-<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 escaped = HtmlEscape.unescapeEntities(escaped);
-<a class="jxr_linenumber" name="L361" href="#L361">361</a>                 System.out.println(escaped);
-<a class="jxr_linenumber" name="L362" href="#L362">362</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L363" href="#L363">363</a>                 byte[] escaped = HtmlEscape.unescapeHtml(content);
-<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 escaped = HtmlEscape.unescapeEntities(escaped);
-<a class="jxr_linenumber" name="L365" href="#L365">365</a>                 System.out.write(escaped, 0, escaped.length);
-<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 System.out.println();
-<a class="jxr_linenumber" name="L367" href="#L367">367</a>             }
-<a class="jxr_linenumber" name="L368" href="#L368">368</a>         }
-<a class="jxr_linenumber" name="L369" href="#L369">369</a>     }
-<a class="jxr_linenumber" name="L370" href="#L370">370</a> }
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>         <strong class="jxr_keyword">boolean</strong> useString = false;
+<a class="jxr_linenumber" name="L344" href="#L344">344</a>         <strong class="jxr_keyword">int</strong> i = 0;
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>         <strong class="jxr_keyword">if</strong> (args.length &gt; 0 &amp;&amp; args[i].equals(<span class="jxr_string">"-s"</span>)) {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a>             System.out.println(<span class="jxr_string">"Switching to string mode"</span>);
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>             useString = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>             i++;
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         }
+<a class="jxr_linenumber" name="L350" href="#L350">350</a> 
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         <strong class="jxr_keyword">for</strong> (; i &lt; args.length; i++) {
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>             byte[] content = Executrix.readDataFromFile(args[i]);
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>             <strong class="jxr_keyword">if</strong> (content == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>                 System.out.println(args[i] + <span class="jxr_string">": Unreadable"</span>);
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>             }
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>             System.out.println(args[i]);
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>             <strong class="jxr_keyword">if</strong> (useString) {
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                 String escaped = HtmlEscape.unescapeHtml(<strong class="jxr_keyword">new</strong> String(content));
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>                 escaped = HtmlEscape.unescapeEntities(escaped);
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>                 System.out.println(escaped);
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                 byte[] escaped = HtmlEscape.unescapeHtml(content);
+<a class="jxr_linenumber" name="L365" href="#L365">365</a>                 escaped = HtmlEscape.unescapeEntities(escaped);
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>                 System.out.write(escaped, 0, escaped.length);
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>                 System.out.println();
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>             }
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>         }
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>     }
+<a class="jxr_linenumber" name="L371" href="#L371">371</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -78,7 +78,7 @@
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> ConnectionConfig staticConnectionConfig = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>      <em class="jxr_comment">// static config variables</em>
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String CONTEXT = DEFAULT_CONTEXT;
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String context = DEFAULT_CONTEXT;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> retries = DEFAULT_RETRIES;
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> String username = DEFAULT_USERNAME;
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>      <em class="jxr_comment">// How long to wait while establishing a connection (ms)</em>
@@ -110,7 +110,7 @@
 <a class="jxr_linenumber" name="L102" href="#L102">102</a>             connectionTimeout = c.findIntEntry(<span class="jxr_string">"connectionTimeout"</span>, DEFAULT_CONNECTION_TIMEOUT);
 <a class="jxr_linenumber" name="L103" href="#L103">103</a>             connectionManagerTimeout = c.findIntEntry(<span class="jxr_string">"connectionManagerTimeout"</span>, DEFAULT_CONNECTION_MANAGER_TIMEOUT);
 <a class="jxr_linenumber" name="L104" href="#L104">104</a>             socketTimeout = c.findIntEntry(<span class="jxr_string">"socketTimeout"</span>, DEFAULT_SOCKET_TIMEOUT);
-<a class="jxr_linenumber" name="L105" href="#L105">105</a>             CONTEXT = c.findStringEntry(<span class="jxr_string">"context"</span>, DEFAULT_CONTEXT);
+<a class="jxr_linenumber" name="L105" href="#L105">105</a>             context = c.findStringEntry(<span class="jxr_string">"context"</span>, DEFAULT_CONTEXT);
 <a class="jxr_linenumber" name="L106" href="#L106">106</a>         } <strong class="jxr_keyword">catch</strong> (IOException iox) {
 <a class="jxr_linenumber" name="L107" href="#L107">107</a>             LOGGER.warn(<span class="jxr_string">"Cannot read EmissaryClient properties, configuring defaults: {}"</span>, iox.getMessage());
 <a class="jxr_linenumber" name="L108" href="#L108">108</a>             retries = DEFAULT_RETRIES;
@@ -118,7 +118,7 @@
 <a class="jxr_linenumber" name="L110" href="#L110">110</a>             connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 <a class="jxr_linenumber" name="L111" href="#L111">111</a>             connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
 <a class="jxr_linenumber" name="L112" href="#L112">112</a>             socketTimeout = DEFAULT_SOCKET_TIMEOUT;
-<a class="jxr_linenumber" name="L113" href="#L113">113</a>             CONTEXT = DEFAULT_CONTEXT;
+<a class="jxr_linenumber" name="L113" href="#L113">113</a>             context = DEFAULT_CONTEXT;
 <a class="jxr_linenumber" name="L114" href="#L114">114</a>         }
 <a class="jxr_linenumber" name="L115" href="#L115">115</a> 
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         <em class="jxr_comment">// Read the jetty user realm formatted property file for the password</em>

@@ -138,7 +138,7 @@
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>                 logger.debug(<span class="jxr_string">"Initiating bundle completed msg for {}, status={}"</span>, paths.getBundleId(), status);
 <a class="jxr_linenumber" name="L131" href="#L131">131</a>                 space.bundleCompleted(paths.getBundleId(), status);
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>             } <strong class="jxr_keyword">catch</strong> (Exception e) {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 StringBuffer fnb = <strong class="jxr_keyword">new</strong> StringBuffer();
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>                 StringBuilder fnb = <strong class="jxr_keyword">new</strong> StringBuilder();
 <a class="jxr_linenumber" name="L134" href="#L134">134</a>                 <em class="jxr_comment">// Report filenames on error</em>
 <a class="jxr_linenumber" name="L135" href="#L135">135</a>                 <strong class="jxr_keyword">for</strong> (Iterator&lt;String&gt; i = paths.getFileNameIterator(); i.hasNext();) {
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>                     String fn = i.next();

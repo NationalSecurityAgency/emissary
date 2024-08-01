@@ -195,19 +195,20 @@
 <a class="jxr_linenumber" name="L187" href="#L187">187</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L188" href="#L188">188</a> <em class="jxr_javadoccomment">     * Main to test output types</em>
 <a class="jxr_linenumber" name="L189" href="#L189">189</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L190" href="#L190">190</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="L191" href="#L191">191</a>         <strong class="jxr_keyword">final</strong> String name = args.length &gt; 0 ? args[0] : <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L192" href="#L192">192</a> 
-<a class="jxr_linenumber" name="L193" href="#L193">193</a>         <strong class="jxr_keyword">final</strong> <a name="DataFilter" href="../../../emissary/output/filter/Da<a name="DataFilter" href="../../../emissary/output/filter/DataFilter.html#DataFilter">DataFilter</a>tml#DataFilter">DataFilter</a> filter = <strong class="jxr_keyword">new</strong> <a name="DataFilter" href="../../../emissary/output/filter/DataFilter.html#DataFilter">DataFilter</a>();
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>             <strong class="jxr_keyword">final</strong> <a name="Configurator" href="../../../emissary/config/Configurator.html#Configurator">Configurator</a> config = ConfigUtil.getConfigInfo(DropOffPlace.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="L196" href="#L196">196</a>             filter.initialize(config, name);
-<a class="jxr_linenumber" name="L197" href="#L197">197</a>             System.out.println(<span class="jxr_string">"Output types "</span> + filter.outputTypes);
-<a class="jxr_linenumber" name="L198" href="#L198">198</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="L199" href="#L199">199</a>             System.err.println(<span class="jxr_string">"Cannot configure filter: "</span> + ex.getMessage());
-<a class="jxr_linenumber" name="L200" href="#L200">200</a>         }
-<a class="jxr_linenumber" name="L201" href="#L201">201</a>     }
-<a class="jxr_linenumber" name="L202" href="#L202">202</a> }
+<a class="jxr_linenumber" name="L190" href="#L190">190</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L191" href="#L191">191</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(<strong class="jxr_keyword">final</strong> String[] args) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L192" href="#L192">192</a>         <strong class="jxr_keyword">final</strong> String name = args.length &gt; 0 ? args[0] : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L193" href="#L193">193</a> 
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         <strong class="jxr_keyword">final</strong> <a name="DataFilter" href="../../../emissary/output/filter/Da<a name="DataFilter" href="../../../emissary/output/filter/DataFilter.html#DataFilter">DataFilter</a>tml#DataFilter">DataFilter</a> filter = <strong class="jxr_keyword">new</strong> <a name="DataFilter" href="../../../emissary/output/filter/DataFilter.html#DataFilter">DataFilter</a>();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L196" href="#L196">196</a>             <strong class="jxr_keyword">final</strong> <a name="Configurator" href="../../../emissary/config/Configurator.html#Configurator">Configurator</a> config = ConfigUtil.getConfigInfo(DropOffPlace.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L197" href="#L197">197</a>             filter.initialize(config, name);
+<a class="jxr_linenumber" name="L198" href="#L198">198</a>             System.out.println(<span class="jxr_string">"Output types "</span> + filter.outputTypes);
+<a class="jxr_linenumber" name="L199" href="#L199">199</a>         } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="L200" href="#L200">200</a>             System.err.println(<span class="jxr_string">"Cannot configure filter: "</span> + ex.getMessage());
+<a class="jxr_linenumber" name="L201" href="#L201">201</a>         }
+<a class="jxr_linenumber" name="L202" href="#L202">202</a>     }
+<a class="jxr_linenumber" name="L203" href="#L203">203</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

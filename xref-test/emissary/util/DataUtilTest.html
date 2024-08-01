@@ -59,10 +59,10 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>          <strong class="jxr_keyword">final</strong> byte[] blankSpace = {' '};
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>          <strong class="jxr_keyword">final</strong> byte[] blankSpaces = {' ', ' '};
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">final</strong> byte[] control = {' ', ByteUtil.Ascii_DEL, ' '};
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">final</strong> byte[] control = {' ', ByteUtil.ASCII_DEL, ' '};
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>          <strong class="jxr_keyword">final</strong> byte[] foo = {'f', 'o', '1'};
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          <strong class="jxr_keyword">final</strong> byte[] blankNum = {' ', ' ', '1'};
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">final</strong> byte[] blankNumControl = {' ', ' ', '1', ByteUtil.Ascii_ESC};
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          <strong class="jxr_keyword">final</strong> byte[] blankNumControl = {' ', ' ', '1', ByteUtil.ASCII_ESC};
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          <strong class="jxr_keyword">final</strong> byte[] W = <span class="jxr_string">"Президент Буш"</span>.getBytes();
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> byte[] bytes : Arrays.asList(blankSpace, blankSpaces, control, foo, blankNum, blankNumControl, W)) {
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>              assertFalse(DataUtil.isEmpty(bytes), <span class="jxr_string">"empty: "</span> + Arrays.toString(bytes));

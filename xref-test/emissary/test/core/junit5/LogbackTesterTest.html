@@ -22,79 +22,80 @@
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertThrows;
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.jupiter.api.Assertions.assertTrue;
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="LogbackTesterTest" href="../../../../emissary/test/core/junit5/LogbackTesterTest.html#LogbackTesterTest">LogbackTesterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>      <strong class="jxr_keyword">protected</strong> Logger logger = LoggerFactory.getLogger(<span class="jxr_string">"TESTY"</span>);
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>      @Test
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>      <strong class="jxr_keyword">void</strong> canCreateTester() {
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>          assertNotNull(logBackTester);
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>      }
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>      @Test
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>      <strong class="jxr_keyword">void</strong> canCheckSingleEvent() {
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>          assertNotNull(logBackTester);
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>          LogbackTester.SimplifiedLogEvent event2 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>          events.add(event2);
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>          assertDoesNotThrow(() -&gt; logBackTester.checkLogList(events));
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>      }
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>  
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>      @Test
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>      <strong class="jxr_keyword">void</strong> canDetectWrongMessage() {
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>          LogbackTester.SimplifiedLogEvent event2 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Wrong Message."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>          events.add(event2);
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>          AssertionFailedError thrownException =
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Messages not equal"</span>));
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>      }
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>      @Test
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      <strong class="jxr_keyword">void</strong> canDetectWrongLevel() {
-<a class="jxr_linenumber" name="L52" href="#L52">52</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>          LogbackTester.SimplifiedLogEvent event3 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.INFO, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>          events.add(event3);
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>          AssertionFailedError thrownException =
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Levels not equal"</span>));
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>      }
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @Test
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">void</strong> canDetectWrongThrowable() {
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>          LogbackTester.SimplifiedLogEvent event4 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"something"</span>));
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>          events.add(event4);
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Throwable(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L71" href="#L71">71</a>          AssertionFailedError thrownException =
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
-<a class="jxr_linenumber" name="L73" href="#L73">73</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Exception class name not"</span>));
-<a class="jxr_linenumber" name="L74" href="#L74">74</a>      }
-<a class="jxr_linenumber" name="L75" href="#L75">75</a>  
-<a class="jxr_linenumber" name="L76" href="#L76">76</a>      @Test
-<a class="jxr_linenumber" name="L77" href="#L77">77</a>      <strong class="jxr_keyword">void</strong> canDetectWrongThrowableMessage() {
-<a class="jxr_linenumber" name="L78" href="#L78">78</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
-<a class="jxr_linenumber" name="L79" href="#L79">79</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
-<a class="jxr_linenumber" name="L80" href="#L80">80</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L81" href="#L81">81</a>          LogbackTester.SimplifiedLogEvent event4 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"something"</span>));
-<a class="jxr_linenumber" name="L82" href="#L82">82</a>          events.add(event4);
-<a class="jxr_linenumber" name="L83" href="#L83">83</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
-<a class="jxr_linenumber" name="L84" href="#L84">84</a>          AssertionFailedError thrownException =
-<a class="jxr_linenumber" name="L85" href="#L85">85</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Exception message not equal for"</span>), thrownException.getMessage());
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      }
-<a class="jxr_linenumber" name="L88" href="#L88">88</a>  
-<a class="jxr_linenumber" name="L89" href="#L89">89</a>  }
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">class</strong> <a name="LogbackTesterTest" href="../../../../emissary/test/core/junit5/LogbackTesterTest.html#LogbackTesterTest">LogbackTesterTest</a> <strong class="jxr_keyword">extends</strong> <a name="UnitTest" href="../../../../emissary/test/core/junit5/UnitTest.html#UnitTest">UnitTest</a> {
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      @SuppressWarnings(<span class="jxr_string">"HidingField"</span>)
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>      <strong class="jxr_keyword">protected</strong> Logger logger = LoggerFactory.getLogger(<span class="jxr_string">"TESTY"</span>);
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      @Test
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>      <strong class="jxr_keyword">void</strong> canCreateTester() {
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>          assertNotNull(logBackTester);
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>      }
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>  
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>      @Test
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>      <strong class="jxr_keyword">void</strong> canCheckSingleEvent() {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>          assertNotNull(logBackTester);
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>          LogbackTester.SimplifiedLogEvent event2 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>          events.add(event2);
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>          assertDoesNotThrow(() -&gt; logBackTester.checkLogList(events));
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>      }
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>      @Test
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      <strong class="jxr_keyword">void</strong> canDetectWrongMessage() {
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          LogbackTester.SimplifiedLogEvent event2 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Wrong Message."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          events.add(event2);
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>          AssertionFailedError thrownException =
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Messages not equal"</span>));
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      }
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>      @Test
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>      <strong class="jxr_keyword">void</strong> canDetectWrongLevel() {
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>          LogbackTester.SimplifiedLogEvent event3 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.INFO, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>          events.add(event3);
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          AssertionFailedError thrownException =
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Levels not equal"</span>));
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>      }
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>      @Test
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">void</strong> canDetectWrongThrowable() {
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>          LogbackTester.SimplifiedLogEvent event4 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"something"</span>));
+<a class="jxr_linenumber" name="L70" href="#L70">70</a>          events.add(event4);
+<a class="jxr_linenumber" name="L71" href="#L71">71</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Throwable(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>          AssertionFailedError thrownException =
+<a class="jxr_linenumber" name="L73" href="#L73">73</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
+<a class="jxr_linenumber" name="L74" href="#L74">74</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Exception class name not"</span>));
+<a class="jxr_linenumber" name="L75" href="#L75">75</a>      }
+<a class="jxr_linenumber" name="L76" href="#L76">76</a>  
+<a class="jxr_linenumber" name="L77" href="#L77">77</a>      @Test
+<a class="jxr_linenumber" name="L78" href="#L78">78</a>      <strong class="jxr_keyword">void</strong> canDetectWrongThrowableMessage() {
+<a class="jxr_linenumber" name="L79" href="#L79">79</a>          <a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logBackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(logger.getName());
+<a class="jxr_linenumber" name="L80" href="#L80">80</a>          assertNotNull(logBackTester, <span class="jxr_string">"Expected tester to not be null."</span>);
+<a class="jxr_linenumber" name="L81" href="#L81">81</a>          List&lt;LogbackTester.SimplifiedLogEvent&gt; events = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L82" href="#L82">82</a>          LogbackTester.SimplifiedLogEvent event4 = <strong class="jxr_keyword">new</strong> LogbackTester.SimplifiedLogEvent(Level.WARN, <span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"something"</span>));
+<a class="jxr_linenumber" name="L83" href="#L83">83</a>          events.add(event4);
+<a class="jxr_linenumber" name="L84" href="#L84">84</a>          logger.warn(<span class="jxr_string">"Not good news."</span>, <strong class="jxr_keyword">new</strong> Exception(<span class="jxr_string">"worse news"</span>));
+<a class="jxr_linenumber" name="L85" href="#L85">85</a>          AssertionFailedError thrownException =
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>                  assertThrows(AssertionFailedError.<strong class="jxr_keyword">class</strong>, () -&gt; logBackTester.checkLogList(events), <span class="jxr_string">"Expected an exception."</span>);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>          assertTrue(thrownException.getMessage().startsWith(<span class="jxr_string">"Exception message not equal for"</span>), thrownException.getMessage());
+<a class="jxr_linenumber" name="L88" href="#L88">88</a>      }
+<a class="jxr_linenumber" name="L89" href="#L89">89</a>  
+<a class="jxr_linenumber" name="L90" href="#L90">90</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -883,7 +883,7 @@
 <a class="jxr_linenumber" name="L875" href="#L875">875</a>     }
 <a class="jxr_linenumber" name="L876" href="#L876">876</a> 
 <a class="jxr_linenumber" name="L877" href="#L877">877</a> 
-<a class="jxr_linenumber" name="L878" href="#L878">878</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> streamData(Process p, byte[] data) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="L878" href="#L878">878</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> streamData(Process p, byte[] data) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="L879" href="#L879">879</a>         <strong class="jxr_keyword">try</strong> (OutputStream os = <strong class="jxr_keyword">new</strong> BufferedOutputStream(<strong class="jxr_keyword">new</strong> DataOutputStream(p.getOutputStream()))) {
 <a class="jxr_linenumber" name="L880" href="#L880">880</a>             <strong class="jxr_keyword">if</strong> (ArrayUtils.isNotEmpty(data)) {
 <a class="jxr_linenumber" name="L881" href="#L881">881</a>                 os.write(data);

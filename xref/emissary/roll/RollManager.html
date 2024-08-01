@@ -37,7 +37,7 @@
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">final</strong> HashSet&lt;Roller&gt; rollers = <strong class="jxr_keyword">new</strong> HashSet&lt;&gt;();
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>      <em class="jxr_comment">// SINGLETON</em>
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      @Nullable
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a> RM;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a> rollManager;
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>  
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      <strong class="jxr_keyword">protected</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a>() {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>          init();
@@ -119,10 +119,10 @@
 <a class="jxr_linenumber" name="L111" href="#L111">111</a> <em class="jxr_javadoccomment">     * Synchronized on RM to prevent multiple returns on RollManager</em>
 <a class="jxr_linenumber" name="L112" href="#L112">112</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L113" href="#L113">113</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">synchronized</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a> getManager() {
-<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">if</strong> (RM == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L115" href="#L115">115</a>             RM = <strong class="jxr_keyword">new</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a>();
+<a class="jxr_linenumber" name="L114" href="#L114">114</a>         <strong class="jxr_keyword">if</strong> (rollManager == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L115" href="#L115">115</a>             rollManager = <strong class="jxr_keyword">new</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a>();
 <a class="jxr_linenumber" name="L116" href="#L116">116</a>         }
-<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">return</strong> RM;
+<a class="jxr_linenumber" name="L117" href="#L117">117</a>         <strong class="jxr_keyword">return</strong> rollManager;
 <a class="jxr_linenumber" name="L118" href="#L118">118</a>     }
 <a class="jxr_linenumber" name="L119" href="#L119">119</a> 
 <a class="jxr_linenumber" name="L120" href="#L120">120</a>     <em class="jxr_javadoccomment">/**</em>
@@ -131,16 +131,16 @@
 <a class="jxr_linenumber" name="L123" href="#L123">123</a> <em class="jxr_javadoccomment">     * Used to create custom RollManager based on configs.</em>
 <a class="jxr_linenumber" name="L124" href="#L124">124</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L125" href="#L125">125</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">synchronized</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a> getManager(<a name="Configurator" href="../../emissary/config/Configurator.html#Configurator">Configurator</a> configG) {
-<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">if</strong> (RM == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L127" href="#L127">127</a>             RM = <strong class="jxr_keyword">new</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a>(configG);
+<a class="jxr_linenumber" name="L126" href="#L126">126</a>         <strong class="jxr_keyword">if</strong> (rollManager == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L127" href="#L127">127</a>             rollManager = <strong class="jxr_keyword">new</strong> <a name="RollManager" href="../../emissary/roll/RollManager.html#RollManager">RollManager</a>(configG);
 <a class="jxr_linenumber" name="L128" href="#L128">128</a>         }
-<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">return</strong> RM;
+<a class="jxr_linenumber" name="L129" href="#L129">129</a>         <strong class="jxr_keyword">return</strong> rollManager;
 <a class="jxr_linenumber" name="L130" href="#L130">130</a>     }
 <a class="jxr_linenumber" name="L131" href="#L131">131</a> 
 <a class="jxr_linenumber" name="L132" href="#L132">132</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> shutdown() {
-<a class="jxr_linenumber" name="L133" href="#L133">133</a>         RM.exec.shutdown();
-<a class="jxr_linenumber" name="L134" href="#L134">134</a>         log.info(<span class="jxr_string">"Closing all rollers ({})"</span>, RM.rollers.size());
-<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">for</strong> (<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a> roller : RM.rollers) {
+<a class="jxr_linenumber" name="L133" href="#L133">133</a>         rollManager.exec.shutdown();
+<a class="jxr_linenumber" name="L134" href="#L134">134</a>         log.info(<span class="jxr_string">"Closing all rollers ({})"</span>, rollManager.rollers.size());
+<a class="jxr_linenumber" name="L135" href="#L135">135</a>         <strong class="jxr_keyword">for</strong> (<a name="Roller" href="../../emissary/roll/Roller.html#Roller">Roller</a> roller : rollManager.rollers) {
 <a class="jxr_linenumber" name="L136" href="#L136">136</a>             <a name="Rollable" href="../../emissary/roll/Rollable.html#Rollable">Rollable</a> r = roller.getRollable();
 <a class="jxr_linenumber" name="L137" href="#L137">137</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L138" href="#L138">138</a>                 r.roll();
@@ -149,7 +149,7 @@
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>                 log.warn(<span class="jxr_string">"Error while closing Rollable: {}"</span>, r.getClass(), ex);
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>             }
 <a class="jxr_linenumber" name="L143" href="#L143">143</a>         }
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>         RM = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         rollManager = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>     }
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
 <a class="jxr_linenumber" name="L147" href="#L147">147</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> RMThreadFactory <strong class="jxr_keyword">implements</strong> ThreadFactory {

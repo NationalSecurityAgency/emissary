@@ -22,7 +22,7 @@
 <a class="jxr_linenumber" name="L14" href="#L14">14</a>  
 <a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="UnixFile" href="../../emissary/util/UnixFile.html#UnixFile">UnixFile</a> {
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Logger log = LoggerFactory.getLogger(UnixFile.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger log = LoggerFactory.getLogger(UnixFile.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L18" href="#L18">18</a>  
 <a class="jxr_linenumber" name="L19" href="#L19">19</a>      <em class="jxr_javadoccomment">/** The magic number configuration file. The file which contains all magic number entries */</em>
 <a class="jxr_linenumber" name="L20" href="#L20">20</a>      <strong class="jxr_keyword">private</strong> List&lt;File&gt; magicFiles = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
@@ -147,48 +147,49 @@
 <a class="jxr_linenumber" name="L139" href="#L139">139</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     * Test standalone main</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L142" href="#L142">142</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">if</strong> (args.length &lt; 2) {
-<a class="jxr_linenumber" name="L144" href="#L144">144</a>             log.info(<span class="jxr_string">"Usage: UnixFile [-v] magicfile file1 [file2 ...]"</span>);
-<a class="jxr_linenumber" name="L145" href="#L145">145</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L146" href="#L146">146</a>         }
-<a class="jxr_linenumber" name="L147" href="#L147">147</a> 
-<a class="jxr_linenumber" name="L148" href="#L148">148</a>         <strong class="jxr_keyword">boolean</strong> verbose = false;
-<a class="jxr_linenumber" name="L149" href="#L149">149</a> 
-<a class="jxr_linenumber" name="L150" href="#L150">150</a>         <strong class="jxr_keyword">int</strong> argIndex = 0;
-<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">if</strong> (args[argIndex].equalsIgnoreCase(<span class="jxr_string">"-v"</span>)) {
-<a class="jxr_linenumber" name="L152" href="#L152">152</a>             verbose = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="L153" href="#L153">153</a>             argIndex++;
-<a class="jxr_linenumber" name="L154" href="#L154">154</a>         }
-<a class="jxr_linenumber" name="L155" href="#L155">155</a> 
-<a class="jxr_linenumber" name="L156" href="#L156">156</a>         <a name="UnixFile" href="../../emissary/util/UnixFile.html#UnixFile">UnixFile</a> unixfile = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L157" href="#L157">157</a> 
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>         File magicNumberFile = <strong class="jxr_keyword">new</strong> File(args[argIndex++]);
-<a class="jxr_linenumber" name="L159" href="#L159">159</a>         <strong class="jxr_keyword">if</strong> (!magicNumberFile.exists()) {
-<a class="jxr_linenumber" name="L160" href="#L160">160</a>             System.err.println(<span class="jxr_string">"Could not find magic file: "</span> + magicNumberFile.getAbsolutePath());
-<a class="jxr_linenumber" name="L161" href="#L161">161</a>             <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L162" href="#L162">162</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L163" href="#L163">163</a>             unixfile = <strong class="jxr_keyword">new</strong> <a name="UnixFile" href="../../emissary/util/UnixFile.html#UnixFile">UnixFile</a>(magicNumberFile);
-<a class="jxr_linenumber" name="L164" href="#L164">164</a>             <strong class="jxr_keyword">if</strong> (verbose) {
-<a class="jxr_linenumber" name="L165" href="#L165">165</a>                 System.err.println(<span class="jxr_string">"Using magic file at: "</span> + magicNumberFile.getAbsolutePath());
-<a class="jxr_linenumber" name="L166" href="#L166">166</a>             }
-<a class="jxr_linenumber" name="L167" href="#L167">167</a>         }
-<a class="jxr_linenumber" name="L168" href="#L168">168</a> 
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">while</strong> (argIndex &lt; args.length) {
-<a class="jxr_linenumber" name="L170" href="#L170">170</a>             File target = <strong class="jxr_keyword">new</strong> File(args[argIndex]);
-<a class="jxr_linenumber" name="L171" href="#L171">171</a>             <strong class="jxr_keyword">if</strong> (!target.exists()) {
-<a class="jxr_linenumber" name="L172" href="#L172">172</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": UNREADABLE"</span>);
-<a class="jxr_linenumber" name="L173" href="#L173">173</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (target.isDirectory()) {
-<a class="jxr_linenumber" name="L174" href="#L174">174</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": DIRECTORY"</span>);
-<a class="jxr_linenumber" name="L175" href="#L175">175</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L176" href="#L176">176</a>                 byte[] data = Executrix.readDataFromFile(args[argIndex]);
-<a class="jxr_linenumber" name="L177" href="#L177">177</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": "</span> + unixfile.evaluateByMagicNumber(data));
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>             }
-<a class="jxr_linenumber" name="L179" href="#L179">179</a>             argIndex++;
-<a class="jxr_linenumber" name="L180" href="#L180">180</a>         }
-<a class="jxr_linenumber" name="L181" href="#L181">181</a> 
-<a class="jxr_linenumber" name="L182" href="#L182">182</a>     }
-<a class="jxr_linenumber" name="L183" href="#L183">183</a> }
+<a class="jxr_linenumber" name="L142" href="#L142">142</a>     @SuppressWarnings(<span class="jxr_string">"SystemOut"</span>)
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> main(String[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L144" href="#L144">144</a>         <strong class="jxr_keyword">if</strong> (args.length &lt; 2) {
+<a class="jxr_linenumber" name="L145" href="#L145">145</a>             log.info(<span class="jxr_string">"Usage: UnixFile [-v] magicfile file1 [file2 ...]"</span>);
+<a class="jxr_linenumber" name="L146" href="#L146">146</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L147" href="#L147">147</a>         }
+<a class="jxr_linenumber" name="L148" href="#L148">148</a> 
+<a class="jxr_linenumber" name="L149" href="#L149">149</a>         <strong class="jxr_keyword">boolean</strong> verbose = false;
+<a class="jxr_linenumber" name="L150" href="#L150">150</a> 
+<a class="jxr_linenumber" name="L151" href="#L151">151</a>         <strong class="jxr_keyword">int</strong> argIndex = 0;
+<a class="jxr_linenumber" name="L152" href="#L152">152</a>         <strong class="jxr_keyword">if</strong> (args[argIndex].equalsIgnoreCase(<span class="jxr_string">"-v"</span>)) {
+<a class="jxr_linenumber" name="L153" href="#L153">153</a>             verbose = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="L154" href="#L154">154</a>             argIndex++;
+<a class="jxr_linenumber" name="L155" href="#L155">155</a>         }
+<a class="jxr_linenumber" name="L156" href="#L156">156</a> 
+<a class="jxr_linenumber" name="L157" href="#L157">157</a>         <a name="UnixFile" href="../../emissary/util/UnixFile.html#UnixFile">UnixFile</a> unixfile = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L158" href="#L158">158</a> 
+<a class="jxr_linenumber" name="L159" href="#L159">159</a>         File magicNumberFile = <strong class="jxr_keyword">new</strong> File(args[argIndex++]);
+<a class="jxr_linenumber" name="L160" href="#L160">160</a>         <strong class="jxr_keyword">if</strong> (!magicNumberFile.exists()) {
+<a class="jxr_linenumber" name="L161" href="#L161">161</a>             System.err.println(<span class="jxr_string">"Could not find magic file: "</span> + magicNumberFile.getAbsolutePath());
+<a class="jxr_linenumber" name="L162" href="#L162">162</a>             <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L163" href="#L163">163</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L164" href="#L164">164</a>             unixfile = <strong class="jxr_keyword">new</strong> <a name="UnixFile" href="../../emissary/util/UnixFile.html#UnixFile">UnixFile</a>(magicNumberFile);
+<a class="jxr_linenumber" name="L165" href="#L165">165</a>             <strong class="jxr_keyword">if</strong> (verbose) {
+<a class="jxr_linenumber" name="L166" href="#L166">166</a>                 System.err.println(<span class="jxr_string">"Using magic file at: "</span> + magicNumberFile.getAbsolutePath());
+<a class="jxr_linenumber" name="L167" href="#L167">167</a>             }
+<a class="jxr_linenumber" name="L168" href="#L168">168</a>         }
+<a class="jxr_linenumber" name="L169" href="#L169">169</a> 
+<a class="jxr_linenumber" name="L170" href="#L170">170</a>         <strong class="jxr_keyword">while</strong> (argIndex &lt; args.length) {
+<a class="jxr_linenumber" name="L171" href="#L171">171</a>             File target = <strong class="jxr_keyword">new</strong> File(args[argIndex]);
+<a class="jxr_linenumber" name="L172" href="#L172">172</a>             <strong class="jxr_keyword">if</strong> (!target.exists()) {
+<a class="jxr_linenumber" name="L173" href="#L173">173</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": UNREADABLE"</span>);
+<a class="jxr_linenumber" name="L174" href="#L174">174</a>             } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (target.isDirectory()) {
+<a class="jxr_linenumber" name="L175" href="#L175">175</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": DIRECTORY"</span>);
+<a class="jxr_linenumber" name="L176" href="#L176">176</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L177" href="#L177">177</a>                 byte[] data = Executrix.readDataFromFile(args[argIndex]);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>                 System.out.println(args[argIndex] + <span class="jxr_string">": "</span> + unixfile.evaluateByMagicNumber(data));
+<a class="jxr_linenumber" name="L179" href="#L179">179</a>             }
+<a class="jxr_linenumber" name="L180" href="#L180">180</a>             argIndex++;
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         }
+<a class="jxr_linenumber" name="L182" href="#L182">182</a> 
+<a class="jxr_linenumber" name="L183" href="#L183">183</a>     }
+<a class="jxr_linenumber" name="L184" href="#L184">184</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

@@ -183,7 +183,7 @@
 <a class="jxr_linenumber" name="L175" href="#L175">175</a> 
 <a class="jxr_linenumber" name="L176" href="#L176">176</a>     @Command()
 <a class="jxr_linenumber" name="L177" href="#L177">177</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> JunkCommand <strong class="jxr_keyword">implements</strong> EmissaryCommand {
-<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(JunkCommand.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L178" href="#L178">178</a>         <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(JunkCommand.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L179" href="#L179">179</a> 
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>         @Override
 <a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">public</strong> String getCommandName() {
@@ -235,7 +235,7 @@
 <a class="jxr_linenumber" name="L227" href="#L227">227</a>     @Command()
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> AnotherBaseCommand <strong class="jxr_keyword">extends</strong> BaseCommand {
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>         <em class="jxr_comment">// need to extend BaseCommand to get verbose options</em>
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger LOG = LoggerFactory.getLogger(AnotherBaseCommand.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="L231" href="#L231">231</a> 
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>         @Override
 <a class="jxr_linenumber" name="L233" href="#L233">233</a>         <strong class="jxr_keyword">public</strong> String getCommandName() {

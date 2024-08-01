@@ -294,8 +294,8 @@
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>         logger.debug(<span class="jxr_string">"Command to exec is "</span> + Arrays.asList(c));
 <a class="jxr_linenumber" name="L287" href="#L287">287</a> 
 <a class="jxr_linenumber" name="L288" href="#L288">288</a>         <strong class="jxr_keyword">int</strong> pstat;
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">final</strong> StringBuffer out = <strong class="jxr_keyword">new</strong> StringBuffer();
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <strong class="jxr_keyword">final</strong> StringBuffer err = <strong class="jxr_keyword">new</strong> StringBuffer();
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>         <strong class="jxr_keyword">final</strong> StringBuilder out = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>         <strong class="jxr_keyword">final</strong> StringBuilder err = <strong class="jxr_keyword">new</strong> StringBuilder();
 <a class="jxr_linenumber" name="L291" href="#L291">291</a> 
 <a class="jxr_linenumber" name="L292" href="#L292">292</a>         pstat = e.execute(c, out, err);
 <a class="jxr_linenumber" name="L293" href="#L293">293</a>         logger.debug(<span class="jxr_string">"Stdout: "</span> + out);
@@ -307,7 +307,7 @@
 <a class="jxr_linenumber" name="L299" href="#L299">299</a>         assertTrue(pstat &gt;= 0, <span class="jxr_string">"Process return value"</span>);
 <a class="jxr_linenumber" name="L300" href="#L300">300</a>         readAndNuke(names[Executrix.OUTPATH]);
 <a class="jxr_linenumber" name="L301" href="#L301">301</a> 
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         pstat = e.execute(c, out, <span class="jxr_string">"UTF-8"</span>);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>         pstat = e.execute(c, out, <strong class="jxr_keyword">new</strong> StringBuilder(<span class="jxr_string">"UTF-8"</span>));
 <a class="jxr_linenumber" name="L303" href="#L303">303</a>         assertTrue(pstat &gt;= 0, <span class="jxr_string">"Process return value"</span>);
 <a class="jxr_linenumber" name="L304" href="#L304">304</a>         readAndNuke(names[Executrix.OUTPATH]);
 <a class="jxr_linenumber" name="L305" href="#L305">305</a> 

@@ -248,103 +248,106 @@
 <a class="jxr_linenumber" name="L240" href="#L240">240</a>         <strong class="jxr_keyword">return</strong> Optional.empty();
 <a class="jxr_linenumber" name="L241" href="#L241">241</a>     }
 <a class="jxr_linenumber" name="L242" href="#L242">242</a> 
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">class</strong> ClearDataBaseDataObject <strong class="jxr_keyword">extends</strong> BaseDataObject {
-<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> clearData() {
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>             theData = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>             seekableByteChannelFactory = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>         }
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>     }
-<a class="jxr_linenumber" name="L249" href="#L249">249</a> 
-<a class="jxr_linenumber" name="L250" href="#L250">250</a>     @ParameterizedTest
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>     @MethodSource(<span class="jxr_string">"data"</span>)
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>     @Override
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testExtractionPlace(<strong class="jxr_keyword">final</strong> String resource) {
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         logger.debug(<span class="jxr_string">"Running {} test on resource {}"</span>, place.getClass().getName(), resource);
-<a class="jxr_linenumber" name="L255" href="#L255">255</a> 
-<a class="jxr_linenumber" name="L256" href="#L256">256</a>         <strong class="jxr_keyword">if</strong> (generateAnswers()) {
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a>                 generateAnswerFiles(resource);
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>             } <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> Exception e) {
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>                 logger.error(<span class="jxr_string">"Error running test {}"</span>, resource, e);
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>                 fail(<span class="jxr_string">"Unable to generate answer file"</span>, e);
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>             }
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>         }
-<a class="jxr_linenumber" name="L264" href="#L264">264</a> 
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <em class="jxr_comment">// Run the normal extraction/regression tests</em>
-<a class="jxr_linenumber" name="L266" href="#L266">266</a>         <strong class="jxr_keyword">super</strong>.testExtractionPlace(resource);
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>     }
-<a class="jxr_linenumber" name="L268" href="#L268">268</a> 
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L270" href="#L270">270</a> <em class="jxr_javadoccomment">     * Actually generate the answer file for a given resource</em>
-<a class="jxr_linenumber" name="L271" href="#L271">271</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * Takes initial form and final forms from the filename</em>
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> ClearDataBaseDataObject <strong class="jxr_keyword">extends</strong> BaseDataObject {
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">long</strong> serialVersionUID = -8728006876784881020L;
+<a class="jxr_linenumber" name="L245" href="#L245">245</a> 
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> clearData() {
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>             theData = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>             seekableByteChannelFactory = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>         }
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>     }
+<a class="jxr_linenumber" name="L251" href="#L251">251</a> 
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>     @ParameterizedTest
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>     @MethodSource(<span class="jxr_string">"data"</span>)
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>     @Override
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testExtractionPlace(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>         logger.debug(<span class="jxr_string">"Running {} test on resource {}"</span>, place.getClass().getName(), resource);
+<a class="jxr_linenumber" name="L257" href="#L257">257</a> 
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>         <strong class="jxr_keyword">if</strong> (generateAnswers()) {
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="L260" href="#L260">260</a>                 generateAnswerFiles(resource);
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>             } <strong class="jxr_keyword">catch</strong> (<strong class="jxr_keyword">final</strong> Exception e) {
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>                 logger.error(<span class="jxr_string">"Error running test {}"</span>, resource, e);
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>                 fail(<span class="jxr_string">"Unable to generate answer file"</span>, e);
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>             }
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>         }
+<a class="jxr_linenumber" name="L266" href="#L266">266</a> 
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>         <em class="jxr_comment">// Run the normal extraction/regression tests</em>
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>         <strong class="jxr_keyword">super</strong>.testExtractionPlace(resource);
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>     }
+<a class="jxr_linenumber" name="L270" href="#L270">270</a> 
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> <em class="jxr_javadoccomment">     * Actually generate the answer file for a given resource</em>
 <a class="jxr_linenumber" name="L273" href="#L273">273</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * @param resource to generate against</em>
-<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * @throws Exception if an error occurs during processing</em>
-<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> generateAnswerFiles(<strong class="jxr_keyword">final</strong> String resource) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>         <em class="jxr_comment">// Get the data and create a channel factory to it</em>
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject initialIbdo = getInitialIbdo(resource);
-<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <em class="jxr_comment">// Clone the BDO to create an 'after' copy</em>
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo, <strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <em class="jxr_comment">// Actually process the BDO and keep the children</em>
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; finalResults;
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>         <strong class="jxr_keyword">final</strong> List&lt;SimplifiedLogEvent&gt; finalLogEvents;
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">if</strong> (getLogbackLoggerName() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             finalResults = place.agentProcessHeavyDuty(finalIbdo);
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>             finalLogEvents = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 finalResults = place.agentProcessHeavyDuty(finalIbdo);
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 finalLogEvents = logbackTester.getSimplifiedLogEvents();
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>             }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a>         }
-<a class="jxr_linenumber" name="L294" href="#L294">294</a> 
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         <em class="jxr_comment">// Allow overriding things before serialising to XML</em>
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>         tweakInitialIbdoBeforeSerialisation(resource, initialIbdo);
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>         tweakFinalIbdoBeforeSerialisation(resource, finalIbdo);
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>         tweakFinalResultsBeforeSerialisation(resource, finalResults);
-<a class="jxr_linenumber" name="L299" href="#L299">299</a>         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
-<a class="jxr_linenumber" name="L300" href="#L300">300</a> 
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>         <em class="jxr_comment">// Generate the full XML (setup &amp; answers from before &amp; after)</em>
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>         RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders());
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>     }
-<a class="jxr_linenumber" name="L304" href="#L304">304</a> 
-<a class="jxr_linenumber" name="L305" href="#L305">305</a>     @Override
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload)
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>             <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>         <strong class="jxr_keyword">if</strong> (getLogbackLoggerName() == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>             actualSimplifiedLogEvents = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
-<a class="jxr_linenumber" name="L310" href="#L310">310</a> 
-<a class="jxr_linenumber" name="L311" href="#L311">311</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>                 <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments = <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
-<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>                 actualSimplifiedLogEvents = logbackTester.getSimplifiedLogEvents();
-<a class="jxr_linenumber" name="L317" href="#L317">317</a> 
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>                 <strong class="jxr_keyword">return</strong> attachments;
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>             }
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>         }
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>     }
-<a class="jxr_linenumber" name="L322" href="#L322">322</a> 
-<a class="jxr_linenumber" name="L323" href="#L323">323</a>     @Override
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>     <strong class="jxr_keyword">protected</strong> Document getAnswerDocumentFor(<strong class="jxr_keyword">final</strong> String resource) {
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>         <em class="jxr_comment">// If generating answers, get the src version, otherwise get the normal XML file</em>
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>         <strong class="jxr_keyword">return</strong> generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource) : <strong class="jxr_keyword">super</strong>.getAnswerDocumentFor(resource);
-<a class="jxr_linenumber" name="L327" href="#L327">327</a>     }
-<a class="jxr_linenumber" name="L328" href="#L328">328</a> 
-<a class="jxr_linenumber" name="L329" href="#L329">329</a>     @Override
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setupPayload(<strong class="jxr_keyword">final</strong> IBaseDataObject payload, <strong class="jxr_keyword">final</strong> Document answers) {
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         RegressionTestUtil.setupPayload(payload, answers, getDecoders());
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>     }
-<a class="jxr_linenumber" name="L333" href="#L333">333</a> 
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>     @Override
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> checkAnswers(<strong class="jxr_keyword">final</strong> Document answers, <strong class="jxr_keyword">final</strong> IBaseDataObject payload,
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>             <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments, <strong class="jxr_keyword">final</strong> String tname) {
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders());
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>     }
-<a class="jxr_linenumber" name="L339" href="#L339">339</a> }
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> <em class="jxr_javadoccomment">     * Takes initial form and final forms from the filename</em>
+<a class="jxr_linenumber" name="L275" href="#L275">275</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="L276" href="#L276">276</a> <em class="jxr_javadoccomment">     * @param resource to generate against</em>
+<a class="jxr_linenumber" name="L277" href="#L277">277</a> <em class="jxr_javadoccomment">     * @throws Exception if an error occurs during processing</em>
+<a class="jxr_linenumber" name="L278" href="#L278">278</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> generateAnswerFiles(<strong class="jxr_keyword">final</strong> String resource) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <em class="jxr_comment">// Get the data and create a channel factory to it</em>
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject initialIbdo = getInitialIbdo(resource);
+<a class="jxr_linenumber" name="L282" href="#L282">282</a>         <em class="jxr_comment">// Clone the BDO to create an 'after' copy</em>
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         <strong class="jxr_keyword">final</strong> IBaseDataObject finalIbdo = IBaseDataObjectHelper.clone(initialIbdo, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         <em class="jxr_comment">// Actually process the BDO and keep the children</em>
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>         <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; finalResults;
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>         <strong class="jxr_keyword">final</strong> List&lt;SimplifiedLogEvent&gt; finalLogEvents;
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>         <strong class="jxr_keyword">if</strong> (getLogbackLoggerName() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>             finalResults = place.agentProcessHeavyDuty(finalIbdo);
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>             finalLogEvents = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                 finalResults = place.agentProcessHeavyDuty(finalIbdo);
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 finalLogEvents = logbackTester.getSimplifiedLogEvents();
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>             }
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>         }
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>         <em class="jxr_comment">// Allow overriding things before serialising to XML</em>
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>         tweakInitialIbdoBeforeSerialisation(resource, initialIbdo);
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>         tweakFinalIbdoBeforeSerialisation(resource, finalIbdo);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>         tweakFinalResultsBeforeSerialisation(resource, finalResults);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>         tweakFinalLogEventsBeforeSerialisation(resource, finalLogEvents);
+<a class="jxr_linenumber" name="L302" href="#L302">302</a> 
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>         <em class="jxr_comment">// Generate the full XML (setup &amp; answers from before &amp; after)</em>
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>         RegressionTestUtil.writeAnswerXml(resource, initialIbdo, finalIbdo, finalResults, finalLogEvents, getEncoders(),
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>                 <strong class="jxr_keyword">super</strong>.answerFileClassRef);
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>     }
+<a class="jxr_linenumber" name="L307" href="#L307">307</a> 
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>     @Override
+<a class="jxr_linenumber" name="L309" href="#L309">309</a>     <strong class="jxr_keyword">protected</strong> List&lt;IBaseDataObject&gt; processHeavyDutyHook(IServiceProviderPlace place, IBaseDataObject payload)
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>             <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         <strong class="jxr_keyword">if</strong> (getLogbackLoggerName() == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             actualSimplifiedLogEvents = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
+<a class="jxr_linenumber" name="L313" href="#L313">313</a> 
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
+<a class="jxr_linenumber" name="L315" href="#L315">315</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>             <strong class="jxr_keyword">try</strong> (<a name="LogbackTester" href="../../../../emissary/test/core/junit5/Log<a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>ml#LogbackTester">LogbackTester</a> logbackTester = <strong class="jxr_keyword">new</strong> <a name="LogbackTester" href="../../../../emissary/test/core/junit5/LogbackTester.html#LogbackTester">LogbackTester</a>(getLogbackLoggerName())) {
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>                 <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments = <strong class="jxr_keyword">super</strong>.processHeavyDutyHook(place, payload);
+<a class="jxr_linenumber" name="L318" href="#L318">318</a> 
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                 actualSimplifiedLogEvents = logbackTester.getSimplifiedLogEvents();
+<a class="jxr_linenumber" name="L320" href="#L320">320</a> 
+<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 <strong class="jxr_keyword">return</strong> attachments;
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>             }
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>         }
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>     }
+<a class="jxr_linenumber" name="L325" href="#L325">325</a> 
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>     @Override
+<a class="jxr_linenumber" name="L327" href="#L327">327</a>     <strong class="jxr_keyword">protected</strong> Document getAnswerDocumentFor(<strong class="jxr_keyword">final</strong> String resource) {
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>         <em class="jxr_comment">// If generating answers, get the src version, otherwise get the normal XML file</em>
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>         <strong class="jxr_keyword">return</strong> generateAnswers() ? RegressionTestUtil.getAnswerDocumentFor(resource, <strong class="jxr_keyword">super</strong>.answerFileClassRef) : <strong class="jxr_keyword">super</strong>.getAnswerDocumentFor(resource);
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>     }
+<a class="jxr_linenumber" name="L331" href="#L331">331</a> 
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>     @Override
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setupPayload(<strong class="jxr_keyword">final</strong> IBaseDataObject payload, <strong class="jxr_keyword">final</strong> Document answers) {
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>         RegressionTestUtil.setupPayload(payload, answers, getDecoders());
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>     }
+<a class="jxr_linenumber" name="L336" href="#L336">336</a> 
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>     @Override
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> checkAnswers(<strong class="jxr_keyword">final</strong> Document answers, <strong class="jxr_keyword">final</strong> IBaseDataObject payload,
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>             <strong class="jxr_keyword">final</strong> List&lt;IBaseDataObject&gt; attachments, <strong class="jxr_keyword">final</strong> String tname) {
+<a class="jxr_linenumber" name="L340" href="#L340">340</a>         RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders());
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>     }
+<a class="jxr_linenumber" name="L342" href="#L342">342</a> }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2024 <a href="https://code.nsa.gov">National Security Agency</a>. All rights reserved.</div>

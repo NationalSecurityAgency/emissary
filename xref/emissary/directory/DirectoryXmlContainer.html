@@ -42,7 +42,7 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> String dataId : dir.getEntryKeys()) {
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>              <strong class="jxr_keyword">final</strong> <a name="DirectoryEntryList" href="../../emissary/directory/DirectoryEntryList.html#DirectoryEntryList">DirectoryEntryList</a> list = dir.getEntryList(dataId);
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>              <strong class="jxr_keyword">if</strong> (list != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXML();
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXml();
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>                  listEl.setAttribute(DATAID_ATTR, dataId);
 <a class="jxr_linenumber" name="L39" href="#L39">39</a>                  root.addContent(listEl);
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>              }
@@ -66,7 +66,7 @@
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>              <strong class="jxr_keyword">final</strong> String dataId = entry.getKey();
 <a class="jxr_linenumber" name="L59" href="#L59">59</a>              <strong class="jxr_keyword">final</strong> <a name="DirectoryEntryList" href="../../emissary/directory/DirectoryEntryList.html#DirectoryEntryList">DirectoryEntryList</a> list = entry.getValue();
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>              <strong class="jxr_keyword">if</strong> (list != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXML();
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXml();
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>                  listEl.setAttribute(DATAID_ATTR, dataId);
 <a class="jxr_linenumber" name="L63" href="#L63">63</a>                  root.addContent(listEl);
 <a class="jxr_linenumber" name="L64" href="#L64">64</a>              }
@@ -100,7 +100,7 @@
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>  
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>              <em class="jxr_comment">// Add them to the xml</em>
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">if</strong> (list.size() &gt; 0) {
-<a class="jxr_linenumber" name="L95" href="#L95">95</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXML();
+<a class="jxr_linenumber" name="L95" href="#L95">95</a>                  <strong class="jxr_keyword">final</strong> Element listEl = list.getXml();
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>                  listEl.setAttribute(DATAID_ATTR, dataId);
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>                  root.addContent(listEl);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>              }
@@ -163,7 +163,7 @@
 <a class="jxr_linenumber" name="L155" href="#L155">155</a>         <strong class="jxr_keyword">final</strong> <a name="DirectoryEntryMap" href="../../emissary/directory/Direct<a name="DirectoryEntryMap" href="../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>DirectoryEntryMap">DirectoryEntryMap</a> map = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntryMap" href="../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>();
 <a class="jxr_linenumber" name="L156" href="#L156">156</a>         <strong class="jxr_keyword">final</strong> List&lt;Element&gt; entryLists = el.getChildren(DirectoryEntryList.ENTRYLIST);
 <a class="jxr_linenumber" name="L157" href="#L157">157</a>         <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">final</strong> Element listElement : entryLists) {
-<a class="jxr_linenumber" name="L158" href="#L158">158</a>             <strong class="jxr_keyword">final</strong> <a name="DirectoryEntryList" href="../../emissary/directory/DirectoryEntryList.html#DirectoryEntryList">DirectoryEntryList</a> d = DirectoryEntryList.fromXML(listElement);
+<a class="jxr_linenumber" name="L158" href="#L158">158</a>             <strong class="jxr_keyword">final</strong> <a name="DirectoryEntryList" href="../../emissary/directory/DirectoryEntryList.html#DirectoryEntryList">DirectoryEntryList</a> d = DirectoryEntryList.fromXml(listElement);
 <a class="jxr_linenumber" name="L159" href="#L159">159</a>             <strong class="jxr_keyword">final</strong> String dataId = listElement.getAttributeValue(DATAID_ATTR);
 <a class="jxr_linenumber" name="L160" href="#L160">160</a>             map.put(dataId, d);
 <a class="jxr_linenumber" name="L161" href="#L161">161</a>         }

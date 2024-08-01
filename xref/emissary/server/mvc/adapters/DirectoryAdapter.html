@@ -97,7 +97,7 @@
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a name="EmissaryResponse" href="../../../../emissary/client/EmissaryResponse.html#EmissaryResponse">EmissaryResponse</a>(response);
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>              <strong class="jxr_keyword">final</strong> String parentDirectoryUrl = KeyManipulator.getServiceHostUrl(parentDirectory);
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>              <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(parentDirectoryUrl, CONTEXT, <span class="jxr_string">"/RegisterPlace.action"</span>);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>              <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(parentDirectoryUrl, context, <span class="jxr_string">"/RegisterPlace.action"</span>);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>  
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>              <strong class="jxr_keyword">final</strong> String parentLoc = KeyManipulator.getServiceLocation(parentDirectory);
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>              <em class="jxr_comment">// Separate it out into lists</em>
@@ -148,7 +148,7 @@
 <a class="jxr_linenumber" name="L140" href="#L140">140</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L141" href="#L141">141</a>     <strong class="jxr_keyword">public</strong> <a name="EmissaryResponse" href="../../../../emissary/client/EmissaryResponse.html#EmissaryResponse">EmissaryResponse</a> outboundRemovePlaces(<strong class="jxr_keyword">final</strong> String directory, <strong class="jxr_keyword">final</strong> List&lt;String&gt; key, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> propagating) {
 <a class="jxr_linenumber" name="L142" href="#L142">142</a>         <strong class="jxr_keyword">final</strong> String directoryUrl = KeyManipulator.getServiceHostUrl(directory);
-<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(directoryUrl, CONTEXT, <span class="jxr_string">"/DeregisterPlace.action"</span>);
+<a class="jxr_linenumber" name="L143" href="#L143">143</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(directoryUrl, context, <span class="jxr_string">"/DeregisterPlace.action"</span>);
 <a class="jxr_linenumber" name="L144" href="#L144">144</a> 
 <a class="jxr_linenumber" name="L145" href="#L145">145</a>         <strong class="jxr_keyword">final</strong> String parentLoc = KeyManipulator.getServiceLocation(directory);
 <a class="jxr_linenumber" name="L146" href="#L146">146</a> 
@@ -174,7 +174,7 @@
 <a class="jxr_linenumber" name="L166" href="#L166">166</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L167" href="#L167">167</a>     <strong class="jxr_keyword">public</strong> <a name="EmissaryResponse" href="../../../../emissary/client/EmissaryResponse.html#EmissaryResponse">EmissaryResponse</a> outboundFailDirectory(<strong class="jxr_keyword">final</strong> String directory, <strong class="jxr_keyword">final</strong> String failKey, <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> permanent) {
 <a class="jxr_linenumber" name="L168" href="#L168">168</a>         <strong class="jxr_keyword">final</strong> String directoryUrl = KeyManipulator.getServiceHostUrl(directory);
-<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(directoryUrl, CONTEXT, <span class="jxr_string">"/FailDirectory.action"</span>);
+<a class="jxr_linenumber" name="L169" href="#L169">169</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(directoryUrl, context, <span class="jxr_string">"/FailDirectory.action"</span>);
 <a class="jxr_linenumber" name="L170" href="#L170">170</a> 
 <a class="jxr_linenumber" name="L171" href="#L171">171</a>         <strong class="jxr_keyword">final</strong> String parentLoc = KeyManipulator.getServiceLocation(directory);
 <a class="jxr_linenumber" name="L172" href="#L172">172</a>         <strong class="jxr_keyword">final</strong> List&lt;NameValuePair&gt; nvps = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
@@ -251,7 +251,7 @@
 <a class="jxr_linenumber" name="L243" href="#L243">243</a> <em class="jxr_javadoccomment">     * @throws EmissaryException if remote returns an error</em>
 <a class="jxr_linenumber" name="L244" href="#L244">244</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L245" href="#L245">245</a>     <strong class="jxr_keyword">private</strong> <a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a> zoneTransfer(<strong class="jxr_keyword">final</strong> String key, @Nullable <strong class="jxr_keyword">final</strong> String myKey, <strong class="jxr_keyword">final</strong> String action) <strong class="jxr_keyword">throws</strong> <a name="EmissaryException" href="../../../../emissary/core/EmissaryException.html#EmissaryException">EmissaryException</a> {
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(KeyManipulator.getServiceHostUrl(key), CONTEXT, action);
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>         <strong class="jxr_keyword">final</strong> HttpPost method = createHttpPost(KeyManipulator.getServiceHostUrl(key), context, action);
 <a class="jxr_linenumber" name="L247" href="#L247">247</a> 
 <a class="jxr_linenumber" name="L248" href="#L248">248</a>         <strong class="jxr_keyword">final</strong> String parentLoc = KeyManipulator.getServiceLocation(key);
 <a class="jxr_linenumber" name="L249" href="#L249">249</a>         <strong class="jxr_keyword">final</strong> List&lt;NameValuePair&gt; nvps = <strong class="jxr_keyword">new</strong> ArrayList&lt;&gt;();
@@ -294,7 +294,7 @@
 <a class="jxr_linenumber" name="L286" href="#L286">286</a>         }
 <a class="jxr_linenumber" name="L287" href="#L287">287</a>     }
 <a class="jxr_linenumber" name="L288" href="#L288">288</a> 
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <strong class="jxr_keyword">private</strong> <a name="DirectoryEntryMap" href="../../..<a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>ctory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a> filterDirectoryEntryMap(<a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a> map) {
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <a name="DirectoryEntryMap" href="../../..<a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>ctory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a> filterDirectoryEntryMap(<a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a> map) {
 <a class="jxr_linenumber" name="L290" href="#L290">290</a>         <a name="DirectoryEntryMap" href="../../../../emissary/directory/Direc<a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>#DirectoryEntryMap">DirectoryEntryMap</a> filtered = <strong class="jxr_keyword">new</strong> <a name="DirectoryEntryMap" href="../../../../emissary/directory/DirectoryEntryMap.html#DirectoryEntryMap">DirectoryEntryMap</a>();
 <a class="jxr_linenumber" name="L291" href="#L291">291</a>         <strong class="jxr_keyword">if</strong> (map.containsKey(DIRECTORY_KEY)) {
 <a class="jxr_linenumber" name="L292" href="#L292">292</a>             filtered.put(DIRECTORY_KEY, map.get(DIRECTORY_KEY));

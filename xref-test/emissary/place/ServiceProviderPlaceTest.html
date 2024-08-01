@@ -92,7 +92,7 @@
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>              + <span class="jxr_string">"SERVICE_QUALITY = 90\n"</span> + <span class="jxr_string">"SERVICE_PROXY = \&quot;TEST_SERVICE_PROXY\&quot;\n"</span>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>              + <span class="jxr_string">"SERVICE_PROXY_DENY = \&quot;TEST_SERVICE_PROXY\&quot;\n"</span> + <span class="jxr_string">"SERVICE_PROXY_DENY != \&quot;*\&quot;\n"</span>).getBytes();
 <a class="jxr_linenumber" name="L86" href="#L86">86</a>  
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>      String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>      String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>  
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>      @Override
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>      @BeforeEach
@@ -236,9 +236,9 @@
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>         Path cfg;
 <a class="jxr_linenumber" name="L229" href="#L229">229</a>         <em class="jxr_comment">// Write out the config data to the temp config dir</em>
 <a class="jxr_linenumber" name="L230" href="#L230">230</a>         <strong class="jxr_keyword">if</strong> (usePackage) {
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>             cfg = Paths.get(CFGDIR, thisPackage.getName() + <span class="jxr_string">".MyFileConfigedTestPlace"</span> + ConfigUtil.CONFIG_FILE_ENDING);
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>             cfg = Paths.get(configDir, thisPackage.getName() + <span class="jxr_string">".MyFileConfigedTestPlace"</span> + ConfigUtil.CONFIG_FILE_ENDING);
 <a class="jxr_linenumber" name="L232" href="#L232">232</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>             cfg = Paths.get(CFGDIR, <span class="jxr_string">"MyFileConfigedTestPlace"</span> + ConfigUtil.CONFIG_FILE_ENDING);
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>             cfg = Paths.get(configDir, <span class="jxr_string">"MyFileConfigedTestPlace"</span> + ConfigUtil.CONFIG_FILE_ENDING);
 <a class="jxr_linenumber" name="L234" href="#L234">234</a>         }
 <a class="jxr_linenumber" name="L235" href="#L235">235</a> 
 <a class="jxr_linenumber" name="L236" href="#L236">236</a>         <strong class="jxr_keyword">try</strong> (OutputStream fos = Files.newOutputStream(cfg)) {
