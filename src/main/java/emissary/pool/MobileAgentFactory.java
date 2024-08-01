@@ -4,6 +4,7 @@ import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.Factory;
 import emissary.core.IMobileAgent;
+import emissary.core.MobileAgent;
 import emissary.core.Namespace;
 
 import org.apache.commons.pool2.PooledObject;
@@ -17,20 +18,19 @@ import java.io.IOException;
 public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
 
     // This is the default class when nothing else is
-    // configured or passed on on a constructor. This value
+    // configured or passed on a constructor. This value
     // can be overridden from the AgentPool.cfg file
-    static String DEFAULT_CLASS_STRING = "emissary.core.MobileAgent";
+    static final String DEFAULT_CLASS_STRING = "emissary.core.MobileAgent";
 
-    public static String AGENT_NAME = "MobileAgent";
+    public static final String AGENT_NAME = "MobileAgent";
 
     // This is the class we are going to be pooling
     // The value can be set by constructor, by public setter
     // or from the value in DEFAULT_CLASS_STRING
     String classString = DEFAULT_CLASS_STRING;
 
-    int maxAgentMoveErrors = 3;
-
-    int maxAgentItinerary = 100;
+    int maxAgentMoveErrors;
+    int maxAgentItinerary;
 
     private static final Logger logger = LoggerFactory.getLogger(MobileAgentFactory.class);
 
@@ -49,8 +49,8 @@ public class MobileAgentFactory implements PooledObjectFactory<IMobileAgent> {
             Configurator conf = ConfigUtil.getConfigInfo(AgentPool.class);
             classString = conf.findStringEntry("agent.class", DEFAULT_CLASS_STRING);
 
-            maxAgentMoveErrors = conf.findIntEntry("agent.move.errors", maxAgentMoveErrors);
-            maxAgentItinerary = conf.findIntEntry("agent.max.itinerary", maxAgentItinerary);
+            maxAgentMoveErrors = conf.findIntEntry("agent.move.errors", MobileAgent.DEFAULT_MAX_MOVE_ERRORS);
+            maxAgentItinerary = conf.findIntEntry("agent.max.itinerary", MobileAgent.DEFAULT_MAX_ITINERARY_STEPS);
         } catch (IOException e) {
             logger.debug("Cannot read AgentPool.cfg, taking default values");
         }
