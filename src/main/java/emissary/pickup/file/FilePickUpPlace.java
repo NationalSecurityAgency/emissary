@@ -19,7 +19,8 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
     protected List<FileDataServer> theDataServer = new ArrayList<>();
 
     // How many files the FileDataServer should group
-    protected int BUNDLE_SIZE = 20;
+    protected static final int DEFAULT_BUNDLE_SIZE = 20;
+    protected int bundleSize;
 
     // Input directories to poll
     protected String[] inputDataDirs;
@@ -53,7 +54,7 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
      */
     protected void configurePlace() {
         pollingInterval = configG.findIntEntry("POLLING_INTERVAL", pollingInterval);
-        BUNDLE_SIZE = configG.findIntEntry("BUNDLE_SIZE", BUNDLE_SIZE);
+        bundleSize = configG.findIntEntry("BUNDLE_SIZE", DEFAULT_BUNDLE_SIZE);
         List<String> params = configG.findEntries("INPUT_DATA");
         inputDataDirs = params.toArray(new String[0]);
     }
@@ -116,7 +117,7 @@ public class FilePickUpPlace extends PickUpPlace implements IPickUp {
             FileDataServer fds = new FileDataServer(inputDataDirs[i], this, pollingInterval);
 
             // Tell it how many files to pick up at a time
-            fds.setBundleSize(BUNDLE_SIZE);
+            fds.setBundleSize(bundleSize);
 
             // Set priority below agent processing
             fds.setPriority(Thread.NORM_PRIORITY - 1);

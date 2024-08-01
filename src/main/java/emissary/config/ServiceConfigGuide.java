@@ -50,7 +50,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
 
     // Used on the RHS to make a null assignment
     // Obsolete, use @{NULL}
-    protected String NULL_VALUE = "<null>";
+    protected static final String NULL_VALUE = "<null>";
 
     // Hold all service specific parameters in a list
     protected List<ConfigEntry> p_service_parameters = new ArrayList<>();
@@ -76,12 +76,12 @@ public class ServiceConfigGuide implements Configurator, Serializable {
     protected Map<String, String> values = new HashMap<>();
 
     // Get this once per jvm
-    private static String THIS_HOST_NAME = "localhost";
+    private static String hostname = "localhost";
 
     // Grab the hostname for @{HOST} replacement
     static {
         try {
-            THIS_HOST_NAME = InetAddress.getLocalHost().getCanonicalHostName();
+            hostname = InetAddress.getLocalHost().getCanonicalHostName();
         } catch (UnknownHostException e) {
             logger.error("Error getting host name", e);
         }
@@ -174,7 +174,7 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         this.values.put("PROJECT_BASE", ConfigUtil.getProjectBase());
         this.values.put("OUTPUT_ROOT", ConfigUtil.getOutputRoot());
         this.values.put("BIN_DIR", ConfigUtil.getBinDir());
-        this.values.put("HOST", THIS_HOST_NAME);
+        this.values.put("HOST", hostname);
         this.values.put("/", File.separator);
         this.values.put("TMPDIR", System.getProperty("java.io.tmpdir"));
         this.values.put("NULL", null);
@@ -374,9 +374,9 @@ public class ServiceConfigGuide implements Configurator, Serializable {
         }
 
         // This is obsolete
-        if (sval != null && sval.equals(this.NULL_VALUE)) {
+        if (sval != null && sval.equals(NULL_VALUE)) {
             sval = null;
-            logger.debug("Using {} is deprecated, please just use {}NULL{}", this.NULL_VALUE, VSTART, VEND);
+            logger.debug("Using {} is deprecated, please just use {}NULL{}", NULL_VALUE, VSTART, VEND);
         }
         return sval;
     }
