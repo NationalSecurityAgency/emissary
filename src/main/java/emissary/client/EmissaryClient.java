@@ -70,7 +70,7 @@ public class EmissaryClient {
     private static ConnectionConfig staticConnectionConfig = null;
 
     // static config variables
-    public static String CONTEXT = DEFAULT_CONTEXT;
+    public static String context = DEFAULT_CONTEXT;
     protected static int retries = DEFAULT_RETRIES;
     protected static String username = DEFAULT_USERNAME;
     // How long to wait while establishing a connection (ms)
@@ -102,7 +102,7 @@ public class EmissaryClient {
             connectionTimeout = c.findIntEntry("connectionTimeout", DEFAULT_CONNECTION_TIMEOUT);
             connectionManagerTimeout = c.findIntEntry("connectionManagerTimeout", DEFAULT_CONNECTION_MANAGER_TIMEOUT);
             socketTimeout = c.findIntEntry("socketTimeout", DEFAULT_SOCKET_TIMEOUT);
-            CONTEXT = c.findStringEntry("context", DEFAULT_CONTEXT);
+            context = c.findStringEntry("context", DEFAULT_CONTEXT);
         } catch (IOException iox) {
             LOGGER.warn("Cannot read EmissaryClient properties, configuring defaults: {}", iox.getMessage());
             retries = DEFAULT_RETRIES;
@@ -110,7 +110,7 @@ public class EmissaryClient {
             connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
             connectionManagerTimeout = DEFAULT_CONNECTION_MANAGER_TIMEOUT;
             socketTimeout = DEFAULT_SOCKET_TIMEOUT;
-            CONTEXT = DEFAULT_CONTEXT;
+            context = DEFAULT_CONTEXT;
         }
 
         // Read the jetty user realm formatted property file for the password
