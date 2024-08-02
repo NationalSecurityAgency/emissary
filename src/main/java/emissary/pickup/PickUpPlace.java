@@ -297,7 +297,7 @@ public abstract class PickUpPlace extends ServiceProviderPlace implements IPickU
         boolean success = true;
         logger.debug("Starting processDataFile in PickUpPlace for {}", theFile);
 
-        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PICK_UP, useObjectTraceLogger);
+        ObjectTracingService.emitLifecycleEvent(null, fixedName, ObjectTracing.Stage.PickUp, useObjectTraceLogger);
 
         // Handle oversize data quickly without reading the file
         if (isOversize) {
