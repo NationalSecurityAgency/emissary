@@ -75,7 +75,7 @@ public class WorkSpace implements Runnable {
 
     // Process control
     protected static final String CLZ = WorkSpace.class.getName();
-    protected boolean WANT_DIRECTORIES = Boolean.getBoolean(CLZ + ".includeDirectories");
+    protected boolean wantDirectories = Boolean.getBoolean(CLZ + ".includeDirectories");
     protected boolean debug = Boolean.getBoolean(CLZ + ".debug");
     protected boolean simpleMode = false;
     protected String outputRootPath = System.getProperty("outputRoot", null);
@@ -84,7 +84,7 @@ public class WorkSpace implements Runnable {
     protected boolean skipDotFiles = Boolean.getBoolean(CLZ + ".skipDotFiles");
     protected boolean loop = false;
     protected boolean useRetryStrategy = false;
-    protected int MAX_BUNDLE_RETRIES = 5;
+    protected static final int MAX_BUNDLE_RETRIES = 5;
     protected PriorityQueue<PriorityDirectory> myDirectories = new PriorityQueue<>();
 
     // Stats tracking, map of stats per remote pick up place
@@ -98,22 +98,22 @@ public class WorkSpace implements Runnable {
     protected boolean timeToQuit = false;
     protected boolean collectorThreadHasQuit = false;
     protected boolean jettyStartedHere = false;
-    protected float MEM_THRESHOLD = 0.80f;
-    protected long LOOP_PAUSE_TIME = 60000L;
-    protected long PENDING_HANG_TIME = 600000L;
-    protected long NOTIFIER_PAUSE_TIME = 1000L;
+    protected static final float MEM_THRESHOLD = 0.80f;
+    protected long loopPauseTime = 60000L;
+    protected long pendingHangTime = 600000L;
+    protected static final long NOTIFIER_PAUSE_TIME = 1000L;
     protected int retryCount = 0;
     protected boolean useFileTimestamps = false;
     @Nullable
-    protected String PROJECT_BASE = null;
+    protected String projectBase = null;
 
     /**
      * How many file names to send per remote message, should be 10% or less of the size of the PickUpPlace.MAX_QUE Helps
      * prevent blocking if it's not a factor of the PickUpPlace.MAX_QUE size
      */
-    protected int FILES_PER_MESSAGE = Integer.getInteger(CLZ + ".filesPerBundle", 5);
+    protected int filesPerMessage = Integer.getInteger(CLZ + ".filesPerBundle", 5);
 
-    protected long MAX_BUNDLE_SIZE = Long.getLong(CLZ + ".maxSizePerBundle", -1);
+    protected long maxBundleSize = Long.getLong(CLZ + ".maxSizePerBundle", -1);
 
     // Metrics collection
     protected long filesProcessed = 0;
@@ -139,11 +139,11 @@ public class WorkSpace implements Runnable {
 
     // Used to synchronize access to the pending and outbound queues
     // One lock to rule them all
-    protected final Object QLOCK = new Object();
+    protected static final Object QLOCK = new Object();
 
-    // How we register in the namespace and advertise ourself
+    // How we register in the namespace and advertise ourselves
     protected static final String DEFAULT_WORK_SPACE_NAME = "WorkSpace";
-    protected String WORK_SPACE_NAME = DEFAULT_WORK_SPACE_NAME;
+    protected String workSpaceName = DEFAULT_WORK_SPACE_NAME;
 
     protected String workSpaceUrl;
     protected String workSpaceKey;
@@ -176,16 +176,16 @@ public class WorkSpace implements Runnable {
         this.loop = this.feedCommand.isLoop();
         this.setRetryStrategy(this.feedCommand.isRetry());
         this.setFileTimestampUsage(this.feedCommand.isFileTimestamp());
-        this.WORK_SPACE_NAME = this.feedCommand.getWorkspaceName();
+        this.workSpaceName = this.feedCommand.getWorkspaceName();
         this.simpleMode = this.feedCommand.isSimple();
-        this.PROJECT_BASE = this.feedCommand.getProjectBase().toAbsolutePath().toString();
+        this.projectBase = this.feedCommand.getProjectBase().toAbsolutePath().toString();
         this.pattern = this.feedCommand.getClientPattern();
         this.outputRootPath = this.feedCommand.getOutputRoot();
         this.eatPrefix = this.feedCommand.getEatPrefix();
-        this.FILES_PER_MESSAGE = this.feedCommand.getBundleSize();
+        this.filesPerMessage = this.feedCommand.getBundleSize();
         this.dataCaseId = this.feedCommand.getCaseId();
         this.setSkipDotFiles(this.feedCommand.isSkipDotFile());
-        this.WANT_DIRECTORIES = this.feedCommand.isIncludeDirs();
+        this.wantDirectories = this.feedCommand.isIncludeDirs();
         this.setSimpleMode(this.feedCommand.isSimple());
         this.myDirectories.addAll(this.feedCommand.getPriorityDirectories());
 
@@ -203,7 +203,7 @@ public class WorkSpace implements Runnable {
             // TODO investigate passing the feedCommand object directly to the serverCommand
             List<String> args = new ArrayList<>();
             args.add("-b");
-            args.add(PROJECT_BASE);
+            args.add(projectBase);
             args.add("--agents");
             args.add("1"); // feed don't need agents
             args.add("-h");
@@ -318,7 +318,7 @@ public class WorkSpace implements Runnable {
      * @param pendingHangTime in millis
      */
     public void setPendingHangTime(final long pendingHangTime) {
-        this.PENDING_HANG_TIME = pendingHangTime;
+        this.pendingHangTime = pendingHangTime;
     }
 
     /**
@@ -327,7 +327,7 @@ public class WorkSpace implements Runnable {
      * @param pauseTimeMillis pause interval in millis
      */
     public void setPauseTime(final long pauseTimeMillis) {
-        this.LOOP_PAUSE_TIME = pauseTimeMillis;
+        this.loopPauseTime = pauseTimeMillis;
     }
 
     /**
@@ -406,7 +406,7 @@ public class WorkSpace implements Runnable {
      * @param on the new value for directory retrieval
      */
     public void setDirectoryProcessing(final boolean on) {
-        this.WANT_DIRECTORIES = on;
+        this.wantDirectories = on;
     }
 
     /**
@@ -526,9 +526,9 @@ public class WorkSpace implements Runnable {
     protected void configure() {
         final EmissaryNode node = new EmissaryNode();
         if (node.isValid()) {
-            this.workSpaceUrl = node.getNodeScheme() + "://" + node.getNodeName() + ":" + node.getNodePort() + "/" + this.WORK_SPACE_NAME;
+            this.workSpaceUrl = node.getNodeScheme() + "://" + node.getNodeName() + ":" + node.getNodePort() + "/" + this.workSpaceName;
         } else {
-            this.workSpaceUrl = "http://localhost:8001/" + this.WORK_SPACE_NAME;
+            this.workSpaceUrl = "http://localhost:8001/" + this.workSpaceName;
             logger.warn("WorkSpace is not running in a valid emissary node. Using URL {}", this.workSpaceUrl);
         }
         this.workSpaceKey = "WORKSPACE.WORK_SPACE.INPUT." + this.workSpaceUrl;
@@ -672,7 +672,7 @@ public class WorkSpace implements Runnable {
      * Return the workspace name
      */
     public String getNamespaceName() {
-        return this.WORK_SPACE_NAME;
+        return this.workSpaceName;
     }
 
     /**
@@ -938,7 +938,7 @@ public class WorkSpace implements Runnable {
             }
 
             // See if it is time to give up on pending items
-            if ((outboundSize == 0) && !this.loop && ((outboundEmptyTimestamp + this.PENDING_HANG_TIME) < System.currentTimeMillis())) {
+            if ((outboundSize == 0) && !this.loop && ((outboundEmptyTimestamp + this.pendingHangTime) < System.currentTimeMillis())) {
                 if (logger.isInfoEnabled()) {
                     logger.info("Giving up on {} items due to timeout", pendingSize);
                     for (final Map.Entry<String, WorkBundle> entry : this.pending.entrySet()) {
@@ -1145,7 +1145,7 @@ public class WorkSpace implements Runnable {
                 logger.debug("Processing files in {}", this.myDirectory.getDirectoryName());
 
                 final int collectCount =
-                        collectFiles(this.myDirectory, WorkSpace.this.WANT_DIRECTORIES, paths, WorkSpace.this.numberOfBundlesToSkip, minFileTime,
+                        collectFiles(this.myDirectory, WorkSpace.this.wantDirectories, paths, WorkSpace.this.numberOfBundlesToSkip, minFileTime,
                                 WorkSpace.this.skipDotFiles);
 
                 // Set times, so we don't redistribute files next loop
@@ -1165,7 +1165,7 @@ public class WorkSpace implements Runnable {
                 if ((collectCount == 0) && WorkSpace.this.loop) {
                     // Wait pause time seconds and try again if looping
                     try {
-                        Thread.sleep(WorkSpace.this.LOOP_PAUSE_TIME);
+                        Thread.sleep(WorkSpace.this.loopPauseTime);
                     } catch (InterruptedException ioex) {
                         Thread.currentThread().interrupt();
                     }
@@ -1320,9 +1320,9 @@ public class WorkSpace implements Runnable {
             // must have a min size of 1 file, but cannot be over the
             // max byte size, or max file count
             boolean bReturn = (bundle.size() <= 0)
-                    || (((WorkSpace.this.MAX_BUNDLE_SIZE <= -1) || (bytesInBundle < WorkSpace.this.MAX_BUNDLE_SIZE))
-                            && ((WorkSpace.this.FILES_PER_MESSAGE <= -1) || (bundle
-                                    .size() < WorkSpace.this.FILES_PER_MESSAGE)));
+                    || (((WorkSpace.this.maxBundleSize <= -1) || (bytesInBundle < WorkSpace.this.maxBundleSize))
+                            && ((WorkSpace.this.filesPerMessage <= -1) || (bundle
+                                    .size() < WorkSpace.this.filesPerMessage)));
 
             logger.debug("workbundle has room = {}", bReturn);
             return bReturn;
