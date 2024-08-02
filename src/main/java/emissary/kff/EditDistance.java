@@ -86,16 +86,8 @@ public class EditDistance {
         return (mx < my ? mx : my);
     }
 
-    static int insert_cost = 1;
-    static int delete_cost = 1;
-
-    static int _iswap; /* swap_int temp variable */
-    static char _cswap; /* swap_char temp variable */
-
-    /* min2, min3 temp variables */
-    static int _mx;
-    static int _my;
-    static int _mz;
+    static int insertCost = 1;
+    static int deleteCost = 1;
 
     // dynamic programming counters
     static int row;
@@ -117,21 +109,21 @@ public class EditDistance {
     static int ins = 1;
     static int del = 1;
     static int ch = 3;
-    static int swap_cost = 5;
+    static int swapCost = 5;
 
-    static int from_len;
-    static int to_len;
+    static int fromLen;
+    static int toLen;
 
     private static int ar(int x, int y, int index) {
         return ((x == 0) ? y * del : ((y == 0) ? x * ins : buffer[mod(index)]));
     }
 
     private static int nw(int x, int y) {
-        return ar(x, y, index + from_len + 2);
+        return ar(x, y, index + fromLen + 2);
     }
 
     private static int n(int x, int y) {
-        return ar(x, y, index + from_len + 3);
+        return ar(x, y, index + fromLen + 3);
     }
 
     private static int w(int x, int y) {
@@ -147,33 +139,33 @@ public class EditDistance {
     }
 
     /*
-     * edit_distn -- returns the edit distance between two strings, or -1 on failure
+     * returns the edit distance between two strings, or -1 on failure
      */
-    public static int edit_distn(@Nullable byte[] from, int _from_len, @Nullable byte[] to, int _to_len) {
-        from_len = _from_len;
-        to_len = _to_len;
+    public static int calculateEditDistance(@Nullable byte[] from, int fromLen, @Nullable byte[] to, int toLen) {
+        EditDistance.fromLen = fromLen;
+        EditDistance.toLen = toLen;
 
         if (from == null) {
             if (to == null) {
                 return 0;
             } else {
-                return to_len * insert_cost;
+                return EditDistance.toLen * insertCost;
             }
         } else if (to == null) {
-            return from_len * delete_cost;
+            return EditDistance.fromLen * deleteCost;
         }
 
         /* Initialize registers */
 
-        radix = 2 * from_len + 3;
+        radix = 2 * EditDistance.fromLen + 3;
 
         /* Make from short enough to fit in the static storage, if it's at all possible */
 
-        if (from_len > to_len && from_len > STRLENTHRESHOLD) {
+        if (EditDistance.fromLen > EditDistance.toLen && EditDistance.fromLen > STRLENTHRESHOLD) {
             int[] x = new int[1];
             int[] y = new int[1];
-            x[0] = from_len;
-            y[0] = to_len;
+            x[0] = EditDistance.fromLen;
+            y[0] = EditDistance.toLen;
             swapInt(x, y);
             byte[][] xx = new byte[1][];
             byte[][] yy = new byte[1][];
@@ -184,7 +176,7 @@ public class EditDistance {
 
         /* Allocate the array storage (from the heap if necessary) */
 
-        if (from_len <= STRLENTHRESHOLD) {
+        if (EditDistance.fromLen <= STRLENTHRESHOLD) {
             buffer = store;
         } else {
             buffer = new int[radix];
@@ -222,7 +214,7 @@ public class EditDistance {
         buffer[index++] = min2(ins + del, (from[0] == to[0] ? 0 : ch));
 
         low = buffer[mod(index + radix - 1)];
-        for (col = 1; col < from_len; col++) {
+        for (col = 1; col < EditDistance.fromLen; col++) {
             buffer[index] = min3(col * del + ((from[col] == to[0]) ? 0 : ch), (col + 1) * del + ins, buffer[index - 1] + del);
             if (buffer[index] < low) {
                 low = buffer[index];
@@ -231,12 +223,12 @@ public class EditDistance {
         }
 
         /* Now handle the rest of the matrix */
-        for (row = 1; row < to_len; row++) {
-            for (col = 0; col < from_len; col++) {
+        for (row = 1; row < EditDistance.toLen; row++) {
+            for (col = 0; col < EditDistance.fromLen; col++) {
                 buffer[index] = min3(nw(row, col) + ((from[col] == to[row]) ? 0 : ch), n(row, col + 1) + ins, w(row + 1, col) + del);
 
                 if (from[col] == to[row - 1] && col > 0 && from[col - 1] == to[row]) {
-                    buffer[index] = min2(buffer[index], nnww(row - 1, col - 1) + swap_cost);
+                    buffer[index] = min2(buffer[index], nnww(row - 1, col - 1) + swapCost);
                 }
 
                 if (buffer[index] < low || col == 0) {

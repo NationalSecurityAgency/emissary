@@ -33,7 +33,7 @@ final class SsdeepTest extends UnitTest {
      */
     private void assertHash(final String text, final String expectedHash) {
         final byte[] input = getStringAsUtf8(text);
-        final String hash = ss.fuzzy_hash(input);
+        final String hash = ss.fuzzyHash(input);
         if (!expectedHash.equals(hash)) {
             fail("input \"" + text + "\" hashed to " + hash + " instead of the expected " + expectedHash);
         }
@@ -80,7 +80,7 @@ final class SsdeepTest extends UnitTest {
         // NOTE: Java guarantees that Random is deterministic for a
         // given seed and consistent across all implementations.
         new Random(BIG_RANDOM_ARRAY_SEED).nextBytes(input);
-        final String hash = ss.fuzzy_hash(input);
+        final String hash = ss.fuzzyHash(input);
         assertEquals(BIG_RANDOM_EXPECTED_HASH, hash,
                 "Hashes do not match for random array (length=" + BIG_RANDOM_ARRAY_LENGTH + ", seed=" + BIG_RANDOM_ARRAY_SEED + ")");
     }
@@ -116,7 +116,7 @@ final class SsdeepTest extends UnitTest {
             final byte[] input = new byte[len];
             totalInputBytes += len;
             rng.nextBytes(input);
-            final String hash = ss.fuzzy_hash(input);
+            final String hash = ss.fuzzyHash(input);
             totalHashChars += hash.length();
             final byte[] hashBytes = getStringAsUtf8(hash);
             digest.update(hashBytes);
@@ -132,16 +132,16 @@ final class SsdeepTest extends UnitTest {
 
     @Test
     void testCompareEqualHashes() {
-        final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-        final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-        assertEquals(100, ss.Compare(hash1, hash2), "signatures from identical strings should produce a perfect score");
+        final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+        final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+        assertEquals(100, ss.compare(hash1, hash2), "signatures from identical strings should produce a perfect score");
     }
 
     @Test
     void testCompareCommutative() {
-        final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM)));
-        final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzy_hash(getStringAsUtf8(LOREM_IPSUM + "x")));
-        assertEquals(ss.Compare(hash1, hash2), ss.Compare(hash2, hash1), "signature comparisons should not depend on the order");
+        final SpamSumSignature hash1 = new SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM)));
+        final SpamSumSignature hash2 = new SpamSumSignature(ss.fuzzyHash(getStringAsUtf8(LOREM_IPSUM + "x")));
+        assertEquals(ss.compare(hash1, hash2), ss.compare(hash2, hash1), "signature comparisons should not depend on the order");
     }
 
     // Changing the parameters will require a corresponding update in the expected scores.
@@ -162,7 +162,7 @@ final class SsdeepTest extends UnitTest {
         final Random rng = new Random(RANDOM_COMPARE_SEED);
         final byte[] input = new byte[RANDOM_COMPARE_LENGTH];
         rng.nextBytes(input);
-        SpamSumSignature prevHash = new SpamSumSignature(ss.fuzzy_hash(input));
+        SpamSumSignature prevHash = new SpamSumSignature(ss.fuzzyHash(input));
         for (int scoreIdx = 0; scoreIdx < scores.length; scoreIdx++) {
             // Generate the next input by adjusting some bytes in the
             // previous input. We want the inputs to be relatively
@@ -172,8 +172,8 @@ final class SsdeepTest extends UnitTest {
             for (int i = 0; i < changeCount; i++) {
                 input[rng.nextInt(input.length)] = (byte) rng.nextInt();
             }
-            final SpamSumSignature hash = new SpamSumSignature(ss.fuzzy_hash(input));
-            scores[scoreIdx] = ss.Compare(prevHash, hash);
+            final SpamSumSignature hash = new SpamSumSignature(ss.fuzzyHash(input));
+            scores[scoreIdx] = ss.compare(prevHash, hash);
             prevHash = hash;
         }
 
