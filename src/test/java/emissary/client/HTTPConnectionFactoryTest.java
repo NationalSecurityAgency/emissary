@@ -114,7 +114,7 @@ class HTTPConnectionFactoryTest extends UnitTest {
      */
     @Test
     void loadPWFromEnv() throws Exception {
-        char[] pw = PkiUtil.loadPW("${PROJECT_BASE}");
+        char[] pw = PkiUtil.loadPassword("${PROJECT_BASE}");
         if (pw == null) {
             Assertions.fail("Failed to read environment variable");
         }

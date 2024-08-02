@@ -127,8 +127,8 @@ public class HTTPConnectionFactory {
      * @throws GeneralSecurityException If there is some security problem.
      */
     SSLContext build(final Configurator cfg) throws IOException, GeneralSecurityException {
-        final char[] kpChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_KEY_STORE_PW));
-        final char[] tsChar = PkiUtil.loadPW(cfg.findStringEntry(CFG_TRUST_STORE_PW));
+        final char[] kpChar = PkiUtil.loadPassword(cfg.findStringEntry(CFG_KEY_STORE_PW));
+        final char[] tsChar = PkiUtil.loadPassword(cfg.findStringEntry(CFG_TRUST_STORE_PW));
 
         final KeyStore keyStore =
                 PkiUtil.buildStore(cfg.findStringEntry(CFG_KEY_STORE), kpChar, cfg.findStringEntry(CFG_KEY_STORE_TYPE, DFLT_STORE_TYPE));

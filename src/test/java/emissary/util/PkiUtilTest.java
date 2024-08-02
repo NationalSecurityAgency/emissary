@@ -78,7 +78,7 @@ class PkiUtilTest extends UnitTest {
 
     @Test
     void testLoadPWFromFile() throws Exception {
-        char[] password = PkiUtil.loadPW("file:///" + getAbsoluteFilePath("/emissary/util/web/password.file"));
+        char[] password = PkiUtil.loadPassword("file:///" + getAbsoluteFilePath("/emissary/util/web/password.file"));
         Assertions.assertNotNull(password, "Failed to read password from file");
         Assertions.assertEquals("password", String.valueOf(password));
     }
@@ -91,7 +91,7 @@ class PkiUtilTest extends UnitTest {
      */
     @Test
     void testLoadPWFromEnv() throws Exception {
-        char[] password = PkiUtil.loadPW("${PROJECT_BASE}");
+        char[] password = PkiUtil.loadPassword("${PROJECT_BASE}");
         Assertions.assertNotNull(password, "Failed to read environment variable");
         Assertions.assertEquals(projectBase, String.valueOf(password));
     }
