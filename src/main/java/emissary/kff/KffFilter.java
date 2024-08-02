@@ -9,7 +9,7 @@ public interface KffFilter {
      * Types of filter
      */
     enum FilterType {
-        Unknown, Ignore, Duplicate
+        UNKNOWN, IGNORE, DUPLICATE
     }
 
     String getName();

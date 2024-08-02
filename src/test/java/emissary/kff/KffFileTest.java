@@ -53,15 +53,15 @@ class KffFileTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        kffFile = new KffFile(resourcePath, "testFilter", KffFilter.FilterType.Unknown);
+        kffFile = new KffFile(resourcePath, "testFilter", KffFilter.FilterType.UNKNOWN);
         kffFile.setPreferredAlgorithm("SHA-1");
     }
 
     @Test
     void testKffFileCreation() {
         assertEquals("testFilter", kffFile.getName());
-        kffFile.setFilterType(KffFilter.FilterType.Ignore);
-        assertEquals(KffFilter.FilterType.Ignore, kffFile.getFilterType());
+        kffFile.setFilterType(KffFilter.FilterType.IGNORE);
+        assertEquals(KffFilter.FilterType.IGNORE, kffFile.getFilterType());
         assertEquals("SHA-1", kffFile.getPreferredAlgorithm());
     }
 
