@@ -24,15 +24,15 @@ class CharsetUtilTest extends UnitTest {
 
     @Test
     void testUTF8() {
-        assertTrue(CharsetUtil.isUTF8("This is a test."), "Ascii is utf8");
-        assertTrue(CharsetUtil.isUTF8("!@#$%^&*(F)=+-_[]{}\\|'\";:,.></?`~"), "Punctuation is utf8");
-        assertTrue(CharsetUtil.isUTF8("0123456789 9876543210"), "Numbers are utf8");
+        assertTrue(CharsetUtil.isUtf8("This is a test."), "Ascii is utf8");
+        assertTrue(CharsetUtil.isUtf8("!@#$%^&*(F)=+-_[]{}\\|'\";:,.></?`~"), "Punctuation is utf8");
+        assertTrue(CharsetUtil.isUtf8("0123456789 9876543210"), "Numbers are utf8");
 
-        assertTrue(CharsetUtil.isUTF8("This is a bytes array test. 123 #$%".getBytes()), "Ascii bytes are utf8");
+        assertTrue(CharsetUtil.isUtf8("This is a bytes array test. 123 #$%".getBytes()), "Ascii bytes are utf8");
 
         for (int i = 0; i < S.length; i++) {
-            assertTrue(CharsetUtil.isUTF8(S[i]), "Foreign strings from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].length());
-            assertTrue(CharsetUtil.isUTF8(S[i].getBytes()),
+            assertTrue(CharsetUtil.isUtf8(S[i]), "Foreign strings from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].length());
+            assertTrue(CharsetUtil.isUtf8(S[i].getBytes()),
                     "Foreign bytes from java, entry " + i + " of " + S.length + " == " + S[i] + "/" + S[i].getBytes().length);
 
         }
@@ -55,7 +55,7 @@ class CharsetUtilTest extends UnitTest {
     @Test
     void testNotUTF8() {
         byte[] b = new byte[] {(byte) 192, (byte) 192, (byte) 224, (byte) 224, (byte) 192, (byte) 0, (byte) 192, (byte) 224};
-        assertFalse(CharsetUtil.isUTF8(b), "Bad utf-8 stream is not utf-8");
+        assertFalse(CharsetUtil.isUtf8(b), "Bad utf-8 stream is not utf-8");
     }
 
     @Test
