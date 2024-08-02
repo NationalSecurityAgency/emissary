@@ -178,23 +178,41 @@ class TransformHistoryTest extends UnitTest {
         String key3 = "*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0";
         String key4 = "KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050";
         String key5 = "KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050";
-        String key6 = "KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050";
+        String key6 = "KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010";
+        String key7 = "KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050";
+
+        // test no sprout
 
         TransformHistory th = new TransformHistory();
+        th.append(key1);
+        th.append(key2);
+        th.append(key4);
+        th.append(key5, true);
+        th.append(key6);
+        th.append(key7);
+
+        Deque<String> formatted = th.format();
+        assertEquals(4, formatted.size());
+        assertEquals("UNKNOWN.INPUT: FILE_PICK_UP", formatted.pop());
+        assertEquals("KNOWN.TRANSFORM: COOL_STUFF", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: COOL_STUFF(ONE_THING)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: ANOTHER_PLACE, LAST_PLACE", formatted.pop());
+
+        // test sprout
+
+        th = new TransformHistory();
         th.append(key1);
         th.append(key2);
         th.append(key3);
         th.append(key4);
         th.append(key5, true);
         th.append(key6);
+        th.append(key7);
 
-        Deque<String> formatted = th.format();
-        assertEquals(5, formatted.size());
-        assertEquals("UNKNOWN.INPUT: FILE_PICK_UP", formatted.pop());
-        assertEquals("KNOWN.TRANSFORM: COOL_STUFF", formatted.pop());
-        assertEquals("*.<SPROUT>: CoolStuffPlace", formatted.pop());
+        formatted = th.format();
+        assertEquals(2, formatted.size());
         assertEquals("KNOWN.COORDINATE: COOL_STUFF(ONE_THING)", formatted.pop());
-        assertEquals("KNOWN.VERIFY: LAST_PLACE", formatted.pop());
+        assertEquals("KNOWN.VERIFY: ANOTHER_PLACE, LAST_PLACE", formatted.pop());
     }
 
     @Test

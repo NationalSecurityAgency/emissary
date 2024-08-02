@@ -35,6 +35,8 @@ public class PayloadUtil {
     protected static final String REDUCED_HISTORY = "REDUCED_HISTORY";
     protected static final String NO_URL = "NO_URL";
 
+    protected static boolean compactHistory;
+
     static {
         configure();
     }
@@ -43,6 +45,7 @@ public class PayloadUtil {
         Configurator configG = null;
         try {
             configG = ConfigUtil.getConfigInfo(PayloadUtil.class);
+            compactHistory = configG.findBooleanEntry("COMPACT_HISTORY", false);
         } catch (IOException e) {
             logger.error("Cannot open default config file", e);
         }
@@ -129,11 +132,19 @@ public class PayloadUtil {
             sb.append("   ** reduced transform history **").append("\n").append("     dropOff -> ")
                     .append(payload.getLastPlaceVisited())
                     .append("\n");
-        } else {
+        } else if (compactHistory) {
             for (String history : th.format()) {
                 sb.append("     ").append(history).append("\n");
             }
+        } else {
+            for (final TransformHistory.History h : th.getHistory()) {
+                sb.append("     ").append(h.getKey(historyCase.equals(NO_URL))).append("\n");
+                for (final String coord : h.getCoordinated(historyCase.equals(NO_URL))) {
+                    sb.append("      ").append(coord).append("\n");
+                }
+            }
         }
+
         return sb.toString();
     }
 

@@ -203,30 +203,29 @@ public class TransformHistory implements Serializable {
         Deque<String> formattedHistory = new ArrayDeque<>();
         for (final History h : this.history) {
             String key = h.getKey();
-            String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
-            StringBuilder displayStrings = new StringBuilder();
-
-            // group by data and service type
-            if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
-                displayStrings.append(formattedHistory.removeLast()).append(", ");
-            } else {
-                displayStrings.append(currentDataAndServiceType).append(": ");
-            }
-
-            // if sprout use the service classname, otherwise use service name
             if (key.contains(SPROUT_KEY)) {
-                displayStrings.append(KeyManipulator.getServiceClassname(key));
+                formattedHistory.clear();
+                prevDataAndServiceType = "";
             } else {
+                String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+                StringBuilder displayStrings = new StringBuilder();
+
+                // group by data and service type
+                if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
+                    displayStrings.append(formattedHistory.removeLast()).append(", ");
+                } else {
+                    displayStrings.append(currentDataAndServiceType).append(": ");
+                }
+
                 displayStrings.append(KeyManipulator.getServiceName(key));
-            }
+                if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
+                    displayStrings
+                            .append(h.getCoordinated().stream().map(KeyManipulator::getServiceName).collect(Collectors.joining(", ", "(", ")")));
+                }
 
-            // process the coordinated places
-            if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
-                displayStrings.append(h.getCoordinated().stream().map(KeyManipulator::getServiceName).collect(Collectors.joining(", ", "(", ")")));
+                formattedHistory.add(displayStrings.toString());
+                prevDataAndServiceType = currentDataAndServiceType;
             }
-
-            formattedHistory.add(displayStrings.toString());
-            prevDataAndServiceType = currentDataAndServiceType;
         }
         return formattedHistory;
     }

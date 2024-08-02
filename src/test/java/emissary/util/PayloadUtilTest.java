@@ -105,9 +105,9 @@ class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("currentForms: [UNKNOWN]"), "Answer did not contain the currentForms");
         assertTrue(answer.contains("filetype: UNKNOWN"), "Answer did not contain the correct filetype");
         assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
-        assertTrue(answer.contains("FOO.FOOPLACE"),
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
                 "Answer did not contain the correct transform history entry");
-        assertTrue(answer.contains("BAR.BARPLACE"),
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
                 "Answer did not contain the correct transform history entry");
     }
 
@@ -155,10 +155,10 @@ class PayloadUtilTest extends UnitTest {
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
         assertTrue(answer.contains("filename: noUrlHistory"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("FOO.FOOPLACE"),
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE"),
                 "Answer should not contain the URL");
         assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"), "Answer should not contain full URL");
-        assertTrue(answer.contains("BAR.BARPLACE"),
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
                 "Answer should not contain the URL");
         assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"), "Answer should not contain full URL");
     }
@@ -181,9 +181,9 @@ class PayloadUtilTest extends UnitTest {
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
         assertTrue(answer.contains("filename: noMatch"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("FOO.FOOPLACE"),
+        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
                 "Answer should not reduce history due to no matching form");
-        assertTrue(answer.contains("BAR.BARPLACE"),
+        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
                 "Answer should not reduce history due to no matching form");
     }
 
@@ -290,6 +290,27 @@ class PayloadUtilTest extends UnitTest {
                     isValidFormSetImplementation(form),
                     "Regex and Set implementations of form check differ for form \"" + form + "\"");
         }
+    }
+
+    @Test
+    void testCompactHistory() {
+        // setup
+        final String fn = "noMatch";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.PLACE_ONE.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("BAR.PLACE_TWO.BARPLACE.http://example.com:1234/BarPlace");
+        d.appendTransformHistory("BAR.PLACE_THREE.NONEPLACE.http://example.com:1234/NonePlace", true);
+        d.setCreationTimestamp(Instant.now());
+
+        // test
+        PayloadUtil.compactHistory = true;
+        final String answer = PayloadUtil.getPayloadDisplayString(d);
+        PayloadUtil.compactHistory = false;
+
+        // verify
+        assertTrue(answer.contains("transform history (3)"), "Answer history count is wrong");
+        assertTrue(answer.contains("FOO.FOOPLACE: PLACE_ONE"), "Answer should have compacted history");
+        assertTrue(answer.contains("BAR.BARPLACE: PLACE_TWO(PLACE_THREE)"), "Answer should have compacted history");
     }
 
     /**
