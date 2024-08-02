@@ -193,10 +193,10 @@ class TransformHistoryTest extends UnitTest {
 
         Deque<String> formatted = th.format();
         assertEquals(4, formatted.size());
-        assertEquals("UNKNOWN.INPUT: FILE_PICK_UP", formatted.pop());
-        assertEquals("KNOWN.TRANSFORM: COOL_STUFF", formatted.pop());
-        assertEquals("KNOWN.COORDINATE: COOL_STUFF(ONE_THING)", formatted.pop());
-        assertEquals("KNOWN.VERIFY: ANOTHER_PLACE, LAST_PLACE", formatted.pop());
+        assertEquals("UNKNOWN.INPUT: FilePickUpPlace", formatted.pop());
+        assertEquals("KNOWN.TRANSFORM: CoolStuffPlace", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
 
         // test sprout
 
@@ -211,8 +211,8 @@ class TransformHistoryTest extends UnitTest {
 
         formatted = th.format();
         assertEquals(2, formatted.size());
-        assertEquals("KNOWN.COORDINATE: COOL_STUFF(ONE_THING)", formatted.pop());
-        assertEquals("KNOWN.VERIFY: ANOTHER_PLACE, LAST_PLACE", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }
 
     @Test

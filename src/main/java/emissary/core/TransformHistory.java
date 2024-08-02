@@ -217,10 +217,10 @@ public class TransformHistory implements Serializable {
                     displayStrings.append(currentDataAndServiceType).append(": ");
                 }
 
-                displayStrings.append(KeyManipulator.getServiceName(key));
+                displayStrings.append(KeyManipulator.getServiceClassname(key));
                 if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
                     displayStrings
-                            .append(h.getCoordinated().stream().map(KeyManipulator::getServiceName).collect(Collectors.joining(", ", "(", ")")));
+                            .append(h.getCoordinated().stream().map(KeyManipulator::getServiceClassname).collect(Collectors.joining(", ", "(", ")")));
                 }
 
                 formattedHistory.add(displayStrings.toString());

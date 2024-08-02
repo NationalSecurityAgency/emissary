@@ -309,8 +309,8 @@ class PayloadUtilTest extends UnitTest {
 
         // verify
         assertTrue(answer.contains("transform history (3)"), "Answer history count is wrong");
-        assertTrue(answer.contains("FOO.FOOPLACE: PLACE_ONE"), "Answer should have compacted history");
-        assertTrue(answer.contains("BAR.BARPLACE: PLACE_TWO(PLACE_THREE)"), "Answer should have compacted history");
+        assertTrue(answer.contains("FOO.FOOPLACE: FooPlace"), "Answer should have compacted history");
+        assertTrue(answer.contains("BAR.BARPLACE: BarPlace(NonePlace)"), "Answer should have compacted history");
     }
 
     /**
