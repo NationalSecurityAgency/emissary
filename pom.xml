@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>gov.nsa.emissary</groupId>
   <artifactId>emissary</artifactId>
-  <version>8.7.1-SNAPSHOT</version>
+  <version>8.7.1</version>
   <packaging>jar</packaging>
   <name>Emissary</name>
   <description>Distributed P2P Data-driven Workflow Framework</description>
@@ -33,8 +33,9 @@
   <scm>
     <connection>scm:git:https://github.com/NationalSecurityAgency/emissary.git</connection>
     <developerConnection>scm:git:git@github.com:NationalSecurityAgency/emissary.git</developerConnection>
+    <tag>8.7.1</tag>
     <url>https://github.com/NationalSecurityAgency/emissary</url>
-  <tag>8.7.0</tag></scm>
+  </scm>
   <issueManagement>
     <system>GitHub</system>
     <url>https://github.com/NationalSecurityAgency/emissary/issues</url>
