@@ -210,7 +210,10 @@ class TransformHistoryTest extends UnitTest {
         th.append(key7);
 
         formatted = th.format();
-        assertEquals(2, formatted.size());
+        assertEquals(5, formatted.size());
+        assertEquals("UNKNOWN.INPUT: FilePickUpPlace", formatted.pop());
+        assertEquals("KNOWN.TRANSFORM: CoolStuffPlace", formatted.pop());
+        assertEquals("*.<SPROUT>: CoolStuffPlace", formatted.pop());
         assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
         assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }

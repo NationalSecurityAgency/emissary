@@ -203,29 +203,24 @@ public class TransformHistory implements Serializable {
         Deque<String> formattedHistory = new ArrayDeque<>();
         for (final History h : this.history) {
             String key = h.getKey();
-            if (key.contains(SPROUT_KEY)) {
-                formattedHistory.clear();
-                prevDataAndServiceType = "";
+            String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+            StringBuilder displayStrings = new StringBuilder();
+
+            // group by data and service type
+            if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
+                displayStrings.append(formattedHistory.removeLast()).append(", ");
             } else {
-                String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
-                StringBuilder displayStrings = new StringBuilder();
-
-                // group by data and service type
-                if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
-                    displayStrings.append(formattedHistory.removeLast()).append(", ");
-                } else {
-                    displayStrings.append(currentDataAndServiceType).append(": ");
-                }
-
-                displayStrings.append(KeyManipulator.getServiceClassname(key));
-                if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
-                    displayStrings
-                            .append(h.getCoordinated().stream().map(KeyManipulator::getServiceClassname).collect(Collectors.joining(", ", "(", ")")));
-                }
-
-                formattedHistory.add(displayStrings.toString());
-                prevDataAndServiceType = currentDataAndServiceType;
+                displayStrings.append(currentDataAndServiceType).append(": ");
             }
+
+            displayStrings.append(KeyManipulator.getServiceClassname(key));
+            if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
+                displayStrings
+                        .append(h.getCoordinated().stream().map(KeyManipulator::getServiceClassname).collect(Collectors.joining(", ", "(", ")")));
+            }
+
+            formattedHistory.add(displayStrings.toString());
+            prevDataAndServiceType = currentDataAndServiceType;
         }
         return formattedHistory;
     }
