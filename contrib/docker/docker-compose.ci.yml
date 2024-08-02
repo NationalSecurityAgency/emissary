@@ -1,0 +1,65 @@
+---
+services:
+  emissary-server:
+    image: emissary
+    build:
+      context: ../../
+      dockerfile: contrib/docker/Dockerfile.ci
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000 -Dfile.encoding=UTF8
+    network_mode: host
+    command: "server -a 5 -p 8001 -m cluster -s http"
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+    expose:
+      - '8000'
+      - '8001'
+    volumes:
+      - input:/opt/emissary/target/data
+      - output:/opt/emissary/localoutput
+    healthcheck:
+      test: curl --fail http://localhost:8001/api/health || exit 1
+      start_period: 10s
+      interval: 10s
+      timeout: 20s
+      retries: 3
+
+  emissary-feeder:
+    image: emissary
+    build:
+      context: ../../
+      dockerfile: contrib/docker/Dockerfile.ci
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:7000 -Dfile.encoding=UTF8
+    network_mode: host
+    command: "feed -p 7001 -i /opt/emissary/target/data/InputData --eatPrefix /opt/emissary/target/data/InputData"
+    ports:
+      - "7000:7000"
+      - "7001:7001"
+    expose:
+      - '7000'
+      - '7001'
+    depends_on:
+      emissary-server:
+        condition: service_healthy
+    volumes:
+      - input:/opt/emissary/target/data
+    healthcheck:
+      test: curl --fail http://localhost:7001/api/health || exit 1
+      start_period: 10s
+      interval: 10s
+      timeout: 20s
+      retries: 3
+
+  emissary-ci:
+    image: redhat/ubi8:8.9
+    network_mode: host
+    command: curl --fail http://localhost:7001/api/health || exit 1
+    depends_on:
+      emissary-feeder:
+        condition: service_healthy
+
+volumes:
+  input:
+  output:
