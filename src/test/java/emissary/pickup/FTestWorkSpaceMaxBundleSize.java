@@ -193,19 +193,19 @@ class FTestWorkSpaceMaxBundleSize extends FunctionalTest {
         }
 
         public void setFpm(int value) {
-            this.FILES_PER_MESSAGE = value;
+            this.filesPerMessage = value;
         }
 
         public void setBpm(long value) {
-            this.MAX_BUNDLE_SIZE = value;
+            this.maxBundleSize = value;
         }
 
         public int getFpm() {
-            return this.FILES_PER_MESSAGE;
+            return this.filesPerMessage;
         }
 
         public long getBpm() {
-            return this.MAX_BUNDLE_SIZE;
+            return this.maxBundleSize;
         }
     }
 }
