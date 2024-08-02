@@ -139,7 +139,8 @@ public class WorkSpace implements Runnable {
 
     // Used to synchronize access to the pending and outbound queues
     // One lock to rule them all
-    protected static final Object QLOCK = new Object();
+    @SuppressWarnings("ConstantField")
+    protected final Object QLOCK = new Object(); // NOSONAR
 
     // How we register in the namespace and advertise ourselves
     protected static final String DEFAULT_WORK_SPACE_NAME = "WorkSpace";
