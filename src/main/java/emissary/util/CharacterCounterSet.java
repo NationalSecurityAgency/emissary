@@ -71,7 +71,7 @@ public class CharacterCounterSet extends CounterSet {
      *
      * Easy access to control
      */
-    public int getISOControlCount() {
+    public int getIsoControlCount() {
         return get("CHARACTER_ISO_CONTROL");
     }
 

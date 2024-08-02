@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
  * Reportable result from MultiKeywordScanner
  */
 public class Hit {
-    public static int OFFSET = 0;
-    public static int ID = 1;
+    public static final int OFFSET = 0;
+    public static final int ID = 1;
 
     protected int[] hit = new int[2];
 
@@ -29,7 +29,7 @@ public class Hit {
         this.hit[OFFSET] = i;
     }
 
-    public void setID(final int i) {
+    public void setId(final int i) {
         this.hit[ID] = i;
     }
 
@@ -37,7 +37,7 @@ public class Hit {
         return this.hit[OFFSET];
     }
 
-    public int getID() {
+    public int getId() {
         return this.hit[ID];
     }
 
