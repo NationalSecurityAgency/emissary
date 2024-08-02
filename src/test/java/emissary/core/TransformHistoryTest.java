@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Deque;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,6 +169,32 @@ class TransformHistoryTest extends UnitTest {
         th.append(key6);
 
         assertEquals(expected.toString(), th.toString());
+    }
+
+    @Test
+    void testFormat() {
+        String key1 = "UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050";
+        String key2 = "KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050";
+        String key3 = "*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0";
+        String key4 = "KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050";
+        String key5 = "KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050";
+        String key6 = "KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050";
+
+        TransformHistory th = new TransformHistory();
+        th.append(key1);
+        th.append(key2);
+        th.append(key3);
+        th.append(key4);
+        th.append(key5, true);
+        th.append(key6);
+
+        Deque<String> formatted = th.format();
+        assertEquals(5, formatted.size());
+        assertEquals("UNKNOWN.INPUT: FILE_PICK_UP", formatted.pop());
+        assertEquals("KNOWN.TRANSFORM: COOL_STUFF", formatted.pop());
+        assertEquals("*.<SPROUT>: CoolStuffPlace", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: COOL_STUFF(ONE_THING)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: LAST_PLACE", formatted.pop());
     }
 
     @Test

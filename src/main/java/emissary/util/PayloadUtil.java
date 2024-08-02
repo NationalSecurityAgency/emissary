@@ -130,11 +130,8 @@ public class PayloadUtil {
                     .append(payload.getLastPlaceVisited())
                     .append("\n");
         } else {
-            for (final TransformHistory.History h : th.getHistory()) {
-                sb.append("     ").append(h.getKey(historyCase.equals(NO_URL))).append("\n");
-                for (final String coord : h.getCoordinated(historyCase.equals(NO_URL))) {
-                    sb.append("      ").append(coord).append("\n");
-                }
+            for (String history : th.format()) {
+                sb.append("     ").append(history).append("\n");
             }
         }
         return sb.toString();

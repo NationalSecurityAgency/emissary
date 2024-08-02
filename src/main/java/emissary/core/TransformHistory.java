@@ -7,11 +7,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import static emissary.place.IServiceProviderPlace.SPROUT_KEY;
 
 public class TransformHistory implements Serializable {
 
@@ -192,6 +196,39 @@ public class TransformHistory implements Serializable {
             size += (int) history.stream().mapToLong(h -> h.coordinated.size()).sum();
         }
         return size;
+    }
+
+    public Deque<String> format() {
+        String prevDataAndServiceType = "";
+        Deque<String> formattedHistory = new ArrayDeque<>();
+        for (final History h : this.history) {
+            String key = h.getKey();
+            String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+            StringBuilder displayStrings = new StringBuilder();
+
+            // group by data and service type
+            if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
+                displayStrings.append(formattedHistory.removeLast()).append(", ");
+            } else {
+                displayStrings.append(currentDataAndServiceType).append(": ");
+            }
+
+            // if sprout use the service classname, otherwise use service name
+            if (key.contains(SPROUT_KEY)) {
+                displayStrings.append(KeyManipulator.getServiceClassname(key));
+            } else {
+                displayStrings.append(KeyManipulator.getServiceName(key));
+            }
+
+            // process the coordinated places
+            if (CollectionUtils.isNotEmpty(h.getCoordinated())) {
+                displayStrings.append(h.getCoordinated().stream().map(KeyManipulator::getServiceName).collect(Collectors.joining(", ", "(", ")")));
+            }
+
+            formattedHistory.add(displayStrings.toString());
+            prevDataAndServiceType = currentDataAndServiceType;
+        }
+        return formattedHistory;
     }
 
     @Override

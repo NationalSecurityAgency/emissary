@@ -105,9 +105,9 @@ class PayloadUtilTest extends UnitTest {
         assertTrue(answer.contains("currentForms: [UNKNOWN]"), "Answer did not contain the currentForms");
         assertTrue(answer.contains("filetype: UNKNOWN"), "Answer did not contain the correct filetype");
         assertTrue(answer.contains("transform history (2)"), "Answer did not contain the transform history number");
-        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+        assertTrue(answer.contains("FOO.FOOPLACE"),
                 "Answer did not contain the correct transform history entry");
-        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+        assertTrue(answer.contains("BAR.BARPLACE"),
                 "Answer did not contain the correct transform history entry");
     }
 
@@ -155,10 +155,10 @@ class PayloadUtilTest extends UnitTest {
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
         assertTrue(answer.contains("filename: noUrlHistory"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE"),
+        assertTrue(answer.contains("FOO.FOOPLACE"),
                 "Answer should not contain the URL");
         assertFalse(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"), "Answer should not contain full URL");
-        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE"),
+        assertTrue(answer.contains("BAR.BARPLACE"),
                 "Answer should not contain the URL");
         assertFalse(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"), "Answer should not contain full URL");
     }
@@ -181,9 +181,9 @@ class PayloadUtilTest extends UnitTest {
         // verify
         assertTrue(answer.contains("\n"), "Must be multi-line string");
         assertTrue(answer.contains("filename: noMatch"), "Answer did not contain the correct filename");
-        assertTrue(answer.contains("FOO.UNKNOWN.FOOPLACE.http://example.com:1234/FooPlace"),
+        assertTrue(answer.contains("FOO.FOOPLACE"),
                 "Answer should not reduce history due to no matching form");
-        assertTrue(answer.contains("BAR.UNKNOWN.BARPLACE.http://example.com:1234/BarPlace"),
+        assertTrue(answer.contains("BAR.BARPLACE"),
                 "Answer should not reduce history due to no matching form");
     }
 
