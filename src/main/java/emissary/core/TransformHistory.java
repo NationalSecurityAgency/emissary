@@ -199,8 +199,9 @@ public class TransformHistory implements Serializable {
     }
 
     public Deque<String> format() {
-        String prevDataAndServiceType = "";
         Deque<String> formattedHistory = new ArrayDeque<>();
+
+        String prevDataAndServiceType = "";
         for (final History h : this.history) {
             String key = h.getKey();
             String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
@@ -211,6 +212,17 @@ public class TransformHistory implements Serializable {
                 displayStrings.append(formattedHistory.removeLast()).append(", ");
             } else {
                 displayStrings.append(currentDataAndServiceType).append(": ");
+            }
+
+            if (key.contains(SPROUT_KEY)) {
+                displayStrings.append(StringUtils.substringBefore(formattedHistory.removeLast(), ".")).append(":");
+                while (!formattedHistory.isEmpty()) {
+                    String last = formattedHistory.removeLast();
+                    if (last.contains(SPROUT_KEY)) {
+                        formattedHistory.add(last);
+                        break;
+                    }
+                }
             }
 
             displayStrings.append(KeyManipulator.getServiceClassname(key));

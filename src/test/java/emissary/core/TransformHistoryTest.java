@@ -173,23 +173,13 @@ class TransformHistoryTest extends UnitTest {
 
     @Test
     void testFormat() {
-        String key1 = "UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050";
-        String key2 = "KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050";
-        String key3 = "*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0";
-        String key4 = "KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050";
-        String key5 = "KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050";
-        String key6 = "KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010";
-        String key7 = "KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050";
-
-        // test no sprout
-
         TransformHistory th = new TransformHistory();
-        th.append(key1);
-        th.append(key2);
-        th.append(key4);
-        th.append(key5, true);
-        th.append(key6);
-        th.append(key7);
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
 
         Deque<String> formatted = th.format();
         assertEquals(4, formatted.size());
@@ -197,25 +187,44 @@ class TransformHistoryTest extends UnitTest {
         assertEquals("KNOWN.TRANSFORM: CoolStuffPlace", formatted.pop());
         assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
         assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
+    }
 
-        // test sprout
+    @Test
+    void testFormatSprout() {
+        TransformHistory th = new TransformHistory();
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("COOL.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
 
-        th = new TransformHistory();
-        th.append(key1);
-        th.append(key2);
-        th.append(key3);
-        th.append(key4);
-        th.append(key5, true);
-        th.append(key6);
-        th.append(key7);
-
-        formatted = th.format();
-        assertEquals(5, formatted.size());
-        assertEquals("UNKNOWN.INPUT: FilePickUpPlace", formatted.pop());
-        assertEquals("KNOWN.TRANSFORM: CoolStuffPlace", formatted.pop());
-        assertEquals("*.<SPROUT>: CoolStuffPlace", formatted.pop());
+        Deque<String> formatted = th.format();
+        assertEquals(3, formatted.size());
+        assertEquals("*.<SPROUT>: COOL:CoolStuffPlace", formatted.pop());
         assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
         assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
+    }
+
+    @Test
+    void testFormatMultipleSprout() {
+        TransformHistory th = new TransformHistory();
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("WHOA.YET_ANOTHER.TRANSFORM.http://localhost:8001/YetAnotherPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/YetAnotherPlace");
+        th.append("FINI.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("FINI.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
+
+        Deque<String> formatted = th.format();
+        assertEquals(3, formatted.size());
+        assertEquals("*.<SPROUT>: KNOWN:CoolStuffPlace", formatted.pop());
+        assertEquals("*.<SPROUT>: WHOA:YetAnotherPlace", formatted.pop());
+        assertEquals("FINI.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }
 
     @Test
