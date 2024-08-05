@@ -17,10 +17,10 @@ public class UnixFile {
     private static final Logger log = LoggerFactory.getLogger(UnixFile.class);
 
     /** The magic number configuration file. The file which contains all magic number entries */
-    private List<File> magicFiles = new ArrayList<>();
+    private final List<File> magicFiles = new ArrayList<>();
 
     /** The Magic number helper class */
-    private MagicNumberUtil util = new MagicNumberUtil();
+    private final MagicNumberUtil util = new MagicNumberUtil();
 
     /** The Binary file type description */
     public static final String FILETYPE_BINARY = "Binary File";

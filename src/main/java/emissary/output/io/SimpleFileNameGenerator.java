@@ -4,7 +4,7 @@ import emissary.output.DropOffUtil;
 import emissary.util.io.FileNameGenerator;
 
 public class SimpleFileNameGenerator implements FileNameGenerator {
-    private DropOffUtil dropOffUtil;
+    private final DropOffUtil dropOffUtil;
 
     /**
      * Creates a file name generator for BUD files

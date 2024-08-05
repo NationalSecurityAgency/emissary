@@ -30,7 +30,7 @@ public class ChecksumCalculator {
     private Ssdeep ssdeep = null;
 
     /** Used for hash calculations */
-    private List<MessageDigest> digest = new ArrayList<>();
+    private final List<MessageDigest> digest = new ArrayList<>();
 
     /**
      * Constructor initializes SHA-1 generator and turns on the CRC32 processing as well

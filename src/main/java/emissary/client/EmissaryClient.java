@@ -82,8 +82,8 @@ public class EmissaryClient {
     // class is thread-safe
     protected static final AuthCache AUTH_CACHE = new BasicAuthCache();
 
-    private CloseableHttpClient client;
-    private RequestConfig requestConfig;
+    private final CloseableHttpClient client;
+    private final RequestConfig requestConfig;
     private ConnectionConfig connectionConfig;
 
     static {

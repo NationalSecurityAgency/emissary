@@ -58,7 +58,7 @@ public class JournaledCoalescer implements IJournaler, ICoalescer {
     /**
      * The name generator to use when creating new output files *
      */
-    private FileNameGenerator fileNameGenerator;
+    private final FileNameGenerator fileNameGenerator;
     /**
      * The path to read input and write rolled output *
      */

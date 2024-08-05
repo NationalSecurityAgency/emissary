@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
  * Provides the ability to find specified {@code byte[]} patterns inside a larger {@code byte[]}.
  */
 public class KeywordScanner {
-    private int[] skip = new int[256];
+    private final int[] skip = new int[256];
     private int dataLength = -1;
     private byte[] data;
     private byte[] pattern;

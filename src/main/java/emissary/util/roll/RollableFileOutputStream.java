@@ -36,7 +36,7 @@ public class RollableFileOutputStream extends OutputStream implements Rollable {
     /** File Name Generator for creating unique file names */
     FileNameGenerator namegen;
     /** Directory we're writing to */
-    private File dir;
+    private final File dir;
     /** Number of bytes written to file */
     long bytesWritten;
     /** Whether to delete a zero byte file */

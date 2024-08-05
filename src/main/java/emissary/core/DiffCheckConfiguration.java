@@ -119,7 +119,7 @@ public class DiffCheckConfiguration {
         /**
          * Internal state whilst building
          */
-        private EnumSet<DiffCheckOptions> building;
+        private final EnumSet<DiffCheckOptions> building;
 
         /**
          * Finish building and create the final DiffCheckConfiguration object

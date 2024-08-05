@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import javax.annotation.Nullable;
 
 public class FileExistsConverter implements ITypeConverter<File> {
-    private String optionName;
+    private final String optionName;
     private static final Logger LOG = LoggerFactory.getLogger(FileExistsConverter.class);
 
     public FileExistsConverter() {

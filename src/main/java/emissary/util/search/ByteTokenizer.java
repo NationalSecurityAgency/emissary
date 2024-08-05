@@ -22,10 +22,10 @@ import java.util.NoSuchElementException;
 public class ByteTokenizer implements Iterator<String> {
     private int currentPosition;
     private int newPosition;
-    private int maxPosition;
-    private byte[] data;
+    private final int maxPosition;
+    private final byte[] data;
     private String delimiters;
-    private boolean retDelims;
+    private final boolean retDelims;
     private boolean delimsChanged;
     private String encoding;
 

@@ -11,7 +11,7 @@ public class MultiKeywordScanner implements IMultiKeywordScanner {
 
     @Nullable
     private byte[] data = null;
-    private int[] skipTable = new int[256];
+    private final int[] skipTable = new int[256];
     private int standardSkip = 0;
     private BackwardsTreeScanner treeScanner;
     private String[] keywords;

@@ -102,7 +102,7 @@ public class JsonOutputFilter extends AbstractRollableFilter {
         protected final boolean denylistStar;
         protected final boolean emptyAllowlist;
         protected final boolean allowlistStar;
-        private char keyReplacement = '_';
+        private final char keyReplacement = '_';
 
         public IbdoParameterFilter() {
             // if all collections are empty, then output everything

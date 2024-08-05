@@ -15,10 +15,10 @@ import javax.annotation.Nullable;
 
 public class ReadOutput implements Runnable {
 
-    private BufferedReader br;
+    private final BufferedReader br;
     @Nullable
     private PrintStream ps = null;
-    private String tag;
+    private final String tag;
     public boolean finished = false;
 
     public ReadOutput(InputStream is, String str) {
