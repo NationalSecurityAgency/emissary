@@ -197,12 +197,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 continue;
             }
 
-            if (updateTransformHistory) {
-                DirectoryEntry de = p.getDirectoryEntry();
-                de.setDataType(d.currentForm());
-                // append to the transform history, with flag indicating that the visit was coordinated
-                d.appendTransformHistory(de.getKey(), true);
-            }
+            updateTransformHistory(d, p);
 
             // Collect attachments for hd processing
             List<IBaseDataObject> sprouts = null;
@@ -220,18 +215,15 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 }
                 errorOccurred = d.currentForm().equals(Form.ERROR);
             } catch (Exception ex) {
-                logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
-                errorOccurred = true;
+                errorOccurred = handlePlaceException(hd, ex);
             } finally {
                 if (Thread.interrupted()) {
                     logger.warn("Place {} was interrupted during execution.", p);
                 }
             }
 
-            if (errorOccurred) {
-                logger.info("Error terminating coordination step at {}", p);
+            if (shouldNotContinueOnError(p, errorOccurred))
                 break;
-            }
 
             // Track any new attachments
             if (CollectionUtils.isNotEmpty(sprouts)) {
@@ -239,30 +231,72 @@ public class CoordinationPlace extends ServiceProviderPlace {
             }
         }
 
-        if (!errorOccurred) {
-            // Process the ouptut form according to configuration
-            if (outputForm != null) {
-                if (pushForm) {
-                    d.pushCurrentForm(outputForm);
-                } else {
-                    d.setCurrentForm(outputForm);
-                }
-            }
+        processForm(d, errorOccurred);
 
-            // Clean up my proxies
-            nukeMyProxies(d);
-
-        }
-
-        // Allow derived classes a shot at the sprouts
-        if (hd) {
-            sproutHook(sproutCollection, d);
-        }
+        sproutHook(d, hd, sproutCollection);
 
         // Allow derived classes a shot to clean up the parent
         cleanUpHook(d);
 
         return sproutCollection;
+    }
+
+    private void sproutHook(IBaseDataObject d, boolean hd, List<IBaseDataObject> sproutCollection) {
+        // Allow derived classes a shot at the sprouts
+        if (hd) {
+            sproutHook(sproutCollection, d);
+        }
+    }
+
+    private boolean handlePlaceException(boolean hd, Exception ex) {
+        logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
+        return true;
+    }
+
+    private boolean shouldNotContinueOnError(IServiceProviderPlace p, boolean errorOccurred) {
+        if (allowSkipProcessingOnError() && errorOccurred) {
+            logger.info("Error terminating coordination step at {}", p);
+            return true;
+        }
+        return false;
+    }
+
+    private void updateTransformHistory(IBaseDataObject d, IServiceProviderPlace p) {
+        if (updateTransformHistory) {
+            DirectoryEntry de = p.getDirectoryEntry();
+            de.setDataType(d.currentForm());
+            // append to the transform history, with flag indicating that the visit was coordinated
+            d.appendTransformHistory(de.getKey(), true);
+        }
+    }
+
+    protected void processForm(IBaseDataObject d, boolean errorOccurred) {
+        if (processOutputFormOnError() || !errorOccurred) {
+            processOutputForm(d);
+
+            // Clean up my proxies
+            nukeMyProxies(d);
+
+        }
+    }
+
+    protected boolean processOutputFormOnError() {
+        return false;
+    }
+
+    protected void processOutputForm(IBaseDataObject d) {
+        // Process the ouptut form according to configuration
+        if (outputForm != null) {
+            if (pushForm) {
+                d.pushCurrentForm(outputForm);
+            } else {
+                d.setCurrentForm(outputForm);
+            }
+        }
+    }
+
+    protected boolean allowSkipProcessingOnError() {
+        return true;
     }
 
     protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
