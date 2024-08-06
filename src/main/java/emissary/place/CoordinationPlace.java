@@ -312,7 +312,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Process the ouptut form according to configuration
+     * Process the outputs form according to configuration
      *
      * @param d the ibdo to process
      */
