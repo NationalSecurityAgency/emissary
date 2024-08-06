@@ -4,6 +4,7 @@ import emissary.test.core.junit5.UnitTest;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Deque;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,6 +169,62 @@ class TransformHistoryTest extends UnitTest {
         th.append(key6);
 
         assertEquals(expected.toString(), th.toString());
+    }
+
+    @Test
+    void testFormat() {
+        TransformHistory th = new TransformHistory();
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
+
+        Deque<String> formatted = th.format();
+        assertEquals(4, formatted.size());
+        assertEquals("UNKNOWN.INPUT: FilePickUpPlace", formatted.pop());
+        assertEquals("KNOWN.TRANSFORM: CoolStuffPlace", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
+    }
+
+    @Test
+    void testFormatSprout() {
+        TransformHistory th = new TransformHistory();
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("COOL.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("KNOWN.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("KNOWN.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
+
+        Deque<String> formatted = th.format();
+        assertEquals(3, formatted.size());
+        assertEquals("COOL.<SPROUT>: CoolStuffPlace", formatted.pop());
+        assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
+        assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
+    }
+
+    @Test
+    void testFormatMultipleSprout() {
+        TransformHistory th = new TransformHistory();
+        th.append("UNKNOWN.FILE_PICK_UP.INPUT.http://localhost:8001/FilePickUpPlace$5050");
+        th.append("KNOWN.COOL_STUFF.TRANSFORM.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/CoolStuffPlace$0");
+        th.append("KNOWN.COOL_STUFF.COORDINATE.http://localhost:8001/CoolStuffPlace$5050");
+        th.append("KNOWN.ONE_THING.ANALYZE.http://localhost:8001/DoOneThingPlace$5050", true);
+        th.append("WHOA.YET_ANOTHER.TRANSFORM.http://localhost:8001/YetAnotherPlace$5050");
+        th.append("*.*.<SPROUT>.http://localhost:8001/YetAnotherPlace");
+        th.append("FINI.ANOTHER_PLACE.VERIFY.http://localhost:8001/AnotherPlace$1010");
+        th.append("FINI.LAST_PLACE.VERIFY.http://localhost:8001/LastThingPlace$5050");
+
+        Deque<String> formatted = th.format();
+        assertEquals(3, formatted.size());
+        assertEquals("KNOWN.<SPROUT>: CoolStuffPlace", formatted.pop());
+        assertEquals("WHOA.<SPROUT>: YetAnotherPlace", formatted.pop());
+        assertEquals("FINI.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }
 
     @Test
