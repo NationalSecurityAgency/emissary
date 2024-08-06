@@ -314,6 +314,28 @@ class PayloadUtilTest extends UnitTest {
     }
 
     @Test
+    void testCompactHistoryFormStack() {
+        // setup
+        final String fn = "noMatch";
+        final IBaseDataObject d = DataObjectFactory.getInstance("abc".getBytes(), fn, Form.UNKNOWN);
+        d.appendTransformHistory("FOO.PLACE_ONE.FOOPLACE.http://example.com:1234/FooPlace");
+        d.appendTransformHistory("[BAR-UPDATED].PLACE_TWO.BARPLACE.http://example.com:1234/BarPlace");
+        d.appendTransformHistory("[BAR].PLACE_THREE.NONEPLACE.http://example.com:1234/NonePlace");
+        d.setCreationTimestamp(Instant.now());
+
+        // test
+        PayloadUtil.compactHistory = true;
+        final String answer = PayloadUtil.getPayloadDisplayString(d);
+        PayloadUtil.compactHistory = false;
+
+        // verify
+        assertTrue(answer.contains("transform history (3)"), "Answer history count is wrong");
+        assertTrue(answer.contains("FOO.FOOPLACE: FooPlace"), "Answer should have compacted history");
+        assertTrue(answer.contains("[BAR-UPDATED].BARPLACE: BarPlace"), "Answer should have compacted history");
+        assertTrue(answer.contains("[BAR].NONEPLACE: NonePlace"), "Answer should have compacted history");
+    }
+
+    @Test
     void testCompactHistorySprout() {
         // setup
         final String fn = "noMatch";
