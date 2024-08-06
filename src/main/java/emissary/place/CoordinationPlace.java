@@ -180,7 +180,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * Consume a data object and coordinate its processing
      * 
      * @param d the payload to process
-     * @param hd true if doing heavy duty processing
+     * @param hd true if doing heavy-duty processing
      * @return the list of sprouted data objects
      */
     protected List<IBaseDataObject> coordinate(IBaseDataObject d, boolean hd) {
@@ -248,13 +248,29 @@ public class CoordinationPlace extends ServiceProviderPlace {
         }
     }
 
-    private boolean handlePlaceException(boolean hd, Exception ex) {
+    /**
+     * Allow derived classes a shot to handle a place exception
+     *
+     * @param hd true if doing heavy-duty processing
+     * @param ex exception thrown by the place
+     *
+     * @return if an error occurred
+     */
+    protected boolean handlePlaceException(boolean hd, Exception ex) {
         logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
         return true;
     }
 
+    /**
+     * Return true when an error has occurred and the places is configured to not continue
+     *
+     * @param p place that is currently processing the ibdo
+     * @param errorOccurred true if an error occurred
+     *
+     * @return true if processing should not continue
+     */
     private boolean shouldNotContinueOnError(IServiceProviderPlace p, boolean errorOccurred) {
-        if (allowSkipProcessingOnError() && errorOccurred) {
+        if (allowShouldNotContinueOnError() && errorOccurred) {
             logger.info("Error terminating coordination step at {}", p);
             return true;
         }
@@ -270,8 +286,14 @@ public class CoordinationPlace extends ServiceProviderPlace {
         }
     }
 
+    /**
+     * Process the form
+     *
+     * @param d the ibdo to process
+     * @param errorOccurred true if an error occurred
+     */
     protected void processForm(IBaseDataObject d, boolean errorOccurred) {
-        if (processOutputFormOnError() || !errorOccurred) {
+        if (allowProcessOutputFormOnError() || !errorOccurred) {
             processOutputForm(d);
 
             // Clean up my proxies
@@ -280,12 +302,21 @@ public class CoordinationPlace extends ServiceProviderPlace {
         }
     }
 
-    protected boolean processOutputFormOnError() {
+    /**
+     * If true, process the output form the same for the default and error condition
+     *
+     * @return boolean to allow processing of output for when an error occurs
+     */
+    protected boolean allowProcessOutputFormOnError() {
         return false;
     }
 
+    /**
+     * Process the ouptut form according to configuration
+     *
+     * @param d the ibdo to process
+     */
     protected void processOutputForm(IBaseDataObject d) {
-        // Process the ouptut form according to configuration
         if (outputForm != null) {
             if (pushForm) {
                 d.pushCurrentForm(outputForm);
@@ -295,7 +326,12 @@ public class CoordinationPlace extends ServiceProviderPlace {
         }
     }
 
-    protected boolean allowSkipProcessingOnError() {
+    /**
+     * If true, do not continue processing other places after an error occurs
+     *
+     * @return boolean to not continue processing after an error
+     */
+    protected boolean allowShouldNotContinueOnError() {
         return true;
     }
 
