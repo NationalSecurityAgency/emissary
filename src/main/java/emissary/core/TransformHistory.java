@@ -204,24 +204,25 @@ public class TransformHistory implements Serializable {
         String prevDataAndServiceType = "";
         for (final History h : this.history) {
             String key = h.getKey();
-            String currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+            String currentDataAndServiceType = "";
             StringBuilder displayStrings = new StringBuilder();
 
-            // group by data and service type
-            if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
-                displayStrings.append(formattedHistory.removeLast()).append(", ");
-            } else {
-                displayStrings.append(currentDataAndServiceType).append(": ");
-            }
-
             if (key.contains(SPROUT_KEY)) {
-                displayStrings.append(StringUtils.substringBefore(formattedHistory.removeLast(), ".")).append(":");
+                displayStrings.append(StringUtils.substringBefore(formattedHistory.removeLast(), ".")).append(".")
+                        .append(KeyManipulator.getServiceType(key)).append(": ");
                 while (!formattedHistory.isEmpty()) {
                     String last = formattedHistory.removeLast();
                     if (last.contains(SPROUT_KEY)) {
                         formattedHistory.add(last);
                         break;
                     }
+                }
+            } else {
+                currentDataAndServiceType = KeyManipulator.getDataType(key) + "." + KeyManipulator.getServiceType(key);
+                if (currentDataAndServiceType.equals(prevDataAndServiceType)) {
+                    displayStrings.append(formattedHistory.removeLast()).append(", ");
+                } else {
+                    displayStrings.append(currentDataAndServiceType).append(": ");
                 }
             }
 

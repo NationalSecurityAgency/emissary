@@ -202,7 +202,7 @@ class TransformHistoryTest extends UnitTest {
 
         Deque<String> formatted = th.format();
         assertEquals(3, formatted.size());
-        assertEquals("*.<SPROUT>: COOL:CoolStuffPlace", formatted.pop());
+        assertEquals("COOL.<SPROUT>: CoolStuffPlace", formatted.pop());
         assertEquals("KNOWN.COORDINATE: CoolStuffPlace(DoOneThingPlace)", formatted.pop());
         assertEquals("KNOWN.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }
@@ -222,8 +222,8 @@ class TransformHistoryTest extends UnitTest {
 
         Deque<String> formatted = th.format();
         assertEquals(3, formatted.size());
-        assertEquals("*.<SPROUT>: KNOWN:CoolStuffPlace", formatted.pop());
-        assertEquals("*.<SPROUT>: WHOA:YetAnotherPlace", formatted.pop());
+        assertEquals("KNOWN.<SPROUT>: CoolStuffPlace", formatted.pop());
+        assertEquals("WHOA.<SPROUT>: YetAnotherPlace", formatted.pop());
         assertEquals("FINI.VERIFY: AnotherPlace, LastThingPlace", formatted.pop());
     }
 
