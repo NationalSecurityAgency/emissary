@@ -215,15 +215,16 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 }
                 errorOccurred = d.currentForm().equals(Form.ERROR);
             } catch (Exception ex) {
-                errorOccurred = handlePlaceException(hd, ex);
+                errorOccurred = handledPlaceException(p, hd, ex);
             } finally {
                 if (Thread.interrupted()) {
                     logger.warn("Place {} was interrupted during execution.", p);
                 }
             }
 
-            if (shouldNotContinueOnError(p, errorOccurred))
+            if (!shouldContinue(p, errorOccurred)) {
                 break;
+            }
 
             // Track any new attachments
             if (CollectionUtils.isNotEmpty(sprouts)) {
@@ -231,7 +232,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
             }
         }
 
-        processForm(d, errorOccurred);
+        applyForm(d, errorOccurred);
 
         sproutHook(d, hd, sproutCollection);
 
@@ -251,30 +252,31 @@ public class CoordinationPlace extends ServiceProviderPlace {
     /**
      * Allow derived classes a shot to handle a place exception
      *
+     * @param p place that was processing when the exception was thrown
      * @param hd true if doing heavy-duty processing
      * @param ex exception thrown by the place
-     *
+     * 
      * @return if an error occurred
      */
-    protected boolean handlePlaceException(boolean hd, Exception ex) {
-        logger.warn("agentProcess {} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
+    protected boolean handledPlaceException(IServiceProviderPlace p, boolean hd, Exception ex) {
+        logger.warn("agentProcess{} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
         return true;
     }
 
     /**
-     * Return true when an error has occurred and the places is configured to not continue
+     * Return false when an error has occurred and the places is configured to not continue
      *
      * @param p place that is currently processing the ibdo
      * @param errorOccurred true if an error occurred
      *
-     * @return true if processing should not continue
+     * @return false if processing should not continue
      */
-    private boolean shouldNotContinueOnError(IServiceProviderPlace p, boolean errorOccurred) {
-        if (allowShouldNotContinueOnError() && errorOccurred) {
+    protected boolean shouldContinue(IServiceProviderPlace p, boolean errorOccurred) {
+        if (!continueOnError() && errorOccurred) {
             logger.info("Error terminating coordination step at {}", p);
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void updateTransformHistory(IBaseDataObject d, IServiceProviderPlace p) {
@@ -287,18 +289,17 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Process the form
+     * Apply the form
      *
      * @param d the ibdo to process
      * @param errorOccurred true if an error occurred
      */
-    protected void processForm(IBaseDataObject d, boolean errorOccurred) {
-        if (allowProcessOutputFormOnError() || !errorOccurred) {
-            processOutputForm(d);
+    protected void applyForm(IBaseDataObject d, boolean errorOccurred) {
+        if (!errorOccurred || shouldApplyOutputFormOnError()) {
+            applyOutputForm(d);
 
             // Clean up my proxies
             nukeMyProxies(d);
-
         }
     }
 
@@ -307,16 +308,16 @@ public class CoordinationPlace extends ServiceProviderPlace {
      *
      * @return boolean to allow processing of output for when an error occurs
      */
-    protected boolean allowProcessOutputFormOnError() {
+    protected boolean shouldApplyOutputFormOnError() {
         return false;
     }
 
     /**
-     * Process the outputs form according to configuration
+     * Apply the output form according to configuration
      *
      * @param d the ibdo to process
      */
-    protected void processOutputForm(IBaseDataObject d) {
+    protected void applyOutputForm(IBaseDataObject d) {
         if (outputForm != null) {
             if (pushForm) {
                 d.pushCurrentForm(outputForm);
@@ -327,12 +328,12 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
-     * If true, do not continue processing other places after an error occurs
+     * If false, do not continue processing other places after an error occurs
      *
      * @return boolean to not continue processing after an error
      */
-    protected boolean allowShouldNotContinueOnError() {
-        return true;
+    protected boolean continueOnError() {
+        return false;
     }
 
     protected TimedResource resourceWatcherStart(final IServiceProviderPlace place) {
