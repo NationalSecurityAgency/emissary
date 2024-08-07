@@ -153,6 +153,22 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
+     * Return whether to continue traversing the list of coordinated places when an error occurs in one of them
+     *
+     * @param p place that is currently processing the ibdo
+     * @param errorOccurred true if an error occurred
+     *
+     * @return false if processing should not continue
+     */
+    protected boolean shouldContinue(IServiceProviderPlace p, boolean errorOccurred) {
+        if (!continueOnError() && errorOccurred) {
+            logger.info("Error terminating coordination step at {}", p);
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Evaluate whether to skip processing. This will allow the coordination place to continue to the next configured place.
      * Note that shouldContinue method takes precedence. Use one or the other and be cautious when using both Classes can
      * override this method to provide any additional logic during coordination
@@ -178,7 +194,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
 
     /**
      * Consume a data object and coordinate its processing
-     * 
+     *
      * @param d the payload to process
      * @param hd true if doing heavy-duty processing
      * @return the list of sprouted data objects
@@ -215,7 +231,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
                 }
                 errorOccurred = d.currentForm().equals(Form.ERROR);
             } catch (Exception ex) {
-                errorOccurred = handledPlaceException(p, hd, ex);
+                errorOccurred = handlePlaceException(p, hd, ex);
             } finally {
                 if (Thread.interrupted()) {
                     logger.warn("Place {} was interrupted during execution.", p);
@@ -255,27 +271,11 @@ public class CoordinationPlace extends ServiceProviderPlace {
      * @param p place that was processing when the exception was thrown
      * @param hd true if doing heavy-duty processing
      * @param ex exception thrown by the place
-     * 
+     *
      * @return if an error occurred
      */
-    protected boolean handledPlaceException(IServiceProviderPlace p, boolean hd, Exception ex) {
+    protected boolean handlePlaceException(IServiceProviderPlace p, boolean hd, Exception ex) {
         logger.warn("agentProcess{} called from Coordinate problem", (hd ? "HeavyDuty" : "Call"), ex);
-        return true;
-    }
-
-    /**
-     * Return false when an error has occurred and the places is configured to not continue
-     *
-     * @param p place that is currently processing the ibdo
-     * @param errorOccurred true if an error occurred
-     *
-     * @return false if processing should not continue
-     */
-    protected boolean shouldContinue(IServiceProviderPlace p, boolean errorOccurred) {
-        if (!continueOnError() && errorOccurred) {
-            logger.info("Error terminating coordination step at {}", p);
-            return false;
-        }
         return true;
     }
 
@@ -289,7 +289,7 @@ public class CoordinationPlace extends ServiceProviderPlace {
     }
 
     /**
-     * Apply the form
+     * How to handle applying the output form if an error occurred during processing
      *
      * @param d the ibdo to process
      * @param errorOccurred true if an error occurred
