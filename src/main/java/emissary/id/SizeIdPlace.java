@@ -10,7 +10,7 @@ import java.util.List;
  * Id place that sets the current form based on size of the data
  */
 public class SizeIdPlace extends IdPlace {
-    protected int[] SIZES = {0, // ZERO
+    protected static final int[] SIZES = {0, // ZERO
             200, // TINY
             3000, // SMALL
             40000, // MEDIUM
@@ -20,14 +20,14 @@ public class SizeIdPlace extends IdPlace {
             900000000 // ASTRONOMICAL
     };
 
-    protected String[] LABELS = {"SIZE_ZERO", "SIZE_TINY", "SIZE_SMALL", "SIZE_MEDIUM", "SIZE_LARGE", "SIZE_HUGE", "SIZE_ENORMOUS",
+    protected static final String[] LABELS = {"SIZE_ZERO", "SIZE_TINY", "SIZE_SMALL", "SIZE_MEDIUM", "SIZE_LARGE", "SIZE_HUGE", "SIZE_ENORMOUS",
             "SIZE_ASTRONOMICAL"};
 
     /** True iff the Filetype should be set */
-    protected boolean SETFT = true;
+    protected boolean setFileType = true;
 
     /** True iff the current form should be set */
-    protected boolean SETCF = true;
+    protected boolean setCurrentForm = true;
 
     /**
      * Create the place
@@ -67,10 +67,10 @@ public class SizeIdPlace extends IdPlace {
     @Override
     public List<IBaseDataObject> processHeavyDuty(IBaseDataObject payload) {
         String szType = fileTypeBySize(payload.dataLength());
-        if (SETFT) {
+        if (setFileType) {
             payload.setFileType(szType);
         }
-        if (SETCF) {
+        if (setCurrentForm) {
             payload.setCurrentForm(szType);
         }
 

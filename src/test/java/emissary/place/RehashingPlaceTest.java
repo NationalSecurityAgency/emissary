@@ -62,7 +62,7 @@ class RehashingPlaceTest extends UnitTest {
     private static final class RehashPlaceTest extends ServiceProviderPlace implements RehashingPlace {
 
         @Nullable
-        private byte[] USE_DATA = null;
+        private byte[] useData = null;
 
         public RehashPlaceTest(InputStream config) throws IOException {
             super(config);
@@ -71,7 +71,7 @@ class RehashingPlaceTest extends UnitTest {
         @Override
         public void process(IBaseDataObject d) {
             assertNotNull(d);
-            d.setData(USE_DATA);
+            d.setData(useData);
         }
 
         public KffDataObjectHandler getKffHandler() {
@@ -79,7 +79,7 @@ class RehashingPlaceTest extends UnitTest {
         }
 
         public void setUseData(byte[] data) {
-            USE_DATA = data;
+            useData = data;
         }
 
     }

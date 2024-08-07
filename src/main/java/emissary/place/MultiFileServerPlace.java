@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  */
 public abstract class MultiFileServerPlace extends PickUpPlace implements IMultiFileServerPlace {
     protected TypeEngine typeEngine;
-    protected Set<?> NON_PROPAGATING_METADATA_VALS;
+    protected Set<?> nonPropagatingMetadataValues;
 
     public MultiFileServerPlace() throws IOException {
         super();
@@ -58,7 +58,7 @@ public abstract class MultiFileServerPlace extends PickUpPlace implements IMulti
      */
     private void configureAbstractPlace() {
         typeEngine = new TypeEngine(configG);
-        NON_PROPAGATING_METADATA_VALS = configG.findEntriesAsSet("NON_PROPAGATING_METADATA");
+        nonPropagatingMetadataValues = configG.findEntriesAsSet("NON_PROPAGATING_METADATA");
     }
 
     /**

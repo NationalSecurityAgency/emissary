@@ -23,7 +23,8 @@ public class KffChain {
     protected List<KffFilter> list = new ArrayList<>();
 
     // Smaller than this and we don't report a hit
-    protected int KFF_MIN_DATA_SIZE = 0;
+    protected static final int DEFAULT_KFF_MIN_DATA_SIZE = 0;
+    protected int kffMinDataSize = DEFAULT_KFF_MIN_DATA_SIZE;
 
     // The algorithms to compute
     protected List<String> algorithms = new ArrayList<>();
@@ -58,7 +59,7 @@ public class KffChain {
         if (i < 0) {
             i = 0;
         }
-        KFF_MIN_DATA_SIZE = i;
+        kffMinDataSize = i;
     }
 
     /**
@@ -122,7 +123,7 @@ public class KffChain {
     public KffResult check(final String itemName, final byte[] content) throws Exception {
         final ChecksumResults sums = computeSums(content);
         KffResult answer = null;
-        if (content.length < KFF_MIN_DATA_SIZE || list.isEmpty()) {
+        if (content.length < kffMinDataSize || list.isEmpty()) {
             answer = new KffResult(sums);
             answer.setItemName(itemName);
         } else {
@@ -156,7 +157,7 @@ public class KffChain {
         try (final SeekableByteChannel sbc = sbcf.create()) {
             sbcSize = sbc.size();
         }
-        if (sbcSize < KFF_MIN_DATA_SIZE || list.isEmpty()) {
+        if (sbcSize < kffMinDataSize || list.isEmpty()) {
             answer = new KffResult(sums);
             answer.setItemName(itemName);
         } else {
