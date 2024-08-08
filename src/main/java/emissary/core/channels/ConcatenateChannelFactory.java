@@ -16,13 +16,13 @@ public final class ConcatenateChannelFactory {
     /**
      * Creates a SeekableByteChannelFactory which represents the concatenation of two other SeekableByteChannelFactories
      * 
-     * @param leftSeekableByteChannelFactory is the left SeekableByteChannelFactory to be concatenated.
-     * @param rightSeekableByteChannelFactory is the right SeekableByteChannelFactory to be concatenated.
+     * @param first is the first SeekableByteChannelFactory to be concatenated.
+     * @param second is the second SeekableByteChannelFactory to be concatenated.
      * @return the concatenated SeekableByteChannelFactory.
      */
-    public static SeekableByteChannelFactory create(final SeekableByteChannelFactory leftSeekableByteChannelFactory,
-            final SeekableByteChannelFactory rightSeekableByteChannelFactory) {
-        return new ConcatenateChannelFactoryImpl(leftSeekableByteChannelFactory, rightSeekableByteChannelFactory);
+    public static SeekableByteChannelFactory create(final SeekableByteChannelFactory first,
+            final SeekableByteChannelFactory second) {
+        return new ConcatenateChannelFactoryImpl(first, second);
     }
 
     /**
@@ -30,26 +30,26 @@ public final class ConcatenateChannelFactory {
      */
     private static class ConcatenateChannelFactoryImpl implements SeekableByteChannelFactory {
         /**
-         * The left SeekableByteChannelFactory to be concatenated
+         * The first SeekableByteChannelFactory to be concatenated
          */
-        private final SeekableByteChannelFactory leftSeekableByteChannelFactory;
+        private final SeekableByteChannelFactory first;
         /**
-         * The right SeekableByteChannelFactory to be concatenated
+         * The second SeekableByteChannelFactory to be concatenated
          */
-        private final SeekableByteChannelFactory rightSeekableByteChannelFactory;
+        private final SeekableByteChannelFactory second;
 
-        private ConcatenateChannelFactoryImpl(final SeekableByteChannelFactory leftSeekableByteChannelFactory,
-                final SeekableByteChannelFactory rightSeekableByteChannelFactory) {
-            Validate.isTrue(leftSeekableByteChannelFactory != null, "Required: leftSeekableByteChannelFactory != null!");
-            Validate.isTrue(rightSeekableByteChannelFactory != null, "Required: rightSeekableByteChannelFactory != null!");
+        private ConcatenateChannelFactoryImpl(final SeekableByteChannelFactory first,
+                final SeekableByteChannelFactory second) {
+            Validate.isTrue(first != null, "Required: first != null!");
+            Validate.isTrue(second != null, "Required: second != null!");
 
-            this.leftSeekableByteChannelFactory = leftSeekableByteChannelFactory;
-            this.rightSeekableByteChannelFactory = rightSeekableByteChannelFactory;
+            this.first = first;
+            this.second = second;
         }
 
         @Override
         public SeekableByteChannel create() {
-            return new ConcatenateSeekableByteChannel(leftSeekableByteChannelFactory.create(), rightSeekableByteChannelFactory.create());
+            return new ConcatenateSeekableByteChannel(first.create(), second.create());
         }
     }
 
@@ -60,29 +60,29 @@ public final class ConcatenateChannelFactory {
         private static final BigInteger LONG_MAX_VALUE = BigInteger.valueOf(Long.MAX_VALUE);
 
         /**
-         * The left SeekableByteChannel to be concatenated.
+         * The first SeekableByteChannel to be concatenated.
          */
-        private final SeekableByteChannel leftSeekableByteChannel;
+        private final SeekableByteChannel first;
         /**
-         * The right SeekableByteChannel to be concatenated.
+         * The second SeekableByteChannel to be concatenated.
          */
-        private final SeekableByteChannel rightSeekableByteChannel;
+        private final SeekableByteChannel second;
 
         /**
-         * the total size of leftSbcf.size() + rightSbcf.size() or -1 if not valid.
+         * the total size of first.size() + second.size() or -1 if not valid.
          */
         private long totalSize = -1;
 
-        private ConcatenateSeekableByteChannel(final SeekableByteChannel leftSeekableByteChannel,
-                final SeekableByteChannel rightSeekableByteChannel) {
-            this.leftSeekableByteChannel = leftSeekableByteChannel;
-            this.rightSeekableByteChannel = rightSeekableByteChannel;
+        private ConcatenateSeekableByteChannel(final SeekableByteChannel first,
+                final SeekableByteChannel second) {
+            this.first = first;
+            this.second = second;
         }
 
         @Override
         protected void closeImpl() throws IOException {
-            leftSeekableByteChannel.close();
-            rightSeekableByteChannel.close();
+            first.close();
+            second.close();
         }
 
         @Override
@@ -91,25 +91,25 @@ public final class ConcatenateChannelFactory {
 
             final long start = position();
             final int length = byteBuffer.remaining();
-            final long leftSbcSize = leftSeekableByteChannel.size();
-            final long leftSbcLastIndex = leftSbcSize - 1;
+            final long firstSbcSize = first.size();
+            final long firstSbcLastIndex = firstSbcSize - 1;
 
-            if (start + length <= leftSbcLastIndex) {
-                leftSeekableByteChannel.position(start);
-                leftSeekableByteChannel.read(byteBuffer);
-            } else if (start > leftSbcLastIndex) {
-                rightSeekableByteChannel.position(start - leftSbcSize);
-                rightSeekableByteChannel.read(byteBuffer);
+            if (start + length <= firstSbcLastIndex) {
+                first.position(start);
+                first.read(byteBuffer);
+            } else if (start > firstSbcLastIndex) {
+                second.position(start - firstSbcSize);
+                second.read(byteBuffer);
             } else {
-                final int leftAmount = (int) (leftSbcSize - start);
+                final int firstAmount = (int) (firstSbcSize - start);
                 final int originalLimit = byteBuffer.limit();
 
-                byteBuffer.limit(leftAmount);
-                leftSeekableByteChannel.position(start);
-                leftSeekableByteChannel.read(byteBuffer);
+                byteBuffer.limit(firstAmount);
+                first.position(start);
+                first.read(byteBuffer);
                 byteBuffer.limit(originalLimit);
-                rightSeekableByteChannel.position(0);
-                rightSeekableByteChannel.read(byteBuffer);
+                second.position(0);
+                second.read(byteBuffer);
             }
 
             return length;
@@ -118,14 +118,14 @@ public final class ConcatenateChannelFactory {
         @Override
         protected long sizeImpl() throws IOException {
             if (totalSize <= -1) {
-                final BigInteger leftSize = BigInteger.valueOf(leftSeekableByteChannel.size());
-                final BigInteger rightSize = BigInteger.valueOf(rightSeekableByteChannel.size());
-                final BigInteger leftPlusRightSize = leftSize.add(rightSize);
+                final BigInteger firstSize = BigInteger.valueOf(first.size());
+                final BigInteger secondSize = BigInteger.valueOf(second.size());
+                final BigInteger firstPlusSecondSize = firstSize.add(secondSize);
 
-                if (leftPlusRightSize.compareTo(LONG_MAX_VALUE) <= 0) {
-                    totalSize = leftPlusRightSize.longValue();
+                if (firstPlusSecondSize.compareTo(LONG_MAX_VALUE) <= 0) {
+                    totalSize = firstPlusSecondSize.longValue();
                 } else {
-                    throw new IOException("leftSbcf.size() + rightSbcf.size() > Long.MAX_VALUE not allowed!");
+                    throw new IOException("firstSbcf.size() + secondSbcf.size() > Long.MAX_VALUE not allowed!");
                 }
             }
 
