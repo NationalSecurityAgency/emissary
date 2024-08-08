@@ -337,6 +337,7 @@ public abstract class RegressionTest extends ExtractionTest {
     @Override
     protected void checkAnswers(final Document answers, final IBaseDataObject payload,
             final List<IBaseDataObject> attachments, final String tname) {
-        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders());
+        RegressionTestUtil.checkAnswers(answers, payload, actualSimplifiedLogEvents, attachments, place.getClass().getName(), getDecoders(),
+                generateAnswers());
     }
 }
