@@ -113,8 +113,13 @@ public abstract class ServiceCommand extends HttpCommand {
                     throw new EmissaryRuntimeException("Emissary " + getServiceName() + " is already running");
                 }
             } else {
-                // no running server so fire it up
-                startService();
+                if (isPause()) {
+                    // we hadn't intended to start the service, so don't try to do so now
+                    throw new EmissaryRuntimeException("Error pausing service: request returned status " + response.getStatus());
+                } else {
+                    // no running server so fire it up
+                    startService();
+                }
             }
         }
     }
