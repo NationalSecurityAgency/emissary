@@ -71,7 +71,7 @@ public final class RegressionTestUtil {
     public static final String THROWABLE_MESSAGE_NAME = "throwableMessage";
 
     public static final String NON_DETERMINISTIC_ERROR_MESSAGE =
-            "\nNOTE: Since 'generateAnswers' is true, these differences could be because of non-deterministic state in the IBDO\n";
+            "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing in the tested code path\n";
 
     /**
      * XML builder to read XML answer file in
