@@ -3,6 +3,7 @@ package emissary.admin;
 import emissary.config.ConfigUtil;
 import emissary.config.Configurator;
 import emissary.core.EmissaryException;
+import emissary.core.EmissaryRuntimeException;
 import emissary.core.Factory;
 import emissary.core.Namespace;
 import emissary.core.NamespaceException;
@@ -201,6 +202,10 @@ public class PlaceStarter {
     }
 
     public static String getClassString(final String theLocation) {
+        return getClassString(theLocation, false);
+    }
+
+    public static String getClassString(final String theLocation, boolean isStrictMode) {
         final String thePlaceName = Startup.placeName(theLocation);
         if (StringUtils.isBlank(thePlaceName)) {
             logger.error("Illegal location specified {}, has no place name", theLocation);
@@ -210,6 +215,11 @@ public class PlaceStarter {
             logger.error("Need a CLASS config entry for {} check entry in emissary.admin.ClassNameInventory.cfg, using default "
                     + "{} which is probably not what you want.", thePlaceName, defaultClassName);
             return defaultClassName;
+        } else if (classStringList.size() > 1) {
+            if (isStrictMode) {
+                throw new EmissaryRuntimeException("Multiple entries for " + thePlaceName + ", found " + classStringList);
+            }
+            logger.warn("Multiple entries for {}, found {}", thePlaceName, classStringList);
         }
         return classStringList.get(0);
     }
