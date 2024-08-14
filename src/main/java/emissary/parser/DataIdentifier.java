@@ -25,10 +25,10 @@ public class DataIdentifier {
     public static final String UNKNOWN_TYPE = "simple";
 
     // Size of string to test
-    protected int DATA_ID_STR_SZ = 100;
+    protected static final int DATA_ID_STR_SZ = 100;
 
     // Things we know how to identify
-    protected Map<String, String> TYPES = new HashMap<>();
+    protected Map<String, String> typesMap = new HashMap<>();
 
     /**
      * Create the id engine
@@ -49,8 +49,8 @@ public class DataIdentifier {
             if (config == null) {
                 config = ConfigUtil.getConfigInfo(this.getClass());
             }
-            TYPES = config.findStringMatchMap("TYPE_", Configurator.PRESERVE_CASE);
-            logger.debug("Configured with " + TYPES.size() + " identifiction types");
+            typesMap = config.findStringMatchMap("TYPE_", Configurator.PRESERVE_CASE);
+            logger.debug("Configured with " + typesMap.size() + " identifiction types");
         } catch (IOException iox) {
             logger.debug("No configuration info found");
         }
@@ -85,7 +85,7 @@ public class DataIdentifier {
      * @param data array of data to identify
      */
     public String identify(byte[] data) {
-        for (Map.Entry<String, String> entry : TYPES.entrySet()) {
+        for (Map.Entry<String, String> entry : typesMap.entrySet()) {
             byte[] pattern = entry.getValue().getBytes();
             if (data.length < pattern.length) {
                 continue;

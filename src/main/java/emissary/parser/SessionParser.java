@@ -6,7 +6,7 @@ package emissary.parser;
 public abstract class SessionParser {
     public static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 10;
     public static final long MAX_ARRAY_SIZE_LONG = MAX_ARRAY_SIZE;
-    public static String ORIG_DOC_SIZE_KEY = "OrigDocumentSize";
+    public static final String ORIG_DOC_SIZE_KEY = "OrigDocumentSize";
 
     protected boolean fullyParsed = false;
 

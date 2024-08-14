@@ -20,10 +20,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(ServiceCommand.class);
 
-    public static String COMMAND_NAME = "ServiceCommand";
-    public static String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
-    public static String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
-    public static String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
+    public static final String COMMAND_NAME = "ServiceCommand";
+    public static final String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
+    public static final String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
+    public static final String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
 
     @Option(names = {"--csrf"}, description = "disable csrf protection\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean csrf = true;
