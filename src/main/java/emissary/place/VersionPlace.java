@@ -11,6 +11,7 @@ public class VersionPlace extends ServiceProviderPlace {
 
     private static final String EMISSARY_VERSION = "EMISSARY_VERSION";
     private boolean includeDate;
+    private final Version version = new Version();
 
     /**
      * Create the place from the specified config file or resource
@@ -60,14 +61,16 @@ public class VersionPlace extends ServiceProviderPlace {
 
     @Override
     public void process(IBaseDataObject payload) throws ResourceException {
-        Version version = new Version();
+        payload.putParameter(EMISSARY_VERSION, getEmissaryVersion());
+    }
+
+    private String getEmissaryVersion() {
         if (includeDate) {
-            // adds version with date & time information
-            String versionDate = version.getTimestamp().replaceAll("\\D", "");
-            payload.putParameter(EMISSARY_VERSION, version.getVersion() + "-" + versionDate);
+            // version with date & time information
+            return version.getVersion() + "-" + version.getTimestamp().replaceAll("\\D", "");
         } else {
             // adds just version
-            payload.putParameter(EMISSARY_VERSION, version.getVersion());
+            return version.getVersion();
         }
     }
 }
