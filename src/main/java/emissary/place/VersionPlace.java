@@ -12,6 +12,7 @@ public class VersionPlace extends ServiceProviderPlace {
     private static final String EMISSARY_VERSION = "EMISSARY_VERSION";
     private boolean includeDate;
     private final Version version = new Version();
+    private String formattedVersion;
 
     /**
      * Create the place from the specified config file or resource
@@ -57,11 +58,12 @@ public class VersionPlace extends ServiceProviderPlace {
 
     private void configurePlace() {
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
+        formattedVersion = getEmissaryVersion();
     }
 
     @Override
     public void process(IBaseDataObject payload) throws ResourceException {
-        payload.putParameter(EMISSARY_VERSION, getEmissaryVersion());
+        payload.putParameter(EMISSARY_VERSION, formattedVersion);
     }
 
     private String getEmissaryVersion() {
