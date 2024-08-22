@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThreadDump {
-    public static final String[] SYSTEM_THREADS = {"Reference Handler", "Finalizer", "Signal Dispatcher"};
+    public static final List<String> SYSTEM_THREADS = List.of("Reference Handler", "Finalizer", "Signal Dispatcher");
 
     ThreadMXBean tmbean = ManagementFactory.getThreadMXBean();
 
