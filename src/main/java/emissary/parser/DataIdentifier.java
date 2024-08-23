@@ -25,7 +25,7 @@ public class DataIdentifier {
     public static final String UNKNOWN_TYPE = "simple";
 
     // Size of string to test
-    protected static final int DATA_ID_STR_SZ = 100;
+    protected int DATA_ID_STR_SZ = 100;
 
     // Things we know how to identify
     protected Map<String, String> typesMap = new HashMap<>();
