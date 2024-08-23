@@ -97,8 +97,8 @@ public class ByteTokenizer implements Iterator<String> {
         try {
             Charset c = Charset.forName(encoding);
             logger.debug("Loaded charset {}", c);
-        } catch (Exception ex) {
-            throw new UnsupportedEncodingException(ex + ": No support for " + encoding);
+        } catch (IllegalArgumentException ex) {
+            throw new UnsupportedEncodingException(ex.toString());
         }
         this.encoding = encoding;
     }
