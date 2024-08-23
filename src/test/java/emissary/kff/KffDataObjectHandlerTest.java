@@ -115,6 +115,9 @@ class KffDataObjectHandlerTest extends UnitTest {
         payload.setParameter(KffDataObjectHandler.KFF_PARAM_KNOWN_FILTER_NAME, "test.filter");
         kff.hash(payload);
 
+        assertNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+                "MD5_ORIGINAL should only be populated if hashing more than once");
+
         // hash again, to see the effect on the hash-related params.
         // none of the parameters should have a duplicated value
 
@@ -127,6 +130,10 @@ class KffDataObjectHandlerTest extends UnitTest {
         assertEquals(DATA_SHA1, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA1));
         assertEquals(DATA_SHA256, payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_SHA256));
         assertEquals(KffDataObjectHandler.KFF_DUPE_CURRENT_FORM, payload.getFileType());
+        assertNotNull(payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL),
+                "MD5_ORIGINAL should be populated if hash called more than once");
+        assertEquals(payload.getStringParameter(KffDataObjectHandler.KFF_PARAM_MD5),
+                payload.getStringParameter(KffDataObjectHandler.MD5_ORIGINAL));
     }
 
     @Test

@@ -4,6 +4,7 @@ import emissary.core.IBaseDataObject;
 import emissary.core.IBaseDataObject.MergePolicy;
 import emissary.core.channels.SeekableByteChannelFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ public class KffDataObjectHandler {
     public static final String KFF_PARAM_KNOWN_FILTER_NAME = KFF_PARAM_BASE + "FILTERED_BY";
     public static final String KFF_PARAM_DUPE_FILTER_NAME = KFF_PARAM_BASE + "KNOWN_BY";
     public static final String KFF_DUPE_CURRENT_FORM = "KNOWN_FILE";
+    public static final String MD5_ORIGINAL = "MD5_ORIGINAL";
 
     // Our kff impl
     protected KffChain kff = KffChainLoader.getChainInstance();
@@ -185,6 +187,7 @@ public class KffDataObjectHandler {
      */
     public void hash(@Nullable final IBaseDataObject d, final boolean useSbc) throws NoSuchAlgorithmException, IOException {
         if (d != null) {
+            preserveOriginalMD5BeforeRehashing(d);
             removeHash(d);
         }
 
@@ -211,6 +214,31 @@ public class KffDataObjectHandler {
             }
             if (truncateKnownData) {
                 d.setData(null);
+            }
+        }
+    }
+
+    /**
+     * Preserve the MD5 checksum value with key MD5_ORIGINAL. If the IBDO already has a parameter with that key, do not
+     * overwrite it.
+     *
+     * @param d IBaseDataObject being processed
+     */
+    static void preserveOriginalMD5BeforeRehashing(IBaseDataObject d) {
+        // If the IBDO already has an MD5_ORIGINAL parameter, do not overwrite it.
+        if (d.hasParameter(MD5_ORIGINAL)) {
+            return;
+        }
+
+        if (d.hasParameter(KFF_PARAM_MD5)) {
+            var paramValue = d.getParameter(KFF_PARAM_MD5);
+            if (!paramValue.isEmpty() && paramValue.get(0) != null) {
+                String originalMD5 = paramValue.get(0).toString();
+
+                // only preserve the KFF_PARAM_MD5 value if it's not blank
+                if (StringUtils.isNotBlank(originalMD5)) {
+                    d.setParameter(MD5_ORIGINAL, originalMD5);
+                }
             }
         }
     }
