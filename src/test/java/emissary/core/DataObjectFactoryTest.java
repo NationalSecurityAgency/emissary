@@ -13,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 class DataObjectFactoryTest extends UnitTest {
     private String defaultPayloadClass;
+    private String defaultPayloadExtractClass;
 
     @Override
     @BeforeEach
     public void setUp() throws Exception {
         this.defaultPayloadClass = DataObjectFactory.getImplementingClass();
+        this.defaultPayloadExtractClass = DataObjectFactory.getImplementingExtractClass();
     }
 
     @Override
@@ -25,6 +27,7 @@ class DataObjectFactoryTest extends UnitTest {
     public void tearDown() throws Exception {
         super.tearDown();
         DataObjectFactory.setImplementingClass(this.defaultPayloadClass);
+        DataObjectFactory.setImplementingExtractClass(this.defaultPayloadExtractClass);
     }
 
     /**
@@ -35,6 +38,10 @@ class DataObjectFactoryTest extends UnitTest {
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
         assertInstanceOf(IBaseDataObject.class, d, "Proper class hierarchy");
+
+        final IBaseDataObject e = DataObjectFactory.getInstance(true);
+        assertNotNull(e, "DataObject created");
+        assertInstanceOf(ExtractedRecord.class, e, "Proper class hierarchy");
     }
 
     @Test
@@ -43,9 +50,16 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals(MyDataObject.class.getName(), DataObjectFactory.getImplementingClass(), "Impl class set");
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
-        assertNotNull(d, "Proper class hierarchy");
         assertInstanceOf(BaseDataObject.class, d, "Proper class hierarchy");
         assertInstanceOf(MyDataObject.class, d, "Proper class hierarchy");
+
+        DataObjectFactory.setImplementingExtractClass(MyExtractObject.class.getName());
+        assertEquals(MyExtractObject.class.getName(), DataObjectFactory.getImplementingExtractClass(), "Impl class set");
+        final IBaseDataObject e = DataObjectFactory.getInstance(true);
+        assertNotNull(e, "DataObject created");
+        assertInstanceOf(BaseDataObject.class, e, "Proper class hierarchy");
+        assertInstanceOf(ExtractedRecord.class, e, "Proper class hierarchy");
+        assertInstanceOf(MyExtractObject.class, e, "Proper class hierarchy");
     }
 
     @Test
@@ -54,6 +68,10 @@ class DataObjectFactoryTest extends UnitTest {
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         final IBaseDataObject d = DataObjectFactory.getInstance(args);
         assertNotNull(d, "DataObject created");
+
+        DataObjectFactory.setImplementingExtractClass(MyExtractObject.class.getName());
+        final IBaseDataObject e = DataObjectFactory.getInstance(true, args);
+        assertNotNull(e, "DataObject created");
     }
 
     @Test
@@ -64,6 +82,12 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals("form", ibdo.currentForm());
         assertEquals("type", ibdo.getFileType());
         assertSame(testPayload, ibdo.data());
+
+        IBaseDataObject extract = DataObjectFactory.getInstance(testPayload, "filename", "form", "type", true);
+        assertEquals("filename", extract.getFilename());
+        assertEquals("form", extract.currentForm());
+        assertEquals("type", extract.getFileType());
+        assertSame(testPayload, extract.data());
     }
 
     @Test
@@ -74,16 +98,36 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals("formAndFileType", ibdo.currentForm());
         assertEquals("formAndFileType", ibdo.getFileType());
         assertSame(testPayload, ibdo.data());
+
+        IBaseDataObject extract = DataObjectFactory.getInstance(testPayload, "filename", "formAndFileType", true);
+        assertEquals("filename", extract.getFilename());
+        assertEquals("formAndFileType", extract.currentForm());
+        assertEquals("formAndFileType", extract.getFileType());
+        assertSame(testPayload, extract.data());
     }
 
+    @SuppressWarnings("unused")
     public static class MyDataObject extends BaseDataObject {
-        static final long serialVersionUID = -2254597461746556210L;
+        private static final long serialVersionUID = -2254597461746556210L;
 
         public MyDataObject() {
             super();
         }
 
         public MyDataObject(final byte[] data, final String name) {
+            super(data, name);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static class MyExtractObject extends ExtractedRecord {
+        private static final long serialVersionUID = -579253286374306668L;
+
+        public MyExtractObject() {
+            super();
+        }
+
+        public MyExtractObject(final byte[] data, final String name) {
             super(data, name);
         }
     }

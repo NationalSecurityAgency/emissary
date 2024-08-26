@@ -64,7 +64,7 @@ public final class IBaseDataObjectXmlHelper {
      */
     public static IBaseDataObject createStandardInitialIbdo(final IBaseDataObject ibdo, final SeekableByteChannelFactory sbcf,
             final String classification, final String formAndFileType, final KffDataObjectHandler kff) {
-        final IBaseDataObject tempIbdo = new BaseDataObject();
+        final IBaseDataObject tempIbdo = DataObjectFactory.getInstance();
 
         // We want to return the ibdo with the data field equal to null. This can only
         // be accomplished if the data is never set. Therefore, we have to set the data
@@ -96,18 +96,20 @@ public final class IBaseDataObjectXmlHelper {
 
         final Element root = document.getRootElement();
         final Element answersElement = root.getChild(ANSWERS);
-        final IBaseDataObject parentIbdo = new BaseDataObject();
+        final IBaseDataObject parentIbdo = DataObjectFactory.getInstance();
         final List<Element> answerChildren = answersElement.getChildren();
 
         ibdoFromXmlMainElements(answersElement, parentIbdo, decoders);
 
         for (final Element answerChild : answerChildren) {
-            final IBaseDataObject childIbdo = new BaseDataObject();
+            final IBaseDataObject childIbdo;
             final String childName = answerChild.getName();
 
             if (childName.startsWith(EXTRACTED_RECORD_ELEMENT_PREFIX)) {
+                childIbdo = DataObjectFactory.getInstance(true);
                 parentIbdo.addExtractedRecord(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             } else if (childName.startsWith(ATTACHMENT_ELEMENT_PREFIX)) {
+                childIbdo = DataObjectFactory.getInstance();
                 children.add(ibdoFromXmlMainElements(answerChild, childIbdo, decoders));
             }
         }

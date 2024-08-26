@@ -86,12 +86,12 @@ public final class IBaseDataObjectXmlCodecs {
      */
     public static final Map<String, Object> PRIMITVE_NAME_DEFAULT_MAP = Collections
             .unmodifiableMap(new ConcurrentHashMap<>(Stream.of(
-                    new AbstractMap.SimpleEntry<>(BIRTH_ORDER, new BaseDataObject().getBirthOrder()),
-                    new AbstractMap.SimpleEntry<>(BROKEN, new BaseDataObject().isBroken()),
-                    new AbstractMap.SimpleEntry<>(NUM_CHILDREN, new BaseDataObject().getNumChildren()),
-                    new AbstractMap.SimpleEntry<>(NUM_SIBLINGS, new BaseDataObject().getNumSiblings()),
-                    new AbstractMap.SimpleEntry<>(OUTPUTABLE, new BaseDataObject().isOutputable()),
-                    new AbstractMap.SimpleEntry<>(PRIORITY, new BaseDataObject().getPriority()))
+                    new AbstractMap.SimpleEntry<>(BIRTH_ORDER, DataObjectFactory.getInstance().getBirthOrder()),
+                    new AbstractMap.SimpleEntry<>(BROKEN, DataObjectFactory.getInstance().isBroken()),
+                    new AbstractMap.SimpleEntry<>(NUM_CHILDREN, DataObjectFactory.getInstance().getNumChildren()),
+                    new AbstractMap.SimpleEntry<>(NUM_SIBLINGS, DataObjectFactory.getInstance().getNumSiblings()),
+                    new AbstractMap.SimpleEntry<>(OUTPUTABLE, DataObjectFactory.getInstance().isOutputable()),
+                    new AbstractMap.SimpleEntry<>(PRIORITY, DataObjectFactory.getInstance().getPriority()))
                     .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue))));
     /**
      * The XML namespace for "xml".
