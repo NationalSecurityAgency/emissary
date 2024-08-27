@@ -831,6 +831,13 @@ public interface IBaseDataObject {
     void setCreationTimestamp(Instant creationTimestamp);
 
     /**
+     * Test to see if this is an extracted record
+     *
+     * @return true if this is an extracted record, false otherwise
+     */
+    boolean isExtracted();
+
+    /**
      * Get the List of extracted records
      */
     List<IBaseDataObject> getExtractedRecords();

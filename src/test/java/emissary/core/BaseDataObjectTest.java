@@ -1214,7 +1214,7 @@ class BaseDataObjectTest extends UnitTest {
 
     @Test
     void testExtractedRecords() {
-        final BaseDataObject other = new BaseDataObject();
+        final BaseDataObject other = new BaseDataObject(true);
         assertFalse(this.b.hasExtractedRecords(), "Expected no extracted records");
         assertNull(this.b.getExtractedRecords());
 
@@ -1271,6 +1271,28 @@ class BaseDataObjectTest extends UnitTest {
         this.b.addExtractedRecords(elist);
         assertEquals(4, this.b.getExtractedRecordCount(), "Expected extended records to be added");
 
+    }
+
+    @Test
+    void testExtractedRecordsForExtractedRecords() {
+        final BaseDataObject other = new BaseDataObject(true);
+
+        this.b.setExtracted(true);
+        assertFalse(this.b.hasExtractedRecords(), "Expected no extracted records");
+        assertNull(this.b.getExtractedRecords());
+
+        assertThrows(UnsupportedOperationException.class, () -> this.b.addExtractedRecord(other));
+        assertFalse(this.b.hasExtractedRecords(), "Expected extracted records");
+        assertNull(this.b.getExtractedRecords(), "Expected a two extracted record");
+        assertEquals(0, this.b.getExtractedRecordCount(), "Expected a two extracted record");
+
+        this.b.clearExtractedRecords();
+        assertFalse(this.b.hasExtractedRecords(), "Expected no extracted records");
+        assertNull(this.b.getExtractedRecords());
+
+        final List<IBaseDataObject> list = List.of(new BaseDataObject());
+        assertThrows(UnsupportedOperationException.class, () -> this.b.setExtractedRecords(list));
+        assertThrows(UnsupportedOperationException.class, () -> this.b.addExtractedRecords(list));
     }
 
     @Test

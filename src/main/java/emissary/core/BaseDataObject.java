@@ -167,6 +167,11 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected List<IBaseDataObject> extractedRecords;
 
     /**
+     * Whether this basedataobject is an extracted object
+     */
+    protected boolean extracted = false;
+
+    /**
      * Check to see if this tree is able to be written out.
      */
     protected boolean outputable = true;
@@ -249,8 +254,16 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * Create an empty BaseDataObject.
      */
     public BaseDataObject() {
+        this(false);
+    }
+
+    /**
+     * Create an empty BaseDataObject.
+     */
+    public BaseDataObject(boolean isExtracted) {
         this.theData = null;
         setCreationTimestamp(Instant.now());
+        this.extracted = isExtracted;
     }
 
     /**
@@ -261,9 +274,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param name the name of the data item
      */
     public BaseDataObject(final byte[] newData, final String name) {
+        this(newData, name, false);
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, boolean isExtracted) {
         setData(newData);
         setFilename(name);
         setCreationTimestamp(Instant.now());
+        this.extracted = isExtracted;
     }
 
     /**
@@ -275,14 +293,22 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      * @param form the initial form of the data
      */
     public BaseDataObject(final byte[] newData, final String name, @Nullable final String form) {
-        this(newData, name);
+        this(newData, name, form, false);
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, @Nullable final String form, boolean isExtracted) {
+        this(newData, name, isExtracted);
         if (form != null) {
             pushCurrentForm(form);
         }
     }
 
     public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType) {
-        this(newData, name, form);
+        this(newData, name, form, fileType, false);
+    }
+
+    public BaseDataObject(final byte[] newData, final String name, final String form, @Nullable final String fileType, boolean isExtracted) {
+        this(newData, name, form, isExtracted);
         if (fileType != null) {
             this.setFileType(fileType);
         }
@@ -1365,6 +1391,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         c.multipartAlternative = new HashMap<>(this.multipartAlternative);
         c.priority = this.priority;
         c.creationTimestamp = this.creationTimestamp;
+        c.extracted = this.extracted;
 
         if ((this.extractedRecords != null) && !this.extractedRecords.isEmpty()) {
             c.clearExtractedRecords(); // remove super.clone copy
@@ -1398,6 +1425,14 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
         this.creationTimestamp = creationTimestamp;
     }
 
+    public boolean isExtracted() {
+        return extracted;
+    }
+
+    public void setExtracted(boolean extracted) {
+        this.extracted = extracted;
+    }
+
     @Override
     public List<IBaseDataObject> getExtractedRecords() {
         return this.extractedRecords;
@@ -1405,6 +1440,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void setExtractedRecords(final List<? extends IBaseDataObject> records) {
+        if (isExtracted()) {
+            throw new UnsupportedOperationException();
+        }
+
         if (records == null) {
             throw new IllegalArgumentException("Record list must not be null");
         }
@@ -1420,6 +1459,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void addExtractedRecord(final IBaseDataObject record) {
+        if (isExtracted()) {
+            throw new UnsupportedOperationException();
+        }
+
         if (record == null) {
             throw new IllegalArgumentException("Added record must not be null");
         }
@@ -1433,6 +1476,10 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public void addExtractedRecords(final List<? extends IBaseDataObject> records) {
+        if (isExtracted()) {
+            throw new UnsupportedOperationException();
+        }
+
         if (records == null) {
             throw new IllegalArgumentException("ExtractedRecord list must not be null");
         }

@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataObjectFactoryTest extends UnitTest {
     private String defaultPayloadClass;
@@ -43,17 +44,27 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals(MyDataObject.class.getName(), DataObjectFactory.getImplementingClass(), "Impl class set");
         final IBaseDataObject d = DataObjectFactory.getInstance();
         assertNotNull(d, "DataObject created");
-        assertNotNull(d, "Proper class hierarchy");
         assertInstanceOf(BaseDataObject.class, d, "Proper class hierarchy");
         assertInstanceOf(MyDataObject.class, d, "Proper class hierarchy");
+
+        final IBaseDataObject e = DataObjectFactory.getInstance(true);
+        assertNotNull(e, "DataObject created");
+        assertInstanceOf(BaseDataObject.class, e, "Proper class hierarchy");
+        assertInstanceOf(MyDataObject.class, e, "Proper class hierarchy");
+        assertTrue(e.isExtracted());
     }
 
     @Test
     void testWithArgs() {
-        final Object[] args = new Object[] {"This is a test".getBytes(), "TestItem"};
+        Object[] args = new Object[] {"This is a test".getBytes(), "TestItem"};
         DataObjectFactory.setImplementingClass(MyDataObject.class.getName());
         final IBaseDataObject d = DataObjectFactory.getInstance(args);
         assertNotNull(d, "DataObject created");
+
+        args = new Object[] {"This is a test".getBytes(), "TestItem", true};
+        final IBaseDataObject e = DataObjectFactory.getInstance(args);
+        assertNotNull(e, "DataObject created");
+        assertTrue(e.isExtracted());
     }
 
     @Test
@@ -64,6 +75,13 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals("form", ibdo.currentForm());
         assertEquals("type", ibdo.getFileType());
         assertSame(testPayload, ibdo.data());
+
+        IBaseDataObject extract = DataObjectFactory.getInstance(testPayload, "filename", "form", "type", true);
+        assertEquals("filename", extract.getFilename());
+        assertEquals("form", extract.currentForm());
+        assertEquals("type", extract.getFileType());
+        assertSame(testPayload, extract.data());
+        assertTrue(extract.isExtracted());
     }
 
     @Test
@@ -74,17 +92,33 @@ class DataObjectFactoryTest extends UnitTest {
         assertEquals("formAndFileType", ibdo.currentForm());
         assertEquals("formAndFileType", ibdo.getFileType());
         assertSame(testPayload, ibdo.data());
+
+        IBaseDataObject extract = DataObjectFactory.getInstance(testPayload, "filename", "formAndFileType", true);
+        assertEquals("filename", extract.getFilename());
+        assertEquals("formAndFileType", extract.currentForm());
+        assertEquals("formAndFileType", extract.getFileType());
+        assertSame(testPayload, extract.data());
+        assertTrue(extract.isExtracted());
     }
 
+    @SuppressWarnings("unused")
     public static class MyDataObject extends BaseDataObject {
-        static final long serialVersionUID = -2254597461746556210L;
+        private static final long serialVersionUID = -2254597461746556210L;
 
         public MyDataObject() {
             super();
         }
 
+        public MyDataObject(final boolean extracted) {
+            super(extracted);
+        }
+
         public MyDataObject(final byte[] data, final String name) {
             super(data, name);
+        }
+
+        public MyDataObject(final byte[] data, final String name, final boolean extracted) {
+            super(data, name, extracted);
         }
     }
 }
