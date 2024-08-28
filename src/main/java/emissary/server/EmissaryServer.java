@@ -93,16 +93,12 @@ public class EmissaryServer {
     private final EmissaryNode emissaryNode;
 
     public EmissaryServer(ServerCommand cmd) throws EmissaryException {
-        this(cmd, new EmissaryNode());
+        this(cmd, new EmissaryNode(cmd.getMode()));
     }
 
     @VisibleForTesting
     public EmissaryServer(ServerCommand cmd, EmissaryNode node) throws EmissaryException {
         this.cmd = cmd;
-        // See if we are an emissary node, but first setup node type
-        if (cmd.getMode() != null) {
-            System.setProperty("node.mode", cmd.getMode()); // TODO: clean this crap up
-        }
         emissaryNode = node;
 
         if (!emissaryNode.isValid()) {
