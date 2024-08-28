@@ -1,0 +1,44 @@
+]$ ./emissary server -m junk -q
+18:56:19.596 [main] ERROR emissary.command.validator.ServerModeValidator -- Unknown mode: junk
+Command threw an exception: [server, -m, junk]
+picocli.CommandLine$ParameterException: Could not invoke private void emissary.command.ServerCommand.setMode(java.lang.String) with junk (java.lang.IllegalArgumentException: Unknown mode: junk)
+	at picocli.CommandLine$Model$MethodBinding.createParameterException(CommandLine.java:12154)
+	at picocli.CommandLine$Model$MethodBinding.set(CommandLine.java:12147)
+	at picocli.CommandLine$Model$ArgSpec.setValue(CommandLine.java:9211)
+	at picocli.CommandLine$Interpreter.applyValueToSingleValuedField(CommandLine.java:14298)
+	at picocli.CommandLine$Interpreter.applyOption(CommandLine.java:14143)
+	at picocli.CommandLine$Interpreter.processStandaloneOption(CommandLine.java:14009)
+	at picocli.CommandLine$Interpreter.processArguments(CommandLine.java:13829)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13564)
+	at picocli.CommandLine$Interpreter.processSubcommand(CommandLine.java:13873)
+	at picocli.CommandLine$Interpreter.processArguments(CommandLine.java:13769)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13564)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13532)
+	at picocli.CommandLine$Interpreter.parse(CommandLine.java:13427)
+	at picocli.CommandLine.parseArgs(CommandLine.java:1552)
+	at emissary.Emissary.execute(Emissary.java:99)
+	at emissary.Emissary.main(Emissary.java:164)
+Caused by: java.lang.IllegalArgumentException: Unknown mode: junk
+	at emissary.command.validator.ServerModeValidator.validate(ServerModeValidator.java:17)
+	at emissary.command.ServerCommand.setMode(ServerCommand.java:35)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at picocli.CommandLine$Model$MethodBinding.set(CommandLine.java:12142)
+	... 14 common frames omitted
+
+
+]$ ./emissary server -m junk -q
+Emissary Version: 8.10.0-SNAPSHOT - built on 2024-08-28T19:14:53+0000 - git hash: 8c963e1
+2024-08-28T19:19:39.807 [localhost-8001] ERROR emissary.command.validator.ServerModeValidator -   - Unknown mode: junk
+2024-08-28T19:19:39.809 [localhost-8001] ERROR emissary.Emissary -   - Command threw an exception: [server, -m, junk, -q]
+java.lang.IllegalArgumentException: Unknown mode: junk
+	at emissary.command.validator.ServerModeValidator.validate(ServerModeValidator.java:17)
+	at emissary.command.ServerCommand.setupServer(ServerCommand.java:110)
+	at emissary.command.ServerCommand.setupCommand(ServerCommand.java:85)
+	at emissary.command.EmissaryCommand.setup(EmissaryCommand.java:14)
+	at emissary.command.ServiceCommand.run(ServiceCommand.java:93)
+	at emissary.Emissary.execute(Emissary.java:113)
+	at emissary.Emissary.main(Emissary.java:164)
+

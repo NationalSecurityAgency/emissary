@@ -7,7 +7,7 @@ public class ServerModeValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerModeValidator.class);
 
-    public void validate(String name, String value) {
+    public static void validate(String value) {
         switch (value) {
             case "cluster":
             case "standalone":
@@ -18,4 +18,6 @@ public class ServerModeValidator {
         }
     }
 
+    /** This class is not meant to be instantiated. */
+    private ServerModeValidator() {}
 }

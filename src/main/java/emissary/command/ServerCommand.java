@@ -27,14 +27,8 @@ public class ServerCommand extends ServiceCommand {
 
     public static final int DEFAULT_PORT = 8001;
 
-    private String mode = "standalone";
-
     @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", defaultValue = "standalone")
-    private void setMode(String value) {
-        ServerModeValidator smv = new ServerModeValidator();
-        smv.validate("mode", value);
-        mode = value;
-    }
+    private String mode = "standalone";
 
     @Option(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     private Path staticDir;
@@ -112,6 +106,8 @@ public class ServerCommand extends ServiceCommand {
         for (String f : flavorMode.split(",")) {
             flavorSet.add(f.toUpperCase());
         }
+
+        ServerModeValidator.validate(getMode());
 
         if (flavorSet.contains("STANDALONE") && flavorSet.contains("CLUSTER")) {
             throw new IllegalArgumentException("Can not run a server in both STANDALONE and CLUSTER");
