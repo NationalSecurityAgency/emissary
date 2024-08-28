@@ -2,9 +2,8 @@ package emissary.command;
 
 import emissary.client.EmissaryResponse;
 import emissary.command.converter.ProjectBaseConverter;
-import emissary.command.validator.ServerModeValidator;
-import emissary.core.EmissaryException;
-import emissary.core.EmissaryRuntimeException;
+import emissary.command.converter.ServerModeConverter;
+import emissary.directory.EmissaryNode;
 import emissary.server.EmissaryServer;
 import emissary.server.api.Pause;
 
@@ -28,15 +27,9 @@ public class ServerCommand extends ServiceCommand {
 
     public static final int DEFAULT_PORT = 8001;
 
-    private String mode = "standalone";
-
-    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", defaultValue = "standalone")
-    @SuppressWarnings("unused")
-    private void setMode(String value) {
-        ServerModeValidator smv = new ServerModeValidator();
-        smv.validate("mode", value);
-        mode = value;
-    }
+    @Option(names = {"-m", "--mode"}, description = "mode: standalone or cluster\nDefault: ${DEFAULT-VALUE}", converter = ServerModeConverter.class,
+            defaultValue = "standalone")
+    private EmissaryNode.EmissaryMode mode;
 
     @Option(names = "--staticDir", description = "path to static assets, loaded from classpath otherwise", converter = ProjectBaseConverter.class)
     private Path staticDir;
@@ -60,7 +53,7 @@ public class ServerCommand extends ServiceCommand {
         return DEFAULT_PORT;
     }
 
-    public String getMode() {
+    public EmissaryNode.EmissaryMode getMode() {
         return mode;
     }
 
@@ -89,20 +82,15 @@ public class ServerCommand extends ServiceCommand {
     public void setupCommand() {
         setupHttp();
         reinitLogback();
-        try {
-            setupServer();
-        } catch (EmissaryException e) {
-            LOG.error("Got an exception", e);
-            throw new EmissaryRuntimeException(e);
-        }
+        setupServer();
     }
 
-    public void setupServer() throws EmissaryException {
+    public void setupServer() {
         String flavorMode;
         if (getFlavor() == null) {
-            flavorMode = getMode().toUpperCase(Locale.getDefault());
+            flavorMode = getMode().toString();
         } else {
-            flavorMode = getMode().toUpperCase(Locale.getDefault()) + "," + getFlavor();
+            flavorMode = getMode().toString() + "," + getFlavor();
         }
 
         if (shouldStrictMode()) {
