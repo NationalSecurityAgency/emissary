@@ -24,20 +24,18 @@ class BaseCommandTest extends UnitTest {
         TestBaseCommand cmd = TestBaseCommand.parse(TestBaseCommand.class, args);
         assertEquals(cmd.getFlavor(), flavorString);
     }
-}
 
+    static class TestBaseCommand extends BaseCommand {
 
-class TestBaseCommand extends BaseCommand {
+        @Override
+        public String getCommandName() {
+            return "GOAWAY";
+        }
 
-    public TestBaseCommand() {}
-
-    @Override
-    public String getCommandName() {
-        return "GOAWAY";
-    }
-
-    @Override
-    public void run(CommandLine c) {
-        setup();
+        @Override
+        public void run(CommandLine c) {
+            setup();
+        }
     }
 }
+
