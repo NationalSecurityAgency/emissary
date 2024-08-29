@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -70,6 +73,16 @@ public class GitRepositoryState {
         Properties properties = new Properties();
         try {
             properties.load(GitRepositoryState.class.getClassLoader().getResourceAsStream(gitProperties));
+        } catch (IOException ie) {
+            LOG.error("Failed to get repository state", ie);
+        }
+        return new GitRepositoryState(properties);
+    }
+
+    public static GitRepositoryState getRepositoryState(Path gitProperties) {
+        Properties properties = new Properties();
+        try (InputStream propertiesStream = Files.newInputStream(gitProperties)) {
+            properties.load(propertiesStream);
         } catch (IOException ie) {
             LOG.error("Failed to get repository state", ie);
         }

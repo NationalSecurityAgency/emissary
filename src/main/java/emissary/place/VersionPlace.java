@@ -18,6 +18,8 @@ public class VersionPlace extends ServiceProviderPlace {
     private String formattedVersion;
     private String versionHash;
 
+    private GitRepositoryState gitRepositoryState;
+
     /**
      * Create the place from the specified config file or resource
      *
@@ -61,8 +63,10 @@ public class VersionPlace extends ServiceProviderPlace {
     }
 
     private void configurePlace() {
+        this.gitRepositoryState = initGitRepositoryState();
+
         includeDate = configG.findBooleanEntry("INCLUDE_DATE", true);
-        useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", false);
+        useAbbrevHash = configG.findBooleanEntry("USE_ABBREV_HASH", true);
         formattedVersion = getEmissaryVersion();
         versionHash = getEmissaryVersionHash();
     }
@@ -71,6 +75,10 @@ public class VersionPlace extends ServiceProviderPlace {
     public void process(IBaseDataObject payload) throws ResourceException {
         payload.putParameter(EMISSARY_VERSION, formattedVersion);
         payload.putParameter(EMISSARY_VERSION_HASH, versionHash);
+    }
+
+    GitRepositoryState initGitRepositoryState() {
+        return GitRepositoryState.getRepositoryState();
     }
 
     private String getEmissaryVersion() {
@@ -85,11 +93,11 @@ public class VersionPlace extends ServiceProviderPlace {
 
     private String getEmissaryVersionHash() {
         if (useAbbrevHash) {
-            // first 8 chars of commit hash
-            return GitRepositoryState.getRepositoryState().getCommitIdAbbrev();
+            // first 7 chars of commit hash
+            return gitRepositoryState.getCommitIdAbbrev();
         } else {
             // full commit hash (default option)
-            return GitRepositoryState.getRepositoryState().getCommitId();
+            return gitRepositoryState.getCommitId();
         }
     }
 }
