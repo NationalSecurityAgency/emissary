@@ -125,6 +125,7 @@ public class Startup {
     /**
      * The main entry point
      */
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) throws IOException, EmissaryException {
 
 
@@ -402,10 +403,7 @@ public class Startup {
                         return;
                     }
 
-                    // logger.debug("Doing local startup on place {}", thePlaceLocation);
-                    final String thePlaceClassStr = PlaceStarter.getClassString(thePlaceLocation);
-
-                    final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassStr, localDirectory);
+                    final IServiceProviderPlace p = PlaceStarter.createPlace(thePlaceLocation, null, thePlaceClassString, localDirectory);
                     if (p != null) {
                         placesArg.put(thePlaceLocation, thePlaceLocation);
                         startupBuilder.append("done!");

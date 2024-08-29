@@ -352,7 +352,7 @@ public class HeartbeatManager {
 
     public static EmissaryResponse getHeartbeat(String fromPlace, String toPlace, EmissaryClient client) {
         final String directoryUrl = KeyManipulator.getServiceHostUrl(toPlace);
-        final HttpPost method = client.createHttpPost(directoryUrl, EmissaryClient.CONTEXT, "/Heartbeat.action");
+        final HttpPost method = client.createHttpPost(directoryUrl, EmissaryClient.context, "/Heartbeat.action");
         final String loc = KeyManipulator.getServiceLocation(toPlace);
 
         final List<NameValuePair> nvps = new ArrayList<>();

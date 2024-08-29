@@ -31,6 +31,8 @@ public final class Ssdeep {
     private static final int SPAMSUM_LENGTH = 64;
     private static final int MIN_BLOCKSIZE = 3;
 
+    public static final int FUZZY_MAX_RESULT = (SPAMSUM_LENGTH + (SPAMSUM_LENGTH / 2 + 20));
+
     /** The window size for the rolling hash. */
     private static final int ROLLING_WINDOW_SIZE = 7;
 
@@ -700,6 +702,7 @@ public final class Ssdeep {
         return (int) score;
     }
 
+    @SuppressWarnings("SystemOut")
     public static void main(final String[] args) throws Exception {
         final Ssdeep ss = new Ssdeep();
         for (final String f : args) {

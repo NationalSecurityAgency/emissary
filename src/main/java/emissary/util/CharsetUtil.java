@@ -66,7 +66,7 @@ public class CharsetUtil {
      * @param end index into input array to stop copying
      * @return array of UTF8 char
      */
-    public static char[] getUTFCharArray(final byte[] byteArray, final String charSet, final int start, final int end) {
+    public static char[] getUtfCharArray(final byte[] byteArray, final String charSet, final int start, final int end) {
         String actualCharSet = charSet;
         if (actualCharSet != null) {
             final String jcs = JavaCharSet.get(actualCharSet);
@@ -74,7 +74,7 @@ public class CharsetUtil {
                 actualCharSet = jcs;
             }
         }
-        return jGetUTFCharArray(byteArray, actualCharSet, start, end);
+        return jGetUtfCharArray(byteArray, actualCharSet, start, end);
     }
 
     /**
@@ -86,7 +86,7 @@ public class CharsetUtil {
      * @param end byte index into input array to stop copying
      * @return array of UTF8 char
      */
-    public static char[] jGetUTFCharArray(final byte[] byteArray, @Nullable final String charSet, final int start, final int end) {
+    public static char[] jGetUtfCharArray(final byte[] byteArray, @Nullable final String charSet, final int start, final int end) {
         char[] cbuffer = null;
 
         if (byteArray != null) {
@@ -130,7 +130,7 @@ public class CharsetUtil {
     /**
      * Get a string in the specified encoding from the input String
      */
-    public static String getUTFString(final String s, final String charSet) {
+    public static String getUtfString(final String s, final String charSet) {
         try {
             return new String(s.getBytes("ISO8859_1"), charSet);
         } catch (UnsupportedEncodingException uue) {
@@ -147,7 +147,7 @@ public class CharsetUtil {
      * @return JUCS2 string or null if error
      */
     @Nullable
-    public static String getUTFString(final byte[] data, final String charSet) {
+    public static String getUtfString(final byte[] data, final String charSet) {
         try {
             return new String(data, charSet);
         } catch (UnsupportedEncodingException uue) {
@@ -211,8 +211,8 @@ public class CharsetUtil {
      * @param s string to test
      * @return true if string is utf8
      */
-    public static boolean isUTF8(final String s) {
-        return isUTF8(s.getBytes(StandardCharsets.UTF_8));
+    public static boolean isUtf8(final String s) {
+        return isUtf8(s.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -222,8 +222,8 @@ public class CharsetUtil {
      * @return true if valid utf8
      */
 
-    public static boolean isUTF8(final byte[] data) {
-        return isUTF8(data, 0, data.length);
+    public static boolean isUtf8(final byte[] data) {
+        return isUtf8(data, 0, data.length);
     }
 
     /**
@@ -236,7 +236,7 @@ public class CharsetUtil {
      * @return true if valid utf8
      */
     @SuppressWarnings("fallthrough")
-    public static boolean isUTF8(final byte[] data, final int offs, final int dlen) {
+    public static boolean isUtf8(final byte[] data, final int offs, final int dlen) {
         int pos = offs;
         int a;
 

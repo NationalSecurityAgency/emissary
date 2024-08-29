@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+@Deprecated(forRemoval = true)
 public class HtmlEscape {
 
     /* our logger */
@@ -338,6 +339,7 @@ public class HtmlEscape {
     /** This class is not meant to be instantiated. */
     private HtmlEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         boolean useString = false;
         int i = 0;

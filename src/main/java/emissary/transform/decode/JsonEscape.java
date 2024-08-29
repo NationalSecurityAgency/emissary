@@ -5,9 +5,10 @@ import emissary.util.shell.Executrix;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Deprecated(forRemoval = true)
 public class JsonEscape {
 
-    private final static String ESCAPES = "ntr\"'/";
+    private static final String ESCAPES = "ntr\"'/\\";
 
     /**
      * Unescape a bunch of JSON bytes that might have \\uxxxx character values. Should already be UTF-8 since JSON is
@@ -76,6 +77,7 @@ public class JsonEscape {
     /** This class is not meant to be instantiated. */
     private JsonEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         for (int i = 0; i < args.length; i++) {
             byte[] content = Executrix.readDataFromFile(args[i]);

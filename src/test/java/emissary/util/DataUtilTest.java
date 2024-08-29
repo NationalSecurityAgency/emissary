@@ -51,10 +51,10 @@ class DataUtilTest extends UnitTest {
 
         final byte[] blankSpace = {' '};
         final byte[] blankSpaces = {' ', ' '};
-        final byte[] control = {' ', ByteUtil.Ascii_DEL, ' '};
+        final byte[] control = {' ', ByteUtil.ASCII_DEL, ' '};
         final byte[] foo = {'f', 'o', '1'};
         final byte[] blankNum = {' ', ' ', '1'};
-        final byte[] blankNumControl = {' ', ' ', '1', ByteUtil.Ascii_ESC};
+        final byte[] blankNumControl = {' ', ' ', '1', ByteUtil.ASCII_ESC};
         final byte[] W = "Президент Буш".getBytes();
         for (final byte[] bytes : Arrays.asList(blankSpace, blankSpaces, control, foo, blankNum, blankNumControl, W)) {
             assertFalse(DataUtil.isEmpty(bytes), "empty: " + Arrays.toString(bytes));

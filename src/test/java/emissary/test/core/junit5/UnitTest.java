@@ -52,6 +52,7 @@ public abstract class UnitTest {
 
     @TempDir
     public static File temporaryDirectory;
+    @SuppressWarnings("ConstantField")
     protected static String TMPDIR = "/tmp";
     @Nullable
     protected Package thisPackage = null;

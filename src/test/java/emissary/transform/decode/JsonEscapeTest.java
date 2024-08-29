@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated(forRemoval = true)
 class JsonEscapeTest extends UnitTest {
     @Test
     void testEscapedAngleBracketChars() {

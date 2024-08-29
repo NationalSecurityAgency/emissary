@@ -21,6 +21,7 @@ import static emissary.core.constants.Parameters.DOCUMENT_TITLE;
 import static emissary.core.constants.Parameters.SUMMARY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Deprecated(forRemoval = true)
 public class HtmlEscapePlaceTest extends ExtractionTest {
 
     public static Stream<? extends Arguments> data() {

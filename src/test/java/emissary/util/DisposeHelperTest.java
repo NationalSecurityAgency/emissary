@@ -37,6 +37,7 @@ class DisposeHelperTest extends UnitTest {
 
     @Nullable
     private ListAppender<ILoggingEvent> appender = null;
+    @SuppressWarnings("HidingField")
     private final Logger logger = (Logger) LoggerFactory.getLogger(DisposeHelper.class);
     private final Logger rLogger = (Logger) LoggerFactory.getLogger("DisposeHelperRunnable");
 

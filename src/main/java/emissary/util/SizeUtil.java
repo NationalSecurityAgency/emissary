@@ -26,7 +26,7 @@ public class SizeUtil {
     /**
      * Object overhead
      */
-    private static final long objOverhead = 8L;
+    private static final long OBJ_OVERHEAD = 8L;
 
     static {
         if (System.getProperty("os.arch").contains("64")) {
@@ -76,10 +76,10 @@ public class SizeUtil {
         long totalSize = 0L;
 
         // Primary view (potentially gigantic)
-        totalSize += getPayloadRAMSize(ibdo);
+        totalSize += getPayloadMemorySize(ibdo);
 
         // Factor in the extracted records
-        totalSize += getExtractedRecordRAMSize(ibdo);
+        totalSize += getExtractedRecordMemorySize(ibdo);
 
         if (ibdo.getParameters() == null) {
             return totalSize;
@@ -133,22 +133,22 @@ public class SizeUtil {
         for (IBaseDataObject ibdo : familyTree) {
             if (ibdo != null) {
                 totalSize += sizeof(ibdo);
-                totalSize += objOverhead + refSize; // For the pointer to ibdo in familyTree (Object overhead)
+                totalSize += OBJ_OVERHEAD + refSize; // For the pointer to ibdo in familyTree (Object overhead)
             }
         }
         return totalSize;
     }
 
     /**
-     * Approximates the amount of RAM consumed by the "extracted records" in a single IBaseDataObject. This is typically the
-     * case when the framework gets eventing datasets. These extracted records are usually treated specially and not run
+     * Approximates the amount of memory consumed by the "extracted records" in a single IBaseDataObject. This is typically
+     * the case when the framework gets eventing datasets. These extracted records are usually treated specially and not run
      * through the processing pipelines proper, but on output do appear as proper child IBaseDataObjects. In the case of a
      * large dataset, these extracted records can consume huge amounts of RAM.
      * 
      * @param ibdo - The IBaseDataObject to approximate
-     * @return - The approximate size, in bytes, in RAM for extracted records of an IBaseDataObject
+     * @return - The approximate memory footprint, in bytes, for extracted records of an IBaseDataObject
      */
-    public static long getExtractedRecordRAMSize(@Nullable IBaseDataObject ibdo) {
+    public static long getExtractedRecordMemorySize(@Nullable IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;
         }
@@ -162,8 +162,8 @@ public class SizeUtil {
                 for (IBaseDataObject child : childObjList) {
                     if (child != null) {
                         totalSize += sizeof(child);
-                        totalSize += objOverhead + refSize; // For the pointer to child in childObjList (Object
-                                                            // overhead)
+                        totalSize += OBJ_OVERHEAD + refSize; // For the pointer to child in childObjList (Object
+                                                             // overhead)
                     }
                 }
             }
@@ -173,13 +173,13 @@ public class SizeUtil {
     }
 
     /**
-     * Approximate the amount of RAM consumed by the various "payloads" of an IBaseDataObject. In this case, a payload
+     * Approximate the amount of memory consumed by the various "payloads" of an IBaseDataObject. In this case, a payload
      * refers to the header, footer, data (primary view), and all the alternate views.
      * 
      * @param ibdo - The IBaseDataObject to approximate
-     * @return - The approximate size, in bytes, in RAM for the IBaseDataObject
+     * @return - The approximate memory footprint, in bytes, for the IBaseDataObject
      */
-    public static long getPayloadRAMSize(@Nullable IBaseDataObject ibdo) {
+    public static long getPayloadMemorySize(@Nullable IBaseDataObject ibdo) {
         if (ibdo == null) {
             return 0L;
         }

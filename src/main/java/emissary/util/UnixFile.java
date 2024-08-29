@@ -139,6 +139,7 @@ public class UnixFile {
     /**
      * Test standalone main
      */
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             log.info("Usage: UnixFile [-v] magicfile file1 [file2 ...]");

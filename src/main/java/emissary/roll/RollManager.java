@@ -29,7 +29,7 @@ public class RollManager implements PropertyChangeListener {
     final HashSet<Roller> rollers = new HashSet<>();
     // SINGLETON
     @Nullable
-    private static RollManager RM;
+    private static RollManager rollManager;
 
     protected RollManager() {
         init();
@@ -111,10 +111,10 @@ public class RollManager implements PropertyChangeListener {
      * Synchronized on RM to prevent multiple returns on RollManager
      */
     public static synchronized RollManager getManager() {
-        if (RM == null) {
-            RM = new RollManager();
+        if (rollManager == null) {
+            rollManager = new RollManager();
         }
-        return RM;
+        return rollManager;
     }
 
     /**
@@ -123,16 +123,16 @@ public class RollManager implements PropertyChangeListener {
      * Used to create custom RollManager based on configs.
      */
     public static synchronized RollManager getManager(Configurator configG) {
-        if (RM == null) {
-            RM = new RollManager(configG);
+        if (rollManager == null) {
+            rollManager = new RollManager(configG);
         }
-        return RM;
+        return rollManager;
     }
 
     public static void shutdown() {
-        RM.exec.shutdown();
-        log.info("Closing all rollers ({})", RM.rollers.size());
-        for (Roller roller : RM.rollers) {
+        rollManager.exec.shutdown();
+        log.info("Closing all rollers ({})", rollManager.rollers.size());
+        for (Roller roller : rollManager.rollers) {
             Rollable r = roller.getRollable();
             try {
                 r.roll();
@@ -141,7 +141,7 @@ public class RollManager implements PropertyChangeListener {
                 log.warn("Error while closing Rollable: {}", r.getClass(), ex);
             }
         }
-        RM = null;
+        rollManager = null;
     }
 
     private static final class RMThreadFactory implements ThreadFactory {

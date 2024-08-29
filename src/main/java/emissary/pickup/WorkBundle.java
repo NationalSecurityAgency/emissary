@@ -124,11 +124,11 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      */
     public static WorkBundle readFromStream(DataInputStream in) throws IOException {
         WorkBundle wb = new WorkBundle();
-        wb.bundleId = readUTFOrNull(in);
-        wb.outputRoot = readUTFOrNull(in);
-        wb.eatPrefix = readUTFOrNull(in);
-        wb.caseId = readUTFOrNull(in);
-        wb.sentTo = readUTFOrNull(in);
+        wb.bundleId = readUtfOrNull(in);
+        wb.outputRoot = readUtfOrNull(in);
+        wb.eatPrefix = readUtfOrNull(in);
+        wb.caseId = readUtfOrNull(in);
+        wb.sentTo = readUtfOrNull(in);
         wb.errorCount = in.readInt();
         wb.priority = in.readInt();
         wb.simpleMode = in.readBoolean();
@@ -153,11 +153,11 @@ public final class WorkBundle implements Comparable<WorkBundle> {
      * @throws IOException if there is a problem writing to the stream.
      */
     public void writeToStream(DataOutputStream out) throws IOException {
-        writeUTFOrNull(bundleId, out);
-        writeUTFOrNull(outputRoot, out);
-        writeUTFOrNull(eatPrefix, out);
-        writeUTFOrNull(caseId, out);
-        writeUTFOrNull(sentTo, out);
+        writeUtfOrNull(bundleId, out);
+        writeUtfOrNull(outputRoot, out);
+        writeUtfOrNull(eatPrefix, out);
+        writeUtfOrNull(caseId, out);
+        writeUtfOrNull(sentTo, out);
         out.writeInt(errorCount);
         out.writeInt(priority);
         out.writeBoolean(simpleMode);
@@ -175,14 +175,14 @@ public final class WorkBundle implements Comparable<WorkBundle> {
     }
 
     @Nullable
-    static String readUTFOrNull(DataInputStream in) throws IOException {
+    static String readUtfOrNull(DataInputStream in) throws IOException {
         if (in.readBoolean()) {
             return in.readUTF();
         }
         return null;
     }
 
-    static void writeUTFOrNull(@Nullable String s, DataOutputStream out) throws IOException {
+    static void writeUtfOrNull(@Nullable String s, DataOutputStream out) throws IOException {
         out.writeBoolean(s != null);
         if (s != null) {
             out.writeUTF(s);

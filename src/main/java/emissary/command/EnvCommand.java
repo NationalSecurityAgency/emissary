@@ -18,7 +18,7 @@ public class EnvCommand extends HttpCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(EnvCommand.class);
 
-    public static int DEFAULT_PORT = 8001;
+    public static final int DEFAULT_PORT = 8001;
 
     @Option(names = {"--bashable"}, description = "format output for sourcing by bash\nDefault: ${DEFAULT-VALUE}")
     private boolean bashable = false;

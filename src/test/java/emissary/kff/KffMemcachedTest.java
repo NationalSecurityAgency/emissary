@@ -68,7 +68,7 @@ class KffMemcachedTest extends UnitTest {
         mcdFilter.setPreferredAlgorithm("SHA-256");
         assertEquals("SHA-256", mcdFilter.getPreferredAlgorithm());
         assertEquals("KFF", mcdFilter.getName());
-        assertEquals(FilterType.Duplicate, mcdFilter.getFilterType());
+        assertEquals(FilterType.DUPLICATE, mcdFilter.getFilterType());
     }
 
     @Test
@@ -116,7 +116,7 @@ class KffMemcachedTest extends UnitTest {
     private KffMemcached createTestFilter(Boolean storeIdDupe, boolean simulateHit, @Nullable String expectedKey)
             throws IOException, NoSuchFieldException,
             IllegalAccessException {
-        KffMemcached filter = new KffMemcached(TEST_ID_WITH_SPACES, "KFF", FilterType.Duplicate, mockMemcachedClient);
+        KffMemcached filter = new KffMemcached(TEST_ID_WITH_SPACES, "KFF", FilterType.DUPLICATE, mockMemcachedClient);
         setPrivateMembersForTesting(filter, storeIdDupe);
         if (simulateHit) {
             cacheResult = "FAKE FIND";

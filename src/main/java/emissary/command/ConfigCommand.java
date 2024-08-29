@@ -22,8 +22,8 @@ public class ConfigCommand extends HttpCommand {
     @Spec
     private CommandSpec spec;
     private static final Logger logger = LoggerFactory.getLogger(ConfigCommand.class);
-    public static int DEFAULT_PORT = 8001;
-    public static String COMMAND_NAME = "config";
+    public static final int DEFAULT_PORT = 8001;
+    public static final String COMMAND_NAME = "config";
 
     @Option(names = {"--place"}, description = "fully-qualified place", arity = "1", required = true)
     private String place;

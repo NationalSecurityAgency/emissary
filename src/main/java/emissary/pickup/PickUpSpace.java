@@ -30,7 +30,7 @@ public abstract class PickUpSpace extends PickUpPlace implements IPickUpSpace {
     protected Map<String, String> pendingBundles = new HashMap<>();
 
     // Number of consecutive take errors that cause space to close
-    protected int TAKE_ERROR_MAX = 10;
+    protected static final int TAKE_ERROR_MAX = 10;
 
     /**
      * Create using default configuration

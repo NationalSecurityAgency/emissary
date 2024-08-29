@@ -44,13 +44,15 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
 
     // Name for our threads
     public static final String AGENT_THREAD = "MobileAgent-";
-    private static int AGENT_COUNTER = 0;
+    private static int agentCounter = 0;
 
     // For tracking errors
-    protected int MAX_MOVE_ERRORS = 3;
+    public static final int DEFAULT_MAX_MOVE_ERRORS = 3;
+    protected int maxMoveErrors = DEFAULT_MAX_MOVE_ERRORS;
 
     // For stopping infinite loops
-    protected int MAX_ITINERARY_STEPS = 100;
+    public static final int DEFAULT_MAX_ITINERARY_STEPS = 100;
+    protected int maxItinerarySteps = DEFAULT_MAX_ITINERARY_STEPS;
 
     // Stages of processing
     protected static final String ERROR_FORM = Form.ERROR;
@@ -91,7 +93,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      * Still have an uncaught exception handler but not really in a true ThreadGroup with other agents
      */
     public MobileAgent() {
-        this(new AgentThreadGroup(TG_ID), AGENT_THREAD + AGENT_COUNTER++);
+        this(new AgentThreadGroup(TG_ID), AGENT_THREAD + agentCounter++);
     }
 
     /**
@@ -304,7 +306,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
             }
 
             controlError = true;
-            if (++this.moveErrorsOccurred > this.MAX_MOVE_ERRORS || this.payload.transformHistory().size() > this.MAX_ITINERARY_STEPS) {
+            if (++this.moveErrorsOccurred > this.maxMoveErrors || this.payload.transformHistory().size() > this.maxItinerarySteps) {
                 logger.error("Too many move errors, giving up");
                 newEntry = null;
                 break;
@@ -439,7 +441,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
         }
 
         // Stop looping from occurring
-        if (payloadArg.transformHistory().size() > this.MAX_ITINERARY_STEPS &&
+        if (payloadArg.transformHistory().size() > this.maxItinerarySteps &&
                 !ERROR_FORM.equals(payloadArg.currentForm())) {
             payloadArg.replaceCurrentForm(ERROR_FORM);
             payloadArg.addProcessingError("Agent stopped due to larger than max transform history size (looping?)");
@@ -875,7 +877,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public int getMaxMoveErrors() {
-        return this.MAX_MOVE_ERRORS;
+        return this.maxMoveErrors;
     }
 
     /**
@@ -886,7 +888,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public void setMaxMoveErrors(final int value) {
-        this.MAX_MOVE_ERRORS = value;
+        this.maxMoveErrors = value;
     }
 
     /**
@@ -894,7 +896,7 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public int getMaxItinerarySteps() {
-        return this.MAX_ITINERARY_STEPS;
+        return this.maxItinerarySteps;
     }
 
     /**
@@ -904,6 +906,6 @@ public abstract class MobileAgent implements IMobileAgent, MobileAgentMBean {
      */
     @Override
     public void setMaxItinerarySteps(final int value) {
-        this.MAX_ITINERARY_STEPS = value;
+        this.maxItinerarySteps = value;
     }
 }

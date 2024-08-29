@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
  * Reportable result from MultiKeywordScanner
  */
 public class Hit {
-    public static int OFFSET = 0;
-    public static int ID = 1;
+    public static final int OFFSET = 0;
+    public static final int ID = 1;
 
     protected int[] hit = new int[2];
 

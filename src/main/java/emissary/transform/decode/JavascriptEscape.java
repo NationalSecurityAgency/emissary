@@ -5,6 +5,7 @@ import emissary.util.shell.Executrix;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+@Deprecated(forRemoval = true)
 public class JavascriptEscape {
 
     /**
@@ -42,6 +43,7 @@ public class JavascriptEscape {
     /** This class is not meant to be instantiated. */
     private JavascriptEscape() {}
 
+    @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         int i = 0;
 

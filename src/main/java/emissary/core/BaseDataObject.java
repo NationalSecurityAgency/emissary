@@ -148,10 +148,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     protected StringBuilder brokenDocument = null;
 
     // Filetypes that we think are equivalent to no file type at all
-    protected String[] FILETYPE_EMPTY = {Form.UNKNOWN};
-
-    // Filetypes with this suffix are equivalent to no file type at all
-    protected String FILETYPE_ENDSWITH = "-UNWRAPPED";
+    protected String[] emptyFileTypes = {Form.UNKNOWN};
 
     /**
      * The integer priority of the data object. A lower number is higher priority.
@@ -821,15 +818,15 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     @Nullable
     @Override
     public DirectoryEntry getLastPlaceVisited() {
-        String entry = history.lastVisit();
-        return entry == null ? null : new DirectoryEntry(entry);
+        TransformHistory.History entry = history.lastVisit();
+        return entry == null ? null : new DirectoryEntry(entry.getKey());
     }
 
     @Nullable
     @Override
     public DirectoryEntry getPenultimatePlaceVisited() {
-        String entry = history.penultimateVisit();
-        return entry == null ? null : new DirectoryEntry(entry);
+        TransformHistory.History entry = history.penultimateVisit();
+        return entry == null ? null : new DirectoryEntry(entry.getKey());
     }
 
     @Override
@@ -1099,6 +1096,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public ByteBuffer headerBuffer() {
         return ByteBuffer.wrap(header());
     }
@@ -1116,11 +1114,13 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
 
     @Override
+    @Deprecated(forRemoval = true)
     public ByteBuffer footerBuffer() {
         return ByteBuffer.wrap(footer());
     }
 
     @Override
+    @Deprecated(forRemoval = true)
     public ByteBuffer dataBuffer() {
         return ByteBuffer.wrap(data());
     }
@@ -1162,12 +1162,12 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
 
     @Override
     public boolean setFileTypeIfEmpty(final String v) {
-        return setFileTypeIfEmpty(v, this.FILETYPE_EMPTY);
+        return setFileTypeIfEmpty(v, this.emptyFileTypes);
     }
 
     @Override
     public boolean isFileTypeEmpty() {
-        return isFileTypeEmpty(this.FILETYPE_EMPTY);
+        return isFileTypeEmpty(this.emptyFileTypes);
     }
 
     /**
@@ -1182,7 +1182,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
             return true;
         }
 
-        if (s.endsWith(FILETYPE_ENDSWITH)) {
+        if (s.endsWith(Form.SUFFIXES_UNWRAPPED)) {
             return true;
         }
 
@@ -1239,6 +1239,7 @@ public class BaseDataObject implements Serializable, Cloneable, Remote, IBaseDat
      */
     @Nullable
     @Override
+    @Deprecated(forRemoval = true)
     public ByteBuffer getAlternateViewBuffer(final String s) {
         final byte[] viewdata = getAlternateView(s);
         if (viewdata == null) {

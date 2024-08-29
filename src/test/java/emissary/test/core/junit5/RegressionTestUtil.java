@@ -70,6 +70,9 @@ public final class RegressionTestUtil {
      */
     public static final String THROWABLE_MESSAGE_NAME = "throwableMessage";
 
+    public static final String NON_DETERMINISTIC_ERROR_MESSAGE =
+            "\nNOTE: Since 'generateAnswers' is true, these differences could indicate non-deterministic processing in the tested code path\n";
+
     /**
      * XML builder to read XML answer file in
      */
@@ -119,7 +122,7 @@ public final class RegressionTestUtil {
     }
 
     public static void checkAnswers(final Document answers, final IBaseDataObject payload, final List<SimplifiedLogEvent> actualSimplifiedLogEvents,
-            final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders) {
+            final List<IBaseDataObject> attachments, final String placeName, final ElementDecoders decoders, final boolean generateAnswers) {
         final Element root = answers.getRootElement();
         final Element parent = root.getChild(ANSWERS);
 
@@ -130,7 +133,7 @@ public final class RegressionTestUtil {
         final String differences = PlaceComparisonHelper.checkDifferences(expectedIbdo, payload, expectedAttachments,
                 attachments, placeName, DIFF_CHECK);
 
-        assertNull(differences, differences);
+        assertNull(differences, generateAnswers ? differences + NON_DETERMINISTIC_ERROR_MESSAGE : differences);
 
         final List<SimplifiedLogEvent> expectedSimplifiedLogEvents = getSimplifiedLogEvents(parent);
 

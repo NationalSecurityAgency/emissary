@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 class JDOMUtilTest extends UnitTest {
 
-    static final String plist_xml =
+    static final String PLIST_XML =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
                     + "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
                     + "<plist version=\"1.0\">\n" + "<dict>\n" + "   <key>Label</key>\n" + "   <string>com.apple.AOSNotification</string>\n"
@@ -25,7 +25,7 @@ class JDOMUtilTest extends UnitTest {
     @Test
     void testNonValidatingDTDRetrievalSuppression() {
         try {
-            final Document doc = JDOMUtil.createDocument(plist_xml, null, false);
+            final Document doc = JDOMUtil.createDocument(PLIST_XML, null, false);
             assertNotNull(doc, "Document should be created");
         } catch (Throwable t) {
             fail("An exception should not be thrown here, perhaps the DTD validation is not fully disabled.", t);
@@ -34,6 +34,6 @@ class JDOMUtilTest extends UnitTest {
 
     @Test
     void testValidationFailedDTDRetrieval() {
-        assertThrows(JDOMParseException.class, () -> JDOMUtil.createDocument(plist_xml, null, true));
+        assertThrows(JDOMParseException.class, () -> JDOMUtil.createDocument(PLIST_XML, null, true));
     }
 }

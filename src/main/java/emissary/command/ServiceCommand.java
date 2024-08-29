@@ -20,10 +20,10 @@ public abstract class ServiceCommand extends HttpCommand {
 
     static final Logger LOG = LoggerFactory.getLogger(ServiceCommand.class);
 
-    public static String COMMAND_NAME = "ServiceCommand";
-    public static String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
-    public static String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
-    public static String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
+    public static final String COMMAND_NAME = "ServiceCommand";
+    public static final String SERVICE_HEALTH_ENDPOINT = "/api/" + HEALTH;
+    public static final String SERVICE_SHUTDOWN_ENDPOINT = "/api/" + SHUTDOWN;
+    public static final String SERVICE_KILL_ENDPOINT = SERVICE_SHUTDOWN_ENDPOINT + "/force";
 
     @Option(names = {"--csrf"}, description = "disable csrf protection\nDefault: ${DEFAULT-VALUE}", arity = "1")
     private boolean csrf = true;
@@ -113,8 +113,13 @@ public abstract class ServiceCommand extends HttpCommand {
                     throw new EmissaryRuntimeException("Emissary " + getServiceName() + " is already running");
                 }
             } else {
-                // no running server so fire it up
-                startService();
+                if (isPause()) {
+                    // we hadn't intended to start the service, so don't try to do so now
+                    throw new EmissaryRuntimeException("Error pausing service: request returned status " + response.getStatus());
+                } else {
+                    // no running server so fire it up
+                    startService();
+                }
             }
         }
     }

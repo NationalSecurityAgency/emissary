@@ -215,6 +215,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated(forRemoval = true)
     ByteBuffer headerBuffer();
 
     /**
@@ -222,6 +223,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated(forRemoval = true)
     ByteBuffer footerBuffer();
 
     /**
@@ -229,6 +231,7 @@ public interface IBaseDataObject {
      * 
      * @return buffer required by the HTML Velocity templates.
      */
+    @Deprecated(forRemoval = true)
     ByteBuffer dataBuffer();
 
     /**
@@ -449,6 +452,7 @@ public interface IBaseDataObject {
      * @param arg1 the name of the view to retrieve
      * @return buffer of alternate view data
      */
+    @Deprecated(forRemoval = true)
     ByteBuffer getAlternateViewBuffer(String arg1);
 
     /**

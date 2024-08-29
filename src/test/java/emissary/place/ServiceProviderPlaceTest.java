@@ -84,7 +84,7 @@ class ServiceProviderPlaceTest extends UnitTest {
             + "SERVICE_QUALITY = 90\n" + "SERVICE_PROXY = \"TEST_SERVICE_PROXY\"\n"
             + "SERVICE_PROXY_DENY = \"TEST_SERVICE_PROXY\"\n" + "SERVICE_PROXY_DENY != \"*\"\n").getBytes();
 
-    String CFGDIR = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
+    String configDir = System.getProperty(ConfigUtil.CONFIG_DIR_PROPERTY);
 
     @Override
     @BeforeEach
@@ -228,9 +228,9 @@ class ServiceProviderPlaceTest extends UnitTest {
         Path cfg;
         // Write out the config data to the temp config dir
         if (usePackage) {
-            cfg = Paths.get(CFGDIR, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+            cfg = Paths.get(configDir, thisPackage.getName() + ".MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
         } else {
-            cfg = Paths.get(CFGDIR, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
+            cfg = Paths.get(configDir, "MyFileConfigedTestPlace" + ConfigUtil.CONFIG_FILE_ENDING);
         }
 
         try (OutputStream fos = Files.newOutputStream(cfg)) {
