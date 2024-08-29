@@ -26,7 +26,7 @@ public class InputStreamChannelFactory {
     }
 
     private static class InputStreamChannelFactoryImpl implements SeekableByteChannelFactory {
-        private long size;
+        private final long size;
         private final InputStreamFactory inputStreamFactory;
 
         public InputStreamChannelFactoryImpl(final long size, final InputStreamFactory inputStreamFactory) {

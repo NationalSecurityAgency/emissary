@@ -46,7 +46,7 @@ public class KffMemcached implements KffFilter {
     /**
      * Logger
      */
-    private Logger logger;
+    private final Logger logger;
 
     /**
      * The hash to use as the key

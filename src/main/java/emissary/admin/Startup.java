@@ -46,7 +46,7 @@ public class Startup {
     static int directoryAction = DIRECTORYADD;
 
     // If we are an emissary node these will be present
-    private EmissaryNode node;
+    private final EmissaryNode node;
 
     // Our logger
     private static final Logger logger = LoggerFactory.getLogger(Startup.class);
