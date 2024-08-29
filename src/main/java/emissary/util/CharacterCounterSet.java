@@ -1,14 +1,15 @@
 package emissary.util;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * A set of named counters for keeping counts on various classes of characters encountered
  */
 public class CharacterCounterSet extends CounterSet {
     private static final long serialVersionUID = -7111758159975960091L;
-    public static final String[] CHARACTER_TYPE_KEYS = {"CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_BLANK_SPACE", "CHARACTER_ISO_CONTROL",
-            "CHARACTER_PUNCTUATION", "CHARACTER_OTHER"};
+    public static final List<String> CHARACTER_TYPE_KEYS =
+            List.of("CHARACTER_LETTER", "CHARACTER_DIGIT", "CHARACTER_BLANK_SPACE", "CHARACTER_ISO_CONTROL",
+                    "CHARACTER_PUNCTUATION", "CHARACTER_OTHER");
 
     /**
      * Create a set of character counters
@@ -42,7 +43,7 @@ public class CharacterCounterSet extends CounterSet {
      * Load in our special character class keys
      */
     protected void loadCharacterKeys() {
-        addKeys(Arrays.asList(CHARACTER_TYPE_KEYS));
+        addKeys(CHARACTER_TYPE_KEYS);
     }
 
 

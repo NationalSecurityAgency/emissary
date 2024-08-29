@@ -36,12 +36,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FeedCommandIT extends UnitTest {
 
-    public static final String[] PROJECT_BASE_ARGS = {"-b", "--projectBase"};
-    public static final String[] INPUT_ARGS = {"-i", "--inputRoot"};
-    public static final String[] STRING_ARGS = {"-h", "--host", "-w", "--workspace", "-ci", "--caseId", "-cc", "--caseClass", "-ep", "--eatPrefix",
-            "-cs", "--case", "-o", "--outputRoot", "-ns", "--namespaceName", "--logbackConfig"};
-    public static final String[] BOOLEAN_ARGS = {"-sd", "--skipDot", "-l", "--loop"};
-    public static final String[] INT_ARGS = {"-p", "--port", "--bundleSize"};
+    public static final List<String> PROJECT_BASE_ARGS = List.of("-b", "--projectBase");
+    public static final List<String> INPUT_ARGS = List.of("-i", "--inputRoot");
+    public static final List<String> STRING_ARGS =
+            List.of("-h", "--host", "-w", "--workspace", "-ci", "--caseId", "-cc", "--caseClass", "-ep", "--eatPrefix",
+                    "-cs", "--case", "-o", "--outputRoot", "-ns", "--namespaceName", "--logbackConfig");
+    public static final List<String> BOOLEAN_ARGS = List.of("-sd", "--skipDot", "-l", "--loop");
+    public static final List<String> INT_ARGS = List.of("-p", "--port", "--bundleSize");
 
     @Nullable
     private FeedCommand command;
@@ -77,7 +78,7 @@ class FeedCommandIT extends UnitTest {
     void requiredArgumentsDefaultValues() throws Exception {
         // setup
         // Add the required parameters
-        arguments.addAll(Arrays.asList(PROJECT_BASE_ARGS[0], baseDir.toString(), INPUT_ARGS[0], inputDir.toString()));
+        arguments.addAll(Arrays.asList(PROJECT_BASE_ARGS.get(0), baseDir.toString(), INPUT_ARGS.get(0), inputDir.toString()));
 
         // test
         command = FeedCommand.parse(FeedCommand.class, arguments);
@@ -110,11 +111,11 @@ class FeedCommandIT extends UnitTest {
 
     static class CartesianArgumentsProvider implements ArgumentsProvider {
         List<List<String>> cartesian = Lists.cartesianProduct(
-                Arrays.asList(PROJECT_BASE_ARGS),
-                Arrays.asList(INPUT_ARGS),
-                Arrays.asList(STRING_ARGS),
-                Arrays.asList(BOOLEAN_ARGS),
-                Arrays.asList(INT_ARGS));
+                PROJECT_BASE_ARGS,
+                INPUT_ARGS,
+                STRING_ARGS,
+                BOOLEAN_ARGS,
+                INT_ARGS);
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
