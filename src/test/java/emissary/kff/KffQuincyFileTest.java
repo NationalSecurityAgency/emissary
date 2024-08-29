@@ -18,13 +18,13 @@ class KffQuincyFileTest extends UnitTest {
     @Override
     @BeforeEach
     public void setUp() throws Exception {
-        kffQuincyFile = new KffQuincyFile(resourcePath, "testFilter", KffFilter.FilterType.Unknown);
+        kffQuincyFile = new KffQuincyFile(resourcePath, "testFilter", KffFilter.FilterType.UNKNOWN);
     }
 
     @Test
     void testCreation() {
         assertEquals("MD5", kffQuincyFile.getPreferredAlgorithm());
-        assertEquals(KffFilter.FilterType.Unknown, kffQuincyFile.ftype);
+        assertEquals(KffFilter.FilterType.UNKNOWN, kffQuincyFile.ftype);
         assertEquals("testFilter", kffQuincyFile.filterName);
         assertEquals(16, kffQuincyFile.recordLength);
     }

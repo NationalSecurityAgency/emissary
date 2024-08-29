@@ -86,6 +86,7 @@ public class LogbackTester implements Closeable {
         public final String message;
         @Nullable
         public final String throwableClassName;
+        @Nullable
         public final String throwableMessage;
 
         public SimplifiedLogEvent(Level level, String message, @Nullable Throwable throwable) {
@@ -97,8 +98,6 @@ public class LogbackTester implements Closeable {
         public SimplifiedLogEvent(Level level, String message, @Nullable String throwableClassName, @Nullable String throwableMessage) {
             Validate.notNull(level, "Required: level != null!");
             Validate.notNull(message, "Required: message != null!");
-            Validate.isTrue((throwableClassName == null && throwableMessage == null) ||
-                    (throwableClassName != null && throwableMessage != null));
 
             this.level = level;
             this.message = message;

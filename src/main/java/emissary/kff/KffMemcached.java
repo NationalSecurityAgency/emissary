@@ -46,7 +46,7 @@ public class KffMemcached implements KffFilter {
     /**
      * Logger
      */
-    private Logger logger;
+    private final Logger logger;
 
     /**
      * The hash to use as the key
@@ -61,7 +61,7 @@ public class KffMemcached implements KffFilter {
     /**
      * Filter type
      */
-    protected FilterType ftype = FilterType.Unknown;
+    protected FilterType ftype = FilterType.UNKNOWN;
 
     /**
      * The age-off in the memcached client

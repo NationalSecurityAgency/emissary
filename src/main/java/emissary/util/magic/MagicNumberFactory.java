@@ -331,7 +331,7 @@ public class MagicNumberFactory {
         try {
             return MagicMath.stringToInt(entry);
         } catch (NumberFormatException e) {
-            throw new ParseException(e + ": Malformatted offset value: " + entry);
+            throw new ParseException(e + ": Malformed offset value");
         }
     }
 

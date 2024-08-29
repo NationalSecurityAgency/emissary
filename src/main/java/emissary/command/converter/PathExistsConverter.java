@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import javax.annotation.Nullable;
 
 public class PathExistsConverter implements ITypeConverter<Path> {
-    private String optionName;
+    private final String optionName;
 
     public PathExistsConverter() {
         this(null);

@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -20,6 +23,7 @@ public class GitRepositoryState {
     private final String dirty;
     private final String remoteOriginUrl;
     private final String commitIdAbbrev;
+    private final String commitId;
     private final String describe;
     private final String describeShort;
     private final String commitUserName;
@@ -43,6 +47,7 @@ public class GitRepositoryState {
         this.remoteOriginUrl = properties.get("git.remote.origin.url").toString();
 
         this.commitIdAbbrev = properties.get("git.commit.id.abbrev").toString();
+        this.commitId = properties.get("git.commit.id.full").toString();
         this.describe = properties.get("git.commit.id.describe").toString();
         this.describeShort = properties.get("git.commit.id.describe-short").toString();
         this.commitUserName = properties.get("git.commit.user.name").toString();
@@ -74,6 +79,16 @@ public class GitRepositoryState {
         return new GitRepositoryState(properties);
     }
 
+    public static GitRepositoryState getRepositoryState(Path gitProperties) {
+        Properties properties = new Properties();
+        try (InputStream propertiesStream = Files.newInputStream(gitProperties)) {
+            properties.load(propertiesStream);
+        } catch (IOException ie) {
+            LOG.error("Failed to get repository state", ie);
+        }
+        return new GitRepositoryState(properties);
+    }
+
     public static String dumpVersionInfo(GitRepositoryState gitRepositoryState, String applicationName) {
         return String.format("%s Version: %s - built on %s - git hash: %s", applicationName, gitRepositoryState.buildVersion,
                 gitRepositoryState.buildTime, gitRepositoryState.getCommitIdAbbrev());
@@ -97,6 +112,10 @@ public class GitRepositoryState {
 
     public String getCommitIdAbbrev() {
         return commitIdAbbrev;
+    }
+
+    public String getCommitId() {
+        return commitId;
     }
 
     public String getDescribe() {

@@ -27,7 +27,7 @@ public class KffQuincyFile extends KffFile {
     @SuppressWarnings("SystemOut")
     public static void main(String[] args) throws Exception {
         KffChain kff = new KffChain();
-        KffFile kfile = new KffQuincyFile(args[0], "QUINCYTEST", FilterType.Ignore);
+        KffFile kfile = new KffQuincyFile(args[0], "QUINCYTEST", FilterType.IGNORE);
         kff.addFilter(kfile);
         kff.addAlgorithm("CRC32");
         kff.addAlgorithm("MD5");

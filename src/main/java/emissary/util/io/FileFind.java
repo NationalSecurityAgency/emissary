@@ -93,7 +93,7 @@ public class FileFind {
         /**
          * Stack of Files and directory lists keeping track of where in the tree we are.
          */
-        private Deque<Object> currentPath = new ArrayDeque<>();
+        private final Deque<Object> currentPath = new ArrayDeque<>();
         @Nullable
         private FileFilter filter = null;
 
@@ -178,7 +178,7 @@ public class FileFind {
      * the added complexity of the 'Iterator' class.
      */
     static class DirectoryList {
-        private File[] contents;
+        private final File[] contents;
         private int position;
 
         public DirectoryList(File[] contents) {
